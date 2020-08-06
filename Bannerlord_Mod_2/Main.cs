@@ -12,8 +12,6 @@ using System.Reflection;
 using JetBrains.Annotations;
 using static TaleWorlds.MountAndBlade.Agent;
 
-// Simonova zmena
-
 namespace RealisticBattle
 {
     public static class Vars
