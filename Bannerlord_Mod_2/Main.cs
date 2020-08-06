@@ -555,6 +555,26 @@ namespace RealisticBattle
             }
 
             float physicalDamage = ((length * length) * (weaponItem.Weight)) / 2;
+            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") & physicalDamage > (weaponItem.Weight) * 1500f)
+            { 
+                physicalDamage = (weaponItem.Weight) * 1500f; 
+            }
+
+            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt") & physicalDamage > (weaponItem.Weight) * 2000f)
+            {
+                physicalDamage = (weaponItem.Weight) * 2000f;
+            }
+
+            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin") & physicalDamage > (weaponItem.Weight) * 300f)
+            {
+                physicalDamage = (weaponItem.Weight) * 300f;
+            }
+
+            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") & physicalDamage > (weaponItem.Weight) * 400f)
+            {
+                physicalDamage = (weaponItem.Weight) * 400f;
+            }
+
             //float distnace = (acd.MissileStartingPosition - acd.CollisionGlobalPosition).Length;
             //InformationManager.DisplayMessage(new InformationMessage("Ek:" + physicalDamage + " modif:" + missileTotalDamage + " speed:" + length + " dist:" + distnace));
             baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining;
@@ -585,7 +605,7 @@ namespace RealisticBattle
 
                         PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                         property.DeclaringType.GetProperty("MissileSpeed");
-                        property.SetValue(missionWeapon.CurrentUsageItem, 50, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                        property.SetValue(missionWeapon.CurrentUsageItem, 70, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                     }
                 }
             }
