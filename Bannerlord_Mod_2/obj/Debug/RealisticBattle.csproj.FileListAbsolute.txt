@@ -1,0 +1,12 @@
+D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\RealisticBattle\bin\Win64_Shipping_Client\RealisticBattle.dll
+D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\RealisticBattle\bin\Win64_Shipping_Client\RealisticBattle.pdb
+D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\RealisticBattle\Bannerlord_Mod_2\obj\Debug\RealisticBattle.csproj.CoreCompileInputs.cache
+D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\RealisticBattle\Bannerlord_Mod_2\obj\Debug\RealisticBattle.dll
+D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\RealisticBattle\Bannerlord_Mod_2\obj\Debug\RealisticBattle.pdb
+B:\Hry\steamapps\common\Mount & Blade II Bannerlord\Modules\RealisticBattle\Bannerlord_Mod_2\obj\Debug\RealisticBattle.csproj.CoreCompileInputs.cache
+B:\Hry\steamapps\common\Mount & Blade II Bannerlord\Modules\RealisticBattle\Bannerlord_Mod_2\obj\Debug\RealisticBattle.dll
+B:\Hry\steamapps\common\Mount & Blade II Bannerlord\Modules\RealisticBattle\Bannerlord_Mod_2\obj\Debug\RealisticBattle.pdb
+B:\Hry\steamapps\common\Mount & Blade II Bannerlord\Modules\RealisticBattle\bin\Win64_Shipping_Client\RealisticBattle.dll
+B:\Hry\steamapps\common\Mount & Blade II Bannerlord\Modules\RealisticBattle\bin\Win64_Shipping_Client\RealisticBattle.pdb
+D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\RealisticBattle\Bannerlord_Mod_2\obj\Debug\RealisticBattle.csprojAssemblyReference.cache
+b:\Hry\steamapps\common\Mount & Blade II Bannerlord\Modules\RealisticBattle\Bannerlord_Mod_2\obj\Debug\RealisticBattle.csprojAssemblyReference.cache
