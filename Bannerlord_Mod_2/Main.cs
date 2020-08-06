@@ -576,25 +576,12 @@ namespace RealisticBattle
             {
                 if (__instance.Equipment != null && !__instance.Equipment[equipmentIndex].IsEmpty)
                 {
-                    WeaponStatsData[] weaponStatsData = null;
-                    weaponStatsData = __instance.Equipment[equipmentIndex].GetWeaponStatsData();
-                    if (weaponStatsData[0].WeaponClass == 15)
+                    WeaponStatsData[] wsd = __instance.Equipment[equipmentIndex].GetWeaponStatsData();
+                    if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
                     {
-                        //WeaponData wd = WeaponData.InvalidWeaponData;
-                        //WeaponStatsData[] wsd = null;
-                        //WeaponData awd = WeaponData.InvalidWeaponData;
-                        //WeaponStatsData[] awsd = null;
-
-                        //wd = missionWeapon.GetWeaponData(needBatchedVersionForMeshes: true);
-                        //wsd = missionWeapon.GetWeaponStatsData();
-                        //awd = missionWeapon.GetAmmoWeaponData(needBatchedVersion: true);
-                        //awsd = missionWeapon.GetAmmoWeaponStatsData();
                         MissionWeapon missionWeapon = __instance.Equipment[equipmentIndex];
 
                         _oldMissileSpeed = missionWeapon.GetMissileSpeedForUsage(0);
-
-                        //double potentialEnergy = missileSpeed * 30 * 0.113f * 0.290f;
-                        //double calculatedMissileSpeed = Math.Sqrt(((potentialEnergy * 2f) / (missionWeapon.AmmoWeapon.GetWeight() + 0.05f)) * 0.92f);
 
                         PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                         property.DeclaringType.GetProperty("MissileSpeed");
@@ -610,9 +597,8 @@ namespace RealisticBattle
             {
                 if (__instance.Equipment != null && !__instance.Equipment[equipmentIndex].IsEmpty)
                 {
-                    WeaponStatsData[] weaponStatsData = null;
-                    weaponStatsData = __instance.Equipment[equipmentIndex].GetWeaponStatsData();
-                    if (weaponStatsData[0].WeaponClass == 15)
+                    WeaponStatsData[] wsd = __instance.Equipment[equipmentIndex].GetWeaponStatsData();
+                    if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
                     {
                         MissionWeapon missionWeapon = __instance.Equipment[equipmentIndex];
 
@@ -641,14 +627,13 @@ namespace RealisticBattle
             WeaponData wd = missionWeapon.GetWeaponData(needBatchedVersionForMeshes: true);
             WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
 
-            if (wsd[0].WeaponClass == 15) {
+            if ((wsd[0].WeaponClass == (int) WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow)) {
 
                 _oldMissileSpeed = missionWeapon.GetMissileSpeedForUsage(0);
 
                 double potentialEnergy = _oldMissileSpeed * 30 * 0.113f * 0.290f;
                 float ammoWeight = missionWeapon.AmmoWeapon.GetWeight();
-                //int calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / (missionWeapon.AmmoWeapon.GetWeight() + 0.005f)) * 0.92f));
-                int calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / (missionWeapon.AmmoWeapon.GetWeight() + 0.005f)) * 0.92f));
+                int calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / (ammoWeight + 0.005f)) * 0.92f));
 
                 PropertyInfo property2 = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                 property2.DeclaringType.GetProperty("MissileSpeed");
@@ -666,8 +651,6 @@ namespace RealisticBattle
                 method.Invoke(shooterAgent, new object[] { weaponIndex, wd, wsd, awd, null, null, true, true });
                 wd.DeinitializeManagedPointers();
 
-                shooterAgent.UpdateAgentProperties();
-
                 shooterAgent.TryToWieldWeaponInSlot(weaponIndex, WeaponWieldActionType.InstantAfterPickUp, true);
 
                 shooterAgent.UpdateAgentProperties();
@@ -679,7 +662,7 @@ namespace RealisticBattle
         {
             MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
             WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
-            if (wsd[0].WeaponClass == 15)
+            if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
             {
                 PropertyInfo property2 = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                 property2.DeclaringType.GetProperty("MissileSpeed");
