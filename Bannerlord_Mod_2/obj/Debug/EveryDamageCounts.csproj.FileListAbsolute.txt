@@ -1,8 +1,0 @@
-D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\Bannerlord_Mod_2\bin\Win64_Shipping_Client\EveryDamageCounts.dll
-D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\Bannerlord_Mod_2\bin\Win64_Shipping_Client\EveryDamageCounts.pdb
-D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\EveryDamageCounts\bin\Win64_Shipping_Client\EveryDamageCounts.dll
-D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\EveryDamageCounts\bin\Win64_Shipping_Client\EveryDamageCounts.pdb
-D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\EveryDamageCounts\Bannerlord_Mod_2\obj\Debug\EveryDamageCounts.csproj.CoreCompileInputs.cache
-D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\EveryDamageCounts\Bannerlord_Mod_2\obj\Debug\EveryDamageCounts.csproj.CopyComplete
-D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\EveryDamageCounts\Bannerlord_Mod_2\obj\Debug\EveryDamageCounts.dll
-D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\EveryDamageCounts\Bannerlord_Mod_2\obj\Debug\EveryDamageCounts.pdb

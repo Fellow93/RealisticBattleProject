@@ -1,6 +1,0 @@
-D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\Bannerlord_Mod_2\bin\Win64_Shipping_Client\AnotherArmorDamage.dll
-D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\Bannerlord_Mod_2\bin\Win64_Shipping_Client\AnotherArmorDamage.pdb
-D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\Bannerlord_Mod_2\Bannerlord_Mod_2\obj\Debug\Bannerlord_Mod_2.csproj.CoreCompileInputs.cache
-D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\Bannerlord_Mod_2\Bannerlord_Mod_2\obj\Debug\Bannerlord_Mod_2.csproj.CopyComplete
-D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\Bannerlord_Mod_2\Bannerlord_Mod_2\obj\Debug\AnotherArmorDamage.dll
-D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\Bannerlord_Mod_2\Bannerlord_Mod_2\obj\Debug\AnotherArmorDamage.pdb
