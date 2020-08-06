@@ -109,31 +109,18 @@ namespace RealisticBattle
                             team.AddTacticOption(new TacticHoldTheHill(team));
                             team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
                             team.AddTacticOption(new TacticCoordinatedRetreat(team));
-                            //team.AddTacticOption(new TacticArchersOnTheHill(team));
                             team.AddTacticOption(new TacticFullScaleAttack(team));
                             team.AddTacticOption(new TacticFrontalCavalryCharge(team));
                             team.AddTacticOption(new TacticCharge(team));
 
                             //team.AddTacticOption(new TacticDefensiveRing(team));
+                            //team.AddTacticOption(new TacticArchersOnTheHill(team));
                         }
                     }
                 }
             }
         }
     }
-            
-    /*
-    [HarmonyPatch(typeof(FormationAI))]
-    [HarmonyPatch("TickOccasionally")]
-    class FormationAiTickOccasionally
-    {
-        static void Postfix(FormationAI __instance)
-        {
-            __instance.DebugMore();
-        }
-        
-    }
-    */
 
     [HarmonyPatch(typeof(CustomBattleAgentStatCalculateModel))]
     [HarmonyPatch("UpdateAgentStats")]
