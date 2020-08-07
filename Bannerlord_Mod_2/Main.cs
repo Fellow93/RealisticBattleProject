@@ -11,6 +11,7 @@ using SandBox;
 using System.Reflection;
 using JetBrains.Annotations;
 using static TaleWorlds.MountAndBlade.Agent;
+using static TaleWorlds.MountAndBlade.Mission;
 
 namespace RealisticBattle
 {
@@ -437,7 +438,7 @@ namespace RealisticBattle
             ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionJavelin, 0.0025f);
             ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionAxe, 0.005f);
             ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionKnife, 0.005f);
-            ManagedParameters.SetParameter(ManagedParametersEnum.MissileMinimumDamageToStick, 80);
+            ManagedParameters.SetParameter(ManagedParametersEnum.MissileMinimumDamageToStick, 20);
         }
     }
 
@@ -493,6 +494,13 @@ namespace RealisticBattle
     {
         static bool Prefix(ref AttackCollisionData acd, ItemObject weaponItem, bool isVictimAgentNull, float momentumRemaining, float missileTotalDamage, out float baseMagnitude, out float specialMagnitude, Vec3 victimVel)
         {
+
+            //Vec3 gcn = acd.CollisionGlobalNormal;
+            //Vec3 wbd = acd.WeaponBlowDir;
+
+            //Vec3 resultVec = gcn + wbd;
+            //float angleModifier = 1f - Math.Abs((resultVec.x + resultVec.y + resultVec.z) / 3);
+
             float length;
             if (!isVictimAgentNull)
             {
@@ -555,28 +563,29 @@ namespace RealisticBattle
             }
 
             float physicalDamage = ((length * length) * (weaponItem.Weight)) / 2;
-            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") & physicalDamage > (weaponItem.Weight) * 1500f)
+            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") && physicalDamage > (weaponItem.Weight) * 1500f)
             { 
                 physicalDamage = (weaponItem.Weight) * 1500f; 
             }
 
-            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt") & physicalDamage > (weaponItem.Weight) * 2000f)
+            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt") && physicalDamage > (weaponItem.Weight) * 2000f)
             {
                 physicalDamage = (weaponItem.Weight) * 2000f;
             }
 
-            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin") & physicalDamage > (weaponItem.Weight) * 300f)
+            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin") && physicalDamage > (weaponItem.Weight) * 300f)
             {
                 physicalDamage = (weaponItem.Weight) * 300f;
             }
 
-            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") & physicalDamage > (weaponItem.Weight) * 400f)
+            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") && physicalDamage > (weaponItem.Weight) * 400f)
             {
                 physicalDamage = (weaponItem.Weight) * 400f;
             }
 
             //float distnace = (acd.MissileStartingPosition - acd.CollisionGlobalPosition).Length;
             //InformationManager.DisplayMessage(new InformationMessage("Ek:" + physicalDamage + " modif:" + missileTotalDamage + " speed:" + length + " dist:" + distnace));
+            // baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining * angleModifier;
             baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining;
             specialMagnitude = baseMagnitude;
 
@@ -650,10 +659,28 @@ namespace RealisticBattle
             if ((wsd[0].WeaponClass == (int) WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow)) {
 
                 _oldMissileSpeed = missionWeapon.GetMissileSpeedForUsage(0);
-
-                double potentialEnergy = _oldMissileSpeed * 30 * 0.113f * 0.290f;
-                float ammoWeight = missionWeapon.AmmoWeapon.GetWeight();
-                int calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / (ammoWeight + 0.005f)) * 0.92f));
+                int calculatedMissileSpeed = 10;
+                if (shooterAgent.Equipment[weaponIndex].CurrentUsageItem.ItemUsage.Equals("bow"))
+                {
+                    float drawlength = (30 * 0.0254f);
+                    double potentialEnergy = 0.5f * (_oldMissileSpeed * 4.448f) * drawlength;
+                    float ammoWeight = missionWeapon.AmmoWeapon.GetWeight();
+                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.89f * ((ammoWeight * 3f) + 0.3f)));
+                }
+                else if (shooterAgent.Equipment[weaponIndex].CurrentUsageItem.ItemUsage.Equals("long_bow"))
+                {
+                    float drawlength = (30 * 0.0254f);
+                    double potentialEnergy = 0.5f * (_oldMissileSpeed * 4.448f) * drawlength;
+                    float ammoWeight = missionWeapon.AmmoWeapon.GetWeight();
+                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.89f * ((ammoWeight * 3f) + 0.3f)));
+                }
+                else if (shooterAgent.Equipment[weaponIndex].CurrentUsageItem.ItemUsage.Equals("crossbow") || shooterAgent.Equipment[weaponIndex].CurrentUsageItem.ItemUsage.Equals("crossbow_fast"))
+                {
+                    float drawlength = (30 * 0.0254f);
+                    double potentialEnergy = 0.5f * (_oldMissileSpeed * 4.448f) * drawlength;
+                    float ammoWeight = missionWeapon.AmmoWeapon.GetWeight();
+                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.89f * ((ammoWeight * 3f) + 0.3f)));
+                }
 
                 PropertyInfo property2 = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                 property2.DeclaringType.GetProperty("MissileSpeed");
