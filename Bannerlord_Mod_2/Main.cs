@@ -11,6 +11,7 @@ using SandBox;
 using System.Reflection;
 using JetBrains.Annotations;
 using static TaleWorlds.MountAndBlade.Agent;
+using System.Collections;
 
 namespace RealisticBattle
 {
@@ -602,6 +603,7 @@ namespace RealisticBattle
         {
             MissionWeapon bow = MissionWeapon.Invalid;
             MissionWeapon arrow = MissionWeapon.Invalid;
+            bool firstProjectile = true;
 
             for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
             {
@@ -614,7 +616,28 @@ namespace RealisticBattle
                     }
                     if ((wsd[0].WeaponClass == (int)WeaponClass.Arrow) || (wsd[0].WeaponClass == (int)WeaponClass.Bolt))
                     {
-                        arrow = __instance.Equipment[equipmentIndex];
+                        if (firstProjectile)
+                        {
+                            arrow = __instance.Equipment[equipmentIndex];
+                            firstProjectile = false;
+                        }
+                    }
+                    if ((wsd[0].WeaponClass == (int)WeaponClass.OneHandedPolearm) || (wsd[0].WeaponClass == (int)WeaponClass.LowGripPolearm) || (wsd[0].WeaponClass == (int)WeaponClass.Javelin) || (wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe) || (wsd[0].WeaponClass == (int)WeaponClass.ThrowingKnife))
+                    {
+                        for(int i=0; i < wsd.Length; i++)
+                        {
+                            if(wsd[i].MissileSpeed != 0)
+                            {
+                                MissionWeapon throwable = __instance.Equipment[equipmentIndex];
+                                float ammoWeight = __instance.Equipment[equipmentIndex].GetWeight() / __instance.Equipment[equipmentIndex].Amount;
+                                int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt(320f * 2f / ammoWeight));
+                                PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
+                                property.DeclaringType.GetProperty("MissileSpeed");
+                                throwable.CurrentUsageIndex = i;
+                                property.SetValue(throwable.CurrentUsageItem, calculatedThrowingSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                                throwable.CurrentUsageIndex = 0;
+                            }
+                        }
                     }
                 }
             }
