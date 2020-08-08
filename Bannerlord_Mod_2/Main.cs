@@ -11,7 +11,6 @@ using SandBox;
 using System.Reflection;
 using JetBrains.Annotations;
 using static TaleWorlds.MountAndBlade.Agent;
-using static TaleWorlds.MountAndBlade.Mission;
 
 namespace RealisticBattle
 {
@@ -609,19 +608,54 @@ namespace RealisticBattle
                 if (__instance.Equipment != null && !__instance.Equipment[equipmentIndex].IsEmpty)
                 {
                     WeaponStatsData[] wsd = __instance.Equipment[equipmentIndex].GetWeaponStatsData();
-                    
                     if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
                     {
                         bow = __instance.Equipment[equipmentIndex];
-
-                        _oldMissileSpeed = bow.GetMissileSpeedForUsage(0);
-
-                        PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
-                        property.DeclaringType.GetProperty("MissileSpeed");
-                        property.SetValue(bow.CurrentUsageItem, 70, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                    }
+                    if ((wsd[0].WeaponClass == (int)WeaponClass.Arrow) || (wsd[0].WeaponClass == (int)WeaponClass.Bolt))
+                    {
+                        arrow = __instance.Equipment[equipmentIndex];
                     }
                 }
             }
+
+            int calculatedMissileSpeed = 50;
+            if (!bow.Equals(MissionWeapon.Invalid) && !arrow.Equals(MissionWeapon.Invalid))
+            {
+                _oldMissileSpeed = bow.GetMissileSpeedForUsage(0);
+                float ammoWeight = arrow.GetWeight() / arrow.Amount;
+                if (bow.CurrentUsageItem.ItemUsage.Equals("bow"))
+                {
+                    float drawlength = (28 * 0.0254f);
+                    double potentialEnergy = 0.5f * (_oldMissileSpeed * 4.448f) * drawlength;
+                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.91f * ((ammoWeight * 3f) + 0.4f)));
+                }
+                else if (bow.CurrentUsageItem.ItemUsage.Equals("long_bow"))
+                {
+                    float drawlength = (30 * 0.0254f);
+                    double potentialEnergy = 0.5f * (_oldMissileSpeed * 4.448f) * drawlength;
+                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.89f * ((ammoWeight * 3f) + 0.3f)));
+                }
+                else if (bow.CurrentUsageItem.ItemUsage.Equals("crossbow") || bow.CurrentUsageItem.ItemUsage.Equals("crossbow_fast"))
+                {
+                    float drawlength = (4.5f * 0.0254f);
+                    double potentialEnergy = 0.5f * (_oldMissileSpeed * 4.448f) * drawlength;
+                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.45f));
+                }
+
+                PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
+                property.DeclaringType.GetProperty("MissileSpeed");
+                property.SetValue(bow.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+            }
+            else if (!bow.Equals(MissionWeapon.Invalid))
+            {
+                PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
+                property.DeclaringType.GetProperty("MissileSpeed");
+                property.SetValue(bow.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+            }
+
+            
+
             return true;
         }
         static void Postfix(Agent __instance)
