@@ -601,20 +601,24 @@ namespace RealisticBattle
         private static int _oldMissileSpeed;
         static bool Prefix(Agent __instance)
         {
+            MissionWeapon bow = MissionWeapon.Invalid;
+            MissionWeapon arrow = MissionWeapon.Invalid;
+
             for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
             {
                 if (__instance.Equipment != null && !__instance.Equipment[equipmentIndex].IsEmpty)
                 {
                     WeaponStatsData[] wsd = __instance.Equipment[equipmentIndex].GetWeaponStatsData();
+                    
                     if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
                     {
-                        MissionWeapon missionWeapon = __instance.Equipment[equipmentIndex];
+                        bow = __instance.Equipment[equipmentIndex];
 
-                        _oldMissileSpeed = missionWeapon.GetMissileSpeedForUsage(0);
+                        _oldMissileSpeed = bow.GetMissileSpeedForUsage(0);
 
                         PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                         property.DeclaringType.GetProperty("MissileSpeed");
-                        property.SetValue(missionWeapon.CurrentUsageItem, 70, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                        property.SetValue(bow.CurrentUsageItem, 70, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                     }
                 }
             }
