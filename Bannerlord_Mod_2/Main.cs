@@ -562,6 +562,7 @@ namespace RealisticBattle
             }
 
             float physicalDamage = ((length * length) * (weaponItem.Weight)) / 2;
+            /*
             if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") && physicalDamage > (weaponItem.Weight) * 1500f)
             { 
                 physicalDamage = (weaponItem.Weight) * 1500f; 
@@ -581,6 +582,7 @@ namespace RealisticBattle
             {
                 physicalDamage = (weaponItem.Weight) * 400f;
             }
+            */
 
             //float distnace = (acd.MissileStartingPosition - acd.CollisionGlobalPosition).Length;
             //InformationManager.DisplayMessage(new InformationMessage("Ek:" + physicalDamage + " modif:" + missileTotalDamage + " speed:" + length + " dist:" + distnace));
@@ -628,13 +630,13 @@ namespace RealisticBattle
                 {
                     float drawlength = (28 * 0.0254f);
                     double potentialEnergy = 0.5f * (_oldMissileSpeed * 4.448f) * drawlength;
-                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.91f * ((ammoWeight * 3f) + 0.4f)));
+                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.91f * ((ammoWeight * 3f) + 0.432f)));
                 }
                 else if (bow.CurrentUsageItem.ItemUsage.Equals("long_bow"))
                 {
                     float drawlength = (30 * 0.0254f);
                     double potentialEnergy = 0.5f * (_oldMissileSpeed * 4.448f) * drawlength;
-                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.89f * ((ammoWeight * 3f) + 0.3f)));
+                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.89f * ((ammoWeight * 3.3f) + 0.33f) * (1f + (0.416f - (0.0026 * _oldMissileSpeed)))));
                 }
                 else if (bow.CurrentUsageItem.ItemUsage.Equals("crossbow") || bow.CurrentUsageItem.ItemUsage.Equals("crossbow_fast"))
                 {
@@ -703,14 +705,14 @@ namespace RealisticBattle
                     float drawlength = (28 * 0.0254f);
                     double potentialEnergy = 0.5f * (_oldMissileSpeed * 4.448f) * drawlength;
                     float ammoWeight = missionWeapon.AmmoWeapon.GetWeight();
-                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.91f * ((ammoWeight * 3f) + 0.4f)));
+                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.91f * ((ammoWeight * 3f) + 0.432f)));
                 }
                 else if (shooterAgent.Equipment[weaponIndex].CurrentUsageItem.ItemUsage.Equals("long_bow"))
                 {
                     float drawlength = (30 * 0.0254f);
                     double potentialEnergy = 0.5f * (_oldMissileSpeed * 4.448f) * drawlength;
                     float ammoWeight = missionWeapon.AmmoWeapon.GetWeight();
-                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.89f * ((ammoWeight * 3f) + 0.3f)));
+                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.89f * ((ammoWeight * 3.3f) + 0.33f) * (1f + (0.416f - (0.0026 * _oldMissileSpeed)))));
                 }
                 else if (shooterAgent.Equipment[weaponIndex].CurrentUsageItem.ItemUsage.Equals("crossbow") || shooterAgent.Equipment[weaponIndex].CurrentUsageItem.ItemUsage.Equals("crossbow_fast"))
                 {
