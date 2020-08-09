@@ -523,30 +523,30 @@ namespace RealisticBattle
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingAxe") ||
                     weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingKnife"))
                 {
-                   /* length += -(12.0f);
+                    length += -(7.0f);
                     if (length < 5.0f)
                     {
                         length = 5.0f;
-                    } */
+                    } 
                     missileTotalDamage *= 0.01f;
                 }
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
                 {
-                 /* length += -(12.0f);
+                  length += -(7.0f);
                     if (length < 5.0f)
                     {
                         length = 5.0f;
-                    } */
+                    } 
                     missileTotalDamage += 168.0f;
                     missileTotalDamage *= 0.005f;
                 }
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm"))
                 {
-                 /*   length += -(12.0f);
+                    length += -(7.0f);
                     if (length < 5.0f)
                     {
                         length = 5.0f;
-                    }*/
+                    }
                     missileTotalDamage *= 0.008f;
                 }
                 else
