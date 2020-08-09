@@ -11,7 +11,6 @@ using SandBox;
 using System.Reflection;
 using JetBrains.Annotations;
 using static TaleWorlds.MountAndBlade.Agent;
-using System.Collections;
 
 namespace RealisticBattle
 {
@@ -25,6 +24,40 @@ namespace RealisticBattle
         {
             var harmony = new Harmony("com.jj.dmg");
             harmony.PatchAll();
+        }
+    }
+
+    public static class Utilities
+    {
+        public static int calculateMissileSpeed(float ammoWeight, MissionWeapon rangedWeapon, int drawWeight)
+        {
+            int calculatedMissileSpeed = 10;
+            if (rangedWeapon.CurrentUsageItem.ItemUsage.Equals("bow"))
+            {
+                float drawlength = (28 * 0.0254f);
+                double potentialEnergy = 0.5f * (drawWeight * 4.448f) * drawlength;
+                calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.91f * ((ammoWeight * 3f) + 0.432f)));
+            }
+            else if (rangedWeapon.CurrentUsageItem.ItemUsage.Equals("long_bow"))
+            {
+                float drawlength = (30 * 0.0254f);
+                double potentialEnergy = 0.5f * (drawWeight * 4.448f) * drawlength;
+                calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.89f * ((ammoWeight * 3.3f) + 0.33f) * (1f + (0.416f - (0.0026 * drawWeight)))));
+            }
+            else if (rangedWeapon.CurrentUsageItem.ItemUsage.Equals("crossbow") || rangedWeapon.CurrentUsageItem.ItemUsage.Equals("crossbow_fast"))
+            {
+                float drawlength = (4.5f * 0.0254f);
+                double potentialEnergy = 0.5f * (drawWeight * 4.448f) * drawlength;
+                calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.45f));
+            }
+            return calculatedMissileSpeed;
+        }
+
+        public static int calculateThrowableSpeed(float ammoWeight)
+        {
+            int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt(320f * 2f / ammoWeight));
+
+            return calculatedThrowingSpeed;
         }
     }
 
@@ -154,113 +187,6 @@ namespace RealisticBattle
         }
         
     }
-
-    /*
-    [HarmonyPatch(typeof(AgentStatCalculateModel))]
-    [HarmonyPatch("SetAiRelatedProperties")]
-    class BetterAi
-    {
-        public static bool Prefix(Agent agent, AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem)
-        {
-            int meleeSkill = GetMeleeSkill(agent.Character, equippedItem, secondaryItem);
-            int weaponSkill = GetWeaponSkill(agent.Character, equippedItem);
-            float meleeLevel = CalculateAILevel(agent, meleeSkill);
-            float rangedLevel = CalculateAILevel(agent, weaponSkill);
-            float defensiveness = meleeLevel + agent.Defensiveness;
-            agentDrivenProperties.AiRangedHorsebackMissileRange = 0.3f + 0.4f * rangedLevel;
-            agentDrivenProperties.AiFacingMissileWatch = -0.96f + meleeLevel * 0.06f;
-            agentDrivenProperties.AiFlyingMissileCheckRadius = 8f - 6f * meleeLevel;
-            agentDrivenProperties.AiShootFreq = 0.3f + 0.7f * rangedLevel;
-            agentDrivenProperties.AiWaitBeforeShootFactor = (agent._propertyModifiers.resetAiWaitBeforeShootFactor ? 0f : (1f - 0.5f * rangedLevel));
-            _ = (secondaryItem != null);
-            agentDrivenProperties.AIBlockOnDecideAbility = MBMath.Lerp(0.25f, 0.99f, MBMath.ClampFloat((float)Math.Pow(meleeLevel, 1.0), 0f, 1f));
-            agentDrivenProperties.AIParryOnDecideAbility = MBMath.Lerp(0.01f, 0.95f, MBMath.ClampFloat((float)Math.Pow(meleeLevel, 1.5), 0f, 1f));
-            agentDrivenProperties.AiTryChamberAttackOnDecide = (meleeLevel - 0.15f) * 0.1f;
-            agentDrivenProperties.AIAttackOnParryChance = 0.3f - 0.1f * agent.Defensiveness;
-            agentDrivenProperties.AiAttackOnParryTiming = -0.2f + 0.3f * meleeLevel;
-            agentDrivenProperties.AIDecideOnAttackChance = 0.15f * agent.Defensiveness;
-            agentDrivenProperties.AIParryOnAttackAbility = MBMath.ClampFloat((float)Math.Pow(meleeLevel, 3.0), 0f, 1f);
-            agentDrivenProperties.AiKick = -0.1f + ((meleeLevel > 0.4f) ? 0.4f : meleeLevel);
-            agentDrivenProperties.AiAttackCalculationMaxTimeFactor = meleeLevel;
-            agentDrivenProperties.AiDecideOnAttackWhenReceiveHitTiming = -0.25f * (1f - meleeLevel);
-            agentDrivenProperties.AiDecideOnAttackContinueAction = -0.5f * (1f - meleeLevel);
-            agentDrivenProperties.AiDecideOnAttackingContinue = 0.1f * meleeLevel;
-            agentDrivenProperties.AIParryOnAttackingContinueAbility = MBMath.Lerp(0.05f, 0.95f, MBMath.ClampFloat((float)Math.Pow(meleeLevel, 3.0), 0f, 1f));
-            agentDrivenProperties.AIDecideOnRealizeEnemyBlockingAttackAbility = 0.5f * MBMath.ClampFloat((float)Math.Pow(meleeLevel, 2.5) - 0.1f, 0f, 1f);
-            agentDrivenProperties.AIRealizeBlockingFromIncorrectSideAbility = 0.5f * MBMath.ClampFloat((float)Math.Pow(meleeLevel, 2.5) - 0.1f, 0f, 1f);
-            agentDrivenProperties.AiAttackingShieldDefenseChance = 0.2f + 0.3f * meleeLevel;
-            agentDrivenProperties.AiAttackingShieldDefenseTimer = -0.3f + 0.3f * meleeLevel;
-            agentDrivenProperties.AiRandomizedDefendDirectionChance = 1f - (float)Math.Log((double)meleeLevel * 7.0 + 1.0, 2.0) * 0.33333f;
-            agentDrivenProperties.AISetNoAttackTimerAfterBeingHitAbility = MBMath.ClampFloat((float)Math.Pow(meleeLevel, 2.0), 0.05f, 0.95f);
-            agentDrivenProperties.AISetNoAttackTimerAfterBeingParriedAbility = MBMath.ClampFloat((float)Math.Pow(meleeLevel, 2.0), 0.05f, 0.95f);
-            agentDrivenProperties.AISetNoDefendTimerAfterHittingAbility = MBMath.ClampFloat((float)Math.Pow(meleeLevel, 2.0), 0.05f, 0.95f);
-            agentDrivenProperties.AISetNoDefendTimerAfterParryingAbility = MBMath.ClampFloat((float)Math.Pow(meleeLevel, 2.0), 0.05f, 0.95f);
-            agentDrivenProperties.AIEstimateStunDurationPrecision = 1f - MBMath.ClampFloat((float)Math.Pow(meleeLevel, 2.0), 0.05f, 0.95f);
-            agentDrivenProperties.AIHoldingReadyMaxDuration = MBMath.Lerp(0.25f, 0f, Math.Min(1f, meleeLevel * 1.2f));
-            agentDrivenProperties.AIHoldingReadyVariationPercentage = meleeLevel;
-            agentDrivenProperties.AiRaiseShieldDelayTimeBase = -0.75f + 0.5f * meleeLevel;
-            agentDrivenProperties.AiUseShieldAgainstEnemyMissileProbability = 0.1f + meleeLevel * 0.6f + defensiveness * 0.2f;
-            agentDrivenProperties.AiCheckMovementIntervalFactor = 0.005f * (1.1f - meleeLevel);
-            agentDrivenProperties.AiMovemetDelayFactor = 4f / (3f + rangedLevel);
-            agentDrivenProperties.AiParryDecisionChangeValue = 0.05f + 0.7f * meleeLevel;
-            agentDrivenProperties.AiDefendWithShieldDecisionChanceValue = Math.Min(1f, 0.2f + 0.5f * meleeLevel + 0.2f * defensiveness);
-            agentDrivenProperties.AiMoveEnemySideTimeValue = -2.5f + 0.5f * meleeLevel;
-            agentDrivenProperties.AiMinimumDistanceToContinueFactor = 2f + 0.3f * (3f - meleeLevel);
-            agentDrivenProperties.AiStandGroundTimerValue = 0.5f * (-1f + meleeLevel);
-            agentDrivenProperties.AiStandGroundTimerMoveAlongValue = -1f + 0.5f * meleeLevel;
-            agentDrivenProperties.AiHearingDistanceFactor = 1f + meleeLevel;
-            agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 1.5f * (3f - meleeLevel);
-            agentDrivenProperties.AiWaitBeforeShootFactor = (agent._propertyModifiers.resetAiWaitBeforeShootFactor ? 0f : (1f - 0.5f * rangedLevel));
-            float num4 = 1f - rangedLevel;
-            agentDrivenProperties.AiRangerLeadErrorMin = (0f - num4) * 0.35f;
-            agentDrivenProperties.AiRangerLeadErrorMax = num4 * 0.2f;
-            agentDrivenProperties.AiRangerVerticalErrorMultiplier = num4 * 0.1f;
-            agentDrivenProperties.AiRangerHorizontalErrorMultiplier = num4 * ((float)Math.PI / 90f);
-            agentDrivenProperties.AIAttackOnDecideChance = MathF.Clamp(0.23f * CalculateAIAttackOnDecideMaxValue() * (3f - agent.Defensiveness), 0.05f, 1f);
-            agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, (agent.Controller != Agent.ControllerType.Player) ? 1f : 0f);
-            return false;
-        }
-
-        static public float CalculateAIAttackOnDecideMaxValue()
-        {
-            if (1f < 0.5f)
-            {
-                return 0.32f;
-            }
-            return 0.96f;
-        }
-
-        static private int GetMeleeSkill(BasicCharacterObject character, WeaponComponentData equippedItem, WeaponComponentData secondaryItem)
-        {
-            SkillObject skill = DefaultSkills.Athletics;
-            if (equippedItem != null)
-            {
-                SkillObject relevantSkill = equippedItem.RelevantSkill;
-                skill = ((relevantSkill == DefaultSkills.OneHanded || relevantSkill == DefaultSkills.Polearm) ? relevantSkill : ((relevantSkill != DefaultSkills.TwoHanded) ? DefaultSkills.OneHanded : ((secondaryItem == null) ? DefaultSkills.TwoHanded : DefaultSkills.OneHanded)));
-            }
-            return character.GetSkillValue(skill);
-        }
-
-        static private int GetWeaponSkill(BasicCharacterObject character, WeaponComponentData equippedItem)
-        {
-            SkillObject skill = DefaultSkills.Athletics;
-            if (equippedItem != null)
-            {
-                skill = equippedItem.RelevantSkill;
-            }
-            return character.GetSkillValue(skill);
-        }
-
-        static protected float CalculateAILevel(Agent agent, int relevantSkillLevel)
-        {
-            //float difficultyModifier = GetDifficultyModifier();
-            float difficultyModifier = 1f;
-            return MBMath.ClampFloat((float)relevantSkillLevel / 350f * difficultyModifier, 0f, 1f);
-        }
-    }
-    */
-
-
 
     [HarmonyPatch(typeof(Agent))]
     [HarmonyPatch("GetBaseArmorEffectivenessForBodyPart")]
@@ -632,7 +558,7 @@ namespace RealisticBattle
                             {
                                 MissionWeapon throwable = __instance.Equipment[equipmentIndex];
                                 float ammoWeight = __instance.Equipment[equipmentIndex].GetWeight() / __instance.Equipment[equipmentIndex].Amount;
-                                int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt(320f * 2f / ammoWeight));
+                                int calculatedThrowingSpeed = Utilities.calculateThrowableSpeed(ammoWeight);
                                 PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                                 property.DeclaringType.GetProperty("MissileSpeed");
                                 throwable.CurrentUsageIndex = i;
@@ -649,24 +575,8 @@ namespace RealisticBattle
             {
                 _oldMissileSpeed = bow.GetMissileSpeedForUsage(0);
                 float ammoWeight = arrow.GetWeight() / arrow.Amount;
-                if (bow.CurrentUsageItem.ItemUsage.Equals("bow"))
-                {
-                    float drawlength = (28 * 0.0254f);
-                    double potentialEnergy = 0.5f * (_oldMissileSpeed * 4.448f) * drawlength;
-                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.91f * ((ammoWeight * 3f) + 0.432f)));
-                }
-                else if (bow.CurrentUsageItem.ItemUsage.Equals("long_bow"))
-                {
-                    float drawlength = (30 * 0.0254f);
-                    double potentialEnergy = 0.5f * (_oldMissileSpeed * 4.448f) * drawlength;
-                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.89f * ((ammoWeight * 3.3f) + 0.33f) * (1f + (0.416f - (0.0026 * _oldMissileSpeed)))));
-                }
-                else if (bow.CurrentUsageItem.ItemUsage.Equals("crossbow") || bow.CurrentUsageItem.ItemUsage.Equals("crossbow_fast"))
-                {
-                    float drawlength = (4.5f * 0.0254f);
-                    double potentialEnergy = 0.5f * (_oldMissileSpeed * 4.448f) * drawlength;
-                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.45f));
-                }
+
+                calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, bow, bow.GetMissileSpeedForUsage(0));
 
                 PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                 property.DeclaringType.GetProperty("MissileSpeed");
@@ -722,28 +632,9 @@ namespace RealisticBattle
             if ((wsd[0].WeaponClass == (int) WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow)) {
 
                 _oldMissileSpeed = missionWeapon.GetMissileSpeedForUsage(0);
-                int calculatedMissileSpeed = 10;
-                if (shooterAgent.Equipment[weaponIndex].CurrentUsageItem.ItemUsage.Equals("bow"))
-                {
-                    float drawlength = (28 * 0.0254f);
-                    double potentialEnergy = 0.5f * (_oldMissileSpeed * 4.448f) * drawlength;
-                    float ammoWeight = missionWeapon.AmmoWeapon.GetWeight();
-                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.91f * ((ammoWeight * 3f) + 0.432f)));
-                }
-                else if (shooterAgent.Equipment[weaponIndex].CurrentUsageItem.ItemUsage.Equals("long_bow"))
-                {
-                    float drawlength = (30 * 0.0254f);
-                    double potentialEnergy = 0.5f * (_oldMissileSpeed * 4.448f) * drawlength;
-                    float ammoWeight = missionWeapon.AmmoWeapon.GetWeight();
-                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.89f * ((ammoWeight * 3.3f) + 0.33f) * (1f + (0.416f - (0.0026 * _oldMissileSpeed)))));
-                }
-                else if (shooterAgent.Equipment[weaponIndex].CurrentUsageItem.ItemUsage.Equals("crossbow") || shooterAgent.Equipment[weaponIndex].CurrentUsageItem.ItemUsage.Equals("crossbow_fast"))
-                {
-                    float drawlength = (4.5f * 0.0254f);
-                    double potentialEnergy = 0.5f * (_oldMissileSpeed * 4.448f) * drawlength;
-                    float ammoWeight = missionWeapon.AmmoWeapon.GetWeight();
-                    calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.45f));
-                }
+                float ammoWeight = missionWeapon.AmmoWeapon.GetWeight();
+                
+                int calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon, missionWeapon.GetMissileSpeedForUsage(0));
 
                 PropertyInfo property2 = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                 property2.DeclaringType.GetProperty("MissileSpeed");
