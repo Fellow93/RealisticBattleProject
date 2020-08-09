@@ -463,7 +463,7 @@ namespace RealisticBattle
                     {
                         length = 5.0f;
                     } 
-                    missileTotalDamage += 168.0f;
+                    //missileTotalDamage += 168.0f;
                     missileTotalDamage *= 0.005f;
                 }
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm"))
@@ -473,7 +473,7 @@ namespace RealisticBattle
                     {
                         length = 5.0f;
                     }
-                    missileTotalDamage *= 0.008f;
+                    missileTotalDamage *= 0.005f;
                 }
                 else
                 {
@@ -498,7 +498,7 @@ namespace RealisticBattle
             if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt") && physicalDamage > (weaponItem.Weight) * 2000f)
             {
                 physicalDamage = (weaponItem.Weight) * 2000f;
-            }
+            }*/
 
             if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin") && physicalDamage > (weaponItem.Weight) * 300f)
             {
@@ -507,9 +507,9 @@ namespace RealisticBattle
 
             if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") && physicalDamage > (weaponItem.Weight) * 400f)
             {
-                physicalDamage = (weaponItem.Weight) * 400f;
+                physicalDamage = (weaponItem.Weight) * 200f;
             }
-            */
+            
 
             //float distnace = (acd.MissileStartingPosition - acd.CollisionGlobalPosition).Length;
             //InformationManager.DisplayMessage(new InformationMessage("Ek:" + physicalDamage + " modif:" + missileTotalDamage + " speed:" + length + " dist:" + distnace));
@@ -767,10 +767,15 @@ namespace RealisticBattle
                                 }
                             case "Javelin":
                                 {
-                                    num *= 1.5f;
+                                    num *= 3.5f;
                                     break;
                                 }
                             case "ThrowingAxe":
+                                {
+                                    num *= 2.0f;
+                                    break;
+                                }
+                            case "OneHandedPolearm":
                                 {
                                     num *= 2.0f;
                                     break;
