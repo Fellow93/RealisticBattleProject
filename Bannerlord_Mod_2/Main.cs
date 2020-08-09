@@ -777,7 +777,7 @@ namespace RealisticBattle
                                 }
                             case "OneHandedPolearm":
                                 {
-                                    num *= 2.0f;
+                                    num *= 3.5f;
                                     break;
                                 }
                             default:
