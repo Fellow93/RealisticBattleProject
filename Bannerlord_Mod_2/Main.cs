@@ -522,6 +522,36 @@ namespace RealisticBattle
     }
 
     [HarmonyPatch(typeof(Agent))]
+    [HarmonyPatch("GetHasRangedWeapon")]
+    class OverrideGetHasRangedWeapon
+    {
+        static void Postfix(Agent __instance, ref bool __result, bool checkHasAmmo = false)
+        {
+            __result = false;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+            {
+                bool isPolearm = false;
+                //bool isjavelin = false;
+                foreach (WeaponComponentData weapon in __instance.Equipment[equipmentIndex].Weapons)
+                {
+                    if (weapon.WeaponClass == WeaponClass.LowGripPolearm || weapon.WeaponClass == WeaponClass.OneHandedPolearm)
+                    {
+                        isPolearm = true;
+                    }
+                    if (weapon != null && weapon.IsRangedWeapon && (!checkHasAmmo || __instance.Equipment.HasAmmo(weapon)))
+                    {
+                        if (!isPolearm)
+                        {
+                            __result = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    [HarmonyPatch(typeof(Agent))]
     [HarmonyPatch("EquipItemsFromSpawnEquipment")]
     class OverrideEquipItemsFromSpawnEquipment
     {
