@@ -521,11 +521,21 @@ namespace RealisticBattle
         }
     }
 
+    //[HarmonyPatch(typeof(TacticComponent))]
+    //[HarmonyPatch("AssignTacticFormations1121")]
+    //class OverrideAssignTacticFormations1121
+    //{
+    //    static void Postfix(TacticComponent __instance)
+    //    {
+    //        __instance.ToString();
+    //    }
+    //}
+
     [HarmonyPatch(typeof(Agent))]
     [HarmonyPatch("GetHasRangedWeapon")]
     class OverrideGetHasRangedWeapon
     {
-        static void Postfix(Agent __instance, ref bool __result, bool checkHasAmmo = false)
+        static bool Prefix(Agent __instance, ref bool __result, bool checkHasAmmo = false)
         {
             __result = false;
             for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
@@ -534,7 +544,7 @@ namespace RealisticBattle
                 //bool isjavelin = false;
                 foreach (WeaponComponentData weapon in __instance.Equipment[equipmentIndex].Weapons)
                 {
-                    if (weapon.WeaponClass == WeaponClass.LowGripPolearm || weapon.WeaponClass == WeaponClass.OneHandedPolearm)
+                    if (weapon.WeaponClass == WeaponClass.LowGripPolearm || weapon.WeaponClass == WeaponClass.OneHandedPolearm || weapon.WeaponClass == WeaponClass.Javelin || weapon.WeaponClass == WeaponClass.ThrowingAxe || weapon.WeaponClass == WeaponClass.ThrowingKnife || weapon.WeaponClass == WeaponClass.Stone)
                     {
                         isPolearm = true;
                     }
@@ -547,9 +557,9 @@ namespace RealisticBattle
                     }
                 }
             }
+            return false;
         }
     }
-
 
     [HarmonyPatch(typeof(Agent))]
     [HarmonyPatch("EquipItemsFromSpawnEquipment")]
