@@ -362,8 +362,8 @@ namespace RealisticBattle
         {
             ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionArrow, 0.0025f);
             ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionJavelin, 0.0025f);
-            ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionAxe, 0.005f);
-            ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionKnife, 0.005f);
+            ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionAxe, 0.01f);
+            ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionKnife, 0.01f);
             ManagedParameters.SetParameter(ManagedParametersEnum.MissileMinimumDamageToStick, 20);
         }
     }
@@ -662,7 +662,7 @@ namespace RealisticBattle
     {
 
         private static int _oldMissileSpeed;
-        static bool Prefix(Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
+        static bool Prefix(Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, ref Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
         {
             MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
 
@@ -673,8 +673,13 @@ namespace RealisticBattle
 
                 _oldMissileSpeed = missionWeapon.GetMissileSpeedForUsage(0);
                 float ammoWeight = missionWeapon.AmmoWeapon.GetWeight();
-                
+
                 int calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon, missionWeapon.GetMissileSpeedForUsage(0));
+
+                float modifier = calculatedMissileSpeed / velocity.Length;
+                velocity.x = velocity.x * modifier;
+                velocity.y = velocity.y * modifier;
+                velocity.z = velocity.z * modifier;
 
                 PropertyInfo property2 = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                 property2.DeclaringType.GetProperty("MissileSpeed");
@@ -695,6 +700,7 @@ namespace RealisticBattle
                 shooterAgent.TryToWieldWeaponInSlot(weaponIndex, WeaponWieldActionType.InstantAfterPickUp, true);
 
                 shooterAgent.UpdateAgentProperties();
+
             }
             return true;
         }
