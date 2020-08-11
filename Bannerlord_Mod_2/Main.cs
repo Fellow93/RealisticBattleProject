@@ -11,6 +11,7 @@ using SandBox;
 using System.Reflection;
 using JetBrains.Annotations;
 using static TaleWorlds.MountAndBlade.Agent;
+using System.Collections;
 
 namespace RealisticBattle
 {
@@ -326,7 +327,7 @@ namespace RealisticBattle
 
         static public float getArmArmor(Agent agent)
         {
-            float num = 0f;
+            //float num = 0f;
             for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
             {
                 EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
@@ -566,10 +567,11 @@ namespace RealisticBattle
     class OverrideEquipItemsFromSpawnEquipment
     {
 
-        private static int _oldMissileSpeed;
+        private static ArrayList _oldMissileSpeeds = new ArrayList();
         static bool Prefix(Agent __instance)
         {
-            MissionWeapon bow = MissionWeapon.Invalid;
+            ArrayList stringRangedWeapons = new ArrayList();
+            //MissionWeapon bow = MissionWeapon.Invalid;
             MissionWeapon arrow = MissionWeapon.Invalid;
             bool firstProjectile = true;
 
@@ -580,7 +582,7 @@ namespace RealisticBattle
                     WeaponStatsData[] wsd = __instance.Equipment[equipmentIndex].GetWeaponStatsData();
                     if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
                     {
-                        bow = __instance.Equipment[equipmentIndex];
+                        stringRangedWeapons.Add(__instance.Equipment[equipmentIndex]);
                     }
                     if ((wsd[0].WeaponClass == (int)WeaponClass.Arrow) || (wsd[0].WeaponClass == (int)WeaponClass.Bolt))
                     {
@@ -610,33 +612,35 @@ namespace RealisticBattle
                 }
             }
 
-            int calculatedMissileSpeed = 50;
-            if (!bow.Equals(MissionWeapon.Invalid) && !arrow.Equals(MissionWeapon.Invalid))
-            {
-                _oldMissileSpeed = bow.GetMissileSpeedForUsage(0);
-                float ammoWeight = arrow.GetWeight() / arrow.Amount;
+            foreach(MissionWeapon missionWeapon in stringRangedWeapons){ 
+                int calculatedMissileSpeed = 50;
+                if (!missionWeapon.Equals(MissionWeapon.Invalid) && !arrow.Equals(MissionWeapon.Invalid))
+                {
+                    _oldMissileSpeeds.Add(missionWeapon.GetMissileSpeedForUsage(0));
+                    float ammoWeight = arrow.GetWeight() / arrow.Amount;
 
-                calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, bow, bow.GetMissileSpeedForUsage(0));
+                    calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon, missionWeapon.GetMissileSpeedForUsage(0));
 
-                PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
-                property.DeclaringType.GetProperty("MissileSpeed");
-                property.SetValue(bow.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                    PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
+                    property.DeclaringType.GetProperty("MissileSpeed");
+                    property.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                }
+                else if (!missionWeapon.Equals(MissionWeapon.Invalid))
+                {
+                    PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
+                    property.DeclaringType.GetProperty("MissileSpeed");
+                    property.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                }
             }
-            else if (!bow.Equals(MissionWeapon.Invalid))
-            {
-                PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
-                property.DeclaringType.GetProperty("MissileSpeed");
-                property.SetValue(bow.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-            }
-
-            
 
             return true;
         }
         static void Postfix(Agent __instance)
         {
+            int i = 0;
             for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
             {
+                
                 if (__instance.Equipment != null && !__instance.Equipment[equipmentIndex].IsEmpty)
                 {
                     WeaponStatsData[] wsd = __instance.Equipment[equipmentIndex].GetWeaponStatsData();
@@ -646,10 +650,12 @@ namespace RealisticBattle
 
                         PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                         property.DeclaringType.GetProperty("MissileSpeed");
-                        property.SetValue(missionWeapon.CurrentUsageItem, _oldMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                        property.SetValue(missionWeapon.CurrentUsageItem, _oldMissileSpeeds.ToArray()[i], BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                        i++;
                     }
                 }
             }
+            _oldMissileSpeeds.Clear();
         }
     }
 
@@ -669,7 +675,8 @@ namespace RealisticBattle
             WeaponData wd = missionWeapon.GetWeaponData(needBatchedVersionForMeshes: true);
             WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
 
-            if ((wsd[0].WeaponClass == (int) WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow)) {
+            if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
+            {
 
                 _oldMissileSpeed = missionWeapon.GetMissileSpeedForUsage(0);
                 float ammoWeight = missionWeapon.AmmoWeapon.GetWeight();
@@ -677,9 +684,9 @@ namespace RealisticBattle
                 int calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon, missionWeapon.GetMissileSpeedForUsage(0));
 
                 float modifier = calculatedMissileSpeed / velocity.Length;
-                velocity.x = velocity.x * modifier;
-                velocity.y = velocity.y * modifier;
-                velocity.z = velocity.z * modifier;
+                velocity.x = (shooterAgent.Velocity.x + velocity.x) * modifier;
+                velocity.y = (shooterAgent.Velocity.y + velocity.y) * modifier;
+                velocity.z = (shooterAgent.Velocity.z + velocity.z) * modifier;
 
                 PropertyInfo property2 = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                 property2.DeclaringType.GetProperty("MissileSpeed");
@@ -692,14 +699,14 @@ namespace RealisticBattle
 
                 WeaponData awd = WeaponData.InvalidWeaponData;
 
-                MethodInfo method = typeof(Agent).GetMethod("WeaponEquipped", BindingFlags.NonPublic | BindingFlags.Instance);
-                method.DeclaringType.GetMethod("WeaponEquipped");
-                method.Invoke(shooterAgent, new object[] { weaponIndex, wd, wsd, awd, null, null, true, true });
-                wd.DeinitializeManagedPointers();
+                //MethodInfo method = typeof(Agent).GetMethod("WeaponEquipped", BindingFlags.NonPublic | BindingFlags.Instance);
+                //method.DeclaringType.GetMethod("WeaponEquipped");
+                //method.Invoke(shooterAgent, new object[] { weaponIndex, wd, wsd, awd, null, null, true, true });
+                //wd.DeinitializeManagedPointers();
 
-                shooterAgent.TryToWieldWeaponInSlot(weaponIndex, WeaponWieldActionType.InstantAfterPickUp, true);
+                //shooterAgent.TryToWieldWeaponInSlot(weaponIndex, WeaponWieldActionType.Instant, false);
 
-                shooterAgent.UpdateAgentProperties();
+                //shooterAgent.UpdateAgentProperties();
 
             }
             return true;
