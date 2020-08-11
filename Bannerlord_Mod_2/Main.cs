@@ -10,7 +10,6 @@ using static TaleWorlds.MountAndBlade.ArrangementOrder;
 using SandBox;
 using System.Reflection;
 using JetBrains.Annotations;
-using static TaleWorlds.MountAndBlade.Agent;
 using System.Collections;
 
 namespace RealisticBattle
@@ -672,7 +671,7 @@ namespace RealisticBattle
         {
             MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
 
-            WeaponData wd = missionWeapon.GetWeaponData(needBatchedVersionForMeshes: true);
+            //WeaponData wd = missionWeapon.GetWeaponData(needBatchedVersionForMeshes: true);
             WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
 
             if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
@@ -692,12 +691,12 @@ namespace RealisticBattle
                 property2.DeclaringType.GetProperty("MissileSpeed");
                 property2.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
 
-                missionWeapon = shooterAgent.Equipment[weaponIndex];
+                //missionWeapon = shooterAgent.Equipment[weaponIndex];
 
-                wd = missionWeapon.GetWeaponData(needBatchedVersionForMeshes: true);
-                wsd = missionWeapon.GetWeaponStatsData();
+               // wd = missionWeapon.GetWeaponData(needBatchedVersionForMeshes: true);
+               // wsd = missionWeapon.GetWeaponStatsData();
 
-                WeaponData awd = WeaponData.InvalidWeaponData;
+               // WeaponData awd = WeaponData.InvalidWeaponData;
 
                 //MethodInfo method = typeof(Agent).GetMethod("WeaponEquipped", BindingFlags.NonPublic | BindingFlags.Instance);
                 //method.DeclaringType.GetMethod("WeaponEquipped");
