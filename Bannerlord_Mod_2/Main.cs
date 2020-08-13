@@ -682,10 +682,26 @@ namespace RealisticBattle
 
                 int calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon, missionWeapon.GetMissileSpeedForUsage(0));
 
-                float modifier = calculatedMissileSpeed / velocity.Length;
-                velocity.x = (shooterAgent.Velocity.x + velocity.x) * modifier;
-                velocity.y = (shooterAgent.Velocity.y + velocity.y) * modifier;
-                velocity.z = (shooterAgent.Velocity.z + velocity.z) * modifier;
+               // float physicModifier = calculatedMissileSpeed + shooterAgent.Velocity.Length;
+
+                Vec3 shooterAgentVelocity = new Vec3(shooterAgent.Velocity, -1);
+                Vec3 myVelocity = new Vec3(velocity, -1);
+
+                myVelocity.Normalize();
+
+                float shooterAgentSpeed = Vec3.DotProduct(shooterAgentVelocity, myVelocity);
+
+                Vec3 modifierVec = shooterAgentVelocity + myVelocity;
+                //float modifierAngle = 1 - (modifierVec.x + modifierVec.y + modifierVec.z) / 3;
+
+                velocity.x = myVelocity.x * (calculatedMissileSpeed + shooterAgentSpeed);
+                velocity.y = myVelocity.y * (calculatedMissileSpeed + shooterAgentSpeed);
+                velocity.z = myVelocity.z * (calculatedMissileSpeed + shooterAgentSpeed);
+                //float direction = velocity.Normalize();
+
+                //velocity.x = (shooterAgent.Velocity.x + velocity.x) * physicModifier;
+                //velocity.y = (shooterAgent.Velocity.y + velocity.y) * physicModifier;
+                //velocity.z = (shooterAgent.Velocity.z + velocity.z) * physicModifier;
 
                 PropertyInfo property2 = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                 property2.DeclaringType.GetProperty("MissileSpeed");
