@@ -418,11 +418,14 @@ namespace RealisticBattle
     [HarmonyPatch("ComputeBlowMagnitudeMissile")]
     class RealArrowDamage
     {
+        
         static bool Prefix(ref AttackCollisionData acd, ItemObject weaponItem, bool isVictimAgentNull, float momentumRemaining, float missileTotalDamage, out float baseMagnitude, out float specialMagnitude, Vec3 victimVel)
         {
 
             //Vec3 gcn = acd.CollisionGlobalNormal;
-            //Vec3 wbd = acd.WeaponBlowDir;
+           // Vec3 wbd = acd.MissileVelocity;
+
+            //float angleModifier = Vec3.DotProduct(gcn, wbd);
 
             //Vec3 resultVec = gcn + wbd;
             //float angleModifier = 1f - Math.Abs((resultVec.x + resultVec.y + resultVec.z) / 3);
@@ -626,6 +629,7 @@ namespace RealisticBattle
                 }
                 else if (!missionWeapon.Equals(MissionWeapon.Invalid))
                 {
+                    _oldMissileSpeeds.Add(missionWeapon.GetMissileSpeedForUsage(0));
                     PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                     property.DeclaringType.GetProperty("MissileSpeed");
                     property.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
