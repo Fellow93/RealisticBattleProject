@@ -209,19 +209,19 @@ namespace RealisticBattle
                     }
                 case BoneBodyPartType.Head:
                     {
-                        __result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead) * 1.2f;
+                        __result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead);
                         break;
                     }
                 case BoneBodyPartType.Neck:
                     {
                         // __result = getNeckArmor(__instance);
-                        __result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead);
+                        __result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead) * 0.8f;
                         break;
                     }
                 case BoneBodyPartType.BipedalLegs:
                 case BoneBodyPartType.QuadrupedalLegs:
                     {
-                        __result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorLegs);
+                        __result = getLegArmor(__instance);
                         break;
                     }
                 case BoneBodyPartType.BipedalArmLeft:
@@ -229,7 +229,7 @@ namespace RealisticBattle
                 case BoneBodyPartType.QuadrupedalArmLeft:
                 case BoneBodyPartType.QuadrupedalArmRight:
                     {
-                        __result = getArmArmor(__instance) * 1.5f;
+                        __result = getArmArmor(__instance);
                         break;
                     }
                 case BoneBodyPartType.Chest:
@@ -290,7 +290,6 @@ namespace RealisticBattle
                 if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
                 {
                     num += (float)equipmentElement.Item.ArmorComponent.ArmArmor;
-                    num += (float)equipmentElement.Item.ArmorComponent.BodyArmor * 0.5f;
                 }
             }
             return num;
@@ -336,6 +335,20 @@ namespace RealisticBattle
                 }
             }
             return 0f;
+        }
+
+        static public float getLegArmor(Agent agent)
+        {
+            float num = 0f;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            {
+                EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.LegArmor)
+                {
+                    num += (float)equipmentElement.Item.ArmorComponent.LegArmor;
+                }
+            }
+            return num;
         }
     }
 
