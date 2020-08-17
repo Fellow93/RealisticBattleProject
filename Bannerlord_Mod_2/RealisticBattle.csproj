@@ -251,6 +251,8 @@
     <!-- TODO: Don't think this can be made optional -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behaviours.cs" />
+    <Compile Include="Tactics.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
