@@ -1075,7 +1075,7 @@ namespace RealisticBattle
         [HarmonyPatch("HasBattleBeenJoined")]
         static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
         {
-            __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 13f);
+            __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 12f);
         }
     }
 
@@ -1096,7 +1096,7 @@ namespace RealisticBattle
             __result = Utilities.HasBattleBeenJoined(____cavalry, ____hasBattleBeenJoined, 7f);
         }
     }
-
+    [HarmonyPatch(typeof(TacticRangedHarrassmentOffensive))]
     class OverrideTacticRangedHarrassmentOffensive
     {
         [HarmonyPostfix]
@@ -1110,7 +1110,27 @@ namespace RealisticBattle
         [HarmonyPatch("HasBattleBeenJoined")]
         static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
         {
-            __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 10f);
+            __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 12f);
+        }
+    }
+    [HarmonyPatch(typeof(TacticDefensiveLine))]
+    class OverrideTacticDefensiveLine
+    {
+        [HarmonyPostfix]
+        [HarmonyPatch("HasBattleBeenJoined")]
+        static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
+        {
+            __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 12f);
+        }
+    }
+    [HarmonyPatch(typeof(TacticDefensiveEngagement))]
+    class OverrideTacticDefensiveEngagement
+    {
+        [HarmonyPostfix]
+        [HarmonyPatch("HasBattleBeenJoined")]
+        static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
+        {
+            __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 12f);
         }
     }
 
