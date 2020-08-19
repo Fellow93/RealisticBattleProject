@@ -62,9 +62,10 @@ namespace RealisticBattle
 
         public static bool HasBattleBeenJoined(Formation mainInfantry, bool hasBattleBeenJoined, float battleJoinRange)
         {
-            if (mainInfantry?.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
+            FormationQuerySystem mainEnemyformation = mainInfantry?.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
+            if (mainEnemyformation != null && (mainEnemyformation.IsCavalryFormation || mainEnemyformation.IsInfantryFormation))
             {
-                if (mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(mainInfantry.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MedianPosition.AsVec2) / mainInfantry.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MovementSpeedMaximum <= 5f)
+                if (mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) / mainEnemyformation.MovementSpeedMaximum <= 5f)
                 {
                     mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
                 }
@@ -73,11 +74,15 @@ namespace RealisticBattle
                     mainInfantry.FiringOrder = FiringOrder.FiringOrderFireAtWill;
                 }
             }
-            if (mainInfantry?.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && !(mainInfantry.AI.ActiveBehavior is BehaviorCharge) && !(mainInfantry.AI.ActiveBehavior is BehaviorTacticalCharge))
+            if (mainEnemyformation != null && (mainEnemyformation.IsCavalryFormation || mainEnemyformation.IsInfantryFormation))
             {
-                return mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(mainInfantry.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MedianPosition.AsVec2) / mainInfantry.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MovementSpeedMaximum <= battleJoinRange + (hasBattleBeenJoined ? 5f : 0f);
+                return mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) / mainEnemyformation.MovementSpeedMaximum <= battleJoinRange + (hasBattleBeenJoined ? 5f : 0f);
             }
-            return true;
+            else
+            {
+                return false;
+            }
+            
         }
 
         public static void FixCharge(ref Formation formation)
@@ -88,6 +93,7 @@ namespace RealisticBattle
                 formation.AI.SetBehaviorWeight<BehaviorCharge>(1f);
             }
         }
+
     }
 
     [HarmonyPatch(typeof(SandboxAgentStatCalculateModel))]
@@ -146,6 +152,7 @@ namespace RealisticBattle
     [HarmonyPatch("EarlyStart")]
     class TeamAiFieldBattle
     {
+        
         static void Postfix()
         {
             if (Mission.Current.Teams.Any())
@@ -183,6 +190,7 @@ namespace RealisticBattle
                 }
             }
         }
+        
     }
 
     [HarmonyPatch(typeof(CustomBattleAgentStatCalculateModel))]
@@ -432,10 +440,10 @@ namespace RealisticBattle
     [HarmonyPatch("CalculateStrikeMagnitudeForPassiveUsage")]
     class ChangeLanceDamage
     {
-        static bool Prefix(float weaponWeight, float exraLinearSpeed, ref float __result)
+        static bool Prefix(float weaponWeight, float extraLinearSpeed, ref float __result)
         {
             //float weaponWeight2 = 40f + weaponWeight;
-            __result = CalculateStrikeMagnitudeForThrust(0f, weaponWeight, exraLinearSpeed, isThrown: false);
+            __result = CalculateStrikeMagnitudeForThrust(0f, weaponWeight, extraLinearSpeed, isThrown: false);
             return false;
         }
 
@@ -570,30 +578,32 @@ namespace RealisticBattle
     [HarmonyPatch("GetHasRangedWeapon")]
     class OverrideGetHasRangedWeapon
     {
+        /*
         static bool Prefix(Agent __instance, ref bool __result, bool checkHasAmmo = false)
         {
-            __result = false;
-            for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-            {
-                bool isPolearm = false;
-                //bool isjavelin = false;
-                foreach (WeaponComponentData weapon in __instance.Equipment[equipmentIndex].Weapons)
-                {
-                    if (weapon.WeaponClass == WeaponClass.LowGripPolearm || weapon.WeaponClass == WeaponClass.OneHandedPolearm || weapon.WeaponClass == WeaponClass.Javelin || weapon.WeaponClass == WeaponClass.ThrowingAxe || weapon.WeaponClass == WeaponClass.ThrowingKnife || weapon.WeaponClass == WeaponClass.Stone)
-                    {
-                        isPolearm = true;
-                    }
-                    if (weapon != null && weapon.IsRangedWeapon && (!checkHasAmmo || __instance.Equipment.HasAmmo(weapon)))
-                    {
-                        if (!isPolearm)
-                        {
-                            __result = true;
-                        }
-                    }
-                }
-            }
-            return false;
-        }
+             __result = false;
+             for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+             {
+                 bool isPolearm = false;
+                 //bool isjavelin = false;
+                 foreach (WeaponComponentData weapon in __instance.Equipment[equipmentIndex].Weapons)
+                 {
+                     if (weapon.WeaponClass == WeaponClass.LowGripPolearm || weapon.WeaponClass == WeaponClass.OneHandedPolearm || weapon.WeaponClass == WeaponClass.Javelin || weapon.WeaponClass == WeaponClass.ThrowingAxe || weapon.WeaponClass == WeaponClass.ThrowingKnife || weapon.WeaponClass == WeaponClass.Stone)
+                     {
+                         isPolearm = true;
+                     }
+                     if (weapon != null && weapon.IsRangedWeapon && (!checkHasAmmo || __instance.Equipment.HasAmmo(weapon)))
+                     {
+                         if (!isPolearm)
+                         {
+                             __result = true;
+                         }
+                     }
+                 }
+             }
+             return false;
+         }
+         */
     }
 
     [HarmonyPatch(typeof(Agent))]
@@ -838,7 +848,7 @@ namespace RealisticBattle
         [HarmonyPatch("ComputeBlowDamageOnShield")]
         class OverrideDamageCalcShield
         {
-            static bool Prefix(bool isAttackerAgentNull, bool isAttackerAgentActive, bool isAttackerAgentCharging, bool canGiveDamageToAgentShield, bool isVictimAgentLeftStance, MissionWeapon victimShield, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, float blowMagnitude)
+            static bool Prefix(bool isAttackerAgentNull, bool isAttackerAgentActive, bool canGiveDamageToAgentShield, bool isVictimAgentLeftStance, MissionWeapon victimShield, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, float blowMagnitude)
             {
                 attackCollisionData.InflictedDamage = 0;
                 if (victimShield.CurrentUsageItem.WeaponFlags.HasAnyFlag(WeaponFlags.CanBlockRanged) & canGiveDamageToAgentShield)
@@ -1070,6 +1080,7 @@ namespace RealisticBattle
         }
     }
 
+    
     [HarmonyPatch(typeof(TacticFullScaleAttack))]
     class OverrideTacticFullScaleAttack
     {
@@ -1080,10 +1091,8 @@ namespace RealisticBattle
         {
             if (____mainInfantry != null)
             {
-                //____mainInfantry.AI.ResetBehaviorWeights();
                 ____mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(2f);
             }
-            //Utilities.FixCharge(ref ____mainInfantry);
         }
 
         [HarmonyPostfix]
@@ -1119,6 +1128,7 @@ namespace RealisticBattle
             __result = Utilities.HasBattleBeenJoined(____cavalry, ____hasBattleBeenJoined, 7f);
         }
     }
+
     [HarmonyPatch(typeof(TacticRangedHarrassmentOffensive))]
     class OverrideTacticRangedHarrassmentOffensive
     {
@@ -1136,6 +1146,7 @@ namespace RealisticBattle
             __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 12f);
         }
     }
+
     [HarmonyPatch(typeof(TacticDefensiveLine))]
     class OverrideTacticDefensiveLine
     {
@@ -1146,6 +1157,7 @@ namespace RealisticBattle
             __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 12f);
         }
     }
+
     [HarmonyPatch(typeof(TacticDefensiveEngagement))]
     class OverrideTacticDefensiveEngagement
     {
@@ -1154,6 +1166,32 @@ namespace RealisticBattle
         static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
         {
             __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 12f);
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch("Engage")]
+        static void PostfixAttack(ref Formation ____archers)
+        {
+            if (____archers != null)
+            {
+                //____archers.AI.ResetBehaviorWeights();
+                ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(0f);
+                ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(BehaviorSkirmishLine))]
+    class OverrideBehaviorSkirmishLine
+    {
+        [HarmonyPostfix]
+        [HarmonyPatch("CalculateCurrentOrder")]
+        static void PostfixCalculateCurrentOrder(Formation ____mainFormation, Formation ___formation, ref FacingOrder ___CurrentFacingOrder)
+        {
+            MethodInfo method = typeof(FacingOrder).GetMethod("FacingOrderLookAtDirection", BindingFlags.NonPublic | BindingFlags.Static);
+            method.DeclaringType.GetMethod("FacingOrderLookAtDirection");
+            ___CurrentFacingOrder = (FacingOrder) method.Invoke(___CurrentFacingOrder, new object[] { ____mainFormation.Direction });
+           // ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
         }
     }
 
