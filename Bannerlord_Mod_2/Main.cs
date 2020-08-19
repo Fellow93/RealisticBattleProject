@@ -11,8 +11,6 @@ using SandBox;
 using System.Reflection;
 using JetBrains.Annotations;
 using System.Collections;
-using static TaleWorlds.Core.ItemObject;
-using static RealisticBattle.Tactics;
 
 namespace RealisticBattle
 {
@@ -64,6 +62,17 @@ namespace RealisticBattle
 
         public static bool HasBattleBeenJoined(Formation mainInfantry, bool hasBattleBeenJoined, float battleJoinRange)
         {
+            if (mainInfantry?.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
+            {
+                if (mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(mainInfantry.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MedianPosition.AsVec2) / mainInfantry.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MovementSpeedMaximum <= 5f)
+                {
+                    mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
+                }
+                else
+                {
+                    mainInfantry.FiringOrder = FiringOrder.FiringOrderFireAtWill;
+                }
+            }
             if (mainInfantry?.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && !(mainInfantry.AI.ActiveBehavior is BehaviorCharge) && !(mainInfantry.AI.ActiveBehavior is BehaviorTacticalCharge))
             {
                 return mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(mainInfantry.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MedianPosition.AsVec2) / mainInfantry.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MovementSpeedMaximum <= battleJoinRange + (hasBattleBeenJoined ? 5f : 0f);
@@ -160,7 +169,7 @@ namespace RealisticBattle
                             team.AddTacticOption(new TacticDefensiveEngagement(team));
                             team.AddTacticOption(new TacticDefensiveLine(team));
                             team.AddTacticOption(new TacticHoldChokePoint(team));
-                            team.AddTacticOption(new TacticHoldTheHill(team));
+                            //team.AddTacticOption(new TacticHoldTheHill(team));
                             //team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
                             //team.AddTacticOption(new TacticCoordinatedRetreat(team));
                             //team.AddTacticOption(new TacticFullScaleAttack(team));
@@ -1064,6 +1073,19 @@ namespace RealisticBattle
     [HarmonyPatch(typeof(TacticFullScaleAttack))]
     class OverrideTacticFullScaleAttack
     {
+
+        [HarmonyPostfix]
+        [HarmonyPatch("Advance")]
+        static void PostfixAdvance(ref Formation ____mainInfantry)
+        {
+            if (____mainInfantry != null)
+            {
+                //____mainInfantry.AI.ResetBehaviorWeights();
+                ____mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(2f);
+            }
+            //Utilities.FixCharge(ref ____mainInfantry);
+        }
+
         [HarmonyPostfix]
         [HarmonyPatch("Attack")]
         static void PostfixAttack(ref Formation ____mainInfantry)
@@ -1082,6 +1104,7 @@ namespace RealisticBattle
     [HarmonyPatch(typeof(TacticFrontalCavalryCharge))]
     class OverrideTacticFrontalCavalryCharge
     {
+
         [HarmonyPostfix]
         [HarmonyPatch("Attack")]
         static void PostfixAttack(ref Formation ____mainInfantry)
