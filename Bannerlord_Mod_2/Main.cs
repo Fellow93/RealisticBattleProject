@@ -432,10 +432,10 @@ namespace RealisticBattle
     [HarmonyPatch("CalculateStrikeMagnitudeForPassiveUsage")]
     class ChangeLanceDamage
     {
-        static bool Prefix(float weaponWeight, float exraLinearSpeed, ref float __result)
+        static bool Prefix(float weaponWeight, float extraLinearSpeed, ref float __result)
         {
             //float weaponWeight2 = 40f + weaponWeight;
-            __result = CalculateStrikeMagnitudeForThrust(0f, weaponWeight, exraLinearSpeed, isThrown: false);
+            __result = CalculateStrikeMagnitudeForThrust(0f, weaponWeight, extraLinearSpeed, isThrown: false);
             return false;
         }
 
