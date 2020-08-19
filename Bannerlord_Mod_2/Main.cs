@@ -11,6 +11,7 @@ using SandBox;
 using System.Reflection;
 using JetBrains.Annotations;
 using System.Collections;
+using TaleWorlds.Engine;
 
 namespace RealisticBattle
 {
@@ -1193,6 +1194,34 @@ namespace RealisticBattle
             ___CurrentFacingOrder = (FacingOrder) method.Invoke(___CurrentFacingOrder, new object[] { ____mainFormation.Direction });
            // ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
         }
+    }
+
+    [HarmonyPatch(typeof(BehaviorHoldHighGround))]
+    class OverrideBehaviorHoldHighGround
+    {
+        static WorldPosition medianPositionOld;
+
+        [HarmonyPostfix]
+        [HarmonyPatch("CalculateCurrentOrder")]
+        static void PostfixCalculateCurrentOrder(Formation ___formation, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged)
+        {
+            FormationQuerySystem mainEnemyformation = ___formation?.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
+            if (mainEnemyformation != null)
+            {
+                WorldPosition medianPositionNew = ___formation.QuerySystem.MedianPosition;
+                medianPositionNew.SetVec2(___formation.QuerySystem.AveragePosition);
+
+                if (___formation.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) < 200f){
+                    ____currentOrder = MovementOrder.MovementOrderMove(medianPositionOld);
+                    ___IsCurrentOrderChanged = true;
+                }
+                else
+                {
+                    medianPositionOld = medianPositionNew;
+                }
+            }
+        }
+               
     }
 
     //volunteers
