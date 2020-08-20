@@ -1,115 +1,87 @@
-﻿using System.Reflection;
-using TaleWorlds.Core;
+﻿using HarmonyLib;
+using System;
+using System.Reflection;
 using TaleWorlds.Engine;
-using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
 namespace RealisticBattle
 {
     class Behaviours
     {
-		
-		public class BehaviorSkirmishFlank : BehaviorComponent
-		{
+        [HarmonyPatch(typeof(BehaviorSkirmishLine))]
+        class OverrideBehaviorSkirmishLine
+        {
+            [HarmonyPostfix]
+            [HarmonyPatch("CalculateCurrentOrder")]
+            static void PostfixCalculateCurrentOrder(Formation ____mainFormation, Formation ___formation, ref FacingOrder ___CurrentFacingOrder)
+            {
+                if (____mainFormation != null)
+                {
+                    MethodInfo method = typeof(FacingOrder).GetMethod("FacingOrderLookAtDirection", BindingFlags.NonPublic | BindingFlags.Static);
+                    method.DeclaringType.GetMethod("FacingOrderLookAtDirection");
+                    ___CurrentFacingOrder = (FacingOrder)method.Invoke(___CurrentFacingOrder, new object[] { ____mainFormation.Direction });
+                }
+            }
+        }
 
-			public Formation attackingFormation;
-			public Formation victimFormation;
+        [HarmonyPatch(typeof(BehaviorHoldHighGround))]
+        class OverrideBehaviorHoldHighGround
+        {
+            static WorldPosition medianPositionOld;
 
-			public BehaviorSkirmishFlank(Formation formation)
-			{
-				attackingFormation = formation;
-				//attackingFormation = formation;
-				//victimFormation = enemyFormation;
-				//base.BehaviorCoherence = 0.5f;
-				CalculateCurrentOrder();
-			}
+            [HarmonyPostfix]
+            [HarmonyPatch("CalculateCurrentOrder")]
+            static void PostfixCalculateCurrentOrder(Formation ___formation, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged)
+            {
+                FormationQuerySystem mainEnemyformation = ___formation?.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
+                if (mainEnemyformation != null)
+                {
+                    WorldPosition medianPositionNew = ___formation.QuerySystem.MedianPosition;
+                    medianPositionNew.SetVec2(___formation.QuerySystem.AveragePosition);
 
-			protected override void CalculateCurrentOrder()
-			{
-				FieldInfo property = typeof(BehaviorComponent).GetField("formation", BindingFlags.NonPublic | BindingFlags.Instance);
-				property.DeclaringType.GetField("formation");
-				property.SetValue(this, attackingFormation, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null);
+                    Formation rangedFormation = null;
+                    foreach (Formation formation in ___formation.Team.Formations)
+                    {
+                        if (formation.QuerySystem.IsRangedFormation)
+                        {
+                            rangedFormation = formation;
+                        }
+                    }
+                    if (rangedFormation != null)
+                    {
+                        if (___formation.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) < (rangedFormation.QuerySystem.MissileRange + 30f))
+                        {
+                            ____currentOrder = MovementOrder.MovementOrderMove(medianPositionOld);
+                            ___IsCurrentOrderChanged = true;
+                        }
+                        else
+                        {
+                            medianPositionOld = medianPositionNew;
+                        }
+                    }
+                }
+            }
+        }
 
-				PropertyInfo PreserveExpireTimeInfo = typeof(BehaviorComponent).GetProperty("PreserveExpireTime", BindingFlags.NonPublic | BindingFlags.Instance);
-				PreserveExpireTimeInfo.DeclaringType.GetProperty("PreserveExpireTime");
-				PreserveExpireTimeInfo.SetValue(this, 0f, BindingFlags.NonPublic, null, null, null);
+        [HarmonyPatch(typeof(BehaviorScreenedSkirmish))]
+        class OverrideBehaviorScreenedSkirmish
+        {
+            [HarmonyPostfix]
+            [HarmonyPatch("CalculateCurrentOrder")]
+            static void PostfixCalculateCurrentOrder(Formation ____mainFormation, Formation ___formation, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
+            {
+                if (____mainFormation != null)
+                {
+                    MethodInfo method = typeof(FacingOrder).GetMethod("FacingOrderLookAtDirection", BindingFlags.NonPublic | BindingFlags.Static);
+                    method.DeclaringType.GetMethod("FacingOrderLookAtDirection");
+                    ___CurrentFacingOrder = (FacingOrder)method.Invoke(___CurrentFacingOrder, new object[] { ____mainFormation.Direction });
 
-				FieldInfo _navmeshlessTargetPenaltyTimeInfo = typeof(BehaviorComponent).GetField("_navmeshlessTargetPenaltyTime", BindingFlags.NonPublic | BindingFlags.Instance);
-				_navmeshlessTargetPenaltyTimeInfo.DeclaringType.GetField("_navmeshlessTargetPenaltyTime");
-				_navmeshlessTargetPenaltyTimeInfo.SetValue(this, new Timer(MBCommon.GetTime(MBCommon.TimeType.Mission), 20f), BindingFlags.NonPublic, null, null);
+                    WorldPosition medianPosition = ____mainFormation.QuerySystem.MedianPosition;
+                    medianPosition.SetVec2(medianPosition.AsVec2 - ____mainFormation.Direction * ((____mainFormation.Depth + ___formation.Depth) * 1.5f));
+                    ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
 
-				WorldPosition position;
-				if (attackingFormation != null && victimFormation != null && attackingFormation.QuerySystem.ClosestEnemyFormation != null)
-				{
-					Vec2 vec;
-					if (attackingFormation.AI.Side == FormationAI.BehaviorSide.Left)
-					{
-						Vec2 v = (attackingFormation.QuerySystem.Team.MedianTargetFormationPosition.AsVec2 - victimFormation.QuerySystem.MedianPosition.AsVec2).Normalized();
-						vec = victimFormation.CurrentPosition + v.LeftVec().Normalized() * (victimFormation.Width + attackingFormation.Width + 5f);
-						vec -= v * (victimFormation.Depth + attackingFormation.Depth);
-					}
-					else
-					{
-						Vec2 v = (attackingFormation.QuerySystem.Team.MedianTargetFormationPosition.AsVec2 - victimFormation.QuerySystem.MedianPosition.AsVec2).Normalized();
-						vec = victimFormation.CurrentPosition + v.RightVec().Normalized() * (victimFormation.Width + attackingFormation.Width + 5f);
-						vec -= v * (victimFormation.Depth + attackingFormation.Depth);
-					}
-
-					WorldPosition medianPosition = victimFormation.QuerySystem.MedianPosition;
-					medianPosition.SetVec2(vec);
-					//position = (attackingFormation.AI.Side == FormationAI.BehaviorSide.Right) ? victimFormation.QuerySystem.Team.RightFlankEdgePosition : victimFormation.QuerySystem.Team.LeftFlankEdgePosition;
-					//Vec2 direction = (position.AsVec2 - attackingFormation.QuerySystem.AveragePosition).Normalized();
-					base.CurrentOrder = MovementOrder.MovementOrderMove(medianPosition);
-				}
-				//CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(direction);
-			}
-
-			protected internal void TickOccasionally()
-			{
-				CalculateCurrentOrder();
-				if (attackingFormation != null)
-				{
-					attackingFormation.MovementOrder = base.CurrentOrder;
-					attackingFormation.FacingOrder = CurrentFacingOrder;
-				}
-			}
-
-
-			protected override void OnBehaviorActivatedAux()
-			{
-				CalculateCurrentOrder();
-				attackingFormation.MovementOrder = base.CurrentOrder;
-				attackingFormation.FacingOrder = CurrentFacingOrder;
-				attackingFormation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
-				attackingFormation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
-				attackingFormation.FormOrder = FormOrder.FormOrderDeep;
-				attackingFormation.WeaponUsageOrder = WeaponUsageOrder.WeaponUsageOrderUseAny;
-			}
-
-			protected override float GetAiWeight()
-			{
-				FormationQuerySystem querySystem = attackingFormation.QuerySystem;
-				if (querySystem.ClosestEnemyFormation == null || querySystem.ClosestEnemyFormation.ClosestEnemyFormation == querySystem)
-				{
-					return 0f;
-				}
-				Vec2 vec = (querySystem.ClosestEnemyFormation.MedianPosition.AsVec2 - querySystem.AveragePosition).Normalized();
-				Vec2 v = (querySystem.ClosestEnemyFormation.ClosestEnemyFormation.MedianPosition.AsVec2 - querySystem.ClosestEnemyFormation.MedianPosition.AsVec2).Normalized();
-				if (vec.DotProduct(v) > -0.5f)
-				{
-					return 0f;
-				}
-				return 1.2f;
-			}
-		}
-
-	//	_rightFlankEdgePosition = new QueryData<WorldPosition>(delegate
-	//{
-	//	Vec2 v = (MedianTargetFormationPosition.AsVec2 - AveragePosition).RightVec();
-	//	v.Normalize();
-	//	WorldPosition medianTargetFormationPosition = MedianTargetFormationPosition;
-	//	medianTargetFormationPosition.SetVec2(medianTargetFormationPosition.AsVec2 + v* 50f);
-	//	return medianTargetFormationPosition;
-	//}, 5f);
+                }
+            }
+        }
     }
 }

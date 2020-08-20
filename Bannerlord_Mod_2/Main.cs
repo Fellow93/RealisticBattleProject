@@ -5,13 +5,11 @@ using TaleWorlds.Library;
 using HarmonyLib;
 using System.Xml;
 using System.Collections.Generic;
-using System.Linq;
 using static TaleWorlds.MountAndBlade.ArrangementOrder;
 using SandBox;
 using System.Reflection;
 using JetBrains.Annotations;
 using System.Collections;
-using TaleWorlds.Engine;
 
 namespace RealisticBattle
 {
@@ -23,7 +21,7 @@ namespace RealisticBattle
     {
         public static void DoPatching()
         {
-            var harmony = new Harmony("com.jj.dmg");
+            var harmony = new Harmony("com.pf.rb");
             harmony.PatchAll();
         }
     }
@@ -147,51 +145,6 @@ namespace RealisticBattle
             Vec2 asVec = chargerMovementDirection.AsVec2;
             return Vec2.DotProduct(va, asVec);
         }
-    }
-
-    [HarmonyPatch(typeof(MissionCombatantsLogic))]
-    [HarmonyPatch("EarlyStart")]
-    class TeamAiFieldBattle
-    {
-        
-        static void Postfix()
-        {
-            if (Mission.Current.Teams.Any())
-            {
-                if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
-                {
-                    foreach (Team team in Mission.Current.Teams.Where((Team t) => t.HasTeamAi))
-                    {
-                        if (team.Side == BattleSideEnum.Attacker)
-                        {
-                            team.ClearTacticOptions();
-                            team.AddTacticOption(new TacticFullScaleAttack(team));
-                            team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
-                            team.AddTacticOption(new TacticFrontalCavalryCharge(team));
-                            //team.AddTacticOption(new TacticCoordinatedRetreat(team));
-                            team.AddTacticOption(new TacticCharge(team));
-                        }
-                        if (team.Side == BattleSideEnum.Defender)
-                        {
-                            team.ClearTacticOptions();
-                            team.AddTacticOption(new TacticDefensiveEngagement(team));
-                            team.AddTacticOption(new TacticDefensiveLine(team));
-                            team.AddTacticOption(new TacticHoldChokePoint(team));
-                            //team.AddTacticOption(new TacticHoldTheHill(team));
-                            //team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
-                            //team.AddTacticOption(new TacticCoordinatedRetreat(team));
-                            //team.AddTacticOption(new TacticFullScaleAttack(team));
-                            //team.AddTacticOption(new TacticFrontalCavalryCharge(team));
-                            team.AddTacticOption(new TacticCharge(team));
-
-                            //team.AddTacticOption(new TacticDefensiveRing(team));
-                            //team.AddTacticOption(new TacticArchersOnTheHill(team));
-                        }
-                    }
-                }
-            }
-        }
-        
     }
 
     [HarmonyPatch(typeof(CustomBattleAgentStatCalculateModel))]
@@ -1079,149 +1032,6 @@ namespace RealisticBattle
             return damage;
 
         }
-    }
-
-    
-    [HarmonyPatch(typeof(TacticFullScaleAttack))]
-    class OverrideTacticFullScaleAttack
-    {
-
-        [HarmonyPostfix]
-        [HarmonyPatch("Advance")]
-        static void PostfixAdvance(ref Formation ____mainInfantry)
-        {
-            if (____mainInfantry != null)
-            {
-                ____mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(2f);
-            }
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch("Attack")]
-        static void PostfixAttack(ref Formation ____mainInfantry)
-        {
-            Utilities.FixCharge(ref ____mainInfantry);
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch("HasBattleBeenJoined")]
-        static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
-        {
-            __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 12f);
-        }
-    }
-
-    [HarmonyPatch(typeof(TacticFrontalCavalryCharge))]
-    class OverrideTacticFrontalCavalryCharge
-    {
-
-        [HarmonyPostfix]
-        [HarmonyPatch("Attack")]
-        static void PostfixAttack(ref Formation ____mainInfantry)
-        {
-            Utilities.FixCharge(ref ____mainInfantry);
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch("HasBattleBeenJoined")]
-        static void PostfixHasBattleBeenJoined(Formation ____cavalry, bool ____hasBattleBeenJoined, ref bool __result)
-        {
-            __result = Utilities.HasBattleBeenJoined(____cavalry, ____hasBattleBeenJoined, 7f);
-        }
-    }
-
-    [HarmonyPatch(typeof(TacticRangedHarrassmentOffensive))]
-    class OverrideTacticRangedHarrassmentOffensive
-    {
-        [HarmonyPostfix]
-        [HarmonyPatch("Attack")]
-        static void PostfixAttack(ref Formation ____mainInfantry)
-        {
-            Utilities.FixCharge(ref ____mainInfantry);
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch("HasBattleBeenJoined")]
-        static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
-        {
-            __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 12f);
-        }
-    }
-
-    [HarmonyPatch(typeof(TacticDefensiveLine))]
-    class OverrideTacticDefensiveLine
-    {
-        [HarmonyPostfix]
-        [HarmonyPatch("HasBattleBeenJoined")]
-        static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
-        {
-            __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 12f);
-        }
-    }
-
-    [HarmonyPatch(typeof(TacticDefensiveEngagement))]
-    class OverrideTacticDefensiveEngagement
-    {
-        [HarmonyPostfix]
-        [HarmonyPatch("HasBattleBeenJoined")]
-        static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
-        {
-            __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 12f);
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch("Engage")]
-        static void PostfixAttack(ref Formation ____archers)
-        {
-            if (____archers != null)
-            {
-                //____archers.AI.ResetBehaviorWeights();
-                ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(0f);
-                ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
-            }
-        }
-    }
-
-    [HarmonyPatch(typeof(BehaviorSkirmishLine))]
-    class OverrideBehaviorSkirmishLine
-    {
-        [HarmonyPostfix]
-        [HarmonyPatch("CalculateCurrentOrder")]
-        static void PostfixCalculateCurrentOrder(Formation ____mainFormation, Formation ___formation, ref FacingOrder ___CurrentFacingOrder)
-        {
-            MethodInfo method = typeof(FacingOrder).GetMethod("FacingOrderLookAtDirection", BindingFlags.NonPublic | BindingFlags.Static);
-            method.DeclaringType.GetMethod("FacingOrderLookAtDirection");
-            ___CurrentFacingOrder = (FacingOrder) method.Invoke(___CurrentFacingOrder, new object[] { ____mainFormation.Direction });
-           // ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
-        }
-    }
-
-    [HarmonyPatch(typeof(BehaviorHoldHighGround))]
-    class OverrideBehaviorHoldHighGround
-    {
-        static WorldPosition medianPositionOld;
-
-        [HarmonyPostfix]
-        [HarmonyPatch("CalculateCurrentOrder")]
-        static void PostfixCalculateCurrentOrder(Formation ___formation, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged)
-        {
-            FormationQuerySystem mainEnemyformation = ___formation?.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
-            if (mainEnemyformation != null)
-            {
-                WorldPosition medianPositionNew = ___formation.QuerySystem.MedianPosition;
-                medianPositionNew.SetVec2(___formation.QuerySystem.AveragePosition);
-
-                if (___formation.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) < 200f){
-                    ____currentOrder = MovementOrder.MovementOrderMove(medianPositionOld);
-                    ___IsCurrentOrderChanged = true;
-                }
-                else
-                {
-                    medianPositionOld = medianPositionNew;
-                }
-            }
-        }
-               
     }
 
     //volunteers
