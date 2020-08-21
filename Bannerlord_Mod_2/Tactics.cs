@@ -5,8 +5,40 @@ using TaleWorlds.MountAndBlade;
 
 namespace RealisticBattle
 {
+    //TODO: DEFENSE FIX
     class Tactics
     {
+
+        [HarmonyPatch(typeof(Team))]
+        [HarmonyPatch("Tick")]
+        class OverrideTick
+        {
+
+            static int i = 0;
+
+            static void Postfix(Team __instance)
+            {
+                if(i == 10)
+                {
+                    if (__instance.IsAttacker)
+                    {
+                        InformationManager.DisplayMessage(new InformationMessage("Attacker"));
+                        //InformationManager.DisplayMessage(new InformationMessage(__instance.TeamAI));TacticComponent _currentTactic
+                        //foreach
+                    }
+                    else
+                    {
+                        InformationManager.DisplayMessage(new InformationMessage("Defender"));
+                    }
+                    i = 0;
+                }
+                else
+                {
+                    i++;
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(MissionCombatantsLogic))]
         [HarmonyPatch("EarlyStart")]
         class TeamAiFieldBattle
@@ -26,7 +58,7 @@ namespace RealisticBattle
                                 team.AddTacticOption(new TacticFullScaleAttack(team));
                                 team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
                                 team.AddTacticOption(new TacticFrontalCavalryCharge(team));
-                                //team.AddTacticOption(new TacticCoordinatedRetreat(team));
+                                team.AddTacticOption(new TacticCoordinatedRetreat(team));
                                 team.AddTacticOption(new TacticCharge(team));
                             }
                             if (team.Side == BattleSideEnum.Defender)
@@ -38,8 +70,8 @@ namespace RealisticBattle
                                 //team.AddTacticOption(new TacticHoldTheHill(team));
                                 //team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
                                 //team.AddTacticOption(new TacticCoordinatedRetreat(team));
-                                //team.AddTacticOption(new TacticFullScaleAttack(team));
-                                //team.AddTacticOption(new TacticFrontalCavalryCharge(team));
+                                team.AddTacticOption(new TacticFullScaleAttack(team));
+                                team.AddTacticOption(new TacticFrontalCavalryCharge(team));
                                 team.AddTacticOption(new TacticCharge(team));
 
                                 //team.AddTacticOption(new TacticDefensiveRing(team));
@@ -57,11 +89,15 @@ namespace RealisticBattle
 
             [HarmonyPostfix]
             [HarmonyPatch("Advance")]
-            static void PostfixAdvance(ref Formation ____mainInfantry)
+            static void PostfixAdvance(ref Formation ____mainInfantry, ref Formation ____archers)
             {
                 if (____mainInfantry != null)
                 {
                     ____mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(2f);
+                }
+                if (____archers != null)
+                {
+                    ____archers.AI.SetBehaviorWeight<BehaviorRegroup>(2f);
                 }
             }
 
@@ -128,14 +164,30 @@ namespace RealisticBattle
             }
 
             [HarmonyPostfix]
+            [HarmonyPatch("Defend")]
+            static void PostfixDefend(ref Formation ____archers, ref Formation ____mainInfantry)
+            {
+                if (____archers != null)
+                {
+                    ____archers.AI.SetBehaviorWeight<BehaviorRegroup>(2f);
+                }
+                if (____mainInfantry != null)
+                {
+                    ____mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(2f);
+                }
+            }
+
+            [HarmonyPostfix]
             [HarmonyPatch("Engage")]
-            static void PostfixAttack(ref Formation ____archers)
+            static void PostfixEngage(ref Formation ____archers, ref Formation ____mainInfantry)
             {
                 if (____archers != null)
                 {
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(0f);
                     ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
                 }
+
+                Utilities.FixCharge(ref ____mainInfantry);
             }
         }
 
@@ -150,14 +202,30 @@ namespace RealisticBattle
             }
 
             [HarmonyPostfix]
+            [HarmonyPatch("Defend")]
+            static void PostfixDefend(ref Formation ____archers, ref Formation ____mainInfantry)
+            {
+                if (____archers != null)
+                {
+                    ____archers.AI.SetBehaviorWeight<BehaviorRegroup>(2f);
+                }
+                if (____mainInfantry != null)
+                {
+                    ____mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(2f);
+                }
+            }
+
+            [HarmonyPostfix]
             [HarmonyPatch("Engage")]
-            static void PostfixAttack(ref Formation ____archers)
+            static void PostfixAttack(ref Formation ____archers, ref Formation ____mainInfantry)
             {
                 if (____archers != null)
                 {
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(0f);
                     ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
                 }
+
+                Utilities.FixCharge(ref ____mainInfantry);
             }
         }
     }

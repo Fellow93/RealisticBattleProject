@@ -13,13 +13,55 @@ namespace RealisticBattle
         {
             [HarmonyPostfix]
             [HarmonyPatch("CalculateCurrentOrder")]
-            static void PostfixCalculateCurrentOrder(Formation ____mainFormation, Formation ___formation, ref FacingOrder ___CurrentFacingOrder)
+            static void PostfixCalculateCurrentOrder(Formation ____mainFormation, ref FacingOrder ___CurrentFacingOrder)
             {
                 if (____mainFormation != null)
                 {
                     MethodInfo method = typeof(FacingOrder).GetMethod("FacingOrderLookAtDirection", BindingFlags.NonPublic | BindingFlags.Static);
                     method.DeclaringType.GetMethod("FacingOrderLookAtDirection");
                     ___CurrentFacingOrder = (FacingOrder)method.Invoke(___CurrentFacingOrder, new object[] { ____mainFormation.Direction });
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(BehaviorDefend))]
+        class OverrideBehaviorDefend
+        {
+            static WorldPosition medianPositionOld;
+
+            [HarmonyPostfix]
+            [HarmonyPatch("CalculateCurrentOrder")]
+            static void PostfixCalculateCurrentOrder(Formation ___formation, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged)
+            {
+                if (___formation != null)
+                {
+                    FormationQuerySystem mainEnemyformation = ___formation?.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
+                    if (mainEnemyformation != null)
+                    {
+                        WorldPosition medianPositionNew = ___formation.QuerySystem.MedianPosition;
+                        medianPositionNew.SetVec2(___formation.QuerySystem.AveragePosition);
+
+                        Formation rangedFormation = null;
+                        foreach (Formation formation in ___formation.Team.Formations)
+                        {
+                            if (formation.QuerySystem.IsRangedFormation)
+                            {
+                                rangedFormation = formation;
+                            }
+                        }
+                        if (rangedFormation != null)
+                        {
+                            if (___formation.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) < (rangedFormation.QuerySystem.MissileRange + 30f))
+                            {
+                                ____currentOrder = MovementOrder.MovementOrderMove(medianPositionOld);
+                                ___IsCurrentOrderChanged = true;
+                            }
+                            else
+                            {
+                                medianPositionOld = medianPositionNew;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -33,30 +75,33 @@ namespace RealisticBattle
             [HarmonyPatch("CalculateCurrentOrder")]
             static void PostfixCalculateCurrentOrder(Formation ___formation, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged)
             {
-                FormationQuerySystem mainEnemyformation = ___formation?.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
-                if (mainEnemyformation != null)
+                if (___formation != null)
                 {
-                    WorldPosition medianPositionNew = ___formation.QuerySystem.MedianPosition;
-                    medianPositionNew.SetVec2(___formation.QuerySystem.AveragePosition);
+                    FormationQuerySystem mainEnemyformation = ___formation?.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
+                    if (mainEnemyformation != null)
+                    {
+                        WorldPosition medianPositionNew = ___formation.QuerySystem.MedianPosition;
+                        medianPositionNew.SetVec2(___formation.QuerySystem.AveragePosition);
 
-                    Formation rangedFormation = null;
-                    foreach (Formation formation in ___formation.Team.Formations)
-                    {
-                        if (formation.QuerySystem.IsRangedFormation)
+                        Formation rangedFormation = null;
+                        foreach (Formation formation in ___formation.Team.Formations)
                         {
-                            rangedFormation = formation;
+                            if (formation.QuerySystem.IsRangedFormation)
+                            {
+                                rangedFormation = formation;
+                            }
                         }
-                    }
-                    if (rangedFormation != null)
-                    {
-                        if (___formation.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) < (rangedFormation.QuerySystem.MissileRange + 30f))
+                        if (rangedFormation != null)
                         {
-                            ____currentOrder = MovementOrder.MovementOrderMove(medianPositionOld);
-                            ___IsCurrentOrderChanged = true;
-                        }
-                        else
-                        {
-                            medianPositionOld = medianPositionNew;
+                            if (___formation.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) < (rangedFormation.QuerySystem.MissileRange + 30f))
+                            {
+                                ____currentOrder = MovementOrder.MovementOrderMove(medianPositionOld);
+                                ___IsCurrentOrderChanged = true;
+                            }
+                            else
+                            {
+                                medianPositionOld = medianPositionNew;
+                            }
                         }
                     }
                 }
@@ -70,7 +115,7 @@ namespace RealisticBattle
             [HarmonyPatch("CalculateCurrentOrder")]
             static void PostfixCalculateCurrentOrder(Formation ____mainFormation, Formation ___formation, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
             {
-                if (____mainFormation != null)
+                if (____mainFormation != null && ___formation != null)
                 {
                     MethodInfo method = typeof(FacingOrder).GetMethod("FacingOrderLookAtDirection", BindingFlags.NonPublic | BindingFlags.Static);
                     method.DeclaringType.GetMethod("FacingOrderLookAtDirection");
