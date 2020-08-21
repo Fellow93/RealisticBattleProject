@@ -8,7 +8,7 @@ namespace RealisticBattle
     //TODO: DEFENSE FIX
     class Tactics
     {
-
+        /*
         [HarmonyPatch(typeof(Team))]
         [HarmonyPatch("Tick")]
         class OverrideTick
@@ -38,7 +38,7 @@ namespace RealisticBattle
                 }
             }
         }
-
+        */
         [HarmonyPatch(typeof(MissionCombatantsLogic))]
         [HarmonyPatch("EarlyStart")]
         class TeamAiFieldBattle
