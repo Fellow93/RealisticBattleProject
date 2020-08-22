@@ -336,6 +336,10 @@ namespace RealisticBattle
                 EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
                 if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.LegArmor)
                 {
+                    num += ((float)equipmentElement.Item.ArmorComponent.LegArmor) * 0.5f;
+                }
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
+                {
                     num += (float)equipmentElement.Item.ArmorComponent.LegArmor;
                 }
             }
@@ -461,7 +465,7 @@ namespace RealisticBattle
                     {
                         length = 5.0f;
                     } 
-                    missileTotalDamage *= 0.01f;
+                    missileTotalDamage *= 0.006f;
                 }
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
                 {
@@ -835,12 +839,12 @@ namespace RealisticBattle
                                 }
                             case "Javelin":
                                 {
-                                    num *= 3.5f;
+                                    num *= 3.0f;
                                     break;
                                 }
                             case "ThrowingAxe":
                                 {
-                                    num *= 2.0f;
+                                    num *= 1.0f;
                                     break;
                                 }
                             case "OneHandedPolearm":
