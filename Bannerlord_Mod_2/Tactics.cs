@@ -18,68 +18,69 @@ namespace RealisticBattle
 
         //    static void Postfix(Team __instance)
         //    {
-        //        if (i == 500)
-        //        {
-        //            if (__instance.IsAttacker)
+        //        if(__instance.Banner != null) { 
+        //            if (i == 500)
         //            {
-
-        //                FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
-        //                _currentTacticField.DeclaringType.GetField("_currentTactic");
-        //                TacticComponent _currentTactic = (TacticComponent)_currentTacticField.GetValue(__instance.TeamAI);
-
-        //                InformationManager.DisplayMessage(new InformationMessage("Attacker: " + _currentTactic));
-        //                foreach (Formation formation in __instance.Formations)
+        //                if (__instance.IsAttacker)
         //                {
-        //                    if (formation.QuerySystem.IsMeleeFormation)
+        //                    FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
+        //                    _currentTacticField.DeclaringType.GetField("_currentTactic");
+        //                    TacticComponent _currentTactic = (TacticComponent)_currentTacticField.GetValue(__instance.TeamAI);
+
+        //                    InformationManager.DisplayMessage(new InformationMessage("Attacker: " + _currentTactic));
+        //                    foreach (Formation formation in __instance.Formations)
         //                    {
-        //                        InformationManager.DisplayMessage(new InformationMessage("infantry: " + formation.AI.ActiveBehavior));
-        //                    }
-        //                    else if (formation.QuerySystem.IsCavalryFormation)
-        //                    {
-        //                        InformationManager.DisplayMessage(new InformationMessage("cavalry: " + formation.AI.ActiveBehavior));
-        //                    }
-        //                    else if (formation.QuerySystem.IsRangedCavalryFormation)
-        //                    {
-        //                        InformationManager.DisplayMessage(new InformationMessage("ranged cavalry: " + formation.AI.ActiveBehavior));
-        //                    }
-        //                    else if (formation.QuerySystem.IsRangedFormation)
-        //                    {
-        //                        InformationManager.DisplayMessage(new InformationMessage("ranged: " + formation.AI.ActiveBehavior));
+        //                        if (formation.QuerySystem.IsMeleeFormation)
+        //                        {
+        //                            InformationManager.DisplayMessage(new InformationMessage("infantry: " + formation.AI.ActiveBehavior));
+        //                        }
+        //                        else if (formation.QuerySystem.IsCavalryFormation)
+        //                        {
+        //                            InformationManager.DisplayMessage(new InformationMessage("cavalry: " + formation.AI.ActiveBehavior));
+        //                        }
+        //                        else if (formation.QuerySystem.IsRangedCavalryFormation)
+        //                        {
+        //                            InformationManager.DisplayMessage(new InformationMessage("ranged cavalry: " + formation.AI.ActiveBehavior));
+        //                        }
+        //                        else if (formation.QuerySystem.IsRangedFormation)
+        //                        {
+        //                            InformationManager.DisplayMessage(new InformationMessage("ranged: " + formation.AI.ActiveBehavior));
+        //                        }
         //                    }
         //                }
+        //                else
+        //                {
+        //                    FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
+        //                    _currentTacticField.DeclaringType.GetField("_currentTactic");
+        //                    TacticComponent _currentTactic = (TacticComponent)_currentTacticField.GetValue(__instance.TeamAI);
+
+        //                    InformationManager.DisplayMessage(new InformationMessage("Defender: " + _currentTactic));
+        //                    foreach (Formation formation in __instance.Formations)
+        //                    {
+        //                        if (formation.QuerySystem.IsMeleeFormation)
+        //                        {
+        //                            InformationManager.DisplayMessage(new InformationMessage("infantry: " + formation.AI.ActiveBehavior));
+        //                        }
+        //                        else if (formation.QuerySystem.IsCavalryFormation)
+        //                        {
+        //                            InformationManager.DisplayMessage(new InformationMessage("cavalry: " + formation.AI.ActiveBehavior));
+        //                        }
+        //                        else if (formation.QuerySystem.IsRangedCavalryFormation)
+        //                        {
+        //                            InformationManager.DisplayMessage(new InformationMessage("ranged cavalry: " + formation.AI.ActiveBehavior));
+        //                        }
+        //                        else if (formation.QuerySystem.IsRangedFormation)
+        //                        {
+        //                            InformationManager.DisplayMessage(new InformationMessage("ranged: " + formation.AI.ActiveBehavior));
+        //                        }
+        //                    }
+        //                }
+        //                i = 0;
         //            }
         //            else
         //            {
-        //                FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
-        //                _currentTacticField.DeclaringType.GetField("_currentTactic");
-        //                TacticComponent _currentTactic = (TacticComponent)_currentTacticField.GetValue(__instance.TeamAI);
-
-        //                InformationManager.DisplayMessage(new InformationMessage("Defender: " + _currentTactic));
-        //                foreach (Formation formation in __instance.Formations)
-        //                {
-        //                    if (formation.QuerySystem.IsMeleeFormation)
-        //                    {
-        //                        InformationManager.DisplayMessage(new InformationMessage("infantry: " + formation.AI.ActiveBehavior));
-        //                    }
-        //                    else if (formation.QuerySystem.IsCavalryFormation)
-        //                    {
-        //                        InformationManager.DisplayMessage(new InformationMessage("cavalry: " + formation.AI.ActiveBehavior));
-        //                    }
-        //                    else if (formation.QuerySystem.IsRangedCavalryFormation)
-        //                    {
-        //                        InformationManager.DisplayMessage(new InformationMessage("ranged cavalry: " + formation.AI.ActiveBehavior));
-        //                    }
-        //                    else if (formation.QuerySystem.IsRangedFormation)
-        //                    {
-        //                        InformationManager.DisplayMessage(new InformationMessage("ranged: " + formation.AI.ActiveBehavior));
-        //                    }
-        //                }
+        //                i++;
         //            }
-        //            i = 0;
-        //        }
-        //        else
-        //        {
-        //            i++;
         //        }
         //    }
         //}
