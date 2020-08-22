@@ -10,6 +10,8 @@ using SandBox;
 using System.Reflection;
 using JetBrains.Annotations;
 using System.Collections;
+using Helpers;
+using TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors;
 
 namespace RealisticBattle
 {
@@ -1039,104 +1041,104 @@ namespace RealisticBattle
     }
 
     //volunteers
-    /*    [HarmonyPatch(typeof(RecruitCampaignBehavior))]
-        [HarmonyPatch("UpdateVolunteersOfNotables")]
-        class BetterVolunteers
-        {
-            static bool Prefix()
-            {
-                foreach (TaleWorlds.CampaignSystem.Settlement settlement in TaleWorlds.CampaignSystem.Campaign.Current.Settlements)
-                {
-                    if ((settlement.IsTown && !settlement.Town.IsRebeling) || (settlement.IsVillage && !settlement.Village.Bound.Town.IsRebeling))
-                    {
-                        foreach (TaleWorlds.CampaignSystem.Hero notable in settlement.Notables)
-                        {
-                            if (notable.CanHaveRecruits)
-                            {
-                                bool flag = false;
-                                TaleWorlds.CampaignSystem.CultureObject cultureObject = (notable.CurrentSettlement != null) ? notable.CurrentSettlement.Culture : notable.Clan.Culture;
-                                TaleWorlds.CampaignSystem.CharacterObject basicTroop = cultureObject.BasicTroop;
-                                double num = (notable.IsRuralNotable && notable.Power >= 200) ? 1.5 : 0.5;
+    //[HarmonyPatch(typeof(RecruitmentCampaignBehavior))]
+    //[HarmonyPatch("UpdateVolunteersOfNotables")]
+    //class BetterVolunteers
+    //{
+    //    static bool Prefix()
+    //    {
+    //        foreach (TaleWorlds.CampaignSystem.Settlement settlement in TaleWorlds.CampaignSystem.Campaign.Current.Settlements)
+    //        {
+    //            if ((settlement.IsTown && !settlement.Town.IsRebeling) || (settlement.IsVillage && !settlement.Village.Bound.Town.IsRebeling))
+    //            {
+    //                foreach (TaleWorlds.CampaignSystem.Hero notable in settlement.Notables)
+    //                {
+    //                    if (notable.CanHaveRecruits)
+    //                    {
+    //                        bool flag = false;
+    //                        TaleWorlds.CampaignSystem.CultureObject cultureObject = (notable.CurrentSettlement != null) ? notable.CurrentSettlement.Culture : notable.Clan.Culture;
+    //                        TaleWorlds.CampaignSystem.CharacterObject basicTroop = cultureObject.BasicTroop;
+    //                        double num = (notable.IsRuralNotable && notable.Power >= 200) ? 1.5 : 0.5;
 
-                                for (int i = 0; i < 6; i++)
-                                {
-                                    if (!(notable.VolunteerTypes[i] != null))
-                                    {
-                                        if (MBRandom.RandomFloat < TaleWorlds.CampaignSystem.Campaign.Current.Models.VolunteerProductionModel.GetDailyVolunteerProductionProbability(notable, i, settlement))
-                                        {
-                                            notable.VolunteerTypes[i] = basicTroop;
-                                            for (int j = 1; j < Vars.dict["Global.VolunteerStartTier"]; j++)
-                                            {
-                                                notable.VolunteerTypes[i] = notable.VolunteerTypes[i].UpgradeTargets[MBRandom.RandomInt(notable.VolunteerTypes[i].UpgradeTargets.Length)];
-                                            }
-                                            //InformationManager.DisplayMessage(new InformationMessage("vol: " + notable.VolunteerTypes[i].Name));
-                                            //notable.VolunteerTypes[i] = notable.VolunteerTypes[i].UpgradeTargets[MBRandom.RandomInt(notable.VolunteerTypes[i].UpgradeTargets.Length)];
-                                            flag = true;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        float num3 = 200f * 200f / (Math.Max(50f, (float)notable.Power) * Math.Max(50f, (float)notable.Power));
-                                        int level = notable.VolunteerTypes[i].Level;
-                                        if (MBRandom.RandomInt((int)Math.Max(2.0, (double)((float)level * num3) * num * 2.25)) == 0 && notable.VolunteerTypes[i].UpgradeTargets != null && notable.VolunteerTypes[i].Level < 20)
-                                        {
-                                            if (notable.VolunteerTypes[i].Tier == Vars.dict["Global.VolunteerStartTier"] && HeroHelper.HeroShouldGiveEliteTroop(notable))
-                                            {
-                                                notable.VolunteerTypes[i] = cultureObject.EliteBasicTroop;
-                                                for (int j = 2; j < Vars.dict["Global.VolunteerStartTier"]; j++)
-                                                {
-                                                    notable.VolunteerTypes[i] = notable.VolunteerTypes[i].UpgradeTargets[MBRandom.RandomInt(notable.VolunteerTypes[i].UpgradeTargets.Length)];
-                                                }
-                                                flag = true;
-                                            }
-                                            else
-                                            {
-                                                notable.VolunteerTypes[i] = notable.VolunteerTypes[i].UpgradeTargets[MBRandom.RandomInt(notable.VolunteerTypes[i].UpgradeTargets.Length)];
-                                                flag = true;
-                                            }
-                                        }
+    //                        for (int i = 0; i < 6; i++)
+    //                        {
+    //                            if (!(notable.VolunteerTypes[i] != null))
+    //                            {
+    //                                if (MBRandom.RandomFloat < TaleWorlds.CampaignSystem.Campaign.Current.Models.VolunteerProductionModel.GetDailyVolunteerProductionProbability(notable, i, settlement))
+    //                                {
+    //                                    notable.VolunteerTypes[i] = basicTroop;
+    //                                    for (int j = 1; j < Vars.dict["Global.VolunteerStartTier"]; j++)
+    //                                    {
+    //                                        notable.VolunteerTypes[i] = notable.VolunteerTypes[i].UpgradeTargets[MBRandom.RandomInt(notable.VolunteerTypes[i].UpgradeTargets.Length)];
+    //                                    }
+    //                                    //InformationManager.DisplayMessage(new InformationMessage("vol: " + notable.VolunteerTypes[i].Name));
+    //                                    //notable.VolunteerTypes[i] = notable.VolunteerTypes[i].UpgradeTargets[MBRandom.RandomInt(notable.VolunteerTypes[i].UpgradeTargets.Length)];
+    //                                    flag = true;
+    //                                }
+    //                            }
+    //                            else
+    //                            {
+    //                                float num3 = 200f * 200f / (Math.Max(50f, (float)notable.Power) * Math.Max(50f, (float)notable.Power));
+    //                                int level = notable.VolunteerTypes[i].Level;
+    //                                if (MBRandom.RandomInt((int)Math.Max(2.0, (double)((float)level * num3) * num * 2.25)) == 0 && notable.VolunteerTypes[i].UpgradeTargets != null && notable.VolunteerTypes[i].Level < 20)
+    //                                {
+    //                                    if (notable.VolunteerTypes[i].Tier == Vars.dict["Global.VolunteerStartTier"] && HeroHelper.HeroShouldGiveEliteTroop(notable))
+    //                                    {
+    //                                        notable.VolunteerTypes[i] = cultureObject.EliteBasicTroop;
+    //                                        for (int j = 2; j < Vars.dict["Global.VolunteerStartTier"]; j++)
+    //                                        {
+    //                                            notable.VolunteerTypes[i] = notable.VolunteerTypes[i].UpgradeTargets[MBRandom.RandomInt(notable.VolunteerTypes[i].UpgradeTargets.Length)];
+    //                                        }
+    //                                        flag = true;
+    //                                    }
+    //                                    else
+    //                                    {
+    //                                        notable.VolunteerTypes[i] = notable.VolunteerTypes[i].UpgradeTargets[MBRandom.RandomInt(notable.VolunteerTypes[i].UpgradeTargets.Length)];
+    //                                        flag = true;
+    //                                    }
+    //                                }
 
-                                    }
-                                }
-                                if (flag)
-                                {
-                                    for (int j = 0; j < 6; j++)
-                                    {
-                                        for (int k = 0; k < 6; k++)
-                                        {
-                                            if (notable.VolunteerTypes[k] != null)
-                                            {
-                                                int l = k + 1;
-                                                while (l < 6)
-                                                {
-                                                    if (notable.VolunteerTypes[l] != null)
-                                                    {
-                                                        if ((float)notable.VolunteerTypes[k].Level > (float)notable.VolunteerTypes[l].Level)
-                                                        {
-                                                            TaleWorlds.CampaignSystem.CharacterObject characterObject = notable.VolunteerTypes[k];
-                                                            notable.VolunteerTypes[k] = notable.VolunteerTypes[l];
-                                                            notable.VolunteerTypes[l] = characterObject;
-                                                            break;
-                                                        }
-                                                        break;
-                                                    }
-                                                    else
-                                                    {
-                                                        l++;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+    //                            }
+    //                        }
+    //                        if (flag)
+    //                        {
+    //                            for (int j = 0; j < 6; j++)
+    //                            {
+    //                                for (int k = 0; k < 6; k++)
+    //                                {
+    //                                    if (notable.VolunteerTypes[k] != null)
+    //                                    {
+    //                                        int l = k + 1;
+    //                                        while (l < 6)
+    //                                        {
+    //                                            if (notable.VolunteerTypes[l] != null)
+    //                                            {
+    //                                                if ((float)notable.VolunteerTypes[k].Level > (float)notable.VolunteerTypes[l].Level)
+    //                                                {
+    //                                                    TaleWorlds.CampaignSystem.CharacterObject characterObject = notable.VolunteerTypes[k];
+    //                                                    notable.VolunteerTypes[k] = notable.VolunteerTypes[l];
+    //                                                    notable.VolunteerTypes[l] = characterObject;
+    //                                                    break;
+    //                                                }
+    //                                                break;
+    //                                            }
+    //                                            else
+    //                                            {
+    //                                                l++;
+    //                                            }
+    //                                        }
+    //                                    }
+    //                                }
+    //                            }
+    //                        }
+    //                    }
 
-                        }
-                    }
-                }
-                return false;
-            }
-        } */
+    //                }
+    //            }
+    //        }
+    //        return false;
+    //    }
+    //} 
     //volunteers
 
 
