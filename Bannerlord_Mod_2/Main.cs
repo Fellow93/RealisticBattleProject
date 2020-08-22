@@ -336,6 +336,10 @@ namespace RealisticBattle
                 EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
                 if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.LegArmor)
                 {
+                    num += ((float)equipmentElement.Item.ArmorComponent.LegArmor) * 0.5f;
+                }
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
+                {
                     num += (float)equipmentElement.Item.ArmorComponent.LegArmor;
                 }
             }
