@@ -1,43 +1,88 @@
 ﻿using HarmonyLib;
 using System.Linq;
+using System.Reflection;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 
 namespace RealisticBattle
 {
-    //TODO: DEFENSE FIX
     class Tactics
     {
 
-        [HarmonyPatch(typeof(Team))]
-        [HarmonyPatch("Tick")]
-        class OverrideTick
-        {
+        //[HarmonyPatch(typeof(Team))]
+        //[HarmonyPatch("Tick")]
+        //class OverrideTick
+        //{
 
-            static int i = 0;
+        //    static int i = 0;
 
-            static void Postfix(Team __instance)
-            {
-                if(i == 10)
-                {
-                    if (__instance.IsAttacker)
-                    {
-                        InformationManager.DisplayMessage(new InformationMessage("Attacker"));
-                        //InformationManager.DisplayMessage(new InformationMessage(__instance.TeamAI));TacticComponent _currentTactic
-                        //foreach
-                    }
-                    else
-                    {
-                        InformationManager.DisplayMessage(new InformationMessage("Defender"));
-                    }
-                    i = 0;
-                }
-                else
-                {
-                    i++;
-                }
-            }
-        }
+        //    static void Postfix(Team __instance)
+        //    {
+        //        if (i == 500)
+        //        {
+        //            if (__instance.IsAttacker)
+        //            {
+
+        //                FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
+        //                _currentTacticField.DeclaringType.GetField("_currentTactic");
+        //                TacticComponent _currentTactic = (TacticComponent)_currentTacticField.GetValue(__instance.TeamAI);
+
+        //                InformationManager.DisplayMessage(new InformationMessage("Attacker: " + _currentTactic));
+        //                foreach (Formation formation in __instance.Formations)
+        //                {
+        //                    if (formation.QuerySystem.IsMeleeFormation)
+        //                    {
+        //                        InformationManager.DisplayMessage(new InformationMessage("infantry: " + formation.AI.ActiveBehavior));
+        //                    }
+        //                    else if (formation.QuerySystem.IsCavalryFormation)
+        //                    {
+        //                        InformationManager.DisplayMessage(new InformationMessage("cavalry: " + formation.AI.ActiveBehavior));
+        //                    }
+        //                    else if (formation.QuerySystem.IsRangedCavalryFormation)
+        //                    {
+        //                        InformationManager.DisplayMessage(new InformationMessage("ranged cavalry: " + formation.AI.ActiveBehavior));
+        //                    }
+        //                    else if (formation.QuerySystem.IsRangedFormation)
+        //                    {
+        //                        InformationManager.DisplayMessage(new InformationMessage("ranged: " + formation.AI.ActiveBehavior));
+        //                    }
+        //                }
+        //            }
+        //            else
+        //            {
+        //                FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
+        //                _currentTacticField.DeclaringType.GetField("_currentTactic");
+        //                TacticComponent _currentTactic = (TacticComponent)_currentTacticField.GetValue(__instance.TeamAI);
+
+        //                InformationManager.DisplayMessage(new InformationMessage("Defender: " + _currentTactic));
+        //                foreach (Formation formation in __instance.Formations)
+        //                {
+        //                    if (formation.QuerySystem.IsMeleeFormation)
+        //                    {
+        //                        InformationManager.DisplayMessage(new InformationMessage("infantry: " + formation.AI.ActiveBehavior));
+        //                    }
+        //                    else if (formation.QuerySystem.IsCavalryFormation)
+        //                    {
+        //                        InformationManager.DisplayMessage(new InformationMessage("cavalry: " + formation.AI.ActiveBehavior));
+        //                    }
+        //                    else if (formation.QuerySystem.IsRangedCavalryFormation)
+        //                    {
+        //                        InformationManager.DisplayMessage(new InformationMessage("ranged cavalry: " + formation.AI.ActiveBehavior));
+        //                    }
+        //                    else if (formation.QuerySystem.IsRangedFormation)
+        //                    {
+        //                        InformationManager.DisplayMessage(new InformationMessage("ranged: " + formation.AI.ActiveBehavior));
+        //                    }
+        //                }
+        //            }
+        //            i = 0;
+        //        }
+        //        else
+        //        {
+        //            i++;
+        //        }
+        //    }
+        //}
 
         [HarmonyPatch(typeof(MissionCombatantsLogic))]
         [HarmonyPatch("EarlyStart")]
@@ -97,14 +142,25 @@ namespace RealisticBattle
                 }
                 if (____archers != null)
                 {
+                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(0f);
+                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
+                    ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
                     ____archers.AI.SetBehaviorWeight<BehaviorRegroup>(2f);
                 }
             }
 
             [HarmonyPostfix]
             [HarmonyPatch("Attack")]
-            static void PostfixAttack(ref Formation ____mainInfantry)
+            static void PostfixAttack(ref Formation ____mainInfantry, ref Formation ____archers)
             {
+
+                if (____archers != null)
+                {
+                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(1f);
+                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
+                    ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
+                }
+
                 Utilities.FixCharge(ref ____mainInfantry);
             }
 
@@ -112,7 +168,7 @@ namespace RealisticBattle
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 12f);
+                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 13f);
             }
         }
 
@@ -131,7 +187,7 @@ namespace RealisticBattle
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____cavalry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined(____cavalry, ____hasBattleBeenJoined, 7f);
+                __result = Utilities.HasBattleBeenJoined(____cavalry, ____hasBattleBeenJoined, 8f);
             }
         }
 
@@ -149,7 +205,7 @@ namespace RealisticBattle
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 12f);
+                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 13f);
             }
         }
 
@@ -160,7 +216,7 @@ namespace RealisticBattle
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 12f);
+                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 13f);
             }
 
             [HarmonyPostfix]
@@ -169,6 +225,9 @@ namespace RealisticBattle
             {
                 if (____archers != null)
                 {
+                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(0f);
+                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
+                    ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
                     ____archers.AI.SetBehaviorWeight<BehaviorRegroup>(2f);
                 }
                 if (____mainInfantry != null)
@@ -183,7 +242,8 @@ namespace RealisticBattle
             {
                 if (____archers != null)
                 {
-                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(0f);
+                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(1f);
+                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
                     ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
                 }
 
@@ -198,7 +258,7 @@ namespace RealisticBattle
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 12f);
+                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 13f);
             }
 
             [HarmonyPostfix]
@@ -207,6 +267,9 @@ namespace RealisticBattle
             {
                 if (____archers != null)
                 {
+                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(0f);
+                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
+                    ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
                     ____archers.AI.SetBehaviorWeight<BehaviorRegroup>(2f);
                 }
                 if (____mainInfantry != null)
@@ -221,7 +284,8 @@ namespace RealisticBattle
             {
                 if (____archers != null)
                 {
-                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(0f);
+                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(1f);
+                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
                     ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
                 }
 
