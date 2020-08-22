@@ -198,7 +198,7 @@ namespace RealisticBattle
 
                     WorldPosition medianPosition = ____mainFormation.QuerySystem.MedianPosition;
                     //medianPosition.SetVec2(medianPosition.AsVec2 - ____mainFormation.Direction * ((____mainFormation.Depth + ___formation.Depth) * 1.5f));
-                    medianPosition.SetVec2(medianPosition.AsVec2 - ____mainFormation.Direction * ((____mainFormation.Depth + ___formation.Depth) * 0.5f + 10f));
+                    medianPosition.SetVec2(medianPosition.AsVec2 - ____mainFormation.Direction * ((____mainFormation.Depth + ___formation.Depth) * 0.25f + 0.0f));
                     ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
 
                 }
