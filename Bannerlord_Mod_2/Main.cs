@@ -342,7 +342,7 @@ namespace RealisticBattle
                 }
                 if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
                 {
-                    num += (float)equipmentElement.Item.ArmorComponent.LegArmor;
+                    num += ((float)equipmentElement.Item.ArmorComponent.LegArmor) * 0.5f;
                 }
             }
             return num;
