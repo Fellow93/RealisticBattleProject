@@ -930,18 +930,18 @@ namespace RealisticBattle
                     }
                 case "OneHandedPolearm":
                     {
-                        magnitude += 10.0f;
+                        magnitude += 35.0f;
                         damage = weaponTypeDamage(Vars.dict[weaponType + ".BluntFactorCut"], Vars.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
                             Vars.dict[weaponType + ".ArmorThresholdFactorCut"], Vars.dict[weaponType + ".ArmorThresholdFactorPierce"]);
-                        damage += 5.0f;
+                        //damage += 5.0f;
                         break;
                     }
                 case "TwoHandedPolearm":
                     {
-                        magnitude += 15.0f;
+                        magnitude += 20.0f;
                         damage = weaponTypeDamage(Vars.dict[weaponType + ".BluntFactorCut"], Vars.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
                             Vars.dict[weaponType + ".ArmorThresholdFactorCut"], Vars.dict[weaponType + ".ArmorThresholdFactorPierce"]);
-                        damage += 7.0f;
+                        //damage += 7.0f;
                         break;
                     }
                 case "Mace":
