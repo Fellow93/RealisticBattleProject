@@ -12,6 +12,7 @@ using JetBrains.Annotations;
 using System.Collections;
 using Helpers;
 using TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors;
+using System.Linq;
 
 namespace RealisticBattle
 {
@@ -64,7 +65,7 @@ namespace RealisticBattle
         public static bool HasBattleBeenJoined(Formation mainInfantry, bool hasBattleBeenJoined, float battleJoinRange)
         {
             FormationQuerySystem mainEnemyformation = mainInfantry?.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
-            if (mainEnemyformation != null && (mainEnemyformation.IsCavalryFormation || mainEnemyformation.IsInfantryFormation))
+            if (mainEnemyformation != null && (mainEnemyformation.IsCavalryFormation || mainEnemyformation.IsInfantryFormation || (mainEnemyformation.IsRangedFormation && !mainEnemyformation.IsRangedCavalryFormation) || (mainEnemyformation.Formation.Team.Formations.Count() == 1)))
             {
                 if (mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) / mainEnemyformation.MovementSpeedMaximum <= 5f)
                 {
@@ -75,7 +76,7 @@ namespace RealisticBattle
                     mainInfantry.FiringOrder = FiringOrder.FiringOrderFireAtWill;
                 }
             }
-            if (mainEnemyformation != null && (mainEnemyformation.IsCavalryFormation || mainEnemyformation.IsInfantryFormation))
+            if (mainEnemyformation != null && (mainEnemyformation.IsCavalryFormation || mainEnemyformation.IsInfantryFormation || (mainEnemyformation.IsRangedFormation && !mainEnemyformation.IsRangedCavalryFormation) || (mainEnemyformation.Formation.Team.Formations.Count() == 1)))
             {
                 return mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) / mainEnemyformation.MovementSpeedMaximum <= battleJoinRange + (hasBattleBeenJoined ? 5f : 0f);
             }
