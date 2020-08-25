@@ -216,6 +216,7 @@ namespace RealisticBattle
                 case BoneBodyPartType.QuadrupedalLegs:
                     {
                         __result = getLegArmor(__instance);
+                        //__result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorLegs) * 0.5f;
                         break;
                     }
                 case BoneBodyPartType.BipedalArmLeft:
@@ -503,27 +504,26 @@ namespace RealisticBattle
             }
 
             float physicalDamage = ((length * length) * (weaponItem.Weight)) / 2;
-            /*
-            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") && physicalDamage > (weaponItem.Weight) * 1500f)
-            { 
-                physicalDamage = (weaponItem.Weight) * 1500f; 
-            }
-
-            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt") && physicalDamage > (weaponItem.Weight) * 2000f)
-            {
-                physicalDamage = (weaponItem.Weight) * 2000f;
-            }*/
 
             if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin") && physicalDamage > (weaponItem.Weight) * 300f)
             {
                 physicalDamage = (weaponItem.Weight) * 300f;
             }
 
-            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") && physicalDamage > (weaponItem.Weight) * 400f)
+            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") && physicalDamage > (weaponItem.Weight) * 200f)
             {
                 physicalDamage = (weaponItem.Weight) * 200f;
             }
-            
+
+            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") && physicalDamage > (weaponItem.Weight) * 2000f)
+            {
+                physicalDamage = (weaponItem.Weight) * 2000f;
+            }
+
+            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt") && physicalDamage > (weaponItem.Weight) * 2500f)
+            {
+                physicalDamage = (weaponItem.Weight) * 2500f;
+            }
 
             //float distnace = (acd.MissileStartingPosition - acd.CollisionGlobalPosition).Length;
             //InformationManager.DisplayMessage(new InformationMessage("Ek:" + physicalDamage + " modif:" + missileTotalDamage + " speed:" + length + " dist:" + distnace));
@@ -842,7 +842,7 @@ namespace RealisticBattle
                                 }
                             case "Javelin":
                                 {
-                                    num *= 3.0f;
+                                    num *= 2.5f;
                                     break;
                                 }
                             case "ThrowingAxe":
@@ -1139,7 +1139,7 @@ namespace RealisticBattle
     //        }
     //        return false;
     //    }
-    //} 
+    //}
     //volunteers
 
 
