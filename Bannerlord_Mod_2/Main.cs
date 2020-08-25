@@ -58,7 +58,7 @@ namespace RealisticBattle
         public static int calculateThrowableSpeed(float ammoWeight)
         {
             int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt(160f * 2f / ammoWeight));
-            calculatedThrowingSpeed += 7;
+            //calculatedThrowingSpeed += 7;
             return calculatedThrowingSpeed;
         }
 
@@ -464,16 +464,16 @@ namespace RealisticBattle
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingAxe") ||
                     weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingKnife"))
                 {
-                    length += -(7.0f);
-                    if (length < 5.0f)
-                    {
-                        length = 5.0f;
-                    } 
-                    missileTotalDamage *= 0.006f;
+                    //length += -(7.0f);
+                    //if (length < 5.0f)
+                    //{
+                    //    length = 5.0f;
+                    //} 
+                    missileTotalDamage *= 0.007f;
                 }
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
                 {
-                  length += -(7.0f);
+                  length += -(10.0f);
                     if (length < 5.0f)
                     {
                         length = 5.0f;
@@ -483,7 +483,16 @@ namespace RealisticBattle
                 }
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm"))
                 {
-                    length += -(7.0f);
+                    length += -(5.0f);
+                    if (length < 5.0f)
+                    {
+                        length = 5.0f;
+                    }
+                    missileTotalDamage *= 0.005f;
+                }
+                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("LowGripPolearm"))
+                {
+                    length += -(5.0f);
                     if (length < 5.0f)
                     {
                         length = 5.0f;
@@ -505,14 +514,14 @@ namespace RealisticBattle
 
             float physicalDamage = ((length * length) * (weaponItem.Weight)) / 2;
 
-            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin") && physicalDamage > (weaponItem.Weight) * 300f)
-            {
-                physicalDamage = (weaponItem.Weight) * 300f;
-            }
-
-            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") && physicalDamage > (weaponItem.Weight) * 200f)
+            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin") && physicalDamage > (weaponItem.Weight) * 200f)
             {
                 physicalDamage = (weaponItem.Weight) * 200f;
+            }
+
+            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") && physicalDamage > (weaponItem.Weight) * 150f)
+            {
+                physicalDamage = (weaponItem.Weight) * 150f;
             }
 
             if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") && physicalDamage > (weaponItem.Weight) * 2000f)
@@ -597,7 +606,25 @@ namespace RealisticBattle
                             firstProjectile = false;
                         }
                     }
-                    if ((wsd[0].WeaponClass == (int)WeaponClass.OneHandedPolearm) || (wsd[0].WeaponClass == (int)WeaponClass.LowGripPolearm) || (wsd[0].WeaponClass == (int)WeaponClass.Javelin) || (wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe) || (wsd[0].WeaponClass == (int)WeaponClass.ThrowingKnife))
+                    if ((wsd[0].WeaponClass == (int)WeaponClass.OneHandedPolearm) || (wsd[0].WeaponClass == (int)WeaponClass.LowGripPolearm))
+                    {
+                        for (int i = 0; i < wsd.Length; i++)
+                        {
+                            if (wsd[i].MissileSpeed != 0)
+                            {
+                                MissionWeapon throwable = __instance.Equipment[equipmentIndex];
+                                float ammoWeight = __instance.Equipment[equipmentIndex].GetWeight() / __instance.Equipment[equipmentIndex].Amount;
+                                int calculatedThrowingSpeed = Utilities.calculateThrowableSpeed(ammoWeight);
+                                PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
+                                property.DeclaringType.GetProperty("MissileSpeed");
+                                throwable.CurrentUsageIndex = i;
+                                calculatedThrowingSpeed += 5;
+                                property.SetValue(throwable.CurrentUsageItem, calculatedThrowingSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                                throwable.CurrentUsageIndex = 0;
+                            }
+                        }
+                    }
+                    if  (wsd[0].WeaponClass == (int)WeaponClass.Javelin)
                     {
                         for(int i=0; i < wsd.Length; i++)
                         {
@@ -609,7 +636,27 @@ namespace RealisticBattle
                                 PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                                 property.DeclaringType.GetProperty("MissileSpeed");
                                 throwable.CurrentUsageIndex = i;
+                                calculatedThrowingSpeed += 10;
                                 property.SetValue(throwable.CurrentUsageItem, calculatedThrowingSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                                throwable.CurrentUsageIndex = 0;
+                            }
+                        }
+                    }
+                    if ((wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe) || (wsd[0].WeaponClass == (int)WeaponClass.ThrowingKnife) || (wsd[0].WeaponClass == (int)WeaponClass.Stone))
+                    {
+                        for (int i = 0; i < wsd.Length; i++)
+                        {
+                            if (wsd[i].MissileSpeed != 0)
+                            {
+                                MissionWeapon throwable = __instance.Equipment[equipmentIndex];
+                                float ammoWeight = __instance.Equipment[equipmentIndex].GetWeight() / __instance.Equipment[equipmentIndex].Amount;
+                                int calculatedThrowingSpeed = Utilities.calculateThrowableSpeed(ammoWeight);
+                                PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
+                                property.DeclaringType.GetProperty("MissileSpeed");
+                                throwable.CurrentUsageIndex = i;
+                                calculatedThrowingSpeed += 0;
+                                property.SetValue(throwable.CurrentUsageItem, calculatedThrowingSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                                
                                 throwable.CurrentUsageIndex = 0;
                             }
                         }
@@ -970,7 +1017,7 @@ namespace RealisticBattle
                     }
                 case "Javelin":
                     {
-                        magnitude += 15.0f;
+                        magnitude += 35.0f;
                         damage = weaponTypeDamage(Vars.dict[weaponType + ".BluntFactorCut"], Vars.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
                             Vars.dict[weaponType + ".ArmorThresholdFactorCut"], Vars.dict[weaponType + ".ArmorThresholdFactorPierce"]);
                         break;

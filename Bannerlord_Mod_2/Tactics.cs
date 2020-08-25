@@ -169,7 +169,7 @@ namespace RealisticBattle
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 13f);
+                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 20f);
             }
         }
 
@@ -206,7 +206,7 @@ namespace RealisticBattle
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 13f);
+                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 20f);
             }
         }
 
