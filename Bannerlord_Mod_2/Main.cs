@@ -62,6 +62,18 @@ namespace RealisticBattle
             return calculatedThrowingSpeed;
         }
 
+        public static void assignThrowableMissileSpeed(MissionWeapon throwable, int index,  int correctiveMissileSpeed)
+        {
+            float ammoWeight = throwable.GetWeight() / throwable.Amount;
+            int calculatedThrowingSpeed = Utilities.calculateThrowableSpeed(ammoWeight);
+            PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
+            property.DeclaringType.GetProperty("MissileSpeed");
+            throwable.CurrentUsageIndex = index;
+            calculatedThrowingSpeed += correctiveMissileSpeed;
+            property.SetValue(throwable.CurrentUsageItem, calculatedThrowingSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+            throwable.CurrentUsageIndex = 0;
+        }
+
         public static bool HasBattleBeenJoined(Formation mainInfantry, bool hasBattleBeenJoined, float battleJoinRange)
         {
             FormationQuerySystem mainEnemyformation = mainInfantry?.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
@@ -359,11 +371,11 @@ namespace RealisticBattle
         {
             __instance.ApplyActionOnEachUnit(delegate (Agent agent)
             {
-                agent.Defensiveness = 2.5f;
+                agent.Defensiveness = 2.1f;
             });
             return false;
         }
-        
+
     }
 
     [HarmonyPatch(typeof(MissionState))]
@@ -473,29 +485,29 @@ namespace RealisticBattle
                 }
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
                 {
-                  length += -(10.0f);
+                  length -= 10f;
                     if (length < 5.0f)
                     {
-                        length = 5.0f;
+                        length = 5f;
                     } 
                     //missileTotalDamage += 168.0f;
                     missileTotalDamage *= 0.005f;
                 }
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm"))
                 {
-                    length += -(5.0f);
+                    length -= 5f;
                     if (length < 5.0f)
                     {
-                        length = 5.0f;
+                        length = 5f;
                     }
                     missileTotalDamage *= 0.005f;
                 }
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("LowGripPolearm"))
                 {
-                    length += -(5.0f);
+                    length -= 5f;
                     if (length < 5.0f)
                     {
-                        length = 5.0f;
+                        length = 5f;
                     }
                     missileTotalDamage *= 0.005f;
                 }
@@ -612,15 +624,7 @@ namespace RealisticBattle
                         {
                             if (wsd[i].MissileSpeed != 0)
                             {
-                                MissionWeapon throwable = __instance.Equipment[equipmentIndex];
-                                float ammoWeight = __instance.Equipment[equipmentIndex].GetWeight() / __instance.Equipment[equipmentIndex].Amount;
-                                int calculatedThrowingSpeed = Utilities.calculateThrowableSpeed(ammoWeight);
-                                PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
-                                property.DeclaringType.GetProperty("MissileSpeed");
-                                throwable.CurrentUsageIndex = i;
-                                calculatedThrowingSpeed += 5;
-                                property.SetValue(throwable.CurrentUsageItem, calculatedThrowingSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-                                throwable.CurrentUsageIndex = 0;
+                                Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentIndex], i, 5);
                             }
                         }
                     }
@@ -630,15 +634,7 @@ namespace RealisticBattle
                         {
                             if(wsd[i].MissileSpeed != 0)
                             {
-                                MissionWeapon throwable = __instance.Equipment[equipmentIndex];
-                                float ammoWeight = __instance.Equipment[equipmentIndex].GetWeight() / __instance.Equipment[equipmentIndex].Amount;
-                                int calculatedThrowingSpeed = Utilities.calculateThrowableSpeed(ammoWeight);
-                                PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
-                                property.DeclaringType.GetProperty("MissileSpeed");
-                                throwable.CurrentUsageIndex = i;
-                                calculatedThrowingSpeed += 10;
-                                property.SetValue(throwable.CurrentUsageItem, calculatedThrowingSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-                                throwable.CurrentUsageIndex = 0;
+                                Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentIndex], i, 10);
                             }
                         }
                     }
@@ -648,16 +644,7 @@ namespace RealisticBattle
                         {
                             if (wsd[i].MissileSpeed != 0)
                             {
-                                MissionWeapon throwable = __instance.Equipment[equipmentIndex];
-                                float ammoWeight = __instance.Equipment[equipmentIndex].GetWeight() / __instance.Equipment[equipmentIndex].Amount;
-                                int calculatedThrowingSpeed = Utilities.calculateThrowableSpeed(ammoWeight);
-                                PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
-                                property.DeclaringType.GetProperty("MissileSpeed");
-                                throwable.CurrentUsageIndex = i;
-                                calculatedThrowingSpeed += 0;
-                                property.SetValue(throwable.CurrentUsageItem, calculatedThrowingSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-                                
-                                throwable.CurrentUsageIndex = 0;
+                                Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentIndex], i, 0);
                             }
                         }
                     }
