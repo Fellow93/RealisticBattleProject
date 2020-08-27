@@ -428,10 +428,10 @@ namespace RealisticBattle
             {
             weaponWeight += 0f;
             }
-            float num2 = 0.5f * weaponWeight * num * num * 0.54f;
-            if (num2 > (weaponWeight * 60.0f))
+            float num2 = 0.5f * weaponWeight * num * num * 0.27f * 2.5f;
+            if (num2 > (weaponWeight * 30.0f * 2.5f))
             {
-            num2 = weaponWeight * 60.0f;
+            num2 = weaponWeight * 30.0f * 2.5f;
             }
             return num2;
             
