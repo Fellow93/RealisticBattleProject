@@ -397,7 +397,7 @@ namespace RealisticBattle
             }
         }
     }
-
+    
     [HarmonyPatch(typeof(CombatStatCalculator))]
     [HarmonyPatch("CalculateStrikeMagnitudeForPassiveUsage")]
     class ChangeLanceDamage
@@ -416,16 +416,16 @@ namespace RealisticBattle
             {
             weaponWeight += 0f;
             }
-            float num2 = 0.5f * weaponWeight * num * num * 0.27f;
-            if (num2 > (weaponWeight * 30.0f))
+            float num2 = 0.5f * weaponWeight * num * num * 0.54f;
+            if (num2 > (weaponWeight * 60.0f))
             {
-            num2 = weaponWeight * 30.0f;
+            num2 = weaponWeight * 60.0f;
             }
             return num2;
             
         }
     }
-
+    
     [HarmonyPatch(typeof(Mission))]
     [HarmonyPatch("ComputeBlowMagnitudeMissile")]
     class RealArrowDamage
@@ -977,7 +977,7 @@ namespace RealisticBattle
                     }
                 case "OneHandedPolearm":
                     {
-                        magnitude += 35.0f;
+                        magnitude += 45.0f;
                         damage = weaponTypeDamage(Vars.dict[weaponType + ".BluntFactorCut"], Vars.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
                             Vars.dict[weaponType + ".ArmorThresholdFactorCut"], Vars.dict[weaponType + ".ArmorThresholdFactorPierce"]);
                         //damage += 5.0f;
@@ -985,7 +985,7 @@ namespace RealisticBattle
                     }
                 case "TwoHandedPolearm":
                     {
-                        magnitude += 20.0f;
+                        magnitude += 30.0f;
                         damage = weaponTypeDamage(Vars.dict[weaponType + ".BluntFactorCut"], Vars.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
                             Vars.dict[weaponType + ".ArmorThresholdFactorCut"], Vars.dict[weaponType + ".ArmorThresholdFactorPierce"]);
                         //damage += 7.0f;
