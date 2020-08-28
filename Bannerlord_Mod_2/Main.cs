@@ -535,7 +535,8 @@ namespace RealisticBattle
                     }
                     if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt"))
                     {
-                        missileTotalDamage *= 0.1f;
+                        missileTotalDamage -= 10f;
+                        missileTotalDamage *= 0.01f;
                     }
                 }
             }
