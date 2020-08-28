@@ -409,7 +409,23 @@ namespace RealisticBattle
             }
         }
     }
-    
+
+    [HarmonyPatch(typeof(AgentStatCalculateModel))]
+    [HarmonyPatch("SetAiRelatedProperties")]
+    class OverrideSetAiRelatedProperties
+    {
+        static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem)
+        {
+            ////int meleeSkill = GetMeleeSkill(agent, equippedItem, secondaryItem);
+            ////float num = CalculateAILevel(agent, meleeSkill);
+            //agentDrivenProperties.AiCheckMovementIntervalFactor = 0.1f;
+            //agentDrivenProperties.AiMoveEnemySideTimeValue = -1.5f;
+            //agentDrivenProperties.AiMovemetDelayFactor = 0.5f;
+            //agentDrivenProperties.AiAttackCalculationMaxTimeFactor = 0.85f;
+            //agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 2.5f;
+        }
+    }
+
     [HarmonyPatch(typeof(CombatStatCalculator))]
     [HarmonyPatch("CalculateStrikeMagnitudeForPassiveUsage")]
     class ChangeLanceDamage
