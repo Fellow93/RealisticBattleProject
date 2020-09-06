@@ -516,7 +516,7 @@ namespace RealisticBattle
                     {
                         length = 5f;
                     }
-                    missileTotalDamage *= 0.005f;
+                    missileTotalDamage *= 0.006f;
                 }
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("LowGripPolearm"))
                 {
@@ -525,7 +525,7 @@ namespace RealisticBattle
                     {
                         length = 5f;
                     }
-                    missileTotalDamage *= 0.005f;
+                    missileTotalDamage *= 0.006f;
                 }
                 else
                 {
@@ -903,7 +903,12 @@ namespace RealisticBattle
                                 }
                             case "OneHandedPolearm":
                                 {
-                                    num *= 3.5f;
+                                    num *= 100.0f;
+                                    break;
+                                }
+                            case "LowGripPolearm":
+                                {
+                                    num *= 100.0f;
                                     break;
                                 }
                             default:
@@ -1123,8 +1128,8 @@ namespace RealisticBattle
     //                                    {
     //                                        notable.VolunteerTypes[i] = notable.VolunteerTypes[i].UpgradeTargets[MBRandom.RandomInt(notable.VolunteerTypes[i].UpgradeTargets.Length)];
     //                                    }
-    //                                    //InformationManager.DisplayMessage(new InformationMessage("vol: " + notable.VolunteerTypes[i].Name));
-    //                                    //notable.VolunteerTypes[i] = notable.VolunteerTypes[i].UpgradeTargets[MBRandom.RandomInt(notable.VolunteerTypes[i].UpgradeTargets.Length)];
+    //                                    InformationManager.DisplayMessage(new InformationMessage("vol: " + notable.VolunteerTypes[i].Name));
+    //                                    notable.VolunteerTypes[i] = notable.VolunteerTypes[i].UpgradeTargets[MBRandom.RandomInt(notable.VolunteerTypes[i].UpgradeTargets.Length)];
     //                                    flag = true;
     //                                }
     //                            }
