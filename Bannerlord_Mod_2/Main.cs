@@ -416,13 +416,25 @@ namespace RealisticBattle
     {
         static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem)
         {
-            ////int meleeSkill = GetMeleeSkill(agent, equippedItem, secondaryItem);
-            ////float num = CalculateAILevel(agent, meleeSkill);
+            //int meleeSkill = GetMeleeSkill(agent, equippedItem, secondaryItem);
+            //float num = CalculateAILevel(agent, meleeSkill);
             //agentDrivenProperties.AiCheckMovementIntervalFactor = 0.1f;
             //agentDrivenProperties.AiMoveEnemySideTimeValue = -1.5f;
             //agentDrivenProperties.AiMovemetDelayFactor = 0.5f;
             //agentDrivenProperties.AiAttackCalculationMaxTimeFactor = 0.85f;
             //agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 2.5f;
+            //agentDrivenProperties.AiTryChamberAttackOnDecide = 100f;
+            //agentDrivenProperties.AiWaitBeforeShootFactor = 1f;
+            //agentDrivenProperties.AiShootFreq = 1f;
+            //agentDrivenProperties.AiDecideOnAttackContinueAction = 1f; // continuing succesfull attack
+            //agentDrivenProperties.AiDecideOnAttackingContinue = 1f;
+            //agentDrivenProperties.AiDecideOnAttackWhenReceiveHitTiming = 0f;
+            //agentDrivenProperties.AIDecideOnAttackChance = 0.7f;
+            //agentDrivenProperties.AIAttackOnParryChance = 0.7f;
+            //agentDrivenProperties.AiAttackOnParryTiming = 0f;
+            //agentDrivenProperties.AIParryOnDecideAbility = 0.8f;
+            //agentDrivenProperties.AIParryOnAttackAbility = 0.8f;
+
         }
     }
 
@@ -555,7 +567,7 @@ namespace RealisticBattle
 
             if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") && physicalDamage > (weaponItem.Weight) * 2000f)
             {
-                physicalDamage = (weaponItem.Weight) * 2000f;
+                physicalDamage = (weaponItem.Weight) * 2500f;
             }
 
             if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt") && physicalDamage > (weaponItem.Weight) * 2500f)
@@ -573,37 +585,37 @@ namespace RealisticBattle
         }
     }
 
-    [HarmonyPatch(typeof(Agent))]
-    [HarmonyPatch("GetHasRangedWeapon")]
-    class OverrideGetHasRangedWeapon
-    {
-        /*
-        static bool Prefix(Agent __instance, ref bool __result, bool checkHasAmmo = false)
-        {
-             __result = false;
-             for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-             {
-                 bool isPolearm = false;
-                 //bool isjavelin = false;
-                 foreach (WeaponComponentData weapon in __instance.Equipment[equipmentIndex].Weapons)
-                 {
-                     if (weapon.WeaponClass == WeaponClass.LowGripPolearm || weapon.WeaponClass == WeaponClass.OneHandedPolearm || weapon.WeaponClass == WeaponClass.Javelin || weapon.WeaponClass == WeaponClass.ThrowingAxe || weapon.WeaponClass == WeaponClass.ThrowingKnife || weapon.WeaponClass == WeaponClass.Stone)
-                     {
-                         isPolearm = true;
-                     }
-                     if (weapon != null && weapon.IsRangedWeapon && (!checkHasAmmo || __instance.Equipment.HasAmmo(weapon)))
-                     {
-                         if (!isPolearm)
-                         {
-                             __result = true;
-                         }
-                     }
-                 }
-             }
-             return false;
-         }
-         */
-    }
+    //[HarmonyPatch(typeof(Agent))]
+    //[HarmonyPatch("GetHasRangedWeapon")]
+    //class OverrideGetHasRangedWeapon
+    //{
+    //    /*
+    //    static bool Prefix(Agent __instance, ref bool __result, bool checkHasAmmo = false)
+    //    {
+    //         __result = false;
+    //         for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+    //         {
+    //             bool isPolearm = false;
+    //             //bool isjavelin = false;
+    //             foreach (WeaponComponentData weapon in __instance.Equipment[equipmentIndex].Weapons)
+    //             {
+    //                 if (weapon.WeaponClass == WeaponClass.LowGripPolearm || weapon.WeaponClass == WeaponClass.OneHandedPolearm || weapon.WeaponClass == WeaponClass.Javelin || weapon.WeaponClass == WeaponClass.ThrowingAxe || weapon.WeaponClass == WeaponClass.ThrowingKnife || weapon.WeaponClass == WeaponClass.Stone)
+    //                 {
+    //                     isPolearm = true;
+    //                 }
+    //                 if (weapon != null && weapon.IsRangedWeapon && (!checkHasAmmo || __instance.Equipment.HasAmmo(weapon)))
+    //                 {
+    //                     if (!isPolearm)
+    //                     {
+    //                         __result = true;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         return false;
+    //     }
+    //     */
+    //}
 
     [HarmonyPatch(typeof(Agent))]
     [HarmonyPatch("EquipItemsFromSpawnEquipment")]
