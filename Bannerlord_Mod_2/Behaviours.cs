@@ -230,4 +230,43 @@ namespace RealisticBattle
             }
         }
     }
+
+    [HarmonyPatch(typeof(BehaviorSkirmish))]
+    class OverrideBehaviorSkirmish
+    {
+        private enum BehaviorState
+        {
+            Approaching,
+            Shooting,
+            PullingBack
+        }
+
+        private static int waitCount = 0;
+
+        [HarmonyPostfix]
+        [HarmonyPatch("CalculateCurrentOrder")]
+        static void PostfixCalculateCurrentOrder(ref Formation ___formation, BehaviorSkirmish __instance, ref BehaviorState ____behaviorState, ref MovementOrder ____currentOrder)
+        {
+            WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
+            switch (____behaviorState)
+            {
+                case BehaviorState.Shooting:
+                    if(waitCount > 50)
+                    {
+                        if (___formation.QuerySystem.MakingRangedAttackRatio < 0.4f && ___formation.QuerySystem.MedianPosition.AsVec2.Distance(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.MedianPosition.AsVec2) > 30f)
+                        {
+                            medianPosition.SetVec2(medianPosition.AsVec2 + ___formation.Direction * 5f);
+                            ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
+                        }
+                        waitCount = 0;
+                    }
+                    else
+                    {
+                        waitCount++;
+                    }
+                   
+                    break;
+            }
+        }
+    }
 }
