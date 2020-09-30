@@ -74,6 +74,15 @@ namespace RealisticBattle
             throwable.CurrentUsageIndex = 0;
         }
 
+        public static void assignStoneMissileSpeed(MissionWeapon throwable, int index)
+        {
+            PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
+            property.DeclaringType.GetProperty("MissileSpeed");
+            throwable.CurrentUsageIndex = index;
+            property.SetValue(throwable.CurrentUsageItem, 25, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+            throwable.CurrentUsageIndex = 0;
+        }
+
         public static bool HasBattleBeenJoined(Formation mainInfantry, bool hasBattleBeenJoined, float battleJoinRange)
         {
             FormationQuerySystem mainEnemyformation = mainInfantry?.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
@@ -625,6 +634,7 @@ namespace RealisticBattle
         private static ArrayList _oldMissileSpeeds = new ArrayList();
         static bool Prefix(Agent __instance)
         {
+
             ArrayList stringRangedWeapons = new ArrayList();
             //MissionWeapon bow = MissionWeapon.Invalid;
             MissionWeapon arrow = MissionWeapon.Invalid;
@@ -667,13 +677,23 @@ namespace RealisticBattle
                             }
                         }
                     }
-                    if ((wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe) || (wsd[0].WeaponClass == (int)WeaponClass.ThrowingKnife) || (wsd[0].WeaponClass == (int)WeaponClass.Stone))
+                    if ((wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe) || (wsd[0].WeaponClass == (int)WeaponClass.ThrowingKnife))
                     {
                         for (int i = 0; i < wsd.Length; i++)
                         {
                             if (wsd[i].MissileSpeed != 0)
                             {
                                 Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentIndex], i, 0);
+                            }
+                        }
+                    }
+                    if (wsd[0].WeaponClass == (int)WeaponClass.Stone)
+                    {
+                        for (int i = 0; i < wsd.Length; i++)
+                        {
+                            if (wsd[i].MissileSpeed != 0)
+                            {
+                                Utilities.assignStoneMissileSpeed(__instance.Equipment[equipmentIndex], i);
                             }
                         }
                     }

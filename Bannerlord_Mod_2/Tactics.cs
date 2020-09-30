@@ -96,6 +96,7 @@ namespace RealisticBattle
 
             static void Postfix()
             {
+                
                 if (Mission.Current.Teams.Any())
                 {
                     if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
@@ -124,7 +125,6 @@ namespace RealisticBattle
                                 team.AddTacticOption(new TacticFullScaleAttack(team));
                                 team.AddTacticOption(new TacticFrontalCavalryCharge(team));
                                 team.AddTacticOption(new TacticCharge(team));
-
                                 //team.AddTacticOption(new TacticDefensiveRing(team));
                                 //team.AddTacticOption(new TacticArchersOnTheHill(team));
                             }
@@ -191,6 +191,28 @@ namespace RealisticBattle
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
                 __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 20f);
+            }
+
+            [HarmonyPostfix]
+            [HarmonyPatch("GetTacticWeight")]
+            static void PostfixGetAiWeight(ref float __result)
+            {
+                if (Mission.Current.Teams.Any())
+                {
+                    if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
+                    {
+                        foreach (Team team in Mission.Current.Teams.Where((Team t) => t.HasTeamAi))
+                        {
+                            if (team.Side == BattleSideEnum.Defender)
+                            {
+                                if(team.QuerySystem.InfantryRatio > 0.9f)
+                                {
+                                    __result = 100f;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -271,6 +293,7 @@ namespace RealisticBattle
 
                 Utilities.FixCharge(ref ____mainInfantry);
             }
+
         }
 
         [HarmonyPatch(typeof(TacticDefensiveEngagement))]
@@ -313,6 +336,8 @@ namespace RealisticBattle
 
                 Utilities.FixCharge(ref ____mainInfantry);
             }
+
+        
         }
 
         
