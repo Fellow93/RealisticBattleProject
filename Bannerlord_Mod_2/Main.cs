@@ -704,10 +704,10 @@ namespace RealisticBattle
                 int calculatedMissileSpeed = 50;
                 if (!missionWeapon.Equals(MissionWeapon.Invalid) && !arrow.Equals(MissionWeapon.Invalid))
                 {
-                    _oldMissileSpeeds.Add(missionWeapon.GetMissileSpeedForUsage(0));
+                    _oldMissileSpeeds.Add(missionWeapon.GetModifiedMissileSpeedForUsage(0));
                     float ammoWeight = arrow.GetWeight() / arrow.Amount;
 
-                    calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon, missionWeapon.GetMissileSpeedForUsage(0));
+                    calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon, missionWeapon.GetModifiedMissileSpeedForUsage(0));
 
                     PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                     property.DeclaringType.GetProperty("MissileSpeed");
@@ -715,7 +715,7 @@ namespace RealisticBattle
                 }
                 else if (!missionWeapon.Equals(MissionWeapon.Invalid))
                 {
-                    _oldMissileSpeeds.Add(missionWeapon.GetMissileSpeedForUsage(0));
+                    _oldMissileSpeeds.Add(missionWeapon.GetModifiedMissileSpeedForUsage(0));
                     PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                     property.DeclaringType.GetProperty("MissileSpeed");
                     property.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
@@ -767,10 +767,10 @@ namespace RealisticBattle
             if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
             {
 
-                _oldMissileSpeed = missionWeapon.GetMissileSpeedForUsage(0);
+                _oldMissileSpeed = missionWeapon.GetModifiedMissileSpeedForUsage(0);
                 float ammoWeight = missionWeapon.AmmoWeapon.GetWeight();
 
-                int calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon, missionWeapon.GetMissileSpeedForUsage(0));
+                int calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon, missionWeapon.GetModifiedMissileSpeedForUsage(0));
 
                // float physicModifier = calculatedMissileSpeed + shooterAgent.Velocity.Length;
 
@@ -834,9 +834,19 @@ namespace RealisticBattle
     [HarmonyPatch("ComputeBlowDamage")]
     class OverrideDamageCalc
     {
-
-        static bool Prefix(float armorAmountFloat, WeaponComponentData shieldOnBack, AgentFlag victimAgentFlag, float victimAgentAbsorbedDamageRatio, float damageMultiplierOfBone, float combatDifficultyMultiplier, DamageTypes damageType, float magnitude, Vec3 blowPosition, ItemObject item, bool blockedWithShield, bool hitShieldOnBack, int speedBonus, bool cancelDamage, bool isFallDamage, out int inflictedDamage, out int absorbedByArmor, out int armorAmount)
+        static bool Prefix(ref AttackInformation attackInformation, ref AttackCollisionData attackCollisionData, in MissionWeapon attackerWeapon, DamageTypes damageType, float magnitude, int speedBonus, bool cancelDamage, out int inflictedDamage, out int absorbedByArmor)
         {
+            float armorAmountFloat = attackInformation.ArmorAmountFloat;
+            WeaponComponentData shieldOnBack = attackInformation.ShieldOnBack;
+            float victimAgentAbsorbedDamageRatio = attackInformation.VictimAgentAbsorbedDamageRatio;
+            float damageMultiplierOfBone = attackInformation.DamageMultiplierOfBone;
+            float combatDifficultyMultiplier = attackInformation.CombatDifficultyMultiplier;
+            bool attackBlockedWithShield = attackCollisionData.AttackBlockedWithShield;
+            bool collidedWithShieldOnBack = attackCollisionData.CollidedWithShieldOnBack;
+            bool isFallDamage = attackCollisionData.IsFallDamage;
+
+            float armorAmount = 0f;
+
             if (!isFallDamage)
             {
                 int num = (int)armorAmountFloat;
@@ -847,15 +857,15 @@ namespace RealisticBattle
                 armorAmount = 0;
             }
             float num2 = (float)armorAmount;
-            if (hitShieldOnBack && shieldOnBack != null)
+            if (collidedWithShieldOnBack && shieldOnBack != null)
             {
                 num2 += 10f;
             }
 
             string weaponType = "otherDamage";
-            if (item != null && item.PrimaryWeapon != null)
+            if (attackerWeapon.Item != null && attackerWeapon.Item.PrimaryWeapon != null)
             {
-                weaponType = item.PrimaryWeapon.WeaponClass.ToString();
+                weaponType = attackerWeapon.Item.PrimaryWeapon.WeaponClass.ToString();
             }
 
             //InformationManager.DisplayMessage(new InformationMessage("weapon type: " + weaponType));
@@ -863,7 +873,7 @@ namespace RealisticBattle
             float num3 = MBMath.ClampInt((int)MyComputeDamage(weaponType, damageType, magnitude, num2, victimAgentAbsorbedDamageRatio), 0, 2000);
             float num4 = 1f;
 
-            if (!blockedWithShield && !isFallDamage)
+            if (!attackBlockedWithShield && !isFallDamage)
             {
                 if(damageMultiplierOfBone == 2f)
                 {
@@ -892,13 +902,13 @@ namespace RealisticBattle
         [HarmonyPatch("ComputeBlowDamageOnShield")]
         class OverrideDamageCalcShield
         {
-            static bool Prefix(bool isAttackerAgentNull, bool isAttackerAgentActive, bool canGiveDamageToAgentShield, bool isVictimAgentLeftStance, MissionWeapon victimShield, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, float blowMagnitude)
+            static bool Prefix(bool isAttackerAgentNull, bool isAttackerAgentActive, bool isAttackerAgentDoingPassiveAttack, bool canGiveDamageToAgentShield, bool isVictimAgentLeftStance, MissionWeapon victimShield, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, float blowMagnitude)
             {
                 attackCollisionData.InflictedDamage = 0;
                 if (victimShield.CurrentUsageItem.WeaponFlags.HasAnyFlag(WeaponFlags.CanBlockRanged) & canGiveDamageToAgentShield)
                 {
                     DamageTypes damageType = (DamageTypes)attackCollisionData.DamageType;
-                    int shieldArmorForCurrentUsage = victimShield.GetShieldArmorForCurrentUsage();
+                    int shieldArmorForCurrentUsage = victimShield.GetGetModifiedArmorForCurrentUsage();
                     float absorbedDamageRatio = 1f;
 
                     string weaponType = "otherDamage";
