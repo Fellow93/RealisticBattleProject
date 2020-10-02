@@ -477,7 +477,7 @@ namespace RealisticBattle
                 else
                 {
                     //___formation.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f);
-                    __result = 1f;
+                    __result = 0f;
                 }
             }
         }

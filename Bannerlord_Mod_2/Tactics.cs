@@ -108,9 +108,9 @@ namespace RealisticBattle
                             {
                                 team.ClearTacticOptions();
                                 team.AddTacticOption(new TacticFullScaleAttack(team));
-                                //team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
-                                //team.AddTacticOption(new TacticFrontalCavalryCharge(team));
-                                //team.AddTacticOption(new TacticCoordinatedRetreat(team));
+                                team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
+                                team.AddTacticOption(new TacticFrontalCavalryCharge(team));
+                                team.AddTacticOption(new TacticCoordinatedRetreat(team));
                                 //team.AddTacticOption(new TacticCharge(team));
                             }
                             if (team.Side == BattleSideEnum.Defender)
@@ -118,7 +118,7 @@ namespace RealisticBattle
                                 team.ClearTacticOptions();
                                 team.AddTacticOption(new TacticDefensiveEngagement(team));
                                 team.AddTacticOption(new TacticDefensiveLine(team));
-                                team.AddTacticOption(new TacticHoldChokePoint(team));
+                                //team.AddTacticOption(new TacticHoldChokePoint(team));
                                 //team.AddTacticOption(new TacticHoldTheHill(team));
                                 //team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
                                 //team.AddTacticOption(new TacticCoordinatedRetreat(team));
@@ -296,7 +296,6 @@ namespace RealisticBattle
                         j++;
                     }
                 }
-
             }
         }
 
@@ -305,9 +304,25 @@ namespace RealisticBattle
         {
 
             [HarmonyPostfix]
-            [HarmonyPatch("Attack")]
-            static void PostfixAttack(ref Formation ____mainInfantry)
+            [HarmonyPatch("Advance")]
+            static void PostfixAdvance(ref Formation ____cavalry)
             {
+                if(____cavalry != null)
+                {
+                    ____cavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                }
+            }
+
+            [HarmonyPostfix]
+            [HarmonyPatch("Attack")]
+            static void PostfixAttack(ref Formation ____mainInfantry, ref Formation ____cavalry)
+            {
+
+                if (____cavalry != null)
+                {
+                    ____cavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                }
+
                 Utilities.FixCharge(ref ____mainInfantry);
             }
 
@@ -322,10 +337,35 @@ namespace RealisticBattle
         [HarmonyPatch(typeof(TacticRangedHarrassmentOffensive))]
         class OverrideTacticRangedHarrassmentOffensive
         {
+
+            [HarmonyPostfix]
+            [HarmonyPatch("Advance")]
+            static void PostfixAdvance(ref Formation ____leftCavalry, ref Formation ____rightCavalry)
+            {
+                if (____rightCavalry != null)
+                {
+                    ____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                }
+                if (____leftCavalry != null)
+                {
+                    ____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                }
+            }
+
             [HarmonyPostfix]
             [HarmonyPatch("Attack")]
-            static void PostfixAttack(ref Formation ____mainInfantry)
+            static void PostfixAttack(ref Formation ____mainInfantry, ref Formation ____leftCavalry, ref Formation ____rightCavalry)
             {
+
+                if (____rightCavalry != null)
+                {
+                    ____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                }
+                if (____leftCavalry != null)
+                {
+                    ____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                }
+
                 Utilities.FixCharge(ref ____mainInfantry);
             }
 
@@ -334,6 +374,90 @@ namespace RealisticBattle
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
                 __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 20f);
+            }
+
+            [HarmonyPostfix]
+            [HarmonyPatch("ManageFormationCounts")]
+            static void PostfixManageFormationCounts(ref Formation ____leftCavalry, ref Formation ____rightCavalry)
+            {
+                if (____leftCavalry != null && ____rightCavalry != null)
+                {
+                    List<Agent> mountedSkirmishersList = new List<Agent>();
+                    List<Agent> mountedMeleeList = new List<Agent>();
+                    for (int i = 0; i < ____leftCavalry.CountOfUnits; i++)
+                    {
+                        Agent agent = ____leftCavalry.GetUnitWithIndex(i);
+                        bool ismountedSkrimisher = false;
+                        for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                        {
+                            if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
+                            {
+                                if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.MountAgent != null)
+                                {
+                                    ismountedSkrimisher = true;
+                                }
+                            }
+                        }
+                        if (ismountedSkrimisher)
+                        {
+                            mountedSkirmishersList.Add(agent);
+                        }
+                        else
+                        {
+                            mountedMeleeList.Add(agent);
+                        }
+                    }
+                    for (int i = 0; i < ____rightCavalry.CountOfUnits; i++)
+                    {
+                        Agent agent = ____rightCavalry.GetUnitWithIndex(i);
+                        bool ismountedSkrimisher = false;
+                        for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                        {
+                            if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
+                            {
+                                if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.MountAgent != null)
+                                {
+                                    ismountedSkrimisher = true;
+                                }
+                            }
+                        }
+                        if (ismountedSkrimisher)
+                        {
+                            mountedSkirmishersList.Add(agent);
+                        }
+                        else
+                        {
+                            mountedMeleeList.Add(agent);
+                        }
+                    }
+
+                    int j = 0;
+                    int cavalryCount = ____leftCavalry.CountOfUnits + ____rightCavalry.CountOfUnits;
+                    foreach (Agent agent in mountedSkirmishersList.ToList())
+                    {
+                        if (j < cavalryCount / 2)
+                        {
+                            agent.Formation = ____rightCavalry;
+                        }
+                        else
+                        {
+                            agent.Formation = ____leftCavalry;
+                        }
+                        j++;
+                    }
+                    foreach (Agent agent in mountedMeleeList.ToList())
+                    {
+                        if (j < cavalryCount / 2)
+                        {
+                            agent.Formation = ____rightCavalry;
+                        }
+                        else
+                        {
+                            agent.Formation = ____leftCavalry;
+                        }
+                        j++;
+                    }
+                }
             }
         }
 
