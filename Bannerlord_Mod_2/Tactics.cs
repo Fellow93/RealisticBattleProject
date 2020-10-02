@@ -548,7 +548,21 @@ namespace RealisticBattle
         
         }
 
-        
+        [HarmonyPatch(typeof(TacticComponent))]
+        class OverrideTacticComponent
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch("SetDefaultBehaviorWeights")]
+            static bool PrefixSetDefaultBehaviorWeights(ref Formation f)
+            {
+                f.AI.SetBehaviorWeight<BehaviorCharge>(1f);
+                f.AI.SetBehaviorWeight<BehaviorPullBack>(1f);
+                f.AI.SetBehaviorWeight<BehaviorStop>(1f);
+                f.AI.SetBehaviorWeight<BehaviorReserve>(0f);
+
+                return false;
+            }
+        }
 
         //public class TacticFullScaleAttackMy : TacticComponent
         //{
@@ -623,7 +637,7 @@ namespace RealisticBattle
         //                    }
         //                }
         //            }
-                    
+
         //            j = 0;
         //            foreach (Agent agent in mountedSkirmishersList)
         //            {
@@ -642,7 +656,7 @@ namespace RealisticBattle
         //            property.SetValue(meleeInfantry.AI, true, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
         //        }
         //        rangedInfantry = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsRangedFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
-                
+
         //        if (list.Count > 0)
         //        {
         //            cavalryLeft = list[0];

@@ -477,9 +477,21 @@ namespace RealisticBattle
                 else
                 {
                     //___formation.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f);
-                    __result = 0f;
+                    __result = 1f;
                 }
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(BehaviorHorseArcherSkirmish))]
+    class OverrideBehaviorHorseArcherSkirmish
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch("GetAiWeight")]
+        static bool PrefixGetAiWeight(ref float __result)
+        {
+            __result = 0f;
+            return false;
         }
     }
 }
