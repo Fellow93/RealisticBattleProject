@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,82 +13,82 @@ namespace RealisticBattle
     class Tactics
     {
 
-        //[HarmonyPatch(typeof(Team))]
-        //[HarmonyPatch("Tick")]
-        //class OverrideTick
-        //{
+        [HarmonyPatch(typeof(Team))]
+        [HarmonyPatch("Tick")]
+        class OverrideTick
+        {
 
-        //    static int i = 0;
+            static int i = 0;
 
-        //    static void Postfix(Team __instance)
-        //    {
-        //        if (__instance.Banner != null)
-        //        {
-        //            if (i == 500)
-        //            {
-        //                if (__instance.IsAttacker)
-        //                {
-        //                    FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
-        //                    _currentTacticField.DeclaringType.GetField("_currentTactic");
-        //                    TacticComponent _currentTactic = (TacticComponent)_currentTacticField.GetValue(__instance.TeamAI);
+            static void Postfix(Team __instance)
+            {
+                if (__instance.Banner != null)
+                {
+                    if (i == 500)
+                    {
+                        if (__instance.IsAttacker)
+                        {
+                            FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
+                            _currentTacticField.DeclaringType.GetField("_currentTactic");
+                            TacticComponent _currentTactic = (TacticComponent)_currentTacticField.GetValue(__instance.TeamAI);
 
-        //                    InformationManager.DisplayMessage(new InformationMessage("Attacker: " + _currentTactic));
-        //                    foreach (Formation formation in __instance.Formations)
-        //                    {
-        //                        if (formation.QuerySystem.IsMeleeFormation)
-        //                        {
-        //                            InformationManager.DisplayMessage(new InformationMessage("infantry: " + formation.AI.ActiveBehavior));
-        //                        }
-        //                        else if (formation.QuerySystem.IsCavalryFormation)
-        //                        {
-        //                            InformationManager.DisplayMessage(new InformationMessage("cavalry: " + formation.AI.ActiveBehavior));
-        //                        }
-        //                        else if (formation.QuerySystem.IsRangedCavalryFormation)
-        //                        {
-        //                            InformationManager.DisplayMessage(new InformationMessage("ranged cavalry: " + formation.AI.ActiveBehavior));
-        //                        }
-        //                        else if (formation.QuerySystem.IsRangedFormation)
-        //                        {
-        //                            InformationManager.DisplayMessage(new InformationMessage("ranged: " + formation.AI.ActiveBehavior));
-        //                        }
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
-        //                    _currentTacticField.DeclaringType.GetField("_currentTactic");
-        //                    TacticComponent _currentTactic = (TacticComponent)_currentTacticField.GetValue(__instance.TeamAI);
+                            InformationManager.DisplayMessage(new InformationMessage("Attacker: " + _currentTactic));
+                            foreach (Formation formation in __instance.Formations)
+                            {
+                                if (formation.QuerySystem.IsMeleeFormation)
+                                {
+                                    InformationManager.DisplayMessage(new InformationMessage("infantry: " + formation.AI.ActiveBehavior));
+                                }
+                                else if (formation.QuerySystem.IsCavalryFormation)
+                                {
+                                    InformationManager.DisplayMessage(new InformationMessage("cavalry: " + formation.AI.ActiveBehavior));
+                                }
+                                else if (formation.QuerySystem.IsRangedCavalryFormation)
+                                {
+                                    InformationManager.DisplayMessage(new InformationMessage("ranged cavalry: " + formation.AI.ActiveBehavior));
+                                }
+                                else if (formation.QuerySystem.IsRangedFormation)
+                                {
+                                    InformationManager.DisplayMessage(new InformationMessage("ranged: " + formation.AI.ActiveBehavior));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
+                            _currentTacticField.DeclaringType.GetField("_currentTactic");
+                            TacticComponent _currentTactic = (TacticComponent)_currentTacticField.GetValue(__instance.TeamAI);
 
-        //                    InformationManager.DisplayMessage(new InformationMessage("Defender: " + _currentTactic));
-        //                    foreach (Formation formation in __instance.Formations)
-        //                    {
-        //                        if (formation.QuerySystem.IsMeleeFormation)
-        //                        {
-        //                            InformationManager.DisplayMessage(new InformationMessage("infantry: " + formation.AI.ActiveBehavior));
-        //                        }
-        //                        else if (formation.QuerySystem.IsCavalryFormation)
-        //                        {
-        //                            InformationManager.DisplayMessage(new InformationMessage("cavalry: " + formation.AI.ActiveBehavior));
-        //                        }
-        //                        else if (formation.QuerySystem.IsRangedCavalryFormation)
-        //                        {
-        //                            InformationManager.DisplayMessage(new InformationMessage("ranged cavalry: " + formation.AI.ActiveBehavior));
-        //                        }
-        //                        else if (formation.QuerySystem.IsRangedFormation)
-        //                        {
-        //                            InformationManager.DisplayMessage(new InformationMessage("ranged: " + formation.AI.ActiveBehavior));
-        //                        }
-        //                    }
-        //                }
-        //                i = 0;
-        //            }
-        //            else
-        //            {
-        //                i++;
-        //            }
-        //        }
-        //    }
-        //}
+                            InformationManager.DisplayMessage(new InformationMessage("Defender: " + _currentTactic));
+                            foreach (Formation formation in __instance.Formations)
+                            {
+                                if (formation.QuerySystem.IsMeleeFormation)
+                                {
+                                    InformationManager.DisplayMessage(new InformationMessage("infantry: " + formation.AI.ActiveBehavior));
+                                }
+                                else if (formation.QuerySystem.IsCavalryFormation)
+                                {
+                                    InformationManager.DisplayMessage(new InformationMessage("cavalry: " + formation.AI.ActiveBehavior));
+                                }
+                                else if (formation.QuerySystem.IsRangedCavalryFormation)
+                                {
+                                    InformationManager.DisplayMessage(new InformationMessage("ranged cavalry: " + formation.AI.ActiveBehavior));
+                                }
+                                else if (formation.QuerySystem.IsRangedFormation)
+                                {
+                                    InformationManager.DisplayMessage(new InformationMessage("ranged: " + formation.AI.ActiveBehavior));
+                                }
+                            }
+                        }
+                        i = 0;
+                    }
+                    else
+                    {
+                        i++;
+                    }
+                }
+            }
+        }
 
         [HarmonyPatch(typeof(MissionCombatantsLogic))]
         [HarmonyPatch("EarlyStart")]
@@ -96,7 +97,7 @@ namespace RealisticBattle
 
             static void Postfix()
             {
-                
+
                 if (Mission.Current.Teams.Any())
                 {
                     if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
@@ -107,10 +108,9 @@ namespace RealisticBattle
                             {
                                 team.ClearTacticOptions();
                                 team.AddTacticOption(new TacticFullScaleAttack(team));
-                                //team.AddTacticOption(new TacticFullScaleAttackMy(team));
-                                //team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
-                                //team.AddTacticOption(new TacticFrontalCavalryCharge(team));
-                                //team.AddTacticOption(new TacticCoordinatedRetreat(team));
+                                team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
+                                team.AddTacticOption(new TacticFrontalCavalryCharge(team));
+                                team.AddTacticOption(new TacticCoordinatedRetreat(team));
                                 //team.AddTacticOption(new TacticCharge(team));
                             }
                             if (team.Side == BattleSideEnum.Defender)
@@ -118,7 +118,7 @@ namespace RealisticBattle
                                 team.ClearTacticOptions();
                                 team.AddTacticOption(new TacticDefensiveEngagement(team));
                                 team.AddTacticOption(new TacticDefensiveLine(team));
-                                team.AddTacticOption(new TacticHoldChokePoint(team));
+                                //team.AddTacticOption(new TacticHoldChokePoint(team));
                                 //team.AddTacticOption(new TacticHoldTheHill(team));
                                 //team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
                                 //team.AddTacticOption(new TacticCoordinatedRetreat(team));
@@ -205,12 +205,96 @@ namespace RealisticBattle
                         {
                             if (team.Side == BattleSideEnum.Defender)
                             {
-                                if(team.QuerySystem.InfantryRatio > 0.9f)
+                                if (team.QuerySystem.InfantryRatio > 0.9f)
                                 {
                                     __result = 100f;
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            [HarmonyPostfix]
+            [HarmonyPatch("ManageFormationCounts")]
+            static void PostfixManageFormationCounts(ref Formation ____leftCavalry, ref Formation ____rightCavalry)
+            {
+                if (____leftCavalry != null && ____rightCavalry != null)
+                {
+                    List<Agent> mountedSkirmishersList = new List<Agent>();
+                    List<Agent> mountedMeleeList = new List<Agent>();
+                    for (int i = 0; i < ____leftCavalry.CountOfUnits; i++)
+                    {
+                        Agent agent = ____leftCavalry.GetUnitWithIndex(i);
+                        bool ismountedSkrimisher = false;
+                        for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                        {
+                            if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
+                            {
+                                if (agent.Equipment[equipmentIndex].PrimaryItem.Type == ItemTypeEnum.Thrown && agent.MountAgent != null)
+                                {
+                                    ismountedSkrimisher = true;
+                                }
+                            }
+                        }
+                        if (ismountedSkrimisher)
+                        {
+                            mountedSkirmishersList.Add(agent);
+                        }
+                        else
+                        {
+                            mountedMeleeList.Add(agent);
+                        }
+                    }
+                    for (int i = 0; i < ____rightCavalry.CountOfUnits; i++)
+                    {
+                        Agent agent = ____rightCavalry.GetUnitWithIndex(i);
+                        bool ismountedSkrimisher = false;
+                        for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                        {
+                            if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
+                            {
+                                if (agent.Equipment[equipmentIndex].PrimaryItem.Type == ItemTypeEnum.Thrown && agent.MountAgent != null)
+                                {
+                                    ismountedSkrimisher = true;
+                                }
+                            }
+                        }
+                        if (ismountedSkrimisher)
+                        {
+                            mountedSkirmishersList.Add(agent);
+                        }
+                        else
+                        {
+                            mountedMeleeList.Add(agent);
+                        }
+                    }
+
+                    int j = 0;
+                    int cavalryCount = ____leftCavalry.CountOfUnits + ____rightCavalry.CountOfUnits;
+                    foreach (Agent agent in mountedSkirmishersList.ToList())
+                    {
+                        if (j < cavalryCount / 2)
+                        {
+                            agent.Formation = ____leftCavalry;
+                        }
+                        else
+                        {
+                            agent.Formation = ____rightCavalry;
+                        }
+                        j++;
+                    }
+                    foreach (Agent agent in mountedMeleeList.ToList())
+                    {
+                        if (j < cavalryCount / 2)
+                        {
+                            agent.Formation = ____leftCavalry;
+                        }
+                        else
+                        {
+                            agent.Formation = ____rightCavalry;
+                        }
+                        j++;
                     }
                 }
             }
@@ -221,9 +305,25 @@ namespace RealisticBattle
         {
 
             [HarmonyPostfix]
-            [HarmonyPatch("Attack")]
-            static void PostfixAttack(ref Formation ____mainInfantry)
+            [HarmonyPatch("Advance")]
+            static void PostfixAdvance(ref Formation ____cavalry)
             {
+                if (____cavalry != null)
+                {
+                    ____cavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                }
+            }
+
+            [HarmonyPostfix]
+            [HarmonyPatch("Attack")]
+            static void PostfixAttack(ref Formation ____mainInfantry, ref Formation ____cavalry)
+            {
+
+                if (____cavalry != null)
+                {
+                    ____cavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                }
+
                 Utilities.FixCharge(ref ____mainInfantry);
             }
 
@@ -238,10 +338,35 @@ namespace RealisticBattle
         [HarmonyPatch(typeof(TacticRangedHarrassmentOffensive))]
         class OverrideTacticRangedHarrassmentOffensive
         {
+
+            [HarmonyPostfix]
+            [HarmonyPatch("Advance")]
+            static void PostfixAdvance(ref Formation ____leftCavalry, ref Formation ____rightCavalry)
+            {
+                if (____rightCavalry != null)
+                {
+                    ____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                }
+                if (____leftCavalry != null)
+                {
+                    ____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                }
+            }
+
             [HarmonyPostfix]
             [HarmonyPatch("Attack")]
-            static void PostfixAttack(ref Formation ____mainInfantry)
+            static void PostfixAttack(ref Formation ____mainInfantry, ref Formation ____leftCavalry, ref Formation ____rightCavalry)
             {
+
+                if (____rightCavalry != null)
+                {
+                    ____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                }
+                if (____leftCavalry != null)
+                {
+                    ____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                }
+
                 Utilities.FixCharge(ref ____mainInfantry);
             }
 
@@ -250,6 +375,90 @@ namespace RealisticBattle
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
                 __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 20f);
+            }
+
+            [HarmonyPostfix]
+            [HarmonyPatch("ManageFormationCounts")]
+            static void PostfixManageFormationCounts(ref Formation ____leftCavalry, ref Formation ____rightCavalry)
+            {
+                if (____leftCavalry != null && ____rightCavalry != null)
+                {
+                    List<Agent> mountedSkirmishersList = new List<Agent>();
+                    List<Agent> mountedMeleeList = new List<Agent>();
+                    for (int i = 0; i < ____leftCavalry.CountOfUnits; i++)
+                    {
+                        Agent agent = ____leftCavalry.GetUnitWithIndex(i);
+                        bool ismountedSkrimisher = false;
+                        for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                        {
+                            if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
+                            {
+                                if (agent.Equipment[equipmentIndex].PrimaryItem.Type == ItemTypeEnum.Thrown && agent.MountAgent != null)
+                                {
+                                    ismountedSkrimisher = true;
+                                }
+                            }
+                        }
+                        if (ismountedSkrimisher)
+                        {
+                            mountedSkirmishersList.Add(agent);
+                        }
+                        else
+                        {
+                            mountedMeleeList.Add(agent);
+                        }
+                    }
+                    for (int i = 0; i < ____rightCavalry.CountOfUnits; i++)
+                    {
+                        Agent agent = ____rightCavalry.GetUnitWithIndex(i);
+                        bool ismountedSkrimisher = false;
+                        for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                        {
+                            if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
+                            {
+                                if (agent.Equipment[equipmentIndex].PrimaryItem.Type == ItemTypeEnum.Thrown && agent.MountAgent != null)
+                                {
+                                    ismountedSkrimisher = true;
+                                }
+                            }
+                        }
+                        if (ismountedSkrimisher)
+                        {
+                            mountedSkirmishersList.Add(agent);
+                        }
+                        else
+                        {
+                            mountedMeleeList.Add(agent);
+                        }
+                    }
+
+                    int j = 0;
+                    int cavalryCount = ____leftCavalry.CountOfUnits + ____rightCavalry.CountOfUnits;
+                    foreach (Agent agent in mountedSkirmishersList.ToList())
+                    {
+                        if (j < cavalryCount / 2)
+                        {
+                            agent.Formation = ____rightCavalry;
+                        }
+                        else
+                        {
+                            agent.Formation = ____leftCavalry;
+                        }
+                        j++;
+                    }
+                    foreach (Agent agent in mountedMeleeList.ToList())
+                    {
+                        if (j < cavalryCount / 2)
+                        {
+                            agent.Formation = ____rightCavalry;
+                        }
+                        else
+                        {
+                            agent.Formation = ____leftCavalry;
+                        }
+                        j++;
+                    }
+                }
             }
         }
 
@@ -337,10 +546,24 @@ namespace RealisticBattle
                 Utilities.FixCharge(ref ____mainInfantry);
             }
 
-        
+
         }
 
-        
+        [HarmonyPatch(typeof(TacticComponent))]
+        class OverrideTacticComponent
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch("SetDefaultBehaviorWeights")]
+            static bool PrefixSetDefaultBehaviorWeights(ref Formation f)
+            {
+                f.AI.SetBehaviorWeight<BehaviorCharge>(1f);
+                f.AI.SetBehaviorWeight<BehaviorPullBack>(1f);
+                f.AI.SetBehaviorWeight<BehaviorStop>(1f);
+                f.AI.SetBehaviorWeight<BehaviorReserve>(0f);
+
+                return false;
+            }
+        }
 
         //public class TacticFullScaleAttackMy : TacticComponent
         //{
@@ -415,7 +638,7 @@ namespace RealisticBattle
         //                    }
         //                }
         //            }
-                    
+
         //            j = 0;
         //            foreach (Agent agent in mountedSkirmishersList)
         //            {
@@ -434,7 +657,7 @@ namespace RealisticBattle
         //            property.SetValue(meleeInfantry.AI, true, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
         //        }
         //        rangedInfantry = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsRangedFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
-                
+
         //        if (list.Count > 0)
         //        {
         //            cavalryLeft = list[0];
