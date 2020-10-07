@@ -14,19 +14,16 @@ namespace RealisticBattle
 {
     class Behaviours
     {
-
-        //private static void SetDefensiveArrangementMoveBehaviorValues(Agent unit)
+        //internal static void SetFollowBehaviorValues(Agent unit)
         //{
-        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 8f, 5f, 20f, 6f);
-        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 4f, 5f, 0f, 20f, 0f);
+        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 7f, 5f, 20f, 6f);
+        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 6f, 7f, 4f, 20f, 0f);
         //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
         //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 0f, 7f, 0f, 30f, 0f);
         //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 0f, 15f, 0f, 30f, 0f);
-
         //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
         //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
         //}
-
         //internal static void SetDefaultMoveBehaviorValues(Agent unit)
         //{
         //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 7f, 5f, 20f, 6f);
@@ -34,7 +31,26 @@ namespace RealisticBattle
         //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0.02f, 7f, 0.04f, 20f, 0.03f);
         //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 10f, 7f, 5f, 30f, 0.05f);
         //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 0.02f, 15f, 0.065f, 30f, 0.055f);
-
+        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
+        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
+        //}
+        //internal static void SetDefensiveArrangementMoveBehaviorValues(Agent unit)
+        //{
+        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 8f, 5f, 20f, 6f);
+        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 4f, 5f, 0f, 20f, 0f);
+        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
+        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 0f, 7f, 0f, 30f, 0f);
+        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 0f, 15f, 0f, 30f, 0f);
+        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
+        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
+        //}
+        //private static void SetChargeBehaviorValues(Agent unit)
+        //{
+        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0f, 7f, 4f, 20f, 6f);
+        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 7f, 4f, 20f, 1f);
+        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 2f, 7f, 4f, 20f, 5f);
+        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 2f, 25f, 5f, 30f, 5f);
+        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 2f, 15f, 6.5f, 30f, 5.5f);
         //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
         //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
         //}
@@ -43,43 +59,62 @@ namespace RealisticBattle
         //class OverrideMovementOrder
         //{
         //    [HarmonyPostfix]
-        //    [HarmonyPatch("OnApply")]
-        //    static void PostfixOnApply(ArrangementOrder __instance, ref Formation formation)
+        //    [HarmonyPatch("SetChargeBehaviorValues")]
+        //    static void PostfixSetChargeBehaviorValues(Agent unit)
         //    {
-        //        if(__instance != null)
-        //        {
-        //            if (formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.ShieldWall || formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.Line)
-        //            {
-        //                //for (int i = 0; i < formation.CountOfUnits; i++)
-        //                //{
-        //                //    Agent agent = formation.GetUnitWithIndex(i);
-        //                //    //agent
-        //                //}
-        //                formation.ApplyActionOnEachUnit(SetDefensiveArrangementMoveBehaviorValues);
-        //            }
-        //        }
+        //        unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 100f, 100f, 100f, 100f, 100f);
         //    }
 
         //    [HarmonyPostfix]
-        //    [HarmonyPatch("OnUnitJoinOrLeave")]
-        //    static void PostfixOnUnitJoinOrLeave(ArrangementOrder __instance, ref Formation formation)
+        //    [HarmonyPatch("SetDefaultMoveBehaviorValues")]
+        //    static void PostfixSetDefaultMoveBehaviorValues(Agent unit)
         //    {
-        //        if (__instance != null)
-        //        {
-        //            if (formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.ShieldWall || formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.Line)
-        //            {
-        //                //for (int i = 0; i < formation.CountOfUnits; i++)
-        //                //{
-        //                //    Agent agent = formation.GetUnitWithIndex(i);
-        //                //    //agent
-        //                //}
-        //                formation.ApplyActionOnEachUnit(SetDefensiveArrangementMoveBehaviorValues);
-        //            }
-        //        }
+        //        unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 100f, 100f, 100f, 100f, 100f);
         //    }
+
         //}
 
-       [HarmonyPatch(typeof(BehaviorSkirmishLine))]
+            //[HarmonyPatch(typeof(MovementOrder))]
+            //class OverrideMovementOrder
+            //{
+            //    [HarmonyPostfix]
+            //    [HarmonyPatch("OnApply")]
+            //    static void PostfixOnApply(ArrangementOrder __instance, ref Formation formation)
+            //    {
+            //        if(__instance != null)
+            //        {
+            //            if (formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.ShieldWall || formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.Line)
+            //            {
+            //                //for (int i = 0; i < formation.CountOfUnits; i++)
+            //                //{
+            //                //    Agent agent = formation.GetUnitWithIndex(i);
+            //                //    //agent
+            //                //}
+            //                formation.ApplyActionOnEachUnit(SetDefensiveArrangementMoveBehaviorValues);
+            //            }
+            //        }
+            //    }
+
+            //    [HarmonyPostfix]
+            //    [HarmonyPatch("OnUnitJoinOrLeave")]
+            //    static void PostfixOnUnitJoinOrLeave(ArrangementOrder __instance, ref Formation formation)
+            //    {
+            //        if (__instance != null)
+            //        {
+            //            if (formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.ShieldWall || formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.Line)
+            //            {
+            //                //for (int i = 0; i < formation.CountOfUnits; i++)
+            //                //{
+            //                //    Agent agent = formation.GetUnitWithIndex(i);
+            //                //    //agent
+            //                //}
+            //                formation.ApplyActionOnEachUnit(SetDefensiveArrangementMoveBehaviorValues);
+            //            }
+            //        }
+            //    }
+            //}
+
+            [HarmonyPatch(typeof(BehaviorSkirmishLine))]
         class OverrideBehaviorSkirmishLine
         {
             [HarmonyPostfix]
@@ -477,7 +512,7 @@ namespace RealisticBattle
                 else
                 {
                     //___formation.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f);
-                    __result = 1f;
+                    __result = 0f;
                 }
             }
         }
