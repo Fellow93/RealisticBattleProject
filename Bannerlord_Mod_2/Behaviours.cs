@@ -491,7 +491,7 @@ namespace RealisticBattle
                     {
                         if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
                         {
-                            if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.MountAgent != null)
+                            if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.Equipment[equipmentIndex].Amount > 0 && agent.MountAgent != null)
                             {
                                 ismountedSkrimisher = true;
                             }
