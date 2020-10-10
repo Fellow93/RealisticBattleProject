@@ -10,8 +10,6 @@ using SandBox;
 using System.Reflection;
 using JetBrains.Annotations;
 using System.Collections;
-using Helpers;
-using TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors;
 using System.Linq;
 
 namespace RealisticBattle
@@ -407,14 +405,16 @@ namespace RealisticBattle
     {
         static void Postfix(ref Agent.UsageDirection __result, Formation formation, Agent unit, ArrangementOrderEnum orderEnum)
         {
-            switch (orderEnum)
-            {
-                case ArrangementOrderEnum.Line:
-                case ArrangementOrderEnum.Loose:
-                    {
-                        __result = Agent.UsageDirection.DefendDown;
-                        break;
-                    }
+            if(!formation.QuerySystem.IsCavalryFormation){
+                switch (orderEnum)
+                {
+                    case ArrangementOrderEnum.Line:
+                    case ArrangementOrderEnum.Loose:
+                        {
+                            __result = Agent.UsageDirection.DefendDown;
+                            break;
+                        }
+                }
             }
         }
     }
@@ -431,7 +431,7 @@ namespace RealisticBattle
             //agentDrivenProperties.AiMoveEnemySideTimeValue = -1.5f;
             //agentDrivenProperties.AiMovemetDelayFactor = 1f;
             //agentDrivenProperties.AiAttackCalculationMaxTimeFactor = 0.85f;
-            //agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 2.5f;
+            agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 4f;
             //agentDrivenProperties.AiTryChamberAttackOnDecide = 100f;
             //agentDrivenProperties.AiWaitBeforeShootFactor = 1f;
             //agentDrivenProperties.AiShootFreq = 1f;

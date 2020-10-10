@@ -201,11 +201,21 @@ namespace RealisticBattle
                 }
                 if (____rightCavalry != null)
                 {
+                    ____rightCavalry.AI.ResetBehaviorWeights();
                     ____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    ____rightCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
+                    //____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    //____rightCavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
+                    //____rightCavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
                 }
                 if (____leftCavalry != null)
                 {
+                    ____leftCavalry.AI.ResetBehaviorWeights();
                     ____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    ____leftCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
+                    //____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    //____leftCavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
+                    //____leftCavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
                 }
 
                 Utilities.FixCharge(ref ____mainInfantry);
@@ -339,7 +349,11 @@ namespace RealisticBattle
 
                 if (____cavalry != null)
                 {
+                    ____cavalry.AI.ResetBehaviorWeights();
                     ____cavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    ____cavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
+                    //____cavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
+                    //____cavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
                 }
                 if (____archers != null)
                 {
@@ -383,11 +397,21 @@ namespace RealisticBattle
 
                 if (____rightCavalry != null)
                 {
+                    ____rightCavalry.AI.ResetBehaviorWeights();
                     ____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    ____rightCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
+                    //____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    //____rightCavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
+                    //____rightCavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
                 }
                 if (____leftCavalry != null)
                 {
+                    ____leftCavalry.AI.ResetBehaviorWeights();
                     ____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    ____leftCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
+                    //____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    //____leftCavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
+                    //____leftCavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
                 }
                 if (____archers != null)
                 {
@@ -519,13 +543,31 @@ namespace RealisticBattle
 
             [HarmonyPostfix]
             [HarmonyPatch("Engage")]
-            static void PostfixEngage(ref Formation ____archers, ref Formation ____mainInfantry)
+            static void PostfixEngage(ref Formation ____archers, ref Formation ____mainInfantry, ref Formation ____rightCavalry, ref Formation ____leftCavalry)
             {
                 if (____archers != null)
                 {
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(1f);
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
                     ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
+                }
+                if (____rightCavalry != null)
+                {
+                    ____rightCavalry.AI.ResetBehaviorWeights();
+                    ____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    ____rightCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
+                    //____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    //____rightCavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
+                    //____rightCavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
+                }
+                if (____leftCavalry != null)
+                {
+                    ____leftCavalry.AI.ResetBehaviorWeights();
+                    ____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    ____leftCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
+                    //____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    //____leftCavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
+                    //____leftCavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
                 }
                 Utilities.FixCharge(ref ____mainInfantry);
             }
@@ -561,7 +603,7 @@ namespace RealisticBattle
 
             [HarmonyPostfix]
             [HarmonyPatch("Engage")]
-            static void PostfixAttack(ref Formation ____archers, ref Formation ____mainInfantry)
+            static void PostfixAttack(ref Formation ____archers, ref Formation ____mainInfantry, ref Formation ____rightCavalry, ref Formation ____leftCavalry)
             {
                 if (____archers != null)
                 {
@@ -569,7 +611,24 @@ namespace RealisticBattle
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
                     ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
                 }
-
+                if (____rightCavalry != null)
+                {
+                    ____rightCavalry.AI.ResetBehaviorWeights();
+                    ____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    ____rightCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
+                    //____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    //____rightCavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
+                    //____rightCavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
+                }
+                if (____leftCavalry != null)
+                {
+                    ____leftCavalry.AI.ResetBehaviorWeights();
+                    ____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    ____leftCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
+                    //____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    //____leftCavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
+                    //____leftCavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
+                }
                 Utilities.FixCharge(ref ____mainInfantry);
             }
 

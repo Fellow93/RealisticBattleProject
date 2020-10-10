@@ -62,59 +62,59 @@ namespace RealisticBattle
         //    [HarmonyPatch("SetChargeBehaviorValues")]
         //    static void PostfixSetChargeBehaviorValues(Agent unit)
         //    {
-        //        unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 100f, 100f, 100f, 100f, 100f);
+        //        unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 2f, 25f, 5f, 30f, 5f);
         //    }
 
         //    [HarmonyPostfix]
         //    [HarmonyPatch("SetDefaultMoveBehaviorValues")]
         //    static void PostfixSetDefaultMoveBehaviorValues(Agent unit)
         //    {
-        //        unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 100f, 100f, 100f, 100f, 100f);
+        //        unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 2f, 25f, 5f, 30f, 5f);
         //    }
 
         //}
 
-            //[HarmonyPatch(typeof(MovementOrder))]
-            //class OverrideMovementOrder
-            //{
-            //    [HarmonyPostfix]
-            //    [HarmonyPatch("OnApply")]
-            //    static void PostfixOnApply(ArrangementOrder __instance, ref Formation formation)
-            //    {
-            //        if(__instance != null)
-            //        {
-            //            if (formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.ShieldWall || formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.Line)
-            //            {
-            //                //for (int i = 0; i < formation.CountOfUnits; i++)
-            //                //{
-            //                //    Agent agent = formation.GetUnitWithIndex(i);
-            //                //    //agent
-            //                //}
-            //                formation.ApplyActionOnEachUnit(SetDefensiveArrangementMoveBehaviorValues);
-            //            }
-            //        }
-            //    }
+        //[HarmonyPatch(typeof(MovementOrder))]
+        //class OverrideMovementOrder
+        //{
+        //    [HarmonyPostfix]
+        //    [HarmonyPatch("OnApply")]
+        //    static void PostfixOnApply(ArrangementOrder __instance, ref Formation formation)
+        //    {
+        //        if(__instance != null)
+        //        {
+        //            if (formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.ShieldWall || formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.Line)
+        //            {
+        //                //for (int i = 0; i < formation.CountOfUnits; i++)
+        //                //{
+        //                //    Agent agent = formation.GetUnitWithIndex(i);
+        //                //    //agent
+        //                //}
+        //                formation.ApplyActionOnEachUnit(SetDefensiveArrangementMoveBehaviorValues);
+        //            }
+        //        }
+        //    }
 
-            //    [HarmonyPostfix]
-            //    [HarmonyPatch("OnUnitJoinOrLeave")]
-            //    static void PostfixOnUnitJoinOrLeave(ArrangementOrder __instance, ref Formation formation)
-            //    {
-            //        if (__instance != null)
-            //        {
-            //            if (formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.ShieldWall || formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.Line)
-            //            {
-            //                //for (int i = 0; i < formation.CountOfUnits; i++)
-            //                //{
-            //                //    Agent agent = formation.GetUnitWithIndex(i);
-            //                //    //agent
-            //                //}
-            //                formation.ApplyActionOnEachUnit(SetDefensiveArrangementMoveBehaviorValues);
-            //            }
-            //        }
-            //    }
-            //}
+        //    [HarmonyPostfix]
+        //    [HarmonyPatch("OnUnitJoinOrLeave")]
+        //    static void PostfixOnUnitJoinOrLeave(ArrangementOrder __instance, ref Formation formation)
+        //    {
+        //        if (__instance != null)
+        //        {
+        //            if (formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.ShieldWall || formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.Line)
+        //            {
+        //                //for (int i = 0; i < formation.CountOfUnits; i++)
+        //                //{
+        //                //    Agent agent = formation.GetUnitWithIndex(i);
+        //                //    //agent
+        //                //}
+        //                formation.ApplyActionOnEachUnit(SetDefensiveArrangementMoveBehaviorValues);
+        //            }
+        //        }
+        //    }
+        //}
 
-            [HarmonyPatch(typeof(BehaviorSkirmishLine))]
+        [HarmonyPatch(typeof(BehaviorSkirmishLine))]
         class OverrideBehaviorSkirmishLine
         {
             [HarmonyPostfix]
