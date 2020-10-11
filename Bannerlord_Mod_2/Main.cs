@@ -405,7 +405,8 @@ namespace RealisticBattle
     {
         static void Postfix(ref Agent.UsageDirection __result, Formation formation, Agent unit, ArrangementOrderEnum orderEnum)
         {
-            if(!formation.QuerySystem.IsCavalryFormation){
+            if(!formation.QuerySystem.IsCavalryFormation && !formation.QuerySystem.IsRangedCavalryFormation)
+            {
                 switch (orderEnum)
                 {
                     case ArrangementOrderEnum.Line:
@@ -435,14 +436,17 @@ namespace RealisticBattle
             //agentDrivenProperties.AiTryChamberAttackOnDecide = 100f;
             //agentDrivenProperties.AiWaitBeforeShootFactor = 1f;
             //agentDrivenProperties.AiShootFreq = 1f;
-            //agentDrivenProperties.AiDecideOnAttackContinueAction = 1f;
+            agentDrivenProperties.AiDecideOnAttackContinueAction = 1f;
             //agentDrivenProperties.AiDecideOnAttackingContinue = 1f; // continuing succesfull attack when enemy is facing other way, 1 = full
             //agentDrivenProperties.AiDecideOnAttackWhenReceiveHitTiming = 0f;
-            //agentDrivenProperties.AIDecideOnAttackChance = 1f; // aggresion, when enemy is facing other way, 1 = full
+            agentDrivenProperties.AIDecideOnAttackChance = 1f; // aggresion, when enemy is facing other way, 1 = full
             //agentDrivenProperties.AIAttackOnParryChance = 2f; // counter-attack after succesfull parry chance, does not apply to shield block only parry, does not apply to crash through parry, 2 is very high maybe 80%
             //agentDrivenProperties.AiAttackOnParryTiming = 0f;
             //agentDrivenProperties.AIParryOnDecideAbility = 0.2f; // speed of parry reaction, depends on enemy attack speed, 0.2 = high parry chance, 0.1 = almost nothing parried, 0.15 decent parry but vulnurable to player spam, this is general chance to parry - it can be still in wrong direction, parry aplies only to oponent AI is facing, other enemies are ignored
             //agentDrivenProperties.AIParryOnAttackAbility = 0.8f;
+            //agentDrivenProperties.AiAttackCalculationMaxTimeFactor = 0.1f; // ???
+            //agentDrivenProperties.AIAttackOnDecideChance = 0.9f; // ???
+            //agentDrivenProperties.AiMinimumDistanceToContinueFactor = 10f;
 
         }
     }
@@ -474,17 +478,17 @@ namespace RealisticBattle
             
         }
     }
-    
+
     [HarmonyPatch(typeof(Mission))]
     [HarmonyPatch("ComputeBlowMagnitudeMissile")]
     class RealArrowDamage
     {
-        
+
         static bool Prefix(ref AttackCollisionData acd, ItemObject weaponItem, bool isVictimAgentNull, float momentumRemaining, float missileTotalDamage, out float baseMagnitude, out float specialMagnitude, Vec3 victimVel)
         {
 
             //Vec3 gcn = acd.CollisionGlobalNormal;
-           // Vec3 wbd = acd.MissileVelocity;
+            // Vec3 wbd = acd.MissileVelocity;
 
             //float angleModifier = Vec3.DotProduct(gcn, wbd);
 
@@ -522,13 +526,13 @@ namespace RealisticBattle
                 }
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
                 {
-                  length -= 10f;
+                    length -= 10f;
                     if (length < 5.0f)
                     {
                         length = 5f;
-                    } 
+                    }
                     //missileTotalDamage += 168.0f;
-                    missileTotalDamage *= 0.005f;
+                    missileTotalDamage *= 0.01f;
                 }
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm"))
                 {
@@ -550,7 +554,8 @@ namespace RealisticBattle
                 }
                 else
                 {
-                    if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow")){
+                    if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow"))
+                    {
                         missileTotalDamage -= 10f;
                         missileTotalDamage *= 0.01f;
                     }
@@ -999,7 +1004,9 @@ namespace RealisticBattle
 
             float damage = 0f;
             float num3 = 100f / (100f + armorEffectiveness * Vars.dict["Global.ArmorMultiplier"]);
-
+            float mag_1hpol = magnitude + 45f;
+            float mag_2hpol = magnitude + 30f;
+     
             switch (weaponType)
             {
                 case "OneHandedSword":
@@ -1028,16 +1035,16 @@ namespace RealisticBattle
                     }
                 case "OneHandedPolearm":
                     {
-                        magnitude += 45.0f;
-                        damage = weaponTypeDamage(Vars.dict[weaponType + ".BluntFactorCut"], Vars.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
+                        //magnitude += 45.0f;
+                        damage = weaponTypeDamage(Vars.dict[weaponType + ".BluntFactorCut"], Vars.dict[weaponType + ".BluntFactorPierce"], mag_1hpol, num3, damageType, armorEffectiveness,
                             Vars.dict[weaponType + ".ArmorThresholdFactorCut"], Vars.dict[weaponType + ".ArmorThresholdFactorPierce"]);
                         //damage += 5.0f;
                         break;
                     }
                 case "TwoHandedPolearm":
                     {
-                        magnitude += 30.0f;
-                        damage = weaponTypeDamage(Vars.dict[weaponType + ".BluntFactorCut"], Vars.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
+                        //magnitude += 30.0f;
+                        damage = weaponTypeDamage(Vars.dict[weaponType + ".BluntFactorCut"], Vars.dict[weaponType + ".BluntFactorPierce"], mag_2hpol, num3, damageType, armorEffectiveness,
                             Vars.dict[weaponType + ".ArmorThresholdFactorCut"], Vars.dict[weaponType + ".ArmorThresholdFactorPierce"]);
                         //damage += 7.0f;
                         break;
@@ -1094,13 +1101,14 @@ namespace RealisticBattle
         private static float weaponTypeDamage(float bfc, float bfp, float magnitude, float num3, DamageTypes damageType, float armorEffectiveness, float ct, float pt)
         {
             float damage = 0f;
+            float num5 = 100f / (100f + armorEffectiveness * Vars.dict["Global.ArmorMultiplier"] * 1.5f);
             switch (damageType)
             {
                 case DamageTypes.Blunt:
                     {
                         float num2 = magnitude * 1f;
 
-                        damage += num2 * num3;
+                        damage += num2 * num5;
 
                         break;
                     }
