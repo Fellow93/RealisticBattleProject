@@ -310,6 +310,47 @@ namespace RealisticBattle
         }
     }
 
+    [HarmonyPatch(typeof(BehaviorCautiousAdvance))]
+    class OverrideBehaviorCautiousAdvance
+    {
+        private enum BehaviorState
+        {
+            Approaching,
+            Shooting,
+            PullingBack
+        }
+
+        private static int waitCount = 0;
+
+        [HarmonyPostfix]
+        [HarmonyPatch("CalculateCurrentOrder")]
+        static void PostfixCalculateCurrentOrder(ref Vec2 ____shootPosition, ref Formation ___formation, BehaviorCautiousAdvance __instance, ref BehaviorState ____behaviorState, ref MovementOrder ____currentOrder)
+        {
+            //switch (____behaviorState)
+            //{
+            //    case BehaviorState.Shooting:
+                    if (waitCount > 65)
+                    {
+                        if (___formation != null && ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && ___formation.QuerySystem.MedianPosition.AsVec2.Distance(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.MedianPosition.AsVec2) > 100f)
+                        {
+                            WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
+                            ____shootPosition = ___formation.QuerySystem.AveragePosition + ___formation.Direction * 10f;
+                            medianPosition.SetVec2(medianPosition.AsVec2 + ___formation.Direction * 5f);
+                            ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
+                        }
+                        waitCount = 0;
+                    }
+                    else
+                    {
+                        waitCount++;
+                    }
+
+            //        break;
+            //}
+        }
+    }
+
+
     [HarmonyPatch(typeof(BehaviorMountedSkirmish))]
     class OverrideBehaviorMountedSkirmish
     {

@@ -83,25 +83,32 @@ namespace RealisticBattle
 
         public static bool HasBattleBeenJoined(Formation mainInfantry, bool hasBattleBeenJoined, float battleJoinRange)
         {
-            FormationQuerySystem mainEnemyformation = mainInfantry?.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
-            if (mainEnemyformation != null && (mainEnemyformation.IsCavalryFormation || mainEnemyformation.IsInfantryFormation || (mainEnemyformation.IsRangedFormation && !mainEnemyformation.IsRangedCavalryFormation) || (mainEnemyformation.Formation.Team.Formations.Count() == 1)))
+            if(mainInfantry != null)
             {
-                if (mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) / mainEnemyformation.MovementSpeedMaximum <= 5f)
+                FormationQuerySystem mainEnemyformation = mainInfantry?.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
+                if (mainEnemyformation != null && (mainEnemyformation.IsCavalryFormation || mainEnemyformation.IsInfantryFormation || (mainEnemyformation.IsRangedFormation && !mainEnemyformation.IsRangedCavalryFormation) || (mainEnemyformation.Formation.Team.Formations.Count() == 1)))
                 {
-                    mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
+                    if (mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) / mainEnemyformation.MovementSpeedMaximum <= 5f)
+                    {
+                        mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
+                    }
+                    else
+                    {
+                        mainInfantry.FiringOrder = FiringOrder.FiringOrderFireAtWill;
+                    }
+                }
+                if (mainEnemyformation != null && (mainEnemyformation.IsCavalryFormation || mainEnemyformation.IsInfantryFormation || (mainEnemyformation.IsRangedFormation && !mainEnemyformation.IsRangedCavalryFormation) || (mainEnemyformation.Formation.Team.Formations.Count() == 1)))
+                {
+                    return mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) / mainEnemyformation.MovementSpeedMaximum <= battleJoinRange + (hasBattleBeenJoined ? 5f : 0f);
                 }
                 else
                 {
-                    mainInfantry.FiringOrder = FiringOrder.FiringOrderFireAtWill;
+                    return false;
                 }
-            }
-            if (mainEnemyformation != null && (mainEnemyformation.IsCavalryFormation || mainEnemyformation.IsInfantryFormation || (mainEnemyformation.IsRangedFormation && !mainEnemyformation.IsRangedCavalryFormation) || (mainEnemyformation.Formation.Team.Formations.Count() == 1)))
-            {
-                return mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) / mainEnemyformation.MovementSpeedMaximum <= battleJoinRange + (hasBattleBeenJoined ? 5f : 0f);
             }
             else
             {
-                return false;
+                return true;
             }
             
         }
@@ -598,6 +605,21 @@ namespace RealisticBattle
             return false;
         }
     }
+
+    //[HarmonyPatch(typeof(Agent))]
+    //[HarmonyPatch("GetMissileRangeWithHeightDifference")]
+    //class OverrideGetMissileRangeWithHeightDifference
+    //{
+        
+    //    static void Postfix(Agent __instance, ref float __result)
+    //    {
+    //        if (__result > 0f)
+    //        {
+    //            __result = __result * 6f;
+    //        }
+    //    }
+         
+    //}
 
     //[HarmonyPatch(typeof(Agent))]
     //[HarmonyPatch("GetHasRangedWeapon")]
