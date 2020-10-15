@@ -443,10 +443,10 @@ namespace RealisticBattle
             //agentDrivenProperties.AiTryChamberAttackOnDecide = 100f;
             //agentDrivenProperties.AiWaitBeforeShootFactor = 1f;
             //agentDrivenProperties.AiShootFreq = 1f;
-            agentDrivenProperties.AiDecideOnAttackContinueAction = 1f;
+            //agentDrivenProperties.AiDecideOnAttackContinueAction = 1f;
             //agentDrivenProperties.AiDecideOnAttackingContinue = 1f; // continuing succesfull attack when enemy is facing other way, 1 = full
             //agentDrivenProperties.AiDecideOnAttackWhenReceiveHitTiming = 0f;
-            agentDrivenProperties.AIDecideOnAttackChance = 1f; // aggresion, when enemy is facing other way, 1 = full
+            //agentDrivenProperties.AIDecideOnAttackChance = 1f; // aggresion, when enemy is facing other way, 1 = full
             //agentDrivenProperties.AIAttackOnParryChance = 2f; // counter-attack after succesfull parry chance, does not apply to shield block only parry, does not apply to crash through parry, 2 is very high maybe 80%
             //agentDrivenProperties.AiAttackOnParryTiming = 0f;
             //agentDrivenProperties.AIParryOnDecideAbility = 0.2f; // speed of parry reaction, depends on enemy attack speed, 0.2 = high parry chance, 0.1 = almost nothing parried, 0.15 decent parry but vulnurable to player spam, this is general chance to parry - it can be still in wrong direction, parry aplies only to oponent AI is facing, other enemies are ignored
@@ -476,10 +476,10 @@ namespace RealisticBattle
             {
             weaponWeight += 0f;
             }
-            float num2 = 0.5f * weaponWeight * num * num * 0.27f * 2.5f;
-            if (num2 > (weaponWeight * 30.0f * 2.5f))
+            float num2 = 0.5f * weaponWeight * num * num * 0.315f;
+            if (num2 > (weaponWeight * 35.0f))
             {
-            num2 = weaponWeight * 30.0f * 2.5f;
+            num2 = weaponWeight * 35.0f;
             }
             return num2;
             
