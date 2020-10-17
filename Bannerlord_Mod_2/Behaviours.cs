@@ -324,89 +324,137 @@ namespace RealisticBattle
 
         [HarmonyPostfix]
         [HarmonyPatch("CalculateCurrentOrder")]
-        static void PostfixCalculateCurrentOrder(ref Vec2 ____shootPosition, ref Formation ___formation, BehaviorCautiousAdvance __instance, ref BehaviorState ____behaviorState, ref MovementOrder ____currentOrder)
+        static void PostfixCalculateCurrentOrder(ref Vec2 ____shootPosition, ref Formation ___formation, ref Formation ____archerFormation, BehaviorCautiousAdvance __instance, ref BehaviorState ____behaviorState, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
         {
-            switch (____behaviorState)
+            if (___formation != null && ____archerFormation != null  &&  ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
-                case BehaviorState.Shooting:
-                    { 
-                        if (waitCountShooting > 75)
-                        {
-                            if (___formation != null && ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && ___formation.QuerySystem.MedianPosition.AsVec2.Distance(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.MedianPosition.AsVec2) > 100f)
-                            {
-                                Vec2 vec = ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MedianPosition.AsVec2 - ___formation.QuerySystem.AveragePosition;
-                                vec.Normalize();
-                                WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
-                                ____shootPosition = ___formation.QuerySystem.AveragePosition + vec * 10f;
-                                medianPosition.SetVec2(medianPosition.AsVec2 + vec * 5f);
-                                ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
-                            }
-                            waitCountShooting = 0;
-                            waitCountApproaching = 0;
-                        }
-                        else
-                        {
-                            waitCountShooting++;
-                        }
-                        break;
-                    }
-                case BehaviorState.Approaching:
+                Formation significantEnemy = null;
+                float dist = 10000f;
+                for (int i = 0; i < Mission.Current.Teams.Count; i++)
+                {
+                    Team enemyTeam = Mission.Current.Teams[i];
+                    if (enemyTeam.IsEnemyOf(___formation.Team))
                     {
-                        if (waitCountApproaching > 30)
+                        Formation newSignificantEnemy = null;
+                        foreach (Formation enemyFormation in enemyTeam.Formations)
                         {
-                            if (___formation != null && ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && ___formation.QuerySystem.MedianPosition.AsVec2.Distance(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.MedianPosition.AsVec2) < 220f)
+                            if (enemyFormation.QuerySystem.IsInfantryFormation)
                             {
-                                Vec2 vec = ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MedianPosition.AsVec2 - ___formation.QuerySystem.AveragePosition;
-                                vec.Normalize();
-                                WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
-                                medianPosition.SetVec2(medianPosition.AsVec2 + vec * 5f);
-                                ____shootPosition = medianPosition.AsVec2;
-                                ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
+                                newSignificantEnemy = enemyFormation;
                             }
-                            waitCountApproaching = 0;
+                            if (newSignificantEnemy == null && enemyFormation.QuerySystem.IsRangedFormation)
+                            {
+                                newSignificantEnemy = enemyFormation;
+                            }
                         }
-                        else
+                        if(newSignificantEnemy != null)
                         {
-                            if (____shootPosition.IsValid && ___formation != null && ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && ___formation.QuerySystem.MedianPosition.AsVec2.Distance(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.MedianPosition.AsVec2) < 220f)
+                            float newDist = ___formation.QuerySystem.MedianPosition.AsVec2.Distance(newSignificantEnemy.QuerySystem.MedianPosition.AsVec2);
+                            if(newDist < dist)
                             {
-                                WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
-                                medianPosition.SetVec2(____shootPosition);
-                                ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
+                                significantEnemy = newSignificantEnemy;
+                                dist = newDist;
                             }
-                            waitCountApproaching++;
                         }
-
-                        break;
                     }
-                case BehaviorState.PullingBack:
+                }
+                
+                if(significantEnemy != null)
+                {
+                    Vec2 vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - ___formation.QuerySystem.AveragePosition;
+                    float distance = vec.Normalize();
+
+                    switch (____behaviorState)
                     {
-                        if (waitCountApproaching > 30)
-                        {
-                            if (___formation != null && ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && ___formation.QuerySystem.MedianPosition.AsVec2.Distance(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.MedianPosition.AsVec2) < 220f)
+                        case BehaviorState.Shooting:
                             {
-                                Vec2 vec = ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MedianPosition.AsVec2 - ___formation.QuerySystem.AveragePosition;
-                                vec.Normalize();
-                                WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
-                                medianPosition.SetVec2(medianPosition.AsVec2 + vec * 5f);
-                                ____shootPosition = medianPosition.AsVec2;
-                                ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
-                            }
-                            waitCountApproaching = 0;
-                        }
-                        else
-                        {
-                            if (____shootPosition.IsValid && ___formation != null && ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && ___formation.QuerySystem.MedianPosition.AsVec2.Distance(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.MedianPosition.AsVec2) < 220f)
-                            {
-                                WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
-                                medianPosition.SetVec2(____shootPosition);
-                                ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
-                            }
-                            waitCountApproaching++;
-                        }
+                                if (waitCountShooting > 75)
+                                {
+                                    if (distance > 100f)
+                                    {
+                                        WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
+                                        medianPosition.SetVec2(medianPosition.AsVec2 + vec * 5f);
+                                        ____shootPosition = medianPosition.AsVec2;
+                                        ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
 
-                        break;
+                                        MethodInfo method = typeof(FacingOrder).GetMethod("FacingOrderLookAtDirection", BindingFlags.NonPublic | BindingFlags.Static);
+                                        method.DeclaringType.GetMethod("FacingOrderLookAtDirection");
+                                        ___CurrentFacingOrder = (FacingOrder)method.Invoke(___CurrentFacingOrder, new object[] { vec });
+                                    }
+                                    waitCountShooting = 0;
+                                    waitCountApproaching = 0;
+                                }
+                                else
+                                {
+                                    MethodInfo method = typeof(FacingOrder).GetMethod("FacingOrderLookAtDirection", BindingFlags.NonPublic | BindingFlags.Static);
+                                    method.DeclaringType.GetMethod("FacingOrderLookAtDirection");
+                                    ___CurrentFacingOrder = (FacingOrder)method.Invoke(___CurrentFacingOrder, new object[] { vec });
+                                    waitCountShooting++;
+                                }
+                                break;
+                            }
+                        case BehaviorState.Approaching:
+                            {
+                                if (waitCountApproaching > 30)
+                                {
+                                    if (distance < 210f)
+                                    {
+                                        WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
+                                        medianPosition.SetVec2(medianPosition.AsVec2 + vec * 5f);
+                                        ____shootPosition = medianPosition.AsVec2;
+                                        ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
+
+                                        MethodInfo method = typeof(FacingOrder).GetMethod("FacingOrderLookAtDirection", BindingFlags.NonPublic | BindingFlags.Static);
+                                        method.DeclaringType.GetMethod("FacingOrderLookAtDirection");
+                                        ___CurrentFacingOrder = (FacingOrder)method.Invoke(___CurrentFacingOrder, new object[] { vec });
+                                    }
+                                    waitCountApproaching = 0;
+                                }
+                                else
+                                {
+                                    if (distance < 210f)
+                                    {
+                                        WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
+                                        medianPosition.SetVec2(____shootPosition);
+                                        ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
+
+                                        MethodInfo method = typeof(FacingOrder).GetMethod("FacingOrderLookAtDirection", BindingFlags.NonPublic | BindingFlags.Static);
+                                        method.DeclaringType.GetMethod("FacingOrderLookAtDirection");
+                                        ___CurrentFacingOrder = (FacingOrder)method.Invoke(___CurrentFacingOrder, new object[] { vec });
+                                    }
+                                    waitCountApproaching++;
+                                }
+                                break;
+                            }
+                        case BehaviorState.PullingBack:
+                            {
+                                if (waitCountApproaching > 30)
+                                {
+                                    if (distance < 210f)
+                                    {
+                                        WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
+                                        medianPosition.SetVec2(medianPosition.AsVec2 - vec * 10f);
+                                        ____shootPosition = medianPosition.AsVec2;
+                                        ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
+                                    }
+                                    waitCountApproaching = 0;
+                                }
+                                else
+                                {
+                                    if (distance < 210f)
+                                    {
+                                        WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
+                                        medianPosition.SetVec2(____shootPosition);
+                                        ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
+                                    }
+                                    waitCountApproaching++;
+                                }
+                                break;
+                            }
                     }
+                }
             }
+            
         }
     }
 
