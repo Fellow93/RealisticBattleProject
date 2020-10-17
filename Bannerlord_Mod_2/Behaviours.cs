@@ -374,7 +374,7 @@ namespace RealisticBattle
                                     {
                                         WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
                                         medianPosition.SetVec2(medianPosition.AsVec2 + vec * 5f);
-                                        ____shootPosition = medianPosition.AsVec2;
+                                        ____shootPosition = medianPosition.AsVec2 + vec * 5f;
                                         ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
 
                                         MethodInfo method = typeof(FacingOrder).GetMethod("FacingOrderLookAtDirection", BindingFlags.NonPublic | BindingFlags.Static);
@@ -401,7 +401,7 @@ namespace RealisticBattle
                                     {
                                         WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
                                         medianPosition.SetVec2(medianPosition.AsVec2 + vec * 5f);
-                                        ____shootPosition = medianPosition.AsVec2;
+                                        ____shootPosition = medianPosition.AsVec2 + vec * 5f;
                                         ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
 
                                         MethodInfo method = typeof(FacingOrder).GetMethod("FacingOrderLookAtDirection", BindingFlags.NonPublic | BindingFlags.Static);
@@ -434,7 +434,7 @@ namespace RealisticBattle
                                     {
                                         WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
                                         medianPosition.SetVec2(medianPosition.AsVec2 - vec * 10f);
-                                        ____shootPosition = medianPosition.AsVec2;
+                                        ____shootPosition = medianPosition.AsVec2 + vec * 5f;
                                         ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
                                     }
                                     waitCountApproaching = 0;
