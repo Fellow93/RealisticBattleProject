@@ -11,6 +11,7 @@ using System.Reflection;
 using JetBrains.Annotations;
 using System.Collections;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 
 namespace RealisticBattle
 {
@@ -96,10 +97,14 @@ namespace RealisticBattle
                     {
                         mainInfantry.FiringOrder = FiringOrder.FiringOrderFireAtWill;
                     }
-                }
-                if (mainEnemyformation != null && (mainEnemyformation.IsCavalryFormation || mainEnemyformation.IsInfantryFormation || (mainEnemyformation.IsRangedFormation && !mainEnemyformation.IsRangedCavalryFormation) || (mainEnemyformation.Formation.Team.Formations.Count() == 1)))
-                {
-                    return mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) / mainEnemyformation.MovementSpeedMaximum <= battleJoinRange + (hasBattleBeenJoined ? 5f : 0f);
+                    if (mainEnemyformation.IsInfantryFormation || mainEnemyformation.IsRangedFormation)
+                    {
+                        return mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) / mainEnemyformation.MovementSpeedMaximum <= battleJoinRange + (hasBattleBeenJoined ? 5f : 0f);
+                    }
+                    else
+                    {
+                        return mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) / (mainEnemyformation.MovementSpeedMaximum * 0.6f) <= battleJoinRange + (hasBattleBeenJoined ? 5f : 0f);
+                    }
                 }
                 else
                 {
@@ -435,18 +440,22 @@ namespace RealisticBattle
         {
             //int meleeSkill = GetMeleeSkill(agent, equippedItem, secondaryItem);
             //float num = CalculateAILevel(agent, meleeSkill);
-            //agentDrivenProperties.AiCheckMovementIntervalFactor = 0.1f;
+            //agentDrivenProperties.AiCheckMovementIntervalFactor = (1f - num) * 0.1f;
             //agentDrivenProperties.AiMoveEnemySideTimeValue = -1.5f;
             //agentDrivenProperties.AiMovemetDelayFactor = 1f;
             //agentDrivenProperties.AiAttackCalculationMaxTimeFactor = 0.85f;
             agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 4f;
+            //agentDrivenProperties.AIBlockOnDecideAbility = num;
+            //agentDrivenProperties.AIParryOnDecideAbility = num;
             //agentDrivenProperties.AiTryChamberAttackOnDecide = 100f;
             //agentDrivenProperties.AiWaitBeforeShootFactor = 1f;
             //agentDrivenProperties.AiShootFreq = 1f;
             //agentDrivenProperties.AiDecideOnAttackContinueAction = 1f;
             //agentDrivenProperties.AiDecideOnAttackingContinue = 1f; // continuing succesfull attack when enemy is facing other way, 1 = full
             //agentDrivenProperties.AiDecideOnAttackWhenReceiveHitTiming = 0f;
-            //agentDrivenProperties.AIDecideOnAttackChance = 1f; // aggresion, when enemy is facing other way, 1 = full
+            //agentDrivenProperties.AIDecideOnAttackChance = 2f; // aggresion, when enemy is facing other way, 1 = full
+            //agentDrivenProperties.AiDecideOnAttackWhenReceiveHitTiming = -0.25f + (1f - num);
+            //agentDrivenProperties.AiDecideOnAttackContinueAction = -0.5f + (1f - num);
             //agentDrivenProperties.AIAttackOnParryChance = 2f; // counter-attack after succesfull parry chance, does not apply to shield block only parry, does not apply to crash through parry, 2 is very high maybe 80%
             //agentDrivenProperties.AiAttackOnParryTiming = 0f;
             //agentDrivenProperties.AIParryOnDecideAbility = 0.2f; // speed of parry reaction, depends on enemy attack speed, 0.2 = high parry chance, 0.1 = almost nothing parried, 0.15 decent parry but vulnurable to player spam, this is general chance to parry - it can be still in wrong direction, parry aplies only to oponent AI is facing, other enemies are ignored
@@ -455,6 +464,28 @@ namespace RealisticBattle
             //agentDrivenProperties.AIAttackOnDecideChance = 0.9f; // ???
             //agentDrivenProperties.AiMinimumDistanceToContinueFactor = 10f;
 
+        }
+
+        static protected float CalculateAILevel(Agent agent, int relevantSkillLevel)
+        {
+            float difficultyModifier = 1f;
+            return MBMath.ClampFloat((float)relevantSkillLevel / 250f * difficultyModifier, 0f, 1f);
+        }
+
+        static protected int GetMeleeSkill(Agent agent, WeaponComponentData equippedItem, WeaponComponentData secondaryItem)
+        {
+            SkillObject skill = DefaultSkills.Athletics;
+            if (equippedItem != null)
+            {
+                SkillObject relevantSkill = equippedItem.RelevantSkill;
+                skill = ((relevantSkill == DefaultSkills.OneHanded || relevantSkill == DefaultSkills.Polearm) ? relevantSkill : ((relevantSkill != DefaultSkills.TwoHanded) ? DefaultSkills.OneHanded : ((secondaryItem == null) ? DefaultSkills.TwoHanded : DefaultSkills.OneHanded)));
+            }
+            return GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
+        }
+
+        static protected int GetEffectiveSkill(BasicCharacterObject agentCharacter, IAgentOriginBase agentOrigin, Formation agentFormation, SkillObject skill)
+        {
+            return agentCharacter.GetSkillValue(skill);
         }
     }
 
@@ -606,19 +637,43 @@ namespace RealisticBattle
         }
     }
 
-    //[HarmonyPatch(typeof(Agent))]
-    //[HarmonyPatch("GetMissileRangeWithHeightDifference")]
-    //class OverrideGetMissileRangeWithHeightDifference
+    //[HarmonyPatch(typeof(MissionEquipment))]
+    //[HarmonyPatch("GetLongestRangedWeaponWithAimingError")]
+    //class OverrideGetLongestRangedWeaponWithAimingError
     //{
-        
-    //    static void Postfix(Agent __instance, ref float __result)
+
+    //    static bool Prefix(MissionEquipment __instance, ref int __result, out float inaccuracy, ref Agent agent, MissionWeapon[] ____weaponSlots)
     //    {
-    //        if (__result > 0f)
+    //        int result = -1;
+    //        float num = -1f;
+    //        inaccuracy = -1f;
+    //        for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
     //        {
-    //            __result = __result * 6f;
+    //            if (__instance.HasAmmo(equipmentIndex, out int rangedUsageIndex, out bool hasLoadedAmmo) && (hasLoadedAmmo || !agent.HasMount || !____weaponSlots[(int)equipmentIndex].GetWeaponComponentDataForUsage(rangedUsageIndex).WeaponFlags.HasAnyFlag(WeaponFlags.CantReloadOnHorseback)))
+    //            {
+    //                int modifiedMissileSpeedForUsage = ____weaponSlots[(int)equipmentIndex].GetModifiedMissileSpeedForUsage(rangedUsageIndex);
+    //                float num2 = (float)modifiedMissileSpeedForUsage * 0.7071067f;
+    //                float num3 = num2 * 0.1019367f;
+    //                float num4 = num2 * num3 * 0.5f;
+    //                float num5 = (float)Math.Sqrt(2f * num4 * 0.1019367f);
+    //                float num6 = num3 + num5;
+    //                float val = num2 * num6;
+    //                WeaponComponentData weaponComponentDataForUsage = ____weaponSlots[(int)equipmentIndex].GetWeaponComponentDataForUsage(rangedUsageIndex);
+    //                int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, weaponComponentDataForUsage.RelevantSkill);
+    //                float weaponInaccuracy = MissionGameModels.Current.AgentStatCalculateModel.GetWeaponInaccuracy(agent, weaponComponentDataForUsage, effectiveSkill);
+    //                float x = Math.Max(0.5f / (float)modifiedMissileSpeedForUsage, weaponInaccuracy * 0.5f);
+    //                val = Math.Min(2.5f / TaleWorlds.Library.MathF.Tan(x), val);
+    //                if (num < val)
+    //                {
+    //                    inaccuracy = weaponInaccuracy;
+    //                    num = val;
+    //                    result = (int)equipmentIndex;
+    //                }                                                   
+    //            }
     //        }
+    //        __result = result;
+    //        return false;
     //    }
-         
     //}
 
     //[HarmonyPatch(typeof(Agent))]
