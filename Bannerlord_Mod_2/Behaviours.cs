@@ -7,6 +7,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.MountAndBlade.GauntletUI.Widgets;
 using static TaleWorlds.Core.ItemObject;
 
 namespace RealisticBattle
@@ -143,7 +144,7 @@ namespace RealisticBattle
 
             [HarmonyPostfix]
             [HarmonyPatch("CalculateCurrentOrder")]
-            static void PostfixCalculateCurrentOrder(Formation ___formation, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged)
+            static void PostfixCalculateCurrentOrder(Formation ___formation, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged, ref WorldPosition ____defensePosition)
             {
                 if (___formation != null)
                 {
@@ -153,24 +154,56 @@ namespace RealisticBattle
                         WorldPosition medianPositionNew = ___formation.QuerySystem.MedianPosition;
                         medianPositionNew.SetVec2(___formation.QuerySystem.AveragePosition);
 
-                        Formation rangedFormation = null;
-                        foreach (Formation formation in ___formation.Team.Formations)
+                        Formation significantEnemy = null;
+                        float dist = 10000f;
+                        for (int i = 0; i < Mission.Current.Teams.Count; i++)
                         {
-                            if (formation.QuerySystem.IsRangedFormation)
+                            Team enemyTeam = Mission.Current.Teams[i];
+                            if (enemyTeam.IsEnemyOf(___formation.Team))
                             {
-                                rangedFormation = formation;
+                                Formation newSignificantEnemy = null;
+                                foreach (Formation enemyFormation in enemyTeam.Formations)
+                                {
+                                    if (enemyFormation.QuerySystem.IsInfantryFormation)
+                                    {
+                                        newSignificantEnemy = enemyFormation;
+                                    }
+                                    if (newSignificantEnemy == null && enemyFormation.QuerySystem.IsRangedFormation)
+                                    {
+                                        newSignificantEnemy = enemyFormation;
+                                    }
+                                }
+                                if (newSignificantEnemy != null)
+                                {
+                                    float newDist = ___formation.QuerySystem.MedianPosition.AsVec2.Distance(newSignificantEnemy.QuerySystem.MedianPosition.AsVec2);
+                                    if (newDist < dist)
+                                    {
+                                        significantEnemy = newSignificantEnemy;
+                                        dist = newDist;
+                                    }
+                                }
                             }
                         }
-                        if (rangedFormation != null)
+                        if (significantEnemy != null)
                         {
-                            if (___formation.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) < (rangedFormation.QuerySystem.MissileRange + 50f))
+                            if (dist < (180f))
                             {
                                 ____currentOrder = MovementOrder.MovementOrderMove(medianPositionOld);
                                 ___IsCurrentOrderChanged = true;
                             }
                             else
                             {
-                                medianPositionOld = medianPositionNew;
+                                if (____defensePosition.IsValid)
+                                {
+                                    medianPositionOld = ____defensePosition;
+                                    medianPositionOld.SetVec2(medianPositionOld.AsVec2 + ___formation.Direction * 10f);
+                                    ____currentOrder = MovementOrder.MovementOrderMove(medianPositionOld);
+                                }
+                                else
+                                {
+                                    medianPositionOld = medianPositionNew;
+                                    medianPositionOld.SetVec2(medianPositionOld.AsVec2 + ___formation.Direction * 10f);
+                                }
                             }
                         }
                     }
@@ -195,17 +228,39 @@ namespace RealisticBattle
                         WorldPosition medianPositionNew = ___formation.QuerySystem.MedianPosition;
                         medianPositionNew.SetVec2(___formation.QuerySystem.AveragePosition);
 
-                        Formation rangedFormation = null;
-                        foreach (Formation formation in ___formation.Team.Formations)
+                        Formation significantEnemy = null;
+                        float dist = 10000f;
+                        for (int i = 0; i < Mission.Current.Teams.Count; i++)
                         {
-                            if (formation.QuerySystem.IsRangedFormation)
+                            Team enemyTeam = Mission.Current.Teams[i];
+                            if (enemyTeam.IsEnemyOf(___formation.Team))
                             {
-                                rangedFormation = formation;
+                                Formation newSignificantEnemy = null;
+                                foreach (Formation enemyFormation in enemyTeam.Formations)
+                                {
+                                    if (enemyFormation.QuerySystem.IsInfantryFormation)
+                                    {
+                                        newSignificantEnemy = enemyFormation;
+                                    }
+                                    if (newSignificantEnemy == null && enemyFormation.QuerySystem.IsRangedFormation)
+                                    {
+                                        newSignificantEnemy = enemyFormation;
+                                    }
+                                }
+                                if (newSignificantEnemy != null)
+                                {
+                                    float newDist = ___formation.QuerySystem.MedianPosition.AsVec2.Distance(newSignificantEnemy.QuerySystem.MedianPosition.AsVec2);
+                                    if (newDist < dist)
+                                    {
+                                        significantEnemy = newSignificantEnemy;
+                                        dist = newDist;
+                                    }
+                                }
                             }
                         }
-                        if (rangedFormation != null)
+                        if (significantEnemy != null)
                         {
-                            if (___formation.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) < (rangedFormation.QuerySystem.MissileRange + 50f))
+                            if (dist < (180f))
                             {
                                 ____currentOrder = MovementOrder.MovementOrderMove(medianPositionOld);
                                 ___IsCurrentOrderChanged = true;
@@ -213,6 +268,7 @@ namespace RealisticBattle
                             else
                             {
                                 medianPositionOld = medianPositionNew;
+                                medianPositionOld.SetVec2(medianPositionOld.AsVec2 + ___formation.Direction * 10f);
                             }
                         }
                     }
