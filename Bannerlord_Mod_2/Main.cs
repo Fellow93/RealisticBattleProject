@@ -463,6 +463,7 @@ namespace RealisticBattle
             //agentDrivenProperties.AiAttackCalculationMaxTimeFactor = 0.1f; // ???
             //agentDrivenProperties.AIAttackOnDecideChance = 0.9f; // ???
             //agentDrivenProperties.AiMinimumDistanceToContinueFactor = 10f;
+            agentDrivenProperties.AiRangedHorsebackMissileRange = 0.7f;
 
         }
 
