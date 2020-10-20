@@ -44,25 +44,25 @@ namespace RealisticBattle
         //                        InformationManager.DisplayMessage(new InformationMessage(tc + ": " + weight));
         //                    }
 
-        //                    //foreach (Formation formation in __instance.Formations)
-        //                    //{
-        //                    //    if (formation.QuerySystem.IsMeleeFormation)
-        //                    //    {
-        //                    //        InformationManager.DisplayMessage(new InformationMessage("infantry: " + formation.AI.ActiveBehavior));
-        //                    //    }
-        //                    //    else if (formation.QuerySystem.IsCavalryFormation)
-        //                    //    {
-        //                    //        InformationManager.DisplayMessage(new InformationMessage("cavalry: " + formation.AI.ActiveBehavior));
-        //                    //    }
-        //                    //    else if (formation.QuerySystem.IsRangedCavalryFormation)
-        //                    //    {
-        //                    //        InformationManager.DisplayMessage(new InformationMessage("ranged cavalry: " + formation.AI.ActiveBehavior));
-        //                    //    }
-        //                    //    else if (formation.QuerySystem.IsRangedFormation)
-        //                    //    {
-        //                    //        InformationManager.DisplayMessage(new InformationMessage("ranged: " + formation.AI.ActiveBehavior));
-        //                    //    }
-        //                    //}
+        //                    foreach (Formation formation in __instance.Formations)
+        //                    {
+        //                        if (formation.QuerySystem.IsMeleeFormation)
+        //                        {
+        //                            InformationManager.DisplayMessage(new InformationMessage("infantry: " + formation.AI.ActiveBehavior));
+        //                        }
+        //                        else if (formation.QuerySystem.IsCavalryFormation)
+        //                        {
+        //                            InformationManager.DisplayMessage(new InformationMessage("cavalry: " + formation.AI.ActiveBehavior));
+        //                        }
+        //                        else if (formation.QuerySystem.IsRangedCavalryFormation)
+        //                        {
+        //                            InformationManager.DisplayMessage(new InformationMessage("ranged cavalry: " + formation.AI.ActiveBehavior));
+        //                        }
+        //                        else if (formation.QuerySystem.IsRangedFormation)
+        //                        {
+        //                            InformationManager.DisplayMessage(new InformationMessage("ranged: " + formation.AI.ActiveBehavior + " " + formation.QuerySystem.MissileRange));
+        //                        }
+        //                    }
         //                }
         //                else
         //                {
@@ -83,25 +83,25 @@ namespace RealisticBattle
         //                        InformationManager.DisplayMessage(new InformationMessage(tc + ": " + weight));
         //                    }
 
-        //                    //foreach (Formation formation in __instance.Formations)
-        //                    //{
-        //                    //    if (formation.QuerySystem.IsMeleeFormation)
-        //                    //    {
-        //                    //        InformationManager.DisplayMessage(new InformationMessage("infantry: " + formation.AI.ActiveBehavior));
-        //                    //    }
-        //                    //    else if (formation.QuerySystem.IsCavalryFormation)
-        //                    //    {
-        //                    //        InformationManager.DisplayMessage(new InformationMessage("cavalry: " + formation.AI.ActiveBehavior));
-        //                    //    }
-        //                    //    else if (formation.QuerySystem.IsRangedCavalryFormation)
-        //                    //    {
-        //                    //        InformationManager.DisplayMessage(new InformationMessage("ranged cavalry: " + formation.AI.ActiveBehavior));
-        //                    //    }
-        //                    //    else if (formation.QuerySystem.IsRangedFormation)
-        //                    //    {
-        //                    //        InformationManager.DisplayMessage(new InformationMessage("ranged: " + formation.AI.ActiveBehavior));
-        //                    //    }
-        //                    //}
+        //                    foreach (Formation formation in __instance.Formations)
+        //                    {
+        //                        if (formation.QuerySystem.IsMeleeFormation)
+        //                        {
+        //                            InformationManager.DisplayMessage(new InformationMessage("infantry: " + formation.AI.ActiveBehavior));
+        //                        }
+        //                        else if (formation.QuerySystem.IsCavalryFormation)
+        //                        {
+        //                            InformationManager.DisplayMessage(new InformationMessage("cavalry: " + formation.AI.ActiveBehavior));
+        //                        }
+        //                        else if (formation.QuerySystem.IsRangedCavalryFormation)
+        //                        {
+        //                            InformationManager.DisplayMessage(new InformationMessage("ranged cavalry: " + formation.AI.ActiveBehavior));
+        //                        }
+        //                        else if (formation.QuerySystem.IsRangedFormation)
+        //                        {
+        //                            InformationManager.DisplayMessage(new InformationMessage("ranged: " + formation.AI.ActiveBehavior + " " + formation.QuerySystem.MissileRange));
+        //                        }
+        //                    }
         //                }
         //                i = 0;
         //            }
@@ -365,7 +365,7 @@ namespace RealisticBattle
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____cavalry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined(____cavalry, ____hasBattleBeenJoined, 8f);
+                __result = Utilities.HasBattleBeenJoined(____cavalry, ____hasBattleBeenJoined, 25f);
             }
         }
 
@@ -518,7 +518,7 @@ namespace RealisticBattle
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 13f);
+                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 5f);
             }
 
             [HarmonyPostfix]
@@ -578,7 +578,7 @@ namespace RealisticBattle
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 13f);
+                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 5f);
             }
 
             [HarmonyPostfix]

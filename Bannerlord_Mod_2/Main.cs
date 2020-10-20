@@ -11,7 +11,7 @@ using System.Reflection;
 using JetBrains.Annotations;
 using System.Collections;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
+using static TaleWorlds.Core.ItemObject;
 
 namespace RealisticBattle
 {
@@ -27,7 +27,6 @@ namespace RealisticBattle
             harmony.PatchAll();
         }
     }
-
     public static class Utilities
     {
         public static int calculateMissileSpeed(float ammoWeight, MissionWeapon rangedWeapon, int drawWeight)
@@ -86,10 +85,10 @@ namespace RealisticBattle
         {
             if(mainInfantry != null)
             {
-                FormationQuerySystem mainEnemyformation = mainInfantry?.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
-                if (mainEnemyformation != null && (mainEnemyformation.IsCavalryFormation || mainEnemyformation.IsInfantryFormation || (mainEnemyformation.IsRangedFormation && !mainEnemyformation.IsRangedCavalryFormation) || (mainEnemyformation.Formation.Team.Formations.Count() == 1)))
+                FormationQuerySystem cslef = mainInfantry?.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
+                if (cslef != null && ((!Utilities.CheckIfMountedSkirmishFormation(cslef.Formation)) || cslef.IsInfantryFormation || (cslef.IsRangedFormation && !cslef.IsRangedCavalryFormation) || (cslef.Formation.Team.Formations.Count() == 1)))
                 {
-                    if (mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) / mainEnemyformation.MovementSpeedMaximum <= 5f)
+                    if (mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(cslef.MedianPosition.AsVec2) / cslef.MovementSpeedMaximum <= 5f)
                     {
                         mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
                     }
@@ -97,13 +96,14 @@ namespace RealisticBattle
                     {
                         mainInfantry.FiringOrder = FiringOrder.FiringOrderFireAtWill;
                     }
-                    if (mainEnemyformation.IsInfantryFormation || mainEnemyformation.IsRangedFormation)
+
+                    if (cslef.IsInfantryFormation || cslef.IsRangedFormation)
                     {
-                        return mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) / mainEnemyformation.MovementSpeedMaximum <= battleJoinRange + (hasBattleBeenJoined ? 5f : 0f);
+                        return mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(cslef.MedianPosition.AsVec2) / cslef.MovementSpeedMaximum <= battleJoinRange + (hasBattleBeenJoined ? 5f : 0f);
                     }
                     else
                     {
-                        return mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(mainEnemyformation.MedianPosition.AsVec2) / (mainEnemyformation.MovementSpeedMaximum * 0.6f) <= battleJoinRange + (hasBattleBeenJoined ? 5f : 0f);
+                        return mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(cslef.MedianPosition.AsVec2) / (cslef.MovementSpeedMaximum * 0.6f) <= battleJoinRange + (hasBattleBeenJoined ? 5f : 0f);
                     }
                 }
                 else
@@ -127,6 +127,60 @@ namespace RealisticBattle
             }
         }
 
+        public static bool CheckIfMountedSkirmishFormation(Formation formation)
+        {
+            if (formation != null && formation.QuerySystem.IsCavalryFormation)
+            {
+                int mountedSkirmishersCount = 0;
+                PropertyInfo property = typeof(Formation).GetProperty("arrangement", BindingFlags.NonPublic | BindingFlags.Instance);
+                if(property != null)
+                {
+                    property.DeclaringType.GetProperty("arrangement");
+                    IFormationArrangement arrangement = (IFormationArrangement)property.GetValue(formation);
+
+                    FieldInfo field = typeof(LineFormation).GetField("_allUnits", BindingFlags.NonPublic | BindingFlags.Instance);
+                    if(field != null)
+                    {
+                        field.DeclaringType.GetField("_allUnits");
+                        List<IFormationUnit> agents = (List<IFormationUnit>)field.GetValue(arrangement);
+
+                        foreach (Agent agent in agents.ToList())
+                        {
+                            bool ismountedSkrimisher = false;
+                            for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                            {
+                                if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
+                                {
+                                    if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.Equipment[equipmentIndex].Amount > 0 && agent.MountAgent != null)
+                                    {
+                                        ismountedSkrimisher = true;
+                                    }
+                                }
+                            }
+                            if (ismountedSkrimisher)
+                            {
+                                mountedSkirmishersCount++;
+                            }
+                        }
+
+                        float mountedSkirmishersRatio = (float)mountedSkirmishersCount / (float)formation.CountOfUnits;
+                        if (mountedSkirmishersRatio > 0.6f)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+                return false;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 
     [HarmonyPatch(typeof(SandboxAgentStatCalculateModel))]

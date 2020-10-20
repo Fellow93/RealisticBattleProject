@@ -7,7 +7,6 @@ using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
-using TaleWorlds.MountAndBlade.GauntletUI.Widgets;
 using static TaleWorlds.Core.ItemObject;
 
 namespace RealisticBattle
@@ -62,7 +61,6 @@ namespace RealisticBattle
             [HarmonyPatch("SetChargeBehaviorValues")]
             static void PostfixSetChargeBehaviorValues(Agent unit)
             {
-
             }
 
             [HarmonyPostfix]
@@ -172,6 +170,10 @@ namespace RealisticBattle
                                     {
                                         newSignificantEnemy = enemyFormation;
                                     }
+                                    if (newSignificantEnemy == null && (!Utilities.CheckIfMountedSkirmishFormation(enemyFormation)))
+                                    {
+                                        newSignificantEnemy = enemyFormation;
+                                    }
                                 }
                                 if (newSignificantEnemy != null)
                                 {
@@ -243,6 +245,10 @@ namespace RealisticBattle
                                         newSignificantEnemy = enemyFormation;
                                     }
                                     if (newSignificantEnemy == null && enemyFormation.QuerySystem.IsRangedFormation)
+                                    {
+                                        newSignificantEnemy = enemyFormation;
+                                    }
+                                    if (newSignificantEnemy == null && (!Utilities.CheckIfMountedSkirmishFormation(enemyFormation)))
                                     {
                                         newSignificantEnemy = enemyFormation;
                                     }
@@ -709,46 +715,12 @@ namespace RealisticBattle
         [HarmonyPatch("GetAiWeight")]
         static void PostfixGetAiWeight(ref Formation ___formation,  ref float __result)
         {
-            int mountedSkirmishersCount = 0;
-            if(___formation != null)
+            if (Utilities.CheckIfMountedSkirmishFormation(___formation)){
+                __result = 5f;
+            }
+            else
             {
-                PropertyInfo property = typeof(Formation).GetProperty("arrangement", BindingFlags.NonPublic | BindingFlags.Instance);
-                property.DeclaringType.GetProperty("arrangement");
-                IFormationArrangement arrangement = (IFormationArrangement)property.GetValue(___formation);
-
-                FieldInfo field = typeof(LineFormation).GetField("_allUnits", BindingFlags.NonPublic | BindingFlags.Instance);
-                field.DeclaringType.GetField("_allUnits");
-                List<IFormationUnit> agents = (List<IFormationUnit>)field.GetValue(arrangement);
-                foreach(Agent agent in agents.ToList())
-                {
-                    bool ismountedSkrimisher = false;
-                    for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-                    {
-                        if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
-                        {
-                            if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.Equipment[equipmentIndex].Amount > 0 && agent.MountAgent != null)
-                            {
-                                ismountedSkrimisher = true;
-                            }
-                        }
-                    }
-                    if (ismountedSkrimisher)
-                    {
-                        mountedSkirmishersCount++;
-                    }
-                }
-
-                float mountedSkirmishersRatio = (float)mountedSkirmishersCount / (float)___formation.CountOfUnits;
-                if (mountedSkirmishersRatio > 0.6f)
-                {
-                    //___formation.AI.SetBehaviorWeight<BehaviorProtectFlank>(0f);
-                    __result = 5f;
-                }
-                else
-                {
-                    //___formation.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f);
-                    __result = 0f;
-                }
+                __result = 0f;
             }
         }
     }
@@ -762,6 +734,55 @@ namespace RealisticBattle
         {
             __result = 0f;
             return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(BehaviorCharge))]
+    class OverrideBehaviorCharge
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch("CalculateCurrentOrder")]
+        static void PostfixCalculateCurrentOrdert(ref Formation ___formation, ref MovementOrder ____currentOrder)
+        {
+            if (___formation != null && ___formation.QuerySystem.IsInfantryFormation &&  ___formation.QuerySystem.ClosestEnemyFormation != null)
+            {
+                Formation significantEnemy = null;
+                float dist = 10000f;
+                for (int i = 0; i < Mission.Current.Teams.Count; i++)
+                {
+                    Team enemyTeam = Mission.Current.Teams[i];
+                    if (enemyTeam.IsEnemyOf(___formation.Team))
+                    {
+                        Formation newSignificantEnemy = null;
+                        foreach (Formation enemyFormation in enemyTeam.Formations)
+                        {
+                            if (enemyFormation.QuerySystem.IsInfantryFormation)
+                            {
+                                newSignificantEnemy = enemyFormation;
+                            }
+                            if (newSignificantEnemy == null && enemyFormation.QuerySystem.IsRangedFormation)
+                            {
+                                newSignificantEnemy = enemyFormation;
+                            }
+                        }
+                        if (newSignificantEnemy != null)
+                        {
+                            float newDist = ___formation.QuerySystem.MedianPosition.AsVec2.Distance(newSignificantEnemy.QuerySystem.MedianPosition.AsVec2);
+                            if (newDist < dist)
+                            {
+                                significantEnemy = newSignificantEnemy;
+                                dist = newDist;
+                            }
+                        }
+                    }
+                }
+                if(significantEnemy != null)
+                {
+                    MethodInfo method = typeof(MovementOrder).GetMethod("MovementOrderChargeToTarget", BindingFlags.NonPublic | BindingFlags.Static);
+                    method.DeclaringType.GetMethod("MovementOrderChargeToTarget");
+                    method.Invoke(____currentOrder, new object[] { significantEnemy });
+                }
+            }
         }
     }
 }
