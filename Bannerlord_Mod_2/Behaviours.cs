@@ -1,13 +1,10 @@
 ﻿using HarmonyLib;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
-using static TaleWorlds.Core.ItemObject;
 
 namespace RealisticBattle
 {
@@ -71,46 +68,6 @@ namespace RealisticBattle
 
         }
 
-        //[HarmonyPatch(typeof(MovementOrder))]
-        //class OverrideMovementOrder
-        //{
-        //    [HarmonyPostfix]
-        //    [HarmonyPatch("OnApply")]
-        //    static void PostfixOnApply(ArrangementOrder __instance, ref Formation formation)
-        //    {
-        //        if(__instance != null)
-        //        {
-        //            if (formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.ShieldWall || formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.Line)
-        //            {
-        //                //for (int i = 0; i < formation.CountOfUnits; i++)
-        //                //{
-        //                //    Agent agent = formation.GetUnitWithIndex(i);
-        //                //    //agent
-        //                //}
-        //                formation.ApplyActionOnEachUnit(SetDefensiveArrangementMoveBehaviorValues);
-        //            }
-        //        }
-        //    }
-
-        //    [HarmonyPostfix]
-        //    [HarmonyPatch("OnUnitJoinOrLeave")]
-        //    static void PostfixOnUnitJoinOrLeave(ArrangementOrder __instance, ref Formation formation)
-        //    {
-        //        if (__instance != null)
-        //        {
-        //            if (formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.ShieldWall || formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.Line)
-        //            {
-        //                //for (int i = 0; i < formation.CountOfUnits; i++)
-        //                //{
-        //                //    Agent agent = formation.GetUnitWithIndex(i);
-        //                //    //agent
-        //                //}
-        //                formation.ApplyActionOnEachUnit(SetDefensiveArrangementMoveBehaviorValues);
-        //            }
-        //        }
-        //    }
-        //}
-
         [HarmonyPatch(typeof(BehaviorSkirmishLine))]
         class OverrideBehaviorSkirmishLine
         {
@@ -154,13 +111,12 @@ namespace RealisticBattle
 
                         Formation significantEnemy = null;
                         float dist = 10000f;
-                        for (int i = 0; i < Mission.Current.Teams.Count; i++)
+                        foreach (Team team in Mission.Current.Teams.ToList())
                         {
-                            Team enemyTeam = Mission.Current.Teams[i];
-                            if (enemyTeam.IsEnemyOf(___formation.Team))
+                            if (team.IsEnemyOf(___formation.Team))
                             {
                                 Formation newSignificantEnemy = null;
-                                foreach (Formation enemyFormation in enemyTeam.Formations)
+                                foreach (Formation enemyFormation in team.Formations.ToList())
                                 {
                                     if (enemyFormation.QuerySystem.IsInfantryFormation)
                                     {
@@ -186,6 +142,7 @@ namespace RealisticBattle
                                 }
                             }
                         }
+
                         if (significantEnemy != null)
                         {
                             if (dist < (180f))
@@ -232,13 +189,12 @@ namespace RealisticBattle
 
                         Formation significantEnemy = null;
                         float dist = 10000f;
-                        for (int i = 0; i < Mission.Current.Teams.Count; i++)
+                        foreach (Team team in Mission.Current.Teams.ToList())
                         {
-                            Team enemyTeam = Mission.Current.Teams[i];
-                            if (enemyTeam.IsEnemyOf(___formation.Team))
+                            if (team.IsEnemyOf(___formation.Team))
                             {
                                 Formation newSignificantEnemy = null;
-                                foreach (Formation enemyFormation in enemyTeam.Formations)
+                                foreach (Formation enemyFormation in team.Formations.ToList())
                                 {
                                     if (enemyFormation.QuerySystem.IsInfantryFormation)
                                     {
@@ -264,6 +220,7 @@ namespace RealisticBattle
                                 }
                             }
                         }
+
                         if (significantEnemy != null)
                         {
                             if (dist < (180f))
@@ -422,13 +379,12 @@ namespace RealisticBattle
             {
                 Formation significantEnemy = null;
                 float dist = 10000f;
-                for (int i = 0; i < Mission.Current.Teams.Count; i++)
+                foreach (Team team in Mission.Current.Teams.ToList())
                 {
-                    Team enemyTeam = Mission.Current.Teams[i];
-                    if (enemyTeam.IsEnemyOf(___formation.Team))
+                    if (team.IsEnemyOf(___formation.Team))
                     {
                         Formation newSignificantEnemy = null;
-                        foreach (Formation enemyFormation in enemyTeam.Formations)
+                        foreach (Formation enemyFormation in team.Formations.ToList())
                         {
                             if (enemyFormation.QuerySystem.IsInfantryFormation)
                             {
@@ -439,10 +395,10 @@ namespace RealisticBattle
                                 newSignificantEnemy = enemyFormation;
                             }
                         }
-                        if(newSignificantEnemy != null)
+                        if (newSignificantEnemy != null)
                         {
                             float newDist = ___formation.QuerySystem.MedianPosition.AsVec2.Distance(newSignificantEnemy.QuerySystem.MedianPosition.AsVec2);
-                            if(newDist < dist)
+                            if (newDist < dist)
                             {
                                 significantEnemy = newSignificantEnemy;
                                 dist = newDist;
@@ -450,8 +406,8 @@ namespace RealisticBattle
                         }
                     }
                 }
-                
-                if(significantEnemy != null)
+
+                if (significantEnemy != null)
                 {
                     Vec2 vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - ___formation.QuerySystem.AveragePosition;
                     float distance = vec.Normalize();
@@ -673,16 +629,15 @@ namespace RealisticBattle
                     float num2 = 50f + (___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.Width + ___formation.Depth) * 0.5f;
                     float num3 = 0f;
                     Formation formation = ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation;
-                    for (int i = 0; i < Mission.Current.Teams.Count; i++)
+
+                    foreach (Team team in Mission.Current.Teams.ToList())
                     {
-                        Team team = Mission.Current.Teams[i];
                         if (!team.IsEnemyOf(___formation.Team))
                         {
                             continue;
                         }
-                        for (int j = 0; j < team.FormationsIncludingSpecialAndEmpty.Count; j++)
+                        foreach(Formation formation2 in team.FormationsIncludingSpecialAndEmpty.ToList())
                         {
-                            Formation formation2 = team.FormationsIncludingSpecialAndEmpty[j];
                             if (formation2.CountOfUnits > 0 && formation2.QuerySystem != closestSignificantlyLargeEnemyFormation)
                             {
                                 Vec2 v = formation2.QuerySystem.AveragePosition - closestSignificantlyLargeEnemyFormation.AveragePosition;
@@ -695,6 +650,7 @@ namespace RealisticBattle
                             }
                         }
                     }
+
                     if (___formation.QuerySystem.RangedCavalryUnitRatio > 0.95f && ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation == formation)
                     {
                         ____currentOrder = MovementOrder.MovementOrderCharge;
@@ -737,6 +693,32 @@ namespace RealisticBattle
         }
     }
 
+    [HarmonyPatch(typeof(BehaviorVanguard))]
+    class OverrideBehaviorVanguard
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch("TickOccasionally")]
+        static bool PrefixTickOccasionally(ref Formation ___formation, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder, BehaviorVanguard __instance)
+        {
+            MethodInfo method = typeof(BehaviorVanguard).GetMethod("CalculateCurrentOrder", BindingFlags.NonPublic | BindingFlags.Instance);
+            method.DeclaringType.GetMethod("CalculateCurrentOrder");
+            method.Invoke(__instance, new object[] { });
+
+            ___formation.MovementOrder = ____currentOrder;
+            ___formation.FacingOrder = ___CurrentFacingOrder;
+            if (___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && ___formation.QuerySystem.AveragePosition.DistanceSquared(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MedianPosition.AsVec2) > 1600f && ___formation.QuerySystem.UnderRangedAttackRatio > 0.2f - ((___formation.ArrangementOrder.OrderEnum == ArrangementOrder.ArrangementOrderEnum.Loose) ? 0.1f : 0f))
+            {
+                ___formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
+            }
+            else
+            {
+                ___formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+            }
+
+            return false;
+        }
+    }
+
     [HarmonyPatch(typeof(BehaviorCharge))]
     class OverrideBehaviorCharge
     {
@@ -748,13 +730,13 @@ namespace RealisticBattle
             {
                 Formation significantEnemy = null;
                 float dist = 10000f;
-                for (int i = 0; i < Mission.Current.Teams.Count; i++)
+
+                foreach (Team team in Mission.Current.Teams.ToList())
                 {
-                    Team enemyTeam = Mission.Current.Teams[i];
-                    if (enemyTeam.IsEnemyOf(___formation.Team))
+                    if (team.IsEnemyOf(___formation.Team))
                     {
                         Formation newSignificantEnemy = null;
-                        foreach (Formation enemyFormation in enemyTeam.Formations)
+                        foreach (Formation enemyFormation in team.Formations.ToList())
                         {
                             if (enemyFormation.QuerySystem.IsInfantryFormation)
                             {
@@ -776,6 +758,7 @@ namespace RealisticBattle
                         }
                     }
                 }
+
                 if(significantEnemy != null)
                 {
                     MethodInfo method = typeof(MovementOrder).GetMethod("MovementOrderChargeToTarget", BindingFlags.NonPublic | BindingFlags.Static);

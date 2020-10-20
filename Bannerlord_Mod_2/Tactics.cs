@@ -124,7 +124,7 @@ namespace RealisticBattle
                 {
                     if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
                     {
-                        foreach (Team team in Mission.Current.Teams.Where((Team t) => t.HasTeamAi))
+                        foreach (Team team in Mission.Current.Teams.Where((Team t) => t.HasTeamAi).ToList())
                         {
                             if (team.Side == BattleSideEnum.Attacker)
                             {
@@ -249,6 +249,7 @@ namespace RealisticBattle
                 {
                     List<Agent> mountedSkirmishersList = new List<Agent>();
                     List<Agent> mountedMeleeList = new List<Agent>();
+
                     for (int i = 0; i < ____leftCavalry.CountOfUnits; i++)
                     {
                         Agent agent = ____leftCavalry.GetUnitWithIndex(i);
@@ -271,6 +272,7 @@ namespace RealisticBattle
                             mountedMeleeList.Add(agent);
                         }
                     }
+
                     for (int i = 0; i < ____rightCavalry.CountOfUnits; i++)
                     {
                         Agent agent = ____rightCavalry.GetUnitWithIndex(i);
