@@ -12,6 +12,7 @@ using JetBrains.Annotations;
 using System.Collections;
 using System.Linq;
 using static TaleWorlds.Core.ItemObject;
+using TaleWorlds.Engine;
 
 namespace RealisticBattle
 {
@@ -85,7 +86,7 @@ namespace RealisticBattle
         {
             if(mainInfantry != null)
             {
-                FormationQuerySystem cslef = mainInfantry?.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
+                FormationQuerySystem cslef = mainInfantry.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
                 if (cslef != null && ((!Utilities.CheckIfMountedSkirmishFormation(cslef.Formation)) || cslef.IsInfantryFormation || (cslef.IsRangedFormation && !cslef.IsRangedCavalryFormation) || (cslef.Formation.Team.Formations.Count() == 1)))
                 {
                     if (mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(cslef.MedianPosition.AsVec2) / cslef.MovementSpeedMaximum <= 5f)
@@ -478,7 +479,22 @@ namespace RealisticBattle
                     case ArrangementOrderEnum.Line:
                     case ArrangementOrderEnum.Loose:
                         {
-                            __result = Agent.UsageDirection.DefendDown;
+                            float currentTime = MBCommon.TimeType.Mission.GetTime();
+                            float lastMeleeAttackTime = unit.LastMeleeAttackTime;
+                            float lastMeleeHitTime = unit.LastMeleeHitTime;
+                            float lastRangedHit = unit.LastRangedHitTime;
+                            if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
+                            {
+                                __result = Agent.UsageDirection.None;
+                            }
+                            else if((currentTime - lastRangedHit < 10f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.1f)
+                            {
+                                __result = Agent.UsageDirection.DefendDown;
+                            }
+                            else
+                            {
+                                __result = Agent.UsageDirection.None;
+                            }
                             break;
                         }
                 }
@@ -492,15 +508,23 @@ namespace RealisticBattle
     {
         static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem)
         {
-            //int meleeSkill = GetMeleeSkill(agent, equippedItem, secondaryItem);
-            //float num = CalculateAILevel(agent, meleeSkill);
+            int meleeSkill = GetMeleeSkill(agent, equippedItem, secondaryItem);
+            SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
+            int effectiveSkill = GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
+            float meleeLevel = CalculateAILevel(agent, meleeSkill);                 //num
+            float effectiveSkillLevel = CalculateAILevel(agent, effectiveSkill);    //num2
+            float meleeDefensivness = meleeLevel + agent.Defensiveness;             //num3
+            //mission.GetNearbyAllyAgents(AveragePosition, 30f, formation.Team), 5f);
             //agentDrivenProperties.AiCheckMovementIntervalFactor = (1f - num) * 0.1f;
             //agentDrivenProperties.AiMoveEnemySideTimeValue = -1.5f;
             //agentDrivenProperties.AiMovemetDelayFactor = 1f;
             //agentDrivenProperties.AiAttackCalculationMaxTimeFactor = 0.85f;
             agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 4f;
-            //agentDrivenProperties.AIBlockOnDecideAbility = num;
-            //agentDrivenProperties.AIParryOnDecideAbility = num;
+            agentDrivenProperties.AIBlockOnDecideAbility = MBMath.ClampFloat(meleeLevel + 0.15f, 0f, 0.95f);
+            agentDrivenProperties.AIParryOnDecideAbility = MBMath.ClampFloat(meleeLevel, 0f, 0.95f);
+            agentDrivenProperties.AIRealizeBlockingFromIncorrectSideAbility = MBMath.ClampFloat(meleeLevel + 0.1f, 0f, 0.95f);
+            agentDrivenProperties.AIDecideOnAttackChance = MBMath.ClampFloat(meleeLevel + 0.1f, 0f, 0.95f);
+            agentDrivenProperties.AIDecideOnRealizeEnemyBlockingAttackAbility = MBMath.ClampFloat(meleeLevel + 0.1f, 0f, 0.95f);
             //agentDrivenProperties.AiTryChamberAttackOnDecide = 100f;
             //agentDrivenProperties.AiWaitBeforeShootFactor = 1f;
             //agentDrivenProperties.AiShootFreq = 1f;
@@ -518,7 +542,8 @@ namespace RealisticBattle
             //agentDrivenProperties.AIAttackOnDecideChance = 0.9f; // ???
             //agentDrivenProperties.AiMinimumDistanceToContinueFactor = 10f;
             agentDrivenProperties.AiRangedHorsebackMissileRange = 0.7f;
-
+            agentDrivenProperties.AiUseShieldAgainstEnemyMissileProbability = 0.95f;
+	        agentDrivenProperties.AiFlyingMissileCheckRadius = 250f;
         }
 
         static protected float CalculateAILevel(Agent agent, int relevantSkillLevel)
@@ -836,14 +861,25 @@ namespace RealisticBattle
                     }
                 }
             }
-
-            foreach(MissionWeapon missionWeapon in stringRangedWeapons){ 
+            foreach (MissionWeapon missionWeapon in stringRangedWeapons){ 
                 int calculatedMissileSpeed = 50;
                 if (!missionWeapon.Equals(MissionWeapon.Invalid) && !arrow.Equals(MissionWeapon.Invalid))
                 {
-                    _oldMissileSpeeds.Add(missionWeapon.GetModifiedMissileSpeedForUsage(0));
-                    float ammoWeight = arrow.GetWeight() / arrow.Amount;
+                    if(missionWeapon.ItemModifier != null)
+                    {
+                        FieldInfo field = typeof(ItemModifier).GetField("_missileSpeed", BindingFlags.NonPublic | BindingFlags.Instance);
+                        field.DeclaringType.GetField("_missileSpeed");
+                        int missileSpeedModifier  = (int)field.GetValue(missionWeapon.ItemModifier);
 
+                        _oldMissileSpeeds.Add(missionWeapon.GetModifiedMissileSpeedForUsage(0) - missileSpeedModifier);
+
+                    }
+                    else
+                    {
+                        _oldMissileSpeeds.Add(missionWeapon.GetModifiedMissileSpeedForUsage(0));
+
+                    }
+                    float ammoWeight = arrow.GetWeight() / arrow.Amount;
                     calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon, missionWeapon.GetModifiedMissileSpeedForUsage(0));
 
                     PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
@@ -852,7 +888,20 @@ namespace RealisticBattle
                 }
                 else if (!missionWeapon.Equals(MissionWeapon.Invalid))
                 {
-                    _oldMissileSpeeds.Add(missionWeapon.GetModifiedMissileSpeedForUsage(0));
+                    if (missionWeapon.ItemModifier != null)
+                    {
+                        FieldInfo field = typeof(ItemModifier).GetField("_missileSpeed", BindingFlags.NonPublic | BindingFlags.Instance);
+                        field.DeclaringType.GetField("_missileSpeed");
+                        int missileSpeedModifier = (int)field.GetValue(missionWeapon.ItemModifier);
+
+                        _oldMissileSpeeds.Add(missionWeapon.GetModifiedMissileSpeedForUsage(0) - missileSpeedModifier);
+
+                    }
+                    else
+                    {
+                        _oldMissileSpeeds.Add(missionWeapon.GetModifiedMissileSpeedForUsage(0));
+
+                    }
                     PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                     property.DeclaringType.GetProperty("MissileSpeed");
                     property.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
@@ -903,8 +952,20 @@ namespace RealisticBattle
 
             if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
             {
+                if (missionWeapon.ItemModifier != null)
+                {
+                    FieldInfo field = typeof(ItemModifier).GetField("_missileSpeed", BindingFlags.NonPublic | BindingFlags.Instance);
+                    field.DeclaringType.GetField("_missileSpeed");
+                    int missileSpeedModifier = (int)field.GetValue(missionWeapon.ItemModifier);
 
-                _oldMissileSpeed = missionWeapon.GetModifiedMissileSpeedForUsage(0);
+                    _oldMissileSpeed = missionWeapon.GetModifiedMissileSpeedForUsage(0) - missileSpeedModifier;
+
+                }
+                else
+                {
+                    _oldMissileSpeed = missionWeapon.GetModifiedMissileSpeedForUsage(0);
+
+                }
                 float ammoWeight = missionWeapon.AmmoWeapon.GetWeight();
 
                 int calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon, missionWeapon.GetModifiedMissileSpeedForUsage(0));

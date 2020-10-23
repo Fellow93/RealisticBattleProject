@@ -51,23 +51,6 @@ namespace RealisticBattle
         //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
         //}
 
-        [HarmonyPatch(typeof(MovementOrder))]
-        class OverrideMovementOrder
-        {
-            [HarmonyPostfix]
-            [HarmonyPatch("SetChargeBehaviorValues")]
-            static void PostfixSetChargeBehaviorValues(Agent unit)
-            {
-            }
-
-            [HarmonyPostfix]
-            [HarmonyPatch("SetDefaultMoveBehaviorValues")]
-            static void PostfixSetDefaultMoveBehaviorValues(Agent unit)
-            {
-            }
-
-        }
-
         [HarmonyPatch(typeof(BehaviorSkirmishLine))]
         class OverrideBehaviorSkirmishLine
         {
@@ -722,7 +705,7 @@ namespace RealisticBattle
     [HarmonyPatch(typeof(BehaviorCharge))]
     class OverrideBehaviorCharge
     {
-        [HarmonyPrefix]
+        [HarmonyPostfix]
         [HarmonyPatch("CalculateCurrentOrder")]
         static void PostfixCalculateCurrentOrdert(ref Formation ___formation, ref MovementOrder ____currentOrder)
         {
