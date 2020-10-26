@@ -520,8 +520,8 @@ namespace RealisticBattle
             //agentDrivenProperties.AiMovemetDelayFactor = 1f;
             //agentDrivenProperties.AiAttackCalculationMaxTimeFactor = 0.85f;
             agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 4f;
-            agentDrivenProperties.AIBlockOnDecideAbility = MBMath.ClampFloat(meleeLevel + 0.15f, 0f, 0.95f);
-            agentDrivenProperties.AIParryOnDecideAbility = MBMath.ClampFloat((meleeLevel * 0.35f) + 0.15f, 0.1f, 0.95f);
+            agentDrivenProperties.AIBlockOnDecideAbility = MBMath.ClampFloat(meleeLevel * 0.7f, 0.15f, 0.45f);
+            agentDrivenProperties.AIParryOnDecideAbility = MBMath.ClampFloat((meleeLevel * 0.35f) + 0.15f, 0.1f, 0.45f);
             agentDrivenProperties.AIRealizeBlockingFromIncorrectSideAbility = MBMath.ClampFloat(meleeLevel + 0.1f, 0f, 0.95f);
             agentDrivenProperties.AIDecideOnAttackChance = MBMath.ClampFloat(meleeLevel + 0.1f, 0f, 0.95f);
             agentDrivenProperties.AIDecideOnRealizeEnemyBlockingAttackAbility = MBMath.ClampFloat(meleeLevel + 0.1f, 0f, 0.95f);
