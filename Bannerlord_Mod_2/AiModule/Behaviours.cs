@@ -784,15 +784,15 @@ namespace RealisticBattle
         [HarmonyPatch("CalculateCurrentOrder")]
         static bool PrefixCalculateCurrentOrder(ref Formation ___formation, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
         {
-            if (___formation != null && ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
+            if (___formation != null && ___formation.QuerySystem.IsInfantryFormation && ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
                 Formation significantEnemy = Utilities.FindSignificantEnemy(___formation, true, true, false, false, false);
                 if (significantEnemy != null)
                 {
-                    //___formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
-                    //___formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
-                    //___formation.FormOrder = FormOrder.FormOrderWide;
-                    //___formation.WeaponUsageOrder = WeaponUsageOrder.WeaponUsageOrderUseAny;
+                    ___formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+                    ___formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
+                    ___formation.FormOrder = FormOrder.FormOrderWide;
+                    ___formation.WeaponUsageOrder = WeaponUsageOrder.WeaponUsageOrderUseAny;
 
                     WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
                     ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);

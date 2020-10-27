@@ -69,6 +69,7 @@ namespace RealisticBattle
             {
                 if (FormationFightingInMelee(mainInfantry))
                 {
+                    mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
                     return true;
                 }
                 else
@@ -210,7 +211,7 @@ namespace RealisticBattle
                             countOfUnitsFightingInMelee++;
                         }
                     }
-                    if (countOfUnitsFightingInMelee / countOfUnits > 0.5f)
+                    if (countOfUnitsFightingInMelee / countOfUnits >= 0.4f)
                     {
                         fightingInMelee = true;
                     }
