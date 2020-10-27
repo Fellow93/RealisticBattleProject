@@ -157,7 +157,7 @@ namespace RealisticBattle
         {
             static void Postfix()
             {
-                
+
                 if (Mission.Current.Teams.Any())
                 {
                     if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
@@ -178,13 +178,13 @@ namespace RealisticBattle
                                 team.ClearTacticOptions();
                                 team.AddTacticOption(new TacticDefensiveEngagement(team));
                                 team.AddTacticOption(new TacticDefensiveLine(team));
+                                team.AddTacticOption(new TacticFullScaleAttack(team));
+                                team.AddTacticOption(new TacticCharge(team));
                                 //team.AddTacticOption(new TacticHoldChokePoint(team));
                                 //team.AddTacticOption(new TacticHoldTheHill(team));
                                 //team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
                                 //team.AddTacticOption(new TacticCoordinatedRetreat(team));
-                                team.AddTacticOption(new TacticFullScaleAttack(team));
                                 //team.AddTacticOption(new TacticFrontalCavalryCharge(team));
-                                team.AddTacticOption(new TacticCharge(team));
                                 //team.AddTacticOption(new TacticDefensiveRing(team));
                                 //team.AddTacticOption(new TacticArchersOnTheHill(team));
                             }
@@ -215,10 +215,12 @@ namespace RealisticBattle
                 }
                 if (____rightCavalry != null)
                 {
+                    ____rightCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(3f);
                     ____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                 }
                 if (____leftCavalry != null)
                 {
+                    ____leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(3f);
                     ____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                 }
             }
@@ -232,7 +234,7 @@ namespace RealisticBattle
                 {
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(1f);
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
-                    ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
+                    ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(0f);
                 }
                 if (____rightCavalry != null)
                 {
@@ -270,7 +272,7 @@ namespace RealisticBattle
                 FieldInfo teamField = typeof(TacticFullScaleAttack).GetField("team", BindingFlags.NonPublic | BindingFlags.Instance);
                 teamField.DeclaringType.GetField("team");
                 Team currentTeam = (Team)teamField.GetValue(__instance);
-                if(currentTeam.Side == BattleSideEnum.Defender)
+                if (currentTeam.Side == BattleSideEnum.Defender)
                 {
                     if (currentTeam.QuerySystem.InfantryRatio > 0.9f)
                     {
@@ -306,7 +308,8 @@ namespace RealisticBattle
                         {
                             mountedSkirmishersList.Add(agent);
                         }
-                        else{
+                        else
+                        {
                             mountedMeleeList.Add(agent);
                         }
                     }
@@ -339,7 +342,7 @@ namespace RealisticBattle
                     int cavalryCount = ____leftCavalry.CountOfUnits + ____rightCavalry.CountOfUnits;
                     foreach (Agent agent in mountedSkirmishersList.ToList())
                     {
-                        if(j < cavalryCount / 2)
+                        if (j < cavalryCount / 2)
                         {
                             agent.Formation = ____leftCavalry;
                         }
@@ -373,8 +376,9 @@ namespace RealisticBattle
             [HarmonyPatch("Advance")]
             static void PostfixAdvance(ref Formation ____cavalry)
             {
-                if(____cavalry != null)
+                if (____cavalry != null)
                 {
+                    ____cavalry.AI.SetBehaviorWeight<BehaviorVanguard>(1.5f);
                     ____cavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                 }
             }
@@ -396,7 +400,7 @@ namespace RealisticBattle
                 {
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(1f);
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
-                    ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
+                    ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(0f);
                 }
                 Utilities.FixCharge(ref ____mainInfantry);
             }
@@ -454,7 +458,7 @@ namespace RealisticBattle
                 {
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(1f);
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
-                    ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
+                    ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(0f);
                 }
                 Utilities.FixCharge(ref ____mainInfantry);
             }
@@ -558,7 +562,7 @@ namespace RealisticBattle
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 8f);
+                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 14f);
             }
 
             [HarmonyPostfix]
@@ -586,7 +590,7 @@ namespace RealisticBattle
                 {
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(1f);
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
-                    ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
+                    ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(0f);
                 }
                 if (____rightCavalry != null)
                 {
@@ -618,7 +622,7 @@ namespace RealisticBattle
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 8f);
+                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 14f);
             }
 
             [HarmonyPostfix]
@@ -646,7 +650,7 @@ namespace RealisticBattle
                 {
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(1f);
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
-                    ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
+                    ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(0f);
                 }
                 if (____rightCavalry != null)
                 {
@@ -668,8 +672,6 @@ namespace RealisticBattle
                 }
                 Utilities.FixCharge(ref ____mainInfantry);
             }
-
-        
         }
 
         [HarmonyPatch(typeof(TacticComponent))]
@@ -679,7 +681,7 @@ namespace RealisticBattle
             [HarmonyPatch("SetDefaultBehaviorWeights")]
             static bool PrefixSetDefaultBehaviorWeights(ref Formation f)
             {
-                if(f != null)
+                if (f != null)
                 {
                     f.AI.SetBehaviorWeight<BehaviorCharge>(1f);
                     f.AI.SetBehaviorWeight<BehaviorPullBack>(1f);

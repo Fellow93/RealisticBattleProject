@@ -259,10 +259,15 @@
     <!-- TODO: Don't think this can be made optional -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Behaviours.cs" />
-    <Compile Include="Tactics.cs" />
+    <Compile Include="AiModule\AgentAi.cs" />
+    <Compile Include="CombatModule\ArmorRework.cs" />
+    <Compile Include="AiModule\Behaviours.cs" />
+    <Compile Include="CombatModule\DamageRework.cs" />
+    <Compile Include="CombatModule\RangedRework.cs" />
+    <Compile Include="AiModule\Tactics.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
