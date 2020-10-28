@@ -561,6 +561,10 @@ namespace RealisticBattle
             {
                 __result = 5f;
             }
+            else if(___formation != null && ___formation.QuerySystem.IsRangedCavalryFormation)
+            {
+                __result = 1f;
+            }
             else
             {
                 __result = 0f;
