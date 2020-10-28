@@ -191,8 +191,15 @@ namespace RealisticBattle
             {
                 property.DeclaringType.GetProperty("arrangement");
                 IFormationArrangement arrangement = (IFormationArrangement)property.GetValue(formation);
-
-                FieldInfo field = typeof(LineFormation).GetField("_allUnits", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo field;
+                if (formation.ArrangementOrder == ArrangementOrder.ArrangementOrderColumn)
+                {
+                    field = typeof(TransposedLineFormation).GetField("_allUnits", BindingFlags.NonPublic | BindingFlags.Instance);
+                }
+                else
+                {
+                    field = typeof(LineFormation).GetField("_allUnits", BindingFlags.NonPublic | BindingFlags.Instance);
+                }
                 float currentTime = MBCommon.TimeType.Mission.GetTime();
                 float countOfUnits = 0;
                 float countOfUnitsFightingInMelee = 0;
