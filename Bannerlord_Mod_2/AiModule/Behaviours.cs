@@ -628,7 +628,8 @@ namespace RealisticBattle
                     return false;
                 }
             }
-            return true;
+            ____currentOrder = MovementOrder.MovementOrderCharge;
+            return false;
         }
     }
 
@@ -670,19 +671,15 @@ namespace RealisticBattle
         {
             if (unit.Formation != null && unit.Formation.QuerySystem.IsInfantryFormation && unit.Formation.MovementOrder.OrderType == OrderType.ChargeWithTarget)
             {
-                //unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0f, 40f, 4f, 50f, 6f);
-                //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 7f, 1f, 10f, 0f);
-                unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0f, 0.1f, 0f, 0f, 0.01f);
-                unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 0f, 0.1f, 0f, 0f, 0.01f);
-                unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 1f, 11, 20f);
+                unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0f, 40f, 4f, 50f, 6f);
+                unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 7f, 1f, 10f, 0f);
+                unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 1f, 11f, 20f);
                 unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 40f, 4f, 60f, 0f);
                 unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 5f, 7f, 10f, 8, 20f);
-                unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
+                unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 1f, 12f, 1f, 30f, 0f);
                 unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-
                 return false;
             }
-
             return true;
         }
 
@@ -741,16 +738,16 @@ namespace RealisticBattle
                 Formation significantEnemy = __instance.TargetFormation;
                 if (significantEnemy != null)
                 {
-                    var targetAgent = unit.GetTargetAgent();
-                    if (targetAgent != null)
-                    {
-                        float distance = unit.GetWorldPosition().AsVec2.Distance(targetAgent.GetWorldPosition().AsVec2);
-                        if (distance > 10f)
-                        {
-                            __result = targetAgent.GetWorldPosition();
-                            return false;
-                        }
-                    }
+                    //var targetAgent = unit.GetTargetAgent();
+                    //if (targetAgent != null)
+                    //{
+                    //    float distance = unit.GetWorldPosition().AsVec2.Distance(targetAgent.GetWorldPosition().AsVec2);
+                    //    if (distance > 10f)
+                    //    {
+                    //        __result = targetAgent.GetWorldPosition();
+                    //        return false;
+                    //    }
+                    //}
                 }
             }
             return true;
