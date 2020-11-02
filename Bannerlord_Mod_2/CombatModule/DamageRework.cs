@@ -254,7 +254,7 @@ namespace RealisticBattle
                                 }
                             case "Javelin":
                                 {
-                                    num *= 2.5f;
+                                    num *= 1.5f;
                                     break;
                                 }
                             case "ThrowingAxe":
@@ -317,7 +317,7 @@ namespace RealisticBattle
             float damage = 0f;
             float num3 = 100f / (100f + armorEffectiveness * XmlConfig.dict["Global.ArmorMultiplier"]);
             float mag_1hpol = magnitude + 45f;
-            float mag_2hpol = magnitude + 30f;
+            float mag_2hpol = magnitude + 45f;
 
             switch (weaponType)
             {
