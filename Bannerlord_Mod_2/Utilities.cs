@@ -16,21 +16,30 @@ namespace RealisticBattle
             int calculatedMissileSpeed = 10;
             if (rangedWeapon.CurrentUsageItem.ItemUsage.Equals("bow"))
             {
-                float drawlength = (28 * 0.0254f);
-                double potentialEnergy = 0.5f * (drawWeight * 4.448f) * drawlength;
-                calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.91f * ((ammoWeight * 3f) + 0.432f)));
+                float powerstroke = (25f * 0.0254f); //28f
+                double potentialEnergy = 0.5f * (drawWeight * 4.448f) * powerstroke * 0.91f;
+                //calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.91f * ((ammoWeight * 3f) + 0.432f)));
+                //calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight + (drawWeight * 0.00012f))));
+                ammoWeight += drawWeight * 0.00012f;
+                calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
             }
             else if (rangedWeapon.CurrentUsageItem.ItemUsage.Equals("long_bow"))
             {
-                float drawlength = (30 * 0.0254f);
-                double potentialEnergy = 0.5f * (drawWeight * 4.448f) * drawlength;
-                calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.89f * ((ammoWeight * 3.3f) + 0.33f) * (1f + (0.416f - (0.0026 * drawWeight)))));
+                float powerstroke = (25f * 0.0254f); //30f
+                double potentialEnergy = 0.5f * (drawWeight * 4.448f) * powerstroke * 0.89f;
+                //calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.89f * ((ammoWeight * 3.3f) + 0.33f) * (1f + (0.416f - (0.0026 * drawWeight)))));
+                //calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight + (drawWeight * 0.00020f))));
+                ammoWeight += drawWeight * 0.00020f;
+                calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
             }
             else if (rangedWeapon.CurrentUsageItem.ItemUsage.Equals("crossbow") || rangedWeapon.CurrentUsageItem.ItemUsage.Equals("crossbow_fast"))
             {
-                float drawlength = (4.5f * 0.0254f);
-                double potentialEnergy = 0.5f * (drawWeight * 4.448f) * drawlength;
-                calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.45f));
+                float powerstroke = (6f * 0.0254f); //4.5f
+                double potentialEnergy = 0.5f * (drawWeight * 4.448f) * powerstroke * 0.91f;
+                //calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.45f));
+                //calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight + (drawWeight * 0.0000588f))));
+                ammoWeight += drawWeight * 0.0000588f;
+                calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
             }
             return calculatedMissileSpeed;
         }
