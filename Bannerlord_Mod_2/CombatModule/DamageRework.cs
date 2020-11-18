@@ -316,8 +316,10 @@ namespace RealisticBattle
 
             float damage = 0f;
             float num3 = 100f / (100f + armorEffectiveness * XmlConfig.dict["Global.ArmorMultiplier"]);
-            float mag_1hpol = magnitude + 45f;
-            float mag_2hpol = magnitude + 45f;
+            //float mag_1hpol = magnitude + 45f;
+            //float mag_2hpol = magnitude + 45f;
+            float mag_1hpol = magnitude + XmlConfig.dict["Global.OneHandedPolearmBonus"];
+            float mag_2hpol = magnitude + XmlConfig.dict["Global.TwoHandedPolearmBonus"];
 
             switch (weaponType)
             {
