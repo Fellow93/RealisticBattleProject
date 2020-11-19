@@ -203,7 +203,8 @@ namespace RealisticBattle
                 FieldInfo field;
                 if (formation.ArrangementOrder == ArrangementOrder.ArrangementOrderColumn)
                 {
-                    field = typeof(TransposedLineFormation).GetField("_allUnits", BindingFlags.NonPublic | BindingFlags.Instance);
+                    return false;
+                    //field = typeof(TransposedLineFormation).GetField("_allUnits", BindingFlags.NonPublic | BindingFlags.Instance);
                 }
                 else
                 {
