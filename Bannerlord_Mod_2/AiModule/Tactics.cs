@@ -1,8 +1,10 @@
 ﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.Core.ItemObject;
 
@@ -109,6 +111,27 @@ namespace RealisticBattle
         //            {
         //                i++;
         //            }
+        //        }
+        //    }
+        //}
+
+        //[HarmonyPatch(typeof(MissionAgentSpawnLogic))]
+        //[HarmonyPatch("BattleSizeSpawnTick")]
+        //class OverrideBattleSizeSpawnTick
+        //{
+
+        //    static bool Prefix(MissionAgentSpawnLogic __instance, int ____battleSize)
+        //    {
+        //        int numberOfActiveDefenderTroops = __instance.NumberOfActiveDefenderTroops;
+        //        int numberOfActiveAttackerTroops = __instance.NumberOfActiveAttackerTroops;
+        //        int numberOfActiveTroops = __instance.NumberOfActiveTroops;
+        //        if ((float)numberOfActiveTroops < (float)____battleSize * 0.2f || (float)numberOfActiveDefenderTroops < (float)____battleSize * 0.2f || (float)numberOfActiveAttackerTroops < (float)____battleSize * 0.2f)
+        //        {
+        //            return true;
+        //        }
+        //        else
+        //        {
+        //            return false;
         //        }
         //    }
         //}

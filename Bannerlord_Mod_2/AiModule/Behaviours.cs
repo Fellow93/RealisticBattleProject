@@ -61,9 +61,7 @@ namespace RealisticBattle
             {
                 if (____mainFormation != null)
                 {
-                    MethodInfo method = typeof(FacingOrder).GetMethod("FacingOrderLookAtDirection", BindingFlags.NonPublic | BindingFlags.Static);
-                    method.DeclaringType.GetMethod("FacingOrderLookAtDirection");
-                    ___CurrentFacingOrder = (FacingOrder)method.Invoke(___CurrentFacingOrder, new object[] { ____mainFormation.Direction });
+                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(____mainFormation.Direction);
                 }
             }
 
@@ -163,9 +161,7 @@ namespace RealisticBattle
             {
                 if (____mainFormation != null && ___formation != null)
                 {
-                    MethodInfo method = typeof(FacingOrder).GetMethod("FacingOrderLookAtDirection", BindingFlags.NonPublic | BindingFlags.Static);
-                    method.DeclaringType.GetMethod("FacingOrderLookAtDirection");
-                    ___CurrentFacingOrder = (FacingOrder)method.Invoke(___CurrentFacingOrder, new object[] { ____mainFormation.Direction });
+                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(____mainFormation.Direction);
 
                     WorldPosition medianPosition = ____mainFormation.QuerySystem.MedianPosition;
                     //medianPosition.SetVec2(medianPosition.AsVec2 - ____mainFormation.Direction * ((____mainFormation.Depth + ___formation.Depth) * 1.5f));
@@ -311,18 +307,14 @@ namespace RealisticBattle
                                         ____shootPosition = medianPosition.AsVec2 + vec * 5f;
                                         ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
 
-                                        MethodInfo method = typeof(FacingOrder).GetMethod("FacingOrderLookAtDirection", BindingFlags.NonPublic | BindingFlags.Static);
-                                        method.DeclaringType.GetMethod("FacingOrderLookAtDirection");
-                                        ___CurrentFacingOrder = (FacingOrder)method.Invoke(___CurrentFacingOrder, new object[] { vec });
+                                        ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
                                     }
                                     waitCountShooting = 0;
                                     waitCountApproaching = 0;
                                 }
                                 else
                                 {
-                                    MethodInfo method = typeof(FacingOrder).GetMethod("FacingOrderLookAtDirection", BindingFlags.NonPublic | BindingFlags.Static);
-                                    method.DeclaringType.GetMethod("FacingOrderLookAtDirection");
-                                    ___CurrentFacingOrder = (FacingOrder)method.Invoke(___CurrentFacingOrder, new object[] { vec });
+                                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
                                     waitCountShooting++;
                                 }
                                 break;
@@ -338,9 +330,7 @@ namespace RealisticBattle
                                         ____shootPosition = medianPosition.AsVec2 + vec * 5f;
                                         ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
 
-                                        MethodInfo method = typeof(FacingOrder).GetMethod("FacingOrderLookAtDirection", BindingFlags.NonPublic | BindingFlags.Static);
-                                        method.DeclaringType.GetMethod("FacingOrderLookAtDirection");
-                                        ___CurrentFacingOrder = (FacingOrder)method.Invoke(___CurrentFacingOrder, new object[] { vec });
+                                        ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
                                     }
                                     waitCountApproaching = 0;
                                 }
@@ -352,9 +342,7 @@ namespace RealisticBattle
                                         medianPosition.SetVec2(____shootPosition);
                                         ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
 
-                                        MethodInfo method = typeof(FacingOrder).GetMethod("FacingOrderLookAtDirection", BindingFlags.NonPublic | BindingFlags.Static);
-                                        method.DeclaringType.GetMethod("FacingOrderLookAtDirection");
-                                        ___CurrentFacingOrder = (FacingOrder)method.Invoke(___CurrentFacingOrder, new object[] { vec });
+                                        ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
                                     }
                                     waitCountApproaching++;
                                 }
@@ -391,7 +379,6 @@ namespace RealisticBattle
 
         }
     }
-
 
     [HarmonyPatch(typeof(BehaviorMountedSkirmish))]
     class OverrideBehaviorMountedSkirmish
@@ -622,9 +609,7 @@ namespace RealisticBattle
                 Formation significantEnemy = Utilities.FindSignificantEnemy(___formation, true, true, false, false, false);
                 if (significantEnemy != null)
                 {
-                    MethodInfo method = typeof(MovementOrder).GetMethod("MovementOrderChargeToTarget", BindingFlags.NonPublic | BindingFlags.Static);
-                    method.DeclaringType.GetMethod("MovementOrderChargeToTarget");
-                    ____currentOrder = (MovementOrder)method.Invoke(____currentOrder, new object[] { significantEnemy });
+                    ____currentOrder = MovementOrder.MovementOrderChargeToTarget(significantEnemy);
                     return false;
                 }
             }
@@ -799,9 +784,7 @@ namespace RealisticBattle
                     ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
 
                     Vec2 direction = (significantEnemy.QuerySystem.MedianPosition.AsVec2 - ___formation.QuerySystem.AveragePosition).Normalized();
-                    MethodInfo method = typeof(FacingOrder).GetMethod("FacingOrderLookAtDirection", BindingFlags.NonPublic | BindingFlags.Static);
-                    method.DeclaringType.GetMethod("FacingOrderLookAtDirection");
-                    ___CurrentFacingOrder = (FacingOrder)method.Invoke(___CurrentFacingOrder, new object[] { direction });
+                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(direction);
 
                     return false;
                 }
