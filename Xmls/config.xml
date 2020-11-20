@@ -2,7 +2,6 @@
 <config>
 	<Global>
 		<ArmorMultiplier>2.0</ArmorMultiplier>
-		<VolunteerStartTier>2</VolunteerStartTier>
 		<OneHandedPolearmBonus>45.0</OneHandedPolearmBonus>
 		<TwoHandedPolearmBonus>45.0</TwoHandedPolearmBonus>
 	</Global>
