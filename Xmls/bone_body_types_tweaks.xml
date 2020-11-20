@@ -1,0 +1,18 @@
+<base>
+  <bone_body_types>
+    <bone_body_type type="abdomen" pierce_damage_multiplier="1.0" cut_damage_multiplier="1.0" blunt_damage_multiplier="0.7" priority="3"/>
+    <bone_body_type type="chest" pierce_damage_multiplier="0.9" cut_damage_multiplier="0.9" blunt_damage_multiplier="0.8" priority="3"/>
+    <bone_body_type type="shoulder_left" pierce_damage_multiplier="0.8" cut_damage_multiplier="0.9" blunt_damage_multiplier="0.8" priority="3"/>
+    <bone_body_type type="shoulder_right" pierce_damage_multiplier="0.8" cut_damage_multiplier="0.9" blunt_damage_multiplier="0.8" priority="3"/>
+    <bone_body_type type="bipedal_arm_left" pierce_damage_multiplier="0.55" cut_damage_multiplier="0.7" blunt_damage_multiplier="0.4" priority="1" activate_sweep="true" />
+    <bone_body_type type="bipedal_arm_right" pierce_damage_multiplier="0.55" cut_damage_multiplier="0.7" blunt_damage_multiplier="0.4" priority="1" activate_sweep="true" />
+    <bone_body_type type="bipedal_legs" pierce_damage_multiplier="0.65" cut_damage_multiplier="0.7" blunt_damage_multiplier="0.4" priority="2" activate_sweep="true" />
+    <bone_body_type type="quadrupedal_arm_left" pierce_damage_multiplier="1.0" cut_damage_multiplier="1.0" blunt_damage_multiplier="1.0" priority="1" />
+    <bone_body_type type="quadrupedal_arm_right" pierce_damage_multiplier="1.0" cut_damage_multiplier="1.0" blunt_damage_multiplier="1.0" priority="1" />
+    <bone_body_type type="quadrupedal_legs" pierce_damage_multiplier="1.2" cut_damage_multiplier="1.5" blunt_damage_multiplier="1.2" priority="2" />
+    <bone_body_type type="head" pierce_damage_multiplier="1.6" cut_damage_multiplier="1.2" blunt_damage_multiplier="1.5" priority="4" />
+    <bone_body_type type="neck" pierce_damage_multiplier="1.6" cut_damage_multiplier="1.2" blunt_damage_multiplier="1.5" priority="4" />
+  </bone_body_types>
+</base>
+
+

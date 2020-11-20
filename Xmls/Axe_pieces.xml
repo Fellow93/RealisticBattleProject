@@ -1,0 +1,820 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CraftingPieces>
+  <!-- #region Axe Pieces -->
+  <!-- #region Used Axe Blade Pieces -->
+  <CraftingPiece id="axe_craft_36_head" name="{=cEU66ABf}Northern Battle Axe Blade" tier="3" piece_type="Blade" mesh="axe_craft_36_head" distance_to_next_piece="10.4" distance_to_previous_piece="3.4" weight="0.316">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-6.8" />
+    <BladeData stack_amount="3" blade_length="15.764" blade_width="16" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.6" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2" count="3" />
+      <Material id="Iron3" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_35_head" name="{=VfzFTGd8}Small Round Bit Head" tier="2" piece_type="Blade" mesh="axe_craft_35_head" distance_to_next_piece="5" distance_to_previous_piece="3.6" weight="0.316">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-7.2" />
+    <BladeData stack_amount="3" blade_length="10.364" blade_width="20.3" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.2" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2" count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_27_head" name="{=g2r3QKOB}Southern Small Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_27_head" distance_to_next_piece="8.3" distance_to_previous_piece="3.1" weight="0.317">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-6.2" />
+    <BladeData stack_amount="3" blade_length="16.562" blade_width="13.626" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.2" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2" count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_26_head" name="{=Tui9qvOZ}Tzikurion Head" tier="3" piece_type="Blade" mesh="axe_craft_26_head" distance_to_next_piece="9" distance_to_previous_piece="3.5" weight="0.357">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-7" />
+    <BladeData stack_amount="3" blade_length="17.6" blade_width="19.393" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.5" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron3" count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_11_head" name="{=1NSafswc}Gallogaich Axe Head" tier="4" piece_type="Blade" mesh="axe_craft_11_head" distance_to_next_piece="2.124" distance_to_previous_piece="3.279" weight="0.425">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-6.558" />
+    <BladeData stack_amount="3" blade_length="9.79" blade_width="28.335" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.8" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron3" count="2" />
+      <Material id="Iron4" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_25_head" name="{=m6CVEgTU}Spiked Battle Axe Blade" tier="4" piece_type="Blade" mesh="axe_craft_25_head" distance_to_next_piece="13.9" distance_to_previous_piece="4" weight="0.4">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-8" />
+    <BladeData stack_amount="3" blade_length="25.328" blade_width="31.023" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.8" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4" count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_20_head" name="{=X7OrRebK}Narrow Sparth Blade" tier="2" piece_type="Blade" mesh="axe_craft_20_head" distance_to_next_piece="3.6" distance_to_previous_piece="2.7" weight="0.312">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-5.4" />
+    <BladeData stack_amount="3" blade_length="9.683" blade_width="18.004" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.2" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2" count="4" />
+      <Material id="Iron3" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_20_head_blunt" name="{=nsjbWcmp}Narrow Blunt Sparth Blade" tier="2" piece_type="Blade" mesh="axe_craft_20_head" distance_to_next_piece="3.6" distance_to_previous_piece="2.7" weight="0.312" is_hidden="true">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-5.4" />
+    <BladeData stack_amount="3" blade_length="9.683" blade_width="18.004" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Blunt" damage_factor="3.2" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2" count="4" />
+      <Material id="Iron3" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_21_head" name="{=NS83CCvb}Common Iron Axe Head" tier="3" piece_type="Blade" mesh="axe_craft_21_head" distance_to_next_piece="2.6" distance_to_previous_piece="2" weight="0.321">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-4" />
+    <BladeData stack_amount="3" blade_length="9.382" blade_width="18.004" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.6" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron3" count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_30_head" name="{=IZw8FnwW}Large Ascia Head" tier="2" piece_type="Blade" mesh="axe_craft_30_head" distance_to_next_piece="2.6" distance_to_previous_piece="2.3" weight="0.344">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-4.6" />
+    <BladeData stack_amount="3" blade_length="8.442" blade_width="19.527" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.2" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2" count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_30_head_blunt" name="{=M9ACQeD6}Large Blunt Ascia Head" tier="2" piece_type="Blade" mesh="axe_craft_30_head" distance_to_next_piece="2.6" distance_to_previous_piece="2.3" weight="0.344" is_hidden="true">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-4.6" />
+    <BladeData stack_amount="3" blade_length="8.442" blade_width="19.527" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Blunt" damage_factor="3.2" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2" count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_32_head" name="{=KhHXgQJb}Common Wrought Iron Axe Head" tier="1" piece_type="Blade" mesh="axe_craft_32_head" distance_to_next_piece="4.3" distance_to_previous_piece="2.7" weight="0.316" is_default="true">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-5.4" />
+    <BladeData stack_amount="3" blade_length="9.664" blade_width="17.21" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="2.4" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2" count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_37_head" name="{=aPr8NPdo}Western Iron Polearm Head" tier="1" piece_type="Blade" mesh="axe_craft_37_head" distance_to_next_piece="10.4" distance_to_previous_piece="3.4" weight="0.316">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-6.8" />
+    <BladeData stack_amount="3" blade_length="15.764" blade_width="12" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="2.8" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron1" count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_18_head" name="{=4Ilo91CO}Western Battle Axe Head" tier="4" piece_type="Blade" mesh="axe_craft_18_head" distance_to_next_piece="3.4" distance_to_previous_piece="1.3" weight="0.358">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-2.6" />
+    <BladeData stack_amount="3" blade_length="11.4" blade_width="17.4" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.8" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron3" count="1" />
+      <Material id="Iron4" count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_2_head" name="{=VccYBtB0}Northern Hatchet Head" tier="2" piece_type="Blade" mesh="axe_craft_2_head" distance_to_next_piece="3.986" distance_to_previous_piece="2.314" weight="0.372">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-5.628" />
+    <BladeData stack_amount="3" blade_length="12.2" blade_width="24.433" physics_material="metal_weapon" body_name="bo_axe_longer_a">
+      <Swing damage_type="Cut" damage_factor="3.2" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2" count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_23_head" name="{=kNhcSC6i}Northern Bearded Head" tier="4" piece_type="Blade" mesh="axe_craft_23_head" distance_to_next_piece="3" distance_to_previous_piece="5.3" weight="0.367">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-10.6" />
+    <BladeData stack_amount="3" blade_length="24.97" blade_width="20.661" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.8" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4" count="1" />
+      <Material id="Iron3" count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_9_head" name="{=8S6ZYPFD}Round Bitted Fine Steel Hatchet Head" tier="5" piece_type="Blade" mesh="axe_craft_9_head" distance_to_next_piece="4.642" distance_to_previous_piece="2.104" weight="0.333">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-4.208" />
+    <BladeData stack_amount="3" blade_length="11.538" blade_width="26.876" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="4.0" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4" count="3" />
+      <Material id="Iron5" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_8_head" name="{=WkTkxQfw}Rectangular Bit Blade" tier="5" piece_type="Blade" mesh="axe_craft_8_head" distance_to_next_piece="11.156" distance_to_previous_piece="1.96" weight="0.751">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-3.92" />
+    <BladeData stack_amount="3" blade_length="22.332" blade_width="23.205" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="4.0" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4" count="3" />
+      <Material id="Iron5" count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_24_head" name="{=fOrRdtNK}Small Spurred Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_24_head" distance_to_next_piece="2.6" distance_to_previous_piece="2.1" weight="0.375">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-4.2" />
+    <BladeData stack_amount="3" blade_length="9.46" blade_width="21.987" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.2" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2" count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_29_head" name="{=iFhr5nGq}Imperial Axe Head" tier="3" piece_type="Blade" mesh="axe_craft_29_head" distance_to_next_piece="2.6" distance_to_previous_piece="2.3" weight="0.359">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-9.6" />
+    <BladeData stack_amount="3" blade_length="9.105" blade_width="23.082" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.6" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron3" count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_28_head" name="{=ajVcY9v6}Small Hammer Axe Head" tier="3" piece_type="Blade" mesh="axe_craft_28_head" distance_to_next_piece="2.8" distance_to_previous_piece="3.1" weight="0.375">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-6.2" />
+    <BladeData stack_amount="3" blade_length="12.961" blade_width="19.393" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.6" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2" count="3" />
+      <Material id="Iron3" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_12_head" name="{=cK6D7cyn}Large Franziska Head" tier="3" piece_type="Blade" mesh="axe_craft_12_head" distance_to_next_piece="5" distance_to_previous_piece="1.5" weight="0.297">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-3" />
+    <BladeData stack_amount="3" blade_length="11.622" blade_width="23.945" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.5" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron3" count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_19_head" name="{=ZxZ7AJ1r}Southern Battle Axe Blade" tier="4" piece_type="Blade" mesh="axe_craft_19_head" distance_to_next_piece="11.1" distance_to_previous_piece="10.2" weight="0.45">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-20.4" />
+    <BladeData stack_amount="3" blade_length="22.539" blade_width="16.706" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.8" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4" count="2" />
+      <Material id="Iron3" count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_33_head" name="{=SR7a3qlO}Round Bit Battle Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_33_head" distance_to_next_piece="7.2" distance_to_previous_piece="3" weight="0.316">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-6" />
+    <BladeData stack_amount="3" blade_length="12.564" blade_width="15.1" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.2" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2" count="4" />
+    </Materials>
+  </CraftingPiece>
+  <!-- #endregion -->
+  <!-- #region Used 2h Axe Blade Pieces -->
+  <CraftingPiece id="axe_craft_15_head" name="{=LSrJljDL}Adze Head" tier="1" piece_type="Blade" mesh="axe_craft_15_head" distance_to_next_piece="4.1" distance_to_previous_piece="3.2" weight="1" is_default="true">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-6.4" />
+    <BladeData stack_amount="3" blade_length="4.552" blade_width="25.764" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="1.9" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron1" count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_7_head" name="{=USWfzbuW}Northern Broad Great Axe Head" tier="3" piece_type="Blade" mesh="axe_craft_7_head" distance_to_next_piece="14.96" distance_to_previous_piece="2.712" weight="0.7296">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-5.424" />
+    <BladeData stack_amount="3" blade_length="28.366" blade_width="28.192" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.3" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2" count="3" />
+      <Material id="Iron3" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_17_head" name="{=R62maL2H}Bill Head" tier="4" piece_type="Blade" mesh="axe_craft_17_head" distance_to_next_piece="21" distance_to_previous_piece="3.8" weight="1.132">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-7.6" />
+    <BladeData stack_amount="3" blade_length="33.887" blade_width="22.47" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.3" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4" count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_6_head" name="{=tNtulHAv}Broad Large Norse Head" tier="3" piece_type="Blade" mesh="axe_craft_6_head" distance_to_next_piece="18.597" distance_to_previous_piece="3.996" weight="1.0176">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-7.992" />
+    <BladeData stack_amount="3" blade_length="24.612" blade_width="24.998" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="2.9" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron3" count="3" />
+      <Material id="Iron2" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_16_head" name="{=0gteBOD7}Bardiche Head" tier="4" piece_type="Blade" mesh="axe_craft_16_head" distance_to_next_piece="28.8" distance_to_previous_piece="6" weight="1.092">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-12" />
+    <BladeData stack_amount="3" blade_length="57.435" blade_width="23.337" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.3" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4" count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_38_head" name="{=SEsx3kZz}Heavy Bardiche Head" tier="5" piece_type="Blade" mesh="axe_craft_16_head" distance_to_next_piece="28.8" distance_to_previous_piece="6" weight="0.9">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-12" />
+    <BladeData stack_amount="3" blade_length="57.435" blade_width="23.337" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.6" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron5" count="3" />
+      <Material id="Iron4" count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_1_head" name="{=NfPgejKk}Drilled Sparth Blade" tier="4" piece_type="Blade" mesh="axe_craft_1_head" distance_to_next_piece="5.402" distance_to_previous_piece="2.747" weight="0.6792">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-8.241" />
+    <BladeData stack_amount="3" blade_length="16.651" blade_width="26.744" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.3" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4" count="2" />
+      <Material id="Iron3" count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_22_head" name="{=IxCaIvUk}Large Northern Broad Head With Decorated Neck" tier="5" piece_type="Blade" mesh="axe_craft_22_head" distance_to_next_piece="9.3" distance_to_previous_piece="2" weight="1.0">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-4" />
+    <BladeData stack_amount="3" blade_length="20.781" blade_width="30.384" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.7" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron5" count="2" />
+      <Material id="Iron4" count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_14_head" name="{=ALO9gw69}Square Bit Two Handed Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_14_head" distance_to_next_piece="3.6" distance_to_previous_piece="2.9" weight="0.8816">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-5.8" />
+    <BladeData stack_amount="3" blade_length="13.923" blade_width="21.94" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="2.5" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2" count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_14_head_blunt" name="{=Wn4GjoXY}Square Bit Blunt Two Handed Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_14_head" distance_to_next_piece="3.6" distance_to_previous_piece="2.9" weight="0.8816" is_hidden="true">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-5.8" />
+    <BladeData stack_amount="3" blade_length="13.923" blade_width="21.94" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Blunt" damage_factor="2.5" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2" count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_5_head" name="{=orwoyDlX}Great Sparth Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_5_head" distance_to_next_piece="3.414" distance_to_previous_piece="2.617" weight="0.7">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-5.234" />
+    <BladeData stack_amount="3" blade_length="13.105" blade_width="27.618" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="2.5" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2" count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_3_head" name="{=gSdybwMN}Large Drilled Norse Bearded Head" tier="3" piece_type="Blade" mesh="axe_craft_3_head" distance_to_next_piece="13.057" distance_to_previous_piece="2.314" weight="0.6">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-4.628" />
+    <BladeData stack_amount="3" blade_length="23.005" blade_width="22.407" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.0" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron3" count="3" />
+      <Material id="Iron4" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_34_head" name="{=a0erBuF1}Hooked Axe Head" tier="4" piece_type="Blade" mesh="axe_craft_34_head" distance_to_next_piece="8.8" distance_to_previous_piece="4" weight="1.0">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-8" />
+    <BladeData stack_amount="3" blade_length="20.281" blade_width="19.8" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut" damage_factor="3.3" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4" count="1" />
+      <Material id="Iron3" count="2" />
+    </Materials>
+  </CraftingPiece>
+  <!-- #endregion -->
+  <!-- #region Used Throwing Axe Blade Pieces -->
+  <CraftingPiece id="axe_craft_4_head" name="{=fdR6zYiP}Franziska Head" tier="4" piece_type="Blade" mesh="axe_craft_4_head" distance_to_next_piece="5.787" distance_to_previous_piece="1.483" weight="0.226">
+    <BuildData piece_offset="-2.966" />
+    <BladeData stack_amount="3" blade_length="10.566" blade_width="19.257" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
+      <Swing damage_type="Cut" damage_factor="2.9" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron4" count="3" />
+    </Materials>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_13_head" name="{=hSSk6tTn}Throwing Axe Head" tier="4" piece_type="Blade" mesh="axe_craft_13_head" distance_to_next_piece="2.7" distance_to_previous_piece="1.6" weight="0.240">
+    <BuildData piece_offset="-3.2" />
+    <BladeData stack_amount="3" blade_length="8.707" blade_width="16.898" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
+      <Swing damage_type="Cut" damage_factor="3.1" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron4" count="3" />
+    </Materials>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_31_head" name="{=sNJNDDKN}Small Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_31_head" distance_to_next_piece="6.7" distance_to_previous_piece="4" weight="0.293">
+    <BuildData piece_offset="-8" />
+    <BladeData stack_amount="3" blade_length="13.366" blade_width="13.211" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
+      <Swing damage_type="Cut" damage_factor="2.5" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
+	  <Flag name="BonusAgainstShield" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2" count="2" />
+    </Materials>
+  </CraftingPiece>
+  <!-- #endregion -->
+  <!-- #region Axe Blade Pieces -->
+  <!-- #endregion-->
+  <!-- #region Used Axe Handle Pieces -->
+  <CraftingPiece id="axe_craft_23_handle" name="{=Zgy40Qc4}Long Mahogany Handle" tier="3" piece_type="Handle" mesh="axe_craft_23_handle" length="98" weight="0.296">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="21" next_piece_offset="1.5" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_13_handle" name="{=VL00fQvj}Reinforced Axe handle" tier="4" piece_type="Handle" mesh="axe_craft_13_handle" length="74.7" weight="0.296" CraftingCost="75">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="21" next_piece_offset="1.5" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_25_handle" name="{=cFTzptut}Mahogany Handle" tier="2" piece_type="Handle" mesh="axe_craft_25_handle" length="80" weight="0.516">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="20" next_piece_offset="1.835" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_15_handle" name="{=KyKh5jCE}Bamboo Handle" tier="2" piece_type="Handle" mesh="axe_craft_15_handle" length="80.5" weight="0.329">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="22" next_piece_offset="3" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_20_handle" name="{=SJiam61q}Short Gnarled Handle" tier="1" piece_type="Handle" mesh="mace_handle_6" length="56.2" weight="0.420" CraftingCost="75" is_default="true">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="15" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_2_handle" name="{=GLnI8ozz}Redwood Handle" tier="2" piece_type="Handle" mesh="axe_craft_2_handle" length="84" weight="0.346">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="23" next_piece_offset="1.835" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_5_handle" name="{=VeHazKzb}Hardwood Handle With Leather Wrap Handle" tier="3" piece_type="Handle" mesh="axe_craft_5_handle" length="86.1" weight="0.296">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="24" next_piece_offset="2.44" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_3_handle" name="{=JabA2SWF}Reinforced Ash Handle" tier="4" piece_type="Handle" mesh="axe_craft_3_handle" length="80.6" weight="0.342">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="22" next_piece_offset="2.29" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_24_handle" name="{=SraI0yxb}Hardened Long Oaken Handle" tier="5" piece_type="Handle" mesh="axe_craft_24_handle" length="110" weight="0.296">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="21" next_piece_offset="1.5" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_21_handle" name="{=HHVH0IoH}Hardened Redwood Handle With Fur Handle" tier="4" piece_type="Handle" mesh="axe_craft_21_handle" length="94" weight="0.296">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="21" next_piece_offset="1.5" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_16_handle" name="{=47UEgMpD}Oaken Handle With Pointy End" tier="5" piece_type="Handle" mesh="axe_craft_16_handle" length="106" weight="0.387" item_holster_pos_shift="0,0,-0.05">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="32" next_piece_offset="15" />
+    <Materials>
+      <Material id="Wood" count="1" />
+      <Material id="Iron4" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <!-- #endregion -->
+  <!-- #region Used 2h Axe Handle Pieces -->
+  <CraftingPiece id="axe_craft_8_handle" name="{=XxhFx0yw}Short Leather Wrapped Great Axe Handle" tier="3" piece_type="Handle" mesh="axe_craft_8_handle" length="116" weight="0.503" excluded_item_usage_features="widegrip">
+    <PieceUsages unavailable_usages="OneHandedAxe" />
+    <BuildData piece_offset="23.86" next_piece_offset="1" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_10_handle" name="{=l13RibeF}Steel Reinforced Great Axe Handle" tier="4" piece_type="Handle" mesh="axe_craft_10_handle" length="132" weight="0.793" excluded_item_usage_features="widegrip">
+    <PieceUsages unavailable_usages="OneHandedAxe" />
+    <BuildData piece_offset="28.87" next_piece_offset="2.5" />
+    <Materials>
+      <Material id="Wood" count="1" />
+      <Material id="Iron4" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_1_handle" name="{=1T0XBYlc}Hardened Oaken Two Handed Axe Handle" tier="5" piece_type="Handle" mesh="axe_craft_1_handle" length="157.6" weight="0.590" item_holster_pos_shift="0,0,-0.1" CraftingCost="75">
+    <PieceUsages unavailable_usages="OneHandedAxe" />
+    <BuildData piece_offset="37.408" next_piece_offset="1.42" />
+    <Materials>
+      <Material id="Wood" count="1" />
+      <Material id="Iron5" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_6_handle" name="{=OJ7iPw5M}Reinforced Hardened Ash Great Axe Handle" tier="4" piece_type="Handle" mesh="axe_craft_6_handle" length="157.3" weight="0.644" item_holster_pos_shift="0,0,-0.1">
+    <PieceUsages unavailable_usages="OneHandedAxe" />
+    <BuildData piece_offset="36.87" next_piece_offset="1.122" />
+    <Materials>
+      <Material id="Wood" count="1" />
+      <Material id="Iron4" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_4_handle" name="{=bfueDx6s}Heavily Reinforced Oaken Great Axe Handle" tier="5" piece_type="Handle" mesh="axe_craft_4_handle" length="157.5" weight="0.677" item_holster_pos_shift="0,0,-0.1">
+    <PieceUsages unavailable_usages="OneHandedAxe" />
+    <BuildData piece_offset="36.879" next_piece_offset="1.6" />
+    <Materials>
+      <Material id="Wood" count="1" />
+      <Material id="Iron5" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_30_handle" name="{=KeTioaJE}Leather Wrapped Mahogany Great Axe Handle" tier="2" piece_type="Handle" mesh="axe_craft_30_handle" length="130" weight="0.516">
+    <PieceUsages unavailable_usages="OneHandedAxe" />
+    <BuildData piece_offset="20" next_piece_offset="1.835" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_14_handle" name="{=22f2NR2N}Long Gnarled Ash Shaft" tier="1" piece_type="Handle" mesh="axe_craft_14_handle" length="115" weight="0.433" item_holster_pos_shift="0,0,0.15" excluded_item_usage_features="widegrip" is_default="true">
+    <PieceUsages unavailable_usages="OneHandedAxe" />
+    <BuildData piece_offset="20.1" next_piece_offset="1.1" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_29_handle" name="{=Qqb0VZ1a}Leather Wrapped Two Handed Ash Shaft" tier="3" piece_type="Handle" mesh="axe_craft_29_handle" length="120" weight="0.516">
+    <PieceUsages unavailable_usages="OneHandedAxe" />
+    <BuildData piece_offset="20" next_piece_offset="1.835" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_31_handle" name="{=J3ADekEw}Oaken Great Axe Shaft" tier="4" piece_type="Handle" mesh="axe_craft_31_handle" length="140" weight="0.516">
+    <PieceUsages unavailable_usages="OneHandedAxe" />
+    <BuildData piece_offset="20" next_piece_offset="1.835" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <!-- #endregion -->
+  <!-- #region Used Throwing Axe Handle Pieces -->
+  <CraftingPiece id="axe_craft_12_handle" name="{=Wkhv9ESv}Hardened Oaken Throwing Axe Handle" tier="4" piece_type="Handle" mesh="axe_craft_12_handle" length="70" weight="0.234">
+    <BuildData piece_offset="8.175" next_piece_offset="4" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_11_handle" name="{=Rh3h5NIg}Hardened Short Hardwood Throwing Axe Handle" tier="4" piece_type="Handle" mesh="axe_craft_11_handle" length="60" weight="0.226">
+    <BuildData piece_offset="7.2" next_piece_offset="4" />
+    <Materials>
+      <Material id="Iron3" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_28_handle" name="{=bQzz8mc3}Simple Pinewood Throwing Axe Handle" tier="1" piece_type="Handle" mesh="axe_craft_28_handle" length="65" weight="0.234">
+    <BuildData piece_offset="8.175" next_piece_offset="4" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <!-- #endregion -->
+  <!-- #region Axe Handle Pieces -->
+  <CraftingPiece id="axe_craft_7_handle" name="{=xKGpbQjJ}Long Mahogany Shaft With Leather Wrapping" tier="4" piece_type="Handle" mesh="axe_craft_7_handle" length="124.3" weight="0.570" excluded_item_usage_features="widegrip">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="23.87" next_piece_offset="1.5" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_9_handle" name="{=pT5C12yT}Studded Ash Two Handed Axe Shaft" tier="4" piece_type="Handle" mesh="axe_craft_9_handle" length="157.7" weight="0.472" item_holster_pos_shift="0,0,-0.1">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="37.86" next_piece_offset="1.69" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_22_handle" name="{=zoxF4ikz}Long Ash Handle With Leather Wrapping" tier="4" piece_type="Handle" mesh="axe_craft_22_handle" length="96" weight="0.296">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="21" next_piece_offset="1.5" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_17_handle" name="{=3aXHbrFV}Long Bamboo Handle With Metal Tip" tier="4" piece_type="Handle" mesh="axe_craft_17_handle" length="91.3" weight="0.314">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="27" next_piece_offset="8" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_18_handle" name="{=pXxv7YJv}Long Mahogany Handle With Leather Wrapping" tier="3" piece_type="Handle" mesh="axe_craft_18_handle" length="100" weight="0.361" item_holster_pos_shift="0,0,-0.15">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="31" next_piece_offset="2" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_19_handle" name="{=13lb5at6}Mahogany Handle With Hide Wrapping" tier="3" piece_type="Handle" mesh="axe_craft_19_handle" length="84.1" weight="0.516">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="20" next_piece_offset="1.835" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_26_handle" name="{=vPMsDf85}Oaken Handle With Leather Wraps" tier="3" piece_type="Handle" mesh="axe_craft_26_handle" length="100" weight="0.516">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="20" next_piece_offset="1.835" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_27_handle" name="{=qYxzdFAa}Long Oaken Handle With Leather Wraps" tier="3" piece_type="Handle" mesh="axe_craft_27_handle" length="105" weight="0.616">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="20" next_piece_offset="1.835" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_32_handle" name="{=ibU7mZKx}Ash Great Axe Shaft" tier="2" piece_type="Handle" mesh="axe_craft_32_handle" length="150" weight="0.816">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="20" next_piece_offset="1.835" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <!-- #endregion -->
+</CraftingPieces>

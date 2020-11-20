@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Items>
+      <!-- #region Used Lances -->
+  <!-- #region Tier 3 -->
+  <CraftedItem id="vlandia_lance_1_t3"
+               name="{=ctkNWKbq}Vlandian Light Lance"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.vlandia">
+    <Pieces>
+      <Piece id="spear_blade_20"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_handle_23"
+             Type="Handle"
+             scale_factor="124" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="empire_lance_1_t3"
+               name="{=dqyN7Sbz}Imperial Light Lance"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.empire">
+    <Pieces>
+      <Piece id="spear_blade_23"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_handle_13"
+             Type="Handle"
+             scale_factor="127" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="khuzait_lance_1_t3"
+               name="{=UWvOndG0}Khuzait Light Lance"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.khuzait">
+    <Pieces>
+      <Piece id="spear_blade_35"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_handle_23"
+             Type="Handle"
+             scale_factor="124" />
+    </Pieces>
+  </CraftedItem>
+  <!-- #endregion -->
+  <!-- #region Tier 4 -->
+  <CraftedItem id="aserai_lance_1_t5"
+               name="{=hsRwbHSk}Mamluke Lance"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.aserai">
+    <Pieces>
+      <Piece id="spear_blade_42"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_handle_19"
+             Type="Handle"
+             scale_factor="110" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="vlandia_lance_2_t4"
+               name="{=aEBMmzn6}Vlandia Lance"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.vlandia">
+    <Pieces>
+      <Piece id="spear_blade_11"
+             Type="Blade"
+             scale_factor="110" />
+      <Piece id="spear_handle_20"
+             Type="Handle"
+             scale_factor="118" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="empire_lance_2_t4"
+               name="{=XDsFl200}Imperial Lance"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.empire">
+    <Pieces>
+      <Piece id="spear_blade_4"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_handle_24"
+             Type="Handle"
+             scale_factor="110" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="sturgia_lance_1_t4"
+               name="{=J4fgemze}Sturgian Lance"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.sturgia">
+    <Pieces>
+      <Piece id="spear_blade_41"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_handle_17"
+             Type="Handle"
+             scale_factor="116" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="khuzait_lance_2_t4"
+               name="{=inr9Mt1i}Khuzait Lance"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.khuzait">
+    <Pieces>
+      <Piece id="spear_blade_36"
+             Type="Blade"
+             scale_factor="110" />
+      <Piece id="spear_handle_20"
+             Type="Handle"
+             scale_factor="118" />
+    </Pieces>
+  </CraftedItem>
+  <!-- #endregion -->
+  <!-- #region Tier 5 -->
+  <CraftedItem id="vlandia_lance_3_t5"
+               name="{=Wh48Wl0C}Vlandian Heavy Lance"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.vlandia">
+    <Pieces>
+      <Piece id="spear_blade_5"
+             Type="Blade"
+             scale_factor="110" />
+      <Piece id="spear_handle_19"
+             Type="Handle"
+             scale_factor="119" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="sturgia_lance_2_t5"
+               name="{=6eO6QDoE}Sturgian Heavy Lance"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.sturgia">
+    <Pieces>
+      <Piece id="spear_blade_13"
+             Type="Blade"
+             scale_factor="110" />
+      <Piece id="spear_handle_19"
+             Type="Handle"
+             scale_factor="119" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="empire_lance_3_t5"
+               name="{=eND6ECxg}Cataphract Lance"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.empire">
+    <Pieces>
+      <Piece id="spear_blade_6"
+             Type="Blade"
+             scale_factor="110" />
+      <Piece id="spear_handle_24"
+             Type="Handle"
+             scale_factor="115" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="khuzait_lance_3_t5"
+               name="{=t7IgyUea}Eastern Noble Lance"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.khuzait">
+    <Pieces>
+      <Piece id="spear_blade_13"
+             Type="Blade"
+             scale_factor="110" />
+      <Piece id="spear_guard_13"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_20"
+             Type="Handle"
+             scale_factor="125" />
+      <Piece id="spear_pommel_9"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="easter_polesword_t4" name="{=2FubBDYB}Eastern Polesword" crafting_template="TwoHandedPolearm" culture="Culture.aserai">
+    <Pieces>
+      <Piece id="spear_blade_22" Type="Blade" scale_factor="100" />
+      <Piece id="default_polearm_guard" Type="Guard" scale_factor="100" />
+      <Piece id="spear_handle_15" Type="Handle" scale_factor="100" />
+      <Piece id="default_polearm_pommel" Type="Pommel" scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <!-- #endregion -->
+<!-- #region Used Javelins -->
+  <!-- #region Tier 2 -->
+  <CraftedItem id="western_javelin_1_t2"
+				value="500"
+               name="{=0NLJnGfF}Simple Javelin"
+               crafting_template="Javelin">
+    <Pieces>
+      <Piece id="spear_blade_15"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="default_polearm_guard"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_2"
+             Type="Handle"
+             scale_factor="100" />
+      <Piece id="default_polearm_pommel"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="northern_javelin_1_t2"
+				value="600"
+               name="{=1oQWbXJw}Fish Harpoon"
+               crafting_template="Javelin"
+               culture="Culture.sturgia">
+    <Pieces>
+      <Piece id="spear_blade_16"
+             Type="Blade"
+             scale_factor="90" />
+      <Piece id="spear_guard_15"
+             Type="Guard"
+             scale_factor="90" />
+      <Piece id="spear_handle_12"
+             Type="Handle"
+             scale_factor="100" />
+      <Piece id="default_polearm_pommel"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="eastern_javelin_1_t2"
+               name="{=4SadJFch}Eastern Jagged Javelin"
+               crafting_template="Javelin"
+			   value ="2200"
+               culture="Culture.khuzait">
+    <Pieces>
+      <Piece id="spear_blade_35"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="default_polearm_guard"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_9"
+             Type="Handle"
+             scale_factor="100" />
+      <Piece id="default_polearm_pommel"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <!-- #endregion -->
+  <!-- #region Tier 3 -->
+  <CraftedItem id="western_javelin_2_t3"
+               name="{=Z8Kc6XlP}Western Javelin"
+               crafting_template="Javelin"
+			   value="5200"
+               culture="Culture.vlandia">
+    <Pieces>
+      <Piece id="spear_blade_1"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="default_polearm_guard"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_11"
+             Type="Handle"
+             scale_factor="100" />
+      <Piece id="default_polearm_pommel"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="generic_javelin_1_t3"
+               name="{=YPUDAJDH}Harpoon"
+			   value="8500"
+               crafting_template="Javelin">
+    <Pieces>
+      <Piece id="spear_blade_10"
+             Type="Blade"
+             scale_factor="90" />
+      <Piece id="spear_guard_15"
+             Type="Guard"
+             scale_factor="90" />
+      <Piece id="spear_handle_11"
+             Type="Handle"
+             scale_factor="100" />
+      <Piece id="default_polearm_pommel"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+    <CraftedItem id="northern_javelin_2_t3"
+               name="{=ObGN145P}Woodland Javelin"
+               crafting_template="Javelin"
+			   value="5400"
+               culture="Culture.battania">
+    <Pieces>
+      <Piece id="spear_blade_14"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="default_polearm_guard"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_2"
+             Type="Handle"
+             scale_factor="100" />
+      <Piece id="default_polearm_pommel"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="eastern_javelin_2_t3"
+               name="{=NmLEZfiI}Eastern Javelin"
+               crafting_template="Javelin"
+			   value="4500"
+               culture="Culture.khuzait">
+    <Pieces>
+      <Piece id="spear_blade_37"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="default_polearm_guard"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_10"
+             Type="Handle"
+             scale_factor="100" />
+      <Piece id="default_polearm_pommel"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <!-- #endregion -->
+  <!-- #region Tier 4 -->
+  <CraftedItem id="western_javelin_3_t4"
+               name="{=vmz4vfu5}Hooked Javelin"
+               crafting_template="Javelin"
+			   value="10000"
+               culture="Culture.vlandia">
+    <Pieces>
+      <Piece id="spear_blade_10"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="default_polearm_guard"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_11"
+             Type="Handle"
+             scale_factor="100" />
+      <Piece id="spear_pommel_5"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="northern_javelin_3_t4"
+               name="{=ppiy9Cwl}Broad Blade Javelin"
+               crafting_template="Javelin"
+			   value="8000"
+                 culture="Culture.sturgia">
+    <Pieces>
+      <Piece id="spear_blade_42"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="default_polearm_guard"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_11"
+             Type="Handle"
+             scale_factor="100" />
+      <Piece id="spear_pommel_5"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="eastern_javelin_3_t4"
+               name="{=Z6Ak3H6G}Jereed"
+			   value="11500"
+               crafting_template="Javelin"
+               culture="Culture.aserai">
+    <Pieces>
+      <Piece id="spear_blade_27"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="default_polearm_guard"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_10"
+             Type="Handle"
+             scale_factor="100" />
+      <Piece id="spear_pommel_12"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <!-- #endregion -->
+  <!-- Pilum -->
+    <CraftedItem id="imperial_throwing_spear_1_t4" name="{=v3lIxLvX}Pila" crafting_template="TwoHandedPolearm" culture="Culture.empire">
+    <Pieces>
+      <Piece id="spear_blade_38" Type="Blade" scale_factor="280" />
+      <Piece id="default_polearm_guard" Type="Guard" scale_factor="100" />
+      <Piece id="spear_handle_14" Type="Handle" scale_factor="81" />
+      <Piece id="default_polearm_pommel" Type="Pommel" scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <!-- Pilum -->
+</Items>

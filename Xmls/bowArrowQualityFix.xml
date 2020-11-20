@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ItemModifiers>
+  <!-- Bows -->
+  <ItemModifier id="masterwork_bow" name="{=8Tal0XIj}Masterwork {ITEMNAME}" damage="10" speed="10" missile_speed="20" price_factor="18.5" />
+  <ItemModifier id="balanced_bow" name="{=WK5y3PyJ}Fast {ITEMNAME}" damage="5" speed="5" missile_speed="10" price_factor="3.5" oldness="0.2" />
+  <ItemModifier id="heavy_bow" name="{=H30eaZdf}Heavy {ITEMNAME}" damage="2" speed="-5" missile_speed="5" weight_factor="1.20" price_factor="1.5" oldness="0.4" />
+  <ItemModifier id="splintered_bow" name="{=8Pd6fLoy}Splintered {ITEMNAME}" damage="-5" speed="-5" missile_speed="-10" price_factor="0.4" oldness="0.9" />
+  <ItemModifier id="cracked_bow" name="{=br0N6SSH}Cracked {ITEMNAME}" damage="-7" speed="-10" missile_speed="-15" price_factor="0.15" oldness="1.0" />
+  <!-- Crossbows -->
+  <ItemModifier id="masterwork_crossbow" name="{=8Tal0XIj}Masterwork {ITEMNAME}" damage="10" speed="10" missile_speed="100" weight_factor="0.80" price_factor="8" />
+  <ItemModifier id="tuned_crossbow" name="{=WbaIorOh}Tuned {ITEMNAME}" damage="5" speed="5" missile_speed="50" price_factor="3.5" oldness="0.6" />
+  <ItemModifier id="bent_crossbow" name="{=eb4miTUB}Bent {ITEMNAME}" damage="-5" speed="-10" missile_speed="-70" price_factor="0.5" oldness="1.0" />
+  <!-- Arrows -->
+  <ItemModifier id="balanced_arrows" name="{=fdgcpipH}Balanced {ITEMNAME}" damage="10" price_factor="4.5" />
+  <ItemModifier id="large_bag_arrows" name="{=3JaHZA3Y}Large Bag of {ITEMNAME}" damage="0" weight_factor="1.50" price_factor="1.5" />
+  <ItemModifier id="splintered_arrows" name="{=8Pd6fLoy}Splintered {ITEMNAME}" damage="-10" price_factor="0.5" />
+  <ItemModifier id="bent_arrows" name="{=eb4miTUB}Bent {ITEMNAME}" damage="-20" price_factor="0.2" />
+</ItemModifiers>
