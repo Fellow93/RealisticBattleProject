@@ -24,7 +24,7 @@ namespace RealisticBattleCombatModule
         protected override void OnSubModuleLoad()
         {
             XmlDocument xmlDocument = new XmlDocument();
-            xmlDocument.Load(BasePath.Name + "Modules/RealisticBattle/config.xml");
+            xmlDocument.Load(BasePath.Name + "Modules/RealisticBattleCombatModule/config.xml");
             foreach (XmlNode childNode in xmlDocument.SelectSingleNode("/config").ChildNodes)
             {
                 foreach (XmlNode subNode in childNode)
