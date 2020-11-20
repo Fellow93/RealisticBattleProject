@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\bin\Win64_Shipping_Client</OutputPath>
+    <OutputPath>$(SolutionDir)..\RealisticBattleCombatModule\bin\Win64_Shipping_Client</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -28,7 +28,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\bin\Win64_Shipping_Client</OutputPath>
+    <OutputPath>$(SolutionDir)..\RealisticBattleCombatModule\bin\Win64_Shipping_Client</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -36,9 +36,9 @@
   <!-- Debugging Properties -->
   <PropertyGroup>
     <StartAction>Program</StartAction>
-    <StartProgram>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\Bannerlord.exe</StartProgram>
+    <StartProgram>$(SolutionDir)..\..\bin\Win64_Shipping_Client\Bannerlord.exe</StartProgram>
     <StartArguments>/singleplayer _MODULES_*Native*SandBoxCore*SandBox*StoryMode*CustomBattle*RealisticBattleCombatModule*_MODULES_</StartArguments>
-    <StartWorkingDirectory>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client</StartWorkingDirectory>
+    <StartWorkingDirectory>$(SolutionDir)..\..\bin\Win64_Shipping_Client</StartWorkingDirectory>
   </PropertyGroup>
   <!-- Bannerlord Native Assemblies -->
   <ItemGroup>
@@ -271,28 +271,28 @@
   </ItemGroup>
   <!-- Post-Build -->
   <PropertyGroup>
-    <PostBuildEvent>xcopy /d /y "$(SolutionDir)\Xmls\native_parameters_tweaks.xml" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)\Xmls\project.mbproj" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)\Xmls\arm_armors_modified.xml" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)\Xmls\Axe_pieces.xml" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)\Xmls\body_armors_modified.xml" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)\Xmls\bone_body_types_tweaks.xml" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)\Xmls\bowArrowQualityFix.xml" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)\Xmls\CouchedLances.xml" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)\Xmls\head_armors_modified.xml" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)\Xmls\horse_armors_modified.xml" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)\Xmls\lances_modified.xml" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)\Xmls\leg_armors_modified.xml" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)\Xmls\mace_pieces.xml" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)\Xmls\ranged_modified.xml" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)\Xmls\shields_modified.xml" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)\Xmls\shoulder_armors_modified.xml" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)\Xmls\sword_blades.xml" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)\Xmls\sword_pieces.xml" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)\Xmls\unit_arrows.xml" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\ModuleData\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /d /y "$(SolutionDir)Xmls\native_parameters_tweaks.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\project.mbproj" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\arm_armors_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\Axe_pieces.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\body_armors_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\bone_body_types_tweaks.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\bowArrowQualityFix.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\CouchedLances.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\head_armors_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\horse_armors_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\lances_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\leg_armors_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\mace_pieces.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\ranged_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\shields_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\shoulder_armors_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\sword_blades.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\sword_pieces.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\unit_arrows.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>xcopy /d /y "$(SolutionDir)\Xmls\config.xml" "D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\RealisticBattleCombatModule\"</PreBuildEvent>
+    <PreBuildEvent>xcopy /d /y "$(SolutionDir)Xmls\config.xml" "$(SolutionDir)..\RealisticBattleCombatModule\"</PreBuildEvent>
   </PropertyGroup>
 </Project>
