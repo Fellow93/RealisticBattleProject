@@ -316,10 +316,19 @@ namespace RealisticBattleCombatModule
 
             float damage = 0f;
             float num3 = 100f / (100f + armorEffectiveness * XmlConfig.dict["Global.ArmorMultiplier"]);
-            //float mag_1hpol = magnitude + 45f;
-            //float mag_2hpol = magnitude + 45f;
-            float mag_1hpol = magnitude + XmlConfig.dict["Global.OneHandedPolearmBonus"];
-            float mag_2hpol = magnitude + XmlConfig.dict["Global.TwoHandedPolearmBonus"];
+            float mag_1hpol;
+            float mag_2hpol;
+
+            if(damageType == DamageTypes.Pierce)
+            {
+                mag_1hpol = magnitude + XmlConfig.dict["Global.OneHandedPolearmBonus"];
+                mag_2hpol = magnitude + XmlConfig.dict["Global.TwoHandedPolearmBonus"];
+            }
+            else
+            {
+                mag_1hpol = magnitude;
+                mag_2hpol = magnitude;
+            }
 
             switch (weaponType)
             {
