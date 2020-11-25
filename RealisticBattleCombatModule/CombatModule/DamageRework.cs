@@ -324,7 +324,7 @@ namespace RealisticBattleCombatModule
                 mag_1hpol = magnitude + XmlConfig.dict["Global.OneHandedPolearmBonus"];
                 mag_2hpol = magnitude + XmlConfig.dict["Global.TwoHandedPolearmBonus"];
             }
-            if (damageType == DamageTypes.Cut)
+            else if(damageType == DamageTypes.Cut)
             {
                 mag_1hpol = magnitude + XmlConfig.dict["Global.OneHandedPolearmBonus"];
                 mag_2hpol = magnitude + XmlConfig.dict["Global.TwoHandedPolearmBonus"];
