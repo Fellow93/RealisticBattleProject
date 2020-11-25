@@ -212,7 +212,7 @@
 <CraftingPiece id="spear_blade_43" name="{=wait0O6m}Warrazor Head" tier="4" piece_type="Blade" mesh="spear_blade_43" length="64.4" weight="0.43" excluded_item_usage_features="">
     <PieceUsages unavailable_usages="OneHandedPolearm" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="2.6" />
+      <Thrust damage_type="Pierce" damage_factor="3.6" />
       <Swing damage_type="Cut" damage_factor="3.1" />
     </BladeData>
     <Materials>
@@ -223,7 +223,7 @@
   <CraftingPiece id="spear_blade_7" name="{=dXRt8jY4}Menavlion Head" tier="4" piece_type="Blade" mesh="spear_blade_7" length="52.924" weight="0.3656">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="3.8" />
+      <Thrust damage_type="Pierce" damage_factor="4.8" />
       <Swing damage_type="Cut" damage_factor="3.0" />
     </BladeData>
     <Materials>
@@ -234,7 +234,7 @@
   <CraftingPiece id="spear_blade_18" name="{=qSV6C2tp}Swordstaff Head" tier="5" piece_type="Blade" mesh="spear_blade_18" length="70" weight="0.4096">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="3.8" />
+      <Thrust damage_type="Pierce" damage_factor="4.8" />
       <Swing damage_type="Cut" damage_factor="3.1" />
     </BladeData>
     <Materials>
@@ -245,7 +245,7 @@
   <CraftingPiece id="spear_blade_19" name="{=OBeOZ27b}Glaive Head" tier="4" piece_type="Blade" mesh="spear_blade_19" length="37.4" weight="0.4408">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="1.7" />
+      <Thrust damage_type="Pierce" damage_factor="2.7" />
       <Swing damage_type="Cut" damage_factor="2.7" />
     </BladeData>
     <Materials>
@@ -256,7 +256,7 @@
   <CraftingPiece id="spear_blade_24" name="{=bjQ8J71a}Long Glaive Head" tier="5" piece_type="Blade" mesh="spear_blade_24" length="68" weight="0.5">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="2.5" />
+      <Thrust damage_type="Pierce" damage_factor="3.5" />
       <Swing damage_type="Cut" damage_factor="3.9" />
     </BladeData>
     <Materials>
@@ -268,7 +268,7 @@
     <PieceUsages unavailable_usages="" />
     <BuildData piece_offset="-8" />
     <BladeData stack_amount="3" blade_length="23.118" blade_width="18.371" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Thrust damage_type="Pierce" damage_factor="2.6" />
+      <Thrust damage_type="Pierce" damage_factor="3.6" />
       <Swing damage_type="Cut" damage_factor="3.7" />
     </BladeData>
     <Flags>
@@ -305,7 +305,7 @@
     <CraftingPiece id="spear_blade_22" name="{=3ged5Ozt}Exceptional Eastern Glaive" tier="4" piece_type="Blade" mesh="spear_blade_22" length="89" weight="0.5456">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="1.7" />
+      <Thrust damage_type="Pierce" damage_factor="2.7" />
       <Swing damage_type="Cut" damage_factor="2.8" />
     </BladeData>
     <Materials>
