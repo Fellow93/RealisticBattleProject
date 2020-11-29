@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -297,6 +298,44 @@ namespace RealisticBattleAiModule
                 }
             }
             return significantEnemy;
+        }
+
+        public static float GetCombatAIDifficultyMultiplier()
+        {
+            switch (CampaignOptions.CombatAIDifficulty)
+            {
+                case CampaignOptions.Difficulty.VeryEasy:
+                    return 0.70f;
+                case CampaignOptions.Difficulty.Easy:
+                    return 0.80f;
+                case CampaignOptions.Difficulty.Realistic:
+                    return 0.90f;
+                default:
+                    return 1.0f;
+            }
+        }
+
+        public static float CalculateAILevel(Agent agent, int relevantSkillLevel)
+        {
+            float difficultyModifier = GetCombatAIDifficultyMultiplier();
+            //float difficultyModifier = 1.0f; // v enhanced battle test je difficulty very easy
+            return MBMath.ClampFloat((float)relevantSkillLevel / 250f * difficultyModifier, 0f, 1f);
+        }
+
+        public static int GetMeleeSkill(Agent agent, WeaponComponentData equippedItem, WeaponComponentData secondaryItem)
+        {
+            SkillObject skill = DefaultSkills.Athletics;
+            if (equippedItem != null)
+            {
+                SkillObject relevantSkill = equippedItem.RelevantSkill;
+                skill = ((relevantSkill == DefaultSkills.OneHanded || relevantSkill == DefaultSkills.Polearm) ? relevantSkill : ((relevantSkill != DefaultSkills.TwoHanded) ? DefaultSkills.OneHanded : ((secondaryItem == null) ? DefaultSkills.TwoHanded : DefaultSkills.OneHanded)));
+            }
+            return GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
+        }
+
+        public static int GetEffectiveSkill(BasicCharacterObject agentCharacter, IAgentOriginBase agentOrigin, Formation agentFormation, SkillObject skill)
+        {
+            return agentCharacter.GetSkillValue(skill);
         }
     }
 }

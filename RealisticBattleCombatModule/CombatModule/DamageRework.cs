@@ -281,16 +281,17 @@ namespace RealisticBattleCombatModule
                     }
                     else if (attackCollisionData.DamageType == 1)
                     {
-                        num *= 1.5f;
+                        num *= 0.5f;
                     }
                     else if (attackCollisionData.DamageType == 2)
                     {
-                        num *= 1.5f;
+                        num *= 0.5f;
                     }
                     if (attackerWeapon != null && attackerWeapon.WeaponFlags.HasAnyFlag(WeaponFlags.BonusAgainstShield))
                     {
-                        num *= 2.5f;
+                        num *= 2f;
                     }
+
                     if (num > 0f)
                     {
                         if (!isVictimAgentLeftStance)
@@ -565,4 +566,50 @@ namespace RealisticBattleCombatModule
         }
 
     }
+
+    //[HarmonyPatch(typeof(SandboxAgentApplyDamageModel))]
+    //[HarmonyPatch("DecideCrushedThrough")]
+    //class OverrideDecideCrushedThrough
+    //{
+    //    static bool Prefix(Agent attackerAgent, Agent defenderAgent, float totalAttackEnergy, Agent.UsageDirection attackDirection, StrikeType strikeType, WeaponComponentData defendItem, bool isPassiveUsage, ref bool __result)
+    //    {
+    //        EquipmentIndex wieldedItemIndex = attackerAgent.GetWieldedItemIndex(Agent.HandIndex.OffHand);
+    //        if (wieldedItemIndex == EquipmentIndex.None)
+    //        {
+    //            wieldedItemIndex = attackerAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+    //        }
+    //        WeaponComponentData weaponComponentData = (wieldedItemIndex != EquipmentIndex.None) ? attackerAgent.Equipment[wieldedItemIndex].CurrentUsageItem : null;
+    //        float num = 47f;
+
+    //        EquipmentIndex wieldedItemIndex4 = defenderAgent.GetWieldedItemIndex(Agent.HandIndex.OffHand);
+    //        WeaponComponentData secondaryItem = (wieldedItemIndex4 != EquipmentIndex.None) ? defenderAgent.Equipment[wieldedItemIndex4].CurrentUsageItem : null;
+    //        int meleeSkill = Utilities.GetMeleeSkill(defenderAgent, weaponComponentData, secondaryItem);
+    //        float meleeLevel = Utilities.CalculateAILevel(defenderAgent, meleeSkill);
+
+    //        if (defendItem != null && defendItem.IsShield)
+    //        {
+    //            num *= (defendItem.WeaponLength / 100f) * meleeLevel * 3f;
+    //        }
+    //        else
+    //        {
+    //            num *= (weaponComponentData.WeaponLength / 100f) * meleeLevel * 2f;
+    //        }
+    //        if (weaponComponentData != null && weaponComponentData.WeaponClass == WeaponClass.TwoHandedMace)
+    //        {
+    //            num *= 0.8f;
+    //        }
+    //        if (defendItem != null && defendItem.IsShield)
+    //        {
+    //            num *= 1.2f;
+    //        }
+    //        if (totalAttackEnergy > num && (isPassiveUsage || attackDirection == Agent.UsageDirection.AttackUp || attackDirection == Agent.UsageDirection.AttackLeft || attackDirection == Agent.UsageDirection.AttackRight))
+    //        {
+    //            __result = true;
+    //            return false;
+    //        }
+    //        __result =  false;
+    //        return false;
+    //    }
+
+    //}
 }
