@@ -637,7 +637,7 @@ namespace RealisticBattleAiModule
                     formationPosition = formation.GetOrderPositionOfUnit(___Agent);
                     formationDirection = formation.GetDirectionOfUnit(___Agent);
                     limitIsMultiplier = true;
-                    speedLimit = ____cohesionComponent != null && FormationCohesionComponent.FormationSpeedAdjustmentEnabled ? ____cohesionComponent.GetDesiredSpeedInFormation() : -1f;
+                    speedLimit = ____cohesionComponent != null && FormationCohesionComponent.FormationSpeedAdjustmentEnabled ? ____cohesionComponent.GetDesiredSpeedInFormation(false) : -1f;
                     __result = true;
                     return false;
                 }
