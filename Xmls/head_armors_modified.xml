@@ -1296,4 +1296,52 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
+	<Item id="decorated_nomad_cap" name="{=smHA8Apa}Decorated Nomad Cap" mesh="khuzait_helmet_i" culture="Culture.khuzait" weight="0.4" appearance="1.6" Type="HeadArmor" value="1200">
+		<ItemComponent>
+			<Armor head_armor="15" has_gender_variations="false" hair_cover_type="type1" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="eastern_cap" name="{=UvJDlhMq}Eastern Cap" mesh="khuzait_helmet_n" culture="Culture.khuzait" weight="0.3" appearance="1" Type="HeadArmor" value="1125" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="fur_hat" name="{=ZbmlNZpU}Eastern Fur Hat" mesh="khuzait_helmet_o" culture="Culture.khuzait" weight="0.5" appearance="1" Type="HeadArmor" value="600" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="7" has_gender_variations="false" hair_cover_type="type1" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="fur_hood" name="{=7rGaUG0W}Eastern Fur Hood" mesh="khuzait_helmet_d" culture="Culture.khuzait" weight="0.6" appearance="1.2" Type="HeadArmor" value="975" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="12" has_gender_variations="false" hair_cover_type="type3" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="nomad_cap" name="{=Oa4h7TVi}Nomad Cap" mesh="khuzait_helmet_h" culture="Culture.khuzait" weight="0.3" appearance="1" Type="HeadArmor" value="1125">
+		<ItemComponent>
+			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="type1" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="nomad_padded_hood" name="{=yMi4ijgI}Nomad Padded Hood" mesh="khuzait_helmet_p" culture="Culture.khuzait" weight="0.4" appearance="1" Type="HeadArmor" value="1575" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="20" has_gender_variations="false" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="peaked_fur_hood" name="{=8tHbqjmB}Peaked Fur Hood" mesh="khuzait_helmet_e" culture="Culture.khuzait" weight="0.7" appearance="1.2" Type="HeadArmor" value="1125" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="type3" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="upturned_fur_cap" name="{=3bqwOJ8z}Upturned Fur Cap" mesh="khuzait_helmet_a" culture="Culture.khuzait" weight="0.6" appearance="1.4" Type="HeadArmor" value="1125" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="type2" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
 </Items>
