@@ -1328,7 +1328,7 @@
                 name="{=9Bw85Elg}Boar Novice"
                 skill_template="NPCCharacter.infantry_heavyinfantry_level26_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_vlandia" />
+      <face_key_template value="NPCCharacter.fighter_vlandia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1336,22 +1336,26 @@
       <skill id="Riding"
              value="20" />
       <skill id="OneHanded"
-             value="40" />
-      <skill id="TwoHanded"
              value="15" />
+      <skill id="TwoHanded"
+             value="30" />
       <skill id="Polearm"
              value="20" />
       <skill id="Bow"
              value="5" />
       <skill id="Crossbow"
-             value="40" />
+             value="50" />
       <skill id="Throwing"
              value="15" />
     </skills>
       <equipment slot="Item0"
-                 id="Item.crossbow_a" />
+                 id="Item.crossbow_b" />
       <equipment slot="Item1"
-                 id="Item.bolt_e" />
+                 id="Item.bolt_d" />
+      <equipment slot="Item2"
+                 id="Item.bolt_d" />
+      <equipment slot="Item3"
+                 id="Item.battania_2haxe_1_t2" />
   </NPCCharacter>
   <NPCCharacter id="company_of_the_boar_tier_2"
                 default_group="Ranged"
@@ -1362,7 +1366,7 @@
                 name="{=9Ylw5Spz}Boar Veteran"
                 skill_template="NPCCharacter.ranged_skirmisher_level16_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_vlandia" />
+      <face_key_template value="NPCCharacter.fighter_vlandia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1370,22 +1374,26 @@
       <skill id="Riding"
              value="40" />
       <skill id="OneHanded"
-             value="70" />
+             value="40" />
       <skill id="TwoHanded"
-             value="30" />
+             value="50" />
       <skill id="Polearm"
              value="40" />
       <skill id="Bow"
              value="10" />
       <skill id="Crossbow"
-             value="70" />
+             value="100" />
       <skill id="Throwing"
              value="30" />
     </skills>
       <equipment slot="Item0"
-                 id="Item.crossbow_c" />
+                 id="Item.crossbow_d" />
       <equipment slot="Item1"
-                 id="Item.bolt_d" />
+                 id="Item.bolt_b" />
+      <equipment slot="Item2"
+                 id="Item.bolt_b" />
+      <equipment slot="Item3"
+                 id="Item.bearded_axe_t3" />
   </NPCCharacter>
   <NPCCharacter id="company_of_the_boar_tier_3"
                 default_group="Ranged"
@@ -1396,7 +1404,7 @@
                 name="{=cSdSSXsO}Boar Champion"
                 skill_template="NPCCharacter.ranged_skirmisher_level26_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_vlandia" />
+      <face_key_template value="NPCCharacter.fighter_vlandia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1404,22 +1412,26 @@
       <skill id="Riding"
              value="15" />
       <skill id="OneHanded"
-             value="100" />
-      <skill id="TwoHanded"
              value="60" />
+      <skill id="TwoHanded"
+             value="100" />
       <skill id="Polearm"
              value="45" />
       <skill id="Bow"
              value="45" />
       <skill id="Crossbow"
-             value="100" />
+             value="160" />
       <skill id="Throwing"
              value="100" />
     </skills>
       <equipment slot="Item0"
-                 id="Item.crossbow_g" />
+                 id="Item.crossbow_f" />
       <equipment slot="Item1"
-                 id="Item.bolt_b" />
+                 id="Item.bolt_a" />
+      <equipment slot="Item2"
+                 id="Item.bolt_a" />
+      <equipment slot="Item3"
+                 id="Item.vlandia_2haxe_1_t4" />
   </NPCCharacter>
   <!-- troop trees for mercenary outlaw minor factions (8) -->
   <!-- wolfskins - battanians with no armor or cloth, only animal hides -->
@@ -1433,7 +1445,7 @@
                 name="{=mrBbsiPN}Young Wolf"
                 skill_template="NPCCharacter.infantry_heavyinfantry_level11_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_battania" />
+      <face_key_template value="NPCCharacter.fighter_battania" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1447,7 +1459,7 @@
       <skill id="Polearm"
              value="15" />
       <skill id="Bow"
-             value="40" />
+             value="60" />
       <skill id="Crossbow"
              value="5" />
       <skill id="Throwing"
@@ -1457,6 +1469,10 @@
                  id="Item.highland_ranger_bow" />
       <equipment slot="Item1"
                  id="Item.barbed_arrows" />
+      <equipment slot="Item2"
+                 id="Item.highland_scouts_shield" />
+      <equipment slot="Item3"
+                 id="Item.woodland_axe_t3" />
   </NPCCharacter>
   <NPCCharacter id="wolfskins_tier_2"
                 default_group="Ranged"
@@ -1467,7 +1483,7 @@
                 name="{=q7b4pQc9}Seasoned Wolf"
                 skill_template="NPCCharacter.infantry_heavyinfantry_level11_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_battania" />
+      <face_key_template value="NPCCharacter.fighter_battania" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1481,16 +1497,20 @@
       <skill id="Polearm"
              value="30" />
       <skill id="Bow"
-             value="80" />
+             value="100" />
       <skill id="Crossbow"
              value="10" />
       <skill id="Throwing"
              value="10" />
     </skills>
       <equipment slot="Item0"
-                 id="Item.lowland_longbow" />
+                 id="Item.woodland_yew_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_b" />
+      <equipment slot="Item2"
+                 id="Item.battania_large_shield_c" />
+      <equipment slot="Item3"
+                 id="Item.battania_axe_2_t4" />
   </NPCCharacter>
   <NPCCharacter id="wolfskins_tier_3"
                 default_group="Ranged"
@@ -1501,7 +1521,7 @@
                 name="{=QvSmhaAV}Chosen Wolf"
                 skill_template="NPCCharacter.infantry_heavyinfantry_level26_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_battania" />
+      <face_key_template value="NPCCharacter.fighter_battania" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1509,22 +1529,26 @@
       <skill id="Riding"
              value="25" />
       <skill id="OneHanded"
-             value="110" />
+             value="130" />
       <skill id="TwoHanded"
              value="50" />
       <skill id="Polearm"
              value="30" />
       <skill id="Bow"
-             value="130" />
+             value="160" />
       <skill id="Crossbow"
              value="15" />
       <skill id="Throwing"
              value="15" />
     </skills>
       <equipment slot="Item0"
-                 id="Item.woodland_yew_bow" />
+                 id="Item.noble_long_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
+      <equipment slot="Item2"
+                 id="Item.battania_large_shield_a" />
+      <equipment slot="Item3"
+                 id="Item.battania_axe_3_t5" />
   </NPCCharacter>
   <!-- brotherhood of woods - -->
   <NPCCharacter id="brotherhood_of_woods_tier_1"
@@ -1537,7 +1561,7 @@
                 name="{=DIt9SuMb}Sprout"
                 skill_template="NPCCharacter.ranged_skirmisher_level11_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_vlandia" />
+      <face_key_template value="NPCCharacter.fighter_vlandia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1551,18 +1575,18 @@
       <skill id="Polearm"
              value="15" />
       <skill id="Bow"
-             value="40" />
+             value="60" />
       <skill id="Crossbow"
              value="20" />
       <skill id="Throwing"
              value="5" />
     </skills>
       <equipment slot="Item0"
-                 id="Item.hunting_bow" />
+                 id="Item.glen_ranger_bow" />
       <equipment slot="Item1"
-                 id="Item.default_arrows" />
+                 id="Item.bodkin_arrows_c" />
       <equipment slot="Item2"
-                 id="Item.default_arrows" />
+                 id="Item.bodkin_arrows_c" />
       <equipment slot="Item3"
                  id="Item.falchion_sword_t2" />
   </NPCCharacter>
@@ -1575,7 +1599,7 @@
                 name="{=riT39wKu}Sapling"
                 skill_template="NPCCharacter.ranged_skirmisher_level16_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_vlandia" />
+      <face_key_template value="NPCCharacter.fighter_vlandia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1583,13 +1607,13 @@
       <skill id="Riding"
              value="60" />
       <skill id="OneHanded"
-             value="110" />
+             value="90" />
       <skill id="TwoHanded"
              value="45" />
       <skill id="Polearm"
              value="45" />
       <skill id="Bow"
-             value="90" />
+             value="110" />
       <skill id="Crossbow"
              value="15" />
       <skill id="Throwing"
@@ -1613,7 +1637,7 @@
                 name="{=u3K1SozQ}Arboreal"
                 skill_template="NPCCharacter.ranged_skirmisher_level26_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_vlandia" />
+      <face_key_template value="NPCCharacter.fighter_vlandia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1621,13 +1645,13 @@
       <skill id="Riding"
              value="60" />
       <skill id="OneHanded"
-             value="90" />
+             value="100" />
       <skill id="TwoHanded"
              value="45" />
       <skill id="Polearm"
              value="45" />
       <skill id="Bow"
-             value="100" />
+             value="160" />
       <skill id="Crossbow"
              value="15" />
       <skill id="Throwing"
@@ -1762,30 +1786,34 @@
                 name="{=xIFHLI66}Karakhuzait Nomad"
                 skill_template="NPCCharacter.horsearcher_level11_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_khuzait" />
+      <face_key_template value="NPCCharacter.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
              value="40" />
       <skill id="Riding"
-             value="40" />
+             value="60" />
       <skill id="OneHanded"
              value="20" />
       <skill id="TwoHanded"
              value="15" />
       <skill id="Polearm"
-             value="10" />
+             value="40" />
       <skill id="Bow"
-             value="30" />
+             value="60" />
       <skill id="Crossbow"
              value="5" />
       <skill id="Throwing"
              value="15" />
     </skills>
       <equipment slot="Item0"
-                 id="Item.steppe_bow" />
+                 id="Item.composite_bow" />
       <equipment slot="Item1"
                  id="Item.tournament_arrows" />
+      <equipment slot="Item2"
+                 id="Item.tournament_arrows" />
+      <equipment slot="Item3"
+                 id="Item.easter_polesword_t4" />
   </NPCCharacter>
   <NPCCharacter id="karakhuzaits_tier_2"
                 default_group="HorseArcher"
@@ -1795,21 +1823,21 @@
                 name="{=lduchnvD}Karakhuzait Rider"
                 skill_template="NPCCharacter.horsearcher_level16_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_khuzait" />
+      <face_key_template value="NPCCharacter.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
              value="40" />
       <skill id="Riding"
-             value="60" />
+             value="90" />
       <skill id="OneHanded"
-             value="70" />
+             value="30" />
       <skill id="TwoHanded"
              value="30" />
       <skill id="Polearm"
-             value="40" />
+             value="70" />
       <skill id="Bow"
-             value="80" />
+             value="90" />
       <skill id="Crossbow"
              value="10" />
       <skill id="Throwing"
@@ -1819,6 +1847,10 @@
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
                  id="Item.steppe_arrows" />
+      <equipment slot="Item2"
+                 id="Item.steppe_arrows" />
+      <equipment slot="Item3"
+                 id="Item.khuzait_polearm_1_t4" />
   </NPCCharacter>
   <NPCCharacter id="karakhuzaits_tier_3"
                 default_group="HorseArcher"
@@ -1828,30 +1860,34 @@
                 name="{=gBuGfUg3}Karakhuzait Elder"
                 skill_template="NPCCharacter.horsearcher_level26_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_khuzait" />
+      <face_key_template value="NPCCharacter.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
              value="60" />
       <skill id="Riding"
-             value="100" />
+             value="150" />
       <skill id="OneHanded"
-             value="100" />
+             value="45" />
       <skill id="TwoHanded"
              value="45" />
       <skill id="Polearm"
-             value="45" />
+             value="130" />
       <skill id="Bow"
-             value="110" />
+             value="160" />
       <skill id="Crossbow"
              value="15" />
       <skill id="Throwing"
              value="60" />
     </skills>
       <equipment slot="Item0"
-                 id="Item.steppe_war_bow" />
+                 id="Item.noble_bow" />
       <equipment slot="Item1"
                  id="Item.heavy_steppe_arrows" />
+      <equipment slot="Item2"
+                 id="Item.heavy_steppe_arrows" />
+      <equipment slot="Item3"
+                 id="Item.khuzait_polearm_2_t5" />
   </NPCCharacter>
   <!-- forest people/sturgia  -->
   <NPCCharacter id="forest_people_tier_1"
@@ -1864,21 +1900,21 @@
                 name="{=h7nGFImt}Recruit Forester"
                 skill_template="NPCCharacter.ranged_skirmisher_level6_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_sturgia" />
+      <face_key_template value="NPCCharacter.fighter_sturgia" />
     </face>
     <skills>
       <skill id="Athletics"
-             value="40" />
+             value="60" />
       <skill id="Riding"
              value="20" />
       <skill id="OneHanded"
-             value="40" />
-      <skill id="TwoHanded"
              value="15" />
+      <skill id="TwoHanded"
+             value="60" />
       <skill id="Polearm"
              value="20" />
       <skill id="Bow"
-             value="40" />
+             value="50" />
       <skill id="Crossbow"
              value="5" />
       <skill id="Throwing"
@@ -1890,6 +1926,8 @@
                  id="Item.default_arrows" />
       <equipment slot="Item2"
                  id="Item.default_arrows" />
+      <equipment slot="Item3"
+                 id="Item.northern_axe_t3" />
   </NPCCharacter>
   <NPCCharacter id="forest_people_tier_2"
                 default_group="Ranged"
@@ -1900,17 +1938,17 @@
                 name="{=2HDPaohZ}Expert Forester"
                 skill_template="NPCCharacter.ranged_skirmisher_level16_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_sturgia" />
+      <face_key_template value="NPCCharacter.fighter_sturgia" />
     </face>
     <skills>
       <skill id="Athletics"
-             value="80" />
+             value="100" />
       <skill id="Riding"
              value="20" />
       <skill id="OneHanded"
-             value="0" />
-      <skill id="TwoHanded"
              value="30" />
+      <skill id="TwoHanded"
+             value="100" />
       <skill id="Polearm"
              value="30" />
       <skill id="Bow"
@@ -1926,6 +1964,8 @@
                  id="Item.heavy_steppe_arrows" />
       <equipment slot="Item2"
                  id="Item.heavy_steppe_arrows" />
+      <equipment slot="Item3"
+                 id="Item.sturgia_2haxe_1_t4" />
   </NPCCharacter>
   <NPCCharacter id="forest_people_tier_3"
                 default_group="Ranged"
@@ -1936,32 +1976,34 @@
                 name="{=ueasbGtd}Veteran Forester"
                 skill_template="NPCCharacter.ranged_skirmisher_level26_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_sturgia" />
+      <face_key_template value="NPCCharacter.fighter_sturgia" />
     </face>
     <skills>
       <skill id="Athletics"
-             value="110" />
+             value="150" />
       <skill id="Riding"
              value="60" />
       <skill id="OneHanded"
-             value="90" />
-      <skill id="TwoHanded"
              value="45" />
+      <skill id="TwoHanded"
+             value="130" />
       <skill id="Polearm"
              value="45" />
       <skill id="Bow"
-             value="100" />
+             value="130" />
       <skill id="Crossbow"
              value="15" />
       <skill id="Throwing"
              value="60" />
     </skills>
       <equipment slot="Item0"
-                 id="Item.woodland_longbow" />
+                 id="Item.steppe_war_bow" />
       <equipment slot="Item1"
                  id="Item.vlandic_arrows" />
       <equipment slot="Item2"
                  id="Item.vlandic_arrows" />
+      <equipment slot="Item3"
+                 id="Item.sturgia_2haxe_2_t5" />
   </NPCCharacter>
   <!-- Mercenaries  -->
   <NPCCharacter id="mercenary_5"

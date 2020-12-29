@@ -338,6 +338,18 @@ namespace RealisticBattleCombatModule
 
             switch (weaponType)
             {
+                case "Dagger":
+                    {
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".BluntFactorCut"], XmlConfig.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
+                                XmlConfig.dict[weaponType + ".ArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ArmorThresholdFactorPierce"]);
+                        break;
+                    }
+                case "ThrowingKnife":
+                    {
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".BluntFactorCut"], XmlConfig.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
+                                XmlConfig.dict[weaponType + ".ArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ArmorThresholdFactorPierce"]);
+                        break;
+                    }
                 case "OneHandedSword":
                     {
                         damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".BluntFactorCut"], XmlConfig.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,

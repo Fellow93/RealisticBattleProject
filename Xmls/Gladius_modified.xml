@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Items>
+  <CraftedItem id="gladius_b" name="{=AOZbTGOS}Gladius" crafting_template="Dagger" culture="Culture.empire">
+    <Pieces>
+      <Piece id="dagger_blade_11" Type="Blade" scale_factor="200" />
+      <Piece id="aserai_dagger_guard_1" Type="Guard" scale_factor="110" />
+      <Piece id="sturgian_grip_4" Type="Handle" />
+      <Piece id="battania_pommel_7" Type="Pommel" scale_factor="90" />
+    </Pieces>
+  </CraftedItem>
+</Items>
