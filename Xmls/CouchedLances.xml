@@ -139,7 +139,7 @@
   <!-- 2h cutting polearms -->
   <!-- heavy ones, mostly tier 5 -->  
     <CraftingPiece id="spear_handle_8" name="{=aQa3tp6Q}Decorated Long Pine Shaft" tier="5" piece_type="Handle" mesh="spear_handle_8" length="230" weight="0.5" CraftingCost="110">
-    <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:TwoHandedPolearm_Bracing:Javelin" />
+    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
     <BuildData piece_offset="22.9" />
     <Materials>
       <Material id="Wood" count="1" />
@@ -147,7 +147,7 @@
   </CraftingPiece>
   <!-- warrazor and hewing spear -->  
     <CraftingPiece id="spear_handle_26" name="{=ELpWa0K5}Cured Oaken Pike Shaft" tier="5" piece_type="Handle" mesh="spear_handle_26" length="280" weight="0.5">
-    <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:TwoHandedPolearm_Bracing:Javelin" />
+    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
     <BuildData piece_offset="22.9" />
     <Materials>
       <Material id="Wood" count="3" />
@@ -155,7 +155,7 @@
   </CraftingPiece>
   <!-- light ones, tier 4 -->  
     <CraftingPiece id="spear_handle_15" name="{=NQb8boHt}Hardened Ash Shaft" tier="4" piece_type="Handle" mesh="spear_handle_15" length="170" weight="0.5">
-    <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:TwoHandedPolearm_Bracing:Javelin" />
+    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
     <BuildData piece_offset="22.9" />
     <Materials>
       <Material id="Wood" count="1" />
@@ -243,7 +243,7 @@
   </CraftingPiece>
   
   <CraftingPiece id="spear_blade_19" name="{=OBeOZ27b}Glaive Head" tier="4" piece_type="Blade" mesh="spear_blade_19" length="37.4" weight="0.4408">
-    <PieceUsages unavailable_usages="" />
+    <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="2.7" />
       <Swing damage_type="Cut" damage_factor="2.7" />
@@ -254,7 +254,7 @@
   </CraftingPiece>
   
   <CraftingPiece id="spear_blade_24" name="{=bjQ8J71a}Long Glaive Head" tier="5" piece_type="Blade" mesh="spear_blade_24" length="68" weight="0.5">
-    <PieceUsages unavailable_usages="" />
+    <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="3.5" />
       <Swing damage_type="Cut" damage_factor="3.9" />
@@ -265,7 +265,7 @@
   </CraftingPiece>
 
 <CraftingPiece id="axe_craft_10_head" name="{=LNDbMUK0}Voulge Head" tier="4" piece_type="Blade" mesh="axe_craft_10_head" distance_to_next_piece="23" distance_to_previous_piece="4" weight="0.5">
-    <PieceUsages unavailable_usages="" />
+    <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable" />
     <BuildData piece_offset="-8" />
     <BladeData stack_amount="3" blade_length="23.118" blade_width="18.371" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Thrust damage_type="Pierce" damage_factor="3.6" />
@@ -303,7 +303,7 @@
   </CraftingPiece>
   
     <CraftingPiece id="spear_blade_22" name="{=3ged5Ozt}Exceptional Eastern Glaive" tier="4" piece_type="Blade" mesh="spear_blade_22" length="89" weight="0.5456">
-    <PieceUsages unavailable_usages="" />
+    <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="2.7" />
       <Swing damage_type="Cut" damage_factor="2.8" />
