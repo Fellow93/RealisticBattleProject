@@ -8,9 +8,9 @@
     <native_parameter id="defend_right_stance_speed_multiplier" value="1.0"/>
 	
 	<native_parameter id="shield_bash_collision_check_scale_multiplier" value="1.3"/>
-    <native_parameter id="bigger_humanoid_physics_capsule_radius_multiplier" value="1.755"/>
-	<native_parameter id="smaller_humanoid_physics_capsule_radius_multiplier_for_static_bodies" value="0.906"/>
-    <native_parameter id="smaller_humanoid_physics_capsule_radius_multiplier_for_agents" value="1.5"/>
+    <native_parameter id="bigger_humanoid_physics_capsule_radius_multiplier" value="1.5"/>
+	<native_parameter id="smaller_humanoid_physics_capsule_radius_multiplier_for_static_bodies" value="0.67"/>
+    <native_parameter id="smaller_humanoid_physics_capsule_radius_multiplier_for_agents" value="1.15"/>
 
   </native_parameters>
 </base>
