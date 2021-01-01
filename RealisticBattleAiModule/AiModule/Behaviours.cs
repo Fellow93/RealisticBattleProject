@@ -597,6 +597,38 @@ namespace RealisticBattleAiModule
         }
     }
 
+    //[HarmonyPatch(typeof(BehaviorDefendCastleKeyPosition))]
+    //class OverrideBehaviorDefendCastleKeyPosition
+    //{
+
+    //    private enum BehaviourState
+    //    {
+    //        UnSet,
+    //        Waiting,
+    //        Ready
+    //    }
+
+    //    [HarmonyPostfix]
+    //    [HarmonyPatch("ResetOrderPositions")]
+    //    static void PostfixResetOrderPositions(ref Formation ___formation, ref TacticalPosition ____tacticalMiddlePos, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviourState ____behaviourState)
+    //    {
+    //        if (____tacticalMiddlePos != null)
+    //        {
+    //            PropertyInfo property = typeof(TacticalPosition).GetProperty("Position", BindingFlags.NonPublic | BindingFlags.Instance);
+    //            property.DeclaringType.GetProperty("Position");
+    //            WorldPosition position = (WorldPosition)property.GetValue(____tacticalMiddlePos, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+    //            if (____behaviourState == BehaviourState.Ready)
+    //            {
+    //                Vec2 direction = (___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.MedianPosition.AsVec2 - ___formation.QuerySystem.AveragePosition).Normalized();
+    //                WorldPosition newPosition = position;
+    //                newPosition.SetVec2(position.AsVec2 + direction * 5f);
+    //                ____readyOrder = MovementOrder.MovementOrderMove(newPosition);
+    //                ____currentOrder = ____readyOrder;
+    //            }
+    //        }
+    //    }
+    //}
+
     [HarmonyPatch(typeof(BehaviorCharge))]
     class OverrideBehaviorCharge
     {
