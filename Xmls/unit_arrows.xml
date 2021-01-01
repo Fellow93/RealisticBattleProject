@@ -185,9 +185,9 @@
       <equipment slot="Item0"
                  id="Item.highland_ranger_bow" />
       <equipment slot="Item1"
-                 id="Item.barbed_arrows" />
+                 id="Item.bodkin_arrows_c" />
       <equipment slot="Item2"
-                 id="Item.barbed_arrows" />
+                 id="Item.bodkin_arrows_c" />
   </NPCCharacter>
   <NPCCharacter id="battanian_highborn_warrior"
                 default_group="Ranged"
@@ -397,9 +397,9 @@
       <equipment slot="Item0"
                  id="Item.hunting_bow" />
       <equipment slot="Item1"
-                 id="Item.range_arrows" />
+                 id="Item.steppe_arrows" />
       <equipment slot="Item3"
-                 id="Item.range_arrows" />
+                 id="Item.steppe_arrows" />
   </NPCCharacter>
   <NPCCharacter id="bucellarii"
                 default_group="HorseArcher"
@@ -468,9 +468,9 @@
       <equipment slot="Item0"
                  id="Item.highland_ranger_bow" />
       <equipment slot="Item1"
-                 id="Item.barbed_arrows" />
+                 id="Item.heavy_steppe_arrows" />
       <equipment slot="Item3"
-                 id="Item.barbed_arrows" />
+                 id="Item.heavy_steppe_arrows" />
   </NPCCharacter>
   <NPCCharacter id="imperial_veteran_archer"
                 default_group="Ranged"
@@ -730,9 +730,9 @@
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
-                 id="Item.tournament_arrows" />
+                 id="Item.heavy_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.tournament_arrows" />
+                 id="Item.heavy_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_sword_1_t2" />
   </NPCCharacter>
@@ -1093,7 +1093,7 @@
              value="30" />
     </skills>
       <equipment slot="Item0"
-                 id="Item.mountain_hunting_bow" />
+                 id="Item.steppe_bow" />
       <equipment slot="Item1"
                  id="Item.steppe_arrows" />
       <equipment slot="Item2"
@@ -1205,7 +1205,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_a" />
       <equipment slot="Item1"
-                 id="Item.tournament_bolts" />
+                 id="Item.bolt_e" />
       <equipment slot="Item3"
                  id="Item.leather_bound_kite_shield" />
   </NPCCharacter>

@@ -59,7 +59,7 @@
 	<Item id="noble_long_bow" name="{=WRqYWspc}Noble Long Bow" body_name="bo_composite_longbow_g" mesh="longbow_j" weight="0.8" value="8000" difficulty="140" appearance="1" Type="Bow" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.battania">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="45" speed_rating="60" missile_speed="200" weapon_length="118" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -67,7 +67,7 @@
 	<Item id="woodland_longbow" name="{=ZFwKlHIJ}Woodland Longbow" body_name="bo_composite_longbow_a" mesh="longbow_c" weight="0.5" value="4800" difficulty="120" appearance="1" Type="Bow" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.battania">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="60" speed_rating="60" missile_speed="180" weapon_length="118" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -75,7 +75,7 @@
 	<Item id="nomad_bow" name="{=ifzgMcrK}Nomad Bow" body_name="bo_composite_longbow_g" mesh="longbow_g" weight="0.5" value="4950" difficulty="110" appearance="1" Type="Bow" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.aserai">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="58" speed_rating="60" missile_speed="170" weapon_length="114" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -83,7 +83,7 @@
 	<Item id="noble_bow" name="{=EO7pCu1b}Noble Bow" body_name="bo_composite_shotbow_f" mesh="shortbow_f" weight="0.8" value="25000" difficulty="106" appearance="1" Type="Bow" item_holsters="bow_back_2:bow_hip:bow_hip_2:bow_back" culture="Culture.khuzait">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="60" speed_rating="60" missile_speed="166" weapon_length="116" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -91,7 +91,7 @@
 	<Item id="lowland_yew_bow" name="{=lkDQMG0y}Western Yew Bow" body_name="bo_composite_longbow_a" mesh="longbow_b" weight="0.5" value="4350" difficulty="100" appearance="1" Type="Bow" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.vlandia">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="65" speed_rating="60" missile_speed="160" weapon_length="117" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -99,7 +99,7 @@
 	<Item id="longbow_recurve_desert_bow" name="{=TgZIAdRk}Southern Strong Longbow" body_name="bo_composite_longbow_g" mesh="longbow_i" weight="0.5" value="4500" difficulty="90" appearance="1" Type="Bow" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.aserai">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="63" speed_rating="60" missile_speed="150" weapon_length="116" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -107,7 +107,7 @@
 	<Item id="woodland_yew_bow" name="{=RcCtV0aS}Woodland Yew Bow" body_name="bo_composite_longbow_a" mesh="longbow_d" weight="0.5" value="3900" difficulty="80" appearance="1" Type="Bow" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.battania">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="67" speed_rating="60" missile_speed="140" weapon_length="115" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -115,7 +115,7 @@
 	<Item id="steppe_war_bow" name="{=wfhHGTbl}Steppe War Bow" body_name="bo_composite_shotbow_a" mesh="shortbow_a" weight="0.3" value="6075" difficulty="75" appearance="1" Type="Bow" item_holsters="bow_hip:bow_hip_2:bow_back:bow_back_2" culture="Culture.khuzait">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="65" speed_rating="60" missile_speed="135" weapon_length="107" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.0,0,-0.15">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -123,7 +123,7 @@
 	<Item id="tribal_bow" name="{=w6sFabVp}Southern Tribesman's Bow" body_name="bo_composite_longbow_g" mesh="longbow_h" weight="0.5" value="3000" difficulty="70" appearance="1" Type="Bow" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.aserai">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="65" speed_rating="60" missile_speed="130" weapon_length="115" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -131,7 +131,7 @@
 	<Item id="steppe_heavy_bow" name="{=E7miRMw1}Heavy Recurve Bow" body_name="bo_composite_shotbow_b" mesh="shortbow_b" weight="0.3" value="3750" difficulty="65" appearance="1" Type="Bow" item_holsters="bow_back_2:bow_hip:bow_hip_2:bow_back" culture="Culture.khuzait">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="70" speed_rating="60" missile_speed="125" weapon_length="106" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.0,0,-0.1">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -139,7 +139,7 @@
 	<Item id="lowland_longbow" name="{=6fPAlYR5}Western Longbow" body_name="bo_composite_longbow_a" mesh="longbow_a" weight="0.5" value="2400" difficulty="60" appearance="1" Type="Bow" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.vlandia" subtype="bow">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="72" speed_rating="60" missile_speed="120" weapon_length="120" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -147,7 +147,7 @@
 	<Item id="nordic_shortbow" name="{=tEimkEsU}Nordic Shortbow" body_name="bo_composite_shotbow_c" mesh="shortbow_e" weight="0.3" value="3450" difficulty="60" appearance="1" Type="Bow" item_holsters="bow_hip:bow_hip_2:bow_back:bow_back_2" culture="Culture.sturgia">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="74" speed_rating="60" missile_speed="120" weapon_length="108" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -155,7 +155,7 @@
 	<Item id="composite_steppe_bow" name="{=w6EU77OH}Steppe Recurve Bow" body_name="bo_composite_shotbow_c" mesh="shortbow_d" weight="0.3" value="3300" difficulty="50" appearance="1" Type="Bow" item_holsters="bow_hip:bow_hip_2:bow_back:bow_back_2" culture="Culture.khuzait">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="80" speed_rating="60" missile_speed="110" weapon_length="108" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -163,7 +163,7 @@
 	<Item id="composite_bow" name="{=h1jKICdp}Simple Short Bow" body_name="bo_composite_shotbow_c" mesh="shortbow_c" weight="0.3" value="3000" difficulty="40" appearance="1" Type="Bow" item_holsters="bow_hip:bow_hip_2:bow_back:bow_back_2">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="83" speed_rating="60" missile_speed="100" weapon_length="110" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -171,7 +171,7 @@
 	<Item id="glen_ranger_bow" name="{=KTegaNPW}Longbow" body_name="bo_composite_longbow_e" mesh="longbow_f" weight="0.4" value="2200" difficulty="40" appearance="1" Type="Bow" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.battania">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="80" speed_rating="60" missile_speed="100" weapon_length="111" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -179,7 +179,7 @@
 	<Item id="highland_ranger_bow" name="{=mTWvG1xz}Ranger Bow" body_name="bo_composite_longbow_e" mesh="longbow_e" weight="0.4" value="1800" difficulty="30" appearance="1" Type="Bow" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.battania">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="85" speed_rating="60" missile_speed="90" weapon_length="113" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -187,7 +187,7 @@
 	<Item id="steppe_bow" name="{=PoY2Vh7K}Steppe Bow" body_name="bo_composite_shotbow_g" mesh="shortbow_g" weight="0.3" value="2700" difficulty="30" appearance="1" Type="Bow" item_holsters="bow_hip:bow_hip_2:bow_back:bow_back_2" culture="Culture.khuzait">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="87" speed_rating="60" missile_speed="90" weapon_length="110" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -211,7 +211,7 @@
 	<Item id="mountain_hunting_bow" name="{=YGQ6UXCo}Mountain Hunting Bow" body_name="bo_composite_shotbow_h" mesh="shortbow_i" weight="0.3" value="700" difficulty="10" appearance="1" Type="Bow" item_holsters="bow_back_2:bow_hip:bow_hip_2:bow_back" culture="Culture.battania">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="89" speed_rating="60" missile_speed="70" weapon_length="108" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -219,7 +219,7 @@
 	<Item id="hunting_bow" name="{=wltdyF2j}Hunting Bow" body_name="bo_composite_shotbow_h" mesh="shortbow_h" weight="0.3" value="600" difficulty="0" appearance="1" Type="Bow" item_holsters="bow_hip:bow_hip_2:bow_back:bow_back_2">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="92" speed_rating="60" missile_speed="60" weapon_length="110" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -227,7 +227,7 @@
 	<Item id="training_bow" name="{=SUSbUAEl}Practice Bow" body_name="bo_composite_shotbow_b" mesh="shortbow_b" weight="0.3" value="600" difficulty="0" appearance="1" Type="Bow" item_holsters="bow_back_2:bow_hip:bow_hip_2:bow_back" is_merchandise="false">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="92" speed_rating="87" missile_speed="60" weapon_length="106" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.0,0,-0.1">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -235,7 +235,7 @@
 	<Item id="training_longbow" name="{=cmuMaYGR}Practice Longbow" body_name="bo_composite_longbow_a" mesh="longbow_a" weight="0.5" value="600" difficulty="0" appearance="1" Type="Bow" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.vlandia" subtype="bow" is_merchandise="false">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" ammo_limit="1" thrust_speed="84" speed_rating="70" missile_speed="60" weapon_length="120" accuracy="80" thrust_damage="10" thrust_damage_type="Pierce" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0">
-				<WeaponFlags RangedWeapon="true" HasString="true" StringHeldByHand="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" AutoReload="true" UnloadWhenSheathed="true"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
@@ -248,97 +248,97 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="vlandic_arrows" name="Armor Piercing Arrows 80 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_g" weight="0.08" value="2400" difficulty="0" appearance="1" Type="Arrows" item_holsters="quiver_back_top:quiver_back_top_2" subtype="arrows" is_merchandise="true" holster_position_shift="0,0,0.1" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_g_quiver" holster_mesh_with_weapon="arrow_bl_g_quiver" flying_mesh="arrow_bl_g">
+	<Item id="vlandic_arrows" name="Armor Piercing Arrows 80 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_g" weight="0.08" value="2400" difficulty="0" appearance="1" Type="Arrows" item_holsters="quiver_back_top:quiver_back_top_2" holster_position_shift="0,0,0.1" subtype="arrows" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_g_quiver" holster_mesh_with_weapon="arrow_bl_g_quiver" flying_mesh="arrow_bl_g">
 		<ItemComponent>
-			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_top" physics_material="missile" center_of_mass="0,0.0,-0.1" stack_amount="30" passby_sound_code="event:/mission/combat/missile/passby" rotation="0, -80, 25" sticking_position="0,-0.97,0" sticking_rotation="90,0,0">
-				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" CanPenetrateShield="true"/>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_top" physics_material="missile" center_of_mass="0,0.0,-0.1" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" AmmoBreaksOnBounceBack="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="arrow_emp_1_a" name="Armor Piercing Arrows 100 grams" body_name="bo_capsule_arrow" mesh="arrow_roman_a" weight="0.1" value="3000" appearance="1" Type="Arrows" item_holsters="quiver_back_top:quiver_back_top_2" is_merchandise="true" holster_position_shift="0.0,0.0,0.1" holster_body_name="bo_axe_short" holster_mesh="quiver_roman_a" holster_mesh_with_weapon="quiver_roman_a" flying_mesh="arrow_roman_a">
+	<Item id="arrow_emp_1_a" name="Armor Piercing Arrows 100 grams" body_name="bo_capsule_arrow" mesh="arrow_roman_a" weight="0.1" value="3000" appearance="1" Type="Arrows" item_holsters="quiver_back_top:quiver_back_top_2" holster_position_shift="0.0,0.0,0.1" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="quiver_roman_a" holster_mesh_with_weapon="quiver_roman_a" flying_mesh="arrow_roman_a">
 		<ItemComponent>
-			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_top" physics_material="missile" center_of_mass="0,0.0,-0.1" stack_amount="30" passby_sound_code="event:/mission/combat/missile/passby" rotation="0, -80, 25" sticking_position="0,-0.97,0" sticking_rotation="90,0,0">
-				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" CanPenetrateShield="true"/>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_top" physics_material="missile" center_of_mass="0,0.0,-0.1" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" AmmoBreaksOnBounceBack="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="piercing_arrows" name="Armor Piercing Arrows 110 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_a" weight="0.11" value="3300" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" is_merchandise="true" holster_position_shift="0.0,0.0,0.15" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_a_quiver" holster_mesh_with_weapon="arrow_bl_a_quiver" flying_mesh="arrow_bl_a">
+	<Item id="piercing_arrows" name="Armor Piercing Arrows 110 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_a" weight="0.11" value="3300" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" holster_position_shift="0.0,0.0,0.15" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_a_quiver" holster_mesh_with_weapon="arrow_bl_a_quiver" flying_mesh="arrow_bl_a">
 		<ItemComponent>
-			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="30" passby_sound_code="event:/mission/combat/missile/passby" rotation="0, -80, 25" sticking_position="0,-0.97,0" sticking_rotation="90,0,0">
-				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" CanPenetrateShield="true"/>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" AmmoBreaksOnBounceBack="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="bodkin_arrows_a" name="Armor Piercing Arrows 90 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_b" weight="0.09" value="2700" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" is_merchandise="true" holster_position_shift="0.0,0.0,0.15" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_b_quiver" holster_mesh_with_weapon="arrow_bl_b_quiver" flying_mesh="arrow_bl_b">
+	<Item id="bodkin_arrows_a" name="Armor Piercing Arrows 90 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_b" weight="0.09" value="2700" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" holster_position_shift="0.0,0.0,0.15" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_b_quiver" holster_mesh_with_weapon="arrow_bl_b_quiver" flying_mesh="arrow_bl_b">
 		<ItemComponent>
-			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="30" passby_sound_code="event:/mission/combat/missile/passby" rotation="0, -80, 25" sticking_position="0,-0.97,0" sticking_rotation="90,0,0">
-				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" CanPenetrateShield="true"/>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" AmmoBreaksOnBounceBack="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="bodkin_arrows_b" name="Armor Piercing Arrows 70 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_c" weight="0.07" value="2100" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" is_merchandise="true" holster_position_shift="0.0,0.0,0.15" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_c_quiver" holster_mesh_with_weapon="arrow_bl_c_quiver" flying_mesh="arrow_bl_c">
+	<Item id="bodkin_arrows_b" name="Armor Piercing Arrows 70 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_c" weight="0.07" value="2100" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" holster_position_shift="0.0,0.0,0.15" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_c_quiver" holster_mesh_with_weapon="arrow_bl_c_quiver" flying_mesh="arrow_bl_c">
 		<ItemComponent>
-			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="30" passby_sound_code="event:/mission/combat/missile/passby" rotation="0, -80, 25" sticking_position="0,-0.97,0" sticking_rotation="90,0,0">
-				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" CanPenetrateShield="true"/>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" AmmoBreaksOnBounceBack="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="bodkin_arrows_c" name="Armor Piercing Arrows 50 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_d" weight="0.05" value="1500" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" is_merchandise="true" holster_position_shift="0.0,0.0,0.15" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_d_quiver" holster_mesh_with_weapon="arrow_bl_d_quiver" flying_mesh="arrow_bl_d">
+	<Item id="bodkin_arrows_c" name="Armor Piercing Arrows 50 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_d" weight="0.05" value="1500" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" holster_position_shift="0.0,0.0,0.15" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_d_quiver" holster_mesh_with_weapon="arrow_bl_d_quiver" flying_mesh="arrow_bl_d">
 		<ItemComponent>
-			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="30" passby_sound_code="event:/mission/combat/missile/passby" rotation="0, -80, 25" sticking_position="0,-0.97,0" sticking_rotation="90,0,0">
-				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" CanPenetrateShield="true"/>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" AmmoBreaksOnBounceBack="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="steppe_arrows" name="Armor Piercing Arrows 40 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_e" weight="0.04" value="1200" appearance="1" Type="Arrows" item_holsters="quiver_back_lower:quiver_back_lower_2" is_merchandise="true" holster_position_shift="0.0,0.0,-0.0" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_e_quiver" holster_mesh_with_weapon="arrow_bl_e_quiver" flying_mesh="arrow_bl_e">
+	<Item id="steppe_arrows" name="Armor Piercing Arrows 40 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_e" weight="0.04" value="1200" appearance="1" Type="Arrows" item_holsters="quiver_back_lower:quiver_back_lower_2" holster_position_shift="0.0,0.0,-0.0" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_e_quiver" holster_mesh_with_weapon="arrow_bl_e_quiver" flying_mesh="arrow_bl_e">
 		<ItemComponent>
-			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="-0.00,0.05,-0.00" stack_amount="30" passby_sound_code="event:/mission/combat/missile/passby" rotation="0, -80, 25" sticking_position="0,-0.97,0" sticking_rotation="90,0,0">
-				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" CanPenetrateShield="true"/>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="-0.00,0.05,-0.00" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" AmmoBreaksOnBounceBack="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="heavy_steppe_arrows" name="Armor Piercing Arrows 60 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_f" weight="0.06" value="1800" appearance="1" Type="Arrows" item_holsters="quiver_back_lower:quiver_back_lower_2" is_merchandise="true" holster_position_shift="0.0,0.0,-0.0" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_f_quiver" holster_mesh_with_weapon="arrow_bl_f_quiver" flying_mesh="arrow_bl_f">
+	<Item id="heavy_steppe_arrows" name="Armor Piercing Arrows 60 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_f" weight="0.06" value="1800" appearance="1" Type="Arrows" item_holsters="quiver_back_lower:quiver_back_lower_2" holster_position_shift="0.0,0.0,-0.0" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_f_quiver" holster_mesh_with_weapon="arrow_bl_f_quiver" flying_mesh="arrow_bl_f">
 		<ItemComponent>
-			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="-0,00.05,-0.0" stack_amount="30" passby_sound_code="event:/mission/combat/missile/passby" rotation="0, -80, 25" sticking_position="0,-0.97,0" sticking_rotation="90,0,0">
-				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" CanPenetrateShield="true"/>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="-0,00.05,-0.0" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" AmmoBreaksOnBounceBack="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="barbed_arrows" name="Flesh Cutting Arrows 60 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_g" weight="0.06" value="1800" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" is_merchandise="true" holster_position_shift="0.0,0.0,0.15" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_h_quiver" holster_mesh_with_weapon="arrow_bl_h_quiver" flying_mesh="arrow_bl_g">
+	<Item id="barbed_arrows" name="Flesh Cutting Arrows 60 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_g" weight="0.06" value="1800" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" holster_position_shift="0.0,0.0,0.15" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_h_quiver" holster_mesh_with_weapon="arrow_bl_h_quiver" flying_mesh="arrow_bl_g">
 		<ItemComponent>
-			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="115" thrust_damage_type="Cut" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="30" passby_sound_code="event:/mission/combat/missile/passby" rotation="0, -80, 25" sticking_position="0,-0.97,0" sticking_rotation="90,0,0">
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="115" thrust_damage_type="Cut" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="range_arrows" name="Flesh Cutting Arrows 40 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_i" weight="0.04" value="1200" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" is_merchandise="true" holster_position_shift="0.0,0.0,0.15" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_i_quiver" holster_mesh_with_weapon="arrow_bl_i_quiver" flying_mesh="arrow_bl_i">
+	<Item id="range_arrows" name="Flesh Cutting Arrows 40 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_i" weight="0.04" value="1200" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" holster_position_shift="0.0,0.0,0.15" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_i_quiver" holster_mesh_with_weapon="arrow_bl_i_quiver" flying_mesh="arrow_bl_i">
 		<ItemComponent>
-			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="115" thrust_damage_type="Cut" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="30" passby_sound_code="event:/mission/combat/missile/passby" rotation="0, -80, 25" sticking_position="0,-0.97,0" sticking_rotation="90,0,0">
-				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" CanPenetrateShield="true"/>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="115" thrust_damage_type="Cut" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" AmmoBreaksOnBounceBack="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="tournament_arrows" name="Flight Arrows 30 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_i" weight="0.03" value="900" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts:quiver_bolts_2" is_merchandise="true" holster_position_shift="0.0,0.0,0.15" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_i_quiver" holster_mesh_with_weapon="arrow_bl_i_quiver" flying_mesh="arrow_bl_i">
+	<Item id="tournament_arrows" name="Flight Arrows 30 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_i" weight="0.03" value="900" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts:quiver_bolts_2" holster_position_shift="0.0,0.0,0.15" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_i_quiver" holster_mesh_with_weapon="arrow_bl_i_quiver" flying_mesh="arrow_bl_i">
 		<ItemComponent>
-			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="115" thrust_damage_type="Cut" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="30" passby_sound_code="event:/mission/combat/missile/passby" rotation="0, -80, 25" sticking_position="0,-0.97,0" sticking_rotation="90,0,0">
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="115" thrust_damage_type="Cut" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="default_arrows" name="Flesh Cutting Arrows 50 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_i" weight="0.05" value="1500" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" is_merchandise="true" holster_position_shift="0.0,0.0,0.15" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_i_quiver" holster_mesh_with_weapon="arrow_bl_i_quiver" flying_mesh="arrow_bl_i">
+	<Item id="default_arrows" name="Flesh Cutting Arrows 50 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_i" weight="0.05" value="1500" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" holster_position_shift="0.0,0.0,0.15" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_i_quiver" holster_mesh_with_weapon="arrow_bl_i_quiver" flying_mesh="arrow_bl_i">
 		<ItemComponent>
-			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="115" thrust_damage_type="Cut" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="30" passby_sound_code="event:/mission/combat/missile/passby" rotation="0, -80, 25" sticking_position="0,-0.97,0" sticking_rotation="90,0,0">
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="115" thrust_damage_type="Cut" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -346,7 +346,7 @@
 	</Item>
 	<Item id="tournament_bolts" name="Flesh Cutting Long Range Bolts 30 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_a" weight="0.03" value="600" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_a_quiver" holster_mesh_with_weapon="bolt_bl_a_quiver" flying_mesh="bolt_bl_a">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="47" thrust_damage="115" thrust_damage_type="Cut" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="20" rotation="180, 0, 0" sticking_position="0,-0.47,0" sticking_rotation="90,0,0">
+			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="47" thrust_damage="115" thrust_damage_type="Cut" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="20" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -354,47 +354,47 @@
 	</Item>
 	<Item id="bolt_a" name="Armor Piercing Bolts 95 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_a" weight="0.095" value="500" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_a_quiver" holster_mesh_with_weapon="bolt_bl_a_quiver" flying_mesh="bolt_bl_a">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="47" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="20" rotation="180, 0, 0" sticking_position="0,-0.47,0" sticking_rotation="90,0,0">
-				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" CanPenetrateShield="true" AttachAmmoToVisual="true"/>
+			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="47" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="20" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
 	</Item>
 	<Item id="bolt_b" name="Armor Piercing Bolts 80 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_b" weight="0.08" value="400" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_b_quiver" holster_mesh_with_weapon="bolt_bl_b_quiver" flying_mesh="bolt_bl_b">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="47" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="20" rotation="180, 0, 0" sticking_position="0,-0.47,0" sticking_rotation="90,0,0">
-				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" CanPenetrateShield="true" AttachAmmoToVisual="true"/>
+			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="47" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="20" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
 	</Item>
 	<Item id="bolt_c" name="Armor Piercing Bolts 65 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_c" weight="0.065" value="400" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_c_quiver" holster_mesh_with_weapon="bolt_bl_c_quiver" flying_mesh="bolt_bl_c">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="20" rotation="180, 0, 0" sticking_position="0,-0.37,0" sticking_rotation="90,0,0">
-				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" CanPenetrateShield="true" AttachAmmoToVisual="true"/>
+			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="20" sticking_position="0,-0.37,0" sticking_rotation="90,0,0" rotation="180, 0, 0">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
 	</Item>
 	<Item id="bolt_d" name="Armor Piercing Bolts 50 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_d" weight="0.05" value="400" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_d_quiver" holster_mesh_with_weapon="bolt_bl_d_quiver" flying_mesh="bolt_bl_d">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="20" rotation="180, 0, 0" sticking_position="0,-0.37,0" sticking_rotation="90,0,0">
-				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" CanPenetrateShield="true" AttachAmmoToVisual="true"/>
+			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="20" sticking_position="0,-0.37,0" sticking_rotation="90,0,0" rotation="180, 0, 0">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
 	</Item>
 	<Item id="bolt_e" name="Armor Piercing Bolts 40 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_e" weight="0.04" value="400" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_e_quiver" holster_mesh_with_weapon="bolt_bl_e_quiver" flying_mesh="bolt_bl_e">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="20" rotation="180, 0, 0" sticking_position="0,-0.37,0" sticking_rotation="90,0,0">
-				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" CanPenetrateShield="true" AttachAmmoToVisual="true"/>
+			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="20" sticking_position="0,-0.37,0" sticking_rotation="90,0,0" rotation="180, 0, 0">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
 	</Item>
-	<Item id="blunt_arrows" name="{=DC0qJkVs}Blunt Arrows" body_name="bo_capsule_arrow" mesh="arrow_bl_i" weight="0.08" value="300" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_back_top:quiver_bolts:quiver_bolts_2" culture="Culture.khuzait" is_merchandise="false" holster_position_shift="0.0,0.0,0.15" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_i_quiver" holster_mesh_with_weapon="arrow_bl_i_quiver" flying_mesh="arrow_bl_i">
+	<Item id="blunt_arrows" name="{=DC0qJkVs}Blunt Arrows" body_name="bo_capsule_arrow" mesh="arrow_bl_i" weight="0.08" value="300" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_back_top:quiver_bolts:quiver_bolts_2" culture="Culture.khuzait" holster_position_shift="0.0,0.0,0.15" is_merchandise="false" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_i_quiver" holster_mesh_with_weapon="arrow_bl_i_quiver" flying_mesh="arrow_bl_i">
 		<ItemComponent>
-			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Blunt" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" passby_sound_code="event:/mission/combat/missile/passby" rotation="0, -80, 25" sticking_position="0,-0.95,0" sticking_rotation="90,0,0">
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Blunt" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.95,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -402,16 +402,48 @@
 	</Item>
 	<Item id="boulder" name="{=pzfbPbWW}Boulder" body_name="bo_projectile_rock" mesh="projectile_rock" weight="8.5" difficulty="0" appearance="1" Type="Thrown" subtype="arrows" is_merchandise="false" holster_body_name="bo_axe_short" multiplayer_item="false">
 		<ItemComponent>
-			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="100" item_usage="heavy_stone" physics_material="boulder_stone" center_of_mass="0,0,0" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" position="0.05, -0.15, 0" rotation_speed="2, 0.5, 0">
-				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" Consumable="true" CanPenetrateShield="true" AmmoCanBreakOnBounceBack="true" LeavesTrail="true" CanKnockDown="true" MissileWithPhysics="true" UseHandAsThrowBase="true"/>
+			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="100" item_usage="heavy_stone" physics_material="boulder_stone" center_of_mass="0,0,0" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" rotation_speed="2, 0.5, 0" position="0.05, -0.15, 0">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" Consumable="true" CanPenetrateShield="true" LeavesTrail="true" UseHandAsThrowBase="true" AmmoCanBreakOnBounceBack="true" CanKnockDown="true" MissileWithPhysics="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags CannotBePickedUp="true" QuickFadeOut="true" DropOnWeaponChange="true" DropOnAnyAction="true"/>
 	</Item>
-	<Item id="pot" name="{=3Wzhxkn1}Fire Pot" body_name="bo_projectile_rock" mesh="projectile_pot" weight="6" difficulty="0" appearance="1" Type="Thrown" subtype="arrows" is_merchandise="false" holster_body_name="bo_axe_short" flying_mesh="projectile_pot" multiplayer_item="false">
+	<Item id="pot" name="{=3Wzhxkn1}Fire Pot" body_name="bo_projectile_rock" mesh="projectile_pot" weight="6" difficulty="0" appearance="1" Type="Thrown" subtype="arrows" is_merchandise="false" holster_body_name="bo_axe_short" multiplayer_item="false" flying_mesh="projectile_pot">
 		<ItemComponent>
-			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="100" item_usage="heavy_stone" physics_material="burning_jar" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" trail_particle_name="psys_game_burning_jar_trail" position="0.05, -0.15, 0" rotation_speed="2, 0.5, 0">
-				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" Consumable="true" AmmoBreaksOnBounceBack="true" CanPenetrateShield="true" Burning="true" LeavesTrail="true" MissileWithPhysics="true" AffectsArea="true"/>
+			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="100" item_usage="heavy_stone" physics_material="burning_jar" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" trail_particle_name="psys_game_burning_jar_trail" rotation_speed="2, 0.5, 0" position="0.05, -0.15, 0">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" Consumable="true" CanPenetrateShield="true" Burning="true" LeavesTrail="true" AmmoBreaksOnBounceBack="true" MissileWithPhysics="true" AffectsArea="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags CannotBePickedUp="true" QuickFadeOut="true" DropOnWeaponChange="true" DropOnAnyAction="true"/>
+	</Item>
+	<Item id="grapeshot_stack" name="{=ZeU1fvdz}Grapeshot Stack" body_name="bo_projectile_grapeshot_carry" mesh="projectile_grapeshot_carry" weight="25" difficulty="0" appearance="1" Type="Thrown" subtype="arrows" is_merchandise="false" holster_body_name="bo_axe_short" multiplayer_item="false">
+		<ItemComponent>
+			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="70" item_usage="heavy_stone" physics_material="boulder_stone" center_of_mass="0,0,0" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" rotation_speed="2, 0.5, 0" position="0.05, -0.15, 0">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" Consumable="true" CanPenetrateShield="true" LeavesTrail="true" UseHandAsThrowBase="true" AmmoCanBreakOnBounceBack="true" CanKnockDown="true" MissileWithPhysics="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags CannotBePickedUp="true" QuickFadeOut="true" DropOnWeaponChange="true" DropOnAnyAction="true"/>
+	</Item>
+	<Item id="grapeshot_fire_stack" name="{=ZeU1fvdz}Grapeshot Stack" body_name="bo_projectile_grapeshot_carry" mesh="projectile_grapeshot_carry" weight="25" difficulty="0" appearance="1" Type="Thrown" subtype="arrows" is_merchandise="false" holster_body_name="bo_axe_short" multiplayer_item="false">
+		<ItemComponent>
+			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="70" item_usage="heavy_stone" physics_material="boulder_stone" center_of_mass="0,0,0" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" rotation_speed="2, 0.5, 0" position="0.05, -0.15, 0">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" Consumable="true" CanPenetrateShield="true" LeavesTrail="true" UseHandAsThrowBase="true" AmmoCanBreakOnBounceBack="true" CanKnockDown="true" MissileWithPhysics="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags CannotBePickedUp="true" QuickFadeOut="true" DropOnWeaponChange="true" DropOnAnyAction="true"/>
+	</Item>
+	<Item id="grapeshot_projectile" name="{=XGytILlt}Grapeshot Ammo" body_name="bo_projectile_grapeshot_piece_a" mesh="projectile_grapeshot_piece_a" weight="5" difficulty="0" appearance="1" Type="Thrown" subtype="arrows" is_merchandise="false" holster_body_name="bo_axe_short" multiplayer_item="false">
+		<ItemComponent>
+			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="70" item_usage="heavy_stone" physics_material="boulder_stone" center_of_mass="0,0,0" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" rotation_speed="2, 0.5, 0" position="0.05, -0.15, 0">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" Consumable="true" CanPenetrateShield="true" LeavesTrail="true" UseHandAsThrowBase="true" AmmoCanBreakOnBounceBack="true" CanKnockDown="true" MissileWithPhysics="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags CannotBePickedUp="true" QuickFadeOut="true" DropOnWeaponChange="true" DropOnAnyAction="true"/>
+	</Item>
+	<Item id="grapeshot_fire_projectile" name="{=XGytILlt}Grapeshot Ammo" body_name="bo_projectile_grapeshot_piece_a" mesh="projectile_grapeshot_piece_a" weight="5" difficulty="0" appearance="1" Type="Thrown" subtype="arrows" is_merchandise="false" holster_body_name="bo_axe_short" multiplayer_item="false">
+		<ItemComponent>
+			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="70" item_usage="heavy_stone" physics_material="boulder_stone" center_of_mass="0,0,0" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" trail_particle_name="mangonel_grapeshot_burning_projectile" rotation_speed="2, 0.5, 0" position="0.05, -0.15, 0">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" Consumable="true" CanPenetrateShield="true" Burning="true" LeavesTrail="true" UseHandAsThrowBase="true" AmmoCanBreakOnBounceBack="true" CanKnockDown="true" MissileWithPhysics="true" AffectsArea="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags CannotBePickedUp="true" QuickFadeOut="true" DropOnWeaponChange="true" DropOnAnyAction="true"/>
