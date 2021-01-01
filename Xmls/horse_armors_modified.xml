@@ -156,7 +156,7 @@
   </Item>
   <Item id="imperial_riding_harness"
         name="{=NUmDuEqI}Imperial Riding Harness"
-        mesh="horse_harness_a"
+        mesh="horse_harness_a_new"
         weight="6"
         appearance="1"
         Type="HorseHarness">
@@ -165,6 +165,7 @@
              mane_cover_type="none"
              family_type="1"
              modifier_group="leather"
+			 reins_mesh="horse_harness_a_new_rein"
              material_type="Leather" />
     </ItemComponent>
     <Flags />
@@ -369,7 +370,7 @@
   </Item>-->
   <Item id="northern_light_harness"
         name="{=8Oi89KRn}Northern Light Harness"
-        mesh="horse_harness_x"
+        mesh="horse_harness_roman_b_new"
         weight="7.2"
         appearance="1"
          Type="HorseHarness">
@@ -378,6 +379,7 @@
              mane_cover_type="none"
              family_type="1"
              modifier_group="leather"
+			 reins_mesh="horse_harness_roman_b_new_rein"
              material_type="Leather" />
     </ItemComponent>
     <Flags />

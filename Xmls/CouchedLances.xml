@@ -203,6 +203,7 @@
     </BladeData>
     <Flags>
       <Flag name="BonusAgainstShield" />
+	  <Flag name="CanPenetrateShield" />
     </Flags>
     <Materials>
       <Material id="Iron3" count="1" />
