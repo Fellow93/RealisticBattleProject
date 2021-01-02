@@ -163,7 +163,7 @@
   </CraftingPiece>
   <!-- 2h cutting polearms -->
 <!-- Peasant weapons -->  
-  <CraftingPiece id="spear_handle_1" name="{=Uhc0KIdz}Pine Spear Staff" tier="1" piece_type="Handle" mesh="spear_handle_1" length="149" weight="1.2" excluded_item_usage_features="long" CraftingCost="100" is_default="true">
+  <CraftingPiece id="spear_handle_1" name="{=Uhc0KIdz}Pine Spear Staff" tier="1" piece_type="Handle" mesh="spear_handle_1" length="149" weight="0.5" excluded_item_usage_features="long" CraftingCost="100" is_default="true">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:TwoHandedPolearm_Bracing:Javelin" />
     <BuildData piece_offset="14.9" />
     <Materials>

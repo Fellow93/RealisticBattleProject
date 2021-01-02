@@ -51,7 +51,7 @@ namespace RealisticBattleCombatModule
                         //{
                         //    length = 5.0f;
                         //} 
-                        missileTotalDamage *= 0.007f;
+                        missileTotalDamage *= 0.01f;
                     }
                     if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
                     {

@@ -541,9 +541,9 @@
   </CraftingPiece>
   <!-- #endregion -->
   <!-- #region Used Throwing Axe Blade Pieces -->
-  <CraftingPiece id="axe_craft_4_head" name="{=fdR6zYiP}Franziska Head" tier="4" piece_type="Blade" mesh="axe_craft_4_head" distance_to_next_piece="5.787" distance_to_previous_piece="1.483" weight="0.226">
-    <BuildData piece_offset="-2.966" />
-    <BladeData stack_amount="3" blade_length="10.566" blade_width="19.257" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
+  <CraftingPiece id="axe_craft_4_head" name="{=fdR6zYiP}Franziska Head" tier="4" piece_type="Blade" mesh="axe_craft_4_head" distance_to_next_piece="5.787" distance_to_previous_piece="1.483" weight="0.426">
+    <BuildData piece_offset="5.0" />
+    <BladeData stack_amount="1" blade_length="10.566" blade_width="19.257" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
       <Swing damage_type="Cut" damage_factor="2.9" />
     </BladeData>
     <Materials>
@@ -554,9 +554,9 @@
 	  <Flag name="BonusAgainstShield" />
     </Flags>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_13_head" name="{=hSSk6tTn}Throwing Axe Head" tier="4" piece_type="Blade" mesh="axe_craft_13_head" distance_to_next_piece="2.7" distance_to_previous_piece="1.6" weight="0.240">
-    <BuildData piece_offset="-3.2" />
-    <BladeData stack_amount="3" blade_length="8.707" blade_width="16.898" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
+  <CraftingPiece id="axe_craft_13_head" name="{=hSSk6tTn}Throwing Axe Head" tier="4" piece_type="Blade" mesh="axe_craft_13_head" distance_to_next_piece="2.7" distance_to_previous_piece="1.6" weight="0.440">
+    <BuildData piece_offset="5.0" />
+    <BladeData stack_amount="1" blade_length="8.707" blade_width="16.898" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
       <Swing damage_type="Cut" damage_factor="3.1" />
     </BladeData>
     <Materials>
@@ -567,9 +567,9 @@
 	  <Flag name="BonusAgainstShield" />
     </Flags>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_31_head" name="{=sNJNDDKN}Small Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_31_head" distance_to_next_piece="6.7" distance_to_previous_piece="4" weight="0.293">
-    <BuildData piece_offset="-8" />
-    <BladeData stack_amount="3" blade_length="13.366" blade_width="13.211" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
+  <CraftingPiece id="axe_craft_31_head" name="{=sNJNDDKN}Small Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_31_head" distance_to_next_piece="6.7" distance_to_previous_piece="4" weight="0.493">
+    <BuildData piece_offset="5.0" />
+    <BladeData stack_amount="1" blade_length="13.366" blade_width="13.211" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
       <Swing damage_type="Cut" damage_factor="2.5" />
     </BladeData>
     <Flags>
@@ -733,20 +733,20 @@
   </CraftingPiece>
   <!-- #endregion -->
   <!-- #region Used Throwing Axe Handle Pieces -->
-  <CraftingPiece id="axe_craft_12_handle" name="{=Wkhv9ESv}Hardened Oaken Throwing Axe Handle" tier="4" piece_type="Handle" mesh="axe_craft_12_handle" length="70" weight="0.234">
-    <BuildData piece_offset="8.175" next_piece_offset="4" />
+  <CraftingPiece id="axe_craft_12_handle" name="{=Wkhv9ESv}Hardened Oaken Throwing Axe Handle" tier="4" piece_type="Handle" mesh="axe_craft_12_handle" length="45" weight="0.234">
+    <BuildData piece_offset="20.0" next_piece_offset="4" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_11_handle" name="{=Rh3h5NIg}Hardened Short Hardwood Throwing Axe Handle" tier="4" piece_type="Handle" mesh="axe_craft_11_handle" length="60" weight="0.226">
-    <BuildData piece_offset="7.2" next_piece_offset="4" />
+  <CraftingPiece id="axe_craft_11_handle" name="{=Rh3h5NIg}Hardened Short Hardwood Throwing Axe Handle" tier="4" piece_type="Handle" mesh="axe_craft_11_handle" length="45" weight="0.226">
+    <BuildData piece_offset="20.0" next_piece_offset="4" />
     <Materials>
       <Material id="Iron3" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_28_handle" name="{=bQzz8mc3}Simple Pinewood Throwing Axe Handle" tier="1" piece_type="Handle" mesh="axe_craft_28_handle" length="65" weight="0.234">
-    <BuildData piece_offset="8.175" next_piece_offset="4" />
+  <CraftingPiece id="axe_craft_28_handle" name="{=bQzz8mc3}Simple Pinewood Throwing Axe Handle" tier="1" piece_type="Handle" mesh="axe_craft_28_handle" length="45" weight="0.234">
+    <BuildData piece_offset="20.0" next_piece_offset="4" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
