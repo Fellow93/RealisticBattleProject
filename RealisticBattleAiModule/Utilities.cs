@@ -119,8 +119,15 @@ namespace RealisticBattleAiModule
                 {
                     property.DeclaringType.GetProperty("arrangement");
                     IFormationArrangement arrangement = (IFormationArrangement)property.GetValue(formation);
-
-                    FieldInfo field = typeof(LineFormation).GetField("_allUnits", BindingFlags.NonPublic | BindingFlags.Instance);
+                    FieldInfo field;
+                    if (formation.ArrangementOrder == ArrangementOrder.ArrangementOrderColumn)
+                    {
+                        field = typeof(TransposedLineFormation).GetField("_allUnits", BindingFlags.NonPublic | BindingFlags.Instance);
+                    }
+                    else
+                    {
+                        field = typeof(LineFormation).GetField("_allUnits", BindingFlags.NonPublic | BindingFlags.Instance);
+                    }
                     if (field != null)
                     {
                         field.DeclaringType.GetField("_allUnits");
@@ -173,8 +180,15 @@ namespace RealisticBattleAiModule
             {
                 property.DeclaringType.GetProperty("arrangement");
                 IFormationArrangement arrangement = (IFormationArrangement)property.GetValue(targetFormation);
-
-                FieldInfo field = typeof(LineFormation).GetField("_allUnits", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo field;
+                if (targetFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderColumn)
+                {
+                    field = typeof(TransposedLineFormation).GetField("_allUnits", BindingFlags.NonPublic | BindingFlags.Instance);
+                }
+                else
+                {
+                    field = typeof(LineFormation).GetField("_allUnits", BindingFlags.NonPublic | BindingFlags.Instance);
+                }
                 if (field != null)
                 {
                     field.DeclaringType.GetField("_allUnits");
@@ -204,8 +218,7 @@ namespace RealisticBattleAiModule
                 FieldInfo field;
                 if (formation.ArrangementOrder == ArrangementOrder.ArrangementOrderColumn)
                 {
-                    return false;
-                    //field = typeof(TransposedLineFormation).GetField("_allUnits", BindingFlags.NonPublic | BindingFlags.Instance);
+                    field = typeof(TransposedLineFormation).GetField("_allUnits", BindingFlags.NonPublic | BindingFlags.Instance);
                 }
                 else
                 {

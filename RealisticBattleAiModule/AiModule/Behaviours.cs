@@ -831,7 +831,7 @@ namespace RealisticBattleAiModule
 
                         Vec2 direction = (targetAgent.Position.AsVec2 - unit.Position.AsVec2).Normalized();
                         IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unit.Position.AsVec2 + direction*0.8f, 0.8f, unit.Team);
-                        if (agents.Count() > 0)
+                        if (agents.Count() > 1)
                         {
                             if (MBRandom.RandomInt(75) == 0)
                             {
@@ -879,7 +879,7 @@ namespace RealisticBattleAiModule
         if(orderType == OrderType.Charge)
 		foreach (Formation selectedFormation in __instance.SelectedFormations)
             {
-                if (____mission.MissionTeamAIType != Mission.MissionTeamAITypeEnum.Siege || ____mission.IsTeleportingAgents)
+                if (selectedFormation.QuerySystem.IsInfantryFormation && ____mission.MissionTeamAIType != Mission.MissionTeamAITypeEnum.Siege || ____mission.IsTeleportingAgents)
                 {
                     if (selectedFormation.QuerySystem.ClosestEnemyFormation == null)
                     {
