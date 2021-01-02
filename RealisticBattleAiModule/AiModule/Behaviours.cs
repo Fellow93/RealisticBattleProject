@@ -869,6 +869,31 @@ namespace RealisticBattleAiModule
         }
     }
 
+    [HarmonyPatch(typeof(OrderController))]
+    class OverrideOrderController
+    {
+        [HarmonyPostfix]
+        [HarmonyPatch("SetOrder")]
+        static void PostfixSetOrder(OrderController __instance, OrderType orderType, ref Mission ____mission)
+        {
+        if(orderType == OrderType.Charge)
+		foreach (Formation selectedFormation in __instance.SelectedFormations)
+            {
+                if (____mission.MissionTeamAIType != Mission.MissionTeamAITypeEnum.Siege || ____mission.IsTeleportingAgents)
+                {
+                    if (selectedFormation.QuerySystem.ClosestEnemyFormation == null)
+                    {
+                        selectedFormation.MovementOrder = MovementOrder.MovementOrderCharge;
+                    }
+                    else
+                    {
+                        selectedFormation.MovementOrder = MovementOrder.MovementOrderChargeToTarget(selectedFormation.QuerySystem.ClosestEnemyFormation.Formation);
+                    }
+                }
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(BehaviorRegroup))]
     class OverrideBehaviorRegroup
     {
