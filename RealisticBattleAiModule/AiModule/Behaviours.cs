@@ -651,6 +651,20 @@ namespace RealisticBattleAiModule
         }
     }
 
+    [HarmonyPatch(typeof(LadderQueueManager))]
+    class OverrideLadderQueueManager
+    {
+
+        [HarmonyPostfix]
+        [HarmonyPatch("Initialize")]
+        static void PostfixInitialize(ref float ____agentSpacing, ref float ____queueBeginDistance, ref float ____queueRowSize)
+        {
+            ____agentSpacing = 1.25f;
+            ____queueBeginDistance = 2f;
+            ____queueRowSize = 1.5f;
+        }
+    }
+
     //[HarmonyPatch(typeof(BehaviorAssaultWalls))]
     //class OverrideBehaviorAssaultWalls
     //{
