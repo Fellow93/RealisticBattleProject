@@ -82,7 +82,7 @@ namespace RealisticBattleAiModule
 
             [HarmonyPostfix]
             [HarmonyPatch("CalculateCurrentOrder")]
-            static void PostfixCalculateCurrentOrder(Formation ___formation, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged, ref WorldPosition ____defensePosition)
+            static void PostfixCalculateCurrentOrder(Formation ___formation, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged, ref WorldPosition ____defensePosition, ref FacingOrder ___CurrentFacingOrder)
             {
                 if (___formation != null && ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                 {
@@ -93,11 +93,13 @@ namespace RealisticBattleAiModule
 
                     if (significantEnemy != null)
                     {
-                        float distance = ___formation.QuerySystem.MedianPosition.AsVec2.Distance(significantEnemy.QuerySystem.MedianPosition.AsVec2);
+                        Vec2 enemyDirection = significantEnemy.QuerySystem.MedianPosition.AsVec2 - ___formation.QuerySystem.MedianPosition.AsVec2;
+                        float distance = enemyDirection.Normalize();
                         if (distance < (180f))
                         {
                             ____currentOrder = MovementOrder.MovementOrderMove(medianPositionOld);
                             ___IsCurrentOrderChanged = true;
+                            ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
                         }
                         else
                         {
@@ -106,11 +108,13 @@ namespace RealisticBattleAiModule
                                 medianPositionOld = ____defensePosition;
                                 medianPositionOld.SetVec2(medianPositionOld.AsVec2 + ___formation.Direction * 10f);
                                 ____currentOrder = MovementOrder.MovementOrderMove(medianPositionOld);
+                                ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
                             }
                             else
                             {
                                 medianPositionOld = medianPositionNew;
                                 medianPositionOld.SetVec2(medianPositionOld.AsVec2 + ___formation.Direction * 10f);
+                                ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
                             }
                         }
                     }
@@ -125,7 +129,7 @@ namespace RealisticBattleAiModule
 
             [HarmonyPostfix]
             [HarmonyPatch("CalculateCurrentOrder")]
-            static void PostfixCalculateCurrentOrder(Formation ___formation, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged)
+            static void PostfixCalculateCurrentOrder(Formation ___formation, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged, ref FacingOrder ___CurrentFacingOrder)
             {
                 if (___formation != null && ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                 {
@@ -136,16 +140,20 @@ namespace RealisticBattleAiModule
 
                     if (significantEnemy != null)
                     {
-                        float distance = ___formation.QuerySystem.MedianPosition.AsVec2.Distance(significantEnemy.QuerySystem.MedianPosition.AsVec2);
+                        Vec2 enemyDirection = significantEnemy.QuerySystem.MedianPosition.AsVec2 - ___formation.QuerySystem.MedianPosition.AsVec2;
+                        float distance = enemyDirection.Normalize();
+
                         if (distance < (180f))
                         {
                             ____currentOrder = MovementOrder.MovementOrderMove(medianPositionOld);
                             ___IsCurrentOrderChanged = true;
+                            ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
                         }
                         else
                         {
                             medianPositionOld = medianPositionNew;
                             medianPositionOld.SetVec2(medianPositionOld.AsVec2 + ___formation.Direction * 10f);
+                            ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
                         }
                     }
                 }
@@ -209,7 +217,6 @@ namespace RealisticBattleAiModule
             PullingBack
         }
 
-
         private static int waitCountShooting = 0;
         private static int waitCountApproaching = 0;
 
@@ -217,52 +224,61 @@ namespace RealisticBattleAiModule
 
         [HarmonyPostfix]
         [HarmonyPatch("CalculateCurrentOrder")]
-        static void PostfixCalculateCurrentOrder(ref Formation ___formation, BehaviorSkirmish __instance, ref BehaviorState ____behaviorState, ref MovementOrder ____currentOrder)
+        static void PostfixCalculateCurrentOrder(ref Formation ___formation, BehaviorSkirmish __instance, ref FacingOrder ___CurrentFacingOrder, ref BehaviorState ____behaviorState, ref MovementOrder ____currentOrder)
         {
             if (___formation != null && ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
-                Vec2 enemyDirection = ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MedianPosition.AsVec2 - ___formation.QuerySystem.AveragePosition;
-                float distance = enemyDirection.Normalize();
+                Formation significantEnemy = Utilities.FindSignificantEnemy(___formation, true, true, false, false, false);
 
-                switch (____behaviorState)
+                if (significantEnemy != null)
                 {
-                    case BehaviorState.Shooting:
-                        if (waitCountShooting > 50)
-                        {
-                            if (___formation.QuerySystem.MakingRangedAttackRatio < 0.4f && distance > 30f)
-                            {
-                                WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
-                                medianPosition.SetVec2(medianPosition.AsVec2 + ___formation.Direction * 5f);
-                                ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
-                            }
-                            waitCountShooting = 0;
-                        }
-                        else
-                        {
-                            waitCountShooting++;
-                        }
+                    Vec2 enemyDirection = significantEnemy.QuerySystem.MedianPosition.AsVec2 - ___formation.QuerySystem.MedianPosition.AsVec2;
+                    float distance = enemyDirection.Normalize();
 
-                        break;
-                    case BehaviorState.Approaching:
-                        if (waitCountApproaching > 20)
-                        {
-                            if (distance < 200f)
+                    switch (____behaviorState)
+                    {
+                        case BehaviorState.Shooting:
+                            if (waitCountShooting > 50)
+                            {
+                                if (___formation.QuerySystem.MakingRangedAttackRatio < 0.4f && distance > 30f)
+                                {
+                                    WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
+                                    medianPosition.SetVec2(medianPosition.AsVec2 + enemyDirection * 5f);
+                                    ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
+                                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
+                                }
+                                waitCountShooting = 0;
+                            }
+                            else
+                            {
+                                ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
+                                waitCountShooting++;
+                            }
+
+                            break;
+                        case BehaviorState.Approaching:
+                            if (waitCountApproaching > 20)
+                            {
+                                if (distance < 200f)
+                                {
+                                    WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
+                                    medianPosition.SetVec2(medianPosition.AsVec2 + enemyDirection * 5f);
+                                    approachingRanging = medianPosition.AsVec2;
+                                    ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
+                                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
+                                }
+                                waitCountApproaching = 0;
+                            }
+                            else
                             {
                                 WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
-                                medianPosition.SetVec2(medianPosition.AsVec2 + enemyDirection * 5f);
-                                approachingRanging = medianPosition.AsVec2;
+                                medianPosition.SetVec2(approachingRanging);
                                 ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
+                                ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
+                                waitCountApproaching++;
                             }
-                            waitCountApproaching = 0;
-                        }
-                        else
-                        {
-                            WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
-                            medianPosition.SetVec2(approachingRanging);
-                            ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
-                            waitCountApproaching++;
-                        }
-                        break;
+                            break;
+                    }
                 }
             }
 
@@ -292,7 +308,7 @@ namespace RealisticBattleAiModule
 
                 if (significantEnemy != null)
                 {
-                    Vec2 vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - ___formation.QuerySystem.AveragePosition;
+                    Vec2 vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - ___formation.QuerySystem.MedianPosition.AsVec2;
                     float distance = vec.Normalize();
 
                     switch (____behaviorState)
@@ -551,7 +567,7 @@ namespace RealisticBattleAiModule
             }
             else if(___formation != null && ___formation.QuerySystem.IsRangedCavalryFormation)
             {
-                __result = 1f;
+                __result = 0f;
             }
             else
             {
@@ -560,8 +576,70 @@ namespace RealisticBattleAiModule
         }
     }
 
+    [HarmonyPatch(typeof(BehaviorProtectFlank))]
+    class OverrideBehaviorProtectFlank
+    {
+        private enum BehaviourState
+        {
+            HoldingFlank,
+            Charging,
+            Returning
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch("CalculateCurrentOrder")]
+        static bool PrefixCalculateCurrentOrdert(ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviourState ____protectFlankState, ref Formation ___formation, ref Formation ____mainFormation, ref FormationAI.BehaviorSide ___behaviorSide)
+        {
+            if (____mainFormation == null || ___formation.QuerySystem.ClosestEnemyFormation == null)
+            {
+                ____currentOrder = MovementOrder.MovementOrderStop;
+                ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
+            }
+            else if (____protectFlankState == BehaviourState.HoldingFlank || ____protectFlankState == BehaviourState.Returning)
+            {
+                Vec2 direction = ____mainFormation.Direction;
+                Vec2 v = (___formation.QuerySystem.Team.MedianTargetFormationPosition.AsVec2 - ____mainFormation.QuerySystem.MedianPosition.AsVec2).Normalized();
+                Vec2 vec;
+                if (___behaviorSide == FormationAI.BehaviorSide.Right || ___FlankSide == FormationAI.BehaviorSide.Right)
+                {
+                    vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized() * (____mainFormation.Width + ___formation.Width + 100f);
+                    vec -= v * (____mainFormation.Depth + ___formation.Depth);
+                    vec += ____mainFormation.Direction * 60f;
+                }
+                else if (___behaviorSide == FormationAI.BehaviorSide.Left || ___FlankSide == FormationAI.BehaviorSide.Left)
+                {
+                    vec = ____mainFormation.CurrentPosition + v.LeftVec().Normalized() * (____mainFormation.Width + ___formation.Width + 100f);
+                    vec -= v * (____mainFormation.Depth + ___formation.Depth);
+                    vec += ____mainFormation.Direction * 100f;
+                }
+                else
+                {
+                    vec = ____mainFormation.CurrentPosition + v * ((____mainFormation.Depth + ___formation.Depth) * 0.5f + 10f);
+                }
+                WorldPosition medianPosition = ____mainFormation.QuerySystem.MedianPosition;
+                medianPosition.SetVec2(vec);
+                ____movementOrder = MovementOrder.MovementOrderMove(medianPosition);
+                ____currentOrder = ____movementOrder;
+                ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(direction);
+            }
+            return false;
+        }
+    }
+
     [HarmonyPatch(typeof(BehaviorHorseArcherSkirmish))]
     class OverrideBehaviorHorseArcherSkirmish
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch("GetAiWeight")]
+        static bool PrefixGetAiWeight(ref float __result)
+        {
+            __result = 0f;
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(BehaviorPullBack))]
+    class OverrideBehaviorPullBack
     {
         [HarmonyPrefix]
         [HarmonyPatch("GetAiWeight")]
@@ -842,16 +920,10 @@ namespace RealisticBattleAiModule
                             {
                                 float distancefr = unit.GetWorldPosition().AsVec2.Distance(agents.ElementAt(0).Position.AsVec2);
                                 float slowdown = Math.Min(distancefr/2f, 1f);
-                                if(slowdown < 0.5f)
+                                if(slowdown < 0.6f)
                                 {
                                     __result = unit.GetWorldPosition();
                                 }
-                                else
-                                {
-                                    unit.SetMaximumSpeedLimit(slowdown, true);
-                                    __result = targetAgent.GetWorldPosition();
-                                }
-                                
                                 return false;
                             }
                         }
@@ -860,7 +932,6 @@ namespace RealisticBattleAiModule
                             __result = targetAgent.GetWorldPosition();
                             return false;
                         }
-
                         
                     }
                 }

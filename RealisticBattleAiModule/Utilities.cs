@@ -93,7 +93,7 @@ namespace RealisticBattleAiModule
                         {
                             mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
                         }
-                        return (distanceSpeedValue <= (battleJoinRange + (hasBattleBeenJoined ? 10f : 0f)));
+                        return (distanceSpeedValue <= (battleJoinRange + (hasBattleBeenJoined ? 5f : 0f)));
                     }
                 }
             }
@@ -280,7 +280,7 @@ namespace RealisticBattleAiModule
                                 dist = newDist;
                             }
                         }
-                        if (includeCavalry && enemyFormation.QuerySystem.IsCavalryFormation && !CheckIfMountedSkirmishFormation(enemyFormation))
+                        if (includeCavalry && enemyFormation.QuerySystem.IsCavalryFormation && !CheckIfMountedSkirmishFormation(enemyFormation) && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
                         {
                             float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
                             if (newDist < dist)

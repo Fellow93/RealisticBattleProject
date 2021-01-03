@@ -178,7 +178,7 @@ namespace RealisticBattleAiModule
         {
             static void Postfix()
             {
-                ManagedParameters.SetParameter(ManagedParametersEnum.BipedalRadius, 0.475f);
+                ManagedParameters.SetParameter(ManagedParametersEnum.BipedalRadius, 0.49f);
                 if (Mission.Current.Teams.Any())
                 {
                     if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
@@ -283,7 +283,7 @@ namespace RealisticBattleAiModule
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 18f);
+                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 16f);
             }
 
             [HarmonyPostfix]
@@ -488,7 +488,7 @@ namespace RealisticBattleAiModule
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 18f);
+                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 16f);
             }
 
             [HarmonyPostfix]
@@ -704,7 +704,14 @@ namespace RealisticBattleAiModule
             {
                 if (f != null)
                 {
-                    f.AI.SetBehaviorWeight<BehaviorCharge>(1f);
+                    if (f.QuerySystem.IsRangedFormation)
+                    {
+                        f.AI.SetBehaviorWeight<BehaviorCharge>(0.4f);
+                    }
+                    else
+                    {
+                        f.AI.SetBehaviorWeight<BehaviorCharge>(1f);
+                    }
                     f.AI.SetBehaviorWeight<BehaviorPullBack>(1f);
                     f.AI.SetBehaviorWeight<BehaviorStop>(1f);
                     f.AI.SetBehaviorWeight<BehaviorReserve>(0f);
