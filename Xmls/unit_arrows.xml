@@ -1569,9 +1569,9 @@
       <skill id="Riding"
              value="20" />
       <skill id="OneHanded"
-             value="40" />
-      <skill id="TwoHanded"
              value="15" />
+      <skill id="TwoHanded"
+             value="40" />
       <skill id="Polearm"
              value="15" />
       <skill id="Bow"
@@ -1588,7 +1588,7 @@
       <equipment slot="Item2"
                  id="Item.bodkin_arrows_c" />
       <equipment slot="Item3"
-                 id="Item.falchion_sword_t2" />
+                 id="Item.peasant_maul_t1_2" />
   </NPCCharacter>
   <NPCCharacter id="brotherhood_of_woods_tier_2"
                 default_group="Ranged"
@@ -1607,9 +1607,9 @@
       <skill id="Riding"
              value="60" />
       <skill id="OneHanded"
-             value="90" />
-      <skill id="TwoHanded"
              value="45" />
+      <skill id="TwoHanded"
+             value="90" />
       <skill id="Polearm"
              value="45" />
       <skill id="Bow"
@@ -1626,7 +1626,7 @@
       <equipment slot="Item2"
                  id="Item.heavy_steppe_arrows" />
       <equipment slot="Item3"
-                 id="Item.star_falchion_sword_t3" />
+                 id="Item.peasant_maul_t1_2" />
   </NPCCharacter>
   <NPCCharacter id="brotherhood_of_woods_tier_3"
                 default_group="Ranged"
@@ -1645,9 +1645,9 @@
       <skill id="Riding"
              value="60" />
       <skill id="OneHanded"
-             value="100" />
+             value="60" />
       <skill id="TwoHanded"
-             value="45" />
+             value="100" />
       <skill id="Polearm"
              value="45" />
       <skill id="Bow"
@@ -1664,7 +1664,7 @@
       <equipment slot="Item2"
                  id="Item.vlandic_arrows" />
       <equipment slot="Item3"
-                 id="Item.vlandia_sword_3_t4" />
+                 id="Item.peasant_maul_t1_2" />
   </NPCCharacter>
   <!-- guardians - -->
   <NPCCharacter id="guardians_tier_1"
