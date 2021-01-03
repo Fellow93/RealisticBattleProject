@@ -757,12 +757,64 @@ namespace RealisticBattleAiModule
 
         [HarmonyPostfix]
         [HarmonyPatch("Initialize")]
-        static void PostfixInitialize(ref int ____maxUserCount, ref float ____agentSpacing, ref float ____queueBeginDistance, ref float ____queueRowSize, ref float ____costPerRow, ref float ____baseCost)
+        static void PostfixInitialize(ref BattleSideEnum managedSide, ref float queueBeginDistance, ref int ____maxUserCount, ref float ____agentSpacing, ref float ____queueBeginDistance, ref float ____queueRowSize, ref float ____costPerRow, ref float ____baseCost)
         {
-            ____agentSpacing = 1.25f;
-            ____queueBeginDistance = 10f;
-            ____queueRowSize = 1.5f;
-            ____maxUserCount = 24;
+            if(managedSide == BattleSideEnum.Attacker && queueBeginDistance != 3f)
+            {
+                ____agentSpacing = 1.25f;
+                ____queueBeginDistance = 8f;
+                ____queueRowSize = 1.25f;
+                ____maxUserCount = 16;
+            }
+            
+        }
+    }
+
+    [HarmonyPatch(typeof(SiegeTower))]
+    class OverrideSiegeTower
+    {
+
+        [HarmonyPostfix]
+        [HarmonyPatch("OnInit")]
+        static void PostfixOnInit(ref GameEntity ____cleanState, ref List<LadderQueueManager> ____queueManagers, ref int ___DynamicNavmeshIdStart)
+        {
+            List<GameEntity> list2 = ____cleanState.CollectChildrenEntitiesWithTag("ladder");
+            ____queueManagers.Clear();
+            if (list2.Count == 3)
+            {
+                LadderQueueManager ladderQueueManager0 = list2.ElementAt(0).GetScriptComponents<LadderQueueManager>().FirstOrDefault();
+                LadderQueueManager ladderQueueManager1 = list2.ElementAt(1).GetScriptComponents<LadderQueueManager>().FirstOrDefault();
+                LadderQueueManager ladderQueueManager2 = list2.ElementAt(2).GetScriptComponents<LadderQueueManager>().FirstOrDefault();
+                if (ladderQueueManager0 != null)
+                {
+                    MatrixFrame identity = MatrixFrame.Identity;
+                    identity.rotation.RotateAboutSide((float)Math.PI / 2f);
+                    identity.rotation.RotateAboutForward((float)Math.PI / 8f);
+                    ladderQueueManager0.Initialize(___DynamicNavmeshIdStart + 1, identity, new Vec3(0f, 0f, 1f), BattleSideEnum.Attacker, 3, (float)Math.PI * 3f / 4f, 0.8f, 0.8f, 30f, 50f, blockUsage: false, 0.8f, 4f, 5f);
+                    ____queueManagers.Add(ladderQueueManager0);
+                }
+                if (ladderQueueManager1 != null)
+                {
+                    MatrixFrame identity = MatrixFrame.Identity;
+                    identity.rotation.RotateAboutSide((float)Math.PI / 2f);
+                    identity.rotation.RotateAboutForward((float)Math.PI / 8f);
+                    ladderQueueManager1.Initialize(___DynamicNavmeshIdStart + 2, identity, new Vec3(0f, 0f, 1f), BattleSideEnum.Attacker, 3, (float)Math.PI * 3f / 4f, 0.8f, 0.8f, 30f, 50f, blockUsage: false, 0.8f, 4f, 5f);
+                    ____queueManagers.Add(ladderQueueManager1);
+                }
+                if (ladderQueueManager2 != null)
+                {
+                    MatrixFrame identity = MatrixFrame.Identity;
+                    identity.rotation.RotateAboutSide((float)Math.PI / 2f);
+                    identity.rotation.RotateAboutForward((float)Math.PI / 8f);
+                    ladderQueueManager2.Initialize(___DynamicNavmeshIdStart + 3, identity, new Vec3(0f, 0f, 1f), BattleSideEnum.Attacker, 3, (float)Math.PI * 3f / 4f, 0.8f, 0.8f, 30f, 50f, blockUsage: false, 0.8f, 4f, 5f);
+                    ____queueManagers.Add(ladderQueueManager2);
+                }
+            }
+            foreach (LadderQueueManager queueManager in ____queueManagers)
+            {
+                ____cleanState.Scene.SetAbilityOfFacesWithId(queueManager.ManagedNavigationFaceId, isEnabled: false);
+                queueManager.IsDeactivated = true;
+            }
         }
     }
 
@@ -887,7 +939,7 @@ namespace RealisticBattleAiModule
     {
         [HarmonyPrefix]
         [HarmonyPatch("GetOrderPositionOfUnit")]
-        static bool PrefixGetOrderPositionOfUnit(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, Agent unit, List<Agent> ___detachedUnits, ref WorldPosition __result)
+        static bool PrefixGetOrderPositionOfUnit(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement,ref Agent unit, List<Agent> ___detachedUnits, ref WorldPosition __result)
         {
             //if (__instance.MovementOrder.OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
             if (__instance.MovementOrder.OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
@@ -907,9 +959,9 @@ namespace RealisticBattleAiModule
                         //    return false;
                         //}
 
-                        Vec2 direction = (targetAgent.Position.AsVec2 - unit.Position.AsVec2).Normalized();
-                        IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unit.Position.AsVec2 + direction*0.8f, 0.8f, unit.Team);
-                        if (agents.Count() > 1)
+                        //Vec2 direction = (targetAgent.GetWorldPosition().AsVec2 - unit.GetWorldPosition().AsVec2).Normalized();
+                        IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.LookDirection.AsVec2 * 0.8f, 0.8f, unit.Team);
+                        if (agents.Count() > 2)
                         {
                             if (MBRandom.RandomInt(75) == 0)
                             {
@@ -918,12 +970,12 @@ namespace RealisticBattleAiModule
                             }
                             else
                             {
-                                float distancefr = unit.GetWorldPosition().AsVec2.Distance(agents.ElementAt(0).Position.AsVec2);
-                                float slowdown = Math.Min(distancefr/2f, 1f);
-                                if(slowdown < 0.6f)
-                                {
-                                    __result = unit.GetWorldPosition();
-                                }
+                                //float distancefr = unit.GetWorldPosition().AsVec2.Distance(agents.ElementAt(0).Position.AsVec2);
+                                //float slowdown = Math.Min(distancefr/2f, 1f);
+                                //if(slowdown < 0.6f)
+                                //{
+                                __result = unit.GetWorldPosition();
+                                //}
                                 return false;
                             }
                         }
@@ -934,6 +986,35 @@ namespace RealisticBattleAiModule
                         }
                         
                     }
+                }
+            }
+            return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch("GetOrderPositionOfUnitAux")]
+        static bool PrefixGetOrderPositionOfUnitAux(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ___detachedUnits, ref WorldPosition __result)
+        {
+            //if (__instance.MovementOrder.OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
+            if (__instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
+            {
+                Mission mission = Mission.Current;
+                IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.LookDirection.AsVec2 * 0.8f, 0.8f, unit.Team);
+                if (agents.Count() > 2)
+                {
+                    if (MBRandom.RandomInt(75) == 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        __result = unit.GetWorldPosition();
+                        return false;
+                    }
+                }
+                else
+                {
+                    return true;
                 }
             }
             return true;
