@@ -194,7 +194,7 @@
 	</Item>
 	<Item id="ballista_projectile" name="{=6Db7aDbF}Ballista Arrows" body_name="bo_ballista_projectile_a" mesh="ballista_projectile_a" weight="0.2" difficulty="0" appearance="1" Type="Arrows" subtype="arrows" is_merchandise="false" holster_body_name="bo_axe_short" holster_mesh="quiver" multiplayer_item="false">
 		<ItemComponent>
-			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="80" weapon_length="95" thrust_damage="84" thrust_damage_type="Pierce" physics_material="ballista_missile" center_of_mass="0,0,-0.3" stack_amount="20" sticking_position="0,-1.2,0" sticking_rotation="90,0,0" flying_sound_code="event:/mission/combat/missile/foley/passby">
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="80" weapon_length="95" thrust_damage="25" thrust_damage_type="Pierce" physics_material="ballista_missile" center_of_mass="0,0,-0.3" stack_amount="20" sticking_position="0,-1.2,0" sticking_rotation="90,0,0" flying_sound_code="event:/mission/combat/missile/foley/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" MultiplePenetration="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -202,7 +202,7 @@
 	</Item>
 	<Item id="ballista_projectile_burning" name="{=6Db7aDbF}Ballista Arrows" body_name="bo_ballista_projectile_a" mesh="ballista_projectile_b" weight="0.2" difficulty="0" appearance="1" Type="Arrows" subtype="arrows" is_merchandise="false" holster_body_name="bo_axe_short" holster_mesh="quiver" multiplayer_item="false" prefab="burning_ballista_projectile">
 		<ItemComponent>
-			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="80" weapon_length="95" thrust_damage="100" thrust_damage_type="Pierce" physics_material="burning_ballista" center_of_mass="0,0,-0.3" stack_amount="20" sticking_position="0,-1.2,0" sticking_rotation="90,0,0" flying_sound_code="event:/mission/combat/missile/foley/passby" trail_particle_name="psys_game_missile_flame">
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="80" weapon_length="95" thrust_damage="30" thrust_damage_type="Pierce" physics_material="burning_ballista" center_of_mass="0,0,-0.3" stack_amount="20" sticking_position="0,-1.2,0" sticking_rotation="90,0,0" flying_sound_code="event:/mission/combat/missile/foley/passby" trail_particle_name="psys_game_missile_flame">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" MultiplePenetration="true" Burning="true" LeavesTrail="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -402,7 +402,7 @@
 	</Item>
 	<Item id="boulder" name="{=pzfbPbWW}Boulder" body_name="bo_projectile_rock" mesh="projectile_rock" weight="8.5" difficulty="0" appearance="1" Type="Thrown" subtype="arrows" is_merchandise="false" holster_body_name="bo_axe_short" multiplayer_item="false">
 		<ItemComponent>
-			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="100" item_usage="heavy_stone" physics_material="boulder_stone" center_of_mass="0,0,0" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" rotation_speed="2, 0.5, 0" position="0.05, -0.15, 0">
+			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="5" item_usage="heavy_stone" physics_material="boulder_stone" center_of_mass="0,0,0" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" rotation_speed="2, 0.5, 0" position="0.05, -0.15, 0">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" Consumable="true" CanPenetrateShield="true" LeavesTrail="true" UseHandAsThrowBase="true" AmmoCanBreakOnBounceBack="true" CanKnockDown="true" MissileWithPhysics="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -410,23 +410,23 @@
 	</Item>
 	<Item id="pot" name="{=3Wzhxkn1}Fire Pot" body_name="bo_projectile_rock" mesh="projectile_pot" weight="6" difficulty="0" appearance="1" Type="Thrown" subtype="arrows" is_merchandise="false" holster_body_name="bo_axe_short" multiplayer_item="false" flying_mesh="projectile_pot">
 		<ItemComponent>
-			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="100" item_usage="heavy_stone" physics_material="burning_jar" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" trail_particle_name="psys_game_burning_jar_trail" rotation_speed="2, 0.5, 0" position="0.05, -0.15, 0">
+			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="7" item_usage="heavy_stone" physics_material="burning_jar" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" trail_particle_name="psys_game_burning_jar_trail" rotation_speed="2, 0.5, 0" position="0.05, -0.15, 0">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" Consumable="true" CanPenetrateShield="true" Burning="true" LeavesTrail="true" AmmoBreaksOnBounceBack="true" MissileWithPhysics="true" AffectsArea="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags CannotBePickedUp="true" QuickFadeOut="true" DropOnWeaponChange="true" DropOnAnyAction="true"/>
 	</Item>
-	<Item id="grapeshot_stack" name="{=ZeU1fvdz}Grapeshot Stack" body_name="bo_projectile_grapeshot_carry" mesh="projectile_grapeshot_carry" weight="25" difficulty="0" appearance="1" Type="Thrown" subtype="arrows" is_merchandise="false" holster_body_name="bo_axe_short" multiplayer_item="false">
+	<Item id="grapeshot_stack" name="{=ZeU1fvdz}Grapeshot Stack" body_name="bo_projectile_grapeshot_carry" mesh="projectile_grapeshot_carry" weight="15" difficulty="0" appearance="1" Type="Thrown" subtype="arrows" is_merchandise="false" holster_body_name="bo_axe_short" multiplayer_item="false">
 		<ItemComponent>
-			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="70" item_usage="heavy_stone" physics_material="boulder_stone" center_of_mass="0,0,0" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" rotation_speed="2, 0.5, 0" position="0.05, -0.15, 0">
+			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="15" item_usage="heavy_stone" physics_material="boulder_stone" center_of_mass="0,0,0" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" rotation_speed="2, 0.5, 0" position="0.05, -0.15, 0">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" Consumable="true" CanPenetrateShield="true" LeavesTrail="true" UseHandAsThrowBase="true" AmmoCanBreakOnBounceBack="true" CanKnockDown="true" MissileWithPhysics="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags CannotBePickedUp="true" QuickFadeOut="true" DropOnWeaponChange="true" DropOnAnyAction="true"/>
 	</Item>
-	<Item id="grapeshot_fire_stack" name="{=ZeU1fvdz}Grapeshot Stack" body_name="bo_projectile_grapeshot_carry" mesh="projectile_grapeshot_carry" weight="25" difficulty="0" appearance="1" Type="Thrown" subtype="arrows" is_merchandise="false" holster_body_name="bo_axe_short" multiplayer_item="false">
+	<Item id="grapeshot_fire_stack" name="{=ZeU1fvdz}Grapeshot Stack" body_name="bo_projectile_grapeshot_carry" mesh="projectile_grapeshot_carry" weight="15" difficulty="0" appearance="1" Type="Thrown" subtype="arrows" is_merchandise="false" holster_body_name="bo_axe_short" multiplayer_item="false">
 		<ItemComponent>
-			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="70" item_usage="heavy_stone" physics_material="boulder_stone" center_of_mass="0,0,0" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" rotation_speed="2, 0.5, 0" position="0.05, -0.15, 0">
+			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="15" item_usage="heavy_stone" physics_material="boulder_stone" center_of_mass="0,0,0" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" rotation_speed="2, 0.5, 0" position="0.05, -0.15, 0">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" Consumable="true" CanPenetrateShield="true" LeavesTrail="true" UseHandAsThrowBase="true" AmmoCanBreakOnBounceBack="true" CanKnockDown="true" MissileWithPhysics="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -434,7 +434,7 @@
 	</Item>
 	<Item id="grapeshot_projectile" name="{=XGytILlt}Grapeshot Ammo" body_name="bo_projectile_grapeshot_piece_a" mesh="projectile_grapeshot_piece_a" weight="5" difficulty="0" appearance="1" Type="Thrown" subtype="arrows" is_merchandise="false" holster_body_name="bo_axe_short" multiplayer_item="false">
 		<ItemComponent>
-			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="70" item_usage="heavy_stone" physics_material="boulder_stone" center_of_mass="0,0,0" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" rotation_speed="2, 0.5, 0" position="0.05, -0.15, 0">
+			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="6.0" item_usage="heavy_stone" physics_material="boulder_stone" center_of_mass="0,0,0" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" rotation_speed="2, 0.5, 0" position="0.05, -0.15, 0">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" Consumable="true" CanPenetrateShield="true" LeavesTrail="true" UseHandAsThrowBase="true" AmmoCanBreakOnBounceBack="true" CanKnockDown="true" MissileWithPhysics="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -442,7 +442,7 @@
 	</Item>
 	<Item id="grapeshot_fire_projectile" name="{=XGytILlt}Grapeshot Ammo" body_name="bo_projectile_grapeshot_piece_a" mesh="projectile_grapeshot_piece_a" weight="5" difficulty="0" appearance="1" Type="Thrown" subtype="arrows" is_merchandise="false" holster_body_name="bo_axe_short" multiplayer_item="false">
 		<ItemComponent>
-			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="70" item_usage="heavy_stone" physics_material="boulder_stone" center_of_mass="0,0,0" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" trail_particle_name="mangonel_grapeshot_burning_projectile" rotation_speed="2, 0.5, 0" position="0.05, -0.15, 0">
+			<Weapon weapon_class="Boulder" ammo_class="Boulder" thrust_speed="100" speed_rating="0" missile_speed="8" weapon_length="95" thrust_damage="7.0" item_usage="heavy_stone" physics_material="boulder_stone" center_of_mass="0,0,0" stack_amount="1" flying_sound_code="event:/mission/combat/boulder/passby" trail_particle_name="mangonel_grapeshot_burning_projectile" rotation_speed="2, 0.5, 0" position="0.05, -0.15, 0">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" Consumable="true" CanPenetrateShield="true" Burning="true" LeavesTrail="true" UseHandAsThrowBase="true" AmmoCanBreakOnBounceBack="true" CanKnockDown="true" MissileWithPhysics="true" AffectsArea="true"/>
 			</Weapon>
 		</ItemComponent>
