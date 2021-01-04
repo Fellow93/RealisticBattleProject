@@ -30,9 +30,9 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="hood" name="{=GazIGIJG}Western Hood" mesh="shoulder_cape_multicolor" culture="Culture.vlandia" weight="0.4" appearance="1" Type="Cape" value="175" subtype="body_armor" difficulty="0">
+	<Item id="hood" name="{=GazIGIJG}Western Hood" mesh="shoulder_cape_multicolor" culture="Culture.vlandia" weight="0.4" appearance="1" Type="Cape" value="250" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="6" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor body_armor="9" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
@@ -288,13 +288,13 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="bearskin" name="{=s7WRzaf2}Bear Pelt" mesh="battania_helmet_h" culture="Culture.battania" weight="2.3" appearance="3" Type="Cape" value="2025" subtype="body_armor" difficulty="0">
+	<Item id="brass_scale_shoulders" name="{=KZmZ9HXW}Brass Scale Shoulders" mesh="sturgia_leather_brass_shoulder" culture="Culture.sturgia" weight="2.2" appearance="0.9" Type="Cape" value="1950">
 		<ItemComponent>
-			<Armor body_armor="26" modifier_group="leather" material_type="Leather" arm_armor="0"/>
+			<Armor body_armor="25" modifier_group="plate" material_type="Plate" arm_armor="0"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="rough_bearskin" name="{=KKWEkA4P}Rough Bearskin" mesh="cloak_fur_c" culture="Culture.battania" weight="2.3" appearance="3" Type="Cape" value="2025">
+	<Item id="bearskin" name="{=s7WRzaf2}Bear Pelt" mesh="battania_helmet_h" culture="Culture.battania" weight="2.3" appearance="3" Type="Cape" value="2025" subtype="body_armor" difficulty="0">
 		<ItemComponent>
 			<Armor body_armor="26" modifier_group="leather" material_type="Leather" arm_armor="0"/>
 		</ItemComponent>
@@ -303,6 +303,12 @@
 	<Item id="eastern_studded_shoulders" name="{=J1zcabv4}Eastern Studded Shoulders" mesh="khuzait_leather_shoulder_b" culture="Culture.khuzait" weight="2.3" appearance="1" Type="Cape" value="2100">
 		<ItemComponent>
 			<Armor body_armor="27" modifier_group="leather" material_type="Leather" arm_armor="0"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="rough_bearskin" name="{=KKWEkA4P}Rough Bearskin" mesh="cloak_fur_c" culture="Culture.battania" weight="2.3" appearance="3" Type="Cape" value="2025">
+		<ItemComponent>
+			<Armor body_armor="26" modifier_group="leather" material_type="Leather" arm_armor="0"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -318,27 +324,21 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="pauldron_cape_a" name="{=MTDaLQOV}Imperial Long Cape" mesh="pauldron_cape_a" culture="Culture.empire" weight="3.5" appearance="4" Type="Cape" value="4650">
-		<ItemComponent>
-			<Armor body_armor="30" modifier_group="plate" material_type="Plate" arm_armor="0"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true"/>
-	</Item>
 	<Item id="a_aserai_scale_b_shoulder_a" name="{=82GMEKy8}Scale Shoulders" mesh="aserai_scale_b_shoulder_a" culture="Culture.aserai" weight="4" appearance="3" Type="Cape" value="4650">
 		<ItemComponent>
 			<Armor body_armor="30" modifier_group="plate" material_type="Plate" arm_armor="0"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
+	<Item id="pauldron_cape_a" name="{=MTDaLQOV}Imperial Long Cape" mesh="pauldron_cape_a" culture="Culture.empire" weight="3.5" appearance="4" Type="Cape" value="4650">
+		<ItemComponent>
+			<Armor body_armor="30" modifier_group="plate" material_type="Plate" arm_armor="0"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
 	<Item id="studded_imperial_neckguard" name="{=g7iQsvPw}Studded Imperial Neckguard" mesh="empire_plate_armor_shoulder" culture="Culture.empire" weight="3.6" appearance="2" Type="Cape" value="4800">
 		<ItemComponent>
 			<Armor body_armor="31" modifier_group="plate" material_type="Plate" arm_armor="0"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
-	<Item id="battanian_chainmail_shoulder_b" name="{=27IgGO81}Highland Mail Shoulder Reinforcements" mesh="battanian_chainmail_shoulder_b" culture="Culture.battania" weight="4.5" appearance="1.8" Type="Cape" value="4950" subtype="body_armor" difficulty="0">
-		<ItemComponent>
-			<Armor body_armor="32" modifier_group="chain" material_type="Chainmail"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -348,9 +348,9 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="brass_scale_shoulders" name="{=KZmZ9HXW}Brass Scale Shoulders" mesh="sturgia_leather_brass_shoulder" culture="Culture.sturgia" weight="2.2" appearance="0.9" Type="Cape" value="1950">
+	<Item id="battanian_chainmail_shoulder_b" name="{=27IgGO81}Highland Mail Shoulder Reinforcements" mesh="battanian_chainmail_shoulder_b" culture="Culture.battania" weight="4.5" appearance="1.8" Type="Cape" value="4950" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="25" modifier_group="plate" material_type="Plate" arm_armor="0"/>
+			<Armor body_armor="32" modifier_group="chain" material_type="Chainmail"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
