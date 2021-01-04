@@ -89,7 +89,7 @@ namespace RealisticBattleAiModule
                     WorldPosition medianPositionNew = ___formation.QuerySystem.MedianPosition;
                     medianPositionNew.SetVec2(___formation.QuerySystem.AveragePosition);
 
-                    Formation significantEnemy = Utilities.FindSignificantEnemy(___formation, true, true, true, false, false);
+                    Formation significantEnemy = Utilities.FindSignificantEnemy(___formation, true, true, false, false, false);
 
                     if (significantEnemy != null)
                     {
@@ -136,7 +136,7 @@ namespace RealisticBattleAiModule
                     WorldPosition medianPositionNew = ___formation.QuerySystem.MedianPosition;
                     medianPositionNew.SetVec2(___formation.QuerySystem.AveragePosition);
 
-                    Formation significantEnemy = Utilities.FindSignificantEnemy(___formation, true, true, true, false, false);
+                    Formation significantEnemy = Utilities.FindSignificantEnemy(___formation, true, true, false, false, false);
 
                     if (significantEnemy != null)
                     {
@@ -714,7 +714,7 @@ namespace RealisticBattleAiModule
                     {
                         if (____outerGate != null)
                         {
-                            float distance = ___formation.QuerySystem.MedianPosition.AsVec2.Distance(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.MedianPosition.AsVec2);
+                            float distance = ___formation.QuerySystem.MedianPosition.AsVec2.Distance(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.AveragePosition);
                             if (____outerGate.IsDestroyed && TeamAISiegeComponent.IsFormationInsideCastle(___formation, includeOnlyPositionedUnits: false) && distance < 35f)
                             {
                                 ____readyOrder = MovementOrder.MovementOrderChargeToTarget(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
@@ -724,7 +724,7 @@ namespace RealisticBattleAiModule
                     }
                     else
                     {
-                        float distance = ___formation.QuerySystem.MedianPosition.AsVec2.Distance(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.MedianPosition.AsVec2);
+                        float distance = ___formation.QuerySystem.MedianPosition.AsVec2.Distance(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.AveragePosition);
                         if (____innerGate.IsDestroyed && TeamAISiegeComponent.IsFormationInsideCastle(___formation, includeOnlyPositionedUnits: false) && distance < 35f)
                         {
                             ____readyOrder = MovementOrder.MovementOrderChargeToTarget(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
@@ -960,8 +960,8 @@ namespace RealisticBattleAiModule
                         //}
 
                         //Vec2 direction = (targetAgent.GetWorldPosition().AsVec2 - unit.GetWorldPosition().AsVec2).Normalized();
-                        IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.LookDirection.AsVec2 * 0.8f, 0.8f, unit.Team);
-                        if (agents.Count() > 2)
+                        IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.LookDirection.AsVec2 * 0.8f, 1f, unit.Team);
+                        if (agents.Count() > 3)
                         {
                             if (MBRandom.RandomInt(75) == 0)
                             {
@@ -999,8 +999,8 @@ namespace RealisticBattleAiModule
             if (__instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
             {
                 Mission mission = Mission.Current;
-                IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.LookDirection.AsVec2 * 0.8f, 0.8f, unit.Team);
-                if (agents.Count() > 2)
+                IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.LookDirection.AsVec2 * 0.8f, 1f, unit.Team);
+                if (agents.Count() > 3)
                 {
                     if (MBRandom.RandomInt(75) == 0)
                     {
