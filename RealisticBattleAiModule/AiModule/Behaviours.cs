@@ -704,7 +704,7 @@ namespace RealisticBattleAiModule
 
         [HarmonyPostfix]
         [HarmonyPatch("ResetOrderPositions")]
-        static void PostfixResetOrderPositions(ref CastleGate ____innerGate, ref CastleGate ____outerGate, ref Formation ___formation, ref TacticalPosition ____tacticalMiddlePos, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviourState ____behaviourState)
+        static void PostfixResetOrderPositions(ref CastleGate ____innerGate, ref CastleGate ____outerGate, ref Formation ___formation, ref TacticalPosition ____tacticalMiddlePos,ref TacticalPosition ____tacticalWaitPos , ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviourState ____behaviourState)
         {
             if (____tacticalMiddlePos != null )
             {
@@ -747,6 +747,10 @@ namespace RealisticBattleAiModule
                         ____currentOrder = ____readyOrder;
                     }
                 }
+            }
+            if(____tacticalWaitPos != null)
+            {
+
             }
         }
     }
@@ -871,6 +875,7 @@ namespace RealisticBattleAiModule
     [HarmonyPatch(typeof(MovementOrder))]
     class OverrideMovementOrder
     {
+
         [HarmonyPrefix]
         [HarmonyPatch("SetChargeBehaviorValues")]
         static bool PrefixGetFormationFrame(Agent unit)
@@ -897,9 +902,17 @@ namespace RealisticBattleAiModule
         {
             if (formation != null && formation.QuerySystem.IsInfantryFormation && __instance.OrderType == OrderType.ChargeWithTarget)
             {
-                var position = formation.QuerySystem.MedianPosition;
-                position.SetVec2(formation.CurrentPosition);
-                __result = MovementOrder.MovementOrderMove(position);
+                if (formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
+                {
+                    __result = MovementOrder.MovementOrderChargeToTarget(formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                }
+                else
+                {
+                    __result = MovementOrder.MovementOrderCharge;
+                }
+                //var position = formation.QuerySystem.MedianPosition;
+                //position.SetVec2(formation.CurrentPosition);
+                //__result = MovementOrder.MovementOrderMove(position);
                 return false;
             }
 
@@ -919,7 +932,7 @@ namespace RealisticBattleAiModule
                 Formation formation = __instance.Formation;
                 if(formation != null)
                 {
-                    if (formation.QuerySystem.IsInfantryFormation && (formation.MovementOrder.OrderType == OrderType.ChargeWithTarget || formation.MovementOrder.OrderType == OrderType.Move))
+                    if (formation.QuerySystem.IsInfantryFormation && (formation.MovementOrder.OrderType == OrderType.ChargeWithTarget))
                     {
                         Formation enemyFormation = formation.MovementOrder.TargetFormation;
                         if(enemyFormation != null)
@@ -987,6 +1000,7 @@ namespace RealisticBattleAiModule
                         
                     }
                 }
+                return false;
             }
             return true;
         }
@@ -995,26 +1009,32 @@ namespace RealisticBattleAiModule
         [HarmonyPatch("GetOrderPositionOfUnitAux")]
         static bool PrefixGetOrderPositionOfUnitAux(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ___detachedUnits, ref WorldPosition __result)
         {
+            if (__instance.MovementOrder.OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit)){
+
+            }
             //if (__instance.MovementOrder.OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
             if (__instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
             {
                 Mission mission = Mission.Current;
-                IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.LookDirection.AsVec2 * 0.8f, 1f, unit.Team);
-                if (agents.Count() > 3)
+                if(mission.Mode != MissionMode.Deployment)
                 {
-                    if (MBRandom.RandomInt(75) == 0)
+                    IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.LookDirection.AsVec2 * 0.8f, 1f, unit.Team);
+                    if (agents.Count() > 3)
                     {
-                        return true;
+                        if (MBRandom.RandomInt(75) == 0)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            __result = unit.GetWorldPosition();
+                            return false;
+                        }
                     }
                     else
                     {
-                        __result = unit.GetWorldPosition();
-                        return false;
+                        return true;
                     }
-                }
-                else
-                {
-                    return true;
                 }
             }
             return true;

@@ -207,6 +207,47 @@ namespace RealisticBattleAiModule
             }
             return targetAgent;
         }
+
+        public static Agent NearestEnemyAgent(Agent unit)
+        {
+            Agent targetAgent = null;
+            float distance = 10000f;
+            Vec2 unitPosition = unit.GetWorldPosition().AsVec2;
+            foreach (Team team in Mission.Current.Teams.ToList())
+            {
+                if (team.IsEnemyOf(unit.Formation.Team))
+                {
+                    foreach (Formation enemyFormation in team.Formations.ToList())
+                    {
+                        PropertyInfo property = typeof(Formation).GetProperty("arrangement", BindingFlags.NonPublic | BindingFlags.Instance);
+                        if (property != null)
+                        {
+                            property.DeclaringType.GetProperty("arrangement");
+                            IFormationArrangement arrangement = (IFormationArrangement)property.GetValue(enemyFormation);
+
+                            FieldInfo field = typeof(LineFormation).GetField("_allUnits", BindingFlags.NonPublic | BindingFlags.Instance);
+                            if (field != null)
+                            {
+                                field.DeclaringType.GetField("_allUnits");
+                                List<IFormationUnit> agents = (List<IFormationUnit>)field.GetValue(arrangement);
+
+                                foreach (Agent agent in agents.ToList())
+                                {
+                                    float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
+                                    if (newDist < distance)
+                                    {
+                                        targetAgent = agent;
+                                        distance = newDist;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return targetAgent;
+        }
+
         public static bool FormationFightingInMelee(Formation formation)
         {
             bool fightingInMelee = false;
