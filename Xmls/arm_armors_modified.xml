@@ -14,13 +14,13 @@
 	</Item>
 	<Item id="armwraps" name="{=oEJnxsQ1}Armwraps" mesh="battania_armwraps_a" culture="Culture.battania" weight="0.2" appearance="0.3" Type="HandArmor" value="1150" difficulty="0">
 		<ItemComponent>
-			<Armor arm_armor="22" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor arm_armor="22" modifier_group="cloth" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="ragged_armwraps" name="{=jIwjYOVj}Ragged Armwraps" mesh="sneak_costume_hand" culture="Culture.battania" weight="0.4" appearance="0.3" Type="HandArmor" value="1150" difficulty="0">
 		<ItemComponent>
-			<Armor arm_armor="22" modifier_group="cloth_unarmoured" material_type="Cloth" covers_hands="false"/>
+			<Armor arm_armor="22" modifier_group="cloth" material_type="Cloth" covers_hands="false"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>

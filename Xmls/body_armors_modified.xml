@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Items>
-	<Item id="cloth_tunic" name="{=uDrT6v7a}Western Cloth Tunic" mesh="clothing_a" culture="Culture.vlandia" weight="0.4" Type="BodyArmor" value="1200" appearance="1" subtype="body_armor">
+	<Item id="cut_dress" name="{=bevik0LU}Cut Dress" mesh="female_tavern_wench_dress_a" culture="Culture.sturgia" weight="0.6" Type="BodyArmor" value="233" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
+			<Armor body_armor="6" leg_armor="6" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" has_gender_variations="false"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
@@ -18,83 +18,83 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="aserai_villager_female_dress" name="{=2Tz96poW}Southern Villager Dress" mesh="aserai_villager_female_dress" culture="Culture.aserai" weight="0.5" Type="BodyArmor" value="1200" appearance="1">
+	<Item id="cut_dress_with_pouch" name="{=deA729dQ}Cut Dress With Pouch" mesh="female_tavern_wench_dress_b" culture="Culture.sturgia" weight="0.5" Type="BodyArmor" value="266" appearance="1">
+		<ItemComponent>
+			<Armor body_armor="7" leg_armor="7" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" has_gender_variations="false"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true" Civilian="true"/>
+	</Item>
+	<Item id="cloth_apron" name="{=2WQTvOLF}Cloth Apron" mesh="costume_merchant_v2" culture="Culture.neutral_culture" weight="0.8" Type="BodyArmor" value="266" appearance="1">
+		<ItemComponent>
+			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="0"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true" Civilian="true"/>
+	</Item>
+	<Item id="half_apron" name="{=FOJHPU5N}Half Apron" mesh="costume_merchant_v3" culture="Culture.neutral_culture" weight="0.7" Type="BodyArmor" value="266" appearance="1">
+		<ItemComponent>
+			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="0"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true" Civilian="true"/>
+	</Item>
+	<Item id="tattered_rags" name="{=F9GB8lMZ}Tattered Rags" mesh="battania_cloth_armor_b" culture="Culture.battania" weight="0.3" Type="BodyArmor" value="266" appearance="0.3" subtype="body_armor" difficulty="0">
+		<ItemComponent>
+			<Armor body_armor="7" leg_armor="7" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="0" has_gender_variations="true"/>
+		</ItemComponent>
+		<Flags Civilian="true" DoesNotHideChest="true"/>
+	</Item>
+	<Item id="empire_short_dress" name="{=XZAAz7NX}Empire Short Tunic" mesh="empire_short_dress" culture="Culture.empire" weight="1" Type="BodyArmor" value="300" appearance="0.1" difficulty="0">
+		<ItemComponent>
+			<Armor body_armor="8" leg_armor="3" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" has_gender_variations="true"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true" Civilian="true" DoesNotHideChest="true"/>
+	</Item>
+	<Item id="burlap_sack_dress" name="{=IuD9SaQM}Burlap Dress" mesh="burlap_sack_dress" culture="Culture.looters" weight="0.5" Type="BodyArmor" value="366" appearance="0.1" difficulty="0">
+		<ItemComponent>
+			<Armor body_armor="5" leg_armor="5" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true" Civilian="true" DoesNotHideChest="true"/>
+	</Item>
+	<Item id="hemp_tunic" name="{=yTWOMSmv}Hemp Tunic" mesh="armor_hemp_tunic" culture="Culture.empire" weight="0.4" Type="BodyArmor" value="366" appearance="1" subtype="body_armor" difficulty="0">
+		<ItemComponent>
+			<Armor body_armor="5" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true" Civilian="true"/>
+	</Item>
+	<Item id="cloth_tunic" name="{=uDrT6v7a}Western Cloth Tunic" mesh="clothing_a" culture="Culture.vlandia" weight="0.4" Type="BodyArmor" value="400" appearance="1" subtype="body_armor">
+		<ItemComponent>
+			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true" Civilian="true"/>
+	</Item>
+	<Item id="aserai_villager_female_dress" name="{=2Tz96poW}Southern Villager Dress" mesh="aserai_villager_female_dress" culture="Culture.aserai" weight="0.5" Type="BodyArmor" value="400" appearance="1">
 		<ItemComponent>
 			<Armor body_armor="6" leg_armor="5" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false" body_mesh_type="shoulders"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="long_desert_robe" name="{=VyOsYv8J}Long Southern Robe" mesh="aserai_tunic_long" culture="Culture.aserai" weight="0.6" Type="BodyArmor" value="1200" appearance="1">
+	<Item id="long_desert_robe" name="{=VyOsYv8J}Long Southern Robe" mesh="aserai_tunic_long" culture="Culture.aserai" weight="0.6" Type="BodyArmor" value="400" appearance="1">
 		<ItemComponent>
 			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="aserai_civil_c" name="{=8r0Z9Hyb}Colored Southern Robe" mesh="aserai_civil_c" culture="Culture.aserai" weight="0.9" Type="BodyArmor" value="1300" appearance="2">
+	<Item id="bandit_envelope_dress_v2" name="{=qILO0HdK}Sleeveless Enveloped Padded Garments" mesh="bandit_envelope_dress_v2" culture="Culture.looters" weight="0.5" Type="BodyArmor" value="400" appearance="0.1" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
+			<Armor body_armor="6" leg_armor="5" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="aserai_female_civil_b" name="{=JLWxF0yJ}Southern Dress with Waistband" mesh="aserai_female_civil_b" culture="Culture.aserai" weight="0.8" Type="BodyArmor" value="1300" appearance="3">
+	<Item id="bandit_fur_a" name="{=v6W9XaDI}Old Fur Armor" mesh="bandit_fur_a" culture="Culture.looters" weight="0.9" Type="BodyArmor" value="400" appearance="0.1" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false" body_mesh_type="shoulders"/>
+			<Armor body_armor="11" leg_armor="11" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" has_gender_variations="true"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="aserai_tunic_waistcoat" name="{=D4gxNfzG}Southern Tunic Waistcoat" mesh="aserai_tunic_waistcoat" culture="Culture.aserai" weight="0.8" Type="BodyArmor" value="1300" appearance="1">
+	<Item id="bandit_fur_b" name="{=j7EZxCiG}Old Fur Coat" mesh="bandit_fur_b" culture="Culture.looters" weight="1" Type="BodyArmor" value="400" appearance="0.1" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
+			<Armor body_armor="11" leg_armor="5" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" has_gender_variations="true"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
-	</Item>
-	<Item id="desert_robe" name="{=eU6YOqBC}Southern Robe" mesh="aserai_tunic_long" culture="Culture.aserai" weight="1.8" Type="BodyArmor" value="1300" appearance="1" subtype="body_armor" difficulty="0">
-		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
-	</Item>
-	<Item id="aserai_civil_d" name="{=SW3lkPHe}Colored Bisht" mesh="aserai_civil_d" culture="Culture.aserai" weight="1" Type="BodyArmor" value="1400" appearance="0.6">
-		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="true"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
-	</Item>
-	<Item id="aserai_civil_e" name="{=FAPHmzxQ}Thawb" mesh="aserai_civil_e" culture="Culture.aserai" weight="1.1" Type="BodyArmor" value="1400" appearance="1">
-		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="true"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
-	</Item>
-	<Item id="aserai_civil_f" name="{=PL3Ut0vL}Southern Peasant Robe" mesh="aserai_civil_f" culture="Culture.aserai" weight="1.1" Type="BodyArmor" value="1400" appearance="1">
-		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="true"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
-	</Item>
-	<Item id="eastern_silk_clothing" name="{=1blLtbDf}Southern Silk Clothing" mesh="aserai_crowd_costume" culture="Culture.aserai" weight="0.4" Type="BodyArmor" value="1400" appearance="4">
-		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
-	</Item>
-	<Item id="fine_southern_dress" name="{=GMqE9FCN}Fine Southern Dress" mesh="aserai_female_costume" culture="Culture.aserai" weight="0.7" Type="BodyArmor" value="1400" appearance="3">
-		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false" body_mesh_type="shoulders"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
-	</Item>
-	<Item id="tassled_southern_robes" name="{=Hm61IBcT}Tassled Southern Robes" mesh="aserai_thobe" culture="Culture.aserai" weight="0.9" Type="BodyArmor" value="1400" appearance="1">
-		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="true"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
-	</Item>
-	<Item id="thick_sleeved_robe" name="{=MKT5IzWm}Thick Sleeved Robe" mesh="aserai_robe_b" culture="Culture.aserai" weight="1" Type="BodyArmor" value="1400" appearance="1">
-		<ItemComponent>
-			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
+		<Flags Civilian="true" DoesNotHideChest="true"/>
 	</Item>
 	<Item id="baggy_trunks" name="{=btrf2AXp}Baggy Trunks" mesh="bandit_1_a" culture="Culture.battania" weight="0.2" Type="BodyArmor" value="100" appearance="1" subtype="body_armor" difficulty="0">
 		<ItemComponent>
@@ -102,53 +102,53 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true" DoesNotHideChest="true"/>
 	</Item>
-	<Item id="cut_dress" name="{=bevik0LU}Cut Dress" mesh="female_tavern_wench_dress_a" culture="Culture.sturgia" weight="0.6" Type="BodyArmor" value="700" appearance="1">
+	<Item id="steppe_dress" name="{=KrCGcsmJ}Eastern Envelope Dress" mesh="female_khuzait_dress" culture="Culture.khuzait" weight="0.6" Type="BodyArmor" value="400" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="6" leg_armor="6" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" has_gender_variations="false"/>
+			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="bandit_envelope_dress_v1" name="{=jbxeZs8K}Commoners Tunic" mesh="bandit_envelope_dress_v1" culture="Culture.looters" weight="0.6" Type="BodyArmor" value="1500" appearance="0.3" difficulty="0">
+	<Item id="steppe_robe" name="{=C7oo0zAY}Eastern Steppe Robe" mesh="mongol_cloth_a" culture="Culture.khuzait" weight="0.4" Type="BodyArmor" value="400" appearance="1" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="8" leg_armor="8" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="true" body_mesh_type="shoulders"/>
+			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="bandit_envelope_dress_v2" name="{=qILO0HdK}Sleeveless Enveloped Padded Garments" mesh="bandit_envelope_dress_v2" culture="Culture.looters" weight="0.5" Type="BodyArmor" value="1200" appearance="0.1" difficulty="0">
+	<Item id="long_woolen_tunic" name="{=U8QfF3Gw}Long Woolen Tunic" mesh="armor_woolen_tunic" culture="Culture.vlandia" weight="0.4" Type="BodyArmor" value="400" appearance="1" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="6" leg_armor="5" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
+			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="bandit_fur_a" name="{=v6W9XaDI}Old Fur Armor" mesh="bandit_fur_a" culture="Culture.looters" weight="0.9" Type="BodyArmor" value="1200" appearance="0.1" difficulty="0">
+	<Item id="monk_robe" name="{=QuaE76ua}Scholars Robe" mesh="monk_robe" culture="Culture.vlandia" weight="0.5" Type="BodyArmor" value="400" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="11" leg_armor="11" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" has_gender_variations="true"/>
+			<Armor body_armor="6" leg_armor="6" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="bandit_fur_b" name="{=j7EZxCiG}Old Fur Coat" mesh="bandit_fur_b" culture="Culture.looters" weight="1" Type="BodyArmor" value="1200" appearance="0.1" difficulty="0">
+	<Item id="dress_with_overall" name="{=MLBA8tej}Dress" mesh="female_peasant_dress_b" culture="Culture.sturgia" weight="0.5" Type="BodyArmor" value="400" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="11" leg_armor="5" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" has_gender_variations="true"/>
-		</ItemComponent>
-		<Flags DoesNotHideChest="true" Civilian="true"/>
-	</Item>
-	<Item id="bandit_gambeson" name="{=bTUGfbH5}Rugged Gambeson" mesh="bandit_gambeson" culture="Culture.looters" weight="0.9" Type="BodyArmor" value="1700" appearance="0.3" difficulty="0">
-		<ItemComponent>
-			<Armor body_armor="11" leg_armor="11" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
+			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="bandit_leather_water_flask" name="{=8hDoWBIa}Commoners Shirt" mesh="bandit_leather_water_flask" culture="Culture.looters" weight="0.5" Type="BodyArmor" value="1300" appearance="0.1" difficulty="0">
+	<Item id="laced_dress" name="{=PP5SzUx0}Laced Dress" mesh="female_peasant_dress_c" culture="Culture.sturgia" weight="0.6" Type="BodyArmor" value="400" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true" body_mesh_type="shoulders"/>
+			<Armor body_armor="6" leg_armor="5" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false" body_mesh_type="shoulders"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="empire_short_dress" name="{=XZAAz7NX}Empire Short Tunic" mesh="empire_short_dress" culture="Culture.empire" weight="1" Type="BodyArmor" value="900" appearance="0.1" difficulty="0">
+	<Item id="sackcloth_tunic" name="{=smKogclC}Sackcloth Tunic" mesh="walker_costume_d" culture="Culture.vlandia" weight="0.6" Type="BodyArmor" value="400" appearance="0.3" subtype="body_armor" difficulty="0" multiplayer_item="false">
 		<ItemComponent>
-			<Armor body_armor="8" leg_armor="3" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" has_gender_variations="true"/>
+			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true" DoesNotHideChest="true" Civilian="true"/>
+		<Flags UseTeamColor="true" Civilian="true"/>
+	</Item>
+	<Item id="northern_dress" name="{=a1KxyGOj}Northern Dress" mesh="female_peasant_dress_d" culture="Culture.sturgia" weight="0.7" Type="BodyArmor" value="400" appearance="1">
+		<ItemComponent>
+			<Armor body_armor="6" leg_armor="6" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
 	<Item id="battania_civil_a" name="{=KaZY0Ixp}Highland Tunic" mesh="battania_civil_a" culture="Culture.battania" weight="0.6" Type="BodyArmor" value="1300" appearance="0.2">
 		<ItemComponent>
@@ -168,45 +168,45 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="battania_dress_a" name="{=6Wkq14uk}Highland Peasant Dress" mesh="battania_dress_a" culture="Culture.battania" weight="0.9" Type="BodyArmor" value="1500" appearance="1">
+	<Item id="fine_town_tunic" name="{=vbPBXiPC}Rich Tunic" mesh="casual_02" culture="Culture.empire" weight="0.4" Type="BodyArmor" value="400" appearance="2">
 		<ItemComponent>
-			<Armor body_armor="8" leg_armor="8" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false" body_mesh_type="shoulders"/>
+			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="battania_dress_b" name="{=DlHkNiJA}Highland Dress" mesh="battania_dress_b" culture="Culture.battania" weight="0.8" Type="BodyArmor" value="1500" appearance="1">
+	<Item id="northern_tunic" name="{=7yGwvnUA}Northern Tunic" mesh="sturgia_costume_j" culture="Culture.sturgia" weight="0.4" Type="BodyArmor" value="400" appearance="0.6" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="8" leg_armor="8" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false" body_mesh_type="shoulders"/>
+			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="battania_dress_c" name="{=Tr3x7ynD}Highland Plaid Dress" mesh="battania_dress_c" culture="Culture.battania" weight="0.7" Type="BodyArmor" value="1500" appearance="1">
+	<Item id="vlandian_corset_dress" name="{=iUjgXGNn}Western Corseted Dress" mesh="vlandian_corset_dress" culture="Culture.vlandia" weight="0.5" Type="BodyArmor" value="400" appearance="3">
 		<ItemComponent>
-			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false"/>
+			<Armor body_armor="6" leg_armor="6" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="battania_female_civil_a" name="{=DlHkNiJA}Highland Dress" mesh="battania_female_civil_a" culture="Culture.battania" weight="0.7" Type="BodyArmor" value="1500" appearance="1">
+	<Item id="plain_dress" name="{=t695AnJU}Plain Dress" mesh="female_peasant_dress_a" culture="Culture.sturgia" weight="0.5" Type="BodyArmor" value="400" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false"/>
+			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="battania_female_civil_b" name="{=QMAGJdyN}Highland Villager Dress" mesh="battania_female_civil_b" culture="Culture.battania" weight="0.7" Type="BodyArmor" value="1500" appearance="1">
+	<Item id="vlandian_noble_woman_dress" name="{=CEj2Rfh5}Western Noble Dress" mesh="vlandian_noble_woman_dress" culture="Culture.vlandia" weight="0.6" Type="BodyArmor" value="400" appearance="4">
 		<ItemComponent>
-			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false"/>
+			<Armor body_armor="6" leg_armor="5" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false" body_mesh_type="shoulders"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="aserai_civil_b" name="{=hhprIQti}Southern Robe with Leather Belt" mesh="aserai_civil_b" culture="Culture.aserai" weight="1.1" Type="BodyArmor" value="1500" appearance="1">
+	<Item id="sturgia_light_tunic" name="{=7yGwvnUA}Long Tunic" mesh="sturgia_light_armor_b" culture="Culture.sturgia" weight="0.4" Type="BodyArmor" value="400" appearance="0.6" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="true"/>
+			<Armor body_armor="6" leg_armor="5" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="cut_dress_with_pouch" name="{=deA729dQ}Cut Dress With Pouch" mesh="female_tavern_wench_dress_b" culture="Culture.sturgia" weight="0.5" Type="BodyArmor" value="800" appearance="1">
+	<Item id="vlandian_woman_dress" name="{=wMO0hoqC}Western Common Dress" mesh="vlandian_woman_dress" culture="Culture.vlandia" weight="0.7" Type="BodyArmor" value="400" appearance="2">
 		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" has_gender_variations="false"/>
+			<Armor body_armor="6" leg_armor="6" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false" body_mesh_type="shoulders"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
@@ -216,9 +216,9 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="steppe_dress" name="{=KrCGcsmJ}Eastern Envelope Dress" mesh="female_khuzait_dress" culture="Culture.khuzait" weight="0.6" Type="BodyArmor" value="1200" appearance="1">
+	<Item id="torn_bandit_clothes" name="{=qhbOjHRI}Torn Padded Garments" mesh="torn_bandit_clothes" culture="Culture.looters" weight="0.5" Type="BodyArmor" value="400" appearance="0.1" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false"/>
+			<Armor body_armor="6" leg_armor="5" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true" body_mesh_type="shoulders"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
@@ -228,9 +228,9 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="steppe_robe" name="{=C7oo0zAY}Eastern Steppe Robe" mesh="mongol_cloth_a" culture="Culture.khuzait" weight="0.4" Type="BodyArmor" value="1200" appearance="1" subtype="body_armor" difficulty="0">
+	<Item id="aserai_civil_c" name="{=8r0Z9Hyb}Colored Southern Robe" mesh="aserai_civil_c" culture="Culture.aserai" weight="0.9" Type="BodyArmor" value="433" appearance="2">
 		<ItemComponent>
-			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
+			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
@@ -240,15 +240,15 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="long_woolen_tunic" name="{=U8QfF3Gw}Long Woolen Tunic" mesh="armor_woolen_tunic" culture="Culture.vlandia" weight="0.4" Type="BodyArmor" value="1200" appearance="1" subtype="body_armor" difficulty="0">
+	<Item id="aserai_female_civil_b" name="{=JLWxF0yJ}Southern Dress with Waistband" mesh="aserai_female_civil_b" culture="Culture.aserai" weight="0.8" Type="BodyArmor" value="433" appearance="3">
 		<ItemComponent>
-			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
+			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false" body_mesh_type="shoulders"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="monk_robe" name="{=QuaE76ua}Scholars Robe" mesh="monk_robe" culture="Culture.vlandia" weight="0.5" Type="BodyArmor" value="1200" appearance="1">
+	<Item id="aserai_tunic_waistcoat" name="{=D4gxNfzG}Southern Tunic Waistcoat" mesh="aserai_tunic_waistcoat" culture="Culture.aserai" weight="0.8" Type="BodyArmor" value="433" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="6" leg_armor="6" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
+			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
@@ -256,23 +256,23 @@
 		<ItemComponent>
 			<Armor body_armor="4" leg_armor="32" covers_body="false" modifier_group="cloth" material_type="Cloth" arm_armor="2" has_gender_variations="false"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true" DoesNotHideChest="true" Civilian="true"/>
+		<Flags UseTeamColor="true" Civilian="true" DoesNotHideChest="true"/>
 	</Item>
-	<Item id="dress_with_overall" name="{=MLBA8tej}Dress" mesh="female_peasant_dress_b" culture="Culture.sturgia" weight="0.5" Type="BodyArmor" value="1200" appearance="1">
+	<Item id="desert_robe" name="{=eU6YOqBC}Southern Robe" mesh="aserai_tunic_long" culture="Culture.aserai" weight="1.8" Type="BodyArmor" value="433" appearance="1" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false"/>
+			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="khuzait_dress" name="{=XyXSx0R8}Common Eastern Dress" mesh="khuzait_dress" culture="Culture.khuzait" weight="0.8" Type="BodyArmor" value="1500" appearance="1">
+	<Item id="bandit_leather_water_flask" name="{=8hDoWBIa}Commoners Shirt" mesh="bandit_leather_water_flask" culture="Culture.looters" weight="0.5" Type="BodyArmor" value="433" appearance="0.1" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false"/>
+			<Armor body_armor="7" leg_armor="7" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true" body_mesh_type="shoulders"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="laced_dress" name="{=PP5SzUx0}Laced Dress" mesh="female_peasant_dress_c" culture="Culture.sturgia" weight="0.6" Type="BodyArmor" value="1200" appearance="1">
+	<Item id="burlap_waistcoat" name="{=mkoMUmLh}Burlap Waistcoat" mesh="walker_costume_c" culture="Culture.battania" weight="0.4" Type="BodyArmor" value="433" appearance="0.3" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="6" leg_armor="5" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false" body_mesh_type="shoulders"/>
+			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
@@ -282,27 +282,27 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="burlap_sack_dress" name="{=IuD9SaQM}Burlap Dress" mesh="burlap_sack_dress" culture="Culture.looters" weight="0.5" Type="BodyArmor" value="1100" appearance="0.1" difficulty="0">
+	<Item id="nordic_tunic" name="{=8cM840mh}Northern Luxery Tunic" mesh="sturgia_costume_a" culture="Culture.sturgia" weight="0.6" Type="BodyArmor" value="433" appearance="0.6" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="5" leg_armor="5" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true" DoesNotHideChest="true" Civilian="true"/>
-	</Item>
-	<Item id="burlap_waistcoat" name="{=mkoMUmLh}Burlap Waistcoat" mesh="walker_costume_c" culture="Culture.battania" weight="0.4" Type="BodyArmor" value="1300" appearance="0.3" subtype="body_armor" difficulty="0">
-		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
+			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="cloth_apron" name="{=2WQTvOLF}Cloth Apron" mesh="costume_merchant_v2" culture="Culture.neutral_culture" weight="0.8" Type="BodyArmor" value="800" appearance="1">
+	<Item id="empire_dress" name="{=JsmnUp0T}Ladies Dress" mesh="empire_dress" culture="Culture.empire" weight="0.7" Type="BodyArmor" value="433" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="0"/>
+			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="sackcloth_tunic" name="{=smKogclC}Sackcloth Tunic" mesh="walker_costume_d" culture="Culture.vlandia" weight="0.6" Type="BodyArmor" value="1200" appearance="0.3" subtype="body_armor" difficulty="0" multiplayer_item="false">
+	<Item id="peasant_costume" name="{=gbRVBOLH}Commoner Clothes" mesh="peasant_costume_a" culture="Culture.empire" weight="0.5" Type="BodyArmor" value="433" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
+			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true" Civilian="true"/>
+	</Item>
+	<Item id="vlandian_dress" name="{=Zvxydvao}Imperial Rich Dress" mesh="vlandian_dress" culture="Culture.empire" weight="0.5" Type="BodyArmor" value="433" appearance="1">
+		<ItemComponent>
+			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
@@ -312,27 +312,27 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="steppe_armor" name="{=oGVGhYeP}Eastern Steppe Armor" mesh="armor_hun_a" culture="Culture.khuzait" weight="0.6" Type="BodyArmor" value="1700" appearance="1" subtype="body_armor">
+	<Item id="ragged_robes" name="{=tVyuxl8e}Ragged Robes" mesh="sneak_costume" culture="Culture.looters" weight="0.9" Type="BodyArmor" value="433" appearance="0.3" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="11" leg_armor="11" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
+			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="light tunic" name="{=7yGwvnUA}Light Tunic" mesh="sturgia_light_armor_a" culture="Culture.sturgia" weight="0.4" Type="BodyArmor" value="1200" appearance="0.6" subtype="body_armor" difficulty="0">
+	<Item id="aserai_civil_d" name="{=SW3lkPHe}Colored Bisht" mesh="aserai_civil_d" culture="Culture.aserai" weight="1" Type="BodyArmor" value="466" appearance="0.6">
 		<ItemComponent>
-			<Armor body_armor="13" leg_armor="13" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="true"/>
+			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="true"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="northern_dress" name="{=a1KxyGOj}Northern Dress" mesh="female_peasant_dress_d" culture="Culture.sturgia" weight="0.7" Type="BodyArmor" value="1200" appearance="1">
+	<Item id="aserai_civil_e" name="{=FAPHmzxQ}Thawb" mesh="aserai_civil_e" culture="Culture.aserai" weight="1.1" Type="BodyArmor" value="466" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="6" leg_armor="6" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false"/>
+			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="true"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="aserai_civil_a" name="{=HG2emvr7}Southern Robe with Waistband" mesh="aserai_civil_a" culture="Culture.aserai" weight="0.8" Type="BodyArmor" value="1700" appearance="1">
+	<Item id="aserai_civil_f" name="{=PL3Ut0vL}Southern Peasant Robe" mesh="aserai_civil_f" culture="Culture.aserai" weight="1.1" Type="BodyArmor" value="466" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="11" leg_armor="11" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
+			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="true"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
@@ -342,39 +342,39 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="aserai_female_civil_a" name="{=5lJrGXqR}Southern Dress With Robes" mesh="aserai_female_civil_a" culture="Culture.aserai" weight="0.9" Type="BodyArmor" value="1700" appearance="2">
+	<Item id="eastern_silk_clothing" name="{=1blLtbDf}Southern Silk Clothing" mesh="aserai_crowd_costume" culture="Culture.aserai" weight="0.4" Type="BodyArmor" value="466" appearance="4">
 		<ItemComponent>
-			<Armor body_armor="9" leg_armor="9" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="7" has_gender_variations="false" body_mesh_type="shoulders"/>
+			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="layered_robe" name="{=fk42FxCE}Layered Robe" mesh="aserai_robe_c" culture="Culture.aserai" weight="14" Type="BodyArmor" value="2000" appearance="1" lod_atlas_index="6">
+	<Item id="fine_southern_dress" name="{=GMqE9FCN}Fine Southern Dress" mesh="aserai_female_costume" culture="Culture.aserai" weight="0.7" Type="BodyArmor" value="466" appearance="3">
 		<ItemComponent>
-			<Armor body_armor="13" leg_armor="13" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="true"/>
+			<Armor body_armor="7" leg_armor="7" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false" body_mesh_type="shoulders"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="hemp_tunic" name="{=yTWOMSmv}Hemp Tunic" mesh="armor_hemp_tunic" culture="Culture.empire" weight="0.4" Type="BodyArmor" value="1100" appearance="1" subtype="body_armor" difficulty="0">
+	<Item id="tassled_southern_robes" name="{=Hm61IBcT}Tassled Southern Robes" mesh="aserai_thobe" culture="Culture.aserai" weight="0.9" Type="BodyArmor" value="466" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="5" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
+			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="true"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="fine_town_tunic" name="{=vbPBXiPC}Rich Tunic" mesh="casual_02" culture="Culture.empire" weight="0.4" Type="BodyArmor" value="1200" appearance="2">
+	<Item id="thick_sleeved_robe" name="{=MKT5IzWm}Thick Sleeved Robe" mesh="aserai_robe_b" culture="Culture.aserai" weight="1" Type="BodyArmor" value="466" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
+			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="northern_tunic" name="{=7yGwvnUA}Northern Tunic" mesh="sturgia_costume_j" culture="Culture.sturgia" weight="0.4" Type="BodyArmor" value="1200" appearance="0.6" subtype="body_armor" difficulty="0">
+	<Item id="empire_dress_b" name="{=VqFV9LS4}Red Dress" mesh="empire_dress_b" culture="Culture.empire" weight="0.6" Type="BodyArmor" value="466" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
+			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="vlandian_corset_dress" name="{=iUjgXGNn}Western Corseted Dress" mesh="vlandian_corset_dress" culture="Culture.vlandia" weight="0.5" Type="BodyArmor" value="1200" appearance="3">
+	<Item id="tied_cloth_tunic" name="{=MQ8LCvCE}Tied Cloth Tunic" mesh="roman_cloth_tunic_a" culture="Culture.empire" weight="0.4" Type="BodyArmor" value="466" appearance="1" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="6" leg_armor="6" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false"/>
+			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
@@ -384,9 +384,9 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="plain_dress" name="{=t695AnJU}Plain Dress" mesh="female_peasant_dress_a" culture="Culture.sturgia" weight="0.5" Type="BodyArmor" value="1200" appearance="1">
+	<Item id="bandit_envelope_dress_v1" name="{=jbxeZs8K}Commoners Tunic" mesh="bandit_envelope_dress_v1" culture="Culture.looters" weight="0.6" Type="BodyArmor" value="500" appearance="0.3" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false"/>
+			<Armor body_armor="8" leg_armor="8" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="true" body_mesh_type="shoulders"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
@@ -396,21 +396,21 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="vlandian_noble_woman_dress" name="{=CEj2Rfh5}Western Noble Dress" mesh="vlandian_noble_woman_dress" culture="Culture.vlandia" weight="0.6" Type="BodyArmor" value="1200" appearance="4">
+	<Item id="battania_dress_a" name="{=6Wkq14uk}Highland Peasant Dress" mesh="battania_dress_a" culture="Culture.battania" weight="0.9" Type="BodyArmor" value="500" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="6" leg_armor="5" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false" body_mesh_type="shoulders"/>
+			<Armor body_armor="8" leg_armor="8" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false" body_mesh_type="shoulders"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="sturgia_light_tunic" name="{=7yGwvnUA}Long Tunic" mesh="sturgia_light_armor_b" culture="Culture.sturgia" weight="0.4" Type="BodyArmor" value="1200" appearance="0.6" subtype="body_armor" difficulty="0">
+	<Item id="battania_dress_b" name="{=DlHkNiJA}Highland Dress" mesh="battania_dress_b" culture="Culture.battania" weight="0.8" Type="BodyArmor" value="500" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="6" leg_armor="5" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
+			<Armor body_armor="8" leg_armor="8" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false" body_mesh_type="shoulders"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="nordic_tunic" name="{=8cM840mh}Northern Luxery Tunic" mesh="sturgia_costume_a" culture="Culture.sturgia" weight="0.6" Type="BodyArmor" value="1300" appearance="0.6" subtype="body_armor" difficulty="0">
+	<Item id="battania_dress_c" name="{=Tr3x7ynD}Highland Plaid Dress" mesh="battania_dress_c" culture="Culture.battania" weight="0.7" Type="BodyArmor" value="500" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
+			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
@@ -426,65 +426,65 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="empire_dress" name="{=JsmnUp0T}Ladies Dress" mesh="empire_dress" culture="Culture.empire" weight="0.7" Type="BodyArmor" value="1300" appearance="1">
-		<ItemComponent>
-			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
-	</Item>
-	<Item id="peasant_costume" name="{=gbRVBOLH}Commoner Clothes" mesh="peasant_costume_a" culture="Culture.empire" weight="0.5" Type="BodyArmor" value="1300" appearance="1">
-		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
-	</Item>
-	<Item id="vlandian_dress" name="{=Zvxydvao}Imperial Rich Dress" mesh="vlandian_dress" culture="Culture.empire" weight="0.5" Type="BodyArmor" value="1300" appearance="1">
-		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
-	</Item>
-	<Item id="roughcloth_shortcoat" name="{=hXijcZyp}Roughcloth Shortcoat" mesh="walker_costume_a" culture="Culture.sturgia" weight="0.4" Type="BodyArmor" value="1500" appearance="0.3" subtype="body_armor" difficulty="0" multiplayer_item="false">
-		<ItemComponent>
-			<Armor body_armor="9" leg_armor="9" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
-	</Item>
-	<Item id="empire_dress_b" name="{=VqFV9LS4}Red Dress" mesh="empire_dress_b" culture="Culture.empire" weight="0.6" Type="BodyArmor" value="1400" appearance="1">
-		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
-	</Item>
-	<Item id="tied_cloth_tunic" name="{=MQ8LCvCE}Tied Cloth Tunic" mesh="roman_cloth_tunic_a" culture="Culture.empire" weight="0.4" Type="BodyArmor" value="1400" appearance="1" subtype="body_armor" difficulty="0">
-		<ItemComponent>
-			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
-	</Item>
-	<Item id="imperial_robes" name="{=aYCvg89I}Imperial Robes" mesh="empire_outfit_a" culture="Culture.empire" weight="0.9" Type="BodyArmor" value="1500" appearance="1">
+	<Item id="battania_female_civil_a" name="{=DlHkNiJA}Highland Dress" mesh="battania_female_civil_a" culture="Culture.battania" weight="0.7" Type="BodyArmor" value="500" appearance="1">
 		<ItemComponent>
 			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="tunic_with_rolled_cloth" name="{=*}Tunic With Rolled Cloth" mesh="armor_tunic_with_rolled_cloth" culture="Culture.empire" weight="0.7" Type="BodyArmor" value="1900" appearance="1" subtype="body_armor" difficulty="0">
+	<Item id="battania_female_civil_b" name="{=QMAGJdyN}Highland Villager Dress" mesh="battania_female_civil_b" culture="Culture.battania" weight="0.7" Type="BodyArmor" value="500" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="11" leg_armor="11" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="7"/>
+			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="footmans_tunic" name="{=2AcfBbCR}Military Tunic" mesh="armor_roman_military_tunic" culture="Culture.empire" weight="0.6" Type="BodyArmor" value="2100" appearance="1" subtype="body_armor" difficulty="0">
+	<Item id="aserai_civil_b" name="{=hhprIQti}Southern Robe with Leather Belt" mesh="aserai_civil_b" culture="Culture.aserai" weight="1.1" Type="BodyArmor" value="500" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="8"/>
+			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="true"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="tunic_with_shoulder_pads" name="{=y3oIzUEp}Tunic With Shoulder Pads" mesh="roman_cloth_tunic_b" culture="Culture.empire" weight="0.6" Type="BodyArmor" value="2100" appearance="1">
+	<Item id="khuzait_dress" name="{=XyXSx0R8}Common Eastern Dress" mesh="khuzait_dress" culture="Culture.khuzait" weight="0.8" Type="BodyArmor" value="500" appearance="1">
+		<ItemComponent>
+			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true" Civilian="true"/>
+	</Item>
+	<Item id="roughcloth_shortcoat" name="{=hXijcZyp}Roughcloth Shortcoat" mesh="walker_costume_a" culture="Culture.sturgia" weight="0.4" Type="BodyArmor" value="500" appearance="0.3" subtype="body_armor" difficulty="0" multiplayer_item="false">
+		<ItemComponent>
+			<Armor body_armor="9" leg_armor="9" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true" Civilian="true"/>
+	</Item>
+	<Item id="imperial_robes" name="{=aYCvg89I}Imperial Robes" mesh="empire_outfit_a" culture="Culture.empire" weight="0.9" Type="BodyArmor" value="500" appearance="1">
+		<ItemComponent>
+			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true" Civilian="true"/>
+	</Item>
+	<Item id="tundra_tunic" name="{=Im7wOGaC}Northern Belted Tunic" mesh="fur_vaegir_b" culture="Culture.sturgia" weight="0.3" Type="BodyArmor" value="500" appearance="1" subtype="body_armor" difficulty="0">
+		<ItemComponent>
+			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true" Civilian="true"/>
+	</Item>
+	<Item id="long_hemp_tunic" name="{=NUHzapSv}Long Hemp Tunic" mesh="casual_01" culture="Culture.vlandia" weight="0.6" Type="BodyArmor" value="500" appearance="1">
+		<ItemComponent>
+			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true" Civilian="true"/>
+	</Item>
+	<Item id="tunic_with_shoulder_pads" name="{=y3oIzUEp}Tunic With Shoulder Pads" mesh="roman_cloth_tunic_b" culture="Culture.empire" weight="0.6" Type="BodyArmor" value="500" appearance="1">
 		<ItemComponent>
 			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="7"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="bandit_gambeson" name="{=bTUGfbH5}Rugged Gambeson" mesh="bandit_gambeson" culture="Culture.looters" weight="0.9" Type="BodyArmor" value="566" appearance="0.3" difficulty="0">
+		<ItemComponent>
+			<Armor body_armor="11" leg_armor="11" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
 	<Item id="patched_gambeson" name="{=Jhshwa48}Patched Gambeson" mesh="bandit_4" culture="Culture.empire" weight="2.4" Type="BodyArmor" value="2400" appearance="0.8" difficulty="0">
 		<ItemComponent>
@@ -552,31 +552,31 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="vlandian_woman_dress" name="{=wMO0hoqC}Western Common Dress" mesh="vlandian_woman_dress" culture="Culture.vlandia" weight="0.7" Type="BodyArmor" value="1200" appearance="2">
+	<Item id="steppe_armor" name="{=oGVGhYeP}Eastern Steppe Armor" mesh="armor_hun_a" culture="Culture.khuzait" weight="0.6" Type="BodyArmor" value="566" appearance="1" subtype="body_armor">
 		<ItemComponent>
-			<Armor body_armor="6" leg_armor="6" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false" body_mesh_type="shoulders"/>
+			<Armor body_armor="11" leg_armor="11" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="half_apron" name="{=FOJHPU5N}Half Apron" mesh="costume_merchant_v3" culture="Culture.neutral_culture" weight="0.7" Type="BodyArmor" value="800" appearance="1">
-		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="0"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
-	</Item>
-	<Item id="tundra_tunic" name="{=Im7wOGaC}Northern Belted Tunic" mesh="fur_vaegir_b" culture="Culture.sturgia" weight="0.3" Type="BodyArmor" value="1500" appearance="1" subtype="body_armor" difficulty="0">
-		<ItemComponent>
-			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="false"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
-	</Item>
-	<Item id="heavy_nordic_coat" name="{=FaWA8c50}Northern Heavy Coat" mesh="sturgia_costume_d" culture="Culture.sturgia" weight="0.9" Type="BodyArmor" value="1700" appearance="1" subtype="body_armor" difficulty="0">
+	<Item id="aserai_civil_a" name="{=HG2emvr7}Southern Robe with Waistband" mesh="aserai_civil_a" culture="Culture.aserai" weight="0.8" Type="BodyArmor" value="566" appearance="1">
 		<ItemComponent>
 			<Armor body_armor="11" leg_armor="11" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="heavy_nordic_tunic" name="{=KHFQdxvL}Heavy Northern Tunic" mesh="sturgia_costume_e" culture="Culture.sturgia" weight="1" Type="BodyArmor" value="1700" appearance="1">
+	<Item id="aserai_female_civil_a" name="{=5lJrGXqR}Southern Dress With Robes" mesh="aserai_female_civil_a" culture="Culture.aserai" weight="0.9" Type="BodyArmor" value="566" appearance="2">
+		<ItemComponent>
+			<Armor body_armor="9" leg_armor="9" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="7" has_gender_variations="false" body_mesh_type="shoulders"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true" Civilian="true"/>
+	</Item>
+	<Item id="heavy_nordic_coat" name="{=FaWA8c50}Northern Heavy Coat" mesh="sturgia_costume_d" culture="Culture.sturgia" weight="0.9" Type="BodyArmor" value="566" appearance="1" subtype="body_armor" difficulty="0">
+		<ItemComponent>
+			<Armor body_armor="11" leg_armor="11" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true" Civilian="true"/>
+	</Item>
+	<Item id="heavy_nordic_tunic" name="{=KHFQdxvL}Heavy Northern Tunic" mesh="sturgia_costume_e" culture="Culture.sturgia" weight="1" Type="BodyArmor" value="566" appearance="1">
 		<ItemComponent>
 			<Armor body_armor="11" leg_armor="11" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true"/>
 		</ItemComponent>
@@ -600,9 +600,9 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="khuzait_dress_b" name="{=7sgW3eHd}Eastern Dress with Fur" mesh="khuzait_dress_b" culture="Culture.khuzait" weight="0.9" Type="BodyArmor" value="1900" appearance="1">
+	<Item id="footmans_tunic" name="{=2AcfBbCR}Military Tunic" mesh="armor_roman_military_tunic" culture="Culture.empire" weight="0.6" Type="BodyArmor" value="566" appearance="1" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="13" leg_armor="13" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false"/>
+			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="8"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
@@ -618,9 +618,9 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="long_hemp_tunic" name="{=NUHzapSv}Long Hemp Tunic" mesh="casual_01" culture="Culture.vlandia" weight="0.6" Type="BodyArmor" value="1500" appearance="1">
+	<Item id="tunic_with_rolled_cloth" name="{=*}Tunic With Rolled Cloth" mesh="armor_tunic_with_rolled_cloth" culture="Culture.empire" weight="0.7" Type="BodyArmor" value="633" appearance="1" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6"/>
+			<Armor body_armor="11" leg_armor="11" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="7"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
@@ -652,7 +652,7 @@
 		<ItemComponent>
 			<Armor body_armor="14" leg_armor="14" covers_body="false" modifier_group="leather" material_type="Leather" arm_armor="6" has_gender_variations="true"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true" DoesNotHideChest="true" Civilian="true"/>
+		<Flags UseTeamColor="true" Civilian="true" DoesNotHideChest="true"/>
 	</Item>
 	<Item id="crude_leather_armor" name="{=JslRu3rX}Crude Eastern Leather Armor" mesh="bandit_5" culture="Culture.khuzait" weight="2.4" Type="BodyArmor" value="2800" appearance="1">
 		<ItemComponent>
@@ -738,9 +738,9 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="leather_coat_over_cloth" name="{=wKucIANJ}Leather Coat Over Cloth" mesh="walker_costume_b" culture="Culture.vlandia" weight="0.7" Type="BodyArmor" value="2600" appearance="1" subtype="body_armor" difficulty="0" multiplayer_item="false">
+	<Item id="khuzait_dress_b" name="{=7sgW3eHd}Eastern Dress with Fur" mesh="khuzait_dress_b" culture="Culture.khuzait" weight="0.9" Type="BodyArmor" value="633" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="18" leg_armor="18" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="7"/>
+			<Armor body_armor="13" leg_armor="13" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="false"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
@@ -990,9 +990,9 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="ragged_robes" name="{=tVyuxl8e}Ragged Robes" mesh="sneak_costume" culture="Culture.looters" weight="0.9" Type="BodyArmor" value="1300" appearance="0.3" subtype="body_armor" difficulty="0">
+	<Item id="light tunic" name="{=7yGwvnUA}Light Tunic" mesh="sturgia_light_armor_a" culture="Culture.sturgia" weight="0.4" Type="BodyArmor" value="666" appearance="0.6" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
+			<Armor body_armor="13" leg_armor="13" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="true"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
@@ -1078,7 +1078,7 @@
 		<ItemComponent>
 			<Armor body_armor="14" leg_armor="14" covers_body="false" modifier_group="leather" material_type="Leather" arm_armor="7"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true" DoesNotHideChest="true" Civilian="true"/>
+		<Flags UseTeamColor="true" Civilian="true" DoesNotHideChest="true"/>
 	</Item>
 	<Item id="battanian_scale_armor_a" name="{=*}Highland Scale Over Mail Armor" mesh="battanian_scale_armor_a" culture="Culture.battania" weight="22.4" Type="BodyArmor" value="36000" appearance="3" subtype="body_armor" difficulty="0">
 		<ItemComponent>
@@ -1206,11 +1206,11 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="tattered_rags" name="{=F9GB8lMZ}Tattered Rags" mesh="battania_cloth_armor_b" culture="Culture.battania" weight="0.3" Type="BodyArmor" value="800" appearance="0.3" subtype="body_armor" difficulty="0">
+	<Item id="layered_robe" name="{=fk42FxCE}Layered Robe" mesh="aserai_robe_c" culture="Culture.aserai" weight="14" Type="BodyArmor" value="666" appearance="1" lod_atlas_index="6">
 		<ItemComponent>
-			<Armor body_armor="7" leg_armor="7" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="0" has_gender_variations="true"/>
+			<Armor body_armor="13" leg_armor="13" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="6" has_gender_variations="true"/>
 		</ItemComponent>
-		<Flags DoesNotHideChest="true" Civilian="true"/>
+		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
 	<Item id="desert_lamellar" name="{=2K0o7NK9}Southern Lamellar Armor" mesh="aserai_cavalry_armor" culture="Culture.aserai" weight="19.4" Type="BodyArmor" value="32600" appearance="1.5" subtype="body_armor" difficulty="0">
 		<ItemComponent>
@@ -1224,9 +1224,9 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="torn_bandit_clothes" name="{=qhbOjHRI}Torn Padded Garments" mesh="torn_bandit_clothes" culture="Culture.looters" weight="0.5" Type="BodyArmor" value="1200" appearance="0.1" difficulty="0">
+	<Item id="leather_coat_over_cloth" name="{=wKucIANJ}Leather Coat Over Cloth" mesh="walker_costume_b" culture="Culture.vlandia" weight="0.7" Type="BodyArmor" value="2600" appearance="1" subtype="body_armor" difficulty="0" multiplayer_item="false">
 		<ItemComponent>
-			<Armor body_armor="6" leg_armor="5" covers_body="false" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" has_gender_variations="true" body_mesh_type="shoulders"/>
+			<Armor body_armor="18" leg_armor="18" covers_body="true" modifier_group="cloth" material_type="Cloth" arm_armor="7"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>

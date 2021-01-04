@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Items>
-	<Item id="ladys_shoe" name="{=RU2EppgI}Lady's Shoes" mesh="woman_shoe_a" culture="Culture.empire" weight="0.6" appearance="1" Type="LegArmor" value="750">
+	<Item id="ladys_shoe" name="{=RU2EppgI}Lady's Shoes" mesh="woman_shoe_a" culture="Culture.empire" weight="0.6" appearance="1" Type="LegArmor" value="250">
 		<ItemComponent>
 			<Armor leg_armor="14" covers_legs="false" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="southern_moccasins" name="{=E7puv7hi}Southern Moccasins" mesh="aserai_female_costume_shoe" culture="Culture.aserai" weight="0.5" appearance="1" Type="LegArmor" value="850">
+	<Item id="southern_moccasins" name="{=E7puv7hi}Southern Moccasins" mesh="aserai_female_costume_shoe" culture="Culture.aserai" weight="0.5" appearance="1" Type="LegArmor" value="283">
 		<ItemComponent>
 			<Armor leg_armor="16" covers_legs="false" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
@@ -26,7 +26,7 @@
 	</Item>
 	<Item id="strapped_shoes" name="{=LOPavWRp}Strapped Shoes" mesh="strapped_shoes" culture="Culture.vlandia" weight="0.7" appearance="1" Type="LegArmor" value="1150" difficulty="0">
 		<ItemComponent>
-			<Armor leg_armor="22" covers_legs="true" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor leg_armor="22" covers_legs="true" modifier_group="cloth" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
@@ -44,7 +44,7 @@
 	</Item>
 	<Item id="ragged_boots" name="{=Szuxa9Bs}Ragged Boots" mesh="sneak_costume_foot" culture="Culture.battania" weight="0.8" appearance="0.3" Type="LegArmor" value="1350" difficulty="0">
 		<ItemComponent>
-			<Armor leg_armor="26" covers_legs="true" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor leg_armor="26" covers_legs="true" modifier_group="cloth" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
@@ -92,13 +92,13 @@
 	</Item>
 	<Item id="highland_leg_wrappings" name="{=cCaHNMwf}Highland Leg Wrappings" mesh="battania_boot_a" culture="Culture.battania" weight="1" appearance="1" Type="LegArmor" value="1550" difficulty="0">
 		<ItemComponent>
-			<Armor leg_armor="30" covers_legs="true" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor leg_armor="30" covers_legs="true" modifier_group="cloth" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="strapped_leather_boots" name="{=tMwsE9IR}Strapped Leather Boots" mesh="boot_g" culture="Culture.empire" weight="0.9" appearance="1" Type="LegArmor" value="1550" difficulty="0">
 		<ItemComponent>
-			<Armor leg_armor="30" covers_legs="true" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor leg_armor="30" covers_legs="true" modifier_group="cloth" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
@@ -146,7 +146,7 @@
 	</Item>
 	<Item id="wrapped_shoes" name="{=4YxbZlbi}Wrapped Shoes" mesh="wrapped_shoes" culture="Culture.aserai" weight="0.8" appearance="1" Type="LegArmor" value="1800">
 		<ItemComponent>
-			<Armor leg_armor="35" covers_legs="true" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor leg_armor="35" covers_legs="true" modifier_group="cloth" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>

@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Items>
-	<Item id="aserai_civil_c_head" name="{=ZFETxZKP}Kefiyyeh With Silken Band" mesh="aserai_civil_c_head" culture="Culture.aserai" weight="0.1" appearance="1" Type="HeadArmor" value="525">
+	<Item id="aserai_civil_c_head" name="{=ZFETxZKP}Kefiyyeh With Silken Band" mesh="aserai_civil_c_head" culture="Culture.aserai" weight="0.1" appearance="1" Type="HeadArmor" value="175">
 		<ItemComponent>
 			<Armor head_armor="6" has_gender_variations="true" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="aserai_civil_e_hscarf" name="{=gf3tDqNk}Brown Kefiyyeh" mesh="aserai_civil_e_hscarf" culture="Culture.aserai" weight="0.1" appearance="1" Type="HeadArmor" value="525">
+	<Item id="aserai_civil_e_hscarf" name="{=gf3tDqNk}Brown Kefiyyeh" mesh="aserai_civil_e_hscarf" culture="Culture.aserai" weight="0.1" appearance="1" Type="HeadArmor" value="175">
 		<ItemComponent>
 			<Armor head_armor="6" has_gender_variations="true" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="aserai_civil_hscarf_a" name="{=W8OGOfyt}Kefiyyeh with Brown Band" mesh="aserai_civil_hscarf_a" culture="Culture.aserai" weight="0.1" appearance="1" Type="HeadArmor" value="525">
+	<Item id="aserai_civil_hscarf_a" name="{=W8OGOfyt}Kefiyyeh with Brown Band" mesh="aserai_civil_hscarf_a" culture="Culture.aserai" weight="0.1" appearance="1" Type="HeadArmor" value="175">
 		<ItemComponent>
 			<Armor head_armor="6" has_gender_variations="true" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="aserai_civil_hscarf_b" name="{=OrEgjXZ1}Roughspun Kefiyyeh" mesh="aserai_civil_hscarf_b" culture="Culture.aserai" weight="0.1" appearance="1" Type="HeadArmor" value="525">
+	<Item id="aserai_civil_hscarf_b" name="{=OrEgjXZ1}Roughspun Kefiyyeh" mesh="aserai_civil_hscarf_b" culture="Culture.aserai" weight="0.1" appearance="1" Type="HeadArmor" value="175">
 		<ItemComponent>
 			<Armor head_armor="6" has_gender_variations="true" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="womens_headwrap_b" name="{=baDdigZj}Northern Style Head Wrap" mesh="womens_headwrap_b" culture="Culture.sturgia" weight="0.2" appearance="1" Type="HeadArmor" value="525">
+	<Item id="womens_headwrap_b" name="{=baDdigZj}Northern Style Head Wrap" mesh="womens_headwrap_b" culture="Culture.sturgia" weight="0.2" appearance="1" Type="HeadArmor" value="175">
 		<ItemComponent>
 			<Armor head_armor="6" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="head_scarf" name="{=2rvCcBuS}Brown Hijab" mesh="head_scarf_b" culture="Culture.aserai" weight="0.1" appearance="1" Type="HeadArmor" value="525">
+	<Item id="head_scarf" name="{=2rvCcBuS}Brown Hijab" mesh="head_scarf_b" culture="Culture.aserai" weight="0.1" appearance="1" Type="HeadArmor" value="175">
 		<ItemComponent>
 			<Armor head_armor="6" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
@@ -42,25 +42,25 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="womens_headwrap_c" name="{=VHPPqw9J}Western Head Wrap" mesh="womens_headwrap_c" culture="Culture.vlandia" weight="0.1" appearance="1" Type="HeadArmor" value="525">
+	<Item id="womens_headwrap_c" name="{=VHPPqw9J}Western Head Wrap" mesh="womens_headwrap_c" culture="Culture.vlandia" weight="0.1" appearance="1" Type="HeadArmor" value="175">
 		<ItemComponent>
 			<Armor head_armor="6" has_gender_variations="false" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="aserai_villager_female_headdress" name="{=6J0aJo7u}Southern Rural Headdress" mesh="aserai_villager_female_headdress" culture="Culture.aserai" weight="0.2" appearance="1" Type="HeadArmor" value="600">
+	<Item id="aserai_villager_female_headdress" name="{=6J0aJo7u}Southern Rural Headdress" mesh="aserai_villager_female_headdress" culture="Culture.aserai" weight="0.2" appearance="1" Type="HeadArmor" value="200">
 		<ItemComponent>
 			<Armor head_armor="7" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="headscarf_d" name="{=wW3iouiU}Hijab" mesh="headscarf_d" culture="Culture.aserai" weight="0.5" appearance="1" Type="HeadArmor" value="600">
+	<Item id="headscarf_d" name="{=wW3iouiU}Hijab" mesh="headscarf_d" culture="Culture.aserai" weight="0.5" appearance="1" Type="HeadArmor" value="200">
 		<ItemComponent>
 			<Armor head_armor="7" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type3"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="pilgrim_hood" name="{=VXFwEF3M}Pilgrim's Hood" mesh="sneak_costume_head" culture="Culture.empire" weight="0.2" appearance="0.3" Type="headArmor" value="600" difficulty="0">
+	<Item id="pilgrim_hood" name="{=VXFwEF3M}Pilgrim's Hood" mesh="sneak_costume_head" culture="Culture.empire" weight="0.2" appearance="0.3" Type="headArmor" value="200" difficulty="0">
 		<ItemComponent>
 			<Armor head_armor="7" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type3"/>
 		</ItemComponent>
@@ -78,109 +78,109 @@
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="aserai_civil_d_hscarf" name="{=l91l1TJo}Colored Turban" mesh="aserai_civil_d_hscarf" culture="Culture.aserai" weight="0.1" appearance="0.6" Type="HeadArmor" value="750">
+	<Item id="aserai_civil_d_hscarf" name="{=l91l1TJo}Colored Turban" mesh="aserai_civil_d_hscarf" culture="Culture.aserai" weight="0.1" appearance="0.6" Type="HeadArmor" value="250">
 		<ItemComponent>
 			<Armor head_armor="9" has_gender_variations="true" hair_cover_type="type1" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="desert_headdress" name="{=4n6n3KL7}Desert Headdress" mesh="aserai_female_costume_headdress" culture="Culture.aserai" weight="0.2" appearance="1" Type="HeadArmor" value="750">
+	<Item id="desert_headdress" name="{=4n6n3KL7}Desert Headdress" mesh="aserai_female_costume_headdress" culture="Culture.aserai" weight="0.2" appearance="1" Type="HeadArmor" value="250">
 		<ItemComponent>
 			<Armor head_armor="9" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="head_wrapped" name="{=VHPPqw9J}Western Head Wrap" mesh="womens_headwrap" culture="Culture.vlandia" weight="0.3" appearance="1" Type="HeadArmor" value="750">
+	<Item id="head_wrapped" name="{=VHPPqw9J}Western Head Wrap" mesh="womens_headwrap" culture="Culture.vlandia" weight="0.3" appearance="1" Type="HeadArmor" value="250">
 		<ItemComponent>
 			<Armor head_armor="9" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="head_wrapping" name="{=j5O8mt4I}Western Head Wrapping" mesh="head_scarf_d" culture="Culture.vlandia" weight="0.05" appearance="1" Type="HeadArmor" value="750">
+	<Item id="head_wrapping" name="{=j5O8mt4I}Western Head Wrapping" mesh="head_scarf_d" culture="Culture.vlandia" weight="0.05" appearance="1" Type="HeadArmor" value="250">
 		<ItemComponent>
 			<Armor head_armor="9" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="headscarf_c" name="{=f7RmWqJ2}Western Head Scarf" mesh="headscarf_c" culture="Culture.vlandia" weight="0.3" appearance="1" Type="HeadArmor" value="750">
+	<Item id="headscarf_c" name="{=f7RmWqJ2}Western Head Scarf" mesh="headscarf_c" culture="Culture.vlandia" weight="0.3" appearance="1" Type="HeadArmor" value="250">
 		<ItemComponent>
 			<Armor head_armor="9" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type3"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="turban" name="{=8SNS2wF9}Turban" mesh="aserai_helmet_i" culture="Culture.aserai" weight="0.5" appearance="1" Type="HeadArmor" value="750">
+	<Item id="turban" name="{=8SNS2wF9}Turban" mesh="aserai_helmet_i" culture="Culture.aserai" weight="0.5" appearance="1" Type="HeadArmor" value="250">
 		<ItemComponent>
 			<Armor head_armor="9" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type2"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="wrapped_headcloth" name="{=Pv3YQMk1}Highland Wrapped Headcloth" mesh="battania_helmet_b" culture="Culture.battania" weight="0.2" appearance="1" Type="HeadArmor" value="750" difficulty="0" subtype="head_armor">
+	<Item id="wrapped_headcloth" name="{=Pv3YQMk1}Highland Wrapped Headcloth" mesh="battania_helmet_b" culture="Culture.battania" weight="0.2" appearance="1" Type="HeadArmor" value="250" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="9" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="aserai_female_civil_hscarf" name="{=NEupkuqV}Desert Headscarf" mesh="aserai_female_civil_hscarf" culture="Culture.aserai" weight="0.4" appearance="1" Type="HeadArmor" value="825">
+	<Item id="aserai_female_civil_hscarf" name="{=NEupkuqV}Desert Headscarf" mesh="aserai_female_civil_hscarf" culture="Culture.aserai" weight="0.4" appearance="1" Type="HeadArmor" value="275">
 		<ItemComponent>
 			<Armor head_armor="10" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="aserai_female_civil_hscarf_b" name="{=94yBVV6R}Southern Half Headscarf" mesh="aserai_female_civil_hscarf_b" culture="Culture.aserai" weight="0.4" appearance="1" Type="HeadArmor" value="825">
+	<Item id="aserai_female_civil_hscarf_b" name="{=94yBVV6R}Southern Half Headscarf" mesh="aserai_female_civil_hscarf_b" culture="Culture.aserai" weight="0.4" appearance="1" Type="HeadArmor" value="275">
 		<ItemComponent>
 			<Armor head_armor="10" has_gender_variations="false" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="female_head_wrap" name="{=KhXnRIan}Female Head Wrap" mesh="female_peasant_cape_c" culture="Culture.aserai" weight="0.4" appearance="1" Type="HeadArmor" value="825">
+	<Item id="female_head_wrap" name="{=KhXnRIan}Female Head Wrap" mesh="female_peasant_cape_c" culture="Culture.aserai" weight="0.4" appearance="1" Type="HeadArmor" value="275">
 		<ItemComponent>
 			<Armor head_armor="10" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="head_piece" name="{=FSa9qv8i}Western Scarf" mesh="head_scarf_c" culture="Culture.vlandia" weight="0.2" appearance="1" Type="HeadArmor" value="825">
+	<Item id="head_piece" name="{=FSa9qv8i}Western Scarf" mesh="head_scarf_c" culture="Culture.vlandia" weight="0.2" appearance="1" Type="HeadArmor" value="275">
 		<ItemComponent>
 			<Armor head_armor="10" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="headscarf" name="{=fqHrMC1v}Western Loose Head Scarf" mesh="headscarf" culture="Culture.vlandia" weight="0.5" appearance="1" Type="HeadArmor" value="825">
+	<Item id="headscarf" name="{=fqHrMC1v}Western Loose Head Scarf" mesh="headscarf" culture="Culture.vlandia" weight="0.5" appearance="1" Type="HeadArmor" value="275">
 		<ItemComponent>
 			<Armor head_armor="10" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type3"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="open_head_scarf" name="{=qsVRoGUv}Open Head Scarf" mesh="aserai_helmet_c" culture="Culture.aserai" weight="0.6" appearance="1" Type="HeadArmor" value="825">
+	<Item id="open_head_scarf" name="{=qsVRoGUv}Open Head Scarf" mesh="aserai_helmet_c" culture="Culture.aserai" weight="0.6" appearance="1" Type="HeadArmor" value="275">
 		<ItemComponent>
 			<Armor head_armor="10" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type3"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="battania_civil_hood" name="{=xYUHruEl}Highland Hood" mesh="battania_civil_hood" culture="Culture.battania" weight="0.5" appearance="1" Type="HeadArmor" value="900" difficulty="0" subtype="head_armor">
+	<Item id="battania_civil_hood" name="{=xYUHruEl}Highland Hood" mesh="battania_civil_hood" culture="Culture.battania" weight="0.5" appearance="1" Type="HeadArmor" value="300" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="11" has_gender_variations="false" hair_cover_type="type3" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="cloth_headwrap" name="{=frwBm3Oh}Cloth Headwrap" mesh="vlandia_helmet_d" culture="Culture.vlandia" weight="0.4" appearance="1" Type="HeadArmor" value="900" difficulty="0" subtype="head_armor">
+	<Item id="cloth_headwrap" name="{=frwBm3Oh}Cloth Headwrap" mesh="vlandia_helmet_d" culture="Culture.vlandia" weight="0.4" appearance="1" Type="HeadArmor" value="300" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="11" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type2"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="tuareg" name="{=02g6K4Yw}Southern Tribal Turban" mesh="tuareg_b" culture="Culture.aserai" weight="0.6" appearance="0.7" Type="HeadArmor" value="900" difficulty="0" subtype="head_armor">
+	<Item id="tuareg" name="{=02g6K4Yw}Southern Tribal Turban" mesh="tuareg_b" culture="Culture.aserai" weight="0.6" appearance="0.7" Type="HeadArmor" value="300" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="11" has_gender_variations="false" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="woven_turban" name="{=ArPvuBYK}Woven Turban" mesh="aserai_helmet_h" culture="Culture.aserai" weight="0.8" appearance="1" Type="HeadArmor" value="900" difficulty="0" subtype="head_armor">
+	<Item id="woven_turban" name="{=ArPvuBYK}Woven Turban" mesh="aserai_helmet_h" culture="Culture.aserai" weight="0.8" appearance="1" Type="HeadArmor" value="300" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="11" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type2"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="wrapped_desert_cap" name="{=0bE9MxK4}Wrapped Southern Cap" mesh="aserai_helmet_o" culture="Culture.aserai" weight="0.5" appearance="0.3" Type="HeadArmor" value="900">
+	<Item id="wrapped_desert_cap" name="{=0bE9MxK4}Wrapped Southern Cap" mesh="aserai_helmet_o" culture="Culture.aserai" weight="0.5" appearance="0.3" Type="HeadArmor" value="300">
 		<ItemComponent>
 			<Armor head_armor="11" has_gender_variations="false" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type2"/>
 		</ItemComponent>
@@ -192,7 +192,7 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="closed_head_scarf" name="{=gUTqDROO}Closed Head Scarf" mesh="aserai_helmet_d" culture="Culture.aserai" weight="0.6" appearance="1" Type="HeadArmor" value="1125" difficulty="0" subtype="head_armor">
+	<Item id="closed_head_scarf" name="{=gUTqDROO}Closed Head Scarf" mesh="aserai_helmet_d" culture="Culture.aserai" weight="0.6" appearance="1" Type="HeadArmor" value="375" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="all"/>
 		</ItemComponent>
@@ -204,13 +204,13 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="desert_cap" name="{=4BaTgzia}Southern Cap" mesh="aserai_helmet_m" culture="Culture.aserai" weight="0.4" appearance="1" Type="HeadArmor" value="1125">
+	<Item id="desert_cap" name="{=4BaTgzia}Southern Cap" mesh="aserai_helmet_m" culture="Culture.aserai" weight="0.4" appearance="1" Type="HeadArmor" value="375">
 		<ItemComponent>
 			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="type1" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="none"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="laced_cloth_coif" name="{=kmdjRAoG}Laced Cloth Coif" mesh="empire_helmet_c" culture="Culture.empire" weight="0.4" appearance="0.3" Type="HeadArmor" value="1125" difficulty="0" subtype="head_armor">
+	<Item id="laced_cloth_coif" name="{=kmdjRAoG}Laced Cloth Coif" mesh="empire_helmet_c" culture="Culture.empire" weight="0.4" appearance="0.3" Type="HeadArmor" value="375" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
@@ -222,25 +222,25 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="tied_head_wrapping" name="{=ndfDy5B8}Tied Head Wrapping" mesh="aserai_helmet_p" culture="Culture.aserai" weight="0.5" appearance="1" Type="HeadArmor" value="1125" difficulty="0" subtype="head_armor">
+	<Item id="tied_head_wrapping" name="{=ndfDy5B8}Tied Head Wrapping" mesh="aserai_helmet_p" culture="Culture.aserai" weight="0.5" appearance="1" Type="HeadArmor" value="375" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type2"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="tight_head_scarf" name="{=U4n0uSlg}Tight Head Scarf" mesh="aserai_helmet_f" culture="Culture.aserai" weight="0.7" appearance="1" Type="HeadArmor" value="1125" difficulty="0" subtype="head_armor">
+	<Item id="tight_head_scarf" name="{=U4n0uSlg}Tight Head Scarf" mesh="aserai_helmet_f" culture="Culture.aserai" weight="0.7" appearance="1" Type="HeadArmor" value="375" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="eastern_cap" name="{=UvJDlhMq}Eastern Cap" mesh="khuzait_helmet_n" culture="Culture.khuzait" weight="0.3" appearance="1" Type="HeadArmor" value="1125" difficulty="0" subtype="head_armor">
+	<Item id="eastern_cap" name="{=UvJDlhMq}Eastern Cap" mesh="khuzait_helmet_n" culture="Culture.khuzait" weight="0.3" appearance="1" Type="HeadArmor" value="375" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="nomad_cap" name="{=Oa4h7TVi}Nomad Cap" mesh="khuzait_helmet_h" culture="Culture.khuzait" weight="0.3" appearance="1" Type="HeadArmor" value="1125">
+	<Item id="nomad_cap" name="{=Oa4h7TVi}Nomad Cap" mesh="khuzait_helmet_h" culture="Culture.khuzait" weight="0.3" appearance="1" Type="HeadArmor" value="375">
 		<ItemComponent>
 			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="type1" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="none"/>
 		</ItemComponent>
@@ -260,7 +260,7 @@
 	</Item>
 	<Item id="decorated_nomad_cap" name="{=smHA8Apa}Decorated Nomad Cap" mesh="khuzait_helmet_i" culture="Culture.khuzait" weight="0.4" appearance="1.6" Type="HeadArmor" value="1200">
 		<ItemComponent>
-			<Armor head_armor="15" has_gender_variations="false" hair_cover_type="type1" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="none"/>
+			<Armor head_armor="15" has_gender_variations="false" hair_cover_type="type1" modifier_group="cloth" material_type="Cloth" beard_cover_type="none"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
@@ -284,7 +284,7 @@
 	</Item>
 	<Item id="imperial_cloth_coif" name="{=Qazvdg1P}Imperial Cloth Coif" mesh="empire_helmet_e" culture="Culture.empire" weight="0.2" appearance="0.3" Type="HeadArmor" value="1350" difficulty="0" subtype="head_armor">
 		<ItemComponent>
-			<Armor head_armor="17" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor head_armor="17" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
@@ -314,13 +314,13 @@
 	</Item>
 	<Item id="nomad_padded_hood" name="{=yMi4ijgI}Nomad Padded Hood" mesh="khuzait_helmet_p" culture="Culture.khuzait" weight="0.4" appearance="1" Type="HeadArmor" value="1575" difficulty="0" subtype="head_armor">
 		<ItemComponent>
-			<Armor head_armor="20" has_gender_variations="false" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor head_armor="20" has_gender_variations="false" hair_cover_type="type2" modifier_group="cloth" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="roughhide_cap" name="{=ZEybMjoq}Northern Roughhide Cap" mesh="sturgia_helmet_d" culture="Culture.sturgia" weight="0.5" appearance="1" Type="HeadArmor" value="1650">
 		<ItemComponent>
-			<Armor head_armor="21" has_gender_variations="false" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="none"/>
+			<Armor head_armor="21" has_gender_variations="false" hair_cover_type="type2" modifier_group="cloth" material_type="Cloth" beard_cover_type="none"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
@@ -332,7 +332,7 @@
 	</Item>
 	<Item id="arming_coif" name="{=mlJKNbbn}Leather Coif" mesh="vlandia_helmet_f" culture="Culture.vlandia" weight="0.3" appearance="1" Type="HeadArmor" value="1725" difficulty="0" subtype="head_armor">
 		<ItemComponent>
-			<Armor head_armor="22" has_gender_variations="false" hair_cover_type="type3" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor head_armor="22" has_gender_variations="false" hair_cover_type="type3" modifier_group="cloth" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
