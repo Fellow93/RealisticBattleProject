@@ -604,7 +604,7 @@ namespace RealisticBattleAiModule
                 {
                     vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized() * (____mainFormation.Width + ___formation.Width + 100f);
                     vec -= v * (____mainFormation.Depth + ___formation.Depth);
-                    vec += ____mainFormation.Direction * 60f;
+                    vec += ____mainFormation.Direction * 100f;
                 }
                 else if (___behaviorSide == FormationAI.BehaviorSide.Left || ___FlankSide == FormationAI.BehaviorSide.Left)
                 {
@@ -750,7 +750,12 @@ namespace RealisticBattleAiModule
             }
             if(____tacticalWaitPos != null)
             {
-
+                float distance = ___formation.QuerySystem.MedianPosition.AsVec2.Distance(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.AveragePosition);
+                if (TeamAISiegeComponent.IsFormationInsideCastle(___formation, includeOnlyPositionedUnits: false) && distance < 35f)
+                {
+                    ____readyOrder = MovementOrder.MovementOrderChargeToTarget(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                    ____currentOrder = ____readyOrder;
+                }
             }
         }
     }
