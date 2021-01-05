@@ -84,17 +84,21 @@ namespace RealisticBattleAiModule
                 }
                 else
                 {
-                    //FormationQuerySystem cslef = mainInfantry.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
-                    Formation enemyForamtion = Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false);
-                    if(enemyForamtion != null)
+                    if(mainInfantry.QuerySystem.ClosestEnemyFormation != null && mainInfantry.QuerySystem.ClosestEnemyFormation.Formation != null)
                     {
-                        float distanceSpeedValue = mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(enemyForamtion.QuerySystem.MedianPosition.AsVec2) / enemyForamtion.QuerySystem.MovementSpeedMaximum;
-                        if (distanceSpeedValue <= 5f)
+                        Formation enemyForamtion = mainInfantry.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation;
+                        //Formation enemyForamtion = Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false);
+                        if (enemyForamtion != null)
                         {
-                            mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
+                            float distanceSpeedValue = mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(enemyForamtion.QuerySystem.MedianPosition.AsVec2) / enemyForamtion.QuerySystem.MovementSpeedMaximum;
+                            if (distanceSpeedValue <= 5f)
+                            {
+                                mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
+                            }
+                            return (distanceSpeedValue <= (battleJoinRange + (hasBattleBeenJoined ? 5f : 0f)));
                         }
-                        return (distanceSpeedValue <= (battleJoinRange + (hasBattleBeenJoined ? 5f : 0f)));
                     }
+                    
                 }
             }
             return true;
@@ -275,15 +279,18 @@ namespace RealisticBattleAiModule
 
                     foreach (Agent agent in agents.ToList())
                     {
-                        countOfUnits++;
-                        float lastMeleeAttackTime = agent.LastMeleeAttackTime;
-                        float lastMeleeHitTime = agent.LastMeleeHitTime;
-                        if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
+                        if(agent != null)
                         {
-                            countOfUnitsFightingInMelee++;
+                            countOfUnits++;
+                            float lastMeleeAttackTime = agent.LastMeleeAttackTime;
+                            float lastMeleeHitTime = agent.LastMeleeHitTime;
+                            if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
+                            {
+                                countOfUnitsFightingInMelee++;
+                            }
                         }
                     }
-                    if (countOfUnitsFightingInMelee / countOfUnits >= 0.4f)
+                    if (countOfUnitsFightingInMelee / countOfUnits >= 0.5f)
                     {
                         fightingInMelee = true;
                     }
@@ -296,56 +303,61 @@ namespace RealisticBattleAiModule
         {
             Formation significantEnemy = null;
             float dist = 10000f;
-
-            foreach (Team team in Mission.Current.Teams.ToList())
+            if(formation != null)
             {
-                if (team.IsEnemyOf(formation.Team))
+                if (formation.QuerySystem.ClosestEnemyFormation != null)
                 {
-                    foreach (Formation enemyFormation in team.Formations.ToList())
+                    foreach (Team team in Mission.Current.Teams.ToList())
                     {
-                        if (includeInfantry && enemyFormation.QuerySystem.IsInfantryFormation)
+                        if (team.IsEnemyOf(formation.Team))
                         {
-                            float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
-                            if (newDist < dist)
+                            foreach (Formation enemyFormation in team.Formations.ToList())
                             {
-                                significantEnemy = enemyFormation;
-                                dist = newDist;
-                            }
-                        }
-                        if (includeRanged && enemyFormation.QuerySystem.IsRangedFormation)
-                        {
-                            float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
-                            if (newDist < dist)
-                            {
-                                significantEnemy = enemyFormation;
-                                dist = newDist;
-                            }
-                        }
-                        if (includeCavalry && enemyFormation.QuerySystem.IsCavalryFormation && !CheckIfMountedSkirmishFormation(enemyFormation) && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
-                        {
-                            float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
-                            if (newDist < dist)
-                            {
-                                significantEnemy = enemyFormation;
-                                dist = newDist;
-                            }
-                        }
-                        if (includeMountedSkirmishers && CheckIfMountedSkirmishFormation(enemyFormation))
-                        {
-                            float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
-                            if (newDist < dist)
-                            {
-                                significantEnemy = enemyFormation;
-                                dist = newDist;
-                            }
-                        }
-                        if (includeHorseArchers && enemyFormation.QuerySystem.IsRangedCavalryFormation)
-                        {
-                            float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
-                            if (newDist < dist)
-                            {
-                                significantEnemy = enemyFormation;
-                                dist = newDist;
+                                if (formation != null && includeInfantry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
+                                {
+                                    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                                    if (newDist < dist)
+                                    {
+                                        significantEnemy = enemyFormation;
+                                        dist = newDist;
+                                    }
+                                }
+                                if (formation != null && includeRanged && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
+                                {
+                                    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                                    if (newDist < dist)
+                                    {
+                                        significantEnemy = enemyFormation;
+                                        dist = newDist;
+                                    }
+                                }
+                                if (formation != null && includeCavalry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsCavalryFormation && !CheckIfMountedSkirmishFormation(enemyFormation) && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
+                                {
+                                    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                                    if (newDist < dist)
+                                    {
+                                        significantEnemy = enemyFormation;
+                                        dist = newDist;
+                                    }
+                                }
+                                if (formation != null && includeMountedSkirmishers && enemyFormation.CountOfUnits > 0 && CheckIfMountedSkirmishFormation(enemyFormation))
+                                {
+                                    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                                    if (newDist < dist)
+                                    {
+                                        significantEnemy = enemyFormation;
+                                        dist = newDist;
+                                    }
+                                }
+                                if (formation != null && includeHorseArchers && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedCavalryFormation)
+                                {
+                                    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                                    if (newDist < dist)
+                                    {
+                                        significantEnemy = enemyFormation;
+                                        dist = newDist;
+                                    }
+                                }
                             }
                         }
                     }

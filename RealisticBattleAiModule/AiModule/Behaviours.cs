@@ -846,25 +846,59 @@ namespace RealisticBattleAiModule
     [HarmonyPatch(typeof(FormationMovementComponent))]
     class OverrideFormationMovementComponent
     {
+        internal enum MovementOrderEnum
+        {
+            Invalid,
+            Attach,
+            AttackEntity,
+            Charge,
+            ChargeToTarget,
+            Follow,
+            FollowEntity,
+            Guard,
+            Move,
+            Retreat,
+            Stop,
+            Advance,
+            FallBack
+        }
+        internal enum MovementStateEnum
+        {
+            Charge,
+            Hold,
+            Retreat,
+            StandGround
+        }
+
         private static readonly MethodInfo IsUnitDetached =
             typeof(Formation).GetMethod("IsUnitDetached", BindingFlags.Instance | BindingFlags.NonPublic);
 
         [HarmonyPrefix]
         [HarmonyPatch("GetFormationFrame")]
-        static bool PrefixGetFormationFrame(ref bool __result, Agent ___Agent, ref FormationCohesionComponent ____cohesionComponent, ref WorldPosition formationPosition, ref Vec2 formationDirection, ref float speedLimit, ref bool isSettingDestinationSpeed, ref bool limitIsMultiplier)
+        static bool PrefixGetFormationFrame(ref bool __result,ref Agent ___Agent, ref FormationCohesionComponent ____cohesionComponent, ref WorldPosition formationPosition, ref Vec2 formationDirection, ref float speedLimit, ref bool isSettingDestinationSpeed, ref bool limitIsMultiplier)
         {
-            var formation = ___Agent.Formation;
-            if (!___Agent.IsMount && formation != null && formation.QuerySystem.IsInfantryFormation && !(bool)IsUnitDetached.Invoke(formation, new object[] { ___Agent }))
+            if(___Agent != null)
             {
-                if (formation.MovementOrder.OrderType == OrderType.ChargeWithTarget)
+                var formation = ___Agent.Formation;
+                if (!___Agent.IsMount && formation != null && formation.QuerySystem.IsInfantryFormation && !(bool)IsUnitDetached.Invoke(formation, new object[] { ___Agent }))
                 {
-                    isSettingDestinationSpeed = false;
-                    formationPosition = formation.GetOrderPositionOfUnit(___Agent);
-                    formationDirection = formation.GetDirectionOfUnit(___Agent);
-                    limitIsMultiplier = true;
-                    speedLimit = ____cohesionComponent != null && FormationCohesionComponent.FormationSpeedAdjustmentEnabled ? ____cohesionComponent.GetDesiredSpeedInFormation(false) : -1f;
-                    __result = true;
-                    return false;
+                    if (formation.MovementOrder.OrderType == OrderType.ChargeWithTarget)
+                    {
+                        if (___Agent != null && formation != null)
+                        {
+                            isSettingDestinationSpeed = false;
+                            formationPosition = formation.GetOrderPositionOfUnit(___Agent);
+                            formationDirection = formation.GetDirectionOfUnit(___Agent);
+                            limitIsMultiplier = true;
+                            speedLimit = ____cohesionComponent != null && FormationCohesionComponent.FormationSpeedAdjustmentEnabled ? ____cohesionComponent.GetDesiredSpeedInFormation(false) : -1f;
+                            __result = true;
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
                 }
             }
 
@@ -952,10 +986,10 @@ namespace RealisticBattleAiModule
     {
         [HarmonyPrefix]
         [HarmonyPatch("GetOrderPositionOfUnit")]
-        static bool PrefixGetOrderPositionOfUnit(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement,ref Agent unit, List<Agent> ___detachedUnits, ref WorldPosition __result)
+        static bool PrefixGetOrderPositionOfUnit(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ___detachedUnits, ref WorldPosition __result)
         {
             //if (__instance.MovementOrder.OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
-            if (__instance.MovementOrder.OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
+            if (unit != null && __instance.MovementOrder.OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
             {
                 Formation significantEnemy = __instance.TargetFormation;
                 if (significantEnemy != null)
@@ -978,8 +1012,15 @@ namespace RealisticBattleAiModule
                         {
                             if (MBRandom.RandomInt(75) == 0)
                             {
-                                __result = targetAgent.GetWorldPosition();
-                                return false;
+                                if (targetAgent != null)
+                                {
+                                    __result = targetAgent.GetWorldPosition();
+                                    return false;
+                                }
+                                else
+                                {
+                                    return true;
+                                }
                             }
                             else
                             {
@@ -987,17 +1028,31 @@ namespace RealisticBattleAiModule
                                 //float slowdown = Math.Min(distancefr/2f, 1f);
                                 //if(slowdown < 0.6f)
                                 //{
-                                __result = unit.GetWorldPosition();
+                                if (unit != null)
+                                {
+                                    __result = unit.GetWorldPosition();
+                                    return false;
+                                }
+                                else
+                                {
+                                    return true;
+                                }
                                 //}
-                                return false;
                             }
                         }
                         else
                         {
-                            __result = targetAgent.GetWorldPosition();
-                            return false;
+                            if (targetAgent != null)
+                            {
+                                __result = targetAgent.GetWorldPosition();
+                                return false;
+                            }
+                            else
+                            {
+                                return true;
+                            }
                         }
-                        
+
                     }
                 }
                 return false;
@@ -1009,14 +1064,11 @@ namespace RealisticBattleAiModule
         [HarmonyPatch("GetOrderPositionOfUnitAux")]
         static bool PrefixGetOrderPositionOfUnitAux(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ___detachedUnits, ref WorldPosition __result)
         {
-            if (__instance.MovementOrder.OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit)){
-
-            }
             //if (__instance.MovementOrder.OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
-            if (__instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
+            if (unit != null && __instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
             {
                 Mission mission = Mission.Current;
-                if(mission.Mode != MissionMode.Deployment)
+                if (mission.Mode != MissionMode.Deployment)
                 {
                     IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.LookDirection.AsVec2 * 0.8f, 1f, unit.Team);
                     if (agents.Count() > 3)
@@ -1027,8 +1079,15 @@ namespace RealisticBattleAiModule
                         }
                         else
                         {
-                            __result = unit.GetWorldPosition();
-                            return false;
+                            if (unit != null)
+                            {
+                                __result = unit.GetWorldPosition();
+                                return false;
+                            }
+                            else
+                            {
+                                return true;
+                            }
                         }
                     }
                     else
