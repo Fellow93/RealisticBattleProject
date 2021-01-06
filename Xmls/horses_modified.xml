@@ -274,7 +274,7 @@
   <!-- #region Tier 3 -->
   <Item id="t2_aserai_horse" name="{=gnvIGThE}Aserai Horse" mesh="horse_brown" subtype="horse" item_category="war_horse" culture="Culture.aserai" weight="515" difficulty="60" appearance="1" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.horse" maneuver="70" speed="53" charge_damage="7" body_length="108" is_mountable="true" skeleton_scale="aserai_horse" modifier_group="horse">
+      <Horse monster="Monster.horse" maneuver="70" speed="53" charge_damage="7" body_length="108" is_mountable="true" extra_health="100" skeleton_scale="aserai_horse" modifier_group="horse">
         <AdditionalMeshes>
           <Mesh name="horse_mane" affected_by_cover="true" />
         </AdditionalMeshes>
@@ -309,7 +309,7 @@
   </Item>
   <Item id="t2_battania_horse" name="{=tZN9H492}Battanian Warmount" mesh="horse_brown" subtype="horse" item_category="war_horse" culture="Culture.battania" weight="542" difficulty="60" appearance="1" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.horse" maneuver="73" speed="49" charge_damage="11" body_length="111" is_mountable="true" extra_health="40" skeleton_scale="battania_horse">
+      <Horse monster="Monster.horse" maneuver="73" speed="49" charge_damage="11" body_length="111" is_mountable="true" extra_health="140" skeleton_scale="battania_horse">
         <AdditionalMeshes>
           <Mesh name="horse_mane_2" affected_by_cover="true" />
           <Mesh name="horse_trotter" />
@@ -327,7 +327,7 @@
   </Item>
   <Item id="t2_empire_horse" name="{=mVAaWp5U}Imperial Charger" mesh="horse_brown" subtype="horse" item_category="war_horse" culture="Culture.empire" weight="548" difficulty="60" appearance="1" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.horse" maneuver="66" speed="47" charge_damage="12" body_length="115" is_mountable="true" extra_health="90" skeleton_scale="empire_horse">
+      <Horse monster="Monster.horse" maneuver="66" speed="47" charge_damage="12" body_length="115" is_mountable="true" extra_health="190" skeleton_scale="empire_horse">
         <AdditionalMeshes>
           <Mesh name="horse_mane_2" affected_by_cover="true" />
         </AdditionalMeshes>
@@ -362,7 +362,7 @@
   </Item>
   <Item id="t2_khuzait_horse" name="{=PZPphq6H}Steppe Warhorse" mesh="horse_brown" item_category="war_horse" culture="Culture.khuzait" subtype="horse" weight="498" difficulty="60" appearance="1" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.horse" maneuver="78" speed="49" charge_damage="9" body_length="94" is_mountable="true" extra_health="50" skeleton_scale="khuzait_horse">
+      <Horse monster="Monster.horse" maneuver="78" speed="49" charge_damage="9" body_length="94" is_mountable="true" extra_health="150" skeleton_scale="khuzait_horse">
         <AdditionalMeshes>
           <Mesh name="horse_mane" affected_by_cover="true" />
         </AdditionalMeshes>
@@ -380,7 +380,7 @@
   </Item>
   <Item id="t2_sturgia_horse" name="{=sturgianhunterhorse}Sturgian Hunter" mesh="horse_brown" subtype="horse" item_category="war_horse" culture="Culture.sturgia" weight="510" difficulty="60" appearance="1" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.horse" maneuver="74" speed="51" charge_damage="9" body_length="100" is_mountable="true" extra_health="10" skeleton_scale="sturgia_horse">
+      <Horse monster="Monster.horse" maneuver="74" speed="51" charge_damage="9" body_length="100" is_mountable="true" extra_health="110" skeleton_scale="sturgia_horse">
         <AdditionalMeshes>
           <Mesh name="horse_mane_2" affected_by_cover="true" />
           <Mesh name="horse_trotter" />
@@ -405,7 +405,7 @@
   </Item>
   <Item id="t2_vlandia_horse" name="{=MqBSmahz}Vlandian Courser" mesh="horse_brown" subtype="horse" item_category="war_horse" culture="Culture.vlandia" weight="531" difficulty="60" appearance="1" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.horse" maneuver="68" speed="50" charge_damage="12" body_length="109" is_mountable="true" extra_health="40" skeleton_scale="vlandia_horse">
+      <Horse monster="Monster.horse" maneuver="68" speed="50" charge_damage="12" body_length="109" is_mountable="true" extra_health="140" skeleton_scale="vlandia_horse">
         <AdditionalMeshes>
           <Mesh name="horse_mane_2" affected_by_cover="true" />
         </AdditionalMeshes>
@@ -440,13 +440,13 @@
   </Item>
   <Item id="war_camel" name="{=baIE2VQW}War Camel" mesh="camel_mesh" item_category="horse" weight="622" difficulty="60" appearance="1" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.camel" maneuver="67" speed="48" charge_damage="13" body_length="105" extra_health="20" is_pack_animal="false" is_mountable="true" />
+      <Horse monster="Monster.camel" maneuver="67" speed="48" charge_damage="13" body_length="105" extra_health="220" is_pack_animal="false" is_mountable="true" />
     </ItemComponent>
     <Flags Civilian="true" />
   </Item>
   <Item id="hunter" name="{=hunterhorse}Hunter" mesh="horse_brown" item_category="horse" weight="350" difficulty="60" appearance="1" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.horse" maneuver="65" speed="51" charge_damage="7" body_length="94" is_mountable="true" extra_health="20" modifier_group="horse">
+      <Horse monster="Monster.horse" maneuver="65" speed="51" charge_damage="7" body_length="94" is_mountable="true" extra_health="120" modifier_group="horse">
         <AdditionalMeshes>
           <Mesh name="horse_mane" affected_by_cover="true" />
         </AdditionalMeshes>
@@ -481,7 +481,7 @@
   </Item>
   <Item id="charger" name="{=h5kfaD4v}Charger" mesh="horse_brown" item_category="war_horse" difficulty="60" weight="400" appearance="1" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.horse" maneuver="68" speed="48" charge_damage="12" body_length="119" is_mountable="true" extra_health="40" modifier_group="horse">
+      <Horse monster="Monster.horse" maneuver="68" speed="48" charge_damage="12" body_length="119" is_mountable="true" extra_health="140" modifier_group="horse">
         <AdditionalMeshes>
           <Mesh name="horse_mane" affected_by_cover="true" />
         </AdditionalMeshes>
@@ -509,7 +509,7 @@
   <!-- #region Tier 5 -->
   <Item id="noble_horse_southern" name="{=Q4sO8AZd}Nahasawi" mesh="horse_brown" item_category="horse" subtype="horse" weight="520" difficulty="90" is_merchandise="false" culture="Culture.aserai" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.horse" maneuver="72" speed="52" charge_damage="10" body_length="110" is_mountable="true" extra_health="25" modifier_group="horse">
+      <Horse monster="Monster.horse" maneuver="72" speed="52" charge_damage="10" body_length="110" is_mountable="true" extra_health="125" modifier_group="horse">
         <AdditionalMeshes>
           <Mesh name="horse_mane" affected_by_cover="true" />
         </AdditionalMeshes>
@@ -544,7 +544,7 @@
   </Item>
   <Item id="noble_horse_imperial" name="{=ueSnrLRy}Cossian" mesh="horse_brown" item_category="horse" subtype="horse" is_merchandise="false" weight="562" culture="Culture.empire" difficulty="90" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.horse" maneuver="66" speed="48" charge_damage="15" body_length="114" is_mountable="true" extra_health="100" modifier_group="horse">
+      <Horse monster="Monster.horse" maneuver="66" speed="48" charge_damage="15" body_length="114" is_mountable="true" extra_health="200" modifier_group="horse">
         <AdditionalMeshes>
           <Mesh name="horse_mane" affected_by_cover="true" />
         </AdditionalMeshes>
@@ -579,7 +579,7 @@
   </Item>
   <Item id="noble_horse_eastern" name="{=qXb7YoGc}Asaligat" mesh="horse_brown" is_merchandise="false" item_category="horse" subtype="horse" culture="Culture.khuzait" weight="510" difficulty="90" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.horse" maneuver="82" speed="52" charge_damage="10" body_length="98" is_mountable="true" extra_health="60" modifier_group="horse">
+      <Horse monster="Monster.horse" maneuver="82" speed="52" charge_damage="10" body_length="98" is_mountable="true" extra_health="160" modifier_group="horse">
         <AdditionalMeshes>
           <Mesh name="horse_mane" affected_by_cover="true" />
         </AdditionalMeshes>
@@ -597,7 +597,7 @@
   </Item>
   <Item id="noble_horse_northern" name="{=jhgVsWKr}Tyal Horse" mesh="horse_brown" item_category="horse" culture="Culture.sturgia" is_merchandise="false" subtype="horse" weight="515" difficulty="90" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.horse" maneuver="76" speed="50" charge_damage="11" body_length="100" is_mountable="true" extra_health="30" modifier_group="horse">
+      <Horse monster="Monster.horse" maneuver="76" speed="50" charge_damage="11" body_length="100" is_mountable="true" extra_health="130" modifier_group="horse">
         <AdditionalMeshes>
           <Mesh name="horse_mane" affected_by_cover="true" />
         </AdditionalMeshes>
@@ -621,7 +621,7 @@
   </Item>
   <Item id="noble_horse_western" name="{=SZrd85Uh}Destrier" mesh="horse_brown" culture="Culture.vlandia" item_category="horse" is_merchandise="false" subtype="horse" weight="533" difficulty="90" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.horse" maneuver="71" speed="53" charge_damage="13" body_length="109" is_mountable="true" extra_health="50" modifier_group="horse">
+      <Horse monster="Monster.horse" maneuver="71" speed="53" charge_damage="13" body_length="109" is_mountable="true" extra_health="150" modifier_group="horse">
         <AdditionalMeshes>
           <Mesh name="horse_mane" affected_by_cover="true" />
         </AdditionalMeshes>
@@ -656,13 +656,13 @@
   </Item>
   <Item id="special_camel" name="{=Goloz0Vm}Husnphree" is_merchandise="false" culture="Culture.aserai" mesh="camel_mesh" item_category="horse" weight="550" difficulty="90" appearance="1" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.camel" maneuver="69" speed="48" charge_damage="15" body_length="115" extra_health="90" is_pack_animal="false" is_mountable="true" />
+      <Horse monster="Monster.camel" maneuver="69" speed="48" charge_damage="15" body_length="115" extra_health="290" is_pack_animal="false" is_mountable="true" />
     </ItemComponent>
     <Flags Civilian="true" />
   </Item>
   <Item id="noble_horse_battania" name="{=ccLDacS4}Battanian Thoroughbred" mesh="horse_brown" item_category="horse" is_merchandise="false" culture="Culture.battania" subtype="horse" weight="532" difficulty="90" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.horse" maneuver="76" speed="66" charge_damage="10" body_length="111" is_mountable="true" extra_health="30" modifier_group="horse">
+      <Horse monster="Monster.horse" maneuver="76" speed="66" charge_damage="10" body_length="111" is_mountable="true" extra_health="130" modifier_group="horse">
         <AdditionalMeshes>
           <Mesh name="horse_mane" affected_by_cover="true" />
         </AdditionalMeshes>
@@ -688,7 +688,7 @@
   <!-- #region Delete -->
   <Item id="noble_horse" name="{=CIT7Zuxh}Pureblood" mesh="horse_brown" item_category="horse" is_merchandise="false" subtype="horse" weight="400" difficulty="0" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.horse" maneuver="65" speed="50" charge_damage="35" body_length="115" is_mountable="true" extra_health="70" modifier_group="horse">
+      <Horse monster="Monster.horse" maneuver="65" speed="50" charge_damage="35" body_length="115" is_mountable="true" extra_health="170" modifier_group="horse">
         <AdditionalMeshes>
           <Mesh name="horse_mane" affected_by_cover="true" />
         </AdditionalMeshes>
@@ -723,7 +723,7 @@
   </Item>
   <Item id="storm_charger" name="{=1aOuyULB}Storm Charger" mesh="horse_brown" is_merchandise="false" item_category="war_horse" difficulty="100" weight="430" appearance="1" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.horse" mane_mesh="horse_mane" maneuver="55" speed="53" charge_damage="20" body_length="100" is_mountable="true" extra_health="-70" modifier_group="horse">
+      <Horse monster="Monster.horse" mane_mesh="horse_mane" maneuver="55" speed="53" charge_damage="20" body_length="100" is_mountable="true" extra_health="120" modifier_group="horse">
         <Materials>
           <Material name="horse_brown_mat">
             <MeshMultipliers>
@@ -755,7 +755,7 @@
   </Item>
   <Item id="war_horse" name="{=UqdZmdcf}War Horse" mesh="horse_brown" item_category="war_horse" is_merchandise="false" difficulty="80" weight="500" appearance="1" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.horse_2" maneuver="50" speed="40" charge_damage="25" body_length="105" is_mountable="true" extra_health="0" modifier_group="horse">
+      <Horse monster="Monster.horse_2" maneuver="50" speed="40" charge_damage="25" body_length="105" is_mountable="true" extra_health="100" modifier_group="horse">
         <AdditionalMeshes>
           <Mesh name="horse_mane" affected_by_cover="true" />
         </AdditionalMeshes>
@@ -790,7 +790,7 @@
   </Item>
   <Item id="steppe_war_horse" name="{=yGwxXsIL}Steppe War Horse" mesh="horse_brown" item_category="war_horse" culture="Culture.khuzait" is_merchandise="false" difficulty="80" weight="460" appearance="1" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.horse" maneuver="55" speed="45" charge_damage="20" body_length="100" is_mountable="true" modifier_group="horse">
+      <Horse monster="Monster.horse" maneuver="55" speed="45" charge_damage="20" body_length="100" is_mountable="true" extra_health="100" modifier_group="horse">
         <AdditionalMeshes>
           <Mesh name="horse_mane" affected_by_cover="true" />
         </AdditionalMeshes>
@@ -825,7 +825,7 @@
   </Item>
   <Item id="desert_war_horse" name="{=24xuA5G2}Desert War Horse" mesh="horse_brown" item_category="war_horse" culture="Culture.aserai" is_merchandise="false" difficulty="80" weight="480" appearance="1" Type="Horse">
     <ItemComponent>
-      <Horse monster="Monster.horse" maneuver="50" speed="55" charge_damage="25" body_length="100" is_mountable="true" modifier_group="horse">
+      <Horse monster="Monster.horse" maneuver="50" speed="55" charge_damage="25" body_length="100" is_mountable="true" extra_health="100" modifier_group="horse">
         <AdditionalMeshes>
           <Mesh name="horse_mane" affected_by_cover="true" />
         </AdditionalMeshes>
