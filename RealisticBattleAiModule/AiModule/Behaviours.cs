@@ -7,6 +7,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
+using System.Diagnostics;
 
 namespace RealisticBattleAiModule
 {
@@ -914,6 +915,22 @@ namespace RealisticBattleAiModule
     [HarmonyPatch(typeof(MovementOrder))]
     class OverrideMovementOrder
     {
+        internal enum MovementOrderEnum
+        {
+            Invalid,
+            Attach,
+            AttackEntity,
+            Charge,
+            ChargeToTarget,
+            Follow,
+            FollowEntity,
+            Guard,
+            Move,
+            Retreat,
+            Stop,
+            Advance,
+            FallBack
+        }
 
         [HarmonyPrefix]
         [HarmonyPatch("SetChargeBehaviorValues")]
@@ -957,6 +974,22 @@ namespace RealisticBattleAiModule
 
             return true;
         }
+
+        //[HarmonyPrefix]
+        //[HarmonyPatch("GetPosition")]
+        //static bool PrefixGetPosition(Formation f, ref WorldPosition __result)
+        //{
+        //    if(f == null)
+        //    {
+        //        __result = WorldPosition.Invalid;
+        //        return false;
+        //    }
+        //    else
+        //    {
+        //        InformationManager.DisplayMessage(new InformationMessage(f.Team.IsAttacker + " " + f.AI.Side.ToString() + " " + f.PrimaryClass.GetName()));
+        //        return true;
+        //    }
+        //}
     }
 
     [HarmonyPatch(typeof(Agent))]

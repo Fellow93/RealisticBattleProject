@@ -310,10 +310,8 @@ namespace RealisticBattleAiModule
                 {
                     List<Agent> mountedSkirmishersList = new List<Agent>();
                     List<Agent> mountedMeleeList = new List<Agent>();
-
-                    for (int i = 0; i < ____leftCavalry.CountOfUnits; i++)
+                    ____leftCavalry.ApplyActionOnEachUnit(delegate (Agent agent)
                     {
-                        Agent agent = ____leftCavalry.GetUnitWithIndex(i);
                         bool ismountedSkrimisher = false;
                         for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                         {
@@ -333,11 +331,10 @@ namespace RealisticBattleAiModule
                         {
                             mountedMeleeList.Add(agent);
                         }
-                    }
+                    });
 
-                    for (int i = 0; i < ____rightCavalry.CountOfUnits; i++)
+                    ____rightCavalry.ApplyActionOnEachUnit(delegate (Agent agent)
                     {
-                        Agent agent = ____rightCavalry.GetUnitWithIndex(i);
                         bool ismountedSkrimisher = false;
                         for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                         {
@@ -357,8 +354,7 @@ namespace RealisticBattleAiModule
                         {
                             mountedMeleeList.Add(agent);
                         }
-                    }
-
+                    });
                     int j = 0;
                     int cavalryCount = ____leftCavalry.CountOfUnits + ____rightCavalry.CountOfUnits;
                     foreach (Agent agent in mountedSkirmishersList.ToList())
@@ -499,9 +495,8 @@ namespace RealisticBattleAiModule
                 {
                     List<Agent> mountedSkirmishersList = new List<Agent>();
                     List<Agent> mountedMeleeList = new List<Agent>();
-                    for (int i = 0; i < ____leftCavalry.CountOfUnits; i++)
+                    ____leftCavalry.ApplyActionOnEachUnit(delegate (Agent agent)
                     {
-                        Agent agent = ____leftCavalry.GetUnitWithIndex(i);
                         bool ismountedSkrimisher = false;
                         for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                         {
@@ -521,42 +516,41 @@ namespace RealisticBattleAiModule
                         {
                             mountedMeleeList.Add(agent);
                         }
-                    }
-                    for (int i = 0; i < ____rightCavalry.CountOfUnits; i++)
-                    {
-                        Agent agent = ____rightCavalry.GetUnitWithIndex(i);
-                        bool ismountedSkrimisher = false;
-                        for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-                        {
-                            if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
-                            {
-                                if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.MountAgent != null)
-                                {
-                                    ismountedSkrimisher = true;
-                                }
-                            }
-                        }
-                        if (ismountedSkrimisher)
-                        {
-                            mountedSkirmishersList.Add(agent);
-                        }
-                        else
-                        {
-                            mountedMeleeList.Add(agent);
-                        }
-                    }
+                    });
 
+                    ____rightCavalry.ApplyActionOnEachUnit(delegate (Agent agent)
+                    {
+                        bool ismountedSkrimisher = false;
+                        for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                        {
+                            if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
+                            {
+                                if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.MountAgent != null)
+                                {
+                                    ismountedSkrimisher = true;
+                                }
+                            }
+                        }
+                        if (ismountedSkrimisher)
+                        {
+                            mountedSkirmishersList.Add(agent);
+                        }
+                        else
+                        {
+                            mountedMeleeList.Add(agent);
+                        }
+                    });
                     int j = 0;
                     int cavalryCount = ____leftCavalry.CountOfUnits + ____rightCavalry.CountOfUnits;
                     foreach (Agent agent in mountedSkirmishersList.ToList())
                     {
                         if (j < cavalryCount / 2)
                         {
-                            agent.Formation = ____rightCavalry;
+                            agent.Formation = ____leftCavalry;
                         }
                         else
                         {
-                            agent.Formation = ____leftCavalry;
+                            agent.Formation = ____rightCavalry;
                         }
                         j++;
                     }
@@ -564,11 +558,11 @@ namespace RealisticBattleAiModule
                     {
                         if (j < cavalryCount / 2)
                         {
-                            agent.Formation = ____rightCavalry;
+                            agent.Formation = ____leftCavalry;
                         }
                         else
                         {
-                            agent.Formation = ____leftCavalry;
+                            agent.Formation = ____rightCavalry;
                         }
                         j++;
                     }
