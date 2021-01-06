@@ -764,7 +764,7 @@ namespace RealisticBattleAiModule
                     }
                 }
             }
-            if(____tacticalWaitPos != null)
+            if(____tacticalWaitPos != null && ____tacticalMiddlePos == null)
             {
                 float distance = ___formation.QuerySystem.MedianPosition.AsVec2.Distance(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.AveragePosition);
                 if (TeamAISiegeComponent.IsFormationInsideCastle(___formation, includeOnlyPositionedUnits: false) && distance < 35f)
@@ -782,9 +782,9 @@ namespace RealisticBattleAiModule
 
         [HarmonyPostfix]
         [HarmonyPatch("Initialize")]
-        static void PostfixInitialize(ref BattleSideEnum managedSide, ref float queueBeginDistance, ref int ____maxUserCount, ref float ____agentSpacing, ref float ____queueBeginDistance, ref float ____queueRowSize, ref float ____costPerRow, ref float ____baseCost)
+        static void PostfixInitialize(ref BattleSideEnum managedSide, Vec3 managedDirection,  ref float queueBeginDistance, ref int ____maxUserCount, ref float ____agentSpacing, ref float ____queueBeginDistance, ref float ____queueRowSize, ref float ____costPerRow, ref float ____baseCost)
         {
-            if(managedSide == BattleSideEnum.Attacker && queueBeginDistance != 3f)
+            if(managedSide == BattleSideEnum.Attacker && queueBeginDistance != 3f && managedDirection != new Vec3(0f, -1f))
             {
                 ____agentSpacing = 1.25f;
                 ____queueBeginDistance = 8f;
@@ -801,12 +801,13 @@ namespace RealisticBattleAiModule
 
         [HarmonyPostfix]
         [HarmonyPatch("OnInit")]
-        static void PostfixOnInit(ref GameEntity ____cleanState, ref List<LadderQueueManager> ____queueManagers, ref int ___DynamicNavmeshIdStart)
+        static void PostfixOnInit(ref SiegeTower __instance,ref GameEntity ____gameEntity,  ref GameEntity ____cleanState, ref List<LadderQueueManager> ____queueManagers, ref int ___DynamicNavmeshIdStart)
         {
+            //__instance.ForcedUse = true;
             List<GameEntity> list2 = ____cleanState.CollectChildrenEntitiesWithTag("ladder");
-            ____queueManagers.Clear();
             if (list2.Count == 3)
             {
+                ____queueManagers.Clear();
                 LadderQueueManager ladderQueueManager0 = list2.ElementAt(0).GetScriptComponents<LadderQueueManager>().FirstOrDefault();
                 LadderQueueManager ladderQueueManager1 = list2.ElementAt(1).GetScriptComponents<LadderQueueManager>().FirstOrDefault();
                 LadderQueueManager ladderQueueManager2 = list2.ElementAt(2).GetScriptComponents<LadderQueueManager>().FirstOrDefault();
@@ -815,7 +816,8 @@ namespace RealisticBattleAiModule
                     MatrixFrame identity = MatrixFrame.Identity;
                     identity.rotation.RotateAboutSide((float)Math.PI / 2f);
                     identity.rotation.RotateAboutForward((float)Math.PI / 8f);
-                    ladderQueueManager0.Initialize(___DynamicNavmeshIdStart + 1, identity, new Vec3(0f, 0f, 1f), BattleSideEnum.Attacker, 3, (float)Math.PI * 3f / 4f, 0.8f, 0.8f, 30f, 50f, blockUsage: false, 0.8f, 4f, 5f);
+
+                    ladderQueueManager0.Initialize(list2.ElementAt(0).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, 0f, 1f), BattleSideEnum.Attacker, 3, (float)Math.PI * 3f / 4f, 0.8f, 0.8f, 30f, 50f, blockUsage: false, 0.8f, 4f, 5f);
                     ____queueManagers.Add(ladderQueueManager0);
                 }
                 if (ladderQueueManager1 != null)
@@ -823,7 +825,8 @@ namespace RealisticBattleAiModule
                     MatrixFrame identity = MatrixFrame.Identity;
                     identity.rotation.RotateAboutSide((float)Math.PI / 2f);
                     identity.rotation.RotateAboutForward((float)Math.PI / 8f);
-                    ladderQueueManager1.Initialize(___DynamicNavmeshIdStart + 2, identity, new Vec3(0f, 0f, 1f), BattleSideEnum.Attacker, 3, (float)Math.PI * 3f / 4f, 0.8f, 0.8f, 30f, 50f, blockUsage: false, 0.8f, 4f, 5f);
+
+                    ladderQueueManager1.Initialize(list2.ElementAt(1).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, 0f, 1f), BattleSideEnum.Attacker, 3, (float)Math.PI * 3f / 4f, 0.8f, 0.8f, 30f, 50f, blockUsage: false, 0.8f, 4f, 5f);
                     ____queueManagers.Add(ladderQueueManager1);
                 }
                 if (ladderQueueManager2 != null)
@@ -831,14 +834,15 @@ namespace RealisticBattleAiModule
                     MatrixFrame identity = MatrixFrame.Identity;
                     identity.rotation.RotateAboutSide((float)Math.PI / 2f);
                     identity.rotation.RotateAboutForward((float)Math.PI / 8f);
-                    ladderQueueManager2.Initialize(___DynamicNavmeshIdStart + 3, identity, new Vec3(0f, 0f, 1f), BattleSideEnum.Attacker, 3, (float)Math.PI * 3f / 4f, 0.8f, 0.8f, 30f, 50f, blockUsage: false, 0.8f, 4f, 5f);
+
+                    ladderQueueManager2.Initialize(list2.ElementAt(2).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, 0f, 1f), BattleSideEnum.Attacker, 3, (float)Math.PI * 3f / 4f, 0.8f, 0.8f, 30f, 50f, blockUsage: false, 0.8f, 4f, 5f);
                     ____queueManagers.Add(ladderQueueManager2);
                 }
-            }
-            foreach (LadderQueueManager queueManager in ____queueManagers)
-            {
-                ____cleanState.Scene.SetAbilityOfFacesWithId(queueManager.ManagedNavigationFaceId, isEnabled: false);
-                queueManager.IsDeactivated = true;
+                foreach (LadderQueueManager queueManager in ____queueManagers)
+                {
+                    ____cleanState.Scene.SetAbilityOfFacesWithId(queueManager.ManagedNavigationFaceId, isEnabled: false);
+                    queueManager.IsDeactivated = true;
+                }
             }
         }
     }
@@ -956,7 +960,7 @@ namespace RealisticBattleAiModule
 
         [HarmonyPrefix]
         [HarmonyPatch("SetChargeBehaviorValues")]
-        static bool PrefixGetFormationFrame(Agent unit)
+        static bool PrefixSetChargeBehaviorValues(Agent unit)
         {
             if (unit.Formation != null && unit.Formation.MovementOrder.OrderType == OrderType.ChargeWithTarget)
             {
@@ -988,6 +992,23 @@ namespace RealisticBattleAiModule
                 }
             }
             return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch("SetDefaultMoveBehaviorValues")]
+        static bool PrefixSetDefaultMoveBehaviorValues(Agent unit)
+        {
+            if (!Mission.Current.IsFieldBattle)
+            {
+                unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 7f, 5f, 20f, 6f);
+                unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 4f, 3f, 20f, 0.01f);
+                unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0.02f, 7f, 0.04f, 20f, 0.03f);
+                unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 10f, 7f, 5f, 30f, 0.05f);
+                unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 0.02f, 15f, 0.065f, 30f, 0.055f);
+                unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
+                unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
+            }
+            return false;
         }
 
         [HarmonyPrefix]
@@ -1192,7 +1213,7 @@ namespace RealisticBattleAiModule
         if(orderType == OrderType.Charge)
 		foreach (Formation selectedFormation in __instance.SelectedFormations)
             {
-                if ((selectedFormation.QuerySystem.IsInfantryFormation || selectedFormation.QuerySystem.IsRangedFormation) && ____mission.MissionTeamAIType != Mission.MissionTeamAITypeEnum.Siege || ____mission.IsTeleportingAgents)
+                if ((selectedFormation.QuerySystem.IsInfantryFormation || selectedFormation.QuerySystem.IsRangedFormation) || ____mission.IsTeleportingAgents)
                 {
                     if (selectedFormation.QuerySystem.ClosestEnemyFormation == null)
                     {
