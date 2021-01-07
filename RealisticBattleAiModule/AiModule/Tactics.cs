@@ -709,7 +709,7 @@ namespace RealisticBattleAiModule
                         f.AI.SetBehaviorWeight<BehaviorCharge>(1f);
                     }
                     f.AI.SetBehaviorWeight<BehaviorPullBack>(1f);
-                    f.AI.SetBehaviorWeight<BehaviorStop>(0f);
+                    f.AI.SetBehaviorWeight<BehaviorStop>(1f);
                     f.AI.SetBehaviorWeight<BehaviorReserve>(0f);
                 }
                 return false;
