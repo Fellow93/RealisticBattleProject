@@ -171,6 +171,11 @@ namespace RealisticBattleAiModule
                     {
                         if (team.IsEnemyOf(formation.Team))
                         {
+                            if(team.Formations.ToList().Count == 1)
+                            {
+                                significantEnemy = team.Formations.ToList()[0];
+                                return significantEnemy;
+                            }
                             foreach (Formation enemyFormation in team.Formations.ToList())
                             {
                                 if (formation != null && includeInfantry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)

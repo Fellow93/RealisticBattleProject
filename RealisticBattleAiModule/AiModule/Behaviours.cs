@@ -982,8 +982,8 @@ namespace RealisticBattleAiModule
                     //unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0f, 40f, 4f, 50f, 6f);
                     //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 7f, 1f, 10f, 0.01f);
                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 2f, 1f, 10f, 0.01f);
-                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 2f, 3f, 10f, 20f);
+                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 2f, 4f, 10f, 0.01f);
+                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 2f, 0f, 8f, 20f);
                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 40f, 4f, 60f, 0f);
                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 5f, 7f, 10f, 8, 20f);
                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 1f, 12f, 1f, 30f, 0f);
@@ -1104,10 +1104,11 @@ namespace RealisticBattleAiModule
                         //    return false;
                         //}
 
-                        //Vec2 direction = (targetAgent.GetWorldPosition().AsVec2 - unit.GetWorldPosition().AsVec2).Normalized();
-                        IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.LookDirection.AsVec2 * 0.8f, 1f, unit.Team);
+                        Vec2 direction = (targetAgent.GetWorldPosition().AsVec2 - unit.GetWorldPosition().AsVec2).Normalized();
+                        IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2 * 0.8f, 1f, unit.Team);
                         if (agents.Count() > 3)
                         {
+                            unit.LookDirection = direction.ToVec3();
                             if (MBRandom.RandomInt(75) == 0)
                             {
                                 if (targetAgent != null)
@@ -1128,6 +1129,42 @@ namespace RealisticBattleAiModule
                                 //{
                                 if (unit != null)
                                 {
+                                    IEnumerable<Agent> agentsLeft = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.LeftVec() * 0.8f, 1f, unit.Team);
+                                    IEnumerable<Agent> agentsRight = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.RightVec() * 0.8f, 1f, unit.Team);
+                                    if (agentsLeft.Count() > 3 && agentsRight.Count() > 3)
+                                    {
+                                    }
+                                    else if (agentsLeft.Count() <= 3 && agentsRight.Count() <= 3)
+                                    {
+                                        if (MBRandom.RandomInt(2) == 0)
+                                        {
+                                            WorldPosition leftPosition = unit.GetWorldPosition();
+                                            leftPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.LeftVec());
+                                            __result = leftPosition;
+                                            return false;
+                                        }
+                                        else
+                                        {
+                                            WorldPosition rightPosition = unit.GetWorldPosition();
+                                            rightPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.RightVec());
+                                            __result = rightPosition;
+                                            return false;
+                                        }
+                                    }
+                                    else if (agentsLeft.Count() <= 3)
+                                    {
+                                        WorldPosition leftPosition = unit.GetWorldPosition();
+                                        leftPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.LeftVec());
+                                        __result = leftPosition;
+                                        return false;
+                                    }
+                                    else if (agentsRight.Count() <= 3)
+                                    {
+                                        WorldPosition rightPosition = unit.GetWorldPosition();
+                                        rightPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.RightVec());
+                                        __result = rightPosition;
+                                        return false;
+                                    }
                                     __result = unit.GetWorldPosition();
                                     return false;
                                 }
@@ -1162,7 +1199,7 @@ namespace RealisticBattleAiModule
         [HarmonyPatch("GetOrderPositionOfUnitAux")]
         static bool PrefixGetOrderPositionOfUnitAux(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ___detachedUnits, ref WorldPosition __result)
         {
-            if(unit != null && __instance.QuerySystem.IsInfantryFormation && __instance.AI != null && __instance.AI.ActiveBehavior != null )
+            if(unit != null && __instance.QuerySystem.IsInfantryFormation && (__instance.AI != null || __instance.IsAIControlled == false) && __instance.AI.ActiveBehavior != null )
             {
                 //InformationManager.DisplayMessage(new InformationMessage(__instance.AI.ActiveBehavior.GetType().Name + " " + __instance.MovementOrder.OrderType.ToString()));
                 bool exludedWhenAiControl = !(__instance.IsAIControlled && (__instance.AI.ActiveBehavior.GetType().Name.Contains("Regroup") || __instance.AI.ActiveBehavior.GetType().Name.Contains("Advance")));
@@ -1173,7 +1210,7 @@ namespace RealisticBattleAiModule
                     Mission mission = Mission.Current;
                     if (mission.Mode != MissionMode.Deployment)
                     {
-                        IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.LookDirection.AsVec2 * 0.8f, 1f, unit.Team);
+                        IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2 * 0.8f, 1f, unit.Team);
                         if (agents.Count() > 3)
                         {
                             if (MBRandom.RandomInt(75) == 0)
@@ -1184,6 +1221,42 @@ namespace RealisticBattleAiModule
                             {
                                 if (unit != null)
                                 {
+                                    IEnumerable<Agent> agentsLeft = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.LeftVec() * 0.8f, 1f, unit.Team);
+                                    IEnumerable<Agent> agentsRight = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.RightVec() * 0.8f, 1f, unit.Team);
+                                    if (agentsLeft.Count() > 3 && agentsRight.Count() > 3)
+                                    {
+                                    }
+                                    else if (agentsLeft.Count() <= 3 && agentsRight.Count() <= 3)
+                                    {
+                                        if (MBRandom.RandomInt(2) == 0)
+                                        {
+                                            WorldPosition leftPosition = unit.GetWorldPosition();
+                                            leftPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.LeftVec());
+                                            __result = leftPosition;
+                                            return false;
+                                        }
+                                        else
+                                        {
+                                            WorldPosition rightPosition = unit.GetWorldPosition();
+                                            rightPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.RightVec());
+                                            __result = rightPosition;
+                                            return false;
+                                        }
+                                    }
+                                    else if (agentsLeft.Count() <= 3)
+                                    {
+                                        WorldPosition leftPosition = unit.GetWorldPosition();
+                                        leftPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.LeftVec());
+                                        __result = leftPosition;
+                                        return false;
+                                    }
+                                    else if (agentsRight.Count() <= 3)
+                                    {
+                                        WorldPosition rightPosition = unit.GetWorldPosition();
+                                        rightPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.RightVec());
+                                        __result = rightPosition;
+                                        return false;
+                                    }
                                     __result = unit.GetWorldPosition();
                                     return false;
                                 }
@@ -1297,13 +1370,20 @@ namespace RealisticBattleAiModule
                     {
                         Vec2 vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - ___formation.QuerySystem.MedianPosition.AsVec2;
                         WorldPosition positionNew = ___formation.QuerySystem.MedianPosition;
-                        positionNew.SetVec2(positionNew.AsVec2 + vec.Normalized() * 10f);
+                        positionNew.SetVec2(positionNew.AsVec2 + vec.Normalized() * 20f);
                         ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
                         ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
                         return false;
                     }
                 }
                 return true;
+            }
+
+            [HarmonyPostfix]
+            [HarmonyPatch("OnBehaviorActivatedAux")]
+            static void PostfixOnBehaviorActivatedAux(ref Formation ___formation, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
+            {
+                ___formation.FormOrder = FormOrder.FormOrderDeep;
             }
         }
     }
