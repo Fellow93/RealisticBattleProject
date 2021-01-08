@@ -1379,12 +1379,12 @@ namespace RealisticBattleAiModule
                 return true;
             }
 
-            [HarmonyPostfix]
-            [HarmonyPatch("OnBehaviorActivatedAux")]
-            static void PostfixOnBehaviorActivatedAux(ref Formation ___formation, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
-            {
-                ___formation.FormOrder = FormOrder.FormOrderDeep;
-            }
+            //[HarmonyPostfix]
+            //[HarmonyPatch("OnBehaviorActivatedAux")]
+            //static void PostfixOnBehaviorActivatedAux(ref Formation ___formation, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
+            //{
+            //    ___formation.FormOrder = FormOrder.FormOrderDeep;
+            //}
         }
     }
 }
