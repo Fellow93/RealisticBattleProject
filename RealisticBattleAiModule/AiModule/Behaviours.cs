@@ -8,6 +8,7 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using System.Diagnostics;
+using static TaleWorlds.MountAndBlade.SiegeTower;
 
 namespace RealisticBattleAiModule
 {
@@ -784,11 +785,11 @@ namespace RealisticBattleAiModule
         [HarmonyPatch("Initialize")]
         static void PostfixInitialize(ref BattleSideEnum managedSide, Vec3 managedDirection,  ref float queueBeginDistance, ref int ____maxUserCount, ref float ____agentSpacing, ref float ____queueBeginDistance, ref float ____queueRowSize, ref float ____costPerRow, ref float ____baseCost)
         {
-            if(managedSide == BattleSideEnum.Attacker && queueBeginDistance != 3f && managedDirection != new Vec3(0f, -1f))
+            if(managedSide == BattleSideEnum.Attacker && queueBeginDistance != 3f )
             {
-                ____agentSpacing = 1.25f;
-                ____queueBeginDistance = 8f;
-                ____queueRowSize = 1.25f;
+                ____agentSpacing = 1.1f;
+                ____queueBeginDistance = 7f;
+                ____queueRowSize = 1.1f;
                 ____maxUserCount = 16;
             }
             
@@ -1385,6 +1386,59 @@ namespace RealisticBattleAiModule
             //{
             //    ___formation.FormOrder = FormOrder.FormOrderDeep;
             //}
+        }
+
+        [HarmonyPatch(typeof(SiegeTower))]
+        class OverrideSiegeTower
+        {
+
+            [HarmonyPostfix]
+            [HarmonyPatch("OnTick")]
+            static void PostfixOnTick(ref SiegeTower __instance, ref GameEntity ____cleanState, ref GateState ____state)
+            {
+                List<GameEntity> list2 = ____cleanState.CollectChildrenEntitiesWithTag("ladder");
+
+                if (____state == GateState.Open)
+                {
+                    FieldInfo property = typeof(SiegeTower).GetField("ActiveWaitStandingPoint", BindingFlags.NonPublic | BindingFlags.Instance);
+                    property.DeclaringType.GetField("ActiveWaitStandingPoint");
+                    GameEntity sp = (GameEntity)property.GetValue(__instance);
+
+                    PropertyInfo property2 = typeof(SiegeTower).GetProperty("WaitStandingPoints", BindingFlags.NonPublic | BindingFlags.Instance);
+                    property2.DeclaringType.GetProperty("WaitStandingPoints");
+                    List<GameEntity> WaitStandingPoints = (List<GameEntity>)property2.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+                    //WaitStandingPoints[0].SetLocalPosition(new Vec3(-100, -100, 0f));
+                    sp = WaitStandingPoints[0];
+                    property.SetValue(__instance, sp, BindingFlags.NonPublic | BindingFlags.SetField, null, null);
+                    //property2.SetValue(__instance, WaitStandingPoints, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                    //property.SetValue(__instance, WaitStandingPoints[0], BindingFlags.NonPublic | BindingFlags.SetProperty, null, null);
+
+                    //Vec3 boundingBoxMin = list2.ElementAt(2).GetBoundingBoxMin();
+                    //Vec3 boundingBoxMax = list2.ElementAt(2).GetBoundingBoxMax();
+                    //Vec2 vec = (boundingBoxMax.AsVec2 + boundingBoxMin.AsVec2) * 0.5f;
+                    //Vec2 asVec = list2.ElementAt(2).GetGlobalFrame().TransformToParent(vec.ToVec3()).AsVec2;
+                    //foreach (Agent item in Mission.Current.GetAgentsInRange(asVec, 0.1f, true))
+                    //{
+                    //    Vec3 pos = item.Position;
+                    //    {
+                    //        int random = MBRandom.RandomInt(3);
+                    //        if (random == 0)
+                    //        {
+                    //            pos.y += 0.1f;
+                    //            pos.x += 0.1f;
+                    //            item.TeleportToPosition(pos);
+
+                    //        }
+                    //        else if (random == 1)
+                    //        {
+                    //            pos.y -= 0.1f;
+                    //            pos.x -= 0.1f;
+                    //            item.TeleportToPosition(pos);
+                    //        }
+                    //    }
+                    //}
+                }
+            }
         }
     }
 }
