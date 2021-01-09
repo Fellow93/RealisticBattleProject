@@ -1060,7 +1060,7 @@
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_knife_a" holster_mesh="throwing_dagger_quiver_2" holster_mesh_length="35.8">
       <Thrust damage_type="Pierce" damage_factor="5.0" />
-      <Swing damage_type="Cut" damage_factor="3.0" />	  
+      <Swing damage_type="Cut" damage_factor="6.0" />	  
     </BladeData>
     <Flags>
       <Flag name="Civilian" type="ItemFlags" />

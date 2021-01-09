@@ -212,8 +212,8 @@
 <CraftingPiece id="spear_blade_43" name="{=wait0O6m}Warrazor Head" tier="4" piece_type="Blade" mesh="spear_blade_43" length="64.4" weight="0.43" excluded_item_usage_features="">
     <PieceUsages unavailable_usages="OneHandedPolearm" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="3.6" />
-      <Swing damage_type="Cut" damage_factor="3.1" />
+      <Thrust damage_type="Pierce" damage_factor="4.1" />
+      <Swing damage_type="Cut" damage_factor="3.6" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="2" />
@@ -223,7 +223,7 @@
   <CraftingPiece id="spear_blade_7" name="{=dXRt8jY4}Menavlion Head" tier="4" piece_type="Blade" mesh="spear_blade_7" length="52.924" weight="0.3656">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="4.8" />
+      <Thrust damage_type="Pierce" damage_factor="5.7" />
       <Swing damage_type="Cut" damage_factor="3.0" />
     </BladeData>
     <Materials>
@@ -234,7 +234,7 @@
   <CraftingPiece id="spear_blade_18" name="{=qSV6C2tp}Swordstaff Head" tier="5" piece_type="Blade" mesh="spear_blade_18" length="70" weight="0.4096">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="4.8" />
+      <Thrust damage_type="Pierce" damage_factor="6.4" />
       <Swing damage_type="Cut" damage_factor="3.1" />
     </BladeData>
     <Materials>
@@ -289,10 +289,10 @@
     </Materials>
   </CraftingPiece>
   
-  <CraftingPiece id="battania_blade_7" name="{=1Ia3Wxbf}Fine Steel Falx Blade" tier="4" piece_type="Blade" mesh="battania_blade_7" culture="Culture.battania" length="75" weight="0.7" excluded_item_usage_features="shield:thrust">
+  <CraftingPiece id="battania_blade_7" name="{=1Ia3Wxbf}Fine Steel Falx Blade" tier="4" piece_type="Blade" mesh="battania_blade_7" culture="Culture.battania" length="75" weight="0.2" excluded_item_usage_features="shield:thrust">
     <PieceUsages unavailable_usages="OneHandedPolearm:TwoHandedPolearm_Couchable:Javelin" />
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed">
-      <Swing damage_type="Cut" damage_factor="2.9" />
+      <Swing damage_type="Cut" damage_factor="3.8" />
     </BladeData>
     <Flags>
       <Flag name="BonusAgainstShield" />
@@ -312,6 +312,18 @@
       <Material id="Iron5" count="2" />
     </Materials>
   </CraftingPiece>
+
+  <CraftingPiece id="spear_blade_44" name="{=PmPxx2gK}Bent Razor Head" tier="4" piece_type="Blade" mesh="spear_blade_44" length="80" weight="0.43" excluded_item_usage_features="">
+    <PieceUsages unavailable_usages="OneHandedPolearm:TwoHandedPolearm_Couchable:Javelin:thrust" />
+    <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
+      <Thrust damage_type="Pierce" damage_factor="2.6" />
+      <Swing damage_type="Cut" damage_factor="4.1" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron4" count="2" />
+    </Materials>
+  </CraftingPiece>
+  
 <!-- #endregion cut polearms -->
 <!-- #falx sword --> 
    <CraftingPiece id="battania_blade_6" name="{=IUlApNGp}Long Falx Blade" tier="4" piece_type="Blade" mesh="battania_blade_6" culture="Culture.battania" length="95.6" weight="1.0" excluded_item_usage_features="thrust">

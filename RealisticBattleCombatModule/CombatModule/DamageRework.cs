@@ -182,7 +182,7 @@ namespace RealisticBattleCombatModule
             float num2 = (float)armorAmount;
             if (collidedWithShieldOnBack && shieldOnBack != null)
             {
-                num2 += 10f;
+                num2 += 20f;
             }
 
             string weaponType = "otherDamage";

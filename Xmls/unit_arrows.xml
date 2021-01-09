@@ -1082,7 +1082,7 @@
       <skill id="OneHanded"
              value="60" />
       <skill id="TwoHanded"
-             value="30" />
+             value="60" />
       <skill id="Polearm"
              value="40" />
       <skill id="Bow"
@@ -1117,7 +1117,7 @@
       <skill id="OneHanded"
              value="100" />
       <skill id="TwoHanded"
-             value="60" />
+             value="100" />
       <skill id="Polearm"
              value="45" />
       <skill id="Bow"
@@ -1153,7 +1153,7 @@
       <skill id="OneHanded"
              value="130" />
       <skill id="TwoHanded"
-             value="60" />
+             value="130" />
       <skill id="Polearm"
              value="60" />
       <skill id="Bow"
@@ -1170,7 +1170,7 @@
       <equipment slot="Item2"
                  id="Item.vlandic_arrows" />
       <equipment slot="Item3"
-                 id="Item.sturgia_axe_5_t5" />
+                 id="Item.sturgia_2haxe_1_t4" />
   </NPCCharacter>
   <!-- #endregion -->
   <!-- #region Vlandia Troops -->

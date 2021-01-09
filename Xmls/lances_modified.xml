@@ -167,12 +167,30 @@
              Type="Pommel"
              scale_factor="100" />
     </Pieces>
+  <!-- #endregion -->
+<!-- #Cutting Polearms -->
   </CraftedItem>
   <CraftedItem id="easter_polesword_t4" name="{=2FubBDYB}Eastern Polesword" crafting_template="TwoHandedPolearm" culture="Culture.aserai">
     <Pieces>
       <Piece id="spear_blade_22" Type="Blade" scale_factor="100" />
       <Piece id="default_polearm_guard" Type="Guard" scale_factor="100" />
       <Piece id="spear_handle_15" Type="Handle" scale_factor="100" />
+      <Piece id="default_polearm_pommel" Type="Pommel" scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="sturgia_polearm_1_t5" name="{=160aqzPm}Warrazor" crafting_template="TwoHandedPolearm" culture="Culture.sturgia">
+    <Pieces>
+      <Piece id="spear_blade_43" Type="Blade" scale_factor="90" />
+      <Piece id="default_polearm_guard" Type="Guard" scale_factor="100" />
+      <Piece id="spear_handle_26" Type="Handle" scale_factor="90" />
+      <Piece id="default_polearm_pommel" Type="Pommel" scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="battania_polearm_1_t5" name="{=V4b2ZRTH}Rhomphalia" crafting_template="TwoHandedPolearm" culture="Culture.battania">
+    <Pieces>
+      <Piece id="battania_blade_7" Type="Blade" scale_factor="150" />
+      <Piece id="spear_guard_7" Type="Guard" scale_factor="90" />
+      <Piece id="spear_handle_8" Type="Handle" scale_factor="45" />
       <Piece id="default_polearm_pommel" Type="Pommel" scale_factor="100" />
     </Pieces>
   </CraftedItem>
