@@ -996,9 +996,40 @@ namespace RealisticBattleAiModule
         }
 
         [HarmonyPrefix]
+        [HarmonyPatch("SetFollowBehaviorValues")]
+        static bool PrefixSetFollowBehaviorValues(Agent unit)
+        {
+            {
+                unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 7f, 5f, 20f, 5f);
+                unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 6f, 7f, 4f, 20f, 0f);
+                unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
+                unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 0f, 7f, 0f, 30f, 0f);
+                unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 0.065f, 15f, 0.065f, 30f, 0.065f);
+                unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
+                unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
+                return false;
+            }
+            return true;
+        }
+
+        [HarmonyPrefix]
         [HarmonyPatch("SetDefaultMoveBehaviorValues")]
         static bool PrefixSetDefaultMoveBehaviorValues(Agent unit)
         {
+            if (unit.Formation != null)
+            {
+                if (unit.Formation.QuerySystem.IsRangedCavalryFormation)
+                {
+                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 7f, 5f, 20f, 5f);
+                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 7f, 5f, 20f, 0.01f);
+                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0.02f, 7f, 0.04f, 20f, 0.03f);
+                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 10f, 7f, 5f, 30f, 0.05f);
+                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 0.065f, 15f, 0.065f, 30f, 0.065f);
+                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
+                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
+                    return false;
+                }
+            }
             if (!Mission.Current.IsFieldBattle)
             {
                 unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 7f, 5f, 20f, 6f);

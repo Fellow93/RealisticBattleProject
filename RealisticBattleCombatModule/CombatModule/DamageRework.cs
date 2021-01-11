@@ -2,6 +2,7 @@
 using SandBox;
 using System;
 using TaleWorlds.Core;
+using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
@@ -161,28 +162,30 @@ namespace RealisticBattleCombatModule
         {
             float armorAmountFloat = attackInformation.ArmorAmountFloat;
             WeaponComponentData shieldOnBack = attackInformation.ShieldOnBack;
+            AgentFlag victimAgentFlag = attackInformation.VictimAgentFlag;
             float victimAgentAbsorbedDamageRatio = attackInformation.VictimAgentAbsorbedDamageRatio;
             float damageMultiplierOfBone = attackInformation.DamageMultiplierOfBone;
             float combatDifficultyMultiplier = attackInformation.CombatDifficultyMultiplier;
+            _ = attackCollisionData.CollisionGlobalPosition;
             bool attackBlockedWithShield = attackCollisionData.AttackBlockedWithShield;
             bool collidedWithShieldOnBack = attackCollisionData.CollidedWithShieldOnBack;
             bool isFallDamage = attackCollisionData.IsFallDamage;
+            BasicCharacterObject attackerAgentCharacter = attackInformation.AttackerAgentCharacter;
+            BasicCharacterObject attackerCaptainCharacter = attackInformation.AttackerCaptainCharacter;
+            BasicCharacterObject victimAgentCharacter = attackInformation.VictimAgentCharacter;
+            BasicCharacterObject victimCaptainCharacter = attackInformation.VictimCaptainCharacter;
 
             float armorAmount = 0f;
 
             if (!isFallDamage)
             {
-                int num = (int)armorAmountFloat;
-                armorAmount = num;
+                float adjustedArmor = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateAdjustedArmorForBlow(armorAmountFloat, attackerAgentCharacter, attackerCaptainCharacter, victimAgentCharacter, victimCaptainCharacter, attackerWeapon.CurrentUsageItem);
+                armorAmount = adjustedArmor;
             }
-            else
-            {
-                armorAmount = 0;
-            }
-            float num2 = (float)armorAmount;
+            //float num2 = (float)armorAmount;
             if (collidedWithShieldOnBack && shieldOnBack != null)
             {
-                num2 += 20f;
+                armorAmount += 20f;
             }
 
             string weaponType = "otherDamage";
@@ -191,28 +194,32 @@ namespace RealisticBattleCombatModule
                 weaponType = attackerWeapon.Item.PrimaryWeapon.WeaponClass.ToString();
             }
 
-            float num3 = MBMath.ClampInt((int)MyComputeDamage(weaponType, damageType, magnitude, num2, victimAgentAbsorbedDamageRatio), 0, 2000);
-            float num4 = 1f;
+            float dmgMultiplier = 1f;
 
             if (!attackBlockedWithShield && !isFallDamage)
             {
                 if (damageMultiplierOfBone == 2f)
                 {
-                    num4 *= 1.5f;
+                    dmgMultiplier *= 1.5f;
                 }
                 else
                 {
-                    num4 *= damageMultiplierOfBone;
+                    dmgMultiplier *= damageMultiplierOfBone;
                 }
-                num4 *= combatDifficultyMultiplier;
+                dmgMultiplier *= combatDifficultyMultiplier;
             }
 
-            num3 *= num4;
+            inflictedDamage = MBMath.ClampInt((int)MyComputeDamage(weaponType, damageType, magnitude, armorAmount, victimAgentAbsorbedDamageRatio), 0, 2000);
 
-            inflictedDamage = MBMath.ClampInt((int)num3, 0, 2000);
+            inflictedDamage = (int)(inflictedDamage * dmgMultiplier);
 
-            int num5 = MBMath.ClampInt((int)(MyComputeDamage(weaponType, damageType, magnitude, 0f, victimAgentAbsorbedDamageRatio) * num4), 0, 2000);
-            absorbedByArmor = num5 - inflictedDamage;
+            //float dmgWithPerksSkills = MissionGameModels.Current.AgentApplyDamageModel.CalculateDamage(ref attackInformation, ref attackCollisionData, in attackerWeapon, inflictedDamage, out float bonusFromSkills);
+
+            //InformationManager.DisplayMessage(new InformationMessage("dmgWithPerksSkills: " + dmgWithPerksSkills + " inflictedDamage: " + inflictedDamage +
+            //    " HP: " + attackInformation.VictimAgentHealth));
+
+            int absoluteDamage = MBMath.ClampInt((int)(MyComputeDamage(weaponType, damageType, magnitude, 0f, victimAgentAbsorbedDamageRatio) * dmgMultiplier), 0, 2000);
+            absorbedByArmor = absoluteDamage - inflictedDamage;
 
             return false;
         }
