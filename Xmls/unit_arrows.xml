@@ -1809,9 +1809,9 @@
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
-                 id="Item.tournament_arrows" />
+                 id="Item.steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.tournament_arrows" />
+                 id="Item.steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.easter_polesword_t4" />
   </NPCCharacter>
@@ -1846,9 +1846,9 @@
       <equipment slot="Item0"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
-                 id="Item.steppe_arrows" />
+                 id="Item.heavy_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.steppe_arrows" />
+                 id="Item.heavy_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_polearm_1_t4" />
   </NPCCharacter>
@@ -1883,9 +1883,9 @@
       <equipment slot="Item0"
                  id="Item.noble_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.vlandic_arrows" />
       <equipment slot="Item2"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.vlandic_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_polearm_2_t5" />
   </NPCCharacter>

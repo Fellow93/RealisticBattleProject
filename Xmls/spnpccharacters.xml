@@ -23240,9 +23240,9 @@
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
-                 id="Item.tournament_arrows" />
+                 id="Item.steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.tournament_arrows" />
+                 id="Item.steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.easter_polesword_t4" />
       <equipment slot="Head"
@@ -23263,9 +23263,9 @@
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
-                 id="Item.tournament_arrows" />
+                 id="Item.steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.tournament_arrows" />
+                 id="Item.steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.easter_polesword_t4" />
       <equipment slot="Head"
@@ -23285,9 +23285,9 @@
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
-                 id="Item.tournament_arrows" />
+                 id="Item.steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.tournament_arrows" />
+                 id="Item.steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.easter_polesword_t4" />
       <equipment slot="Head"
@@ -23307,9 +23307,9 @@
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
-                 id="Item.tournament_arrows" />
+                 id="Item.steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.tournament_arrows" />
+                 id="Item.steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.easter_polesword_t4" />
       <equipment slot="Head"
@@ -23361,9 +23361,9 @@
       <equipment slot="Item0"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
-                 id="Item.steppe_arrows" />
+                 id="Item.heavy_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.steppe_arrows" />
+                 id="Item.heavy_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_polearm_1_t4" />
       <equipment slot="Head"
@@ -23385,9 +23385,9 @@
       <equipment slot="Item0"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
-                 id="Item.steppe_arrows" />
+                 id="Item.heavy_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.steppe_arrows" />
+                 id="Item.heavy_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_polearm_1_t4" />
       <equipment slot="Head"
@@ -23441,9 +23441,9 @@
       <equipment slot="Item0"
                  id="Item.noble_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.vlandic_arrows" />
       <equipment slot="Item2"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.vlandic_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_polearm_2_t5" />
       <equipment slot="Head"
@@ -23465,9 +23465,9 @@
       <equipment slot="Item0"
                  id="Item.noble_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.vlandic_arrows" />
       <equipment slot="Item2"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.vlandic_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_polearm_2_t5" />
       <equipment slot="Head"
@@ -44077,6 +44077,185 @@
                  id="Item.eastern_plated_leather_vambraces" />
     </equipmentSet>
     <upgrade_targets></upgrade_targets>
+  </NPCCharacter>
+  <!-- #endregion -->
+  <!-- NPCSs for Caravan Ambush issue -->
+  <NPCCharacter id="mounted_pillager"
+                default_group="HorseArcher"
+                level="11"
+                occupation="Soldier"
+                is_basic_troop="true"
+                culture="Culture.empire"
+                name="{=C8hwcOdF}Mounted Pillager"
+                skill_template="NPCCharacter.horsearcher_level11_template_skills">
+    <face>
+      <BodyProperties version="4"
+                      age="36.33"
+                      weight="0.4454"
+                      build="0.445"
+                      key="00050004402C0312367324453354621232316505203133023641312273143224028A86240896594500000000000000000000000000000000000000001D043002" />
+      <BodyPropertiesMax version="4"
+                         age="71.09"
+                         weight="0.6244"
+                         build="0.6336"
+                         key="001CFC0CC02C3959AD8AA89C9A86CDEC9FCA8BBC8AA4CD775DACED6B7E2F8D4807EEE6780ECADBC9000000000000000000000000000000000000000067D48105" />
+    </face>
+    <skills>
+      <skill id="Athletics"
+             value="40" />
+      <skill id="Riding"
+             value="40" />
+      <skill id="OneHanded"
+             value="20" />
+      <skill id="TwoHanded"
+             value="15" />
+      <skill id="Polearm"
+             value="10" />
+      <skill id="Bow"
+             value="30" />
+      <skill id="Crossbow"
+             value="5" />
+      <skill id="Throwing"
+             value="15" />
+    </skills>
+    <equipmentSet civilian="true">
+      <equipment slot="Item0"
+                 id="Item.iron_spatha_sword_t2" />
+      <equipment slot="Body"
+                 id="Item.bandit_envelope_dress_v2" />
+      <equipment slot="Leg"
+                 id="Item.wrapped_shoes" />
+    </equipmentSet>
+    <equipmentSet>
+      <equipment slot="Item0"
+                 id="Item.hunting_bow" />
+      <equipment slot="Item1"
+                 id="Item.steppe_arrows" />
+      <equipment slot="Item2"
+                 id="Item.steppe_arrows" />
+      <equipment slot="Item3"
+                 id="Item.iron_spatha_sword_t2" />
+      <equipment slot="Head"
+                 id="Item.pilgrim_hood" />
+      <equipment slot="Body"
+                 id="Item.bandit_envelope_dress_v1" />
+      <equipment slot="Leg"
+                 id="Item.leather_boots" />
+      <equipment slot="Horse"
+                 id="Item.empire_horse" />
+      <equipment slot="HorseHarness"
+                 id="Item.steppe_harness" />
+    </equipmentSet>
+    <equipmentSet>
+      <equipment slot="Item0"
+                 id="Item.hunting_bow" />
+      <equipment slot="Item1"
+                 id="Item.steppe_arrows" />
+      <equipment slot="Item2"
+                 id="Item.steppe_arrows" />
+      <equipment slot="Item3"
+                 id="Item.iron_spatha_sword_t2" />
+      <equipment slot="Body"
+                 id="Item.bandit_envelope_dress_v2" />
+      <equipment slot="Leg"
+                 id="Item.leather_boots" />
+      <equipment slot="Gloves"
+                 id="Item.ragged_armwraps" />
+      <equipment slot="Horse"
+                 id="Item.empire_horse" />
+      <equipment slot="HorseHarness"
+                 id="Item.steppe_harness" />
+    </equipmentSet>
+  </NPCCharacter>
+  <NPCCharacter id="mounted_ransacker"
+                default_group="Cavalry"
+                level="16"
+                civilianTemplate="NPCCharacter.empire_troop_civilian_template_t1"
+                name="{=J6Yksji5}Mounted Ransacker"
+                upgrade_requires="ItemCategory.horse"
+                occupation="Soldier"
+                culture="Culture.empire">
+    <face>
+      <face_key_template value="NPCCharacter.villager_empire" />
+    </face>
+    <skills>
+      <skill id="Athletics"
+             value="40" />
+      <skill id="Riding"
+             value="70" />
+      <skill id="OneHanded"
+             value="40" />
+      <skill id="TwoHanded"
+             value="30" />
+      <skill id="Polearm"
+             value="70" />
+      <skill id="Bow"
+             value="30" />
+      <skill id="Crossbow"
+             value="10" />
+      <skill id="Throwing"
+             value="70" />
+    </skills>
+    <equipmentSet civilian="true">
+      <equipment slot="Item0"
+                 id="Item.iron_spatha_sword_t2" />
+      <equipment slot="Body"
+                 id="Item.bandit_envelope_dress_v1" />
+      <equipment slot="Leg"
+                 id="Item.wrapped_shoes" />
+    </equipmentSet>
+    <equipmentSet>
+      <equipment slot="Item0"
+                 id="Item.small_bit_axe_t2" />
+      <equipment slot="Item1"
+                 id="Item.old_kite_shield" />
+      <equipment slot="Item2"
+                 id="Item.highland_spear_3_t3" />
+      <equipment slot="Head"
+                 id="Item.arming_coif" />
+      <equipment slot="Body"
+                 id="Item.bandit_fur_a" />
+      <equipment slot="Leg"
+                 id="Item.empire_horseman_boots" />
+      <equipment slot="Gloves"
+                 id="Item.buttoned_leather_bracers" />
+      <equipment slot="Horse"
+                 id="Item.empire_horse" />
+      <equipment slot="HorseHarness"
+                 id="Item.light_harness" />
+    </equipmentSet>
+    <equipmentSet>
+      <equipment slot="Item0"
+                 id="Item.simple_back_sword_t2" />
+      <equipment slot="Item2"
+                 id="Item.highland_spear_3_t3" />
+      <equipment slot="Body"
+                 id="Item.bandit_fur_b" />
+      <equipment slot="Leg"
+                 id="Item.strapped_leather_boots" />
+      <equipment slot="Gloves"
+                 id="Item.ragged_armwraps" />
+      <equipment slot="Horse"
+                 id="Item.empire_horse" />
+      <equipment slot="HorseHarness"
+                 id="Item.light_harness" />
+    </equipmentSet>
+    <equipmentSet>
+      <equipment slot="Item0"
+                 id="Item.simple_back_sword_t2" />
+      <equipment slot="Item2"
+                 id="Item.highland_spear_3_t3" />
+      <equipment slot="Body"
+                 id="Item.bandit_fur_b" />
+      <equipment slot="Leg"
+                 id="Item.strapped_leather_boots" />
+      <equipment slot="Gloves"
+                 id="Item.ragged_armwraps" />
+      <equipment slot="Horse"
+                 id="Item.empire_horse" />
+      <equipment slot="HorseHarness"
+                 id="Item.light_harness" />
+    </equipmentSet>
   </NPCCharacter>
   <!-- #endregion -->
   <!-- #region to be erased -->

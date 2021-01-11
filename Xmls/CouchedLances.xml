@@ -329,7 +329,7 @@
    <CraftingPiece id="battania_blade_6" name="{=IUlApNGp}Long Falx Blade" tier="4" piece_type="Blade" mesh="battania_blade_6" culture="Culture.battania" length="95.6" weight="1.0" excluded_item_usage_features="thrust">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed">
-      <Swing damage_type="Cut" damage_factor="5.7" />
+      <Swing damage_type="Cut" damage_factor="4.5" />
     </BladeData>
     <Flags>
       <Flag name="BonusAgainstShield" />
