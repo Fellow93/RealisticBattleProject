@@ -1200,7 +1200,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="imperial_goggled_helmet" name="{*}Imperial Visored Helmet" mesh="imperial_helmet" culture="Culture.empire" weight="4.2" appearance="2.6" Type="HeadArmor" value="10000">
+	<Item id="imperial_goggled_helmet" name="Imperial Visored Helmet" mesh="imperial_helmet" culture="Culture.empire" weight="4.2" appearance="2.6" Type="HeadArmor" value="10000">
 		<ItemComponent>
 			<Armor head_armor="72" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="type2"/>
 		</ItemComponent>
