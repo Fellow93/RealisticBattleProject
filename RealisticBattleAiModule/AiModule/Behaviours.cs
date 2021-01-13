@@ -9,6 +9,8 @@ using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using System.Diagnostics;
 using static TaleWorlds.MountAndBlade.SiegeTower;
+using SandBox;
+using TaleWorlds.CampaignSystem;
 
 namespace RealisticBattleAiModule
 {
@@ -1473,6 +1475,24 @@ namespace RealisticBattleAiModule
                     //    }
                     //}
                 }
+            }
+        }
+
+        [HarmonyPatch(typeof(SiegeMissionTroopSpawnHandler))]
+        class OverrideAfterStart
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch("AfterStart")]
+            static bool PrefixAfterStart(ref MapEvent ____mapEvent,ref MissionAgentSpawnLogic ____missionAgentSpawnLogic)
+            {
+                int numberOfInvolvedMen = ____mapEvent.GetNumberOfInvolvedMen(BattleSideEnum.Defender);
+                int numberOfInvolvedMen2 = ____mapEvent.GetNumberOfInvolvedMen(BattleSideEnum.Attacker);
+                int defenderInitialSpawn = numberOfInvolvedMen;
+                int attackerInitialSpawn = numberOfInvolvedMen2;
+                ____missionAgentSpawnLogic.SetSpawnHorses(BattleSideEnum.Defender, spawnHorses: false);
+                ____missionAgentSpawnLogic.SetSpawnHorses(BattleSideEnum.Attacker, spawnHorses: false);
+                ____missionAgentSpawnLogic.InitWithSinglePhase(numberOfInvolvedMen, numberOfInvolvedMen2, defenderInitialSpawn, attackerInitialSpawn, spawnDefenders: false, spawnAttackers: false, 4f);
+                return false;
             }
         }
     }
