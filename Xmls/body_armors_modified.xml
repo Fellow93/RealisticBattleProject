@@ -1326,4 +1326,22 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
+  <Item id="fur_trimmed_tunic" name="{=TAczhIzX}Northern Fur Trimmed Tunic" subtype="body_armor" mesh="sturgia_light_armor_c" culture="Culture.sturgia" weight="0.8" difficulty="0" appearance="0.6" Type="BodyArmor">
+    <ItemComponent>
+      <Armor body_armor="6" leg_armor="3" arm_armor="3" has_gender_variations="true" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" />
+    </ItemComponent>
+    <Flags UseTeamColor="true" Civilian="true" />
+  </Item>
+  <Item id="fur_trimmed_short_tunic" name="{=7yGwvnUA}Fur Trimmed Short Tunic" subtype="body_armor" mesh="sturgia_light_armor_d" culture="Culture.sturgia" weight="0.4" difficulty="0" appearance="0.6" Type="BodyArmor">
+    <ItemComponent>
+      <Armor body_armor="2" leg_armor="1" arm_armor="1" has_gender_variations="true" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" />
+    </ItemComponent>
+    <Flags UseTeamColor="true" Civilian="true" />
+  </Item>
+  <Item id="battanian_scale_armor_b" name="{=oJKXjRJ3}Highland Scale Armor Over Cloth" subtype="body_armor" mesh="battanian_scale_armor_b" culture="Culture.battania" weight="11.4" difficulty="0" appearance="3" Type="BodyArmor">
+    <ItemComponent>
+      <Armor body_armor="31" leg_armor="6" arm_armor="3" has_gender_variations="true" covers_body="true" modifier_group="plate" material_type="Plate" />
+    </ItemComponent>
+    <Flags UseTeamColor="true" />
+  </Item>
 </Items>

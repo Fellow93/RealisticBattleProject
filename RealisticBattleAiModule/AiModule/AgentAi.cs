@@ -57,7 +57,7 @@ namespace RealisticBattleAiModule
                             {
                                 __result = Agent.UsageDirection.None;
                             }
-                            else if ((currentTime - lastRangedHit < 10f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.1f)
+                            else if ((currentTime - lastRangedHit < 10f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.04f)
                             {
                                 __result = Agent.UsageDirection.DefendDown;
                             }

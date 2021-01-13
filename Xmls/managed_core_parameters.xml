@@ -43,7 +43,7 @@
     <managed_core_parameter id="MissileMinimumDamageToStick" value="3.0"/>
     <managed_core_parameter id="BreakableProjectileMinimumBreakSpeed" value="60.0"/>
     <managed_core_parameter id="FallDamageMultiplier" value="0.575"/>
-    <managed_core_parameter id="FallDamageAbsorbtion" value="52.0"/>
+    <managed_core_parameter id="FallDamageAbsorbtion" value="54.0"/>
     <managed_core_parameter id="FallSpeedReductionMultiplierForRiderDamage" value="0.77"/>
     <!--While mounted fall speed will be multiplied with this value for rider's damage calculation. Mount's speed will not be effected.-->
     <managed_core_parameter id="FistFightDamageMultiplier" value="4.0" />

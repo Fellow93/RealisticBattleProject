@@ -5,12 +5,11 @@
   <NPCCharacter id="aserai_archer"
                 default_group="Ranged"
                 level="21"
-                civilianTemplate="NPCCharacter.aserai_troop_civilian_template_t2"
                 name="{=yhBagy1Y}Aserai Archer"
                 occupation="Soldier"
                 culture="Culture.aserai">
     <face>
-      <face_key_template value="NPCCharacter.villager_aserai" />
+      <face_key_template value="BodyProperty.fighter_aserai" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -30,6 +29,7 @@
       <skill id="Throwing"
              value="60" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.tribal_bow" />
       <equipment slot="Item1"
@@ -38,16 +38,16 @@
                  id="Item.bodkin_arrows_b" />
       <equipment slot="Item3"
                  id="Item.aserai_sword_2_t2" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="aserai_master_archer"
                 default_group="Ranged"
                 level="26"
-                civilianTemplate="NPCCharacter.aserai_troop_civilian_template_t3"
                 name="{=B4ls6R2b}Aserai Master Archer"
                 occupation="Soldier"
                 culture="Culture.aserai">
     <face>
-      <face_key_template value="NPCCharacter.villager_aserai" />
+      <face_key_template value="BodyProperty.fighter_aserai" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -67,6 +67,7 @@
       <skill id="Throwing"
              value="80" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.nomad_bow" />
       <equipment slot="Item1"
@@ -75,17 +76,17 @@
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item3"
                  id="Item.aserai_sword_7_t5" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="aserai_mameluke_cavalry"
                 default_group="HorseArcher"
                 level="21"
-                civilianTemplate="NPCCharacter.aserai_troop_civilian_template_t3"
                 name="{=YUCzyA8C}Aserai Mameluke Cavalry"
                 upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.aserai">
     <face>
-      <face_key_template value="NPCCharacter.villager_aserai" />
+      <face_key_template value="BodyProperty.fighter_aserai" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -105,6 +106,7 @@
       <skill id="Throwing"
              value="60" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
@@ -113,16 +115,16 @@
                  id="Item.aserai_sword_3_t3" />
       <equipment slot="Item3"
                  id="Item.desert_round_shield" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="aserai_mameluke_heavy_cavalry"
                 default_group="HorseArcher"
                 level="26"
-                civilianTemplate="NPCCharacter.aserai_troop_civilian_template_t3"
                 name="{=JVG0zC4e}Aserai Mameluke Heavy Cavalry"
                 occupation="Soldier"
                 culture="Culture.aserai">
     <face>
-      <face_key_template value="NPCCharacter.villager_aserai" />
+      <face_key_template value="BodyProperty.fighter_aserai" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -142,6 +144,7 @@
       <skill id="Throwing"
              value="80" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
@@ -150,19 +153,19 @@
                  id="Item.aserai_sword_4_t4" />
       <equipment slot="Item3"
                  id="Item.large_adarga" />
+    </Equipments>
   </NPCCharacter>
   <!-- #endregion -->
   <!-- #region Battania Troops -->
   <NPCCharacter id="battanian_highborn_youth"
                 default_group="Ranged"
                 level="11"
-                civilianTemplate="NPCCharacter.battania_troop_civilian_template_t2"
                 name="{=cZms8Ivb}Battanian Highborn Youth"
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.battania">
     <face>
-      <face_key_template value="NPCCharacter.villager_battania" />
+      <face_key_template value="BodyProperty.fighter_battania" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -182,22 +185,23 @@
       <skill id="Throwing"
              value="5" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.highland_ranger_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_c" />
       <equipment slot="Item2"
                  id="Item.bodkin_arrows_c" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="battanian_highborn_warrior"
                 default_group="Ranged"
                 level="16"
-                civilianTemplate="NPCCharacter.battania_troop_civilian_template_t2"
                 name="{=IHczn7ti}Battanian Highborn Warrior"
                 occupation="Soldier"
                 culture="Culture.battania">
     <face>
-      <face_key_template value="NPCCharacter.villager_battania" />
+      <face_key_template value="BodyProperty.fighter_battania" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -217,22 +221,23 @@
       <skill id="Throwing"
              value="10" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.lowland_longbow" />
       <equipment slot="Item1"
                  id="Item.heavy_steppe_arrows" />
       <equipment slot="Item2"
                  id="Item.heavy_steppe_arrows" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="battanian_hero"
                 default_group="Ranged"
                 level="21"
-                civilianTemplate="NPCCharacter.battania_troop_civilian_template_t3"
                 name="{=ac8MZYne}Battanian Hero"
                 occupation="Soldier"
                 culture="Culture.battania">
     <face>
-      <face_key_template value="NPCCharacter.villager_battania" />
+      <face_key_template value="BodyProperty.fighter_battania" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -252,22 +257,23 @@
       <skill id="Throwing"
              value="15" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.woodland_yew_bow" />
       <equipment slot="Item1"
                  id="Item.vlandic_arrows" />
       <equipment slot="Item2"
                  id="Item.vlandic_arrows" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="battanian_fian"
                 default_group="Ranged"
                 level="26"
-                civilianTemplate="NPCCharacter.battania_troop_civilian_template_t2"
                 name="{=Btb7p3mD}Battanian Fian"
                 occupation="Soldier"
                 culture="Culture.battania">
     <face>
-      <face_key_template value="NPCCharacter.villager_battania" />
+      <face_key_template value="BodyProperty.fighter_battania" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -287,22 +293,23 @@
       <skill id="Throwing"
              value="50" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.woodland_longbow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item2"
                  id="Item.bodkin_arrows_a" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="battanian_fian_champion"
                 default_group="Ranged"
                 level="31"
-                civilianTemplate="NPCCharacter.battania_troop_civilian_template_t2"
                 name="{=1zObCG2o}Battanian Fian Champion"
                 occupation="Soldier"
                 culture="Culture.battania">
     <face>
-      <face_key_template value="NPCCharacter.villager_battania" />
+      <face_key_template value="BodyProperty.fighter_battania" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -322,12 +329,14 @@
       <skill id="Throwing"
              value="40" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="noble_long_bow" />
       <equipment slot="Item1"
                  id="Item.piercing_arrows" />
       <equipment slot="Item2"
                  id="Item.piercing_arrows" />
+    </Equipments>
   </NPCCharacter>
   <!-- #endregion -->
   <!-- #region Empire Troops -->
@@ -335,11 +344,10 @@
                 default_group="Ranged"
                 level="11"
                 name="{=ieiqOaZp}Archer"
-                civilianTemplate="NPCCharacter.empire_troop_civilian_template_t1"
                 occupation="Townsfolk"
                 culture="Culture.empire">
     <face>
-      <face_key_template value="NPCCharacter.villager_empire" />
+      <face_key_template value="BodyProperty.fighter_empire" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -359,22 +367,23 @@
       <skill id="Throwing"
              value="20" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.hunting_bow" />
       <equipment slot="Item1"
                  id="Item.range_arrows" />
       <equipment slot="Item3"
                  id="Item.range_arrows" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="imperial_archer"
                 default_group="Ranged"
                 level="11"
-                civilianTemplate="NPCCharacter.empire_troop_civilian_template_t1"
                 name="{=LbjxH9yp}Imperial Archer"
                 occupation="Soldier"
                 culture="Culture.empire">
     <face>
-      <face_key_template value="NPCCharacter.villager_empire" />
+      <face_key_template value="BodyProperty.fighter_empire" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -394,23 +403,24 @@
       <skill id="Throwing"
              value="15" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.hunting_bow" />
       <equipment slot="Item1"
                  id="Item.steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.steppe_arrows" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="bucellarii"
                 default_group="HorseArcher"
                 level="26"
-                civilianTemplate="NPCCharacter.empire_troop_civilian_template_t3"
                 name="{=pRbbJHkU}Imperial Bucellarii"
                 upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.empire">
     <face>
-      <face_key_template value="NPCCharacter.villager_empire" />
+      <face_key_template value="BodyProperty.fighter_empire" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -430,22 +440,23 @@
       <skill id="Throwing"
              value="40" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
                  id="Item.arrow_emp_1_a" />
       <equipment slot="Item2"
                  id="Item.arrow_emp_1_a" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="imperial_trained_archer"
                 default_group="Ranged"
                 level="16"
-                civilianTemplate="NPCCharacter.empire_troop_civilian_template_t2"
                 name="{=fHQ8ifKM}Imperial Trained Archer"
                 occupation="Soldier"
                 culture="Culture.empire">
     <face>
-      <face_key_template value="NPCCharacter.villager_empire" />
+      <face_key_template value="BodyProperty.fighter_empire" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -465,23 +476,24 @@
       <skill id="Throwing"
              value="40" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.highland_ranger_bow" />
       <equipment slot="Item1"
                  id="Item.heavy_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.heavy_steppe_arrows" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="imperial_veteran_archer"
                 default_group="Ranged"
                 level="21"
-                civilianTemplate="NPCCharacter.empire_troop_civilian_template_t2"
                 name="{=8bA4PvdG}Imperial Veteran Archer"
                 occupation="Soldier"
                 culture="Culture.empire"
-                skill_template="NPCCharacter.ranged_skirmisher_level21_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level21_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_empire" />
+      <face_key_template value="BodyProperty.fighter_empire" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -501,22 +513,23 @@
       <skill id="Throwing"
              value="45" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.composite_steppe_bow" />
       <equipment slot="Item1"
                  id="Item.vlandic_arrows" />
       <equipment slot="Item3"
                  id="Item.vlandic_arrows" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="imperial_palatine_guard"
                 default_group="Ranged"
                 level="26"
-                civilianTemplate="NPCCharacter.empire_troop_civilian_template_t3"
                 name="{=CDUvlu4d}Imperial Palatine Guard"
                 occupation="Soldier"
                 culture="Culture.empire">
     <face>
-      <face_key_template value="NPCCharacter.villager_empire" />
+      <face_key_template value="BodyProperty.fighter_empire" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -536,22 +549,23 @@
       <skill id="Throwing"
              value="60" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item3"
                  id="Item.bodkin_arrows_a" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="imperial_crossbowman"
                 default_group="Ranged"
                 level="21"
-                civilianTemplate="NPCCharacter.empire_troop_civilian_template_t2"
                 name="{=UdTc1PGo}Imperial Crossbowman"
                 occupation="Soldier"
                 culture="Culture.empire">
     <face>
-      <face_key_template value="NPCCharacter.villager_empire" />
+      <face_key_template value="BodyProperty.fighter_empire" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -571,6 +585,7 @@
       <skill id="Throwing"
              value="45" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.crossbow_e" />
       <equipment slot="Item1"
@@ -581,17 +596,17 @@
                  id="Item.reinforced_kite_shield" />
       <equipment slot="Gloves"
                  id="Item.reinforced_padded_mitten" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="imperial_sergeant_crossbowman"
                 default_group="Ranged"
                 level="26"
-                civilianTemplate="NPCCharacter.empire_troop_civilian_template_t2"
                 name="{=THyv3q9f}Imperial Sergeant Crossbowman"
                 occupation="Soldier"
                 culture="Culture.empire"
-                skill_template="NPCCharacter.ranged_skirmisher_level26_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level26_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_empire" />
+      <face_key_template value="BodyProperty.fighter_empire" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -611,6 +626,7 @@
       <skill id="Throwing"
              value="60" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.crossbow_d" />
       <equipment slot="Item1"
@@ -619,19 +635,19 @@
                  id="Item.empire_mace_2_t4" />
       <equipment slot="Item3"
                  id="Item.fortified_kite_shield" />
+    </Equipments>
   </NPCCharacter>
   <!-- #endregion -->
   <!-- #region Khuzait Troops -->
   <NPCCharacter id="khuzait_tribal_warrior"
                 default_group="HorseArcher"
                 level="11"
-                civilianTemplate="NPCCharacter.khuzait_troop_civilian_template_t1"
                 name="{=kppseK3N}Khuzait Tribal Warrior"
                 upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 culture="Culture.khuzait">
     <face>
-      <face_key_template value="NPCCharacter.villager_khuzait" />
+      <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -651,6 +667,7 @@
       <skill id="Throwing"
              value="15" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_bow" />
       <equipment slot="Item1"
@@ -659,18 +676,18 @@
                  id="Item.steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.eastern_spear_1_t2" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="khuzait_noble_son"
                 default_group="HorseArcher"
                 level="11"
-                civilianTemplate="NPCCharacter.khuzait_troop_civilian_template_t1"
                 name="{=ZKuabzhK}Khuzait Noble's Son"
                 upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.khuzait">
     <face>
-      <face_key_template value="NPCCharacter.villager_khuzait" />
+      <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -690,6 +707,7 @@
       <skill id="Throwing"
              value="5" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_bow" />
       <equipment slot="Item1"
@@ -698,16 +716,16 @@
                  id="Item.steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_sword_1_t2" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="khuzait_hunter"
                 default_group="Ranged"
                 level="16"
-                civilianTemplate="NPCCharacter.khuzait_troop_civilian_template_t2"
                 name="{=Loc1XOIk}Khuzait Hunter"
                 occupation="Soldier"
                 culture="Culture.khuzait">
     <face>
-      <face_key_template value="NPCCharacter.villager_khuzait" />
+      <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -727,6 +745,7 @@
       <skill id="Throwing"
              value="30" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
@@ -735,17 +754,17 @@
                  id="Item.heavy_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_sword_1_t2" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="khuzait_raider"
                 default_group="HorseArcher"
                 level="16"
-                civilianTemplate="NPCCharacter.khuzait_troop_civilian_template_t2"
                 name="{=o1jvmi9P}Khuzait Raider"
                 occupation="Soldier"
                 culture="Culture.khuzait"
-                skill_template="NPCCharacter.horsearcher_level16_template_skills">
+                skill_template="SkillSet.horsearcher_level16_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_khuzait" />
+      <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -765,22 +784,23 @@
       <skill id="Throwing"
              value="30" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_c" />
       <equipment slot="Item2"
                  id="Item.bodkin_arrows_c" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="khuzait_qanqli"
                 default_group="HorseArcher"
                 level="16"
-                civilianTemplate="NPCCharacter.khuzait_troop_civilian_template_t2"
                 name="{=UYPaQP2j}Khuzait Qanqli"
                 occupation="Soldier"
                 culture="Culture.khuzait">
     <face>
-      <face_key_template value="NPCCharacter.villager_khuzait" />
+      <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -800,6 +820,7 @@
       <skill id="Throwing"
              value="25" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.composite_steppe_bow" />
       <equipment slot="Item1"
@@ -808,16 +829,16 @@
                  id="Item.eastern_spear_3_t3" />
       <equipment slot="Item3"
                  id="Item.heavy_steppe_arrows" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="khuzait_archer"
                 default_group="Ranged"
                 level="21"
-                civilianTemplate="NPCCharacter.khuzait_troop_civilian_template_t2"
                 name="{=lkrV8jZa}Khuzait Archer"
                 occupation="Soldier"
                 culture="Culture.khuzait">
     <face>
-      <face_key_template value="NPCCharacter.villager_khuzait" />
+      <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -837,23 +858,24 @@
       <skill id="Throwing"
              value="15" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_b" />
       <equipment slot="Item2"
 				 id="Item.bodkin_arrows_b" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="khuzait_horse_archer"
                 default_group="HorseArcher"
                 level="21"
-                civilianTemplate="NPCCharacter.khuzait_troop_civilian_template_t2"
                 name="{=eHVgfyPH}Khuzait Horse Archer"
                 upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.khuzait">
     <face>
-      <face_key_template value="NPCCharacter.villager_khuzait" />
+      <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -873,23 +895,24 @@
       <skill id="Throwing"
              value="60" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
                  id="Item.vlandic_arrows" />
       <equipment slot="Item2"
                  id="Item.vlandic_arrows" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="khuzait_torguud"
                 default_group="HorseArcher"
                 level="21"
-                civilianTemplate="NPCCharacter.khuzait_troop_civilian_template_t2"
                 name="{=QhNpvW0Y}Khuzait Torguud"
                 upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.khuzait">
     <face>
-      <face_key_template value="NPCCharacter.villager_khuzait" />
+      <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -909,6 +932,7 @@
       <skill id="Throwing"
              value="15" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
@@ -917,16 +941,16 @@
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item3"
                  id="Item.khuzait_polearm_1_t4" /> 
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="khuzait_marksman"
                 default_group="Ranged"
                 level="26"
-                civilianTemplate="NPCCharacter.khuzait_troop_civilian_template_t3"
                 name="{=DlIU2vJB}Khuzait Marksman"
                 occupation="Soldier"
                 culture="Culture.khuzait">
     <face>
-      <face_key_template value="NPCCharacter.villager_khuzait" />
+      <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -946,22 +970,23 @@
       <skill id="Throwing"
              value="60" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.noble_bow" />
       <equipment slot="Item1"
                  id="Item.arrow_emp_1_a" />
       <equipment slot="Item2"
                  id="Item.arrow_emp_1_a" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="khuzait_heavy_horse_archer"
                 default_group="HorseArcher"
                 level="26"
-                civilianTemplate="NPCCharacter.khuzait_troop_civilian_template_t3"
                 name="{=KAJKOooN}Khuzait Heavy Horse Archer"
                 occupation="Soldier"
                 culture="Culture.khuzait">
     <face>
-      <face_key_template value="NPCCharacter.villager_khuzait" />
+      <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -981,22 +1006,23 @@
       <skill id="Throwing"
              value="60" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
                  id="Item.piercing_arrows" />
       <equipment slot="Item2"
                  id="Item.piercing_arrows" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="khuzait_kheshig"
                 default_group="HorseArcher"
                 level="26"
-                civilianTemplate="NPCCharacter.khuzait_troop_civilian_template_t3"
                 name="{=VqrQ096u}Khuzait Kheshig"
                 occupation="Soldier"
                 culture="Culture.khuzait">
     <face>
-      <face_key_template value="NPCCharacter.villager_khuzait" />
+      <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1016,6 +1042,7 @@
       <skill id="Throwing"
              value="60" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
@@ -1024,16 +1051,16 @@
                  id="Item.arrow_emp_1_a" />
       <equipment slot="Item3"
                  id="Item.khuzait_polearm_1_t4" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="khuzait_khans_guard"
                 default_group="HorseArcher"
                 level="31"
-                civilianTemplate="NPCCharacter.khuzait_troop_civilian_template_t3"
                 name="{=B7oI7AZG}Khuzait Khan's Guard"
                 occupation="Soldier"
                 culture="Culture.khuzait">
     <face>
-      <face_key_template value="NPCCharacter.villager_khuzait" />
+      <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1053,6 +1080,7 @@
       <skill id="Throwing"
              value="30" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.noble_bow" />
       <equipment slot="Item1"
@@ -1061,18 +1089,18 @@
                  id="Item.piercing_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_polearm_2_t5" />
+    </Equipments>
   </NPCCharacter>
   <!-- #endregion -->
   <!-- #region Sturgia Troops -->
   <NPCCharacter id="sturgian_hunter"
                 default_group="Ranged"
                 level="16"
-                civilianTemplate="NPCCharacter.sturgia_troop_civilian_template_t2"
                 name="{=sturgianhuntertroop}Sturgian Hunter"
                 occupation="Soldier"
                 culture="Culture.sturgia">
     <face>
-      <face_key_template value="NPCCharacter.villager_sturgia" />
+      <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1092,22 +1120,23 @@
       <skill id="Throwing"
              value="30" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_bow" />
       <equipment slot="Item1"
                  id="Item.steppe_arrows" />
       <equipment slot="Item2"
                  id="Item.steppe_arrows" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="sturgian_archer"
                 default_group="Ranged"
                 level="21"
-                civilianTemplate="NPCCharacter.sturgia_troop_civilian_template_t2"
                 name="{=1WfDVpya}Sturgian Archer"
                 occupation="Soldier"
                 culture="Culture.sturgia">
     <face>
-      <face_key_template value="NPCCharacter.villager_sturgia" />
+      <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1127,23 +1156,24 @@
       <skill id="Throwing"
              value="45" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.nordic_shortbow" />
       <equipment slot="Item1"
                  id="Item.heavy_steppe_arrows" />
       <equipment slot="Item2"
                  id="Item.heavy_steppe_arrows" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="sturgian_veteran_bowman"
                 default_group="Ranged"
                 level="26"
-                civilianTemplate="NPCCharacter.sturgia_troop_civilian_template_t3"
                 name="{=7WWUxI6y}Sturgian Veteran Bowman"
                 occupation="Soldier"
                 culture="Culture.sturgia"
-                skill_template="NPCCharacter.ranged_skirmisher_level26_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level26_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_sturgia" />
+      <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1163,6 +1193,7 @@
       <skill id="Throwing"
              value="80" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.lowland_yew_bow" />
       <equipment slot="Item1"
@@ -1171,18 +1202,18 @@
                  id="Item.vlandic_arrows" />
       <equipment slot="Item3"
                  id="Item.sturgia_2haxe_1_t4" />
+    </Equipments>
   </NPCCharacter>
   <!-- #endregion -->
   <!-- #region Vlandia Troops -->
   <NPCCharacter id="vlandian_levy_crossbowman"
                 default_group="Ranged"
                 level="11"
-                civilianTemplate="NPCCharacter.vlandia_troop_civilian_template_t1"
                 name="{=SvAADOwm}Vlandian Levy Crossbowman"
                 occupation="Soldier"
                 culture="Culture.vlandia">
     <face>
-      <face_key_template value="NPCCharacter.villager_vlandia" />
+      <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1202,22 +1233,23 @@
       <skill id="Throwing"
              value="15" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.crossbow_a" />
       <equipment slot="Item1"
                  id="Item.bolt_e" />
       <equipment slot="Item3"
                  id="Item.leather_bound_kite_shield" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="vlandian_crossbowman"
                 default_group="Ranged"
                 level="16"
-                civilianTemplate="NPCCharacter.vlandia_troop_civilian_template_t2"
                 name="{=kih9DwL4}Vlandian Crossbowman"
                 occupation="Soldier"
                 culture="Culture.vlandia">
     <face>
-      <face_key_template value="NPCCharacter.villager_vlandia" />
+      <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1237,22 +1269,23 @@
       <skill id="Throwing"
              value="30" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.crossbow_b" />
       <equipment slot="Item1"
                  id="Item.bolt_d" />
       <equipment slot="Item3"
                  id="Item.reinforced_flat_kite_shield" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="vlandian_hardened_crossbowman"
                 default_group="Ranged"
                 level="21"
-                civilianTemplate="NPCCharacter.vlandia_troop_civilian_template_t2"
                 name="{=acubGB3g}Vlandian Hardened Crossbowman"
                 occupation="Soldier"
                 culture="Culture.vlandia">
     <face>
-      <face_key_template value="NPCCharacter.villager_vlandia" />
+      <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1272,22 +1305,23 @@
       <skill id="Throwing"
              value="60" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.crossbow_d" />
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item3"
                  id="Item.reinforced_flat_kite_shield" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="vlandian_sharpshooter"
                 default_group="Ranged"
                 level="26"
-                civilianTemplate="NPCCharacter.vlandia_troop_civilian_template_t3"
                 name="{=X6CQ9CMZ}Vlandian Sharpshooter"
                 occupation="Soldier"
                 culture="Culture.vlandia">
     <face>
-      <face_key_template value="NPCCharacter.villager_vlandia" />
+      <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1307,10 +1341,12 @@
       <skill id="Throwing"
              value="60" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.crossbow_f" />
       <equipment slot="Item1"
                  id="Item.bolt_a" />
+    </Equipments>
   </NPCCharacter>
   <!-- #endregion -->
   <!-- #region Other Troops -->
@@ -1321,14 +1357,13 @@
   <NPCCharacter id="company_of_the_boar_tier_1"
                 default_group="Ranged"
                 level="6"
-                civilianTemplate="NPCCharacter.vlandia_troop_civilian_template_t1"
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.vlandia"
                 name="{=9Bw85Elg}Boar Novice"
-                skill_template="NPCCharacter.infantry_heavyinfantry_level26_template_skills">
+                skill_template="SkillSet.infantry_heavyinfantry_level26_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.fighter_vlandia" />
+      <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1348,6 +1383,7 @@
       <skill id="Throwing"
              value="15" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.crossbow_b" />
       <equipment slot="Item1"
@@ -1356,17 +1392,17 @@
                  id="Item.bolt_d" />
       <equipment slot="Item3"
                  id="Item.battania_2haxe_1_t2" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="company_of_the_boar_tier_2"
                 default_group="Ranged"
                 level="16"
-                civilianTemplate="NPCCharacter.vlandia_troop_civilian_template_t2"
                 occupation="Soldier"
                 culture="Culture.vlandia"
                 name="{=9Ylw5Spz}Boar Veteran"
-                skill_template="NPCCharacter.ranged_skirmisher_level16_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.fighter_vlandia" />
+      <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1386,6 +1422,7 @@
       <skill id="Throwing"
              value="30" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.crossbow_d" />
       <equipment slot="Item1"
@@ -1394,17 +1431,17 @@
                  id="Item.bolt_b" />
       <equipment slot="Item3"
                  id="Item.bearded_axe_t3" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="company_of_the_boar_tier_3"
                 default_group="Ranged"
                 level="21"
-                civilianTemplate="NPCCharacter.vlandia_troop_civilian_template_t3"
                 occupation="Soldier"
                 culture="Culture.vlandia"
                 name="{=cSdSSXsO}Boar Champion"
-                skill_template="NPCCharacter.ranged_skirmisher_level26_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level26_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.fighter_vlandia" />
+      <face_key_template value="BodyProperty.villager_vlandia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1424,6 +1461,7 @@
       <skill id="Throwing"
              value="100" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.crossbow_f" />
       <equipment slot="Item1"
@@ -1432,20 +1470,20 @@
                  id="Item.bolt_a" />
       <equipment slot="Item3"
                  id="Item.vlandia_2haxe_1_t4" />
+    </Equipments>
   </NPCCharacter>
   <!-- troop trees for mercenary outlaw minor factions (8) -->
   <!-- wolfskins - battanians with no armor or cloth, only animal hides -->
   <NPCCharacter id="wolfskins_tier_1"
                 default_group="Ranged"
                 level="11"
-                civilianTemplate="NPCCharacter.battania_troop_civilian_template_t1"
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.battania"
                 name="{=mrBbsiPN}Young Wolf"
-                skill_template="NPCCharacter.infantry_heavyinfantry_level11_template_skills">
+                skill_template="SkillSet.infantry_heavyinfantry_level11_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.fighter_battania" />
+      <face_key_template value="BodyProperty.fighter_battania" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1465,6 +1503,7 @@
       <skill id="Throwing"
              value="20" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.highland_ranger_bow" />
       <equipment slot="Item1"
@@ -1473,17 +1512,17 @@
                  id="Item.highland_scouts_shield" />
       <equipment slot="Item3"
                  id="Item.woodland_axe_t3" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="wolfskins_tier_2"
                 default_group="Ranged"
                 level="16"
-                civilianTemplate="NPCCharacter.battania_troop_civilian_template_t2"
                 occupation="Soldier"
                 culture="Culture.battania"
                 name="{=q7b4pQc9}Seasoned Wolf"
-                skill_template="NPCCharacter.infantry_heavyinfantry_level11_template_skills">
+                skill_template="SkillSet.infantry_heavyinfantry_level11_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.fighter_battania" />
+      <face_key_template value="BodyProperty.fighter_battania" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1503,6 +1542,7 @@
       <skill id="Throwing"
              value="10" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.woodland_yew_bow" />
       <equipment slot="Item1"
@@ -1511,17 +1551,17 @@
                  id="Item.battania_large_shield_c" />
       <equipment slot="Item3"
                  id="Item.battania_axe_2_t4" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="wolfskins_tier_3"
                 default_group="Ranged"
                 level="21"
-                civilianTemplate="NPCCharacter.battania_troop_civilian_template_t3"
                 occupation="Soldier"
                 culture="Culture.battania"
                 name="{=QvSmhaAV}Chosen Wolf"
-                skill_template="NPCCharacter.infantry_heavyinfantry_level26_template_skills">
+                skill_template="SkillSet.infantry_heavyinfantry_level26_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.fighter_battania" />
+      <face_key_template value="BodyProperty.fighter_battania" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1541,6 +1581,7 @@
       <skill id="Throwing"
              value="15" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.noble_long_bow" />
       <equipment slot="Item1"
@@ -1549,19 +1590,19 @@
                  id="Item.battania_large_shield_a" />
       <equipment slot="Item3"
                  id="Item.battania_axe_3_t5" />
+    </Equipments>
   </NPCCharacter>
   <!-- brotherhood of woods - -->
   <NPCCharacter id="brotherhood_of_woods_tier_1"
                 default_group="Ranged"
                 level="11"
-                civilianTemplate="NPCCharacter.vlandia_troop_civilian_template_t1"
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.vlandia"
                 name="{=DIt9SuMb}Sprout"
-                skill_template="NPCCharacter.ranged_skirmisher_level11_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level11_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.fighter_vlandia" />
+      <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1581,6 +1622,7 @@
       <skill id="Throwing"
              value="5" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.glen_ranger_bow" />
       <equipment slot="Item1"
@@ -1589,17 +1631,17 @@
                  id="Item.bodkin_arrows_c" />
       <equipment slot="Item3"
                  id="Item.peasant_maul_t1_2" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="brotherhood_of_woods_tier_2"
                 default_group="Ranged"
                 level="16"
-                civilianTemplate="NPCCharacter.vlandia_troop_civilian_template_t2"
                 occupation="Soldier"
                 culture="Culture.vlandia"
                 name="{=riT39wKu}Sapling"
-                skill_template="NPCCharacter.ranged_skirmisher_level16_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.fighter_vlandia" />
+      <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1619,6 +1661,7 @@
       <skill id="Throwing"
              value="60" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.lowland_longbow" />
       <equipment slot="Item1"
@@ -1627,17 +1670,17 @@
                  id="Item.heavy_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.peasant_maul_t1_2" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="brotherhood_of_woods_tier_3"
                 default_group="Ranged"
                 level="21"
-                civilianTemplate="NPCCharacter.vlandia_troop_civilian_template_t3"
                 occupation="Soldier"
                 culture="Culture.vlandia"
                 name="{=u3K1SozQ}Arboreal"
-                skill_template="NPCCharacter.ranged_skirmisher_level26_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level26_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.fighter_vlandia" />
+      <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1657,6 +1700,7 @@
       <skill id="Throwing"
              value="60" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.lowland_yew_bow" />
       <equipment slot="Item1"
@@ -1665,19 +1709,19 @@
                  id="Item.vlandic_arrows" />
       <equipment slot="Item3"
                  id="Item.peasant_maul_t1_2" />
+    </Equipments>
   </NPCCharacter>
   <!-- guardians - -->
   <NPCCharacter id="guardians_tier_1"
                 default_group="Ranged"
                 level="11"
-                civilianTemplate="NPCCharacter.empire_troop_civilian_template_t1"
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.empire"
                 name="{=rtOJNB6u}Guardian Recruit"
-                skill_template="NPCCharacter.infantry_heavyinfantry_level6_template_skills">
+                skill_template="SkillSet.infantry_heavyinfantry_level6_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_empire" />
+      <face_key_template value="BodyProperty.fighter_empire" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1697,23 +1741,24 @@
       <skill id="Throwing"
              value="5" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.glen_ranger_bow" />
       <equipment slot="Item1"
                  id="Item.default_arrows" />
       <equipment slot="Item2"
                  id="Item.default_arrows" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="guardians_tier_2"
                 default_group="Ranged"
                 level="16"
-                civilianTemplate="NPCCharacter.empire_troop_civilian_template_t2"
                 occupation="Soldier"
                 culture="Culture.empire"
                 name="{=cMcGn6n3}Expert Guardian"
-                skill_template="NPCCharacter.infantry_heavyinfantry_level16_template_skills">
+                skill_template="SkillSet.infantry_heavyinfantry_level16_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_empire" />
+      <face_key_template value="BodyProperty.fighter_empire" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1733,23 +1778,24 @@
       <skill id="Throwing"
              value="50" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
                  id="Item.default_arrows" />
       <equipment slot="Item2"
                  id="Item.default_arrows" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="guardians_tier_3"
                 default_group="Ranged"
                 level="21"
-                civilianTemplate="NPCCharacter.empire_troop_civilian_template_t3"
                 occupation="Soldier"
                 culture="Culture.empire"
                 name="{=WNU7kE5N}Veteran Guardian"
-                skill_template="NPCCharacter.infantry_heavyinfantry_level26_template_skills">
+                skill_template="SkillSet.infantry_heavyinfantry_level26_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_empire" />
+      <face_key_template value="BodyProperty.fighter_empire" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1769,12 +1815,14 @@
       <skill id="Throwing"
              value="60" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.lowland_yew_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_b" />
       <equipment slot="Item2"
                  id="Item.bodkin_arrows_b" />
+    </Equipments>
   </NPCCharacter>
   <!-- karakhuzaits - different headgear (scythian cap? hunnic hood?) but otherwise poorer-looking nomads -->
   <NPCCharacter id="karakhuzaits_tier_1"
@@ -1784,9 +1832,9 @@
                 is_basic_troop="true"
                 culture="Culture.khuzait"
                 name="{=xIFHLI66}Karakhuzait Nomad"
-                skill_template="NPCCharacter.horsearcher_level11_template_skills">
+                skill_template="SkillSet.horsearcher_level11_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.fighter_khuzait" />
+      <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1806,6 +1854,7 @@
       <skill id="Throwing"
              value="15" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
@@ -1814,6 +1863,7 @@
                  id="Item.steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.easter_polesword_t4" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="karakhuzaits_tier_2"
                 default_group="HorseArcher"
@@ -1821,9 +1871,9 @@
                 occupation="Soldier"
                 culture="Culture.khuzait"
                 name="{=lduchnvD}Karakhuzait Rider"
-                skill_template="NPCCharacter.horsearcher_level16_template_skills">
+                skill_template="SkillSet.horsearcher_level16_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.fighter_khuzait" />
+      <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1843,6 +1893,7 @@
       <skill id="Throwing"
              value="30" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
@@ -1851,6 +1902,7 @@
                  id="Item.heavy_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_polearm_1_t4" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="karakhuzaits_tier_3"
                 default_group="HorseArcher"
@@ -1858,9 +1910,9 @@
                 occupation="Soldier"
                 culture="Culture.khuzait"
                 name="{=gBuGfUg3}Karakhuzait Elder"
-                skill_template="NPCCharacter.horsearcher_level26_template_skills">
+                skill_template="SkillSet.horsearcher_level26_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.fighter_khuzait" />
+      <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1880,6 +1932,7 @@
       <skill id="Throwing"
              value="60" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.noble_bow" />
       <equipment slot="Item1"
@@ -1888,19 +1941,19 @@
                  id="Item.vlandic_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_polearm_2_t5" />
+    </Equipments>
   </NPCCharacter>
   <!-- forest people/sturgia  -->
   <NPCCharacter id="forest_people_tier_1"
                 default_group="Ranged"
                 level="11"
-                civilianTemplate="NPCCharacter.sturgia_troop_civilian_template_t1"
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.vakken"
                 name="{=h7nGFImt}Recruit Forester"
-                skill_template="NPCCharacter.ranged_skirmisher_level6_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level6_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.fighter_sturgia" />
+      <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1920,6 +1973,7 @@
       <skill id="Throwing"
              value="15" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.mountain_hunting_bow" />
       <equipment slot="Item1"
@@ -1928,17 +1982,17 @@
                  id="Item.default_arrows" />
       <equipment slot="Item3"
                  id="Item.northern_axe_t3" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="forest_people_tier_2"
                 default_group="Ranged"
                 level="16"
-                civilianTemplate="NPCCharacter.sturgia_troop_civilian_template_t2"
                 occupation="Soldier"
                 culture="Culture.vakken"
                 name="{=2HDPaohZ}Expert Forester"
-                skill_template="NPCCharacter.ranged_skirmisher_level16_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.fighter_sturgia" />
+      <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1958,6 +2012,7 @@
       <skill id="Throwing"
              value="20" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.nordic_shortbow" />
       <equipment slot="Item1"
@@ -1966,17 +2021,17 @@
                  id="Item.heavy_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.sturgia_2haxe_1_t4" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="forest_people_tier_3"
                 default_group="Ranged"
                 level="21"
-                civilianTemplate="NPCCharacter.sturgia_troop_civilian_template_t3"
                 occupation="Soldier"
                 culture="Culture.vakken"
                 name="{=ueasbGtd}Veteran Forester"
-                skill_template="NPCCharacter.ranged_skirmisher_level26_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level26_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.fighter_sturgia" />
+      <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -1996,6 +2051,7 @@
       <skill id="Throwing"
              value="60" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
@@ -2004,6 +2060,7 @@
                  id="Item.vlandic_arrows" />
       <equipment slot="Item3"
                  id="Item.sturgia_2haxe_2_t5" />
+    </Equipments>
   </NPCCharacter>
   <!-- Mercenaries  -->
   <NPCCharacter id="mercenary_5"
@@ -2011,12 +2068,11 @@
                 is_hero="false"
                 level="21"
                 name="{=PgOknaEN}Mercenary Crossbowman"
-                civilianTemplate="NPCCharacter.empire_troop_civilian_template_t3"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture"
-                skill_template="NPCCharacter.infantry_heavyinfantry_level21_template_skills">
+                skill_template="SkillSet.infantry_heavyinfantry_level21_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_empire" />
+      <face_key_template value="BodyProperty.fighter_empire" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -2036,22 +2092,23 @@
       <skill id="Throwing"
              value="60" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.crossbow_d" />
       <equipment slot="Item1"
                  id="Item.bolt_c" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="mercenary_8"
                 default_group="Ranged"
                 is_hero="false"
                 level="26"
                 name="{=QfVe3IVw}Hired Crossbow"
-                civilianTemplate="NPCCharacter.empire_troop_civilian_template_t3"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture"
-                skill_template="NPCCharacter.ranged_skirmisher_level26_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level26_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_empire" />
+      <face_key_template value="BodyProperty.fighter_empire" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -2071,10 +2128,12 @@
       <skill id="Throwing"
              value="50" />
     </skills>
+    <Equipments>
       <equipment slot="Item1"
                  id="Item.bolt_a" />
       <equipment slot="Item0"
                  id="Item.crossbow_f" />
+    </Equipments>
   </NPCCharacter>
   <!-- #endregion -->
   <!-- #region Other NPCs -->
@@ -2084,12 +2143,11 @@
                 default_group="HorseArcher"
                 level="11"
                 name="{=ugJfuabA}Horse Archer"
-                civilianTemplate="NPCCharacter.empire_troop_civilian_template_t1"
                 occupation="Townsfolk"
                 culture="Culture.empire"
-                skill_template="NPCCharacter.horsearcher_level11_template_skills">
+                skill_template="SkillSet.horsearcher_level11_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_empire" />
+      <face_key_template value="BodyProperty.fighter_empire" />
     </face>
     <skills>
       <!--<skill id="Athletics" value="50" /> #OLD_SKILL# -->
@@ -2108,10 +2166,12 @@
       <skill id="Throwing"
              value="50" />
     </skills>
+    <Equipments>
       <equipment slot="Item2"
                  id="Item.composite_steppe_bow" />
       <equipment slot="Item3"
                  id="Item.steppe_arrows" />
+    </Equipments>
   </NPCCharacter>
   <!-- #endregion -->
   <!-- #region Caravans -->
@@ -2122,9 +2182,9 @@
                 occupation="CaravanGuard"
                 culture="Culture.aserai"
                 is_basic_troop="true"
-                skill_template="NPCCharacter.ranged_skirmisher_level6_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level6_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_aserai" />
+      <face_key_template value="BodyProperty.fighter_aserai" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -2144,10 +2204,12 @@
       <skill id="Throwing"
              value="30" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.glen_ranger_bow" />
       <equipment slot="Item1"
                  id="Item.default_arrows" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="armed_trader_battania"
                 default_group="Ranged"
@@ -2156,9 +2218,9 @@
                 occupation="CaravanGuard"
                 culture="Culture.battania"
                 is_basic_troop="true"
-                skill_template="NPCCharacter.ranged_skirmisher_level6_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level6_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_battania" />
+      <face_key_template value="BodyProperty.fighter_battania" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -2178,10 +2240,12 @@
       <skill id="Throwing"
              value="30" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.glen_ranger_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_b" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="armed_trader_empire"
                 default_group="Ranged"
@@ -2190,9 +2254,9 @@
                 occupation="CaravanGuard"
                 culture="Culture.empire"
                 is_basic_troop="true"
-                skill_template="NPCCharacter.ranged_skirmisher_level6_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level6_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_empire" />
+      <face_key_template value="BodyProperty.fighter_empire" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -2212,10 +2276,12 @@
       <skill id="Throwing"
              value="30" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.glen_ranger_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_b" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="armed_trader_khuzait"
                 default_group="Ranged"
@@ -2224,9 +2290,9 @@
                 occupation="CaravanGuard"
                 culture="Culture.khuzait"
                 is_basic_troop="true"
-                skill_template="NPCCharacter.ranged_skirmisher_level6_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level6_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_khuzait" />
+      <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -2246,10 +2312,12 @@
       <skill id="Throwing"
              value="50" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_b" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="armed_trader_sturgia"
                 default_group="Ranged"
@@ -2258,9 +2326,9 @@
                 occupation="CaravanGuard"
                 culture="Culture.sturgia"
                 is_basic_troop="true"
-                skill_template="NPCCharacter.ranged_skirmisher_level6_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level6_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_sturgia" />
+      <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -2280,10 +2348,12 @@
       <skill id="Throwing"
              value="30" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.highland_ranger_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_b" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="armed_trader_vlandia"
                 default_group="Ranged"
@@ -2292,9 +2362,9 @@
                 occupation="CaravanGuard"
                 culture="Culture.vlandia"
                 is_basic_troop="true"
-                skill_template="NPCCharacter.ranged_skirmisher_level6_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level6_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_vlandia" />
+      <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -2314,10 +2384,12 @@
       <skill id="Throwing"
              value="30" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.crossbow_a" />
       <equipment slot="Item1"
                  id="Item.bolt_e" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="veteran_caravan_guard_aserai"
                 default_group="HorseArcher"
@@ -2326,9 +2398,9 @@
                 upgrade_requires="ItemCategory.war_horse"
                 occupation="CaravanGuard"
                 culture="Culture.aserai"
-                skill_template="NPCCharacter.horsearcher_level26_template_skills">
+                skill_template="SkillSet.horsearcher_level26_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_aserai" />
+      <face_key_template value="BodyProperty.fighter_aserai" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -2348,10 +2420,12 @@
       <skill id="Throwing"
              value="60" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
                  id="Item.vlandic_arrows" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="veteran_caravan_guard_khuzait"
                 default_group="HorseArcher"
@@ -2360,9 +2434,9 @@
                 upgrade_requires="ItemCategory.war_horse"
                 occupation="CaravanGuard"
                 culture="Culture.khuzait"
-                skill_template="NPCCharacter.horsearcher_level26_template_skills">
+                skill_template="SkillSet.horsearcher_level26_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_khuzait" />
+      <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
     <skills>
       <skill id="Athletics"
@@ -2382,10 +2456,12 @@
       <skill id="Throwing"
              value="60" />
     </skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
                  id="Item.vlandic_arrows" />
+    </Equipments>
   </NPCCharacter>
   <!-- #endregion -->
   <!-- #region Militia-->
@@ -2395,11 +2471,12 @@
                 name="{=CPcJ2gRF}Aserai Militia Archer"
                 occupation="Soldier"
                 culture="Culture.aserai"
-                skill_template="NPCCharacter.ranged_skirmisher_level16_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_aserai" />
+      <face_key_template value="BodyProperty.fighter_aserai" />
     </face>
     <skills></skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.tribal_bow" />
       <equipment slot="Item1"
@@ -2408,6 +2485,7 @@
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item3"
                  id="Item.aserai_sword_2_t2" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="aserai_militia_veteran_archer"
                 default_group="Ranged"
@@ -2415,11 +2493,12 @@
                 name="{=tL6aGah4}Aserai Militia Veteran Archer"
                 occupation="Soldier"
                 culture="Culture.aserai"
-                skill_template="NPCCharacter.ranged_skirmisher_level21_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level21_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_aserai" />
+      <face_key_template value="BodyProperty.fighter_aserai" />
     </face>
     <skills></skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.longbow_recurve_desert_bow" />
       <equipment slot="Item1"
@@ -2428,6 +2507,7 @@
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item3"
                  id="Item.aserai_sword_2_t2" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="vlandian_militia_archer"
                 default_group="Ranged"
@@ -2435,11 +2515,12 @@
                 name="{=vkuJeNSa}Vlandian Militia Archer"
                 occupation="Soldier"
                 culture="Culture.vlandia"
-                skill_template="NPCCharacter.ranged_skirmisher_level16_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_vlandia" />
+      <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
     <skills></skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.crossbow_e" />
       <equipment slot="Item1"
@@ -2448,6 +2529,7 @@
                  id="Item.bolt_c" />
       <equipment slot="Item3"
                  id="Item.vlandia_mace_1_t2" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="vlandian_militia_veteran_archer"
                 default_group="Ranged"
@@ -2455,11 +2537,12 @@
                 name="{=DNIa6a5p}Vlandian Militia Veteran Archer"
                 occupation="Soldier"
                 culture="Culture.vlandia"
-                skill_template="NPCCharacter.ranged_skirmisher_level21_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level21_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_vlandia" />
+      <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
     <skills></skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.crossbow_g" />
       <equipment slot="Item1"
@@ -2468,6 +2551,7 @@
                  id="Item.bolt_b" />
       <equipment slot="Item3"
                  id="Item.vlandia_mace_1_t2" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="battanian_militia_archer"
                 default_group="Ranged"
@@ -2475,11 +2559,12 @@
                 name="{=b4QPaEnA}Battanian Militia Archer"
                 occupation="Soldier"
                 culture="Culture.battania"
-                skill_template="NPCCharacter.ranged_skirmisher_level16_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_battania" />
+      <face_key_template value="BodyProperty.fighter_battania" />
     </face>
     <skills></skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.lowland_longbow" />
       <equipment slot="Item1"
@@ -2488,6 +2573,7 @@
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item3"
                  id="Item.woodland_axe_t3" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="battanian_militia_veteran_archer"
                 default_group="Ranged"
@@ -2495,11 +2581,12 @@
                 name="{=i5DfUz6D}Battanian Militia Veteran Archer"
                 occupation="Soldier"
                 culture="Culture.battania"
-                skill_template="NPCCharacter.ranged_skirmisher_level21_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level21_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_battania" />
+      <face_key_template value="BodyProperty.fighter_battania" />
     </face>
     <skills></skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.woodland_yew_bow" />
       <equipment slot="Item1"
@@ -2508,6 +2595,7 @@
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item3"
                  id="Item.woodland_axe_t3" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="imperial_militia_archer"
                 default_group="Ranged"
@@ -2515,11 +2603,12 @@
                 name="{=P8EATvn8}Imperial Militia Archer"
                 occupation="Soldier"
                 culture="Culture.empire"
-                skill_template="NPCCharacter.ranged_skirmisher_level16_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_empire" />
+      <face_key_template value="BodyProperty.fighter_empire" />
     </face>
     <skills></skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
@@ -2528,6 +2617,7 @@
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item3"
                  id="Item.imperial_axe_t3" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="imperial_militia_veteran_archer"
                 default_group="Ranged"
@@ -2535,11 +2625,12 @@
                 name="{=HsboF2mR}Imperial Militia Veteran Archer"
                 occupation="Soldier"
                 culture="Culture.empire"
-                skill_template="NPCCharacter.ranged_skirmisher_level21_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level21_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_empire" />
+      <face_key_template value="BodyProperty.fighter_empire" />
     </face>
     <skills></skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
@@ -2548,6 +2639,7 @@
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item3"
                  id="Item.imperial_axe_t3" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="sturgian_militia_archer"
                 default_group="Ranged"
@@ -2555,11 +2647,12 @@
                 name="{=jRFfRZv2}Sturgian Militia Archer"
                 occupation="Soldier"
                 culture="Culture.sturgia"
-                skill_template="NPCCharacter.ranged_skirmisher_level16_template_skills">
-   <face>
-      <face_key_template value="NPCCharacter.villager_sturgia" />
+                skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
+    <face>
+      <face_key_template value="BodyProperty.fighter_battania" />
     </face>
     <skills></skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.nordic_shortbow" />
       <equipment slot="Item1"
@@ -2568,6 +2661,7 @@
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item3"
                  id="Item.sturgia_axe_3_t3" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="sturgian_militia_veteran_archer"
                 default_group="Ranged"
@@ -2575,11 +2669,12 @@
                 name="{=gZ4JeEw4}Sturgian Militia Veteran Archer"
                 occupation="Soldier"
                 culture="Culture.sturgia"
-                skill_template="NPCCharacter.ranged_skirmisher_level21_template_skills">
-   <face>
-      <face_key_template value="NPCCharacter.villager_sturgia" />
+                skill_template="SkillSet.ranged_skirmisher_level21_template_skills">
+    <face>
+      <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
     <skills></skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
@@ -2588,6 +2683,7 @@
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item3"
                  id="Item.sturgia_axe_3_t3" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="khuzait_militia_archer"
                 default_group="Ranged"
@@ -2595,11 +2691,12 @@
                 name="{=CKoq1wQa}Khuzait Militia Archer"
                 occupation="Soldier"
                 culture="Culture.khuzait"
-                skill_template="NPCCharacter.ranged_skirmisher_level16_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_khuzait" />
+      <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
     <skills></skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
@@ -2608,6 +2705,7 @@
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item3"
                  id="Item.light_mace_t3" />
+    </Equipments>
   </NPCCharacter>
   <NPCCharacter id="khuzait_militia_veteran_archer"
                 default_group="Ranged"
@@ -2615,11 +2713,12 @@
                 name="{=5JFkQn5U}Khuzait Militia Veteran Archer"
                 occupation="Soldier"
                 culture="Culture.khuzait"
-                skill_template="NPCCharacter.ranged_skirmisher_level21_template_skills">
+                skill_template="SkillSet.ranged_skirmisher_level21_template_skills">
     <face>
-      <face_key_template value="NPCCharacter.villager_khuzait" />
+      <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
     <skills></skills>
+    <Equipments>
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
@@ -2628,6 +2727,7 @@
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item3"
                  id="Item.khuzait_sword_2_t3" />
+    </Equipments>
   </NPCCharacter>
   <!-- #endregion -->
 </NPCCharacters>

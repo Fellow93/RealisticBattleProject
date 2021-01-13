@@ -52,8 +52,8 @@
     <def name="couched_lance_rider_rot_limit_right" val="20" />
 
     <def name="bow_rider_look_down_limit" val="-25" />
-    <def name="bow_rider_rot_limit_left" val="170" />
-    <def name="bow_rider_rot_limit_right" val="30" />
+    <def name="bow_rider_rot_limit_left" val="180" />
+    <def name="bow_rider_rot_limit_right" val="70" />
     <def name="bow_reload_rider_rot_limit_left" val="90" />
     <def name="bow_reload_rider_rot_limit_right" val="30" />
     <def name="throw_rider_look_down_limit" val="-35" />
