@@ -9473,7 +9473,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_sword_1_t2_blunt" />
+                 id="Item.empire_sword_1_t2" />
       <equipment slot="Item1"
                  id="Item.western_kite_sparring_shield" />
       </EquipmentRoster>
@@ -9689,7 +9689,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_lance_1_t3_blunt" />
+                 id="Item.empire_lance_1_t3" />
       <equipment slot="Horse"
                  id="Item.empire_horse_tournament" />
       <equipment slot="HorseHarness"
@@ -9697,7 +9697,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_lance_1_t3_blunt" />
+                 id="Item.empire_lance_1_t3" />
       <equipment slot="Horse"
                  id="Item.empire_horse_tournament" />
       <equipment slot="HorseHarness"
