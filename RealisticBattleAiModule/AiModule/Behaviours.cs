@@ -623,13 +623,13 @@ namespace RealisticBattleAiModule
                 {
                     vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized() * (____mainFormation.Width + ___formation.Width + 100f);
                     vec -= v * (____mainFormation.Depth + ___formation.Depth);
-                    vec += ____mainFormation.Direction * 100f;
+                    vec += ____mainFormation.Direction * 130f;
                 }
                 else if (___behaviorSide == FormationAI.BehaviorSide.Left || ___FlankSide == FormationAI.BehaviorSide.Left)
                 {
                     vec = ____mainFormation.CurrentPosition + v.LeftVec().Normalized() * (____mainFormation.Width + ___formation.Width + 100f);
                     vec -= v * (____mainFormation.Depth + ___formation.Depth);
-                    vec += ____mainFormation.Direction * 100f;
+                    vec += ____mainFormation.Direction * 130f;
                 }
                 else
                 {
