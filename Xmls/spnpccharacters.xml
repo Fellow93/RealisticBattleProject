@@ -13852,7 +13852,7 @@
       <equipment slot="Item0"
                  id="Item.battania_2hsword_4_t4" />
       <equipment slot="Body"
-                 id="Item.battanian_chainmail_armor_b" />
+                 id="Item.battanian_scale_armor_b" />
       <equipment slot="Leg"
                  id="Item.mail_chausses" />
       <equipment slot="Gloves"
@@ -13866,7 +13866,7 @@
       <equipment slot="Item0"
                  id="Item.battania_2hsword_4_t4" />
       <equipment slot="Body"
-                 id="Item.scale_armor" />
+                 id="Item.battanian_scale_armor_b" />
       <equipment slot="Head"
                  id="Item.ridged_northernhelm" />
       <equipment slot="Leg"
@@ -13880,7 +13880,7 @@
       <equipment slot="Item0"
                  id="Item.battania_2hsword_4_t4" />
       <equipment slot="Body"
-                 id="Item.battanian_chainmail_armor_c" />
+                 id="Item.battanian_scale_armor_b" />
       <equipment slot="Head"
                  id="Item.battania_fur_helmet" />
       <equipment slot="Leg"
@@ -26191,6 +26191,10 @@
       <equipment slot="Cape"
                  id="Item.lamellar_shoulders" />
       </EquipmentRoster>
+      <equipment slot="Horse"
+               id="Item.t2_sturgia_horse" />
+      <equipment slot="HorseHarness"
+               id="Item.northern_ring_barding" />
       <EquipmentSet id="empire_troop_civilian_template_t3"
                     civilian="true" />
     </Equipments>
