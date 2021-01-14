@@ -19108,7 +19108,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_lance_1_t4" />
       <equipment slot="Item1"
-                 id="Item.leather_round_shield" />
+                 id="Item.stronger_reinforced_kite_shield" />
       <equipment slot="Item2"
                  id="Item.sturgia_axe_4_t4" />
       <equipment slot="Body"
@@ -19130,7 +19130,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_lance_1_t4" />
       <equipment slot="Item1"
-                 id="Item.leather_round_shield" />
+                 id="Item.stronger_reinforced_kite_shield" />
       <equipment slot="Item2"
                  id="Item.sturgia_axe_4_t4" />
       <equipment slot="Body"
@@ -19152,7 +19152,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_lance_1_t4" />
       <equipment slot="Item1"
-                 id="Item.leather_round_shield" />
+                 id="Item.stronger_reinforced_kite_shield" />
       <equipment slot="Item2"
                  id="Item.sturgia_axe_4_t4" />
       <equipment slot="Body"
@@ -19208,7 +19208,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_lance_2_t5" />
       <equipment slot="Item1"
-                 id="Item.heavy_round_shield" />
+                 id="Item.fortified_kite_shield" />
       <equipment slot="Item2"
                  id="Item.sturgia_axe_5_t5" />
       <equipment slot="Gloves"
@@ -19230,7 +19230,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_lance_2_t5" />
       <equipment slot="Item1"
-                 id="Item.heavy_round_shield" />
+                 id="Item.fortified_kite_shield" />
       <equipment slot="Item2"
                  id="Item.sturgia_axe_5_t5" />
       <equipment slot="Gloves"
@@ -19252,7 +19252,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_lance_2_t5" />
       <equipment slot="Item1"
-                 id="Item.heavy_round_shield" />
+                 id="Item.fortified_kite_shield" />
       <equipment slot="Item2"
                  id="Item.sturgia_axe_5_t5" />
       <equipment slot="Gloves"
@@ -19785,7 +19785,7 @@
       <equipment slot="Item0"
                  id="Item.northern_javelin_2_t3" />
       <equipment slot="Item1"
-                 id="Item.viking_round_shield" />
+                 id="Item.northern_horsemans_shield" />
       <equipment slot="Item2"
                  id="Item.northern_javelin_2_t3" />
       <equipment slot="Item3"
@@ -19809,7 +19809,7 @@
       <equipment slot="Item0"
                  id="Item.northern_javelin_2_t3" />
       <equipment slot="Item1"
-                 id="Item.viking_round_shield" />
+                 id="Item.northern_horsemans_shield" />
       <equipment slot="Item2"
                  id="Item.northern_javelin_2_t3" />
       <equipment slot="Item3"
@@ -19833,7 +19833,7 @@
       <equipment slot="Item0"
                  id="Item.northern_javelin_2_t3" />
       <equipment slot="Item1"
-                 id="Item.viking_round_shield" />
+                 id="Item.northern_horsemans_shield" />
       <equipment slot="Item2"
                  id="Item.northern_javelin_2_t3" />
       <equipment slot="Item3"
@@ -19891,7 +19891,7 @@
       <equipment slot="Item0"
                  id="Item.northern_spear_3_t4" />
       <equipment slot="Item1"
-                 id="Item.leather_round_shield" />
+                 id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
                  id="Item.northern_javelin_3_t4" />
       <equipment slot="Item3"
@@ -19915,7 +19915,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_sword_5_t4" />
       <equipment slot="Item1"
-                 id="Item.leather_round_shield" />
+                 id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
                  id="Item.northern_javelin_3_t4" />
       <equipment slot="Item3"
@@ -19939,7 +19939,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_axe_4_t4" />
       <equipment slot="Item1"
-                 id="Item.leather_round_shield" />
+                 id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
                  id="Item.northern_javelin_3_t4" />
       <equipment slot="Item3"
