@@ -62,7 +62,7 @@ namespace RealisticBattleCombatModule
                             length = 5f;
                         }
                         //missileTotalDamage += 168.0f;
-                        missileTotalDamage *= 0.01f;
+                        missileTotalDamage *= 0.004f;
                     }
                     if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm"))
                     {
@@ -71,7 +71,7 @@ namespace RealisticBattleCombatModule
                         {
                             length = 5f;
                         }
-                        missileTotalDamage *= 0.006f;
+                        missileTotalDamage *= 0.0024f;
                     }
                     if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("LowGripPolearm"))
                     {
@@ -144,10 +144,10 @@ namespace RealisticBattleCombatModule
             {
                 weaponWeight += 0f;
             }
-            float num2 = 0.5f * weaponWeight * num * num * 0.315f;
-            if (num2 > (weaponWeight * 35.0f))
+            float num2 = 0.5f * weaponWeight * num * num * 0.3f;
+            if (num2 > (weaponWeight * 13.0f))
             {
-                num2 = weaponWeight * 35.0f;
+                num2 = weaponWeight * 39.0f;
             }
             return num2;
 
@@ -261,7 +261,7 @@ namespace RealisticBattleCombatModule
                                 }
                             case "Javelin":
                                 {
-                                    num *= 1.5f;
+                                    num *= 0.6f;
                                     break;
                                 }
                             case "ThrowingAxe":

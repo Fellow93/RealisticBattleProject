@@ -178,6 +178,7 @@
       <Piece id="default_polearm_pommel" Type="Pommel" scale_factor="100" />
     </Pieces>
   </CraftedItem>
+  
   <CraftedItem id="sturgia_polearm_1_t5" name="{=160aqzPm}Warrazor" crafting_template="TwoHandedPolearm" culture="Culture.sturgia">
     <Pieces>
       <Piece id="spear_blade_43" Type="Blade" scale_factor="90" />
@@ -186,6 +187,7 @@
       <Piece id="default_polearm_pommel" Type="Pommel" scale_factor="100" />
     </Pieces>
   </CraftedItem>
+  
   <CraftedItem id="battania_polearm_1_t5" name="{=V4b2ZRTH}Rhomphalia" crafting_template="TwoHandedPolearm" culture="Culture.battania">
     <Pieces>
       <Piece id="battania_blade_7" Type="Blade" scale_factor="150" />
@@ -194,6 +196,8 @@
       <Piece id="default_polearm_pommel" Type="Pommel" scale_factor="100" />
     </Pieces>
   </CraftedItem>
+  
+  
   <!-- #endregion -->
 <!-- #region Used Javelins -->
   <!-- #region Tier 2 -->
