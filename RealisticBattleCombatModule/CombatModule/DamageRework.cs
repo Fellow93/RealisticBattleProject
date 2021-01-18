@@ -327,10 +327,6 @@ namespace RealisticBattleCombatModule
             float mag_1hpol;
             float mag_2hpol;
 
-            float ExtraRealismYes;
-            ExtraRealismYes = 0f;
-            ExtraRealismYes += XmlConfig.dict["Global.ExtraRealism"];
-
             if (damageType == DamageTypes.Pierce)
             {
                 mag_1hpol = magnitude + XmlConfig.dict["Global.OneHandedPolearmBonus"];
@@ -347,208 +343,99 @@ namespace RealisticBattleCombatModule
                 mag_2hpol = magnitude;
             }
 
-            if (ExtraRealismYes > 0f)
+            switch (weaponType)
             {
-                switch (weaponType)
-                {
-                    case "Dagger":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                    XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "ThrowingKnife":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                    XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "OneHandedSword":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                    XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "TwoHandedSword":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
+                case "Dagger":
+                    {
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
                                 XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "OneHandedAxe":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
+                        break;
+                    }
+                case "ThrowingKnife":
+                    {
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
                                 XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "TwoHandedAxe":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
+                        break;
+                    }
+                case "OneHandedSword":
+                    {
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
                                 XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "OneHandedPolearm":
-                        {
-                            //magnitude += 45.0f;
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1hpol, num3, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
-                            //damage += 5.0f;
-                            break;
-                        }
-                    case "TwoHandedPolearm":
-                        {
-                            //magnitude += 30.0f;
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_2hpol, num3, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
-                            //damage += 7.0f;
-                            break;
-                        }
-                    case "Mace":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "TwoHandedMace":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "Arrow":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "Bolt":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "Javelin":
-                        {
-                            magnitude += 35.0f;
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "ThrowingAxe":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    default:
-                        {
-                            //InformationManager.DisplayMessage(new InformationMessage("POZOR DEFAULT !!!!"));
-                            damage = weaponTypeDamage(1f, 1f, magnitude, num3, damageType, armorEffectiveness, 1f, 1f);
-                            break;
-                        }
-                }
-            }
-
-            if (ExtraRealismYes <= 0f)
-            {
-                switch (weaponType)
-                {
-                    case "Dagger":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".BluntFactorCut"], XmlConfig.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                    XmlConfig.dict[weaponType + ".ArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "ThrowingKnife":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".BluntFactorCut"], XmlConfig.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                    XmlConfig.dict[weaponType + ".ArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "OneHandedSword":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".BluntFactorCut"], XmlConfig.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                    XmlConfig.dict[weaponType + ".ArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "TwoHandedSword":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".BluntFactorCut"], XmlConfig.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "OneHandedAxe":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".BluntFactorCut"], XmlConfig.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "TwoHandedAxe":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".BluntFactorCut"], XmlConfig.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "OneHandedPolearm":
-                        {
-                            //magnitude += 45.0f;
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".BluntFactorCut"], XmlConfig.dict[weaponType + ".BluntFactorPierce"], mag_1hpol, num3, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ArmorThresholdFactorPierce"]);
-                            //damage += 5.0f;
-                            break;
-                        }
-                    case "TwoHandedPolearm":
-                        {
-                            //magnitude += 30.0f;
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".BluntFactorCut"], XmlConfig.dict[weaponType + ".BluntFactorPierce"], mag_2hpol, num3, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ArmorThresholdFactorPierce"]);
-                            //damage += 7.0f;
-                            break;
-                        }
-                    case "Mace":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".BluntFactorCut"], XmlConfig.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "TwoHandedMace":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".BluntFactorCut"], XmlConfig.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "Arrow":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".BluntFactorCut"], XmlConfig.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "Bolt":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".BluntFactorCut"], XmlConfig.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "Javelin":
-                        {
-                            magnitude += 35.0f;
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".BluntFactorCut"], XmlConfig.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    case "ThrowingAxe":
-                        {
-                            damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".BluntFactorCut"], XmlConfig.dict[weaponType + ".BluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ArmorThresholdFactorPierce"]);
-                            break;
-                        }
-                    default:
-                        {
-                            //InformationManager.DisplayMessage(new InformationMessage("POZOR DEFAULT !!!!"));
-                            damage = weaponTypeDamage(1f, 1f, magnitude, num3, damageType, armorEffectiveness, 1f, 1f);
-                            break;
-                        }
-                }
+                        break;
+                    }
+                case "TwoHandedSword":
+                    {
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
+                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
+                        break;
+                    }
+                case "OneHandedAxe":
+                    {
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
+                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
+                        break;
+                    }
+                case "TwoHandedAxe":
+                    {
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
+                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
+                        break;
+                    }
+                case "OneHandedPolearm":
+                    {
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1hpol, num3, damageType, armorEffectiveness,
+                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
+                        break;
+                    }
+                case "TwoHandedPolearm":
+                    {
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_2hpol, num3, damageType, armorEffectiveness,
+                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
+                        break;
+                    }
+                case "Mace":
+                    {
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
+                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
+                        break;
+                    }
+                case "TwoHandedMace":
+                    {
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
+                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
+                        break;
+                    }
+                case "Arrow":
+                    {
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
+                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
+                        break;
+                    }
+                case "Bolt":
+                    {
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
+                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
+                        break;
+                    }
+                case "Javelin":
+                    {
+                        magnitude += 35.0f;
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
+                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
+                        break;
+                    }
+                case "ThrowingAxe":
+                    {
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, num3, damageType, armorEffectiveness,
+                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"]);
+                        break;
+                    }
+                default:
+                    {
+                        //InformationManager.DisplayMessage(new InformationMessage("POZOR DEFAULT !!!!"));
+                        damage = weaponTypeDamage(1f, 1f, magnitude, num3, damageType, armorEffectiveness, 1f, 1f);
+                        break;
+                    }
             }
 
             return damage * absorbedDamageRatio;
@@ -558,100 +445,83 @@ namespace RealisticBattleCombatModule
         {
             float damage = 0f;
             float num5 = 100f / (100f + armorEffectiveness * XmlConfig.dict["Global.ArmorMultiplier"] * 1.5f);
-            float ExtraRealismYes;
-            ExtraRealismYes = 0f;
-            ExtraRealismYes += XmlConfig.dict["Global.ExtraRealism"];
-            if (ExtraRealismYes > 0f)
-
+            switch (damageType)
             {
-                switch (damageType)
-                {
+                case DamageTypes.Blunt:
+                    {
+                        float num2 = magnitude * 1f;
 
+                        damage += num2 * num5;
 
-                    case DamageTypes.Blunt:
-                        {
-                            float num2 = magnitude * 1f;
+                        break;
+                    }
+                case DamageTypes.Cut:
+                    {
+                        float num2 = magnitude * bfc;
 
-                            damage += num2 * num5;
+                        damage += num2 * num3;
 
-                            break;
-                        }
-                    case DamageTypes.Cut:
-                        {
-                            float num2 = magnitude * bfc;
+                        float num4 = Math.Max(0f, magnitude - armorEffectiveness * ct);
 
-                            damage += num2 * num3;
+                        damage += num4;
 
-                            float num4 = Math.Max(0f, magnitude - armorEffectiveness * ct);
+                        break;
+                    }
+                case DamageTypes.Pierce:
+                    {
+                        float num2 = magnitude * bfp;
 
-                            damage += num4;
+                        damage += num2 * num3;
 
-                            break;
-                        }
-                    case DamageTypes.Pierce:
-                        {
-                            float num2 = magnitude * bfp;
+                        float num4 = Math.Max(0f, magnitude - armorEffectiveness * pt);
 
-                            damage += num2 * num3;
-
-                            float num4 = Math.Max(0f, magnitude - armorEffectiveness * pt);
-
-                            damage += num4;
-                            break;
-                        }
-                    default:
-                        {
-                            damage = 0f;
-                            break;
-                        }
-
-                }
-                return damage;
+                        damage += num4;
+                        break;
+                    }
+                default:
+                    {
+                        damage = 0f;
+                        break;
+                    }
             }
+            return damage;
+        }
+    }
 
-            else
+    [HarmonyPatch(typeof(DefaultItemValueModel))]
+    [HarmonyPatch("CalculateValue")]
+    class OverrideCalculateValue
+    {
+        static bool Prefix(ref DefaultItemValueModel __instance, ItemObject item, ref int __result)
+        {
+            float num = 1f;
+            if (item.ItemComponent != null)
             {
-                 switch (damageType)
-                 {
-                    case DamageTypes.Blunt:
-                        {
-                            float num2 = magnitude * 1f;
-
-                            damage += num2 * num5;
-
-                            break;
-                        }
-                    case DamageTypes.Cut:
-                        {
-                            float num2 = magnitude * bfc;
-
-                            damage += num2 * num3;
-
-                            float num4 = Math.Max(0f, magnitude * num3 - armorEffectiveness * ct);
-
-                            damage += num4 * (1f - bfc);
-
-                            break;
-                        }
-                    case DamageTypes.Pierce:
-                        {
-                            float num2 = magnitude * bfp;
-
-                            damage += num2 * num3;
-
-                            float num4 = Math.Max(0f, magnitude * num3 - armorEffectiveness * pt);
-
-                            damage += num4 * (1f - bfp);
-                            break;
-                        }
-                    default:
-                        {
-                            damage = 0f;
-                            break;
-                        }
-                 }
-                return damage;
+                num = __instance.GetEquipmentValueFromTier(item.Tierf);
             }
+            float num2 = 1f;
+            if (item.ItemComponent is ArmorComponent)
+            {
+                num2 = ((item.ItemType == ItemObject.ItemTypeEnum.BodyArmor) ? 120 : ((item.ItemType == ItemObject.ItemTypeEnum.HandArmor) ? 120 : ((item.ItemType == ItemObject.ItemTypeEnum.LegArmor) ? 120 : 100)));
+            }
+            else if (item.ItemComponent is WeaponComponent)
+            {
+                num2 = 10f;
+            }
+            else if (item.ItemComponent is HorseComponent)
+            {
+                num2 = 100f;
+            }
+            else if (item.ItemComponent is SaddleComponent)
+            {
+                num2 = 100f;
+            }
+            else if (item.ItemComponent is TradeItemComponent)
+            {
+                num2 = 100f;
+            }
+            __result = (int)(num2 * num * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
+            return false;
         }
     }
 
