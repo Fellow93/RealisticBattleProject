@@ -1,10 +1,17 @@
 ﻿using HarmonyLib;
 using SandBox;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml;
+using System.Xml.Linq;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.ObjectSystem;
+using static TaleWorlds.Core.Crafting;
 
 namespace RealisticBattleCombatModule
 {
@@ -700,4 +707,73 @@ namespace RealisticBattleCombatModule
     //    }
 
     //}
+
+    //[HarmonyPatch(typeof(Crafting))]
+    //[HarmonyPatch("CreatePreCraftedWeapon")]
+    //class GenerateItemPatch
+    //{
+
+    //    static List<string> names = new List<string>();
+    //    static bool Prefix(ItemObject itemObject, WeaponDesignElement[] usedPieces, string templateId, TextObject weaponName, OverrideData overridenData, ItemModifierGroup itemModifierGroup)
+    //    {
+    //        if (itemObject != null)
+    //        {
+    //            bool contains = false;
+    //            foreach(String name in names)
+    //            {
+    //                if (name.Equals(itemObject.StringId))
+    //                {
+    //                    contains = true;
+    //                }
+    //            }
+    //            if (contains)
+    //            {
+    //                return false;
+    //            }
+    //            else
+    //            {
+    //                names.Add(itemObject.StringId);
+    //                return true;
+    //            }
+    //        }
+    //        return true;
+    //    }
+    //}
+
+    [HarmonyPatch(typeof(MBObjectManager))]
+    [HarmonyPatch("MergeTwoXmls")]
+    class MergeTwoXmlsPatch
+    {
+        static bool Prefix(XmlDocument xmlDocument1, XmlDocument xmlDocument2, ref XmlDocument __result)
+        {
+            XDocument xDocument = MBObjectManager.ToXDocument(xmlDocument1);
+            XDocument xDocument2 = MBObjectManager.ToXDocument(xmlDocument2);
+
+            List<XElement> toRemove = new List<XElement>();
+
+            foreach(XElement node in xDocument.Root.Elements())
+            {
+                if(node.Name == "CraftedItem")
+                {
+                    foreach (XElement node2 in xDocument2.Root.Elements())
+                    {
+                        if (node2.Name == "CraftedItem")
+                        {
+                            if (node.Attribute("id").Value.Equals(node2.Attribute("id").Value)){
+                                toRemove.Add(node);
+                            }
+                        }
+                    }
+                }
+            }
+            foreach (XElement node in toRemove)
+            {
+                node.Remove();
+            }
+
+            xDocument.Root.Add(xDocument2.Root.Elements());
+            __result = MBObjectManager.ToXmlDocument(xDocument);
+            return false;
+        }
+    }
 }
