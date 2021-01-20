@@ -69,7 +69,7 @@ namespace RealisticBattleCombatModule
                             length = 5f;
                         }
                         //missileTotalDamage += 168.0f;
-                        missileTotalDamage *= 0.0025f;
+                        missileTotalDamage *= 0.0020f;
                     }
                     if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm"))
                     {
