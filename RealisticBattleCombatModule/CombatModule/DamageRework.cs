@@ -218,12 +218,12 @@ namespace RealisticBattleCombatModule
 
             BasicCharacterObject player = null;
             bool isPlayerVictim = false;
-            if (attackerAgentCharacter != null && attackerAgentCharacter.IsPlayerCharacter)
+            if (attackerAgentCharacter != null && attackInformation.IsAttackerPlayer)
             {
                 player = attackerAgentCharacter;
                 isPlayerVictim = false;
             }
-            else if (victimAgentCharacter != null && victimAgentCharacter.IsPlayerCharacter)
+            else if (victimAgentCharacter != null && attackInformation.IsVictimPlayer)
             {
                 player = victimAgentCharacter;
                 isPlayerVictim = true;
