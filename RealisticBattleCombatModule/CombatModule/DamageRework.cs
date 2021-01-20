@@ -78,7 +78,7 @@ namespace RealisticBattleCombatModule
                         {
                             length = 5f;
                         }
-                        missileTotalDamage *= 0.0030f;
+                        missileTotalDamage *= 0.0045f;
                     }
                     if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("LowGripPolearm"))
                     {
@@ -87,7 +87,7 @@ namespace RealisticBattleCombatModule
                         {
                             length = 5f;
                         }
-                        missileTotalDamage *= 0.0030f;
+                        missileTotalDamage *= 0.0045f;
                     }
                     else
                     {
@@ -116,7 +116,7 @@ namespace RealisticBattleCombatModule
                     physicalDamage = (weaponItem.Weight) * 150f;
                 }
 
-                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") && physicalDamage > (weaponItem.Weight) * 2000f)
+                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") && physicalDamage > (weaponItem.Weight) * 2500f)
                 {
                     physicalDamage = (weaponItem.Weight) * 2500f;
                 }
@@ -151,10 +151,10 @@ namespace RealisticBattleCombatModule
             {
                 weaponWeight += 0f;
             }
-            float num2 = 0.5f * weaponWeight * num * num * 0.3f;
-            if (num2 > (weaponWeight * 13.0f))
+            float num2 = 0.5f * weaponWeight * num * num * 0.35f;
+            if (num2 > (weaponWeight * 14.0f))
             {
-                num2 = weaponWeight * 39.0f;
+                num2 = weaponWeight * 14.0f;
             }
             return num2;
 
@@ -475,12 +475,13 @@ namespace RealisticBattleCombatModule
                     }
                 case DamageTypes.Cut:
                     {
-                        float bluntTrauma = magnitude * bluntFactorCut;
+                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * cutTreshold);
+                        float bluntFraction = (magnitude - penetratedDamage) / magnitude;
+                        damage += penetratedDamage;
+
+                        float bluntTrauma = magnitude * bluntFactorCut * bluntFraction;
                         float bluntTraumaAfterArmor = bluntTrauma * armorReduction;
                         damage += bluntTraumaAfterArmor;
-
-                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * cutTreshold);
-                        damage += penetratedDamage;
 
                         if(player != null)
                         {
@@ -499,12 +500,13 @@ namespace RealisticBattleCombatModule
                     }
                 case DamageTypes.Pierce:
                     {
-                        float bluntTrauma = magnitude * bluntFactorPierce;
+                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * pierceTreshold);
+                        float bluntFraction = (magnitude - penetratedDamage) / magnitude;
+                        damage += penetratedDamage;
+
+                        float bluntTrauma = magnitude * bluntFactorPierce * bluntFraction;
                         float bluntTraumaAfterArmor = bluntTrauma * armorReduction;
                         damage += bluntTraumaAfterArmor;
-
-                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * pierceTreshold);
-                        damage += penetratedDamage;
 
                         if (player != null)
                         {
