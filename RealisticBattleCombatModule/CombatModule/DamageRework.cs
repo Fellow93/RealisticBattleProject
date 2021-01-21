@@ -160,6 +160,28 @@ namespace RealisticBattleCombatModule
         }
     }
 
+    [HarmonyPatch(typeof(CombatStatCalculator))]
+    [HarmonyPatch("CalculateStrikeMagnitudeForThrust")]
+    class CalculateStrikeMagnitudeForThrustPatch
+    {
+        static bool Prefix(float thrustWeaponSpeed, float weaponWeight, float extraLinearSpeed, bool isThrown, ref float __result)
+        {
+            float combinedSpeed = thrustWeaponSpeed + extraLinearSpeed;
+            if (combinedSpeed > 0f)
+            {
+                if (!isThrown)
+                {
+                    weaponWeight += 2.5f;
+                }
+                float kineticEnergy = 0.5f * weaponWeight * combinedSpeed * combinedSpeed;
+                __result =  0.125f * kineticEnergy;
+                return false;
+            }
+            __result = 0f;
+            return false;
+        }
+    }
+
     [HarmonyPatch(typeof(Mission))]
     [HarmonyPatch("ComputeBlowDamage")]
     class OverrideDamageCalc
@@ -475,11 +497,15 @@ namespace RealisticBattleCombatModule
                 case DamageTypes.Cut:
                     {
                         float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * cutTreshold);
-                        float bluntFraction = (magnitude - penetratedDamage) / magnitude;
+                        float bluntFraction = 0f;
+                        if (magnitude > 0f)
+                        {
+                            bluntFraction = (magnitude - penetratedDamage) / magnitude;
+                        }
                         damage += penetratedDamage;
 
                         float bluntTrauma = magnitude * bluntFactorCut * bluntFraction;
-                        float bluntTraumaAfterArmor = bluntTrauma * armorReduction;
+                        float bluntTraumaAfterArmor = Math.Max(0f, bluntTrauma * armorReduction);
                         damage += bluntTraumaAfterArmor;
 
                         if(player != null)
@@ -502,11 +528,15 @@ namespace RealisticBattleCombatModule
                 case DamageTypes.Pierce:
                     {
                         float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * pierceTreshold);
-                        float bluntFraction = (magnitude - penetratedDamage) / magnitude;
+                        float bluntFraction = 0f;
+                        if (magnitude > 0f)
+                        {
+                            bluntFraction = (magnitude - penetratedDamage) / magnitude;
+                        }
                         damage += penetratedDamage;
 
                         float bluntTrauma = magnitude * bluntFactorPierce * bluntFraction;
-                        float bluntTraumaAfterArmor = bluntTrauma * armorReduction;
+                        float bluntTraumaAfterArmor = Math.Max(0f, bluntTrauma * armorReduction);
                         damage += bluntTraumaAfterArmor;
 
                         if (player != null)
