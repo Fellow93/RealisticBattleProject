@@ -150,10 +150,10 @@ namespace RealisticBattleCombatModule
             {
                 weaponWeight += 0f;
             }
-            float num2 = 0.5f * weaponWeight * num * num * 0.35f;
-            if (num2 > (weaponWeight * 14.0f))
+            float num2 = 0.5f * weaponWeight * num * num * 0.30f;
+            if (num2 > (weaponWeight * 15.0f))
             {
-                num2 = weaponWeight * 14.0f;
+                num2 = weaponWeight * 15.0f;
             }
             return num2;
 
@@ -174,6 +174,11 @@ namespace RealisticBattleCombatModule
                     weaponWeight += 2.5f;
                 }
                 float kineticEnergy = 0.5f * weaponWeight * combinedSpeed * combinedSpeed;
+                float handLimit = 0.5f * weaponWeight * thrustWeaponSpeed * thrustWeaponSpeed * 1.25f;
+                if (kineticEnergy > handLimit)
+                {
+                    kineticEnergy = handLimit;
+                }
                 __result =  0.125f * kineticEnergy;
                 return false;
             }

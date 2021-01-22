@@ -2,136 +2,136 @@
 
 <CraftingPieces>
 <!-- #region Used Spear Handle Pieces -->
-  <CraftingPiece id="spear_handle_5" name="{=baQ99nza}Long Ash Shaft" tier="2" piece_type="Handle" mesh="spear_handle_5" length="229" weight="0.92" CraftingCost="110">
-    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
-    <BuildData piece_offset="38.2" />
+  <CraftingPiece id="spear_handle_5" name="{=baQ99nza}Long Ash Shaft" tier="2" piece_type="Handle" mesh="spear_handle_5" length="229" weight="0.85" CraftingCost="110">
+    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin:TwoHandedPolearm_Couchable" />
+    <BuildData piece_offset="20.0" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="spear_handle_6" name="{=RXjhTS9s}Long Wrapped Oak Shaft" tier="2" piece_type="Handle" mesh="spear_handle_6" length="250" weight="1.0" CraftingCost="120">
-    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
-    <BuildData piece_offset="41.5" />
-    <Materials>
-      <Material id="Wood" count="1" />
-    </Materials>
-  </CraftingPiece>
-  <CraftingPiece id="spear_handle_25" name="{=nGP3FlHm}Long Mahogany Shaft" tier="3" piece_type="Handle" mesh="spear_handle_25" length="270" weight="1.08">
-    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
-    <BuildData piece_offset="45.5" />
-    <Materials>
-      <Material id="Wood" count="1" />
-    </Materials>
-  </CraftingPiece>
-  <CraftingPiece id="spear_handle_27" name="{=tSQbGb4m}Extra Long Mahogany Shaft" tier="4" piece_type="Handle" mesh="spear_handle_27" length="290" weight="1.16">
-    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
-    <BuildData piece_offset="48.5" />
-    <Materials>
-      <Material id="Wood" count="1" />
-    </Materials>
-  </CraftingPiece>
-  <CraftingPiece id="spear_handle_3" name="{=71588OX7}Bamboo Shaft" tier="2" piece_type="Handle" mesh="spear_handle_3" length="179" weight="0.72" excluded_item_usage_features="long" CraftingCost="100">
-    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
-    <BuildData piece_offset="29.7" />
-    <Materials>
-      <Material id="Wood" count="1" />
-    </Materials>
-  </CraftingPiece>
-  <CraftingPiece id="spear_handle_4" name="{=LSOXMCAW}Pine Shaft" tier="4" piece_type="Handle" mesh="spear_handle_4" length="190" weight="0.76" excluded_item_usage_features="long" item_holster_pos_shift="0,0,0.10" CraftingCost="100">
-    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
-    <BuildData piece_offset="31.5" />
-    <Materials>
-      <Material id="Wood" count="1" />
-    </Materials>
-  </CraftingPiece>
-  <CraftingPiece id="spear_handle_18" name="{=ow1aK4DJ}Wrapped Oaken Long Shaft" tier="3" piece_type="Handle" mesh="spear_handle_18" excluded_item_usage_features="long" length="200" weight="0.8">
-    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
-    <BuildData piece_offset="33.0" />
-    <Materials>
-      <Material id="Wood" count="4" />
-    </Materials>
-  </CraftingPiece>
-  <CraftingPiece id="spear_handle_22" name="{=HaNPlFBt}Wrapped Hardwood Long Shaft" tier="3" piece_type="Handle" mesh="spear_handle_22" length="240" weight="0.96">
-    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
-    <BuildData piece_offset="40.0" />
-    <Materials>
-      <Material id="Wood" count="1" />
-    </Materials>
-  </CraftingPiece>
-  <CraftingPiece id="spear_handle_21" name="{=7EZbFRaG}Reinforced Pine Shaft" tier="3" piece_type="Handle" mesh="spear_handle_21" length="230" weight="0.92">
-    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
-    <BuildData piece_offset="38.5" />
-    <Materials>
-      <Material id="Wood" count="1" />
-    </Materials>
-  </CraftingPiece>
-  <CraftingPiece id="spear_handle_16" name="{=yD9v5GS0}Decorated Pine Shaft" tier="4" piece_type="Handle" mesh="spear_handle_16" length="180" weight="0.72">
-    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
+  <CraftingPiece id="spear_handle_6" name="{=RXjhTS9s}Long Wrapped Oak Shaft" tier="2" piece_type="Handle" mesh="spear_handle_6" length="250" weight="0.93" CraftingCost="120">
+    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin:TwoHandedPolearm_Couchable" />
     <BuildData piece_offset="30.0" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="spear_handle_14" name="{=AtNVVwTF}Short Pine Shaft" tier="3" piece_type="Handle" mesh="spear_handle_14" length="160" weight="0.64">
-	<PieceUsages unavailable_usages="TwoHandedPolearm_Bracing" />
-    <BuildData piece_offset="26.0" />
+  <CraftingPiece id="spear_handle_25" name="{=nGP3FlHm}Long Mahogany Shaft" tier="3" piece_type="Handle" mesh="spear_handle_25" length="270" weight="1.01">
+    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin:TwoHandedPolearm_Couchable" />
+    <BuildData piece_offset="40.0" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="spear_handle_27" name="{=tSQbGb4m}Extra Long Mahogany Shaft" tier="4" piece_type="Handle" mesh="spear_handle_27" length="290" weight="1.08">
+    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin:TwoHandedPolearm_Couchable" />
+    <BuildData piece_offset="50.0" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="spear_handle_3" name="{=71588OX7}Bamboo Shaft" tier="2" piece_type="Handle" mesh="spear_handle_3" length="179" weight="0.67" excluded_item_usage_features="long" CraftingCost="100">
+    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin:TwoHandedPolearm_Couchable" />
+    <BuildData piece_offset="5.0" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="spear_handle_4" name="{=LSOXMCAW}Pine Shaft" tier="4" piece_type="Handle" mesh="spear_handle_4" length="190" weight="0.72" excluded_item_usage_features="long" item_holster_pos_shift="0,0,0.10" CraftingCost="100">
+    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin:TwoHandedPolearm_Couchable" />
+    <BuildData piece_offset="5.0" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="spear_handle_18" name="{=ow1aK4DJ}Wrapped Oaken Long Shaft" tier="3" piece_type="Handle" mesh="spear_handle_18" excluded_item_usage_features="long" length="200" weight="0.75">
+    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin:TwoHandedPolearm_Couchable" />
+    <BuildData piece_offset="10.0" />
+    <Materials>
+      <Material id="Wood" count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="spear_handle_22" name="{=HaNPlFBt}Wrapped Hardwood Long Shaft" tier="3" piece_type="Handle" mesh="spear_handle_22" length="240" weight="0.90">
+    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin:TwoHandedPolearm_Couchable" />
+    <BuildData piece_offset="30.0" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="spear_handle_21" name="{=7EZbFRaG}Reinforced Pine Shaft" tier="3" piece_type="Handle" mesh="spear_handle_21" length="230" weight="0.86">
+    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin:TwoHandedPolearm_Couchable" />
+    <BuildData piece_offset="25.0" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="spear_handle_16" name="{=yD9v5GS0}Decorated Pine Shaft" tier="4" piece_type="Handle" mesh="spear_handle_16" length="180" weight="0.67">
+    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin:TwoHandedPolearm_Couchable" />
+    <BuildData piece_offset="5.0" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="spear_handle_14" name="{=AtNVVwTF}Short Pine Shaft" tier="3" piece_type="Handle" mesh="spear_handle_14" length="160" weight="0.60">
+	<PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:TwoHandedPolearm_Couchable" />
+    <BuildData piece_offset="50.0" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
    <!-- #Pikes -->
-  <CraftingPiece id="spear_handle_7" name="{=Nhhmj7bz}Hard Maple Pike Shaft" tier="5" piece_type="Handle" mesh="spear_handle_7" length="295" weight="1.18" excluded_item_usage_features="long" CraftingCost="150">
+  <CraftingPiece id="spear_handle_7" name="{=Nhhmj7bz}Hard Maple Pike Shaft" tier="5" piece_type="Handle" mesh="spear_handle_7" length="295" weight="1.1" excluded_item_usage_features="long" CraftingCost="150">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:TwoHandedPolearm_Bracing:OneHandedPolearm:Javelin" />
-    <BuildData piece_offset="49.0" />
+    <BuildData piece_offset="100.0" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
      <!-- #vlandia_lance_1_t3;khuzait_lance_1_t3 -long and light -->
-  <CraftingPiece id="spear_handle_23" name="{=GsBQCQEF}Reinforced Long Pine Shaft" tier="3" piece_type="Handle" mesh="spear_handle_23" length="250" weight="1.53">
+  <CraftingPiece id="spear_handle_23" name="{=GsBQCQEF}Reinforced Long Pine Shaft" tier="3" piece_type="Handle" mesh="spear_handle_23" length="250" weight="1.56">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
-    <BuildData piece_offset="60.0" />
+    <BuildData piece_offset="65.0" />
     <Materials>
       <Material id="Iron3" count="1" />
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
        <!-- #aserai_lance_1_t5; vlandia_lance_3_t5; sturgia_lance_2_t5 -medium and heavy -->
-  <CraftingPiece id="spear_handle_19" name="{=e1DF7wbz}Hardened Ashen Staff" tier="5" piece_type="Handle" mesh="spear_handle_19" length="210" weight="2.24">
+  <CraftingPiece id="spear_handle_19" name="{=e1DF7wbz}Hardened Ashen Staff" tier="5" piece_type="Handle" mesh="spear_handle_19" length="210" weight="1.31">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
-    <BuildData piece_offset="37.0" />
+    <BuildData piece_offset="50.0" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
   <!-- #empire_lance_1_t3 -medium and light -->
-  <CraftingPiece id="spear_handle_13" name="{=pocRP9dq}Long Ash Staff" tier="3" piece_type="Handle" mesh="spear_handle_13" length="228" weight="1.5" CraftingCost="110">
+  <CraftingPiece id="spear_handle_13" name="{=pocRP9dq}Long Ash Staff" tier="3" piece_type="Handle" mesh="spear_handle_13" length="228" weight="1.42" CraftingCost="110">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
-    <BuildData piece_offset="51.0" />
+    <BuildData piece_offset="54.0" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
   <!-- #empire_lance_2_t4; empire_lance_3_t5 -long and medium weight -->
-  <CraftingPiece id="spear_handle_24" name="{=8yb60cDi}Mahogany Long Spear Shaft" tier="4" piece_type="Handle" mesh="spear_handle_24" length="260" weight="2.0">
+  <CraftingPiece id="spear_handle_24" name="{=8yb60cDi}Mahogany Long Spear Shaft" tier="4" piece_type="Handle" mesh="spear_handle_24" length="260" weight="1.625">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
-    <BuildData piece_offset="58.0" />
+    <BuildData piece_offset="70.0" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
   <!-- #khuzait_lance_2_t4; khuzait_lance_3_t5; vlandia_lance_2_t4 -short and medium weight -->
-  <CraftingPiece id="spear_handle_20" name="{=tgJ3dSOx}Oaken Long Spear Staff" tier="4" piece_type="Handle" mesh="spear_handle_20" length="220" weight="1.94">
+  <CraftingPiece id="spear_handle_20" name="{=tgJ3dSOx}Oaken Long Spear Staff" tier="4" piece_type="Handle" mesh="spear_handle_20" length="220" weight="1.37">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
-    <BuildData piece_offset="42.0" />
+    <BuildData piece_offset="52.0" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
   <!-- #sturgia_lance_1_t4 -shortest -->
-  <CraftingPiece id="spear_handle_17" name="{=J5Tu73Mb}Hardened Pine Long Spear Staff" tier="4" piece_type="Handle" mesh="spear_handle_17" length="190" weight="1.72">
+  <CraftingPiece id="spear_handle_17" name="{=J5Tu73Mb}Hardened Pine Long Spear Staff" tier="4" piece_type="Handle" mesh="spear_handle_17" length="190" weight="1.19">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
-    <BuildData piece_offset="25.0" />
+    <BuildData piece_offset="45.0" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
@@ -335,19 +335,41 @@
     </Materials>
   </CraftingPiece>
   
-  <!-- #region Used Spear Blade Pieces -->
+  <!-- #region Used Lance Blade Pieces -->
 
-  <CraftingPiece id="spear_blade_20" name="{=uwG8iwBc}Long Grassland Spear" tier="3" piece_type="Blade" mesh="spear_blade_20" length="46" weight="0.3592" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_23" name="{=OryiZr9d}Kontarion" tier="3" piece_type="Blade" mesh="spear_blade_23" length="42" weight="0.35" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="5.1" />
+      <Thrust damage_type="Pierce" damage_factor="5.0" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron3" count="2" />
+    </Materials>
+  </CraftingPiece>
+
+  <CraftingPiece id="spear_blade_20" name="{=uwG8iwBc}Long Grassland Spear" tier="4" piece_type="Blade" mesh="spear_blade_20" length="46" weight="0.39" excluded_item_usage_features="swing">
+    <PieceUsages unavailable_usages="" />
+    <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
+      <Thrust damage_type="Pierce" damage_factor="5.3" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="1" />
     </Materials>
   </CraftingPiece>
 
-  <CraftingPiece id="spear_blade_6" name="{=S75vUGzK}Fine Steel Hewing Spear Head" tier="5" piece_type="Blade" mesh="spear_blade_6" length="84.4" weight="0.4" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_5" name="{=QwfDN06p}Knightly Lance Head" tier="5" piece_type="Blade" mesh="spear_blade_5" length="52.242" weight="0.43" excluded_item_usage_features="swing">
+    <PieceUsages unavailable_usages="" />
+    <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
+      <Thrust damage_type="Pierce" damage_factor="5.6" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron5" count="1" />
+    </Materials>
+  </CraftingPiece>
+  
+  <!-- #region Used Spear Blade Pieces -->
+
+  <CraftingPiece id="spear_blade_6" name="{=S75vUGzK}Fine Steel Hewing Spear Head" tier="5" piece_type="Blade" mesh="spear_blade_6" length="84.4" weight="0.3" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="6.5" />
@@ -357,7 +379,7 @@
     </Materials>
   </CraftingPiece>
   
-  <CraftingPiece id="spear_blade_1" name="{=Oxew9WCe}Imperial Simple Spear Head" tier="2" piece_type="Blade" mesh="spear_blade_1" length="48" weight="0.3384" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_1" name="{=Oxew9WCe}Imperial Simple Spear Head" tier="2" piece_type="Blade" mesh="spear_blade_1" length="48" weight="0.26" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="5" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_4" holster_body_name="bo_throwing_spear_quiver_4" holster_mesh_length="96.2">
       <Thrust damage_type="Pierce" damage_factor="5.2" />
@@ -366,18 +388,8 @@
       <Material id="Iron2" count="1" />
     </Materials>
   </CraftingPiece>
-  
-  <CraftingPiece id="spear_blade_5" name="{=QwfDN06p}Knightly Lance Head" tier="5" piece_type="Blade" mesh="spear_blade_5" length="52.242" weight="0.4056" excluded_item_usage_features="swing">
-    <PieceUsages unavailable_usages="" />
-    <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="7.0" />
-    </BladeData>
-    <Materials>
-      <Material id="Iron5" count="1" />
-    </Materials>
-  </CraftingPiece>
-  
-  <CraftingPiece id="spear_blade_8" name="{=CdBAvJdP}Kontos Head" tier="3" piece_type="Blade" mesh="spear_blade_8" length="60.153" weight="0.7" excluded_item_usage_features="swing">
+      
+  <CraftingPiece id="spear_blade_8" name="{=CdBAvJdP}Kontos Head" tier="3" piece_type="Blade" mesh="spear_blade_8" length="60.153" weight="0.4" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="5.0" />
@@ -387,7 +399,7 @@
     </Materials>
   </CraftingPiece>
   
-  <CraftingPiece id="spear_blade_4" name="{=ZcUNAfKT}Extra Long Fine Steel Spear Head" tier="4" piece_type="Blade" mesh="spear_blade_4" length="72.558" weight="0.6168" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_4" name="{=ZcUNAfKT}Extra Long Fine Steel Spear Head" tier="4" piece_type="Blade" mesh="spear_blade_4" length="72.558" weight="0.4168" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="6.3" />
@@ -407,7 +419,7 @@
     </Materials>
   </CraftingPiece>
   
-  <CraftingPiece id="spear_blade_14" name="{=T1aiDuOp}Narrow Menavlon Head" tier="3" piece_type="Blade" mesh="spear_blade_14" length="46.28" weight="0.3768" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_14" name="{=T1aiDuOp}Narrow Menavlon Head" tier="3" piece_type="Blade" mesh="spear_blade_14" length="46.28" weight="0.3268" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="5" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_4" holster_body_name="bo_throwing_spear_quiver_4" holster_mesh_length="96.2">
       <Thrust damage_type="Pierce" damage_factor="6.0" />
@@ -427,7 +439,7 @@
     </Materials>
   </CraftingPiece>
   
-  <CraftingPiece id="spear_blade_27" name="{=1rGNXUaJ}Thin Fine Steel Hewing Spear Head" tier="5" piece_type="Blade" mesh="spear_blade_27" length="69.5" weight="0.5" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_27" name="{=1rGNXUaJ}Thin Fine Steel Hewing Spear Head" tier="5" piece_type="Blade" mesh="spear_blade_27" length="69.5" weight="0.4" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="5" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_2" holster_body_name="bo_throwing_spear_quiver_2" holster_mesh_length="94.6">
       <Thrust damage_type="Pierce" damage_factor="7.0" />
@@ -478,7 +490,7 @@
     </Materials>
   </CraftingPiece>
 
-  <CraftingPiece id="spear_blade_10" name="{=emUoygLE}Harpoon Head" tier="2" piece_type="Blade" mesh="spear_blade_10" length="39.775" weight="0.54" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_10" name="{=emUoygLE}Harpoon Head" tier="2" piece_type="Blade" mesh="spear_blade_10" length="39.775" weight="0.44" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="5" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_1" holster_body_name="bo_throwing_spear_quiver_1" holster_mesh_length="68.9">
       <Thrust damage_type="Pierce" damage_factor="6.0" />
@@ -487,17 +499,7 @@
       <Material id="Iron3" count="1" />
     </Materials>
   </CraftingPiece>
-  
-  <CraftingPiece id="spear_blade_23" name="{=OryiZr9d}Kontarion" tier="3" piece_type="Blade" mesh="spear_blade_23" length="42" weight="0.352" excluded_item_usage_features="swing">
-    <PieceUsages unavailable_usages="" />
-    <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="5.0" />
-    </BladeData>
-    <Materials>
-      <Material id="Iron3" count="2" />
-    </Materials>
-  </CraftingPiece>
-  
+   
   <CraftingPiece id="spear_blade_16" name="{=Js1FKwrL}Javelin Head" tier="2" piece_type="Blade" mesh="spear_blade_16" length="23.328" weight="0.204" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="4" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_3_1" holster_body_name="bo_throwing_spear_quiver_3_1" holster_mesh_length="96.8">
@@ -528,7 +530,7 @@
     </Materials>
   </CraftingPiece>
   
-  <CraftingPiece id="spear_blade_3" name="{=ZAoWK9Gt}Rounded Imperial Spear Head" tier="2" piece_type="Blade" mesh="spear_blade_3" length="57.143" weight="0.4536" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_3" name="{=ZAoWK9Gt}Rounded Imperial Spear Head" tier="2" piece_type="Blade" mesh="spear_blade_3" length="57.143" weight="0.3536" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="4.3" />
@@ -538,7 +540,7 @@
     </Materials>
   </CraftingPiece>
   
-  <CraftingPiece id="spear_blade_26" name="{=Y0gbKTgZ}Sturgian Military Fork Head" tier="2" piece_type="Blade" mesh="spear_blade_26" length="29.8" weight="0.4584" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_26" name="{=Y0gbKTgZ}Sturgian Military Fork Head" tier="2" piece_type="Blade" mesh="spear_blade_26" length="29.8" weight="0.3584" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="4.5" />
@@ -549,7 +551,7 @@
     </Materials>
   </CraftingPiece>
   
-  <CraftingPiece id="spear_blade_2" name="{=U30HpvtI}Triangular Iron Northern Spear Head" tier="3" piece_type="Blade" mesh="spear_blade_2" length="47.843" weight="0.3912" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_2" name="{=U30HpvtI}Triangular Iron Northern Spear Head" tier="3" piece_type="Blade" mesh="spear_blade_2" length="47.843" weight="0.2912" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="5.0" />
@@ -559,7 +561,7 @@
     </Materials>
   </CraftingPiece>
   
-  <CraftingPiece id="spear_blade_39" name="{=8T7gNbfM}Drilled Wide Leaf Shaped Spear Head" tier="4" piece_type="Blade" mesh="spear_blade_39" length="54.2" weight="0.4216" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_39" name="{=8T7gNbfM}Drilled Wide Leaf Shaped Spear Head" tier="4" piece_type="Blade" mesh="spear_blade_39" length="54.2" weight="0.3216" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="6.3" />
@@ -569,7 +571,7 @@
     </Materials>
   </CraftingPiece>
   
-  <CraftingPiece id="spear_blade_25" name="{=mrTkURKV}Notched Fork Head" tier="3" piece_type="Blade" mesh="spear_blade_25" length="42.5" weight="0.6504" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_25" name="{=mrTkURKV}Notched Fork Head" tier="3" piece_type="Blade" mesh="spear_blade_25" length="42.5" weight="0.3504" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="5.5" />
