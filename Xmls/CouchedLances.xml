@@ -74,7 +74,7 @@
   </CraftingPiece>
   <CraftingPiece id="spear_handle_14" name="{=AtNVVwTF}Short Pine Shaft" tier="3" piece_type="Handle" mesh="spear_handle_14" length="160" weight="0.60">
 	<PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:TwoHandedPolearm_Couchable" />
-    <BuildData piece_offset="50.0" />
+    <BuildData piece_offset="0.0" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>

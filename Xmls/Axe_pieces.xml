@@ -341,7 +341,7 @@
     <PieceUsages unavailable_usages="" />
     <BuildData piece_offset="-7.6" />
     <BladeData stack_amount="3" blade_length="33.887" blade_width="22.47" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Swing damage_type="Cut" damage_factor="3.3" />
+      <Swing damage_type="Cut" damage_factor="4.7" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />

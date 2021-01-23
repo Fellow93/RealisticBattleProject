@@ -407,7 +407,7 @@
     <!--WOOD-->
     <PieceUsages unavailable_usages="OneHandedPolearm:TwoHandedPolearm_Couchable:Javelin" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
-      <Swing damage_type="Blunt" damage_factor="2.1" />
+      <Swing damage_type="Blunt" damage_factor="2.8" />
     </BladeData>
     <Materials>
       <Material id="Iron2" count="1" />

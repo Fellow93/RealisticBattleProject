@@ -98,7 +98,7 @@
 	</Item>
 	<Item id="tournament_bolts" name="Flesh Cutting Long Range Bolts 30 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_a" weight="0.03" value="600" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_a_quiver" holster_mesh_with_weapon="bolt_bl_a_quiver" flying_mesh="bolt_bl_a">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="47" thrust_damage="115" thrust_damage_type="Cut" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="20" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0">
+			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="47" thrust_damage="115" thrust_damage_type="Cut" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="40" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -106,7 +106,7 @@
 	</Item>
 	<Item id="bolt_a" name="Armor Piercing Bolts 95 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_a" weight="0.095" value="500" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_a_quiver" holster_mesh_with_weapon="bolt_bl_a_quiver" flying_mesh="bolt_bl_a">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="47" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="20" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0">
+			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="47" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="40" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -114,7 +114,7 @@
 	</Item>
 	<Item id="bolt_b" name="Armor Piercing Bolts 80 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_b" weight="0.08" value="400" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_b_quiver" holster_mesh_with_weapon="bolt_bl_b_quiver" flying_mesh="bolt_bl_b">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="47" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="20" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0">
+			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="47" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="40" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -122,7 +122,7 @@
 	</Item>
 	<Item id="bolt_c" name="Armor Piercing Bolts 65 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_c" weight="0.065" value="400" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_c_quiver" holster_mesh_with_weapon="bolt_bl_c_quiver" flying_mesh="bolt_bl_c">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="20" sticking_position="0,-0.37,0" sticking_rotation="90,0,0" rotation="180, 0, 0">
+			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="40" sticking_position="0,-0.37,0" sticking_rotation="90,0,0" rotation="180, 0, 0">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -130,7 +130,7 @@
 	</Item>
 	<Item id="bolt_d" name="Armor Piercing Bolts 50 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_d" weight="0.05" value="400" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_d_quiver" holster_mesh_with_weapon="bolt_bl_d_quiver" flying_mesh="bolt_bl_d">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="20" sticking_position="0,-0.37,0" sticking_rotation="90,0,0" rotation="180, 0, 0">
+			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="40" sticking_position="0,-0.37,0" sticking_rotation="90,0,0" rotation="180, 0, 0">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -138,7 +138,7 @@
 	</Item>
 	<Item id="bolt_e" name="Armor Piercing Bolts 40 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_e" weight="0.04" value="400" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_e_quiver" holster_mesh_with_weapon="bolt_bl_e_quiver" flying_mesh="bolt_bl_e">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="20" sticking_position="0,-0.37,0" sticking_rotation="90,0,0" rotation="180, 0, 0">
+			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" physics_material="missile" center_of_mass="0,0,-0.1" stack_amount="40" sticking_position="0,-0.37,0" sticking_rotation="90,0,0" rotation="180, 0, 0">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" CanPenetrateShield="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
