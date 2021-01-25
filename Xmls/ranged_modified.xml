@@ -51,7 +51,7 @@
 	<Item id="crossbow_a" name="{=K1UFTirG}Light Crossbow" body_name="bo_cross_bow_heavy" mesh="crossbow_a" weight="1" value="2000" difficulty="0" appearance="0.3" Type="Crossbow" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" AmmoOffset="0.0, 0.02131, 0.24650" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
 			<Weapon weapon_class="Crossbow" ammo_class="Bolt" ammo_limit="1" thrust_speed="70" speed_rating="50" missile_speed="450" weapon_length="95" accuracy="95" thrust_damage="10" thrust_damage_type="Pierce" item_usage="crossbow_fast" physics_material="wood_weapon" center_of_mass="0,0,0.4">
-				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" CantReloadOnHorseback="false"/>
+				<WeaponFlags RangedWeapon="true" HasString="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="false" CantReloadOnHorseback="false"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>

@@ -340,7 +340,7 @@
   <CraftingPiece id="spear_blade_23" name="{=OryiZr9d}Kontarion" tier="3" piece_type="Blade" mesh="spear_blade_23" length="42" weight="0.35" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="5.0" />
+      <Thrust damage_type="Pierce" damage_factor="7.5" />
     </BladeData>
     <Materials>
       <Material id="Iron3" count="2" />
@@ -350,7 +350,7 @@
   <CraftingPiece id="spear_blade_20" name="{=uwG8iwBc}Long Grassland Spear" tier="4" piece_type="Blade" mesh="spear_blade_20" length="46" weight="0.39" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="5.3" />
+      <Thrust damage_type="Pierce" damage_factor="7.95" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="1" />
@@ -360,7 +360,7 @@
   <CraftingPiece id="spear_blade_5" name="{=QwfDN06p}Knightly Lance Head" tier="5" piece_type="Blade" mesh="spear_blade_5" length="52.242" weight="0.43" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="5.6" />
+      <Thrust damage_type="Pierce" damage_factor="8.4" />
     </BladeData>
     <Materials>
       <Material id="Iron5" count="1" />

@@ -144,9 +144,9 @@
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
 	</Item>
-	<Item id="blunt_arrows" name="{=DC0qJkVs}Blunt Arrows" body_name="bo_capsule_arrow" mesh="arrow_bl_i" weight="0.08" value="300" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_back_top:quiver_bolts:quiver_bolts_2" culture="Culture.khuzait" holster_position_shift="0.0,0.0,0.15" is_merchandise="false" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_i_quiver" holster_mesh_with_weapon="arrow_bl_i_quiver" flying_mesh="arrow_bl_i">
+	<Item id="blunt_arrows" name="Very Heavy Armor Piercing Arrows 125 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_i" weight="0.125" value="6000" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_back_top:quiver_bolts:quiver_bolts_2" culture="Culture.khuzait" holster_position_shift="0.0,0.0,0.15" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_i_quiver" holster_mesh_with_weapon="arrow_bl_i_quiver" flying_mesh="arrow_bl_i">
 		<ItemComponent>
-			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Blunt" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.95,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="10" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.95,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true"/>
 			</Weapon>
 		</ItemComponent>

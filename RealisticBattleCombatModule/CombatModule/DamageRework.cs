@@ -150,10 +150,10 @@ namespace RealisticBattleCombatModule
             {
                 weaponWeight += 0f;
             }
-            float num2 = 0.5f * weaponWeight * num * num * 0.30f;
-            if (num2 > (weaponWeight * 15.0f))
+            float num2 = 0.5f * weaponWeight * num * num * 0.20f;
+            if (num2 > (weaponWeight * 10.0f))
             {
-                num2 = weaponWeight * 15.0f;
+                num2 = weaponWeight * 10.0f;
             }
             return num2;
 
