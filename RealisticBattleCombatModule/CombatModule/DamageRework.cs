@@ -589,7 +589,7 @@ namespace RealisticBattleCombatModule
             }
             else if (item.ItemComponent is WeaponComponent)
             {
-                num2 = 10f;
+                num2 = 100f;
             }
             else if (item.ItemComponent is HorseComponent)
             {
