@@ -608,6 +608,71 @@ namespace RealisticBattleCombatModule
         }
     }
 
+    [HarmonyPatch(typeof(DefaultItemValueModel))]
+    [HarmonyPatch("CalculateTierMeleeWeapon")]
+    class OverrideCalculateTierMeleeWeapon
+    {
+        private static float GetFactor(DamageTypes swingDamageType)
+        {
+            switch (swingDamageType)
+            {
+                default:
+                    return 1f;
+                case DamageTypes.Pierce:
+                    return 1.15f;
+                case DamageTypes.Blunt:
+                    return 1.3f;
+            }
+        }
+
+        static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
+        {
+            WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
+            float val = (float)weaponComponentData.ThrustDamage * GetFactor(weaponComponentData.ThrustDamageType) * MathF.Pow((float)weaponComponentData.ThrustSpeed * 0.01f, 1.5f);
+            float num = (float)weaponComponentData.SwingDamage * GetFactor(weaponComponentData.SwingDamageType) * MathF.Pow((float)weaponComponentData.SwingSpeed * 0.01f, 1.5f);
+            float num2 = Math.Max(val, num * 1.1f);
+            if (weaponComponentData.WeaponFlags.HasAnyFlag(WeaponFlags.NotUsableWithOneHand))
+            {
+                num2 *= 0.8f;
+            }
+            if (weaponComponentData.WeaponClass == WeaponClass.ThrowingKnife || weaponComponentData.WeaponClass == WeaponClass.ThrowingKnife || weaponComponentData.WeaponClass == WeaponClass.Javelin)
+            {
+                num2 *= 1.2f;
+            }
+            float num3 = (float)weaponComponentData.WeaponLength * 0.01f;
+            __result =  0.06f * (num2 * (1f + num3)) - 3.5f;
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(DefaultItemValueModel))]
+    [HarmonyPatch("CalculateArmorTier")]
+    class OverrideCalculateArmorTier
+    {
+        static bool Prefix(ref DefaultItemValueModel __instance, ArmorComponent armorComponent, ref float __result)
+        {
+            float num = 1.2f * (float)armorComponent.HeadArmor + 1f * (float)armorComponent.BodyArmor + 1f * (float)armorComponent.LegArmor + 1f * (float)armorComponent.ArmArmor;
+            if (armorComponent.Item.ItemType == ItemObject.ItemTypeEnum.LegArmor)
+            {
+                num *= 1.6f;
+            }
+            else if (armorComponent.Item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
+            {
+                num *= 1.7f;
+            }
+            else if (armorComponent.Item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
+            {
+                num *= 1.2f;
+            }
+            else if (armorComponent.Item.ItemType == ItemObject.ItemTypeEnum.Cape)
+            {
+                num *= 1.8f;
+            }
+            __result =  num * 0.1f - 0.4f;
+            return false;
+        }
+    }
+
     [HarmonyPatch(typeof(SandboxAgentStatCalculateModel))]
     [HarmonyPatch("UpdateHumanStats")]
     class SandboxAgentUpdateHumanStats
