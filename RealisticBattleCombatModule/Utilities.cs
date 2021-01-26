@@ -307,9 +307,9 @@ namespace RealisticBattleCombatModule
                 case CampaignOptions.Difficulty.VeryEasy:
                     return 0.70f;
                 case CampaignOptions.Difficulty.Easy:
-                    return 0.80f;
+                    return 0.85f;
                 case CampaignOptions.Difficulty.Realistic:
-                    return 0.90f;
+                    return 1.0f;
                 default:
                     return 1.0f;
             }
