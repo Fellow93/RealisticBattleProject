@@ -630,7 +630,7 @@ namespace RealisticBattleCombatModule
             WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
             float val = ((float)weaponComponentData.ThrustDamage - 50f) * 0.1f * GetFactor(weaponComponentData.ThrustDamageType) * ((float)weaponComponentData.ThrustSpeed * 0.01f);
             float num = ((float)weaponComponentData.SwingDamage - 50f) * 0.1f * GetFactor(weaponComponentData.SwingDamageType) * ((float)weaponComponentData.SwingSpeed * 0.01f);
-            float MaceTier = ((float)weaponComponentData.SwingDamage - 30f) * 0.2f * ((float)weaponComponentData.SwingSpeed * 0.01f);
+            float maceTier = ((float)weaponComponentData.SwingDamage - 30f) * 0.2f * ((float)weaponComponentData.SwingSpeed * 0.01f);
             if (val < 1f)
             {
                 val = 1f;
@@ -639,55 +639,65 @@ namespace RealisticBattleCombatModule
             {
                 num = 1f;
             }
-            if (MaceTier < 1f)
+            if (maceTier < 1f)
             {
-                MaceTier = 1f;
+                maceTier = 1f;
             }
 
             float num2 = 0f;
-            if (weaponComponentData.WeaponClass == WeaponClass.OneHandedSword || weaponComponentData.WeaponClass == WeaponClass.Dagger)
+            switch (weaponComponentData.WeaponClass)
             {
-                num2 = (val + num) * 0.5f;
-            }
-
-            else if (weaponComponentData.WeaponClass == WeaponClass.TwoHandedSword || weaponComponentData.WeaponClass == WeaponClass.TwoHandedPolearm || weaponComponentData.WeaponClass == WeaponClass.LowGripPolearm)
-            {
-                num2 = (val + num) * 0.4f;
-            }
-
-            else if (weaponComponentData.WeaponClass == WeaponClass.TwoHandedAxe || weaponComponentData.WeaponClass == WeaponClass.TwoHandedMace)
-            {
-                num2 = num * 0.75f;
-            }
-
-            else if (weaponComponentData.WeaponClass == WeaponClass.OneHandedAxe || weaponComponentData.WeaponClass == WeaponClass.Pick)
-            {
-                num2 = num * (float)weaponComponentData.WeaponLength * 0.014f;
-            }
-
-            else if (weaponComponentData.WeaponClass == WeaponClass.Mace)
-            {
-                num2 = MaceTier * (float)weaponComponentData.WeaponLength * 0.014f;
-            }
-
-            else if (weaponComponentData.WeaponClass == WeaponClass.ThrowingKnife || weaponComponentData.WeaponClass == WeaponClass.ThrowingAxe)
-            {
-                num2 = (float)weaponComponentData.SwingDamage * 0.05f;
-            }
-
-            else if (weaponComponentData.WeaponClass == WeaponClass.Javelin)
-            {
-                num2 = ((float)weaponComponentData.ThrustDamage - 100f) * 0.34f;
-            }
-
-            else if (weaponComponentData.WeaponClass == WeaponClass.OneHandedPolearm)
-            {
-                num2 = val;
-            }
-
-            else
-            {
-                num2 = (val + num) * 0.5f;
+                case WeaponClass.OneHandedSword:
+                case WeaponClass.Dagger:
+                    {
+                        num2 = (val + num) * 0.5f;
+                        break;
+                    }
+                case WeaponClass.TwoHandedSword:
+                case WeaponClass.TwoHandedPolearm:
+                case WeaponClass.LowGripPolearm:
+                    {
+                        num2 = (val + num) * 0.4f;
+                        break;
+                    }
+                case WeaponClass.TwoHandedAxe:
+                case WeaponClass.TwoHandedMace:
+                    {
+                        num2 = num * 0.75f;
+                        break;
+                    }
+                case WeaponClass.OneHandedAxe:
+                case WeaponClass.Pick:
+                    {
+                        num2 = num * (float)weaponComponentData.WeaponLength * 0.014f;
+                        break;
+                    }
+                case WeaponClass.Mace:
+                    {
+                        num2 = maceTier * (float)weaponComponentData.WeaponLength * 0.014f;
+                        break;
+                    }
+                case WeaponClass.ThrowingKnife:
+                case WeaponClass.ThrowingAxe:
+                    {
+                        num2 = (float)weaponComponentData.SwingDamage * 0.05f;
+                        break;
+                    }
+                case WeaponClass.Javelin:
+                    {
+                        num2 = ((float)weaponComponentData.ThrustDamage - 100f) * 0.34f;
+                        break;
+                    }
+                case WeaponClass.OneHandedPolearm:
+                    {
+                        num2 = val;
+                        break;
+                    }
+                default:
+                    {
+                        num2 = (val + num) * 0.5f;
+                        break;
+                    }
             }
 
             __result =  num2;
