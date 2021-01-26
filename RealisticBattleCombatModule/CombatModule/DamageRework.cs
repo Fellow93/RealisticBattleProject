@@ -621,26 +621,76 @@ namespace RealisticBattleCombatModule
                 case DamageTypes.Pierce:
                     return 1.15f;
                 case DamageTypes.Blunt:
-                    return 1.3f;
+                    return 2.0f;
             }
         }
 
         static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
         {
             WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
-            float val = (float)weaponComponentData.ThrustDamage * GetFactor(weaponComponentData.ThrustDamageType) * MathF.Pow((float)weaponComponentData.ThrustSpeed * 0.01f, 1.5f);
-            float num = (float)weaponComponentData.SwingDamage * GetFactor(weaponComponentData.SwingDamageType) * MathF.Pow((float)weaponComponentData.SwingSpeed * 0.01f, 1.5f);
-            float num2 = Math.Max(val, num * 1.1f);
-            if (weaponComponentData.WeaponFlags.HasAnyFlag(WeaponFlags.NotUsableWithOneHand))
+            float val = ((float)weaponComponentData.ThrustDamage - 50f) * 0.1f * GetFactor(weaponComponentData.ThrustDamageType) * ((float)weaponComponentData.ThrustSpeed * 0.01f);
+            float num = ((float)weaponComponentData.SwingDamage - 50f) * 0.1f * GetFactor(weaponComponentData.SwingDamageType) * ((float)weaponComponentData.SwingSpeed * 0.01f);
+            float MaceTier = ((float)weaponComponentData.SwingDamage - 30f) * 0.2f * ((float)weaponComponentData.SwingSpeed * 0.01f);
+            if (val < 1f)
             {
-                num2 *= 0.8f;
+                val = 1f;
             }
-            if (weaponComponentData.WeaponClass == WeaponClass.ThrowingKnife || weaponComponentData.WeaponClass == WeaponClass.ThrowingKnife || weaponComponentData.WeaponClass == WeaponClass.Javelin)
+            if (num < 1f)
             {
-                num2 *= 1.2f;
+                num = 1f;
             }
-            float num3 = (float)weaponComponentData.WeaponLength * 0.01f;
-            __result =  0.06f * (num2 * (1f + num3)) - 3.5f;
+            if (MaceTier < 1f)
+            {
+                MaceTier = 1f;
+            }
+
+            float num2 = 0f;
+            if (weaponComponentData.WeaponClass == WeaponClass.OneHandedSword || weaponComponentData.WeaponClass == WeaponClass.Dagger)
+            {
+                num2 = (val + num) * 0.5f;
+            }
+
+            else if (weaponComponentData.WeaponClass == WeaponClass.TwoHandedSword || weaponComponentData.WeaponClass == WeaponClass.TwoHandedPolearm || weaponComponentData.WeaponClass == WeaponClass.LowGripPolearm)
+            {
+                num2 = (val + num) * 0.4f;
+            }
+
+            else if (weaponComponentData.WeaponClass == WeaponClass.TwoHandedAxe || weaponComponentData.WeaponClass == WeaponClass.TwoHandedMace)
+            {
+                num2 = num * 0.75f;
+            }
+
+            else if (weaponComponentData.WeaponClass == WeaponClass.OneHandedAxe || weaponComponentData.WeaponClass == WeaponClass.Pick)
+            {
+                num2 = num * (float)weaponComponentData.WeaponLength * 0.014f;
+            }
+
+            else if (weaponComponentData.WeaponClass == WeaponClass.Mace)
+            {
+                num2 = MaceTier * (float)weaponComponentData.WeaponLength * 0.014f;
+            }
+
+            else if (weaponComponentData.WeaponClass == WeaponClass.ThrowingKnife || weaponComponentData.WeaponClass == WeaponClass.ThrowingAxe)
+            {
+                num2 = (float)weaponComponentData.SwingDamage * 0.05f;
+            }
+
+            else if (weaponComponentData.WeaponClass == WeaponClass.Javelin)
+            {
+                num2 = ((float)weaponComponentData.ThrustDamage - 100f) * 0.34f;
+            }
+
+            else if (weaponComponentData.WeaponClass == WeaponClass.OneHandedPolearm)
+            {
+                num2 = val;
+            }
+
+            else
+            {
+                num2 = (val + num) * 0.5f;
+            }
+
+            __result =  num2;
             return false;
         }
     }
@@ -651,24 +701,28 @@ namespace RealisticBattleCombatModule
     {
         static bool Prefix(ref DefaultItemValueModel __instance, ArmorComponent armorComponent, ref float __result)
         {
-            float num = 1.2f * (float)armorComponent.HeadArmor + 1f * (float)armorComponent.BodyArmor + 1f * (float)armorComponent.LegArmor + 1f * (float)armorComponent.ArmArmor;
+            float ArmorTier = 0f;
             if (armorComponent.Item.ItemType == ItemObject.ItemTypeEnum.LegArmor)
             {
-                num *= 1.6f;
+                ArmorTier = (float)armorComponent.LegArmor * 0.10f;
             }
             else if (armorComponent.Item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
             {
-                num *= 1.7f;
+                ArmorTier = (float)armorComponent.ArmArmor * 0.10f;
             }
             else if (armorComponent.Item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
             {
-                num *= 1.2f;
+                ArmorTier = (float)armorComponent.HeadArmor * 0.086f;
             }
             else if (armorComponent.Item.ItemType == ItemObject.ItemTypeEnum.Cape)
             {
-                num *= 1.8f;
+                ArmorTier = ((float)armorComponent.BodyArmor + (float)armorComponent.ArmArmor) * 0.15f;
             }
-            __result =  num * 0.1f - 0.4f;
+            else if (armorComponent.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
+            {
+                ArmorTier = ((float)armorComponent.BodyArmor * 0.05f) + ((float)armorComponent.LegArmor * 0.035f) + ((float)armorComponent.ArmArmor * 0.025f);
+            }
+            __result =  ArmorTier;
             return false;
         }
     }
