@@ -114,14 +114,14 @@
   <Item multiplayer_item="false"
         id="chain_horse_harness"
         name="{=GTWUtUFj}Chain Horse Harness"
-        mesh="horse_harness_sturgia_a_clotest"
+        mesh="horse_harness_e"
         subtype="body_armor"
         weight="24"
         difficulty="0"
         appearance="0.6"
         Type="HorseHarness">
     <ItemComponent>
-      <Armor body_armor="47"
+      <Armor body_armor="50"
              hair_cover_type="all"
              covers_head="true"
              mane_cover_type="all"
@@ -130,7 +130,7 @@
              charge_bonus="0"
              family_type="1"
              modifier_group="chain"
-             reins_mesh="horse_harness_sturgia_a_rein"
+             reins_mesh="horse_harness_e_rein"
              material_type="Chainmail" />
     </ItemComponent>
     <Flags />
