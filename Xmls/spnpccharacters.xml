@@ -15866,8 +15866,7 @@
                 level="21"
                 name="{=8bA4PvdG}Imperial Veteran Archer"
                 occupation="Soldier"
-                culture="Culture.empire"
-                skill_template="SkillSet.ranged_skirmisher_level21_template_skills">
+                culture="Culture.empire">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -16315,8 +16314,7 @@
                 level="26"
                 name="{=THyv3q9f}Imperial Sergeant Crossbowman"
                 occupation="Soldier"
-                culture="Culture.empire"
-                skill_template="SkillSet.ranged_skirmisher_level26_template_skills">
+                culture="Culture.empire">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -16954,8 +16952,7 @@
                 level="16"
                 name="{=o1jvmi9P}Khuzait Raider"
                 occupation="Soldier"
-                culture="Culture.khuzait"
-                skill_template="SkillSet.horsearcher_level16_template_skills">
+                culture="Culture.khuzait">
     <face>
       <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
@@ -18475,8 +18472,7 @@
                 level="16"
                 name="{=brlJJW5I}Sturgian Soldier"
                 occupation="Soldier"
-                culture="Culture.sturgia"
-                skill_template="SkillSet.infantry_heavyinfantry_level16_template_skills">
+                culture="Culture.sturgia">
     <face>
       <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
@@ -19557,8 +19553,7 @@
                 level="26"
                 name="{=7WWUxI6y}Sturgian Veteran Bowman"
                 occupation="Soldier"
-                culture="Culture.sturgia"
-                skill_template="SkillSet.ranged_skirmisher_level26_template_skills">
+                culture="Culture.sturgia">
     <face>
       <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
@@ -21138,8 +21133,7 @@
                 name="{=8PLgCsiR}Vlandian Vanguard"
                 upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
-                culture="Culture.vlandia"
-                skill_template="SkillSet.cavalry_lightcavalry_heavycavalry_level26_template_skills">
+                culture="Culture.vlandia">
     <face>
       <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
@@ -22046,8 +22040,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.darshi"
-                name="{=KnhpjA7Y}Koleman"
-                skill_template="SkillSet.cavalry_lightcavalry_heavycavalry_level11_template_skills">
+                name="{=KnhpjA7Y}Koleman">
     <face>
       <face_key_template value="BodyProperty.fighter_aserai" />
     </face>
@@ -22128,8 +22121,7 @@
                 level="16"
                 occupation="Soldier"
                 culture="Culture.darshi"
-                name="{=H5iWxbbl}Ghilman"
-                skill_template="SkillSet.cavalry_lightcavalry_heavycavalry_level16_template_skills">
+                name="{=H5iWxbbl}Ghilman">
     <face>
       <face_key_template value="BodyProperty.fighter_aserai" />
     </face>
@@ -22188,8 +22180,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.darshi"
-                name="{=7EUhAv8b}Ghulam"
-                skill_template="SkillSet.cavalry_lightcavalry_heavycavalry_level26_template_skills">
+                name="{=7EUhAv8b}Ghulam">
     <face>
       <face_key_template value="BodyProperty.fighter_aserai" />
     </face>
@@ -22494,8 +22485,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.empire"
-                name="{=G9ByT85b}Hastati"
-                skill_template="SkillSet.ranged_skirmisher_level11_template_skills">
+                name="{=G9ByT85b}Hastati">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -22550,8 +22540,7 @@
                 level="16"
                 occupation="Soldier"
                 culture="Culture.empire"
-                name="{=qMYpZKWo}Principes"
-                skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
+                name="{=qMYpZKWo}Principes">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -22606,8 +22595,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.empire"
-                name="{=cOt1onbR}Triarii"
-                skill_template="SkillSet.infantry_heavyinfantry_level26_template_skills">
+                name="{=cOt1onbR}Triarii">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -22661,8 +22649,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.nord"
-                name="{=uViDMxLC}Skolder Recruit"
-                skill_template="SkillSet.infantry_heavyinfantry_level11_template_skills">
+                name="{=uViDMxLC}Skolder Recruit">
     <face>
       <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
@@ -22711,8 +22698,7 @@
                 level="16"
                 occupation="Soldier"
                 culture="Culture.nord"
-                name="{=LXybWXde}Skolder Warrior Broda"
-                skill_template="SkillSet.infantry_heavyinfantry_level16_template_skills">
+                name="{=LXybWXde}Skolder Warrior Broda">
     <face>
       <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
@@ -22763,8 +22749,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.nord"
-                name="{=YGexslSX}Skolder Veteran Broda"
-                skill_template="SkillSet.infantry_heavyinfantry_level26_template_skills">
+                name="{=YGexslSX}Skolder Veteran Broda">
     <face>
       <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
@@ -22815,8 +22800,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.vlandia"
-                name="{=9Bw85Elg}Boar Novice"
-                skill_template="SkillSet.infantry_heavyinfantry_level26_template_skills">
+                name="{=9Bw85Elg}Boar Novice">
     <face>
       <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
@@ -22871,8 +22855,7 @@
                 level="16"
                 occupation="Soldier"
                 culture="Culture.vlandia"
-                name="{=9Ylw5Spz}Boar Veteran"
-                skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
+                name="{=9Ylw5Spz}Boar Veteran">
     <face>
       <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
@@ -22927,8 +22910,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.vlandia"
-                name="{=cSdSSXsO}Boar Champion"
-                skill_template="SkillSet.ranged_skirmisher_level26_template_skills">
+                name="{=cSdSSXsO}Boar Champion">
     <face>
       <face_key_template value="BodyProperty.villager_vlandia" />
     </face>
@@ -22984,8 +22966,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.aserai"
-                name="{=uca778lM}Beni Zilal Recruit"
-                skill_template="SkillSet.horsearcher_level11_template_skills">
+                name="{=uca778lM}Beni Zilal Recruit">
     <face>
       <face_key_template value="BodyProperty.fighter_aserai" />
     </face>
@@ -23068,8 +23049,7 @@
                 level="16"
                 occupation="Soldier"
                 culture="Culture.aserai"
-                name="{=9zXXes9i}Beni Zilal Soldier"
-                skill_template="SkillSet.horsearcher_level16_template_skills">
+                name="{=9zXXes9i}Beni Zilal Soldier">
     <face>
       <face_key_template value="BodyProperty.fighter_aserai" />
     </face>
@@ -23152,8 +23132,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.aserai"
-                name="{=8Gh8q1PX}Beni Zilal Royal Guard"
-                skill_template="SkillSet.horsearcher_level26_template_skills">
+                name="{=8Gh8q1PX}Beni Zilal Royal Guard">
     <face>
       <face_key_template value="BodyProperty.fighter_aserai" />
     </face>
@@ -23212,8 +23191,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.battania"
-                name="{=mrBbsiPN}Young Wolf"
-                skill_template="SkillSet.infantry_heavyinfantry_level11_template_skills">
+                name="{=mrBbsiPN}Young Wolf">
     <face>
       <face_key_template value="BodyProperty.fighter_battania" />
     </face>
@@ -23288,8 +23266,7 @@
                 level="16"
                 occupation="Soldier"
                 culture="Culture.battania"
-                name="{=q7b4pQc9}Seasoned Wolf"
-                skill_template="SkillSet.infantry_heavyinfantry_level11_template_skills">
+                name="{=q7b4pQc9}Seasoned Wolf">
     <face>
       <face_key_template value="BodyProperty.fighter_battania" />
     </face>
@@ -23364,8 +23341,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.battania"
-                name="{=QvSmhaAV}Chosen Wolf"
-                skill_template="SkillSet.infantry_heavyinfantry_level26_template_skills">
+                name="{=QvSmhaAV}Chosen Wolf">
     <face>
       <face_key_template value="BodyProperty.fighter_battania" />
     </face>
@@ -23440,8 +23416,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.empire"
-                name="{=ehACDRBk}Hidden Pawn"
-                skill_template="SkillSet.infantry_heavyinfantry_level11_template_skills">
+                name="{=ehACDRBk}Hidden Pawn">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -23492,8 +23467,7 @@
                 level="16"
                 occupation="Soldier"
                 culture="Culture.empire"
-                name="{=MVHawAEp}Hidden Hand"
-                skill_template="SkillSet.infantry_heavyinfantry_level16_template_skills">
+                name="{=MVHawAEp}Hidden Hand">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -23546,8 +23520,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.empire"
-                name="{=PU2zIMu0}Puppeteer"
-                skill_template="SkillSet.infantry_heavyinfantry_level26_template_skills">
+                name="{=PU2zIMu0}Puppeteer">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -23663,8 +23636,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.sturgia"
-                name="{=6j9iJMRr}Lake Rat Recruit"
-                skill_template="SkillSet.infantry_heavyinfantry_level11_template_skills">
+                name="{=6j9iJMRr}Lake Rat Recruit">
     <face>
       <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
@@ -23719,8 +23691,7 @@
                 level="16"
                 occupation="Soldier"
                 culture="Culture.sturgia"
-                name="{=1gAasy1t}Lake Rat Veteran"
-                skill_template="SkillSet.infantry_heavyinfantry_level16_template_skills">
+                name="{=1gAasy1t}Lake Rat Veteran">
     <face>
       <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
@@ -23835,8 +23806,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.sturgia"
-                name="{=BC5YGna3}Lake Rat Wrecker "
-                skill_template="SkillSet.infantry_heavyinfantry_level26_template_skills">
+                name="{=BC5YGna3}Lake Rat Wrecker ">
     <face>
       <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
@@ -23951,8 +23921,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.vlandia"
-                name="{=DIt9SuMb}Sprout"
-                skill_template="SkillSet.ranged_skirmisher_level11_template_skills">
+                name="{=DIt9SuMb}Sprout">
     <face>
       <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
@@ -24007,8 +23976,7 @@
                 level="16"
                 occupation="Soldier"
                 culture="Culture.vlandia"
-                name="{=riT39wKu}Sapling"
-                skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
+                name="{=riT39wKu}Sapling">
     <face>
       <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
@@ -24063,8 +24031,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.vlandia"
-                name="{=u3K1SozQ}Arboreal"
-                skill_template="SkillSet.ranged_skirmisher_level26_template_skills">
+                name="{=u3K1SozQ}Arboreal">
     <face>
       <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
@@ -24119,8 +24086,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.empire"
-                name="{=rtOJNB6u}Guardian Recruit"
-                skill_template="SkillSet.infantry_heavyinfantry_level6_template_skills">
+                name="{=rtOJNB6u}Guardian Recruit">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -24183,8 +24149,7 @@
                 level="16"
                 occupation="Soldier"
                 culture="Culture.empire"
-                name="{=cMcGn6n3}Expert Guardian"
-                skill_template="SkillSet.infantry_heavyinfantry_level16_template_skills">
+                name="{=cMcGn6n3}Expert Guardian">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -24259,8 +24224,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.empire"
-                name="{=WNU7kE5N}Veteran Guardian"
-                skill_template="SkillSet.infantry_heavyinfantry_level26_template_skills">
+                name="{=WNU7kE5N}Veteran Guardian">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -24335,8 +24299,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.empire"
-                name="{=80plewQ1}Oath Keeper Recruit"
-                skill_template="SkillSet.infantry_heavyinfantry_level6_template_skills">
+                name="{=80plewQ1}Oath Keeper Recruit">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -24385,8 +24348,7 @@
                 level="16"
                 occupation="Soldier"
                 culture="Culture.empire"
-                name="{=bYn4ad1t}Expert Oath Keeper"
-                skill_template="SkillSet.infantry_heavyinfantry_level16_template_skills">
+                name="{=bYn4ad1t}Expert Oath Keeper">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -24435,8 +24397,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.empire"
-                name="{=nsyTIbtp}Veteran Oath Keeper"
-                skill_template="SkillSet.infantry_heavyinfantry_level26_template_skills">
+                name="{=nsyTIbtp}Veteran Oath Keeper">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -24486,8 +24447,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.aserai"
-                name="{=vxlAJIiU}Jawwal Recruit"
-                skill_template="SkillSet.infantry_heavyinfantry_level6_template_skills">
+                name="{=vxlAJIiU}Jawwal Recruit">
     <face>
       <face_key_template value="BodyProperty.fighter_jawwal" />
     </face>
@@ -24540,8 +24500,7 @@
                 level="16"
                 occupation="Soldier"
                 culture="Culture.aserai"
-                name="{=Mcbjdntz}Jawwal Camel Rider"
-                skill_template="SkillSet.infantry_heavyinfantry_level16_template_skills">
+                name="{=Mcbjdntz}Jawwal Camel Rider">
     <face>
       <face_key_template value="BodyProperty.fighter_jawwal" />
     </face>
@@ -24598,8 +24557,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.aserai"
-                name="{=qAvxmnav}Jawwal Bedouin"
-                skill_template="SkillSet.cavalry_lightcavalry_heavycavalry_level26_template_skills">
+                name="{=qAvxmnav}Jawwal Bedouin">
     <face>
       <face_key_template value="BodyProperty.fighter_jawwal" />
     </face>
@@ -24658,8 +24616,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.khuzait"
-                name="{=xIFHLI66}Karakhuzait Nomad"
-                skill_template="SkillSet.horsearcher_level11_template_skills">
+                name="{=xIFHLI66}Karakhuzait Nomad">
     <face>
       <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
@@ -24783,8 +24740,7 @@
                 level="16"
                 occupation="Soldier"
                 culture="Culture.khuzait"
-                name="{=lduchnvD}Karakhuzait Rider"
-                skill_template="SkillSet.horsearcher_level16_template_skills">
+                name="{=lduchnvD}Karakhuzait Rider">
     <face>
       <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
@@ -24865,8 +24821,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.khuzait"
-                name="{=gBuGfUg3}Karakhuzait Elder"
-                skill_template="SkillSet.horsearcher_level26_template_skills">
+                name="{=gBuGfUg3}Karakhuzait Elder">
     <face>
       <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
@@ -24947,8 +24902,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.vakken"
-                name="{=h7nGFImt}Recruit Forester"
-                skill_template="SkillSet.ranged_skirmisher_level6_template_skills">
+                name="{=h7nGFImt}Recruit Forester">
     <face>
       <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
@@ -25003,8 +24957,7 @@
                 level="16"
                 occupation="Soldier"
                 culture="Culture.vakken"
-                name="{=2HDPaohZ}Expert Forester"
-                skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
+                name="{=2HDPaohZ}Expert Forester">
     <face>
       <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
@@ -25059,8 +25012,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.vakken"
-                name="{=ueasbGtd}Veteran Forester"
-                skill_template="SkillSet.ranged_skirmisher_level26_template_skills">
+                name="{=ueasbGtd}Veteran Forester">
     <face>
       <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
@@ -25115,8 +25067,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.empire"
-                name="{=S6BosJUq}Recruit Eleftheroi"
-                skill_template="SkillSet.cavalry_lightcavalry_heavycavalry_level6_template_skills">
+                name="{=S6BosJUq}Recruit Eleftheroi">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -25173,8 +25124,7 @@
                 level="16"
                 occupation="Soldier"
                 culture="Culture.empire"
-                name="{=qBVNIhme}Expert Eleftheroi"
-                skill_template="SkillSet.cavalry_lightcavalry_heavycavalry_level16_template_skills">
+                name="{=qBVNIhme}Expert Eleftheroi">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -25231,8 +25181,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.empire"
-                name="{=cEKbOxRA}Veteran Eleftheroi"
-                skill_template="SkillSet.cavalry_lightcavalry_heavycavalry_level26_template_skills">
+                name="{=cEKbOxRA}Veteran Eleftheroi">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -25686,8 +25635,7 @@
                 name="{=RYP9hzIy}Watchman"
                 occupation="Mercenary"
                 is_basic_troop="true"
-                culture="Culture.neutral_culture"
-                skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
+                culture="Culture.neutral_culture">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -25740,8 +25688,7 @@
                 level="16"
                 name="{=0GKH29JG}Mercenary Guard"
                 occupation="Mercenary"
-                culture="Culture.neutral_culture"
-                skill_template="SkillSet.infantry_heavyinfantry_level16_template_skills">
+                culture="Culture.neutral_culture">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -25797,8 +25744,7 @@
                 name="{=xaYwo9tM}Mercenary Scout"
                 upgrade_requires="ItemCategory.horse"
                 occupation="Mercenary"
-                culture="Culture.neutral_culture"
-                skill_template="SkillSet.cavalry_lightcavalry_heavycavalry_level6_template_skills">
+                culture="Culture.neutral_culture">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -25856,8 +25802,7 @@
                 level="21"
                 name="{=Mgr6qv1j}Mercenary Swordsman"
                 occupation="Mercenary"
-                culture="Culture.neutral_culture"
-                skill_template="SkillSet.infantry_heavyinfantry_level21_template_skills">
+                culture="Culture.neutral_culture">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -25913,8 +25858,7 @@
                 level="21"
                 name="{=PgOknaEN}Mercenary Crossbowman"
                 occupation="Mercenary"
-                culture="Culture.neutral_culture"
-                skill_template="SkillSet.infantry_heavyinfantry_level21_template_skills">
+                culture="Culture.neutral_culture">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -25970,8 +25914,7 @@
                 level="21"
                 name="{=AssCCFew}Mercenary Horseman"
                 occupation="Mercenary"
-                culture="Culture.neutral_culture"
-                skill_template="SkillSet.cavalry_lightcavalry_heavycavalry_level21_template_skills">
+                culture="Culture.neutral_culture">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -26031,8 +25974,7 @@
                 level="26"
                 name="{=R74i2pQz}Hired Blade"
                 occupation="Mercenary"
-                culture="Culture.neutral_culture"
-                skill_template="SkillSet.infantry_heavyinfantry_level26_template_skills">
+                culture="Culture.neutral_culture">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -26085,8 +26027,7 @@
                 level="26"
                 name="{=QfVe3IVw}Hired Crossbow"
                 occupation="Mercenary"
-                culture="Culture.neutral_culture"
-                skill_template="SkillSet.ranged_skirmisher_level26_template_skills">
+                culture="Culture.neutral_culture">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -26139,8 +26080,7 @@
                 level="26"
                 name="{=SaqVvzyV}Mercenary Cavalry"
                 occupation="Mercenary"
-                culture="Culture.neutral_culture"
-                skill_template="SkillSet.cavalry_lightcavalry_heavycavalry_level26_template_skills">
+                culture="Culture.neutral_culture">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
