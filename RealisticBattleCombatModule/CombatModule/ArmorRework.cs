@@ -32,7 +32,7 @@ namespace RealisticBattleCombatModule
                         }
                     case BoneBodyPartType.Neck:
                         {
-                            __result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead) * 0.8f;
+                            __result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead) * 0.66f;
                             break;
                         }
                     case BoneBodyPartType.BipedalLegs:

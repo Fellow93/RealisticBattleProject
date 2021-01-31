@@ -105,14 +105,14 @@ namespace RealisticBattleCombatModule
 
                 float physicalDamage = ((length * length) * (weaponItem.Weight)) / 2;
 
-                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin") && physicalDamage > (weaponItem.Weight) * 200f)
+                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin") && physicalDamage > (weaponItem.Weight) * 300f)
                 {
-                    physicalDamage = (weaponItem.Weight) * 200f;
+                    physicalDamage = (weaponItem.Weight) * 300f;
                 }
 
-                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") && physicalDamage > (weaponItem.Weight) * 150f)
+                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") && physicalDamage > (weaponItem.Weight) * 225f)
                 {
-                    physicalDamage = (weaponItem.Weight) * 150f;
+                    physicalDamage = (weaponItem.Weight) * 225f;
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") && physicalDamage > (weaponItem.Weight) * 2500f)
@@ -297,12 +297,12 @@ namespace RealisticBattleCombatModule
                         {
                             case "Arrow":
                                 {
-                                    num *= 0.5f;
+                                    num *= 1.0f;
                                     break;
                                 }
                             case "Bolt":
                                 {
-                                    num *= 0.5f;
+                                    num *= 1.0f;
                                     break;
                                 }
                             case "Javelin":
@@ -589,7 +589,7 @@ namespace RealisticBattleCombatModule
             }
             else if (item.ItemComponent is WeaponComponent)
             {
-                num2 = 100f;
+                num2 = 200f;
             }
             else if (item.ItemComponent is HorseComponent)
             {
