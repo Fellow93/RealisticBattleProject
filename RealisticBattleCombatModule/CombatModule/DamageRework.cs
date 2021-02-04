@@ -92,12 +92,12 @@ namespace RealisticBattleCombatModule
                     {
                         if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow"))
                         {
-                            missileTotalDamage -= 10f;
+                            missileTotalDamage -= 100f;
                             missileTotalDamage *= 0.01f;
                         }
                         if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt"))
                         {
-                            missileTotalDamage -= 10f;
+                            missileTotalDamage -= 100f;
                             missileTotalDamage *= 0.01f;
                         }
                     }
