@@ -48,7 +48,7 @@
     <!--While mounted fall speed will be multiplied with this value for rider's damage calculation. Mount's speed will not be effected.-->
     <managed_core_parameter id="FistFightDamageMultiplier" value="4.0" />
 
-    <managed_core_parameter id="SwingHitWithArmDamageMultiplier" value="0.15" />
+    <managed_core_parameter id="SwingHitWithArmDamageMultiplier" value="0.50" />
     <managed_core_parameter id="ThrustHitWithArmDamageMultiplier" value="1.0" />
     <managed_core_parameter id="NonTipThrustHitDamageMultiplier" value="1.0" />
 
