@@ -519,13 +519,13 @@ namespace RealisticBattleCombatModule
                             {
                                 //InformationManager.DisplayMessage(new InformationMessage("You received"));
                                 InformationManager.DisplayMessage(new InformationMessage("You received " + (int)(bluntTraumaAfterArmor) +
-                                    " blunt trauma, " + (int)(penetratedDamage) + "armor penetration damage"));
+                                    " blunt trauma, " + (int)(penetratedDamage) + " armor penetration damage"));
                                 //InformationManager.DisplayMessage(new InformationMessage("damage penetrated: " + penetratedDamage));
                             }
                             else
                             {
                                 InformationManager.DisplayMessage(new InformationMessage("You dealt " + (int)(bluntTraumaAfterArmor) +
-                                    " blunt trauma, " + (int)(penetratedDamage) + "armor penetration damage"));
+                                    " blunt trauma, " + (int)(penetratedDamage) + " armor penetration damage"));
                             }
                         }
                         break;
@@ -550,13 +550,13 @@ namespace RealisticBattleCombatModule
                             {
                                 //InformationManager.DisplayMessage(new InformationMessage("You received"));
                                 InformationManager.DisplayMessage(new InformationMessage("You received " + (int)(bluntTraumaAfterArmor) +
-                                    " blunt trauma, " + (int)(penetratedDamage) + "armor penetration damage"));
+                                    " blunt trauma, " + (int)(penetratedDamage) + " armor penetration damage"));
                                 //InformationManager.DisplayMessage(new InformationMessage("damage penetrated: " + penetratedDamage));
                             }
                             else
                             {
                                 InformationManager.DisplayMessage(new InformationMessage("You dealt " + (int)(bluntTraumaAfterArmor) +
-                                    " blunt trauma, " + (int)(penetratedDamage) + "armor penetration damage"));
+                                    " blunt trauma, " + (int)(penetratedDamage) + " armor penetration damage"));
                             }
                         }
                         break;
