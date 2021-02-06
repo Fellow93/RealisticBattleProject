@@ -396,7 +396,7 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="open_mail_coif" name="{=OpYdqPWs}Open Mail Coif" mesh="vlandia_helmet_v" culture="Culture.empire" weight="1.6" appearance="1" Type="HeadArmor" value="4250" difficulty="0" subtype="head_armor">
+	<Item id="open_mail_coif" name="{=OpYdqPWs}Open Mail Coif" mesh="vlandia_helmet_v" culture="Culture.empire" weight="1.6" appearance="1" Type="HeadArmor" value="5100" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="33" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail"/>
 		</ItemComponent>
@@ -414,19 +414,19 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="imperial_open_mail_coif" name="{=nNGCuIUf}Imperial Open Mail Coif" mesh="empire_helmet_f" culture="Culture.empire" weight="1.5" appearance="1" Type="HeadArmor" value="4375" difficulty="0" subtype="head_armor">
+	<Item id="imperial_open_mail_coif" name="{=nNGCuIUf}Imperial Open Mail Coif" mesh="empire_helmet_f" culture="Culture.empire" weight="1.5" appearance="1" Type="HeadArmor" value="5250" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="34" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="type3"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="mail_coif" name="{=77RIGK7B}Mail Coif" mesh="vlandia_helmet_a" culture="Culture.empire" weight="1.7" appearance="1" Type="HeadArmor" value="4375" difficulty="0" subtype="head_armor">
+	<Item id="mail_coif" name="{=77RIGK7B}Mail Coif" mesh="vlandia_helmet_a" culture="Culture.empire" weight="1.7" appearance="1" Type="HeadArmor" value="5250" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="34" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="type2"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="imperial_mail_coif" name="{=xsO9LNmO}Imperial Mail Coif" mesh="empire_helmet_a" culture="Culture.empire" weight="1.7" appearance="1" Type="HeadArmor" value="4875" difficulty="0" subtype="head_armor">
+	<Item id="imperial_mail_coif" name="{=xsO9LNmO}Imperial Mail Coif" mesh="empire_helmet_a" culture="Culture.empire" weight="1.7" appearance="1" Type="HeadArmor" value="5850" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="38" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="type2"/>
 		</ItemComponent>
@@ -485,6 +485,12 @@
 			<Armor head_armor="50" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="nasal_helmet" name="{=4c7e0RCE}Northern Nasal Helmet" mesh="nasal_helmet_a" culture="Culture.sturgia" weight="1.8" appearance="1" Type="HeadArmor" value="7650">
+		<ItemComponent>
+			<Armor head_armor="50" has_gender_variations="false" hair_cover_type="type1" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
 	</Item>
 	<Item id="cervelliere_over_padded_cap" name="{=wG582fzT}Cervelliere Over Padded Cap" mesh="vlandia_helmet_n_e" culture="Culture.vlandia" weight="1" appearance="1" Type="HeadArmor" value="7800">
 		<ItemComponent>
@@ -588,12 +594,6 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="nasal_helmet" name="{=4c7e0RCE}Northern Nasal Helmet" mesh="nasal_helmet_a" culture="Culture.sturgia" weight="1.8" appearance="1" Type="HeadArmor" value="9150">
-		<ItemComponent>
-			<Armor head_armor="60" has_gender_variations="false" hair_cover_type="type1" modifier_group="plate" material_type="Plate"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
 	<Item id="nasal_helmet_over_laced_coif" name="{=FWFDkjBk}Nasal Helmet Over Laced Coif" mesh="vlandia_helmet_p_c" culture="Culture.vlandia" weight="1.3" appearance="1" Type="HeadArmor" value="9150" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="60" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
@@ -630,21 +630,27 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
+	<Item id="spangenhelm_with_padded_cloth" name="{=ebHdQfbX}Spangenhelm With Padded Cloth" mesh="spangenhelm_arming" culture="Culture.sturgia" weight="1.3" appearance="1.6" Type="HeadArmor" value="9300" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="61" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
 	<Item id="pointed_skullcap_over_cloth_headwrap" name="{=LqA9uBH9}Pointed Skullcap Over Cloth Headwrap" mesh="vlandia_helmet_l_d" culture="Culture.aserai" weight="1.1" appearance="1" Type="HeadArmor" value="9450" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="62" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="closed_desert_helmet_with_mail" name="{=vwAaIwnD}Closed Southern Helmet With Mail" mesh="aserai_helmet_k" culture="Culture.aserai" weight="3.2" appearance="1.3" Type="HeadArmor" value="9450">
-		<ItemComponent>
-			<Armor head_armor="62" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="type3"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
 	<Item id="battania_earmuff_helmet_c_cpr" name="{=UVdYqQGj}Fringed Decorated Copper Cap With Cheek Guards" mesh="battania_earmuff_helmet_c_cpr" culture="Culture.battania" weight="3.3" appearance="3" Type="HeadArmor" value="9600" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="63" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="nasal_helmet_with_leather" name="{=TxAYmCjr}Nasal Helmet With Leather" mesh="nasal_helmet_neckguard" culture="Culture.sturgia" weight="1.2" appearance="1" Type="HeadArmor" value="9600" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="63" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -690,15 +696,33 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
+	<Item id="nasalhelm_over_leather" name="{=AVcbBH1J}Northern Nasalhelm Over Leather" mesh="sturgia_helmet_f" culture="Culture.sturgia" weight="1.4" appearance="1" Type="HeadArmor" value="9900">
+		<ItemComponent>
+			<Armor head_armor="65" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="nasal_helmet_with_mail" name="{=EWR2MNeM}Nasal Helmet With Mail" mesh="nasal_helmet_reinforced" culture="Culture.sturgia" weight="1.5" appearance="1" Type="HeadArmor" value="9900" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="65" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="closed_desert_helmet_with_mail" name="{=vwAaIwnD}Closed Southern Helmet With Mail" mesh="aserai_helmet_k" culture="Culture.aserai" weight="3.2" appearance="1.3" Type="HeadArmor" value="10200">
+		<ItemComponent>
+			<Armor head_armor="67" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
 	<Item id="roundkettle_over_imperial_padding" name="{=qaraQjXa}Roundkettle Over Imperial Padding" mesh="empire_helmet_j_b" culture="Culture.empire" weight="1.4" appearance="1.3" Type="HeadArmor" value="10200" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="67" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="spangenhelm_with_padded_cloth" name="{=ebHdQfbX}Spangenhelm With Padded Cloth" mesh="spangenhelm_arming" culture="Culture.sturgia" weight="1.3" appearance="1.6" Type="HeadArmor" value="10350" difficulty="0" subtype="head_armor">
+	<Item id="spangenhelm_with_leather" name="{=3Z91Nxbf}Spangenhelm With Leather" mesh="spangenhelm_a" culture="Culture.sturgia" weight="1.2" appearance="1.6" Type="HeadArmor" value="10200" difficulty="0" subtype="head_armor">
 		<ItemComponent>
-			<Armor head_armor="68" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+			<Armor head_armor="67" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
@@ -711,12 +735,6 @@
 	<Item id="battania_earmuff_helmet_d_brnz" name="{=RDbqA36B}Ridged Decorated Bronze Cap With Cheek Guards" mesh="battania_earmuff_helmet_d_brnz" culture="Culture.battania" weight="3.3" appearance="3" Type="HeadArmor" value="10800" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="71" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
-	<Item id="nasal_helmet_with_leather" name="{=TxAYmCjr}Nasal Helmet With Leather" mesh="nasal_helmet_neckguard" culture="Culture.sturgia" weight="1.2" appearance="1" Type="HeadArmor" value="11100" difficulty="0" subtype="head_armor">
-		<ItemComponent>
-			<Armor head_armor="73" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -744,12 +762,6 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="spangenhelm_with_leather" name="{=3Z91Nxbf}Spangenhelm With Leather" mesh="spangenhelm_a" culture="Culture.sturgia" weight="1.2" appearance="1.6" Type="HeadArmor" value="11250" difficulty="0" subtype="head_armor">
-		<ItemComponent>
-			<Armor head_armor="74" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true"/>
-	</Item>
 	<Item id="roundkettle_over_imperial_leather" name="{=9Hr4oEvw}Roundkettle Over Imperial Leather" mesh="empire_helmet_j_d" culture="Culture.empire" weight="1.3" appearance="1" Type="HeadArmor" value="11250" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="74" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
@@ -768,27 +780,15 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="nasalhelm_over_leather" name="{=AVcbBH1J}Northern Nasalhelm Over Leather" mesh="sturgia_helmet_f" culture="Culture.sturgia" weight="1.4" appearance="1" Type="HeadArmor" value="11400">
-		<ItemComponent>
-			<Armor head_armor="75" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
 	<Item id="segmented_skullcap_over_padded_coif" name="{=zAvb7WKe}Segmented Skullcap Over Padded Coif" mesh="vlandia_helmet_r_b" culture="Culture.vlandia" weight="1.3" appearance="1" Type="HeadArmor" value="11400">
 		<ItemComponent>
 			<Armor head_armor="75" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type1"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="nasal_helmet_with_mail" name="{=EWR2MNeM}Nasal Helmet With Mail" mesh="nasal_helmet_reinforced" culture="Culture.sturgia" weight="1.5" appearance="1" Type="HeadArmor" value="11400" difficulty="0" subtype="head_armor">
+	<Item id="nasalhelm_over_mail" name="{=1bdDdwub}Nasalhelm Over Mail" mesh="sturgia_helmet_a" culture="Culture.sturgia" weight="1.8" appearance="1" Type="HeadArmor" value="11400">
 		<ItemComponent>
-			<Armor head_armor="75" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
-	<Item id="nordic_helmet" name="{=FHu0bGub}Northern Visored Cap" mesh="sturgia_masked_helm_a" culture="Culture.sturgia" weight="4.1" appearance="1" Type="HeadArmor" value="11400">
-		<ItemComponent>
-			<Armor head_armor="75" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail"/>
+			<Armor head_armor="75" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -852,17 +852,17 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="goggled_helmet_over_leather" name="{=ydxXW0ZW}Northern Helmet Over Leather" mesh="sturgia_helmet_b" culture="Culture.sturgia" weight="1.4" appearance="1.6" Type="HeadArmor" value="12600">
-		<ItemComponent>
-			<Armor head_armor="83" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
 	<Item id="guards_kettle_over_laced_coif" name="{=Jpt1WvTM}Guard's Kettle Over Laced Coif" mesh="vlandia_helmet_j_c" culture="Culture.vlandia" weight="1.4" appearance="1" Type="HeadArmor" value="12600" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="83" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="sturgian_helmet_base" name="{=OzUsuoDO}Northern Helmet" mesh="sturgian_helmet_base" culture="Culture.sturgia" weight="1.8" appearance="1.6" Type="HeadArmor" value="12600">
+		<ItemComponent>
+			<Armor head_armor="83" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
 	</Item>
 	<Item id="segmented_cervelliere_over_mail" name="{=bdpjqoGe}Segmented Cevelliere Over Mail" mesh="vlandia_helmet_u_v" culture="Culture.vlandia" weight="3.3" appearance="1" Type="HeadArmor" value="12750">
 		<ItemComponent>
@@ -900,6 +900,18 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
+	<Item id="sturgian_helmet_open" name="{=JEaU5XOP}Northern Open Helmet" mesh="sturgian_helmet_open" culture="Culture.sturgia" weight="1.8" appearance="1.6" Type="HeadArmor" value="12900">
+		<ItemComponent>
+			<Armor head_armor="85" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="nordic_helmet" name="{=FHu0bGub}Northern Visored Cap" mesh="sturgia_masked_helm_a" culture="Culture.sturgia" weight="4.1" appearance="1" Type="HeadArmor" value="13050">
+		<ItemComponent>
+			<Armor head_armor="86" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
 	<Item id="nasal_helmet_over_mail" name="{=tpQLvMSM}Nasal Helmet Over Mail" mesh="vlandia_helmet_p_v" culture="Culture.vlandia" weight="3.1" appearance="1" Type="HeadArmor" value="13050">
 		<ItemComponent>
 			<Armor head_armor="86" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
@@ -912,7 +924,7 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="northern_goggled_helmet" name="{=IPyPb4Dp}Northern Goggled Helmet" mesh="sturgia_helmet_k" culture="Culture.sturgia" weight="1.8" appearance="1.6" Type="HeadArmor" value="13200">
+	<Item id="goggled_helmet_over_leather" name="{=ydxXW0ZW}Northern Helmet Over Leather" mesh="sturgia_helmet_b" culture="Culture.sturgia" weight="1.4" appearance="1.6" Type="HeadArmor" value="13200">
 		<ItemComponent>
 			<Armor head_armor="87" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
 		</ItemComponent>
@@ -954,6 +966,12 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
+	<Item id="northern_goggled_helmet" name="{=IPyPb4Dp}Northern Goggled Helmet" mesh="sturgia_helmet_k" culture="Culture.sturgia" weight="1.8" appearance="1.6" Type="HeadArmor" value="13500">
+		<ItemComponent>
+			<Armor head_armor="89" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
 	<Item id="nasal_helmet_over_mail_coif" name="{=PVgSGCYK}Nasal Helmet Over Mail Coif" mesh="vlandia_helmet_p_a" culture="Culture.vlandia" weight="2.7" appearance="1" Type="HeadArmor" value="13500">
 		<ItemComponent>
 			<Armor head_armor="89" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
@@ -969,12 +987,6 @@
 	<Item id="battania_earmuff_helmet_c" name="{=1zFYpSSY}Fringed Decorated Steel Cap With Cheek Guards" mesh="battania_earmuff_helmet_c" culture="Culture.battania" weight="3.1" appearance="3" Type="HeadArmor" value="13500" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="89" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
-	<Item id="nasalhelm_over_mail" name="{=1bdDdwub}Nasalhelm Over Mail" mesh="sturgia_helmet_a" culture="Culture.sturgia" weight="1.8" appearance="1" Type="HeadArmor" value="13650">
-		<ItemComponent>
-			<Armor head_armor="90" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -1098,12 +1110,6 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="sturgia_heavy_cavalary_helmet" name="{=xl5MgK49}Sturgia Heavy Cavalry Helmet" mesh="sturgia_helmet_o" culture="Culture.sturgia" weight="2.8" appearance="2" Type="HeadArmor" value="14550">
-		<ItemComponent>
-			<Armor head_armor="96" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
 	<Item id="imperial_nasal_helm" name="{=XazcYatD}Imperial Nasal Helm" mesh="empire_helmet_h" culture="Culture.empire" weight="2.2" appearance="1" Type="HeadArmor" value="14700" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="97" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
@@ -1122,15 +1128,15 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="sturgian_helmet_open" name="{=JEaU5XOP}Northern Open Helmet" mesh="sturgian_helmet_open" culture="Culture.sturgia" weight="1.8" appearance="1.6" Type="HeadArmor" value="14850">
-		<ItemComponent>
-			<Armor head_armor="98" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
 	<Item id="western_plated_helmet" name="{=9j9fb5pR}Plated Helmet with Sideguards" mesh="vlandia_lord_helmet_b" culture="Culture.vlandia" weight="4.1" appearance="3" Type="headArmor" value="14850" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="98" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="sturgian_helmet_b_open" name="{=JEaU5XOP}Northern Open Helmet" mesh="sturgian_helmet_b_open" culture="Culture.sturgia" weight="1.8" appearance="2.4" Type="HeadArmor" value="14850">
+		<ItemComponent>
+			<Armor head_armor="98" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -1146,18 +1152,6 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="sturgian_helmet_base" name="{=OzUsuoDO}Northern Helmet" mesh="sturgian_helmet_base" culture="Culture.sturgia" weight="1.8" appearance="1.6" Type="HeadArmor" value="15150">
-		<ItemComponent>
-			<Armor head_armor="100" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
-	<Item id="eastern_vendel_helmet" name="{=brvgn9Ja}Eastern Vendel Helmet" mesh="khuzait_helmet_m" culture="Culture.khuzait" weight="4" appearance="2.6" Type="HeadArmor" value="15150">
-		<ItemComponent>
-			<Armor head_armor="100" has_gender_variations="false" hair_cover_type="type3" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
 	<Item id="western_crowned_helmet" name="{=LSgDVSfl}Western Crowned Helmet" mesh="vlandia_lord_helmet_a" culture="Culture.vlandia" weight="3.7" appearance="3" Type="headArmor" value="15150" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="100" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
@@ -1167,18 +1161,6 @@
 	<Item id="southern_lord_helmet" name="{=Xs8a5YxN}Southern Lord Helmet" mesh="aserai_lord_helmet_c" culture="Culture.aserai" weight="3.9" appearance="3.6" Type="headArmor" value="15150" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="100" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
-	<Item id="sturgian_helmet_b_open" name="{=JEaU5XOP}Northern Open Helmet" mesh="sturgian_helmet_b_open" culture="Culture.sturgia" weight="1.8" appearance="2.4" Type="HeadArmor" value="15300">
-		<ItemComponent>
-			<Armor head_armor="101" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
-	<Item id="goggled_helmet_over_mail" name="{=qc0P0b2r}Goggled Helmet Over Mail" mesh="sturgia_helmet_c" culture="Culture.sturgia" weight="1.8" appearance="1.6" Type="HeadArmor" value="15450">
-		<ItemComponent>
-			<Armor head_armor="102" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -1194,15 +1176,15 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="sturgian_helmet_b_close" name="{=oIOYBIbv}Northern Closed Helmet" mesh="sturgian_helmet_b_close" culture="Culture.sturgia" weight="3" appearance="2" Type="HeadArmor" value="15600">
-		<ItemComponent>
-			<Armor head_armor="103" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
 	<Item id="plumed_helmet" name="{=sJ1R62Tn}Plumed Helmet" mesh="roman_helmet_d" culture="Culture.empire" weight="2.9" appearance="1.3" Type="HeadArmor" value="15750" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="104" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="closed_goggled_helmet" name="{=oIOYBIbv}Northern Closed Helmet" mesh="sturgia_helmet_l" culture="Culture.sturgia" weight="4.1" appearance="1.6" Type="HeadArmor" value="15750">
+		<ItemComponent>
+			<Armor head_armor="104" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -1218,33 +1200,33 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="closed_goggled_helmet" name="{=oIOYBIbv}Northern Closed Helmet" mesh="sturgia_helmet_l" culture="Culture.sturgia" weight="4.1" appearance="1.6" Type="HeadArmor" value="15900">
-		<ItemComponent>
-			<Armor head_armor="105" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
-	<Item id="goggled_helmet_over_full_mail" name="{=mAEjSAlV}Northern Closed Helmet Over Mail" mesh="sturgia_helmet_e" culture="Culture.sturgia" weight="4.4" appearance="1.6" Type="HeadArmor" value="15900">
-		<ItemComponent>
-			<Armor head_armor="105" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
 	<Item id="khuzait_noble_helmet_with_feathers" name="{=MZzQZcCf}Eastern Noble Helmet with Feathers" mesh="khuzait_lord_helmet_a" culture="Culture.khuzait" weight="3.4" appearance="3.6" Type="headArmor" value="15900" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="105" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="sturgian_lord_helmet_b" name="{=loHYOJA9}Northern Lord Helmet With Open Mail Coif" mesh="sturgian_lord_helmet_b" culture="Culture.sturgia" weight="3.4" appearance="3" Type="headArmor" value="15900" difficulty="0" subtype="head_armor">
-		<ItemComponent>
-			<Armor head_armor="105" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
 	<Item id="western_crowned_plated_helmet" name="{=kweDHlz8}Western Crowned Plated Helmet" mesh="vlandia_lord_helmet_c" culture="Culture.vlandia" weight="3.9" appearance="3.2" Type="headArmor" value="15900" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="105" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="eastern_vendel_helmet" name="{=brvgn9Ja}Eastern Vendel Helmet" mesh="khuzait_helmet_m" culture="Culture.khuzait" weight="4" appearance="2.6" Type="HeadArmor" value="16050">
+		<ItemComponent>
+			<Armor head_armor="106" has_gender_variations="false" hair_cover_type="type3" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="goggled_helmet_over_mail" name="{=qc0P0b2r}Goggled Helmet Over Mail" mesh="sturgia_helmet_c" culture="Culture.sturgia" weight="1.8" appearance="1.6" Type="HeadArmor" value="16050">
+		<ItemComponent>
+			<Armor head_armor="106" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="sturgian_helmet_b_close" name="{=oIOYBIbv}Northern Closed Helmet" mesh="sturgian_helmet_b_close" culture="Culture.sturgia" weight="3" appearance="2" Type="HeadArmor" value="16200">
+		<ItemComponent>
+			<Armor head_armor="107" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -1260,15 +1242,27 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="lendman_helmet_over_full_mail" name="{=ljE4zLrf}Northern Warlord Helmet Over Full Mail" mesh="sturgia_helmet_h" culture="Culture.sturgia" weight="4.3" appearance="3" Type="HeadArmor" value="16950">
+	<Item id="northern_warlord_helmet" name="{=TpjbgasA}Northern Warlord Helmet" mesh="sturgia_helmet_i" culture="Culture.sturgia" weight="3.6" appearance="3" Type="HeadArmor" value="17100">
 		<ItemComponent>
-			<Armor head_armor="112" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
+			<Armor head_armor="113" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type1"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="sturgian_lord_helmet_a" name="{=YAOfXanz}Northern Lord Helmet" mesh="sturgian_lord_helmet_a" culture="Culture.sturgia" weight="3.6" appearance="3" Type="headArmor" value="17400" difficulty="0" subtype="head_armor">
+	<Item id="goggled_helmet_over_full_mail" name="{=mAEjSAlV}Northern Closed Helmet Over Mail" mesh="sturgia_helmet_e" culture="Culture.sturgia" weight="4.4" appearance="1.6" Type="HeadArmor" value="17250">
+		<ItemComponent>
+			<Armor head_armor="114" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="sturgian_lord_helmet_b" name="{=loHYOJA9}Northern Lord Helmet With Open Mail Coif" mesh="sturgian_lord_helmet_b" culture="Culture.sturgia" weight="3.4" appearance="3" Type="headArmor" value="17400" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="115" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="sturgian_lord_helmet_a" name="{=YAOfXanz}Northern Lord Helmet" mesh="sturgian_lord_helmet_a" culture="Culture.sturgia" weight="3.6" appearance="3" Type="headArmor" value="17550" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="116" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -1290,9 +1284,15 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="northern_warlord_helmet" name="{=TpjbgasA}Northern Warlord Helmet" mesh="sturgia_helmet_i" culture="Culture.sturgia" weight="3.6" appearance="3" Type="HeadArmor" value="18150">
+	<Item id="lendman_helmet_over_mail" name="{=meC5HTQD}Northern Warlord Helmet Over Mail" mesh="sturgia_helmet_g" culture="Culture.sturgia" weight="1.9" appearance="3" Type="HeadArmor" value="18000">
 		<ItemComponent>
-			<Armor head_armor="120" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type1"/>
+			<Armor head_armor="119" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="sturgia_heavy_cavalary_helmet" name="{=xl5MgK49}Sturgia Heavy Cavalry Helmet" mesh="sturgia_helmet_o" culture="Culture.sturgia" weight="2.8" appearance="2" Type="HeadArmor" value="18150">
+		<ItemComponent>
+			<Armor head_armor="120" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -1311,12 +1311,6 @@
 	<Item id="full_helm_over_laced_coif" name="{=wEfZyccm}Full Helm Over Laced Coif" mesh="vlandia_helmet_s_c" culture="Culture.vlandia" weight="3.5" appearance="2" Type="HeadArmor" value="18300" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="121" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
-	<Item id="decorated_goggled_helmet" name="{=X3FAb6Wm}Northern Decorated Visored Helmet" mesh="sturgia_helmet_n" culture="Culture.sturgia" weight="4.2" appearance="3" Type="HeadArmor" value="18600">
-		<ItemComponent>
-			<Armor head_armor="123" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -1344,12 +1338,6 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="lendman_helmet_over_mail" name="{=meC5HTQD}Northern Warlord Helmet Over Mail" mesh="sturgia_helmet_g" culture="Culture.sturgia" weight="1.9" appearance="3" Type="HeadArmor" value="18900">
-		<ItemComponent>
-			<Armor head_armor="125" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
 	<Item id="empire_jewelled_helmet" name="{=BD07fj39}Imperial Jewelled Helmet" mesh="empire_lord_helmet_c" culture="Culture.empire" weight="3.8" appearance="5" Type="headArmor" value="18900" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="125" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
@@ -1362,9 +1350,9 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="imperial_goggled_helmet" name="Imperial Visored Helmet" mesh="imperial_helmet" culture="Culture.empire" weight="4.2" appearance="2.6" Type="HeadArmor" value="19200">
+	<Item id="lendman_helmet_over_full_mail" name="{=ljE4zLrf}Northern Warlord Helmet Over Full Mail" mesh="sturgia_helmet_h" culture="Culture.sturgia" weight="4.3" appearance="3" Type="HeadArmor" value="19200">
 		<ItemComponent>
-			<Armor head_armor="127" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="type2"/>
+			<Armor head_armor="127" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -1380,9 +1368,21 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
+	<Item id="decorated_goggled_helmet" name="{=X3FAb6Wm}Northern Decorated Visored Helmet" mesh="sturgia_helmet_n" culture="Culture.sturgia" weight="4.2" appearance="3" Type="HeadArmor" value="20100">
+		<ItemComponent>
+			<Armor head_armor="133" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
 	<Item id="khuzait_noble_helmet_with_fur" name="{=XoISdMVx}Eastern Noble Helmet with Fur" mesh="khuzait_lord_helmet_c" culture="Culture.khuzait" weight="3.9" appearance="3.6" Type="headArmor" value="21300" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="141" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="imperial_goggled_helmet" name="Imperial Visored Helmet" mesh="imperial_helmet" culture="Culture.empire" weight="4.2" appearance="2.6" Type="HeadArmor" value="21750">
+		<ItemComponent>
+			<Armor head_armor="144" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="type2"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
