@@ -590,6 +590,7 @@ namespace RealisticBattleCombatModule
             else if (item.ItemComponent is WeaponComponent)
             {
                 num2 = 200f;
+
             }
             else if (item.ItemComponent is HorseComponent)
             {
@@ -703,6 +704,10 @@ namespace RealisticBattleCombatModule
             {
                 num2 = 0f;
             }
+            if (num2 > 5.5f)
+            {
+                num2 = 5.5f;
+            }
             __result =  num2;
             return false;
         }
@@ -725,7 +730,7 @@ namespace RealisticBattleCombatModule
             }
             else if (armorComponent.Item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
             {
-                ArmorTier = (float)armorComponent.HeadArmor * 0.086f - 1f;
+                ArmorTier = (float)armorComponent.HeadArmor * 0.06f - 1f;
             }
             else if (armorComponent.Item.ItemType == ItemObject.ItemTypeEnum.Cape)
             {
