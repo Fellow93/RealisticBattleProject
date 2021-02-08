@@ -421,6 +421,12 @@ namespace RealisticBattleCombatModule
                             XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }
+                case "OneHandedBastardAxe":
+                    {
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, armorReduction, damageType, armorEffectiveness,
+                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
+                        break;
+                    }
                 case "TwoHandedAxe":
                     {
                         damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, armorReduction, damageType, armorEffectiveness,
@@ -954,6 +960,7 @@ namespace RealisticBattleCombatModule
                 switch (weaponType)
                 {
                     case "TwoHandedAxe":
+                    case "OneHandedBastardAxe":
                     case "TwoHandedPolearm":
                     case "TwoHandedMace":
                         {

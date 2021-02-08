@@ -294,7 +294,8 @@ xcopy /d /y "$(SolutionDir)Xmls\sword_pieces.xml" "$(SolutionDir)..\RealisticBat
 xcopy /d /y "$(SolutionDir)Xmls\unit_arrows.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
 xcopy /d /y "$(SolutionDir)Xmls\horses_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
 xcopy /d /y "$(SolutionDir)Xmls\Gladius_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\arrow_visuals_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"</PostBuildEvent>
+xcopy /d /y "$(SolutionDir)Xmls\arrow_visuals_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\no_bastard_axes.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
