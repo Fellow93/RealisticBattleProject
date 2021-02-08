@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?> 
 <config>
+		<!-- Set ArmorPenetrationMessage to 0 in order to disable blunt trauma and armor penetration message -->
 	<Global>
 		<ArmorMultiplier>2.0</ArmorMultiplier>
 		<OneHandedPolearmBonus>0.0</OneHandedPolearmBonus>
 		<TwoHandedPolearmBonus>0.0</TwoHandedPolearmBonus>
-		<!-- Set ArmorPenetrationMessage to 0 in order to disable blunt trauma and armor penetration message -->
-		<ArmorPenetrationMessage>1.0</ArmorPenetrationMessage>
+		<ArmorPenetrationMessage>1</ArmorPenetrationMessage>
 	</Global>
-		<!-- Armor works like this. -->
+		<!-- Armor works like this -->
 		<!-- Damage that penetrates armor = damage caused by the weapon - (armor of body part * ExtraArmorThresholdFactor)-->
-		<!-- Blunt trauma = 100 / 100 + damage absorbed by armor (based on above calculation) * ExtraBluntFactor * ArmorMultiplier -->		
+		<!-- Blunt trauma = 100 / 100 + damage absorbed by armor (based on above calculation) * ExtraBluntFactor * ArmorMultiplier -->	
 	<Dagger>
 		<ExtraBluntFactorCut>0.15</ExtraBluntFactorCut>
 		<ExtraBluntFactorPierce>0.2</ExtraBluntFactorPierce>
