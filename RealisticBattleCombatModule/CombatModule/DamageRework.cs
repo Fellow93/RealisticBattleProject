@@ -68,7 +68,7 @@ namespace RealisticBattleCombatModule
                             length = 5f;
                         }
                         //missileTotalDamage += 168.0f;
-                        missileTotalDamage *= 0.00143f;
+                        missileTotalDamage *= 0.00260f;
                     }
                     if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm"))
                     {
@@ -77,7 +77,7 @@ namespace RealisticBattleCombatModule
                         {
                             length = 5f;
                         }
-                        missileTotalDamage *= 0.0045f;
+                        missileTotalDamage *= 0.0063f;
                     }
                     if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("LowGripPolearm"))
                     {
@@ -86,7 +86,7 @@ namespace RealisticBattleCombatModule
                         {
                             length = 5f;
                         }
-                        missileTotalDamage *= 0.0045f;
+                        missileTotalDamage *= 0.0063f;
                     }
                     else
                     {
