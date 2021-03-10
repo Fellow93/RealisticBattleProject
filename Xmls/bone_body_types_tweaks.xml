@@ -10,8 +10,8 @@
     <bone_body_type type="quadrupedal_arm_left" pierce_damage_multiplier="1.0" cut_damage_multiplier="1.0" blunt_damage_multiplier="1.0" priority="1" />
     <bone_body_type type="quadrupedal_arm_right" pierce_damage_multiplier="1.0" cut_damage_multiplier="1.0" blunt_damage_multiplier="1.0" priority="1" />
     <bone_body_type type="quadrupedal_legs" pierce_damage_multiplier="1.0" cut_damage_multiplier="1.5" blunt_damage_multiplier="1.2" priority="1" />
-    <bone_body_type type="head" pierce_damage_multiplier="1.2" cut_damage_multiplier="1.2" blunt_damage_multiplier="1.5" priority="4" />
-    <bone_body_type type="neck" pierce_damage_multiplier="1.2" cut_damage_multiplier="1.2" blunt_damage_multiplier="1.5" priority="4" />
+    <bone_body_type type="head" pierce_damage_multiplier="2.0" cut_damage_multiplier="2.0" blunt_damage_multiplier="2.0" priority="4" />
+    <bone_body_type type="neck" pierce_damage_multiplier="2.0" cut_damage_multiplier="2.0" blunt_damage_multiplier="2.0" priority="4" />
   </bone_body_types>
 </base>
 
