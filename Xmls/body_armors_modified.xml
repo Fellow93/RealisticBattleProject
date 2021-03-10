@@ -1140,7 +1140,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="southern_lamellar_armor" name="{=2K0o7NK9}Southern Lamellar Armor" mesh="sturgia_costume_i_yellow" culture="Culture.aserai" weight="44325" Type="BodyArmor" value="18270" appearance="1.5" difficulty="0" subtype="body_armor">
+	<Item id="southern_lamellar_armor" name="{=2K0o7NK9}Southern Lamellar Armor" mesh="sturgia_costume_i_yellow" culture="Culture.aserai" weight="11" Type="BodyArmor" value="18270" appearance="1.5" difficulty="0" subtype="body_armor">
 		<ItemComponent>
 			<Armor body_armor="50" leg_armor="25" covers_body="true" modifier_group="plate" material_type="Plate" has_gender_variations="true" arm_armor="32"/>
 		</ItemComponent>
