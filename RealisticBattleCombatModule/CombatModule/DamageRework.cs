@@ -11,6 +11,7 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.ObjectSystem;
+using static TaleWorlds.Core.ItemObject;
 
 namespace RealisticBattleCombatModule
 {
@@ -1154,6 +1155,131 @@ namespace RealisticBattleCombatModule
                     hprd.EndHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_blood_sword_exit");
                 }
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(ItemObject))]
+    [HarmonyPatch("CalculateEffectiveness")]
+    class CalculateEffectivenessPatch
+    {
+        static bool Prefix(ref ItemObject __instance, ref float __result)
+        {
+            float result = 1f;
+            ArmorComponent armorComponent = __instance.ArmorComponent;
+            if (armorComponent != null)
+            {
+                result = ((__instance.Type != ItemTypeEnum.HorseHarness) ? (((float)armorComponent.HeadArmor * 34f + (float)armorComponent.BodyArmor * 42f + (float)armorComponent.LegArmor * 12f + (float)armorComponent.ArmArmor * 12f) * 0.03f) : ((float)armorComponent.BodyArmor * 1.67f));
+            }
+            if (__instance.WeaponComponent != null)
+            {
+                WeaponComponentData primaryWeapon = __instance.WeaponComponent.PrimaryWeapon;
+                float num = 1f;
+                switch (primaryWeapon.WeaponClass)
+                {
+                    case WeaponClass.Dagger:
+                        num = 0.4f;
+                        break;
+                    case WeaponClass.OneHandedSword:
+                        num = 0.55f;
+                        break;
+                    case WeaponClass.TwoHandedSword:
+                        num = 0.6f;
+                        break;
+                    case WeaponClass.OneHandedAxe:
+                        num = 0.5f;
+                        break;
+                    case WeaponClass.TwoHandedAxe:
+                        num = 0.55f;
+                        break;
+                    case WeaponClass.Mace:
+                        num = 0.5f;
+                        break;
+                    case WeaponClass.Pick:
+                        num = 0.4f;
+                        break;
+                    case WeaponClass.TwoHandedMace:
+                        num = 0.55f;
+                        break;
+                    case WeaponClass.OneHandedPolearm:
+                        num = 0.4f;
+                        break;
+                    case WeaponClass.TwoHandedPolearm:
+                        num = 0.4f;
+                        break;
+                    case WeaponClass.LowGripPolearm:
+                        num = 0.4f;
+                        break;
+                    case WeaponClass.Arrow:
+                        num = 3f;
+                        break;
+                    case WeaponClass.Bolt:
+                        num = 3f;
+                        break;
+                    case WeaponClass.Cartridge:
+                        num = 3f;
+                        break;
+                    case WeaponClass.Bow:
+                        num = 0.55f;
+                        break;
+                    case WeaponClass.Crossbow:
+                        num = 0.57f;
+                        break;
+                    case WeaponClass.Stone:
+                        num = 0.1f;
+                        break;
+                    case WeaponClass.Boulder:
+                        num = 0.1f;
+                        break;
+                    case WeaponClass.ThrowingAxe:
+                        num = 0.25f;
+                        break;
+                    case WeaponClass.ThrowingKnife:
+                        num = 0.2f;
+                        break;
+                    case WeaponClass.Javelin:
+                        num = 0.28f;
+                        break;
+                    case WeaponClass.Pistol:
+                        num = 1f;
+                        break;
+                    case WeaponClass.Musket:
+                        num = 1f;
+                        break;
+                    case WeaponClass.SmallShield:
+                        num = 0.4f;
+                        break;
+                    case WeaponClass.LargeShield:
+                        num = 0.5f;
+                        break;
+                }
+                if (primaryWeapon.IsRangedWeapon)
+                {
+                    result = ((!primaryWeapon.IsConsumable) ? (((float)(primaryWeapon.MissileSpeed * primaryWeapon.MissileDamage) * 1.75f + (float)(primaryWeapon.ThrustSpeed * primaryWeapon.Accuracy) * 0.3f) * 0.01f * (float)primaryWeapon.MaxDataValue * num) : (((float)(primaryWeapon.MissileDamage * primaryWeapon.MissileSpeed) * 1.775f + (float)(primaryWeapon.Accuracy * primaryWeapon.MaxDataValue) * 25f + (float)primaryWeapon.WeaponLength * 4f) * 0.006944f * (float)primaryWeapon.MaxDataValue * num));
+                }
+                else if (primaryWeapon.IsMeleeWeapon)
+                {
+                    float val = (float)(primaryWeapon.ThrustSpeed * primaryWeapon.ThrustDamage) * 0.01f;
+                    float val2 = (float)(primaryWeapon.SwingSpeed * primaryWeapon.SwingDamage) * 0.01f;
+                    float num2 = Math.Max(val2, val);
+                    float num3 = Math.Min(val2, val);
+                    result = ((num2 + num3 * num3 / num2) * 120f + (float)primaryWeapon.Handling * 15f + (float)primaryWeapon.WeaponLength * 20f + __instance.Weight * 5f) * 0.01f * num;
+                }
+                else if (primaryWeapon.IsConsumable)
+                {
+                    result = ((float)primaryWeapon.MissileDamage * 550f + (float)primaryWeapon.MissileSpeed * 15f + (float)primaryWeapon.MaxDataValue * 60f) * 0.01f * num;
+                }
+                else if (primaryWeapon.IsShield)
+                {
+                    result = ((float)primaryWeapon.BodyArmor * 60f + (float)primaryWeapon.ThrustSpeed * 10f + (float)primaryWeapon.MaxDataValue * 40f + (float)primaryWeapon.WeaponLength * 20f) * 0.01f * num;
+                }
+            }
+            HorseComponent horseComponent = __instance.HorseComponent;
+            if (horseComponent != null)
+            {
+                result = ((float)(horseComponent.ChargeDamage * horseComponent.Speed + horseComponent.Maneuver * horseComponent.Speed) + (float)horseComponent.BodyLength * __instance.Weight * 0.025f) * (float)(horseComponent.HitPoints + horseComponent.HitPointBonus) * 0.0001f;
+            }
+            __result =  result;
+            return false;
         }
     }
 }
