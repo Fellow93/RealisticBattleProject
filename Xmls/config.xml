@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?> 
 <config>
-		<!-- Set ArmorPenetrationMessage to 0 in order to disable blunt trauma and armor penetration message -->
+		<!-- Set ArmorPenetrationMessage to 0 in order to disable blunt trauma and armor penetration message, set it to 1 to enable these messages -->
 	<Global>
 		<ArmorMultiplier>2.0</ArmorMultiplier>
-		<OneHandedPolearmBonus>0.0</OneHandedPolearmBonus>
-		<TwoHandedPolearmBonus>0.0</TwoHandedPolearmBonus>
-		<ArmorPenetrationMessage>0</ArmorPenetrationMessage>
+		<OneHandedThrustBonus>2.5</OneHandedThrustBonus>
+		<TwoHandedThrustBonus>2.5</TwoHandedThrustBonus>
+		<ArmorPenetrationMessage>1</ArmorPenetrationMessage>
+		<ThrustModifier>0.4</ThrustModifier>
 	</Global>
 		<!-- Armor works like this -->
 		<!-- Damage that penetrates armor = damage caused by the weapon - (armor of body part * ExtraArmorThresholdFactor)-->
@@ -129,9 +130,9 @@
 	
 	<Javelin>
 		<ExtraBluntFactorCut>0.05</ExtraBluntFactorCut>
-		<ExtraBluntFactorPierce>0.10</ExtraBluntFactorPierce>
+		<ExtraBluntFactorPierce>0.20</ExtraBluntFactorPierce>
 		<ExtraBluntFactorBlunt>1.0</ExtraBluntFactorBlunt>
-		<ExtraArmorThresholdFactorPierce>3.0</ExtraArmorThresholdFactorPierce>
+		<ExtraArmorThresholdFactorPierce>4.0</ExtraArmorThresholdFactorPierce>
 		<ExtraArmorThresholdFactorCut>3.0</ExtraArmorThresholdFactorCut>
 		<ExtraArmorSkillDamageAbsorb>1.0</ExtraArmorSkillDamageAbsorb>
 	</Javelin>
