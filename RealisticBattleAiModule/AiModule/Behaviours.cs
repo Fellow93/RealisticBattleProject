@@ -607,7 +607,7 @@ namespace RealisticBattleAiModule
 
         [HarmonyPrefix]
         [HarmonyPatch("CalculateCurrentOrder")]
-        static bool PrefixCalculateCurrentOrdert(ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviourState ____protectFlankState, ref Formation ___formation, ref Formation ____mainFormation, ref FormationAI.BehaviorSide ___behaviorSide)
+        static bool PrefixCalculateCurrentOrder(ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviourState ____protectFlankState, ref Formation ___formation, ref Formation ____mainFormation, ref FormationAI.BehaviorSide ___behaviorSide)
         {
             if (____mainFormation == null || ___formation.QuerySystem.ClosestEnemyFormation == null)
             {
@@ -640,6 +640,51 @@ namespace RealisticBattleAiModule
                 ____movementOrder = MovementOrder.MovementOrderMove(medianPosition);
                 ____currentOrder = ____movementOrder;
                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(direction);
+            }
+            return false;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch("CheckAndChangeState")]
+        static bool PrefixCheckAndChangeState( ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviourState ____protectFlankState, ref Formation ___formation, ref Formation ____mainFormation, ref FormationAI.BehaviorSide ___behaviorSide)
+        {
+            WorldPosition position = ____movementOrder.GetPosition(___formation);
+            switch (____protectFlankState)
+            {
+                case BehaviourState.HoldingFlank:
+                    if (___formation.QuerySystem.ClosestEnemyFormation != null)
+                    {
+                        float num = 50 + (___formation.Depth + ___formation.QuerySystem.ClosestEnemyFormation.Formation.Depth) / 2f;
+                        if (___formation.QuerySystem.ClosestEnemyFormation.MedianPosition.AsVec2.DistanceSquared(position.AsVec2) < num * num)
+                        {
+                            ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(___formation.QuerySystem.ClosestEnemyFormation.Formation);
+                            ____currentOrder = ____chargeToTargetOrder;
+                            ____protectFlankState = BehaviourState.Charging;
+                        }
+                    }
+                    break;
+                case BehaviourState.Charging:
+                    {
+                        if (___formation.QuerySystem.ClosestEnemyFormation == null)
+                        {
+                            ____currentOrder = ____movementOrder;
+                            ____protectFlankState = BehaviourState.Returning;
+                            break;
+                        }
+                        float num2 = 60f + (___formation.Depth + ___formation.QuerySystem.ClosestEnemyFormation.Formation.Depth) / 2f;
+                        if (___formation.QuerySystem.AveragePosition.DistanceSquared(position.AsVec2) > num2 * num2)
+                        {
+                            ____currentOrder = ____movementOrder;
+                            ____protectFlankState = BehaviourState.Returning;
+                        }
+                        break;
+                    }
+                case BehaviourState.Returning:
+                    if (___formation.QuerySystem.AveragePosition.DistanceSquared(position.AsVec2) < 400f)
+                    {
+                        ____protectFlankState = BehaviourState.HoldingFlank;
+                    }
+                    break;
             }
             return false;
         }
