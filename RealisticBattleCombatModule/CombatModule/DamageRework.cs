@@ -69,7 +69,7 @@ namespace RealisticBattleCombatModule
                             length = 5f;
                         }
                         //missileTotalDamage += 168.0f;
-                        missileTotalDamage *= 0.0033f;
+                        missileTotalDamage *= 0.01f;
                     }
                     if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm"))
                     {
@@ -78,7 +78,8 @@ namespace RealisticBattleCombatModule
                         {
                             length = 5f;
                         }
-                        missileTotalDamage *= 0.0050f;
+                        missileTotalDamage -= 25f;
+                        missileTotalDamage *= 0.01f;
                     }
                     if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("LowGripPolearm"))
                     {
@@ -87,7 +88,8 @@ namespace RealisticBattleCombatModule
                         {
                             length = 5f;
                         }
-                        missileTotalDamage *= 0.0050f;
+                        missileTotalDamage -= 25f;
+                        missileTotalDamage *= 0.01f;
                     }
                     else
                     {
@@ -111,9 +113,9 @@ namespace RealisticBattleCombatModule
                     physicalDamage = (weaponItem.Weight) * 300f;
                 }
 
-                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") && physicalDamage > (weaponItem.Weight) * 225f)
+                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") && physicalDamage > (weaponItem.Weight) * 300f)
                 {
-                    physicalDamage = (weaponItem.Weight) * 225f;
+                    physicalDamage = (weaponItem.Weight) * 300f;
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") && physicalDamage > (weaponItem.Weight) * 2500f)
@@ -175,7 +177,7 @@ namespace RealisticBattleCombatModule
                     weaponWeight += 2.5f;
                 }
                 float kineticEnergy = 0.5f * weaponWeight * combinedSpeed * combinedSpeed;
-                float handLimit = 0.5f * weaponWeight * thrustWeaponSpeed * thrustWeaponSpeed * 1.25f;
+                float handLimit = 0.5f * weaponWeight * thrustWeaponSpeed * thrustWeaponSpeed * 1.5f;
                 if (kineticEnergy > handLimit)
                 {
                     kineticEnergy = handLimit;
@@ -373,24 +375,36 @@ namespace RealisticBattleCombatModule
             float armorReduction = 100f / (100f + armorEffectiveness * XmlConfig.dict["Global.ArmorMultiplier"]);
             float mag_1h_thrust;
             float mag_2h_thrust;
+            float mag_1h_sword_thrust;
+            float mag_2h_sword_thrust;
 
             if (damageType == DamageTypes.Pierce)
             {
                 mag_1h_thrust = magnitude * XmlConfig.dict["Global.OneHandedThrustBonus"];
                 mag_2h_thrust = magnitude * XmlConfig.dict["Global.TwoHandedThrustBonus"];
-
+                mag_1h_sword_thrust = magnitude * 1.15f * XmlConfig.dict["Global.OneHandedThrustBonus"];
+                mag_2h_sword_thrust = magnitude * 1.15f * XmlConfig.dict["Global.TwoHandedThrustBonus"];
+            }
+            else if (damageType == DamageTypes.Cut)
+            {
+                mag_1h_thrust = magnitude;
+                mag_2h_thrust = magnitude;
+                mag_1h_sword_thrust = magnitude * 1.35f;
+                mag_2h_sword_thrust = magnitude * 1.15f;
             }
             else
             {
                 mag_1h_thrust = magnitude;
                 mag_2h_thrust = magnitude;
+                mag_1h_sword_thrust = magnitude;
+                mag_2h_sword_thrust = magnitude;
             }
 
             switch (weaponType)
             {
                 case "Dagger":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_thrust, armorReduction, damageType, armorEffectiveness,
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_sword_thrust, armorReduction, damageType, armorEffectiveness,
                                 XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }
@@ -402,13 +416,13 @@ namespace RealisticBattleCombatModule
                     }
                 case "OneHandedSword":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_thrust, armorReduction, damageType, armorEffectiveness,
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_sword_thrust, armorReduction, damageType, armorEffectiveness,
                                 XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }
                 case "TwoHandedSword":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_2h_thrust, armorReduction, damageType, armorEffectiveness,
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_2h_sword_thrust, armorReduction, damageType, armorEffectiveness,
                             XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }
@@ -468,7 +482,7 @@ namespace RealisticBattleCombatModule
                     }
                 case "Javelin":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_thrust, armorReduction, damageType, armorEffectiveness,
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, armorReduction, damageType, armorEffectiveness,
                             XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }

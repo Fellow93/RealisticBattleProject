@@ -654,7 +654,7 @@ namespace RealisticBattleAiModule
                 case BehaviourState.HoldingFlank:
                     if (___formation.QuerySystem.ClosestEnemyFormation != null)
                     {
-                        float num = 50 + (___formation.Depth + ___formation.QuerySystem.ClosestEnemyFormation.Formation.Depth) / 2f;
+                        float num = 150 + (___formation.Depth + ___formation.QuerySystem.ClosestEnemyFormation.Formation.Depth) / 2f;
                         if (___formation.QuerySystem.ClosestEnemyFormation.MedianPosition.AsVec2.DistanceSquared(position.AsVec2) < num * num)
                         {
                             ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(___formation.QuerySystem.ClosestEnemyFormation.Formation);
@@ -671,7 +671,7 @@ namespace RealisticBattleAiModule
                             ____protectFlankState = BehaviourState.Returning;
                             break;
                         }
-                        float num2 = 60f + (___formation.Depth + ___formation.QuerySystem.ClosestEnemyFormation.Formation.Depth) / 2f;
+                        float num2 = 160f + (___formation.Depth + ___formation.QuerySystem.ClosestEnemyFormation.Formation.Depth) / 2f;
                         if (___formation.QuerySystem.AveragePosition.DistanceSquared(position.AsVec2) > num2 * num2)
                         {
                             ____currentOrder = ____movementOrder;
