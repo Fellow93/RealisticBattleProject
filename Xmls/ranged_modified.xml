@@ -218,7 +218,7 @@
 	</Item>
 	<Item id="training_bow" name="{=SUSbUAEl}Practice Bow" body_name="bo_composite_shotbow_b" mesh="shortbow_b" weight="0.3" difficulty="0" appearance="1" Type="Bow" is_merchandise="false" value="600" item_holsters="bow_back_2:bow_hip:bow_hip_2:bow_back">
 		<ItemComponent>
-			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="60" speed_rating="60" missile_speed="166" weapon_length="106" thrust_damage="150" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.0,0,-0.1" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="60" speed_rating="60" missile_speed="166" weapon_length="106" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.0,0,-0.1" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -226,7 +226,7 @@
 	</Item>
 	<Item id="training_longbow" name="{=cmuMaYGR}Practice Longbow" body_name="bo_composite_longbow_a" mesh="longbow_a" weight="0.5" difficulty="0" appearance="1" Type="Bow" subtype="bow" is_merchandise="false" value="600" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.vlandia">
 		<ItemComponent>
-			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="60" speed_rating="60" missile_speed="200" weapon_length="120" thrust_damage="150" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="60" speed_rating="60" missile_speed="200" weapon_length="120" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
 			</Weapon>
 		</ItemComponent>
