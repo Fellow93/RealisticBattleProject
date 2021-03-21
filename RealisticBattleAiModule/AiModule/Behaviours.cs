@@ -654,7 +654,7 @@ namespace RealisticBattleAiModule
                 case BehaviourState.HoldingFlank:
                     if (___formation.QuerySystem.ClosestEnemyFormation != null)
                     {
-                        float num = 150 + (___formation.Depth + ___formation.QuerySystem.ClosestEnemyFormation.Formation.Depth) / 2f;
+                        float num = 150f + (___formation.Depth + ___formation.QuerySystem.ClosestEnemyFormation.Formation.Depth) / 2f;
                         if (___formation.QuerySystem.ClosestEnemyFormation.MedianPosition.AsVec2.DistanceSquared(position.AsVec2) < num * num)
                         {
                             ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(___formation.QuerySystem.ClosestEnemyFormation.Formation);
