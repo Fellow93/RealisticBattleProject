@@ -19291,8 +19291,6 @@
                  id="Item.fortified_kite_shield" />
       <equipment slot="Item2"
                  id="Item.sturgia_axe_5_t5" />
-      <equipment slot="Item3"
-                 id="Item.eastern_throwing_spear_2_t4" />
       <equipment slot="Gloves"
                  id="Item.northern_plated_gloves" />
       <equipment slot="Body"
@@ -19315,8 +19313,6 @@
                  id="Item.fortified_kite_shield" />
       <equipment slot="Item2"
                  id="Item.sturgia_axe_5_t5" />
-      <equipment slot="Item3"
-                 id="Item.eastern_throwing_spear_2_t4" />
       <equipment slot="Gloves"
                  id="Item.northern_plated_gloves" />
       <equipment slot="Body"
@@ -19338,9 +19334,7 @@
       <equipment slot="Item1"
                  id="Item.fortified_kite_shield" />
       <equipment slot="Item2"
-                 id="Item.sturgia_axe_5_t5" />
-      <equipment slot="Item3"
-                 id="Item.eastern_throwing_spear_2_t4" />
+                 id="Item.khuzait_mace_4_t5" />
       <equipment slot="Gloves"
                  id="Item.northern_plated_gloves" />
       <equipment slot="Body"

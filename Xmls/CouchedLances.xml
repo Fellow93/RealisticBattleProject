@@ -340,7 +340,7 @@
   <CraftingPiece id="spear_blade_23" name="{=OryiZr9d}Kontarion" tier="3" piece_type="Blade" mesh="spear_blade_23" length="42" weight="0.35" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="9.5" />
+      <Thrust damage_type="Pierce" damage_factor="8.36" />
     </BladeData>
     <Materials>
       <Material id="Iron3" count="2" />

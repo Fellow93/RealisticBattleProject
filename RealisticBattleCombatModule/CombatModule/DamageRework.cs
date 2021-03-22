@@ -383,14 +383,14 @@ namespace RealisticBattleCombatModule
                 mag_1h_thrust = magnitude * XmlConfig.dict["Global.OneHandedThrustBonus"];
                 mag_2h_thrust = magnitude * XmlConfig.dict["Global.TwoHandedThrustBonus"];
                 mag_1h_sword_thrust = magnitude * 1.15f * XmlConfig.dict["Global.OneHandedThrustBonus"];
-                mag_2h_sword_thrust = magnitude * 1.15f * XmlConfig.dict["Global.TwoHandedThrustBonus"];
+                mag_2h_sword_thrust = magnitude * 2.0f * XmlConfig.dict["Global.TwoHandedThrustBonus"];
             }
             else if (damageType == DamageTypes.Cut)
             {
                 mag_1h_thrust = magnitude;
                 mag_2h_thrust = magnitude;
                 mag_1h_sword_thrust = magnitude * 1.35f;
-                mag_2h_sword_thrust = magnitude * 1.15f;
+                mag_2h_sword_thrust = magnitude * 1.07f;
             }
             else
             {
