@@ -69,27 +69,29 @@ namespace RealisticBattleCombatModule
                             length = 5f;
                         }
                         //missileTotalDamage += 168.0f;
-                        missileTotalDamage *= 0.01f;
+                        //missileTotalDamage *= 0.01f;
+                        //missileTotalDamage = 1f;
                     }
                     if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm"))
                     {
-                        length -= 5f;
+                        length -= 10f;
                         if (length < 5.0f)
                         {
                             length = 5f;
                         }
-                        missileTotalDamage -= 25f;
-                        missileTotalDamage *= 0.01f;
+                        //missileTotalDamage -= 25f;
+                        //missileTotalDamage = 1f;
                     }
                     if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("LowGripPolearm"))
                     {
-                        length -= 5f;
+                        length -= 10f;
                         if (length < 5.0f)
                         {
                             length = 5f;
                         }
-                        missileTotalDamage -= 25f;
-                        missileTotalDamage *= 0.01f;
+                        //missileTotalDamage -= 25f;
+                        //missileTotalDamage *= 0.01f;
+                        //missileTotalDamage = 1f;
                     }
                     else
                     {
@@ -129,6 +131,22 @@ namespace RealisticBattleCombatModule
                 }
 
                 baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining;
+
+                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
+                {
+                    baseMagnitude = physicalDamage * momentumRemaining + ((missileTotalDamage * 0.6f) - 42f);
+                }
+
+                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") ||
+                    weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("LowGripPolearm"))
+                {
+                    baseMagnitude = (physicalDamage * momentumRemaining + missileTotalDamage) * XmlConfig.dict["Global.ThrustModifier"];
+                }
+                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") ||
+                    weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt"))
+                {
+                    baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining;
+                }
                 specialMagnitude = baseMagnitude;
 
                 return false;
@@ -652,7 +670,7 @@ namespace RealisticBattleCombatModule
         static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
         {
             WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
-            float val = ((float)weaponComponentData.ThrustDamage - 50f) * 0.1f * GetFactor(weaponComponentData.ThrustDamageType) * ((float)weaponComponentData.ThrustSpeed * 0.01f);
+            float val = ((float)weaponComponentData.ThrustDamage * XmlConfig.dict["Global.OneHandedThrustBonus"] - 50f) * 0.1f * GetFactor(weaponComponentData.ThrustDamageType) * ((float)weaponComponentData.ThrustSpeed * 0.01f);
             float num = ((float)weaponComponentData.SwingDamage - 50f) * 0.1f * GetFactor(weaponComponentData.SwingDamageType) * ((float)weaponComponentData.SwingSpeed * 0.01f);
             float maceTier = ((float)weaponComponentData.SwingDamage - 30f) * 0.2f * ((float)weaponComponentData.SwingSpeed * 0.01f);
             if (val < 0f)

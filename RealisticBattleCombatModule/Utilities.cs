@@ -47,7 +47,7 @@ namespace RealisticBattleCombatModule
 
         public static int calculateThrowableSpeed(float ammoWeight)
         {
-            int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt(160f * 2f / ammoWeight));
+            int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt(115f * 2f / ammoWeight));
             //calculatedThrowingSpeed += 7;
             return calculatedThrowingSpeed;
         }
