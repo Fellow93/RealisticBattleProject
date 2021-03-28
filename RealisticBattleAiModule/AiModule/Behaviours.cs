@@ -1029,7 +1029,7 @@ namespace RealisticBattleAiModule
 
                     if (unit.HasMount)
                     {
-                        if(Utilities.GetHarnessTier(unit) > 2)
+                        if(Utilities.GetHarnessTier(unit) > 3)
                         {
                             unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 7f, 4f, 20f, 1f);
                             unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);

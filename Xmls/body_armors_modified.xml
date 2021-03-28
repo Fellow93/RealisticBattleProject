@@ -1242,12 +1242,6 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="eastern_lamellar_armor" name="{=6qaNQAND}Eastern Lamellar Armor" mesh="metal_lamellar_armor" culture="Culture.khuzait" weight="16" Type="BodyArmor" value="26520" appearance="2">
-		<ItemComponent>
-			<Armor body_armor="75" leg_armor="50" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="32"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true"/>
-	</Item>
 	<Item id="coat_of_plates_over_mail" name="{=p949oNWk}Coat of Plates Over Mail" mesh="tunic_ironplate_armor" culture="Culture.vlandia" weight="20.11" Type="BodyArmor" value="27400" appearance="3" difficulty="0" subtype="body_armor">
 		<ItemComponent>
 			<Armor body_armor="75" leg_armor="35" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="55"/>
@@ -1257,12 +1251,6 @@
 	<Item id="sturgian_lamellar_base" name="Northern Light Lamellar Over Mail" mesh="sturgian_lamellar_base" culture="Culture.sturgia" weight="21.5" Type="BodyArmor" value="27620" appearance="3">
 		<ItemComponent>
 			<Armor body_armor="79" leg_armor="38" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="46"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true"/>
-	</Item>
-	<Item id="brass_lamellar_over_mail" name="{=ItZt3amR}Eastern Brass Lamellar Over Mail" mesh="brass_lamellar" culture="Culture.khuzait" weight="23" Type="BodyArmor" value="28280" appearance="2">
-		<ItemComponent>
-			<Armor body_armor="80" leg_armor="44" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="44"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
@@ -1341,6 +1329,18 @@
 	<Item id="imperial_scale_armor" name="Imperial Scale Armor Over Double Mail" mesh="imperial_lamellar_b" culture="Culture.empire" weight="35.5" Type="BodyArmor" value="53580" appearance="3" difficulty="0" subtype="body_armor">
 		<ItemComponent>
 			<Armor body_armor="135" leg_armor="122" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="86"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="eastern_lamellar_armor" name="{=6qaNQAND}Eastern Lamellar Armor" mesh="metal_lamellar_armor" culture="Culture.khuzait" weight="16" Type="BodyArmor" value="26520" appearance="2">
+		<ItemComponent>
+			<Armor body_armor="75" leg_armor="50" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="32"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="brass_lamellar_over_mail" name="{=ItZt3amR}Eastern Brass Lamellar Over Mail" mesh="brass_lamellar" culture="Culture.khuzait" weight="23" Type="BodyArmor" value="32680" appearance="2">
+		<ItemComponent>
+			<Armor body_armor="100" leg_armor="44" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="44"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
