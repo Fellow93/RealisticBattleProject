@@ -1025,10 +1025,28 @@ namespace RealisticBattleAiModule
                 }
                 if (unit.Formation.QuerySystem.IsCavalryFormation)
                 {
+                    
+
+                    if (unit.HasMount)
+                    {
+                        if(Utilities.GetHarnessTier(unit) > 2)
+                        {
+                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 7f, 4f, 20f, 1f);
+                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
+                        }
+                        else
+                        {
+                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 1f, 2f, 4f, 20f, 1f);
+                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
+                        }
+                    }
+                    else
+                    {
+                        unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 7f, 4f, 20f, 1f);
+                        unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
+                    }
                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0f, 7f, 4f, 20f, 6f);
-                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 7f, 4f, 20f, 1f);
                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 2f, 7f, 4f, 20f, 5f);
-                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 0f, 10f, 3f, 20f, 6f);
                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
@@ -1038,10 +1056,18 @@ namespace RealisticBattleAiModule
                 {
                     if (unit.Formation.QuerySystem.IsInfantryFormation)
                     {
+                        //podmienky: twohandedpolearm v rukach
                         //unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0f, 40f, 4f, 50f, 6f);
                         //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 7f, 1f, 10f, 0.01f);
-                        unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                        unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 2f, 1f, 10f, 0.01f);
+                        if (Utilities.CheckIfTwoHandedPolearmInfantry(unit))
+                        {
+                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 3.5f, 5f, 20f, 6f);
+                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 3.5f, 4f, 20f, 0.01f);
+                        }
+                        else {
+                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
+                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 2f, 1f, 10f, 0.01f);
+                        }
                         unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 1f, 10f, 20f);
                         unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 40f, 4f, 60f, 0f);
                         unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 5f, 7f, 10f, 8, 20f);
@@ -1167,6 +1193,7 @@ namespace RealisticBattleAiModule
         [HarmonyPatch("GetTargetAgent")]
         static bool PrefixGetTargetAgent(ref Agent __instance, ref Agent __result)
         {
+            List<Formation> formations;
             if(__instance != null)
             {
                 Formation formation = __instance.Formation;
@@ -1174,12 +1201,18 @@ namespace RealisticBattleAiModule
                 {
                     if ((formation.QuerySystem.IsInfantryFormation ||  formation.QuerySystem.IsRangedFormation) && (formation.MovementOrder.OrderType == OrderType.ChargeWithTarget))
                     {
-                        Formation enemyFormation = formation.MovementOrder.TargetFormation;
-                        if(enemyFormation != null)
+                        formations = Utilities.FindSignificantFormations(formation);
+                        if(formations.Count > 0)
                         {
-                            __result = Utilities.NearestAgentFromFormation(__instance.Position.AsVec2, enemyFormation);
+                            __result = Utilities.NearestAgentFromMultipleFormations(__instance.Position.AsVec2, formations);
                             return false;
                         }
+                        //Formation enemyFormation = formation.MovementOrder.TargetFormation;
+                        //if(enemyFormation != null)
+                        //{
+                        //    __result = Utilities.NearestAgentFromFormation(__instance.Position.AsVec2, enemyFormation);
+                        //    return false;
+                        //}
                     }
                 }
             }
@@ -1206,7 +1239,7 @@ namespace RealisticBattleAiModule
                     {
 
                         float distance = unit.GetWorldPosition().AsVec2.Distance(targetAgent.GetWorldPosition().AsVec2);
-                        if (distance > 20f)
+                        if (distance > 25f)
                         {
                             __result = targetAgent.GetWorldPosition();
                             return false;
@@ -1217,17 +1250,17 @@ namespace RealisticBattleAiModule
                         if (agents.Count() > 3)
                         {
                             unit.LookDirection = direction.ToVec3();
-                            if (MBRandom.RandomInt(75) == 0)
+                            if (MBRandom.RandomInt(50) == 0)
                             {
-                                if (targetAgent != null)
-                                {
-                                    __result = targetAgent.GetWorldPosition();
-                                    return false;
-                                }
-                                else
-                                {
+                                //if (targetAgent != null)
+                                //{
+                                //    __result = targetAgent.GetWorldPosition();
+                                //    return false;
+                                //}
+                                //else
+                                //{
                                     return true;
-                                }
+                                //}
                             }
                             else
                             {
@@ -1241,6 +1274,23 @@ namespace RealisticBattleAiModule
                                     IEnumerable<Agent> agentsRight = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.RightVec() * 0.8f, 1f, unit.Team);
                                     if (agentsLeft.Count() > 3 && agentsRight.Count() > 3)
                                     {
+                                        if (MBRandom.RandomInt(50) == 0)
+                                        {
+                                            if (MBRandom.RandomInt(2) == 0)
+                                            {
+                                                WorldPosition leftPosition = unit.GetWorldPosition();
+                                                leftPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.LeftVec());
+                                                __result = leftPosition;
+                                                return false;
+                                            }
+                                            else
+                                            {
+                                                WorldPosition rightPosition = unit.GetWorldPosition();
+                                                rightPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.RightVec());
+                                                __result = rightPosition;
+                                                return false;
+                                            }
+                                        }
                                     }
                                     else if (agentsLeft.Count() <= 3 && agentsRight.Count() <= 3)
                                     {
@@ -1285,15 +1335,15 @@ namespace RealisticBattleAiModule
                         }
                         else
                         {
-                            if (targetAgent != null)
-                            {
-                                __result = targetAgent.GetWorldPosition();
-                                return false;
-                            }
-                            else
-                            {
+                            //if (targetAgent != null)
+                            //{
+                            //    __result = targetAgent.GetWorldPosition();
+                            //    return false;
+                            //}
+                            //else
+                            //{
                                 return true;
-                            }
+                            //}
                         }
 
                     }

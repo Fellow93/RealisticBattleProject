@@ -91,6 +91,32 @@ namespace RealisticBattleAiModule
             }
         }
 
+        public static bool CheckIfTwoHandedPolearmInfantry(Agent agent)
+        {
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+            {
+                if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
+                {
+                    if (agent.Equipment[equipmentIndex].Item.PrimaryWeapon.WeaponClass == WeaponClass.TwoHandedPolearm)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static int GetHarnessTier(Agent agent)
+        {
+            int tier = -1;
+            EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
+            if (equipmentElement.Item != null)
+            {
+                tier = (int) equipmentElement.Item.Tier;
+            }
+            return tier;
+        }
+
         public static Agent NearestAgentFromFormation(Vec2 unitPosition, Formation targetFormation)
         {
             Agent targetAgent = null;
@@ -104,6 +130,25 @@ namespace RealisticBattleAiModule
                     distance = newDist;
                 }
             });
+            return targetAgent;
+        }
+
+        public static Agent NearestAgentFromMultipleFormations(Vec2 unitPosition, List<Formation> formations)
+        {
+            Agent targetAgent = null;
+            float distance = 10000f;
+            foreach(Formation formation in formations.ToList())
+            {
+                formation.ApplyActionOnEachUnit(delegate (Agent agent)
+                {
+                    float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
+                    if (newDist < distance)
+                    {
+                        targetAgent = agent;
+                        distance = newDist;
+                    }
+                });
+            }
             return targetAgent;
         }
 
@@ -157,6 +202,40 @@ namespace RealisticBattleAiModule
                 fightingInMelee = true;
             }
             return fightingInMelee;
+        }
+
+        public static List<Formation> FindSignificantFormations(Formation formation)
+        {
+            List<Formation> formations = new List<Formation>();
+            if (formation != null)
+            {
+                if (formation.QuerySystem.ClosestEnemyFormation != null)
+                {
+                    foreach (Team team in Mission.Current.Teams.ToList())
+                    {
+                        if (team.IsEnemyOf(formation.Team))
+                        {
+                            if (team.Formations.ToList().Count == 1)
+                            {
+                                formations.Add(team.Formations.ToList()[0]);
+                                return formations;
+                            }
+                            foreach (Formation enemyFormation in team.Formations.ToList())
+                            {
+                                if (enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
+                                {
+                                     formations.Add(enemyFormation);
+                                }
+                                if (enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
+                                {
+                                    formations.Add(enemyFormation);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return formations;
         }
 
         public static Formation FindSignificantEnemy(Formation formation, bool includeInfantry, bool includeRanged, bool includeCavalry, bool includeMountedSkirmishers, bool includeHorseArchers)
