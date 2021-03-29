@@ -1605,14 +1605,114 @@ namespace RealisticBattleAiModule
             [HarmonyPatch("AfterStart")]
             static bool PrefixAfterStart(ref MapEvent ____mapEvent,ref MissionAgentSpawnLogic ____missionAgentSpawnLogic)
             {
+                FieldInfo field = typeof(MissionAgentSpawnLogic).GetField("_battleSize", BindingFlags.NonPublic | BindingFlags.Instance);
+                field.DeclaringType.GetField("_battleSize");
+                int battleSize = (int)field.GetValue(____missionAgentSpawnLogic);
+
                 int numberOfInvolvedMen = ____mapEvent.GetNumberOfInvolvedMen(BattleSideEnum.Defender);
                 int numberOfInvolvedMen2 = ____mapEvent.GetNumberOfInvolvedMen(BattleSideEnum.Attacker);
                 int defenderInitialSpawn = numberOfInvolvedMen;
                 int attackerInitialSpawn = numberOfInvolvedMen2;
-                ____missionAgentSpawnLogic.SetSpawnHorses(BattleSideEnum.Defender, spawnHorses: false);
-                ____missionAgentSpawnLogic.SetSpawnHorses(BattleSideEnum.Attacker, spawnHorses: false);
-                ____missionAgentSpawnLogic.InitWithSinglePhase(numberOfInvolvedMen, numberOfInvolvedMen2, defenderInitialSpawn, attackerInitialSpawn, spawnDefenders: false, spawnAttackers: false, 4f);
-                return false;
+
+                int totalBattleSize = defenderInitialSpawn + attackerInitialSpawn;
+
+                if (totalBattleSize > battleSize)
+                {
+
+                    float defenderAdvantage = (float)battleSize / ((float)defenderInitialSpawn * ((battleSize * 2f) / (totalBattleSize)));
+                    if (defenderInitialSpawn < (battleSize / 2f))
+                    {
+                        defenderAdvantage = (float)totalBattleSize / (float)battleSize;
+                    }
+                    ____missionAgentSpawnLogic.SetSpawnHorses(BattleSideEnum.Defender, !____mapEvent.IsSiegeAssault);
+                    ____missionAgentSpawnLogic.SetSpawnHorses(BattleSideEnum.Attacker, !____mapEvent.IsSiegeAssault);
+                    ____missionAgentSpawnLogic.InitWithSinglePhase(numberOfInvolvedMen, numberOfInvolvedMen2, defenderInitialSpawn, attackerInitialSpawn, spawnDefenders: true, spawnAttackers: true, defenderAdvantage);
+                    return false;
+                }
+                return true;
+            }
+        }
+
+
+        [HarmonyPatch(typeof(BaseMissionTroopSpawnHandler))]
+        class OverrideAfterStartBaseMissionTroopSpawnHandler
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch("AfterStart")]
+            static bool PrefixAfterStart(ref MapEvent ____mapEvent, ref MissionAgentSpawnLogic ____missionAgentSpawnLogic)
+            {
+                FieldInfo field = typeof(MissionAgentSpawnLogic).GetField("_battleSize", BindingFlags.NonPublic | BindingFlags.Instance);
+                field.DeclaringType.GetField("_battleSize");
+                int battleSize = (int)field.GetValue(____missionAgentSpawnLogic);
+
+                int numberOfInvolvedMen = MBMath.Floor(____mapEvent.GetNumberOfInvolvedMen(BattleSideEnum.Defender));
+                int numberOfInvolvedMen2 = MBMath.Floor(____mapEvent.GetNumberOfInvolvedMen(BattleSideEnum.Attacker));
+                int defenderInitialSpawn = numberOfInvolvedMen;
+                int attackerInitialSpawn = numberOfInvolvedMen2;
+
+                int totalBattleSize = defenderInitialSpawn + attackerInitialSpawn;
+
+                if (totalBattleSize > battleSize)
+                {
+                    
+                    float defenderAdvantage = (float)battleSize / ((float)defenderInitialSpawn*((battleSize*2f)/(totalBattleSize)));
+                    if (defenderInitialSpawn < (battleSize / 2f))
+                    {
+                        defenderAdvantage = (float)totalBattleSize / (float)battleSize;
+                    }
+                    ____missionAgentSpawnLogic.SetSpawnHorses(BattleSideEnum.Defender, !____mapEvent.IsSiegeAssault);
+                    ____missionAgentSpawnLogic.SetSpawnHorses(BattleSideEnum.Attacker, !____mapEvent.IsSiegeAssault);
+                    ____missionAgentSpawnLogic.InitWithSinglePhase(numberOfInvolvedMen, numberOfInvolvedMen2, defenderInitialSpawn, attackerInitialSpawn, spawnDefenders: true, spawnAttackers: true, defenderAdvantage);
+                    return false;
+                }
+                return true;
+
+            }
+        }
+
+        [HarmonyPatch(typeof(MissionAgentSpawnLogic))]
+        class OverrideBattleSizeSpawnTick
+        {
+
+            private class SpawnPhase
+            {
+                public int TotalSpawnNumber;
+
+                public int InitialSpawnedNumber;
+
+                public int InitialSpawnNumber;
+
+                public int RemainingSpawnNumber;
+
+                public int NumberActiveTroops;
+
+                public void OnInitialTroopsSpawned()
+                {
+                    InitialSpawnedNumber = InitialSpawnNumber;
+                    InitialSpawnNumber = 0;
+                }
+            }
+
+            [HarmonyPrefix]
+            [HarmonyPatch("BattleSizeSpawnTick")]
+            static bool PrefixBattleSizeSpawnTick(ref MissionAgentSpawnLogic __instance, ref int ____battleSize,ref List<SpawnPhase>[] ____phases)
+            {
+                
+                int numberOfTroopsCanBeSpawned = __instance.NumberOfTroopsCanBeSpawned;
+                if (__instance.NumberOfRemainingTroops <= 0 || numberOfTroopsCanBeSpawned <= 0)
+                {
+                    return true;
+                }
+                float num4 = (float)(____phases[0][0].InitialSpawnedNumber - __instance.NumberOfActiveDefenderTroops) / (float)____phases[0][0].InitialSpawnedNumber;
+                float num5 = (float)(____phases[1][0].InitialSpawnedNumber - __instance.NumberOfActiveAttackerTroops) / (float)____phases[1][0].InitialSpawnedNumber;
+                if ((float)numberOfTroopsCanBeSpawned >= (float)____battleSize * 0.5f || num4 >= 0.5f || num5 >= 0.5f)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
     }
