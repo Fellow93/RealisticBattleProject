@@ -55,7 +55,7 @@
       <skill id="Riding"
              value="80" />
       <skill id="OneHanded"
-             value="100" />
+             value="130" />
       <skill id="TwoHanded"
              value="50" />
       <skill id="Polearm"
@@ -90,7 +90,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="60" />
+             value="80" />
       <skill id="Riding"
              value="110" />
       <skill id="OneHanded"
@@ -128,7 +128,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="80" />
+             value="100" />
       <skill id="Riding"
              value="150" />
       <skill id="OneHanded"
@@ -500,9 +500,9 @@
       <skill id="Riding"
              value="15" />
       <skill id="OneHanded"
-             value="60" />
-      <skill id="TwoHanded"
              value="100" />
+      <skill id="TwoHanded"
+             value="60" />
       <skill id="Polearm"
              value="60" />
       <skill id="Bow"
@@ -649,7 +649,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="20" />
+             value="30" />
       <skill id="Riding"
              value="40" />
       <skill id="OneHanded"
@@ -689,7 +689,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="20" />
+             value="30" />
       <skill id="Riding"
              value="40" />
       <skill id="OneHanded"
@@ -765,7 +765,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="40" />
+             value="60" />
       <skill id="Riding"
              value="70" />
       <skill id="OneHanded"
@@ -801,7 +801,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="40" />
+             value="60" />
       <skill id="Riding"
              value="70" />
       <skill id="OneHanded"
@@ -839,9 +839,9 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="60" />
-      <skill id="Riding"
              value="100" />
+      <skill id="Riding"
+             value="60" />
       <skill id="OneHanded"
              value="90" />
       <skill id="TwoHanded"
@@ -876,7 +876,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="60" />
+             value="80" />
       <skill id="Riding"
              value="100" />
       <skill id="OneHanded"
@@ -913,7 +913,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="45" />
+             value="80" />
       <skill id="Riding"
              value="110" />
       <skill id="OneHanded"
@@ -923,7 +923,7 @@
       <skill id="Polearm"
              value="110" />
       <skill id="Bow"
-             value="150" />
+             value="140" />
       <skill id="Crossbow"
              value="15" />
       <skill id="Throwing"
@@ -987,7 +987,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="80" />
+             value="100" />
       <skill id="Riding"
              value="150" />
       <skill id="OneHanded"
@@ -1023,7 +1023,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="80" />
+             value="100" />
       <skill id="Riding"
              value="150" />
       <skill id="OneHanded"
@@ -1061,7 +1061,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="60" />
+             value="130" />
       <skill id="Riding"
              value="200" />
       <skill id="OneHanded"
@@ -1137,7 +1137,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="60" />
+             value="100" />
       <skill id="Riding"
              value="100" />
       <skill id="OneHanded"
@@ -1429,7 +1429,7 @@
   </NPCCharacter>
   <NPCCharacter id="company_of_the_boar_tier_3"
                 default_group="Ranged"
-                level="21"
+                level="26"
                 occupation="Soldier"
                 culture="Culture.vlandia"
                 name="{=cSdSSXsO}Boar Champion">
@@ -1438,7 +1438,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="60" />
+             value="130" />
       <skill id="Riding"
              value="15" />
       <skill id="OneHanded"
@@ -1555,7 +1555,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="120" />
+             value="140" />
       <skill id="Riding"
              value="25" />
       <skill id="OneHanded"
@@ -1662,7 +1662,7 @@
   </NPCCharacter>
   <NPCCharacter id="brotherhood_of_woods_tier_3"
                 default_group="Ranged"
-                level="21"
+                level="26"
                 occupation="Soldier"
                 culture="Culture.vlandia"
                 name="{=u3K1SozQ}Arboreal">
@@ -1671,7 +1671,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="110" />
+             value="130" />
       <skill id="Riding"
              value="60" />
       <skill id="OneHanded"
@@ -1862,7 +1862,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="40" />
+             value="60" />
       <skill id="Riding"
              value="90" />
       <skill id="OneHanded"
@@ -1891,7 +1891,7 @@
   </NPCCharacter>
   <NPCCharacter id="karakhuzaits_tier_3"
                 default_group="HorseArcher"
-                level="21"
+                level="26"
                 occupation="Soldier"
                 culture="Culture.khuzait"
                 name="{=gBuGfUg3}Karakhuzait Elder">
@@ -1900,7 +1900,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="60" />
+             value="100" />
       <skill id="Riding"
              value="150" />
       <skill id="OneHanded"
@@ -2007,7 +2007,7 @@
   </NPCCharacter>
   <NPCCharacter id="forest_people_tier_3"
                 default_group="Ranged"
-                level="21"
+                level="26"
                 occupation="Soldier"
                 culture="Culture.vakken"
                 name="{=ueasbGtd}Veteran Forester">
@@ -2091,7 +2091,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="120" />
+             value="130" />
       <skill id="Riding"
              value="30" />
       <skill id="OneHanded"
