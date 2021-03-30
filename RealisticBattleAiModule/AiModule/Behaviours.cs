@@ -569,8 +569,16 @@ namespace RealisticBattleAiModule
                     float num5 = flag ? 35f : 20f;
                     num5 += (formation.Depth + ___formation.Width) * 0.25f;
                     //num5 = Math.Min(num5, ___formation.QuerySystem.MissileRange - ___formation.Width * 0.5f);
-                    Ellipse ellipse = new Ellipse(formation.QuerySystem.MedianPosition.AsVec2, num5, formation.Width * 0.25f * (flag ? 1.5f : 1f), formation.Direction);
-                    position.SetVec2(ellipse.GetTargetPos(___formation.QuerySystem.AveragePosition, 20f));
+                    if (___formation.QuerySystem.IsRangedCavalryFormation)
+                    {
+                        Ellipse ellipse = new Ellipse(formation.QuerySystem.MedianPosition.AsVec2, num5, formation.Width * 0.5f * (flag ? 1.5f : 1f), formation.Direction);
+                        position.SetVec2(ellipse.GetTargetPos(___formation.QuerySystem.AveragePosition, 20f));
+                    }
+                    else
+                    {
+                        Ellipse ellipse = new Ellipse(formation.QuerySystem.MedianPosition.AsVec2, num5, formation.Width * 0.25f * (flag ? 1.5f : 1f), formation.Direction);
+                        position.SetVec2(ellipse.GetTargetPos(___formation.QuerySystem.AveragePosition, 20f));
+                    }
                 }
             }
             ____currentOrder = MovementOrder.MovementOrderMove(position);
@@ -584,9 +592,9 @@ namespace RealisticBattleAiModule
             {
                 __result = 5f;
             }
-            else if(___formation != null && ___formation.QuerySystem.IsRangedCavalryFormation)
+            else if (___formation != null && ___formation.QuerySystem.IsRangedCavalryFormation)
             {
-                __result = 0f;
+                __result = 1f;
             }
             else
             {
@@ -1715,5 +1723,7 @@ namespace RealisticBattleAiModule
                 }
             }
         }
+
+        
     }
 }
