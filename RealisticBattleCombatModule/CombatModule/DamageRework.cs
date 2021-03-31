@@ -171,7 +171,7 @@ namespace RealisticBattleCombatModule
             {
                 weaponWeight += 0f;
             }
-            float num2 = 0.5f * weaponWeight * num * num * 0.12f * XmlConfig.dict["Global.ThrustModifier"];
+            float num2 = 0.5f * weaponWeight * num * num * 0.10f * XmlConfig.dict["Global.ThrustModifier"];
             if (num2 > (weaponWeight * 15.0f * XmlConfig.dict["Global.ThrustModifier"]))
             {
                 num2 = weaponWeight * 15.0f * XmlConfig.dict["Global.ThrustModifier"];
@@ -1320,7 +1320,7 @@ namespace RealisticBattleCombatModule
             if (victimAgent.HasMount && !isInitialBlowShrugOff)
             {
                 //bool flag = (float)blow.InflictedDamage / victimAgent.HealthLimit > 0.25f;
-                bool flag = blow.BaseMagnitude > 7f;
+                bool flag = blow.BaseMagnitude > 9f;
                 bool flag2 = MBMath.IsBetween((int)blow.VictimBodyPart, 0, 5);
                 if (!(victimAgent.Health - (float)collisionData.InflictedDamage >= 1f && flag && flag2))
                 {
