@@ -1326,7 +1326,7 @@ namespace RealisticBattleCombatModule
                 {
                     return false;
                 }
-                if (blow.StrikeType == StrikeType.Thrust && attackerWeapon.ItemUsage.Equals("polearm_couch"))//&& blow.WeaponRecord.WeaponFlags.HasAnyFlag(WeaponFlags.CanDismount))
+                if (attackerWeapon != null && attackerWeapon.ItemUsage!= null && blow.StrikeType == StrikeType.Thrust && attackerWeapon.ItemUsage.Equals("polearm_couch"))//&& blow.WeaponRecord.WeaponFlags.HasAnyFlag(WeaponFlags.CanDismount))
                 {
                     blow.BlowFlag |= BlowFlags.CanDismount;
                     return false;
