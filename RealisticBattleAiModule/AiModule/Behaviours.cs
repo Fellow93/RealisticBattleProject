@@ -7,7 +7,6 @@ using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
-using System.Diagnostics;
 using static TaleWorlds.MountAndBlade.SiegeTower;
 using SandBox;
 using TaleWorlds.CampaignSystem;
@@ -1018,7 +1017,7 @@ namespace RealisticBattleAiModule
         [HarmonyPatch("SetChargeBehaviorValues")]
         static bool PrefixSetChargeBehaviorValues(Agent unit)
         {
-            if (unit.Formation != null)
+            if (unit != null && unit.Formation != null)
             {
                 if (unit.Formation.QuerySystem.IsRangedCavalryFormation)
                 {

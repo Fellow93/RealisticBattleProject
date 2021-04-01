@@ -108,11 +108,22 @@ namespace RealisticBattleAiModule
 
         public static int GetHarnessTier(Agent agent)
         {
-            int tier = -1;
+            int tier = 10;
             EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
-            if (equipmentElement.Item != null)
-            {
-                tier = (int) equipmentElement.Item.Tier;
+            if (agent != null){
+                if (agent.MountAgent != null)
+                {
+                    if (agent.SpawnEquipment != null)
+                    {
+                        if (equipmentElement.Item != null)
+                        {
+                            if (Game.Current.BasicModels.ItemValueModel != null)
+                            {
+                                    tier = (int)equipmentElement.Item.Tier;
+                            }
+                        }
+                    }
+                }
             }
             return tier;
         }

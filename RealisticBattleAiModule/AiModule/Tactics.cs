@@ -178,7 +178,7 @@ namespace RealisticBattleAiModule
         {
             static void Postfix()
             {
-                ManagedParameters.SetParameter(ManagedParametersEnum.BipedalRadius, 0.49f);
+                ManagedParameters.SetParameter(ManagedParametersEnum.BipedalRadius, 0.53f);
                 if (Mission.Current.Teams.Any())
                 {
                     if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
