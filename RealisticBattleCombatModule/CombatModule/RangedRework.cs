@@ -325,7 +325,7 @@ namespace RealisticBattleCombatModule
         static bool PrefixOnTick(ref Mangonel __instance, ref float ___currentReleaseAngle)
         {
             float baseSpeed = 20f;
-            float speedIncrease = 1f;
+            float speedIncrease = 1.125f;
             __instance.ProjectileSpeed = baseSpeed + (((___currentReleaseAngle * MathF.RadToDeg)) * speedIncrease);
 
             return true;
