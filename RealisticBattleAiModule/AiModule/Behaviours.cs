@@ -10,6 +10,7 @@ using TaleWorlds.MountAndBlade;
 using static TaleWorlds.MountAndBlade.SiegeTower;
 using SandBox;
 using TaleWorlds.CampaignSystem;
+using static TaleWorlds.MountAndBlade.Agent;
 
 namespace RealisticBattleAiModule
 {
@@ -750,15 +751,45 @@ namespace RealisticBattleAiModule
     [HarmonyPatch(typeof(BehaviorAssaultWalls))]
     class OverrideBehaviorAssaultWalls
     {
+
+        private enum BehaviorState
+        {
+            Deciding,
+            ClimbWall,
+            AttackEntity,
+            TakeControl,
+            MoveToGate,
+            Charging,
+            Stop
+        }
+
         [HarmonyPrefix]
         [HarmonyPatch("CalculateCurrentOrder")]
         static bool PrefixCalculateCurrentOrder(ref Formation ___formation, ref MovementOrder ____chargeOrder)
         {
-            if(___formation != null && ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
+            if (___formation != null && ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
                 ____chargeOrder = MovementOrder.MovementOrderChargeToTarget(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
             }
             return true;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch("CalculateCurrentOrder")]
+        static void PostfixCalculateCurrentOrder(ref Formation ___formation, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviourState)
+        {
+
+            switch (____behaviourState)
+            {
+                case BehaviorState.ClimbWall:
+                    {
+                        if (___formation != null && ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
+                        {
+                            ____currentOrder = MovementOrder.MovementOrderChargeToTarget(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                        }
+                        break;
+                    }
+            }
         }
     }
 
@@ -775,8 +806,9 @@ namespace RealisticBattleAiModule
 
         [HarmonyPostfix]
         [HarmonyPatch("ResetOrderPositions")]
-        static void PostfixResetOrderPositions(ref CastleGate ____innerGate, ref CastleGate ____outerGate, ref Formation ___formation, ref TacticalPosition ____tacticalMiddlePos,ref TacticalPosition ____tacticalWaitPos , ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviourState ____behaviourState)
+        static void PostfixResetOrderPositions(ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate, ref Formation ___formation, ref TacticalPosition ____tacticalMiddlePos,ref TacticalPosition ____tacticalWaitPos , ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviourState ____behaviourState)
         {
+            ____laddersOnThisSide.Clear();
             if (____tacticalMiddlePos != null )
             {
                 if(___formation != null && ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
@@ -786,7 +818,7 @@ namespace RealisticBattleAiModule
                         if (____outerGate != null)
                         {
                             float distance = ___formation.QuerySystem.MedianPosition.AsVec2.Distance(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.AveragePosition);
-                            if (____outerGate.IsDestroyed && TeamAISiegeComponent.IsFormationInsideCastle(___formation, includeOnlyPositionedUnits: false) && distance < 35f)
+                            if ((____outerGate.IsDestroyed || ____outerGate.IsGateOpen) && TeamAISiegeComponent.IsFormationInsideCastle(___formation, includeOnlyPositionedUnits: false) && distance < 35f)
                             {
                                 ____readyOrder = MovementOrder.MovementOrderChargeToTarget(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
                                 ____currentOrder = ____readyOrder;
@@ -796,7 +828,7 @@ namespace RealisticBattleAiModule
                     else
                     {
                         float distance = ___formation.QuerySystem.MedianPosition.AsVec2.Distance(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.AveragePosition);
-                        if (____innerGate.IsDestroyed && TeamAISiegeComponent.IsFormationInsideCastle(___formation, includeOnlyPositionedUnits: false) && distance < 35f)
+                        if ((____innerGate.IsDestroyed || ____innerGate.IsGateOpen) && TeamAISiegeComponent.IsFormationInsideCastle(___formation, includeOnlyPositionedUnits: false) && distance < 35f)
                         {
                             ____readyOrder = MovementOrder.MovementOrderChargeToTarget(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
                             ____currentOrder = ____readyOrder;
@@ -846,6 +878,13 @@ namespace RealisticBattleAiModule
                 ____queueRowSize = 1.1f;
                 ____maxUserCount = 16;
             }
+            else
+            {
+                ____agentSpacing = 1.2f;
+                ____queueBeginDistance = 0.2f;
+                ____queueRowSize = 1.2f;
+                ____maxUserCount = 16;
+            }
             
         }
     }
@@ -856,9 +895,9 @@ namespace RealisticBattleAiModule
 
         [HarmonyPostfix]
         [HarmonyPatch("OnInit")]
-        static void PostfixOnInit(ref SiegeTower __instance,ref GameEntity ____gameEntity,  ref GameEntity ____cleanState, ref List<LadderQueueManager> ____queueManagers, ref int ___DynamicNavmeshIdStart)
+        static void PostfixOnInit(ref SiegeTower __instance, ref GameEntity ____gameEntity, ref GameEntity ____cleanState, ref List<LadderQueueManager> ____queueManagers, ref int ___DynamicNavmeshIdStart)
         {
-            //__instance.ForcedUse = true;
+            __instance.ForcedUse = true;
             List<GameEntity> list2 = ____cleanState.CollectChildrenEntitiesWithTag("ladder");
             if (list2.Count == 3)
             {
@@ -872,7 +911,7 @@ namespace RealisticBattleAiModule
                     identity.rotation.RotateAboutSide((float)Math.PI / 2f);
                     identity.rotation.RotateAboutForward((float)Math.PI / 8f);
 
-                    ladderQueueManager0.Initialize(list2.ElementAt(0).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, 0f, 1f), BattleSideEnum.Attacker, 3, (float)Math.PI * 3f / 4f, 0.8f, 0.8f, 30f, 50f, blockUsage: false, 0.8f, 4f, 5f);
+                    ladderQueueManager0.Initialize(list2.ElementAt(0).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, 0f, 1f), BattleSideEnum.Attacker, 3, (float)Math.PI * 3f / 4f, 7f, 1.1f, 30f, 50f, blockUsage: false, 1.1f, 4f, 5f);
                     ____queueManagers.Add(ladderQueueManager0);
                 }
                 if (ladderQueueManager1 != null)
@@ -881,7 +920,7 @@ namespace RealisticBattleAiModule
                     identity.rotation.RotateAboutSide((float)Math.PI / 2f);
                     identity.rotation.RotateAboutForward((float)Math.PI / 8f);
 
-                    ladderQueueManager1.Initialize(list2.ElementAt(1).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, 0f, 1f), BattleSideEnum.Attacker, 3, (float)Math.PI * 3f / 4f, 0.8f, 0.8f, 30f, 50f, blockUsage: false, 0.8f, 4f, 5f);
+                    ladderQueueManager1.Initialize(list2.ElementAt(1).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, 0f, 1f), BattleSideEnum.Attacker, 3, (float)Math.PI * 3f / 4f, 7f, 1.1f, 30f, 50f, blockUsage: false, 1.1f, 4f, 5f);
                     ____queueManagers.Add(ladderQueueManager1);
                 }
                 if (ladderQueueManager2 != null)
@@ -890,7 +929,7 @@ namespace RealisticBattleAiModule
                     identity.rotation.RotateAboutSide((float)Math.PI / 2f);
                     identity.rotation.RotateAboutForward((float)Math.PI / 8f);
 
-                    ladderQueueManager2.Initialize(list2.ElementAt(2).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, 0f, 1f), BattleSideEnum.Attacker, 3, (float)Math.PI * 3f / 4f, 0.8f, 0.8f, 30f, 50f, blockUsage: false, 0.8f, 4f, 5f);
+                    ladderQueueManager2.Initialize(list2.ElementAt(2).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, 0f, 1f), BattleSideEnum.Attacker, 3, (float)Math.PI * 3f / 4f, 7f, 1.1f, 30f, 50f, blockUsage: false, 1.1f, 4f, 5f);
                     ____queueManagers.Add(ladderQueueManager2);
                 }
                 foreach (LadderQueueManager queueManager in ____queueManagers)
@@ -899,6 +938,53 @@ namespace RealisticBattleAiModule
                     queueManager.IsDeactivated = true;
                 }
             }
+            else if (list2.Count == 0)
+            {
+                ____queueManagers.Clear();
+                LadderQueueManager ladderQueueManager2 = ____cleanState.GetScriptComponents<LadderQueueManager>().FirstOrDefault();
+                if (ladderQueueManager2 != null)
+                {
+                    MatrixFrame identity2 = MatrixFrame.Identity;
+                    identity2.origin.y += 4f;
+                    identity2.rotation.RotateAboutSide(-(float)Math.PI / 2f);
+                    identity2.rotation.RotateAboutUp((float)Math.PI);
+                    ladderQueueManager2.Initialize(___DynamicNavmeshIdStart + 2, identity2, new Vec3(0f, -1f), BattleSideEnum.Attacker, 16, (float)Math.PI / 4f, 7f, 1.1f, 2f, 1f, blockUsage: false, 1.1f, 0f, 5f);
+                    ____queueManagers.Add(ladderQueueManager2);
+                }
+                foreach (LadderQueueManager queueManager in ____queueManagers)
+                {
+                    ____cleanState.Scene.SetAbilityOfFacesWithId(queueManager.ManagedNavigationFaceId, isEnabled: false);
+                    queueManager.IsDeactivated = true;
+                }
+        }
+    }
+
+        [HarmonyPostfix]
+        [HarmonyPatch("OnDeploymentStateChanged")]
+        static void PostfixDeploymentStateChanged(ref SiegeTower __instance, ref List<SiegeLadder> ____sameSideSiegeLadders, ref GameEntity ____cleanState, ref List<LadderQueueManager> ____queueManagers)
+        {
+            //__instance.Disable();
+            //____cleanState.SetVisibilityExcludeParents(false);
+            if (____sameSideSiegeLadders != null)
+            {
+                foreach (SiegeLadder sameSideSiegeLadder in ____sameSideSiegeLadders)
+                {
+                    sameSideSiegeLadder.GameEntity.SetVisibilityExcludeParents(true);
+                }
+            }
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch("OnDestroyed")]
+        static void PostfixOnDestroyed(ref List<SiegeLadder> ____sameSideSiegeLadders)
+        {
+            //if(____sameSideSiegeLadders != null)
+            //{
+            //    foreach (SiegeLadder sameSideSiegeLadder in ____sameSideSiegeLadders)
+            //    {
+            //        sameSideSiegeLadder.GameEntity.SetVisibilityExcludeParents(true);
+            //    }
+            //}
         }
     }
 

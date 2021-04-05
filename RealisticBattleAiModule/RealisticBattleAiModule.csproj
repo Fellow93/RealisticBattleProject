@@ -104,10 +104,6 @@
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.AccessProvider.Test.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="TaleWorlds.Diamond.ChatSystem">
-      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.ChatSystem.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="TaleWorlds.Diamond.ChatSystem.Library">
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.ChatSystem.Library.dll</HintPath>
       <Private>False</Private>
