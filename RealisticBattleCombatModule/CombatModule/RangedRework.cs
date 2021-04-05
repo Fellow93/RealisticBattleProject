@@ -235,4 +235,102 @@ namespace RealisticBattleCombatModule
             }
         }
     }
+
+    [HarmonyPatch(typeof(RangedSiegeWeapon))]
+    class OverrideRangedSiegeWeapon
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch("CalculateShootingRange")]
+        static bool PrefixCalculateShootingRange(ref float __result, ref string[] ___skeletonNames, float heightDifference)
+        {
+            if(___skeletonNames != null && ___skeletonNames.Length > 0 && ___skeletonNames[0].Contains("ballista"))
+            {
+                __result = Mission.GetMissileRange(60f, heightDifference);
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch("GetTargetReleaseAngle")]
+        static bool PrefixGetTargetReleaseAngle(RangedSiegeWeapon __instance, ref float __result, Vec3 target,  ref string[] ___skeletonNames, ItemObject ___OriginalMissileItem)
+        {
+            if (___skeletonNames != null && ___skeletonNames.Length > 0 && ___skeletonNames[0].Contains("ballista"))
+            {
+
+                PropertyInfo property = typeof(RangedSiegeWeapon).GetProperty("MissleStartingPositionForSimulation", BindingFlags.NonPublic | BindingFlags.Instance);
+                property.DeclaringType.GetProperty("MissleStartingPositionForSimulation");
+                Vec3 MissleStartingPositionForSimulation = (Vec3)property.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+
+                WeaponStatsData weaponStatsData = new MissionWeapon(___OriginalMissileItem, null, null).GetWeaponStatsDataForUsage(0);
+                __result = Mission.GetMissileVerticalAimCorrection(target - MissleStartingPositionForSimulation, 60f, ref weaponStatsData, ItemObject.GetAirFrictionConstant(___OriginalMissileItem.PrimaryWeapon.WeaponClass));
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch("ShootProjectileAux")]
+        static bool PrefixShootProjectileAux(RangedSiegeWeapon __instance, ref string[] ___skeletonNames, ItemObject missileItem, Agent ____lastShooterAgent)
+        {
+
+
+            if (___skeletonNames != null && ___skeletonNames.Length > 0 && ___skeletonNames[0].Contains("ballista"))
+            {
+
+                Mat3 mat = default(Mat3);
+
+                PropertyInfo property = typeof(RangedSiegeWeapon).GetProperty("ShootingDirection", BindingFlags.NonPublic | BindingFlags.Instance);
+                property.DeclaringType.GetProperty("ShootingDirection");
+                mat.f = (Vec3)property.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+
+                mat.u = Vec3.Up;
+                Mat3 mat2 = mat;
+                mat2.Orthonormalize();
+                float a = MBRandom.RandomFloat * ((float)MathF.PI * 2f);
+                mat2.RotateAboutForward(a);
+                float f = 1f * MBRandom.RandomFloat;
+                mat2.RotateAboutSide(f.ToRadians());
+
+                Mat3 identity = Mat3.Identity;
+                //identity.f = GetBallisticErrorAppliedDirection(1f);
+                identity.f = mat2.f;
+                identity.Orthonormalize();
+
+                PropertyInfo property2 = typeof(RangedSiegeWeapon).GetProperty("Projectile", BindingFlags.NonPublic | BindingFlags.Instance);
+                property2.DeclaringType.GetProperty("Projectile");
+                Vec3 ProjectileEntityCurrentGlobalPosition = ((SynchedMissionObject)property2.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null)).GameEntity.GetGlobalFrame().origin;
+
+                Mission.Current.AddCustomMissile(____lastShooterAgent, new MissionWeapon(missileItem, null, ____lastShooterAgent.Origin?.Banner, 1), ProjectileEntityCurrentGlobalPosition, identity.f, identity, 60f, 60f, addRigidBody: false, __instance);
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Mangonel))]
+    class OverrideMangonel
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch("OnTick")]
+        static bool PrefixOnTick(ref Mangonel __instance, ref float ___currentReleaseAngle)
+        {
+            float baseSpeed = 25f;
+            float speedIncrease = 0.875f;
+            __instance.ProjectileSpeed = baseSpeed + (((___currentReleaseAngle * MathF.RadToDeg)) * speedIncrease);
+
+            return true;
+            
+        }
+        
+    }
 }
