@@ -54,6 +54,11 @@ namespace RealisticBattleCombatModule
                     if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingAxe") ||
                         weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingKnife"))
                     {
+                        length -= 10f;
+                        if (length < 5.0f)
+                        {
+                            length = 5f;
+                        }
                         //length += -(7.0f);
                         //if (length < 5.0f)
                         //{

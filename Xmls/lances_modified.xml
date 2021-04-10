@@ -183,7 +183,7 @@
     <Pieces>
       <Piece id="spear_blade_43" Type="Blade" scale_factor="90" />
       <Piece id="default_polearm_guard" Type="Guard" scale_factor="100" />
-      <Piece id="spear_handle_26" Type="Handle" scale_factor="90" />
+      <Piece id="spear_handle_26" Type="Handle" scale_factor="70" />
       <Piece id="default_polearm_pommel" Type="Pommel" scale_factor="100" />
     </Pieces>
   </CraftedItem>
@@ -218,7 +218,7 @@
   <!-- #endregion -->
 <!-- #region Used Spears -->
 
-  <CraftedItem id="highland_spear_3_t3" name="{=HVcwvRMF}Reinforced Highland Spear" crafting_template="TwoHandedPolearm" culture="Culture.khuzait">
+  <CraftedItem id="highland_spear_3_t3" name="{=HVcwvRMF}Reinforced Highland Spear" crafting_template="TwoHandedPolearm" culture="Culture.battania">
     <Pieces>
       <Piece id="spear_blade_8" Type="Blade" scale_factor="100" />
       <Piece id="spear_handle_6" Type="Handle" scale_factor="110" />
@@ -450,4 +450,44 @@
     </Pieces>
   </CraftedItem>
   <!-- Pilum -->
+  <!-- #region hewing spears -->
+  <CraftedItem id="eastern_spear_5_t5"
+               name="{=mWxNSjSP}Thin Fine Steel Hewing Spear"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.khuzait">
+    <Pieces>
+      <Piece id="spear_blade_27"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_guard_2"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_8"
+             Type="Handle"
+             scale_factor="100" />
+      <Piece id="spear_pommel_12"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="northern_spear_4_t5"
+               name="{=N28bDEhh}Fine Steel Hewing Spear"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.sturgia">
+    <Pieces>
+      <Piece id="spear_blade_6"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_guard_7"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_26"
+             Type="Handle"
+             scale_factor="80" />
+      <Piece id="spear_pommel_9"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <!-- #endregion -->
 </Items>

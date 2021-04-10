@@ -959,7 +959,7 @@
       <skill id="TwoHanded"
              value="80" />
       <skill id="Polearm"
-             value="80" />
+             value="90" />
       <skill id="Bow"
              value="170" />
       <skill id="Crossbow"
@@ -1179,11 +1179,11 @@
       <skill id="OneHanded"
              value="130" />
       <skill id="TwoHanded"
-             value="130" />
+             value="140" />
       <skill id="Polearm"
              value="60" />
       <skill id="Bow"
-             value="130" />
+             value="140" />
       <skill id="Crossbow"
              value="40" />
       <skill id="Throwing"

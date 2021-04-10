@@ -15600,7 +15600,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_mace_4_t5" />
+                 id="Item.empire_noble_sword_3_t5" />
       <equipment slot="Item1"
                  id="Item.fortified_kite_shield" />
       <equipment slot="Item2"
@@ -15640,7 +15640,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_mace_4_t5" />
+                 id="Item.empire_polearm_1_t4" />
       <equipment slot="Item1"
                  id="Item.fortified_kite_shield" />
       <equipment slot="Item2"
@@ -17145,7 +17145,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.eastern_spear_3_t3" />
+                 id="Item.khuzait_lance_1_t3" />
       <equipment slot="Item1"
                  id="Item.decorated_steppe_shield" />
       <equipment slot="Item2"
@@ -17163,11 +17163,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.eastern_spear_3_t3" />
+                 id="Item.khuzait_lance_1_t3" />
       <equipment slot="Item1"
                  id="Item.decorated_steppe_shield" />
       <equipment slot="Item2"
-                 id="Item.khuzait_sword_2_t3" />
+                 id="Item.light_mace_t3" />
       <equipment slot="Head"
                  id="Item.nomad_helmet" />
       <equipment slot="Body"
@@ -17181,7 +17181,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.eastern_spear_3_t3" />
+                 id="Item.khuzait_lance_1_t3" />
       <equipment slot="Item1"
                  id="Item.decorated_steppe_shield" />
       <equipment slot="Item2"
@@ -17325,7 +17325,7 @@
       <skill id="TwoHanded"
              value="45" />
       <skill id="Polearm"
-             value="45" />
+             value="90" />
       <skill id="Bow"
              value="110" />
       <skill id="Crossbow"
@@ -17532,7 +17532,7 @@
       <equipment slot="Item2"
                  id="Item.vlandic_arrows" />
       <equipment slot="Item3"
-                 id="Item.khuzait_sword_3_t3" />
+                 id="Item.khuzait_sword_4_t4" />
       <equipment slot="Body"
                  id="Item.khuzait_lamellar_strapped" />
       <equipment slot="Head"
@@ -17552,7 +17552,7 @@
       <equipment slot="Item2"
                  id="Item.vlandic_arrows" />
       <equipment slot="Item3"
-                 id="Item.khuzait_sword_3_t3" />
+                 id="Item.khuzait_sword_5_t4" />
       <equipment slot="Body"
                  id="Item.khuzait_lamellar_strapped" />
       <equipment slot="Head"
@@ -17572,7 +17572,7 @@
       <equipment slot="Item2"
                  id="Item.vlandic_arrows" />
       <equipment slot="Item3"
-                 id="Item.khuzait_sword_3_t3" />
+                 id="Item.khuzait_sword_5_t4" />
       <equipment slot="Body"
                  id="Item.eastern_stitched_leather_coat" />
       <equipment slot="Head"
@@ -17626,11 +17626,11 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.khuzait_lance_1_t3" />
+                 id="Item.khuzait_lance_2_t4" />
       <equipment slot="Item1"
                  id="Item.steppe_guardian_shield" />
       <equipment slot="Item2"
-                 id="Item.khuzait_sword_3_t3" />
+                 id="Item.khuzait_mace_3_t4" />
       <equipment slot="Body"
                  id="Item.eastern_lamellar_armor" />
       <equipment slot="Head"
@@ -17644,11 +17644,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.khuzait_lance_1_t3" />
+                 id="Item.khuzait_lance_2_t4" />
       <equipment slot="Item1"
                  id="Item.steppe_guardian_shield" />
       <equipment slot="Item2"
-                 id="Item.khuzait_sword_3_t3" />
+                 id="Item.khuzait_mace_2_t4" />
       <equipment slot="Body"
                  id="Item.eastern_lamellar_armor" />
       <equipment slot="Head"
@@ -17662,11 +17662,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.khuzait_lance_1_t3" />
+                 id="Item.khuzait_lance_2_t4" />
       <equipment slot="Item1"
                  id="Item.steppe_guardian_shield" />
       <equipment slot="Item2"
-                 id="Item.khuzait_sword_3_t3" />
+                 id="Item.eastern_steel_mace_t4" />
       <equipment slot="Body"
                  id="Item.eastern_lamellar_armor" />
       <equipment slot="Head"
@@ -17822,7 +17822,7 @@
       <equipment slot="Item2"
                  id="Item.arrow_emp_1_a" />
       <equipment slot="Item3"
-                 id="Item.khuzait_noble_sword_1_t5" />
+                 id="Item.eastern_spear_5_t5" />
       <equipment slot="Body"
                  id="Item.eastern_lamellar_armor" />
       <equipment slot="Head"
@@ -17842,7 +17842,7 @@
       <equipment slot="Item2"
                  id="Item.arrow_emp_1_a" />
       <equipment slot="Item3"
-                 id="Item.khuzait_noble_sword_1_t5" />
+                 id="Item.eastern_spear_5_t5" />
       <equipment slot="Body"
                  id="Item.eastern_plated_leather" />
       <equipment slot="Head"
@@ -18006,7 +18006,7 @@
       <equipment slot="Item2"
                  id="Item.piercing_arrows" />
       <equipment slot="Item3"
-                 id="Item.khuzait_sword_4_t4" />
+                 id="Item.khuzait_noble_sword_1_t5" />
       <equipment slot="Body"
                  id="Item.eastern_lamellar_armor" />
       <equipment slot="Head"
@@ -18026,7 +18026,7 @@
       <equipment slot="Item2"
                  id="Item.piercing_arrows" />
       <equipment slot="Item3"
-                 id="Item.khuzait_sword_4_t4" />
+                 id="Item.khuzait_noble_sword_2_t5" />
       <equipment slot="Body"
                  id="Item.eastern_lamellar_armor" />
       <equipment slot="Head"
@@ -18046,7 +18046,7 @@
       <equipment slot="Item2"
                  id="Item.piercing_arrows" />
       <equipment slot="Item3"
-                 id="Item.khuzait_sword_4_t4" />
+                 id="Item.khuzait_noble_sword_3_t5" />
       <equipment slot="Body"
                  id="Item.eastern_lamellar_armor" />
       <equipment slot="Head"
@@ -18100,7 +18100,7 @@
       <equipment slot="Item1"
                  id="Item.steppe_guardian_shield" />
       <equipment slot="Item2"
-                 id="Item.khuzait_sword_4_t4" />
+                 id="Item.khuzait_mace_4_t5" />
       <equipment slot="Body"
                  id="Item.brass_lamellar_over_mail" />
       <equipment slot="Head"
@@ -18122,7 +18122,7 @@
       <equipment slot="Item1"
                  id="Item.steppe_guardian_shield" />
       <equipment slot="Item2"
-                 id="Item.khuzait_sword_4_t4" />
+                 id="Item.khuzait_mace_4_t5" />
       <equipment slot="Body"
                  id="Item.brass_lamellar_over_mail" />
       <equipment slot="Head"
@@ -18144,7 +18144,7 @@
       <equipment slot="Item1"
                  id="Item.steppe_guardian_shield" />
       <equipment slot="Item2"
-                 id="Item.khuzait_sword_4_t4" />
+                 id="Item.khuzait_mace_4_t5" />
       <equipment slot="Body"
                  id="Item.brass_lamellar_over_mail" />
       <equipment slot="Head"
@@ -18722,13 +18722,13 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_polearm_1_t5" />
+                 id="Item.northern_spear_4_t5" />
       <equipment slot="Item1"
                  id="Item.eastern_throwing_spear_2_t4" />
       <equipment slot="Item2"
                  id="Item.eastern_throwing_spear_2_t4" />
       <equipment slot="Item3"
-                 id="Item.eastern_throwing_spear_2_t4" />
+                 id="Item.heavy_round_shield" />
       <equipment slot="Head"
                  id="Item.lendman_helmet_over_mail" />
       <equipment slot="Body"
@@ -18748,7 +18748,7 @@
       <equipment slot="Item2"
                  id="Item.eastern_throwing_spear_2_t4" />
       <equipment slot="Item3"
-                 id="Item.eastern_throwing_spear_2_t4" />
+                 id="Item.heavy_round_shield" />
       <equipment slot="Head"
                  id="Item.sturgian_helmet_closed" />
       <equipment slot="Body"
@@ -18768,7 +18768,7 @@
       <equipment slot="Item2"
                  id="Item.eastern_throwing_spear_2_t4" />
       <equipment slot="Item3"
-                 id="Item.eastern_throwing_spear_2_t4" />				 
+                 id="Item.heavy_round_shield" />				 
       <equipment slot="Head"
                  id="Item.sturgian_lord_helmet_a" />
       <equipment slot="Body"
@@ -19394,7 +19394,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_axe_2_t2" />
+                 id="Item.simple_sparth_axe_t2" />
       <equipment slot="Item1"
                  id="Item.northern_javelin_1_t2" />
       <equipment slot="Item2"
@@ -19414,7 +19414,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_axe_2_t2" />
+                 id="Item.simple_sparth_axe_t2" />
       <equipment slot="Item1"
                  id="Item.northern_javelin_1_t2" />
       <equipment slot="Item2"
@@ -19434,7 +19434,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_axe_2_t2" />
+                 id="Item.simple_sparth_axe_t2" />
       <equipment slot="Item1"
                  id="Item.northern_javelin_1_t2" />
       <equipment slot="Item2"
@@ -19495,7 +19495,7 @@
       <equipment slot="Item2"
                  id="Item.steppe_arrows" />
       <equipment slot="Item3"
-                 id="Item.sturgia_axe_2_t2" />
+                 id="Item.simple_sparth_axe_t2" />
       <equipment slot="Head"
                  id="Item.spangenhelm_with_padded_cloth" />
       <equipment slot="Body"
@@ -19515,7 +19515,7 @@
       <equipment slot="Item2"
                  id="Item.steppe_arrows" />
       <equipment slot="Item3"
-                 id="Item.sturgia_axe_2_t2" />
+                 id="Item.simple_sparth_axe_t2" />
       <equipment slot="Head"
                  id="Item.nasal_helmet_with_leather" />
       <equipment slot="Body"
@@ -19535,7 +19535,7 @@
       <equipment slot="Item2"
                  id="Item.steppe_arrows" />
       <equipment slot="Item3"
-                 id="Item.sturgia_axe_2_t2" />
+                 id="Item.simple_sparth_axe_t2" />
       <equipment slot="Head"
                  id="Item.spangenhelm_with_leather" />
       <equipment slot="Body"
@@ -19590,7 +19590,7 @@
       <equipment slot="Item2"
                  id="Item.heavy_steppe_arrows" />
       <equipment slot="Item3"
-                 id="Item.sturgia_axe_3_t3" />
+                 id="Item.northern_axe_t3" />
       <equipment slot="Head"
                  id="Item.nasalhelm_over_mail" />
       <equipment slot="Body"
@@ -19610,7 +19610,7 @@
       <equipment slot="Item2"
                  id="Item.heavy_steppe_arrows" />
       <equipment slot="Item3"
-                 id="Item.sturgia_axe_3_t3" />
+                 id="Item.northern_axe_t3" />
       <equipment slot="Head"
                  id="Item.northern_goggled_helmet" />
       <equipment slot="Body"
@@ -19630,7 +19630,7 @@
       <equipment slot="Item2"
                  id="Item.heavy_steppe_arrows" />
       <equipment slot="Item3"
-                 id="Item.sturgia_axe_3_t3" />
+                 id="Item.bearded_axe_t3" />
       <equipment slot="Head"
                  id="Item.goggled_helmet_over_leather" />
       <equipment slot="Body"
@@ -21100,8 +21100,6 @@
                  id="Item.mail_shoulders" />
       </EquipmentRoster>
       <EquipmentRoster>
-      <equipment slot="Item0"
-                 id="Item.vlandia_noble_sword_4_t5" />
       <equipment slot="Item1"
                  id="Item.stronger_reinforced_kite_shield" />
       <equipment slot="Item2"

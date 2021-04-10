@@ -5,7 +5,7 @@
 		<ArmorMultiplier>2.0</ArmorMultiplier>
 		<OneHandedThrustBonus>3.34</OneHandedThrustBonus>
 		<TwoHandedThrustBonus>3.34</TwoHandedThrustBonus>
-		<ArmorPenetrationMessage>0</ArmorPenetrationMessage>
+		<ArmorPenetrationMessage>1</ArmorPenetrationMessage>
 		<ThrustModifier>0.3</ThrustModifier>
 	</Global>
 		<!-- Armor works like this -->
@@ -39,7 +39,7 @@
 	</OneHandedSword>
 	
 	<TwoHandedSword>
-		<ExtraBluntFactorCut>0.20</ExtraBluntFactorCut>
+		<ExtraBluntFactorCut>0.25</ExtraBluntFactorCut>
 		<ExtraBluntFactorPierce>0.40</ExtraBluntFactorPierce>
 		<ExtraBluntFactorBlunt>1.0</ExtraBluntFactorBlunt>
 		<ExtraArmorThresholdFactorPierce>2.5</ExtraArmorThresholdFactorPierce>
@@ -52,7 +52,7 @@
 		<ExtraBluntFactorPierce>0.3</ExtraBluntFactorPierce>
 		<ExtraBluntFactorBlunt>1.0</ExtraBluntFactorBlunt>
 		<ExtraArmorThresholdFactorPierce>0.70</ExtraArmorThresholdFactorPierce>
-		<ExtraArmorThresholdFactorCut>3</ExtraArmorThresholdFactorCut>
+		<ExtraArmorThresholdFactorCut>4</ExtraArmorThresholdFactorCut>
 		<ExtraArmorSkillDamageAbsorb>1.0</ExtraArmorSkillDamageAbsorb>
 	</OneHandedBastardAxe>
 	
@@ -66,7 +66,7 @@
 	</OneHandedAxe>	
 	
 	<TwoHandedAxe>
-		<ExtraBluntFactorCut>0.25</ExtraBluntFactorCut>
+		<ExtraBluntFactorCut>0.30</ExtraBluntFactorCut>
 		<ExtraBluntFactorPierce>0.3</ExtraBluntFactorPierce>
 		<ExtraBluntFactorBlunt>1.0</ExtraBluntFactorBlunt>
 		<ExtraArmorThresholdFactorPierce>0.70</ExtraArmorThresholdFactorPierce>
@@ -84,8 +84,8 @@
 	</OneHandedPolearm>
 	
 	<TwoHandedPolearm>
-		<ExtraBluntFactorCut>0.2</ExtraBluntFactorCut>
-		<ExtraBluntFactorPierce>0.45</ExtraBluntFactorPierce>
+		<ExtraBluntFactorCut>0.30</ExtraBluntFactorCut>
+		<ExtraBluntFactorPierce>0.35</ExtraBluntFactorPierce>
 		<ExtraBluntFactorBlunt>1.0</ExtraBluntFactorBlunt>
 		<ExtraArmorThresholdFactorPierce>4.0</ExtraArmorThresholdFactorPierce>
 		<ExtraArmorThresholdFactorCut>4</ExtraArmorThresholdFactorCut>
