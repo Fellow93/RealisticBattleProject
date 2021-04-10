@@ -776,9 +776,10 @@ namespace RealisticBattleAiModule
 
         [HarmonyPostfix]
         [HarmonyPatch("CalculateCurrentOrder")]
-        static void PostfixCalculateCurrentOrder(ref Formation ___formation, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviourState)
+        static void PostfixCalculateCurrentOrder(ref ArrangementOrder ___CurrentArrangementOrder, ref TeamAISiegeComponent ____teamAISiegeComponent, ref Formation ___formation, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviourState, ref MovementOrder ____attackEntityOrderInnerGate)
         {
 
+            //____attackEntityOrderInnerGate = MovementOrder.MovementOrderAttackEntity(____teamAISiegeComponent.InnerGate.GameEntity, surroundEntity: false);
             switch (____behaviourState)
             {
                 case BehaviorState.ClimbWall:
@@ -789,9 +790,39 @@ namespace RealisticBattleAiModule
                         }
                         break;
                     }
+                case BehaviorState.AttackEntity:
+                    {
+                        MethodInfo method = typeof(Formation).GetMethod("FormAttackEntityDetachment", BindingFlags.NonPublic | BindingFlags.Instance);
+                        method.DeclaringType.GetMethod("FormAttackEntityDetachment");
+                        method.Invoke(___formation, new object[] { ____attackEntityOrderInnerGate.TargetEntity });
+
+                        ___CurrentArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
+                        break;
+                    }
+                case BehaviorState.Charging:
+                    {
+                        if (___formation != null && ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
+                        {
+                            ____currentOrder = MovementOrder.MovementOrderChargeToTarget(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                        }
+                        break;
+                    }
             }
         }
     }
+
+
+    //[HarmonyPatch(typeof(AttackEntityOrderDetachment))]
+    //class OverrideAttackEntityOrderDetachment
+    //{
+
+    //    [HarmonyPostfix]
+    //    [HarmonyPatch("Initialize")]
+    //    static void PostfixInitialize(ref BattleSideEnum managedSide, Vec3 managedDirection, ref float queueBeginDistance, ref int ____maxUserCount, ref float ____agentSpacing, ref float ____queueBeginDistance, ref float ____queueRowSize, ref float ____costPerRow, ref float ____baseCost)
+    //    {
+
+    //    }
+    //}
 
     [HarmonyPatch(typeof(BehaviorDefendCastleKeyPosition))]
     class OverrideBehaviorDefendCastleKeyPosition
@@ -806,7 +837,7 @@ namespace RealisticBattleAiModule
 
         [HarmonyPostfix]
         [HarmonyPatch("ResetOrderPositions")]
-        static void PostfixResetOrderPositions(ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate, ref Formation ___formation, ref TacticalPosition ____tacticalMiddlePos,ref TacticalPosition ____tacticalWaitPos , ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviourState ____behaviourState)
+        static void PostfixResetOrderPositions(ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate, ref Formation ___formation, ref TacticalPosition ____tacticalMiddlePos,ref TacticalPosition ____tacticalWaitPos ,ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviourState ____behaviourState)
         {
             ____laddersOnThisSide.Clear();
             if (____tacticalMiddlePos != null )
@@ -851,7 +882,19 @@ namespace RealisticBattleAiModule
                     }
                 }
             }
-            if(____tacticalWaitPos != null && ____tacticalMiddlePos == null)
+            ____waitOrder = ____readyOrder;
+            ____tacticalWaitPos = ____tacticalMiddlePos;
+
+            //if (___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && ____tacticalWaitPos != null && ____tacticalMiddlePos != null)
+            //{
+            //    if (TeamAISiegeComponent.IsFormationInsideCastle(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation, includeOnlyPositionedUnits: false,0.05f))
+            //    {
+            //        ____readyOrder = MovementOrder.MovementOrderChargeToTarget(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+            //        ____currentOrder = ____readyOrder;
+            //    }
+            //}
+
+            if (___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && ____tacticalWaitPos != null && ____tacticalMiddlePos == null)
             {
                 float distance = ___formation.QuerySystem.MedianPosition.AsVec2.Distance(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.AveragePosition);
                 if (TeamAISiegeComponent.IsFormationInsideCastle(___formation, includeOnlyPositionedUnits: false) && distance < 35f)
@@ -871,20 +914,20 @@ namespace RealisticBattleAiModule
         [HarmonyPatch("Initialize")]
         static void PostfixInitialize(ref BattleSideEnum managedSide, Vec3 managedDirection,  ref float queueBeginDistance, ref int ____maxUserCount, ref float ____agentSpacing, ref float ____queueBeginDistance, ref float ____queueRowSize, ref float ____costPerRow, ref float ____baseCost)
         {
-            if(managedSide == BattleSideEnum.Attacker && queueBeginDistance != 3f )
+            if(queueBeginDistance != 3f )
             {
                 ____agentSpacing = 1.1f;
                 ____queueBeginDistance = 7f;
                 ____queueRowSize = 1.1f;
                 ____maxUserCount = 16;
             }
-            else
-            {
-                ____agentSpacing = 1.2f;
-                ____queueBeginDistance = 0.2f;
-                ____queueRowSize = 1.2f;
-                ____maxUserCount = 16;
-            }
+            //else if(queueBeginDistance == 3f)
+            //{
+            //    ____agentSpacing = 5f;
+            //    ____queueBeginDistance = 0.2f;
+            //    ____queueRowSize = 5f;
+            //    ____maxUserCount = 10;
+            //}
             
         }
     }
@@ -963,8 +1006,8 @@ namespace RealisticBattleAiModule
         [HarmonyPatch("OnDeploymentStateChanged")]
         static void PostfixDeploymentStateChanged(ref SiegeTower __instance, ref List<SiegeLadder> ____sameSideSiegeLadders, ref GameEntity ____cleanState, ref List<LadderQueueManager> ____queueManagers)
         {
-            //__instance.Disable();
-            //____cleanState.SetVisibilityExcludeParents(false);
+            __instance.Disable();
+            ____cleanState.SetVisibilityExcludeParents(false);
             if (____sameSideSiegeLadders != null)
             {
                 foreach (SiegeLadder sameSideSiegeLadder in ____sameSideSiegeLadders)
@@ -1321,7 +1364,7 @@ namespace RealisticBattleAiModule
         static bool PrefixGetOrderPositionOfUnit(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ___detachedUnits, ref WorldPosition __result)
         {
             //if (__instance.MovementOrder.OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
-            if (unit != null && __instance.MovementOrder.OrderType == OrderType.ChargeWithTarget && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation) && !___detachedUnits.Contains(unit))
+            if (unit != null && (__instance.MovementOrder.OrderType == OrderType.ChargeWithTarget || __instance.MovementOrder.OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation || __instance.QuerySystem.IsCavalryFormation) && !___detachedUnits.Contains(unit))
             {
                 Formation significantEnemy = __instance.TargetFormation;
                 if (significantEnemy != null)
