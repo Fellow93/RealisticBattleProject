@@ -113,33 +113,33 @@
                    description ="{=*}Trebuchets take time to build and set up but given enough time, will turn enemy defenses to rubble."
                    difficulty="40"
                    is_ranged="true"
-                   damage="3000"
+                   damage="1200"
                    max_hit_points="2500"
                    hit_chance="1"
                    anti_personnel_hit_chance="1"
                    man_day_cost="40"
-                   campaign_rate_of_fire_per_day="2.0"/>
+                   campaign_rate_of_fire_per_day="5.0"/>
   <SiegeEngineType id="fire_trebuchet"
                    name ="{=*}Fire Trebuchet"
                    description ="{=*}Fire trebuchets hurl incendiary projectiles instead of regular stones which are more effective against enemy siege weapons and personell."
                    is_ranged="true"
                    difficulty="40"
-                   damage="4000"
+                   damage="1600"
                    max_hit_points="2500"
                    hit_chance="1"
                    anti_personnel_hit_chance="1"
                    man_day_cost="40"
-                   campaign_rate_of_fire_per_day="2.0"/>
+                   campaign_rate_of_fire_per_day="5.0"/>
   <SiegeEngineType id="ram"
                    name ="{=MaBSSg7I}Battering Ram"
                    description ="{=*}A battering ram can be used to break the gate and open access to the inner courtyard."
                    difficulty="40"
-                   max_hit_points="10000"
+                   max_hit_points="6000"
                    man_day_cost="12"/>
   <SiegeEngineType id="improved_ram"
                    name ="{=zt0bVSsU}Improved Ram"
                    description ="{=*}A more powerful version of the regular battering ram."
                    difficulty="110"
-                   max_hit_points="15000"
+                   max_hit_points="10000"
                    man_day_cost="16"/>
 </SiegeEngineTypes>
