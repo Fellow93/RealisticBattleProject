@@ -1322,32 +1322,36 @@ namespace RealisticBattleCombatModule
         [HarmonyPatch("DecideAgentDismountedByBlow")]
         static bool PrefixDecideAgentDismountedByBlow(Agent attackerAgent, Agent victimAgent, in AttackCollisionData collisionData, WeaponComponentData attackerWeapon, bool isInitialBlowShrugOff, ref Blow blow)
         {
-            if (victimAgent.HasMount && !isInitialBlowShrugOff)
+            if (!blow.IsMissile)
             {
-                //bool flag = (float)blow.InflictedDamage / victimAgent.HealthLimit > 0.25f;
-                bool flag = blow.BaseMagnitude > 9f;
-                bool flag2 = MBMath.IsBetween((int)blow.VictimBodyPart, 0, 5);
-                if (!(victimAgent.Health - (float)collisionData.InflictedDamage >= 1f && flag && flag2))
+                if (victimAgent.HasMount && !isInitialBlowShrugOff)
                 {
-                    return false;
+                    //bool flag = (float)blow.InflictedDamage / victimAgent.HealthLimit > 0.25f;
+                    bool flag = blow.BaseMagnitude > 9f;
+                    bool flag2 = MBMath.IsBetween((int)blow.VictimBodyPart, 0, 5);
+                    if (!(victimAgent.Health - (float)collisionData.InflictedDamage >= 1f && flag && flag2))
+                    {
+                        return false;
+                    }
+                    if (attackerWeapon != null && attackerWeapon.ItemUsage != null && blow.StrikeType == StrikeType.Thrust && attackerWeapon.ItemUsage.Equals("polearm_couch"))//&& blow.WeaponRecord.WeaponFlags.HasAnyFlag(WeaponFlags.CanDismount))
+                    {
+                        blow.BlowFlag |= BlowFlags.CanDismount;
+                        return false;
+                    }
+                    float num = 0f;
+                    num += MissionGameModels.Current.AgentApplyDamageModel.CalculateDismountChanceBonus(attackerAgent, attackerWeapon);
+                    if ((MBMath.IsBetween(num, 0f, 1f) ? MBRandom.RandomFloat : 0.1f) <= num)
+                    {
+                        blow.BlowFlag |= BlowFlags.CanDismount;
+                    }
                 }
-                if (attackerWeapon != null && attackerWeapon.ItemUsage!= null && blow.StrikeType == StrikeType.Thrust && attackerWeapon.ItemUsage.Equals("polearm_couch"))//&& blow.WeaponRecord.WeaponFlags.HasAnyFlag(WeaponFlags.CanDismount))
+                else
                 {
-                    blow.BlowFlag |= BlowFlags.CanDismount;
-                    return false;
+                    _ = victimAgent.HasMount;
                 }
-                float num = 0f;
-                num += MissionGameModels.Current.AgentApplyDamageModel.CalculateDismountChanceBonus(attackerAgent, attackerWeapon);
-                if ((MBMath.IsBetween(num, 0f, 1f) ? MBRandom.RandomFloat : 0.1f) <= num)
-                {
-                    blow.BlowFlag |= BlowFlags.CanDismount;
-                }
+                return false;
             }
-            else
-            {
-                _ = victimAgent.HasMount;
-            }
-            return false;
+            return true;
         }
     }
 }
