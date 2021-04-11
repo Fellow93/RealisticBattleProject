@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
+using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.Core.ItemObject;
@@ -263,6 +264,85 @@ namespace RealisticBattleAiModule
                 }
             }
             return formations;
+        }
+
+        public static Formation FindSignificantEnemyToPosition(Formation formation, WorldPosition position, bool includeInfantry, bool includeRanged, bool includeCavalry, bool includeMountedSkirmishers, bool includeHorseArchers, bool withSide)
+        {
+            Formation significantEnemy = null;
+            float dist = 10000f;
+            if (formation != null)
+            {
+                if (formation.QuerySystem.ClosestEnemyFormation != null)
+                {
+                    foreach (Team team in Mission.Current.Teams.ToList())
+                    {
+                        if (team.IsEnemyOf(formation.Team))
+                        {
+                            if (team.Formations.ToList().Count == 1)
+                            {
+                                significantEnemy = team.Formations.ToList()[0];
+                                return significantEnemy;
+                            }
+                            foreach (Formation enemyFormation in team.Formations.ToList())
+                            {
+                                if (withSide)
+                                {
+                                    if(formation.AI.Side != enemyFormation.AI.Side)
+                                    {
+                                        break;
+                                    }
+                                }
+                                if (formation != null && includeInfantry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
+                                {
+                                    float newDist = position.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                                    if (newDist < dist)
+                                    {
+                                        significantEnemy = enemyFormation;
+                                        dist = newDist;
+                                    }
+                                }
+                                if (formation != null && includeRanged && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
+                                {
+                                    float newDist = position.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                                    if (newDist < dist)
+                                    {
+                                        significantEnemy = enemyFormation;
+                                        dist = newDist;
+                                    }
+                                }
+                                //if (formation != null && includeCavalry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsCavalryFormation && !CheckIfMountedSkirmishFormation(enemyFormation) && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
+                                //{
+                                //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                                //    if (newDist < dist)
+                                //    {
+                                //        significantEnemy = enemyFormation;
+                                //        dist = newDist;
+                                //    }
+                                //}
+                                //if (formation != null && includeMountedSkirmishers && enemyFormation.CountOfUnits > 0 && CheckIfMountedSkirmishFormation(enemyFormation))
+                                //{
+                                //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                                //    if (newDist < dist)
+                                //    {
+                                //        significantEnemy = enemyFormation;
+                                //        dist = newDist;
+                                //    }
+                                //}
+                                //if (formation != null && includeHorseArchers && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedCavalryFormation)
+                                //{
+                                //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                                //    if (newDist < dist)
+                                //    {
+                                //        significantEnemy = enemyFormation;
+                                //        dist = newDist;
+                                //    }
+                                //}
+                            }
+                        }
+                    }
+                }
+            }
+            return significantEnemy;
         }
 
         public static Formation FindSignificantEnemy(Formation formation, bool includeInfantry, bool includeRanged, bool includeCavalry, bool includeMountedSkirmishers, bool includeHorseArchers)
