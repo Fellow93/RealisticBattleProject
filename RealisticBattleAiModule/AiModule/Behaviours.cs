@@ -827,6 +827,39 @@ namespace RealisticBattleAiModule
     //    }
     //}
 
+    [HarmonyPatch(typeof(BehaviorShootFromCastleWalls))]
+    class OverrideBehaviorShootFromCastleWalls
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch("OnBehaviorActivatedAux")]
+        static bool PrefixOnBehaviorActivatedAux(ref Formation ___formation, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder)
+        {
+            ___formation.MovementOrder = ____currentOrder;
+            ___formation.FacingOrder = ___CurrentFacingOrder;
+            ___formation.ArrangementOrder = ArrangementOrder.ArrangementOrderScatter;
+            ___formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
+            ___formation.FormOrder = FormOrder.FormOrderCustom(40f);
+            ___formation.WeaponUsageOrder = WeaponUsageOrder.WeaponUsageOrderUseAny;
+            return false;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch("TickOccasionally")]
+        static bool PrefixTickOccasionally(ref Formation ___formation, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref TacticalPosition ____tacticalArcherPosition)
+        {
+            ___formation.MovementOrder = ____currentOrder;
+            ___formation.FacingOrder = ___CurrentFacingOrder;
+            if (____tacticalArcherPosition != null)
+            {
+                PropertyInfo property = typeof(TacticalPosition).GetProperty("Width", BindingFlags.NonPublic | BindingFlags.Instance);
+                property.DeclaringType.GetProperty("Width");
+                float Width = (float)property.GetValue(____tacticalArcherPosition, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+                ___formation.FormOrder = FormOrder.FormOrderCustom(Width*5f);
+            }
+            return false;
+        }
+    }
+
     [HarmonyPatch(typeof(BehaviorDefendCastleKeyPosition))]
     class OverrideBehaviorDefendCastleKeyPosition
     {
