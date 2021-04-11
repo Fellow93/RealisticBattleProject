@@ -462,4 +462,64 @@
     <Flags />
   </Item>
   <!-- #endregion -->
+    <Item id="fortunas_choice"
+        name="{=vRIpgxhi}Fortunas Choice"
+        mesh="horse_harness_roman_b_new"
+        weight="26"
+        appearance="0.5"
+        Type="HorseHarness"
+        is_merchandise="false">
+    <ItemComponent>
+      <Armor body_armor="25"
+             mane_cover_type="all"
+             maneuver_bonus="0"
+             speed_bonus="0"
+             reins_mesh="horse_harness_roman_b_new_rein"
+             charge_bonus="0"
+             family_type="1"
+             modifier_group="chain"
+             material_type="Chainmail" />
+    </ItemComponent>
+    <Flags />
+  </Item>
+  <Item id="celtic_frost"
+        name="{=XkwOTdVQ}Celtic Frost"
+        mesh="horse_harness_saxon_new"
+        weight="26"
+        appearance="0.5"
+        Type="HorseHarness"
+		is_merchandise="false">
+    <ItemComponent>
+      <Armor body_armor="25"
+             mane_cover_type="all"
+             maneuver_bonus="0"
+             speed_bonus="0"
+             reins_mesh="horse_harness_saxon_new_rein"
+             charge_bonus="0"
+             family_type="1"
+             modifier_group="chain"
+             material_type="Chainmail" />
+    </ItemComponent>
+    <Flags />
+  </Item>
+  <Item id="saddle_of_aeneas"
+        name="{=k3dvbLDi}Saddle of Aeneas"
+        mesh="horse_harness_a_new"
+        weight="26"
+        appearance="0.5"
+        Type="HorseHarness"
+		is_merchandise="false">
+    <ItemComponent>
+      <Armor body_armor="25"
+             mane_cover_type="all"
+             maneuver_bonus="0"
+             speed_bonus="0"
+             reins_mesh="horse_harness_a_new_rein"
+             charge_bonus="0"
+             family_type="1"
+             modifier_group="chain"
+             material_type="Chainmail" />
+    </ItemComponent>
+    <Flags />
+  </Item>
 </Items>
