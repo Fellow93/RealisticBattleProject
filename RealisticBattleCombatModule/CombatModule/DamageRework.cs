@@ -1,17 +1,19 @@
 ﻿using HarmonyLib;
+using Helpers;
 using SandBox;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Linq;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.SandBox.GameComponents.Map;
 using TaleWorlds.Core;
 using TaleWorlds.DotNet;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.ObjectSystem;
-using static TaleWorlds.Core.ItemObject;
 
 namespace RealisticBattleCombatModule
 {
@@ -375,11 +377,11 @@ namespace RealisticBattleCombatModule
                     {
                         if (!isVictimAgentLeftStance)
                         {
-                            num *= ManagedParameters.Instance.GetManagedParameter(ManagedParametersEnum.ShieldRightStanceBlockDamageMultiplier);
+                            num *= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.ShieldRightStanceBlockDamageMultiplier);
                         }
                         if (attackCollisionData.CorrectSideShieldBlock)
                         {
-                            num *= ManagedParameters.Instance.GetManagedParameter(ManagedParametersEnum.ShieldCorrectSideBlockDamageMultiplier);
+                            num *= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.ShieldCorrectSideBlockDamageMultiplier);
                         }
 
                         num = MissionGameModels.Current.AgentApplyDamageModel.CalculateShieldDamage(num);
@@ -1352,6 +1354,59 @@ namespace RealisticBattleCombatModule
                 return false;
             }
             return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(DefaultPartyHealingModel))]
+    class OverrideDefaultPartyHealingModel
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch("GetSurvivalChance")]
+        static bool PrefixGetAiWeight(ref float __result, PartyBase party, CharacterObject character, DamageTypes damageType, PartyBase enemyParty = null)
+        {
+            if (character.IsHero)
+            {
+                if (character.HeroObject.AlwaysDie)
+                {
+                    __result = 0f;
+                    return false;
+                }
+                if (character.HeroObject.AlwaysUnconscious)
+                {
+                    __result = 1f;
+                    return false;
+                }
+            }
+            //if (damageType == DamageTypes.Blunt)
+            //{
+            //    __result = 0.25f;
+            //    return false;
+            //}
+            ExplainedNumber stat = new ExplainedNumber(character.IsHero ? 50f : 1f);
+            if (party != null && party.MobileParty != null)
+            {
+                MobileParty mobileParty = party.MobileParty;
+                SkillHelper.AddSkillBonusForParty(DefaultSkills.Medicine, DefaultSkillEffects.SurgeonSurvivalBonus, mobileParty, ref stat);
+                if (enemyParty?.MobileParty != null && enemyParty.MobileParty.HasPerk(DefaultPerks.Medicine.DoctorsOath))
+                {
+                    SkillHelper.AddSkillBonusForParty(DefaultSkills.Medicine, DefaultSkillEffects.SurgeonSurvivalBonus, enemyParty.MobileParty, ref stat);
+                }
+                stat.Add((float)character.Level * 0.02f);
+                if (!character.IsHero && party.MapEvent != null && character.Tier < 3)
+                {
+                    PerkHelper.AddPerkBonusForParty(DefaultPerks.Medicine.PhysicianOfPeople, party.MobileParty, isPrimaryBonus: false, ref stat);
+                }
+                ExplainedNumber stat2 = new ExplainedNumber(1f / stat.ResultNumber);
+                if (character.IsHero)
+                {
+                    PerkHelper.AddPerkBonusForParty(DefaultPerks.Medicine.CheatDeath, mobileParty, isPrimaryBonus: false, ref stat2);
+                    PerkHelper.AddPerkBonusForParty(DefaultPerks.Medicine.FortitudeTonic, mobileParty, isPrimaryBonus: true, ref stat2);
+                }
+                __result = 1f - MBMath.ClampFloat(stat2.ResultNumber, 0f, 1f);
+                return false;
+            }
+            __result = 1f - 1f / stat.ResultNumber;
+            return false;
         }
     }
 }

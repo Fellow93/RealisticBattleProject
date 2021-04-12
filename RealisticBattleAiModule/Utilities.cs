@@ -289,7 +289,7 @@ namespace RealisticBattleAiModule
                                 {
                                     if(formation.AI.Side != enemyFormation.AI.Side)
                                     {
-                                        break;
+                                        continue;
                                     }
                                 }
                                 if (formation != null && includeInfantry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)

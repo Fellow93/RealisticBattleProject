@@ -10,7 +10,6 @@ using TaleWorlds.MountAndBlade;
 using static TaleWorlds.MountAndBlade.SiegeTower;
 using SandBox;
 using TaleWorlds.CampaignSystem;
-using static TaleWorlds.MountAndBlade.Agent;
 
 namespace RealisticBattleAiModule
 {
@@ -1638,16 +1637,18 @@ namespace RealisticBattleAiModule
                     Mission mission = Mission.Current;
                     if (targetAgent != null)
                     {
+                        Vec2 lookDirection = unit.LookDirection.AsVec2;
+                        Vec2 unitPosition = unit.GetWorldPosition().AsVec2;
 
-                        float distance = unit.GetWorldPosition().AsVec2.Distance(targetAgent.GetWorldPosition().AsVec2);
+                        float distance = unitPosition.Distance(targetAgent.GetWorldPosition().AsVec2);
                         if (distance > 25f)
                         {
                             __result = targetAgent.GetWorldPosition();
                             return false;
                         }
 
-                        Vec2 direction = (targetAgent.GetWorldPosition().AsVec2 - unit.GetWorldPosition().AsVec2).Normalized();
-                        IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2 * 0.8f, 1f, unit.Team);
+                        Vec2 direction = (targetAgent.GetWorldPosition().AsVec2 - unitPosition).Normalized();
+                        IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unitPosition + lookDirection * 0.8f, 1f, unit.Team);
                         if (agents.Count() > 3)
                         {
                             unit.LookDirection = direction.ToVec3();
@@ -1665,14 +1666,14 @@ namespace RealisticBattleAiModule
                             }
                             else
                             {
-                                //float distancefr = unit.GetWorldPosition().AsVec2.Distance(agents.ElementAt(0).Position.AsVec2);
+                                //float distancefr = unitPosition.Distance(agents.ElementAt(0).Position.AsVec2);
                                 //float slowdown = Math.Min(distancefr/2f, 1f);
                                 //if(slowdown < 0.6f)
                                 //{
                                 if (unit != null)
                                 {
-                                    IEnumerable<Agent> agentsLeft = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.LeftVec() * 0.8f, 1f, unit.Team);
-                                    IEnumerable<Agent> agentsRight = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.RightVec() * 0.8f, 1f, unit.Team);
+                                    IEnumerable<Agent> agentsLeft = mission.GetNearbyAllyAgents(unitPosition + lookDirection.LeftVec() * 0.8f, 1f, unit.Team);
+                                    IEnumerable<Agent> agentsRight = mission.GetNearbyAllyAgents(unitPosition + lookDirection.RightVec() * 0.8f, 1f, unit.Team);
                                     if (agentsLeft.Count() > 3 && agentsRight.Count() > 3)
                                     {
                                         if (MBRandom.RandomInt(50) == 0)
@@ -1680,14 +1681,14 @@ namespace RealisticBattleAiModule
                                             if (MBRandom.RandomInt(2) == 0)
                                             {
                                                 WorldPosition leftPosition = unit.GetWorldPosition();
-                                                leftPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.LeftVec());
+                                                leftPosition.SetVec2(unitPosition + lookDirection.LeftVec());
                                                 __result = leftPosition;
                                                 return false;
                                             }
                                             else
                                             {
                                                 WorldPosition rightPosition = unit.GetWorldPosition();
-                                                rightPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.RightVec());
+                                                rightPosition.SetVec2(unitPosition + lookDirection.RightVec());
                                                 __result = rightPosition;
                                                 return false;
                                             }
@@ -1698,14 +1699,14 @@ namespace RealisticBattleAiModule
                                         if (MBRandom.RandomInt(2) == 0)
                                         {
                                             WorldPosition leftPosition = unit.GetWorldPosition();
-                                            leftPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.LeftVec());
+                                            leftPosition.SetVec2(unitPosition + lookDirection.LeftVec());
                                             __result = leftPosition;
                                             return false;
                                         }
                                         else
                                         {
                                             WorldPosition rightPosition = unit.GetWorldPosition();
-                                            rightPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.RightVec());
+                                            rightPosition.SetVec2(unitPosition + lookDirection.RightVec());
                                             __result = rightPosition;
                                             return false;
                                         }
@@ -1713,14 +1714,14 @@ namespace RealisticBattleAiModule
                                     else if (agentsLeft.Count() <= 3)
                                     {
                                         WorldPosition leftPosition = unit.GetWorldPosition();
-                                        leftPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.LeftVec());
+                                        leftPosition.SetVec2(unitPosition + lookDirection.LeftVec());
                                         __result = leftPosition;
                                         return false;
                                     }
                                     else if (agentsRight.Count() <= 3)
                                     {
                                         WorldPosition rightPosition = unit.GetWorldPosition();
-                                        rightPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.RightVec());
+                                        rightPosition.SetVec2(unitPosition + lookDirection.RightVec());
                                         __result = rightPosition;
                                         return false;
                                     }
@@ -1758,7 +1759,8 @@ namespace RealisticBattleAiModule
         [HarmonyPatch("GetOrderPositionOfUnitAux")]
         static bool PrefixGetOrderPositionOfUnitAux(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ___detachedUnits, ref WorldPosition __result)
         {
-            if(unit != null && __instance.QuerySystem.IsInfantryFormation && (__instance.AI != null || __instance.IsAIControlled == false) && __instance.AI.ActiveBehavior != null )
+            //Mission.Current.IsFieldBattle &&
+            if (Mission.Current.IsFieldBattle && unit != null && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation || __instance.QuerySystem.IsCavalryFormation) && (__instance.AI != null || __instance.IsAIControlled == false) && __instance.AI.ActiveBehavior != null )
             {
                 //InformationManager.DisplayMessage(new InformationMessage(__instance.AI.ActiveBehavior.GetType().Name + " " + __instance.MovementOrder.OrderType.ToString()));
                 bool exludedWhenAiControl = !(__instance.IsAIControlled && (__instance.AI.ActiveBehavior.GetType().Name.Contains("Regroup") || __instance.AI.ActiveBehavior.GetType().Name.Contains("Advance")));
@@ -1769,35 +1771,56 @@ namespace RealisticBattleAiModule
                     Mission mission = Mission.Current;
                     if (mission.Mode != MissionMode.Deployment)
                     {
-                        IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2 * 0.8f, 1f, unit.Team);
+                        Vec2 lookDirection = unit.LookDirection.AsVec2;
+                        Vec2 unitPosition = unit.GetWorldPosition().AsVec2;
+
+                        IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unitPosition + lookDirection * 0.8f, 1f, unit.Team);
                         if (agents.Count() > 3)
                         {
-                            if (MBRandom.RandomInt(75) == 0)
+                            if (MBRandom.RandomInt(50) == 0)
                             {
                                 return true;
                             }
                             else
                             {
+                                
                                 if (unit != null)
                                 {
-                                    IEnumerable<Agent> agentsLeft = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.LeftVec() * 0.8f, 1f, unit.Team);
-                                    IEnumerable<Agent> agentsRight = mission.GetNearbyAllyAgents(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.RightVec() * 0.8f, 1f, unit.Team);
+                                    IEnumerable<Agent> agentsLeft = mission.GetNearbyAllyAgents(unitPosition + lookDirection.LeftVec() * 0.8f, 1f, unit.Team);
+                                    IEnumerable<Agent> agentsRight = mission.GetNearbyAllyAgents(unitPosition + lookDirection.RightVec() * 0.8f, 1f, unit.Team);
                                     if (agentsLeft.Count() > 3 && agentsRight.Count() > 3)
                                     {
+                                        if (MBRandom.RandomInt(50) == 0)
+                                        {
+                                            if (MBRandom.RandomInt(2) == 0)
+                                            {
+                                                WorldPosition leftPosition = unit.GetWorldPosition();
+                                                leftPosition.SetVec2(unitPosition + lookDirection.LeftVec());
+                                                __result = leftPosition;
+                                                return false;
+                                            }
+                                            else
+                                            {
+                                                WorldPosition rightPosition = unit.GetWorldPosition();
+                                                rightPosition.SetVec2(unitPosition + lookDirection.RightVec());
+                                                __result = rightPosition;
+                                                return false;
+                                            }
+                                        }
                                     }
                                     else if (agentsLeft.Count() <= 3 && agentsRight.Count() <= 3)
                                     {
                                         if (MBRandom.RandomInt(2) == 0)
                                         {
                                             WorldPosition leftPosition = unit.GetWorldPosition();
-                                            leftPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.LeftVec());
+                                            leftPosition.SetVec2(unitPosition + lookDirection.LeftVec());
                                             __result = leftPosition;
                                             return false;
                                         }
                                         else
                                         {
                                             WorldPosition rightPosition = unit.GetWorldPosition();
-                                            rightPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.RightVec());
+                                            rightPosition.SetVec2(unitPosition + lookDirection.RightVec());
                                             __result = rightPosition;
                                             return false;
                                         }
@@ -1805,14 +1828,14 @@ namespace RealisticBattleAiModule
                                     else if (agentsLeft.Count() <= 3)
                                     {
                                         WorldPosition leftPosition = unit.GetWorldPosition();
-                                        leftPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.LeftVec());
+                                        leftPosition.SetVec2(unitPosition + lookDirection.LeftVec());
                                         __result = leftPosition;
                                         return false;
                                     }
                                     else if (agentsRight.Count() <= 3)
                                     {
                                         WorldPosition rightPosition = unit.GetWorldPosition();
-                                        rightPosition.SetVec2(unit.GetWorldPosition().AsVec2 + unit.GetMovementDirection().AsVec2.RightVec());
+                                        rightPosition.SetVec2(unitPosition + lookDirection.RightVec());
                                         __result = rightPosition;
                                         return false;
                                     }
@@ -2116,7 +2139,5 @@ namespace RealisticBattleAiModule
                 }
             }
         }
-
-        
     }
 }
