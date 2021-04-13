@@ -269,14 +269,206 @@ namespace RealisticBattleCombatModule
 
             if (!attackBlockedWithShield && !isFallDamage)
             {
-                if (damageMultiplierOfBone == 2f)
+                switch (attackCollisionData.VictimHitBodyPart)
                 {
-                    dmgMultiplier *= 1.5f;
+                    case BoneBodyPartType.Abdomen:
+                        {
+                            switch (damageType)
+                            {
+                                case DamageTypes.Pierce:
+                                    {
+                                        dmgMultiplier *= 1f;
+                                        break;
+                                    }
+                                case DamageTypes.Cut:
+                                    {
+                                        dmgMultiplier *= 1f;
+                                        break;
+                                    }
+                                case DamageTypes.Blunt:
+                                    {
+                                        dmgMultiplier *= 1f;
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        dmgMultiplier *= 0.7f;
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
+                    case BoneBodyPartType.Chest:
+                        {
+                            switch (damageType)
+                            {
+                                case DamageTypes.Pierce:
+                                    {
+                                        dmgMultiplier *= 0.9f;
+                                        break;
+                                    }
+                                case DamageTypes.Cut:
+                                    {
+                                        dmgMultiplier *= 0.9f;
+                                        break;
+                                    }
+                                case DamageTypes.Blunt:
+                                    {
+                                        dmgMultiplier *= 0.8f;
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        dmgMultiplier *= 1f;
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
+                    case BoneBodyPartType.ShoulderLeft:
+                    case BoneBodyPartType.ShoulderRight:
+                        {
+                            switch (damageType)
+                            {
+                                case DamageTypes.Pierce:
+                                    {
+                                        dmgMultiplier *= 0.8f;
+                                        break;
+                                    }
+                                case DamageTypes.Cut:
+                                    {
+                                        dmgMultiplier *= 0.9f;
+                                        break;
+                                    }
+                                case DamageTypes.Blunt:
+                                    {
+                                        dmgMultiplier *= 0.8f;
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        dmgMultiplier *= 1f;
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
+                    case BoneBodyPartType.BipedalArmLeft:
+                    case BoneBodyPartType.BipedalArmRight:
+                        {
+                            switch (damageType)
+                            {
+                                case DamageTypes.Pierce:
+                                    {
+                                        dmgMultiplier *= 0.3f;
+                                        break;
+                                    }
+                                case DamageTypes.Cut:
+                                    {
+                                        dmgMultiplier *= 0.6f;
+                                        break;
+                                    }
+                                case DamageTypes.Blunt:
+                                    {
+                                        dmgMultiplier *= 0.4f;
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        dmgMultiplier *= 1f;
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
+                    case BoneBodyPartType.BipedalLegs:
+                        {
+                            switch (damageType)
+                            {
+                                case DamageTypes.Pierce:
+                                    {
+                                        dmgMultiplier *= 0.4f;
+                                        break;
+                                    }
+                                case DamageTypes.Cut:
+                                    {
+                                        dmgMultiplier *= 0.6f;
+                                        break;
+                                    }
+                                case DamageTypes.Blunt:
+                                    {
+                                        dmgMultiplier *= 0.4f;
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        dmgMultiplier *= 1f;
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
+                    case BoneBodyPartType.Head:
+                        {
+                            switch (damageType)
+                            {
+                                case DamageTypes.Pierce:
+                                    {
+                                        dmgMultiplier *= 2f;
+                                        break;
+                                    }
+                                case DamageTypes.Cut:
+                                    {
+                                        dmgMultiplier *= 2f;
+                                        break;
+                                    }
+                                case DamageTypes.Blunt:
+                                    {
+                                        dmgMultiplier *= 2f;
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        dmgMultiplier *= 1f;
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
+                    case BoneBodyPartType.Neck:
+                        {
+                            switch (damageType)
+                            {
+                                case DamageTypes.Pierce:
+                                    {
+                                        dmgMultiplier *= 2f;
+                                        break;
+                                    }
+                                case DamageTypes.Cut:
+                                    {
+                                        dmgMultiplier *= 2f;
+                                        break;
+                                    }
+                                case DamageTypes.Blunt:
+                                    {
+                                        dmgMultiplier *= 2f;
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        dmgMultiplier *= 1f;
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
+                    default: 
+                        {
+                            dmgMultiplier *= 1f;
+                            break;
+                        }
                 }
-                else
-                {
-                    dmgMultiplier *= damageMultiplierOfBone;
-                }
+                
                 dmgMultiplier *= combatDifficultyMultiplier;
             }
 
@@ -383,19 +575,19 @@ namespace RealisticBattleCombatModule
                                 }
                             default:
                                 {
-                                    num *= 1.0f;
+                                    if (attackCollisionData.DamageType == 0)
+                                    {
+                                        num *= 1.0f;
+                                    }
+                                    else
+                                    {
+                                        num *= 0.5f;
+                                    }
                                     break;
                                 }
                         }
                     }
-                    else if (attackCollisionData.DamageType == 1)
-                    {
-                        num *= 0.5f;
-                    }
-                    else if (attackCollisionData.DamageType == 2)
-                    {
-                        num *= 0.5f;
-                    }
+
                     if (attackerWeapon != null && attackerWeapon.WeaponFlags.HasAnyFlag(WeaponFlags.BonusAgainstShield))
                     {
                         num *= 5f;
