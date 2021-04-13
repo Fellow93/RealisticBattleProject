@@ -1046,37 +1046,43 @@ namespace RealisticBattleCombatModule
 
         private static ArmorComponent.ArmorMaterialTypes GetProtectorArmorMaterialOfBone(Agent agent,sbyte boneIndex)
         {
-	        if (boneIndex >= 0)
-	        {
-		        EquipmentIndex equipmentIndex = EquipmentIndex.None;
-		        switch (agent.AgentVisuals.GetBoneTypeData(boneIndex).BodyPartType)
-		        {
-		        case BoneBodyPartType.Chest:
-		        case BoneBodyPartType.Abdomen:
-		        case BoneBodyPartType.ShoulderLeft:
-		        case BoneBodyPartType.ShoulderRight:
-			        equipmentIndex = EquipmentIndex.Body;
-			        break;
-		        case BoneBodyPartType.BipedalArmLeft:
-		        case BoneBodyPartType.BipedalArmRight:
-		        case BoneBodyPartType.QuadrupedalArmLeft:
-		        case BoneBodyPartType.QuadrupedalArmRight:
-			        equipmentIndex = EquipmentIndex.Gloves;
-			        break;
-		        case BoneBodyPartType.BipedalLegs:
-		        case BoneBodyPartType.QuadrupedalLegs:
-			        equipmentIndex = EquipmentIndex.Leg;
-			        break;
-		        case BoneBodyPartType.Head:
-		        case BoneBodyPartType.Neck:
-			        equipmentIndex = EquipmentIndex.NumAllWeaponSlots;
-			        break;
-		        }
-		        if (equipmentIndex != EquipmentIndex.None && agent.SpawnEquipment[equipmentIndex].Item != null)
-		        {
-			        return agent.SpawnEquipment[equipmentIndex].Item.ArmorComponent.MaterialType;
-		        }
-	        }
+            if(agent != null && agent.SpawnEquipment != null)
+            {
+                if (boneIndex >= 0)
+                {
+                    EquipmentIndex equipmentIndex = EquipmentIndex.None;
+                    switch (agent.AgentVisuals.GetBoneTypeData(boneIndex).BodyPartType)
+                    {
+                        case BoneBodyPartType.Chest:
+                        case BoneBodyPartType.Abdomen:
+                        case BoneBodyPartType.ShoulderLeft:
+                        case BoneBodyPartType.ShoulderRight:
+                            equipmentIndex = EquipmentIndex.Body;
+                            break;
+                        case BoneBodyPartType.BipedalArmLeft:
+                        case BoneBodyPartType.BipedalArmRight:
+                        case BoneBodyPartType.QuadrupedalArmLeft:
+                        case BoneBodyPartType.QuadrupedalArmRight:
+                            equipmentIndex = EquipmentIndex.Gloves;
+                            break;
+                        case BoneBodyPartType.BipedalLegs:
+                        case BoneBodyPartType.QuadrupedalLegs:
+                            equipmentIndex = EquipmentIndex.Leg;
+                            break;
+                        case BoneBodyPartType.Head:
+                        case BoneBodyPartType.Neck:
+                            equipmentIndex = EquipmentIndex.NumAllWeaponSlots;
+                            break;
+                    }
+                    if (equipmentIndex != EquipmentIndex.None && agent.SpawnEquipment[equipmentIndex].Item != null)
+                    {
+                        if(agent.SpawnEquipment[equipmentIndex].Item.ArmorComponent != null)
+                        {
+                            return agent.SpawnEquipment[equipmentIndex].Item.ArmorComponent.MaterialType;
+                        }
+                    }
+                }
+            }
 	        return ArmorComponent.ArmorMaterialTypes.None;
         }
         static bool Prefix(ref Agent __instance, ref Blow b)
