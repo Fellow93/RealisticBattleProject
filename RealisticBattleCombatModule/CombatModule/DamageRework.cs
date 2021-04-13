@@ -144,6 +144,16 @@ namespace RealisticBattleCombatModule
                     baseMagnitude = physicalDamage * momentumRemaining + ((missileTotalDamage * 0.6f) - 42f);
                 }
 
+                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingAxe"))
+                {
+                    baseMagnitude = physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f);
+                }
+
+                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingKnife"))
+                {
+                    baseMagnitude = physicalDamage * momentumRemaining + (missileTotalDamage * 0f);
+                }
+
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") ||
                     weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("LowGripPolearm"))
                 {
@@ -335,7 +345,7 @@ namespace RealisticBattleCombatModule
                                 }
                             case "Javelin":
                                 {
-                                    num *= 1.5f;
+                                    num *= 2.5f;
                                     break;
                                 }
                             case "ThrowingAxe":
@@ -356,6 +366,24 @@ namespace RealisticBattleCombatModule
                             default:
                                 {
                                     num *= 0.1f;
+                                    break;
+                                }
+                        }
+                    }
+                    else if (!attackCollisionData.IsMissile)
+                    {
+                        switch (weaponType)
+                        {
+                            case "OneHandedAxe":
+                            case "TwoHandedAxe":
+                            case "OneHandedBastardAxe":
+                                {
+                                    num *= 2.0f;
+                                    break;
+                                }
+                            default:
+                                {
+                                    num *= 1.0f;
                                     break;
                                 }
                         }
