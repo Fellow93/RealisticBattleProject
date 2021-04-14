@@ -263,12 +263,12 @@
     </Materials>
   </CraftingPiece>
 
-<CraftingPiece id="axe_craft_10_head" name="{=LNDbMUK0}Voulge Head" tier="4" piece_type="Blade" mesh="axe_craft_10_head" distance_to_next_piece="23" distance_to_previous_piece="4" weight="0.25">
+<CraftingPiece id="axe_craft_10_head" name="{=LNDbMUK0}Voulge Head" tier="4" piece_type="Blade" mesh="axe_craft_10_head" distance_to_next_piece="23" distance_to_previous_piece="4" weight="0.10">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:OneHandedPolearm" />
     <BuildData piece_offset="-8" />
     <BladeData stack_amount="3" blade_length="23.118" blade_width="18.371" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Thrust damage_type="Pierce" damage_factor="10" />
-      <Swing damage_type="Cut" damage_factor="6.3" />
+      <Swing damage_type="Cut" damage_factor="7.7" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />

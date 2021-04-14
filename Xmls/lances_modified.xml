@@ -167,9 +167,29 @@
              Type="Pommel"
              scale_factor="100" />
     </Pieces>
+  </CraftedItem>
   <!-- #endregion -->
 <!-- #Cutting Polearms -->
+  <CraftedItem id="vlandia_polearm_1_t5"
+               name="{=zbsajPMp}Voulge"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.vlandia">
+    <Pieces>
+      <Piece id="axe_craft_10_head"
+             Type="Blade"
+             scale_factor="175" />
+      <Piece id="default_polearm_guard"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_27"
+             Type="Handle"
+             scale_factor="70" />
+      <Piece id="default_polearm_pommel"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
   </CraftedItem>
+
   <CraftedItem id="easter_polesword_t4" name="{=2FubBDYB}Eastern Polesword" crafting_template="TwoHandedPolearm" culture="Culture.aserai">
     <Pieces>
       <Piece id="spear_blade_22" Type="Blade" scale_factor="100" />

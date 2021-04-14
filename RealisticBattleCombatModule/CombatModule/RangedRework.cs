@@ -80,7 +80,7 @@ namespace RealisticBattleCombatModule
                             {
                                 if (wsd[i].MissileSpeed != 0)
                                 {
-                                    Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentIndex], i, 10);
+                                    Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentIndex], i, 5);
                                 }
                             }
                         }

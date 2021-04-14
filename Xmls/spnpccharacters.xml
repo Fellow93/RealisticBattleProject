@@ -14079,7 +14079,7 @@
       <equipment slot="Leg"
                  id="Item.battania_warlord_boots" />
       <equipment slot="Gloves"
-                 id="Item.battania_warlord_bracers" />
+                 id="Item.reinforced_mail_mitten" />
       <equipment slot="Cape"
                  id="Item.battanian_chainmail_shoulder_b" />
       </EquipmentRoster>
@@ -14093,7 +14093,7 @@
       <equipment slot="Leg"
                  id="Item.battania_warlord_boots" />
       <equipment slot="Gloves"
-                 id="Item.battania_warlord_bracers" />
+                 id="Item.reinforced_mail_mitten" />
       <equipment slot="Cape"
                  id="Item.battanian_chainmail_shoulder_b" />
       </EquipmentRoster>
@@ -14107,7 +14107,7 @@
       <equipment slot="Leg"
                  id="Item.battania_warlord_boots" />
       <equipment slot="Gloves"
-                 id="Item.battania_warlord_bracers" />
+                 id="Item.reinforced_mail_mitten" />
       <equipment slot="Cape"
                  id="Item.battanian_chainmail_shoulder_b" />
       </EquipmentRoster>
@@ -20700,7 +20700,7 @@
       <skill id="TwoHanded"
              value="80" />
       <skill id="Polearm"
-             value="155" />
+             value="165" />
       <skill id="Bow"
              value="20" />
       <skill id="Crossbow"
@@ -20722,7 +20722,7 @@
       <equipment slot="Head"
                  id="Item.visored_helmet_over_padded_coif" />
       <equipment slot="Gloves"
-                 id="Item.mail_mitten" />
+                 id="Item.reinforced_mail_mitten" />
       <equipment slot="Cape"
                  id="Item.mail_shoulders" />
       </EquipmentRoster>
@@ -20738,7 +20738,7 @@
       <equipment slot="Head"
                  id="Item.visored_helmet_over_mail_coif" />
       <equipment slot="Gloves"
-                 id="Item.mail_mitten" />
+                 id="Item.reinforced_mail_mitten" />
       <equipment slot="Cape"
                  id="Item.mail_shoulders" />
       </EquipmentRoster>
@@ -20754,7 +20754,7 @@
       <equipment slot="Head"
                  id="Item.peaked_helmet_over_mail_coif" />
       <equipment slot="Gloves"
-                 id="Item.mail_mitten" />
+                 id="Item.reinforced_mail_mitten" />
       <equipment slot="Cape"
                  id="Item.mail_shoulders" />
       </EquipmentRoster>
@@ -20803,7 +20803,7 @@
       <equipment slot="Head"
                  id="Item.peaked_helmet_over_mail_coif" />
       <equipment slot="Gloves"
-                 id="Item.mail_mitten" />
+                 id="Item.reinforced_mail_mitten" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -20817,13 +20817,13 @@
       <equipment slot="Head"
                  id="Item.visored_helmet_over_padded_coif" />
       <equipment slot="Gloves"
-                 id="Item.mail_mitten" />
+                 id="Item.reinforced_mail_mitten" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.vlandia_pike_1_t5" />
       <equipment slot="Item1"
-                 id="Item.western_2hsword_t4" />
+                 id="Item.vlandia_2hsword_2_t5" />
       <equipment slot="Body"
                  id="Item.coat_of_plates_over_mail" />
 	  <equipment slot="Cape"
@@ -20833,7 +20833,7 @@
       <equipment slot="Head"
                  id="Item.visored_helmet_over_mail_coif" />
       <equipment slot="Gloves"
-                 id="Item.mail_mitten" />
+                 id="Item.reinforced_mail_mitten" />
       </EquipmentRoster>
       <EquipmentSet id="vlandia_troop_civilian_template_t3"
                     civilian="true" />
@@ -21946,7 +21946,7 @@
     <equipment slot="Horse"
                id="Item.vlandia_horse" />
     <equipment slot="HorseHarness"
-               id="Item.chain_barding" />
+               id="Item.halfchain_barding" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="vlandian_champion"

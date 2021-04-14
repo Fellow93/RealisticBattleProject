@@ -56,7 +56,7 @@ namespace RealisticBattleCombatModule
                     if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingAxe") ||
                         weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingKnife"))
                     {
-                        length -= 10f;
+                        length -= 5f;
                         if (length < 5.0f)
                         {
                             length = 5f;
@@ -66,7 +66,6 @@ namespace RealisticBattleCombatModule
                         //{
                         //    length = 5.0f;
                         //} 
-                        missileTotalDamage *= 0.01f;
                     }
                     if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
                     {
@@ -542,7 +541,7 @@ namespace RealisticBattleCombatModule
                                 }
                             case "ThrowingAxe":
                                 {
-                                    num *= 1.0f;
+                                    num *= 2.0f;
                                     break;
                                 }
                             case "OneHandedPolearm":
