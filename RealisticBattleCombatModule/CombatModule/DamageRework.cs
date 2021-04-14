@@ -127,9 +127,9 @@ namespace RealisticBattleCombatModule
                     physicalDamage = (weaponItem.Weight) * 300f;
                 }
 
-                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") && physicalDamage > (weaponItem.Weight) * 2500f)
+                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") && physicalDamage > (weaponItem.Weight) * 2250f)
                 {
-                    physicalDamage = (weaponItem.Weight) * 2500f;
+                    physicalDamage = (weaponItem.Weight) * 2250f;
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt") && physicalDamage > (weaponItem.Weight) * 2500f)
@@ -314,7 +314,7 @@ namespace RealisticBattleCombatModule
                                     }
                                 case DamageTypes.Blunt:
                                     {
-                                        dmgMultiplier *= 0.8f;
+                                        dmgMultiplier *= 0.9f;
                                         break;
                                     }
                                 default:
@@ -332,17 +332,17 @@ namespace RealisticBattleCombatModule
                             {
                                 case DamageTypes.Pierce:
                                     {
-                                        dmgMultiplier *= 0.8f;
+                                        dmgMultiplier *= 0.6f;
                                         break;
                                     }
                                 case DamageTypes.Cut:
                                     {
-                                        dmgMultiplier *= 0.9f;
+                                        dmgMultiplier *= 0.6f;
                                         break;
                                     }
                                 case DamageTypes.Blunt:
                                     {
-                                        dmgMultiplier *= 0.8f;
+                                        dmgMultiplier *= 0.7f;
                                         break;
                                     }
                                 default:
@@ -360,7 +360,7 @@ namespace RealisticBattleCombatModule
                             {
                                 case DamageTypes.Pierce:
                                     {
-                                        dmgMultiplier *= 0.3f;
+                                        dmgMultiplier *= 0.5f;
                                         break;
                                     }
                                 case DamageTypes.Cut:
@@ -370,7 +370,7 @@ namespace RealisticBattleCombatModule
                                     }
                                 case DamageTypes.Blunt:
                                     {
-                                        dmgMultiplier *= 0.4f;
+                                        dmgMultiplier *= 0.7f;
                                         break;
                                     }
                                 default:
@@ -387,7 +387,7 @@ namespace RealisticBattleCombatModule
                             {
                                 case DamageTypes.Pierce:
                                     {
-                                        dmgMultiplier *= 0.4f;
+                                        dmgMultiplier *= 0.5f;
                                         break;
                                     }
                                 case DamageTypes.Cut:
@@ -397,7 +397,7 @@ namespace RealisticBattleCombatModule
                                     }
                                 case DamageTypes.Blunt:
                                     {
-                                        dmgMultiplier *= 0.4f;
+                                        dmgMultiplier *= 0.7f;
                                         break;
                                     }
                                 default:
@@ -419,7 +419,7 @@ namespace RealisticBattleCombatModule
                                     }
                                 case DamageTypes.Cut:
                                     {
-                                        dmgMultiplier *= 2f;
+                                        dmgMultiplier *= 1.5f;
                                         break;
                                     }
                                 case DamageTypes.Blunt:
@@ -954,7 +954,7 @@ namespace RealisticBattleCombatModule
                     }
                 case WeaponClass.Javelin:
                     {
-                        num2 = ((float)weaponComponentData.ThrustDamage - 100f) * 0.34f - 1f;
+                        num2 = ((float)weaponComponentData.ThrustDamage * XmlConfig.dict["Global.OneHandedThrustBonus"] - 100f) * 0.34f - 1f;
                         break;
                     }
                 case WeaponClass.OneHandedPolearm:
