@@ -33,10 +33,10 @@
     <Pieces>
       <Piece id="axe_craft_4_head"
              Type="Blade"
-             scale_factor="200" />
+             scale_factor="100" />
       <Piece id="axe_craft_12_handle"
              Type="Handle"
-             scale_factor="150" />
+             scale_factor="100" />
     </Pieces>
   </CraftedItem>
   <!-- #endregion -->
@@ -48,10 +48,10 @@
     <Pieces>
       <Piece id="axe_craft_4_head"
              Type="Blade"
-             scale_factor="200" />
+             scale_factor="100" />
       <Piece id="axe_craft_12_handle"
              Type="Handle"
-             scale_factor="150" />
+             scale_factor="100" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="northern_throwing_axe_1_t1"
@@ -61,10 +61,10 @@
     <Pieces>
       <Piece id="axe_craft_13_head"
              Type="Blade"
-             scale_factor="200" />
+             scale_factor="100" />
       <Piece id="axe_craft_11_handle"
              Type="Handle"
-             scale_factor="150" />
+             scale_factor="100" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="woodland_throwing_axe_1_t1"
@@ -74,10 +74,10 @@
     <Pieces>
       <Piece id="axe_craft_13_head"
              Type="Blade"
-             scale_factor="200" />
+             scale_factor="100" />
       <Piece id="axe_craft_28_handle"
              Type="Handle"
-             scale_factor="150" />
+             scale_factor="100" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="western_throwing_axe_1_t1"
@@ -87,10 +87,10 @@
     <Pieces>
       <Piece id="axe_craft_4_head"
              Type="Blade" 
-             scale_factor="200" />
+             scale_factor="100" />
       <Piece id="axe_craft_11_handle"
              Type="Handle" 
-			 scale_factor="150" />
+			 scale_factor="100" />
     </Pieces>
   </CraftedItem>
   <!-- #endregion -->

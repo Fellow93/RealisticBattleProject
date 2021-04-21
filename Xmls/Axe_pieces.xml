@@ -501,8 +501,8 @@
   <!-- #region Used Throwing Axe Blade Pieces -->
   <CraftingPiece id="axe_craft_4_head" name="{=fdR6zYiP}Franziska Head" tier="4" piece_type="Blade" mesh="axe_craft_4_head" distance_to_next_piece="5.787" distance_to_previous_piece="1.483" weight="0.426">
     <BuildData piece_offset="5.0" />
-    <BladeData stack_amount="1" blade_length="10.566" blade_width="19.257" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
-      <Swing damage_type="Cut" damage_factor="2.9" />
+    <BladeData stack_amount="2" blade_length="10.566" blade_width="19.257" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
+      <Swing damage_type="Cut" damage_factor="5.8" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="3" />
@@ -514,8 +514,8 @@
   </CraftingPiece>
   <CraftingPiece id="axe_craft_13_head" name="{=hSSk6tTn}Throwing Axe Head" tier="4" piece_type="Blade" mesh="axe_craft_13_head" distance_to_next_piece="2.7" distance_to_previous_piece="1.6" weight="0.440">
     <BuildData piece_offset="5.0" />
-    <BladeData stack_amount="1" blade_length="8.707" blade_width="16.898" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
-      <Swing damage_type="Cut" damage_factor="3.1" />
+    <BladeData stack_amount="2" blade_length="8.707" blade_width="16.898" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
+      <Swing damage_type="Cut" damage_factor="6.2" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="3" />
@@ -527,8 +527,8 @@
   </CraftingPiece>
   <CraftingPiece id="axe_craft_31_head" name="{=sNJNDDKN}Small Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_31_head" distance_to_next_piece="6.7" distance_to_previous_piece="4" weight="0.493">
     <BuildData piece_offset="5.0" />
-    <BladeData stack_amount="1" blade_length="13.366" blade_width="13.211" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
-      <Swing damage_type="Cut" damage_factor="2.5" />
+    <BladeData stack_amount="2" blade_length="13.366" blade_width="13.211" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
+      <Swing damage_type="Cut" damage_factor="5.0" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
