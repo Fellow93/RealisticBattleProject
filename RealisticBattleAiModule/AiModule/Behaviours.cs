@@ -10,6 +10,7 @@ using TaleWorlds.MountAndBlade;
 using static TaleWorlds.MountAndBlade.SiegeTower;
 using SandBox;
 using TaleWorlds.CampaignSystem;
+using static TaleWorlds.MountAndBlade.FormationAI;
 
 namespace RealisticBattleAiModule
 {
@@ -766,6 +767,7 @@ namespace RealisticBattleAiModule
         [HarmonyPatch("CalculateCurrentOrder")]
         static bool PrefixCalculateCurrentOrder(ref Formation ___formation, ref MovementOrder ____chargeOrder)
         {
+            ___formation.AI.SetBehaviorWeight<BehaviorCharge>(0f);
             if (___formation != null && ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
                 ____chargeOrder = MovementOrder.MovementOrderChargeToTarget(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
@@ -775,7 +777,7 @@ namespace RealisticBattleAiModule
 
         [HarmonyPostfix]
         [HarmonyPatch("CalculateCurrentOrder")]
-        static void PostfixCalculateCurrentOrder(ref ArrangementOrder ___CurrentArrangementOrder, ref TeamAISiegeComponent ____teamAISiegeComponent, ref Formation ___formation, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviourState, ref MovementOrder ____attackEntityOrderInnerGate)
+        static void PostfixCalculateCurrentOrder( ref MovementOrder ____attackEntityOrderOuterGate, ref ArrangementOrder ___CurrentArrangementOrder, ref MovementOrder ____chargeOrder, ref TeamAISiegeComponent ____teamAISiegeComponent, ref Formation ___formation, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviourState, ref MovementOrder ____attackEntityOrderInnerGate)
         {
 
             //____attackEntityOrderInnerGate = MovementOrder.MovementOrderAttackEntity(____teamAISiegeComponent.InnerGate.GameEntity, surroundEntity: false);
@@ -793,7 +795,7 @@ namespace RealisticBattleAiModule
                     {
                         MethodInfo method = typeof(Formation).GetMethod("FormAttackEntityDetachment", BindingFlags.NonPublic | BindingFlags.Instance);
                         method.DeclaringType.GetMethod("FormAttackEntityDetachment");
-                        if(____attackEntityOrderInnerGate.TargetEntity != null)
+                        if (____attackEntityOrderInnerGate.TargetEntity != null)
                         {
                             method.Invoke(___formation, new object[] { ____attackEntityOrderInnerGate.TargetEntity });
                         }
@@ -802,10 +804,36 @@ namespace RealisticBattleAiModule
                         break;
                     }
                 case BehaviorState.Charging:
+                case BehaviorState.TakeControl:
                     {
+                        
+                        if(___formation.AI.Side == BehaviorSide.Middle)
+                        {
+                            MethodInfo method = typeof(Formation).GetMethod("DisbandAttackEntityDetachment", BindingFlags.NonPublic | BindingFlags.Instance);
+                            method.DeclaringType.GetMethod("DisbandAttackEntityDetachment");
+                            method.Invoke(___formation, new object[] { });
+
+                            FieldInfo field = typeof(Formation).GetField("_detachments", BindingFlags.NonPublic | BindingFlags.Instance);
+                            field.DeclaringType.GetField("_detachments");
+                            List<IDetachment> detachments = (List<IDetachment>)field.GetValue(___formation);
+
+                            foreach (IDetachment detach in detachments.ToList())
+                            {
+                                MethodInfo method2 = typeof(Formation).GetMethod("LeaveDetachment", BindingFlags.NonPublic | BindingFlags.Instance);
+                                method2.DeclaringType.GetMethod("LeaveDetachment");
+                                method2.Invoke(___formation, new object[] { detach });
+                            }
+
+                        }
+
                         if (___formation != null && ___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                         {
+                            //____attackEntityOrderInnerGate = MovementOrder.MovementOrderChargeToTarget(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                            //____attackEntityOrderOuterGate = MovementOrder.MovementOrderChargeToTarget(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                            ____chargeOrder = MovementOrder.MovementOrderChargeToTarget(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                            ____chargeOrder.TargetEntity = null;
                             ____currentOrder = MovementOrder.MovementOrderChargeToTarget(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                            ____currentOrder.TargetEntity = null;
                         }
                         break;
                     }
