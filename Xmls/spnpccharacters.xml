@@ -15301,8 +15301,6 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.empire_lance_3_t5" />
-      <equipment slot="Item1"
-                 id="Item.chivalric_kite_shield" />
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Head"
@@ -15319,8 +15317,6 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.empire_lance_3_t5" />
-      <equipment slot="Item1"
-                 id="Item.chivalric_kite_shield" />
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Head"
@@ -15337,8 +15333,6 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.empire_lance_3_t5" />
-      <equipment slot="Item1"
-                 id="Item.chivalric_kite_shield" />
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Head"
@@ -15355,8 +15349,6 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.empire_lance_3_t5" />
-      <equipment slot="Item1"
-                 id="Item.chivalric_kite_shield" />
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Head"
