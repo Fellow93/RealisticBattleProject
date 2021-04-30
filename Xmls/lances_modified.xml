@@ -9,10 +9,10 @@
     <Pieces>
       <Piece id="spear_blade_23"
              Type="Blade"
-             scale_factor="110" />
+             scale_factor="100" />
       <Piece id="spear_handle_23"
              Type="Handle"
-             scale_factor="120" />
+             scale_factor="112" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="empire_lance_1_t3"
@@ -22,10 +22,10 @@
     <Pieces>
       <Piece id="spear_blade_23"
              Type="Blade"
-             scale_factor="115" />
+             scale_factor="100" />
       <Piece id="spear_handle_13"
              Type="Handle"
-             scale_factor="123" />
+             scale_factor="118" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="khuzait_lance_1_t3"
@@ -36,26 +36,13 @@
       <Piece id="spear_blade_23"
              Type="Blade"
              scale_factor="100" />
-      <Piece id="spear_handle_23"
+      <Piece id="spear_handle_20"
              Type="Handle"
-             scale_factor="130" />
+             scale_factor="136" />
     </Pieces>
   </CraftedItem>
   <!-- #endregion -->
   <!-- #region Tier 4 -->
-  <CraftedItem id="aserai_lance_1_t5"
-               name="{=hsRwbHSk}Mamluke Lance"
-               crafting_template="TwoHandedPolearm"
-               culture="Culture.aserai">
-    <Pieces>
-      <Piece id="spear_blade_5"
-             Type="Blade"
-             scale_factor="110" />
-      <Piece id="spear_handle_19"
-             Type="Handle"
-             scale_factor="185" />
-    </Pieces>
-  </CraftedItem>
   <CraftedItem id="vlandia_lance_2_t4"
                name="{=aEBMmzn6}Vlandia Lance"
                crafting_template="TwoHandedPolearm"
@@ -63,10 +50,10 @@
     <Pieces>
       <Piece id="spear_blade_20"
              Type="Blade"
-             scale_factor="110" />
-      <Piece id="spear_handle_20"
+             scale_factor="100" />
+      <Piece id="spear_handle_23"
              Type="Handle"
-             scale_factor="154" />
+             scale_factor="132" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="empire_lance_2_t4"
@@ -77,9 +64,9 @@
       <Piece id="spear_blade_20"
              Type="Blade"
              scale_factor="100" />
-      <Piece id="spear_handle_24"
+      <Piece id="spear_handle_13"
              Type="Handle"
-             scale_factor="138" />
+             scale_factor="153" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="sturgia_lance_1_t4"
@@ -89,10 +76,10 @@
     <Pieces>
       <Piece id="spear_blade_20"
              Type="Blade"
-             scale_factor="115" />
+             scale_factor="100" />
       <Piece id="spear_handle_17"
              Type="Handle"
-             scale_factor="178" />
+             scale_factor="163" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="khuzait_lance_2_t4"
@@ -102,10 +89,10 @@
     <Pieces>
       <Piece id="spear_blade_20"
              Type="Blade"
-             scale_factor="105" />
+             scale_factor="100" />
       <Piece id="spear_handle_20"
              Type="Handle"
-             scale_factor="159" />
+             scale_factor="168" />
     </Pieces>
   </CraftedItem>
   <!-- #endregion -->
@@ -117,10 +104,10 @@
     <Pieces>
       <Piece id="spear_blade_5"
              Type="Blade"
-             scale_factor="115" />
+             scale_factor="100" />
       <Piece id="spear_handle_19"
              Type="Handle"
-             scale_factor="185" />
+             scale_factor="172" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="sturgia_lance_2_t5"
@@ -130,10 +117,10 @@
     <Pieces>
       <Piece id="spear_blade_5"
              Type="Blade"
-             scale_factor="110" />
+             scale_factor="100" />
       <Piece id="spear_handle_19"
              Type="Handle"
-             scale_factor="180" />
+             scale_factor="170" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="empire_lance_3_t5"
@@ -143,7 +130,7 @@
     <Pieces>
       <Piece id="spear_blade_5"
              Type="Blade"
-             scale_factor="105" />
+             scale_factor="100" />
       <Piece id="spear_handle_24"
              Type="Handle"
              scale_factor="153" />
@@ -162,10 +149,23 @@
              scale_factor="100" />
       <Piece id="spear_handle_20"
              Type="Handle"
-             scale_factor="186" />
+             scale_factor="181" />
       <Piece id="spear_pommel_9"
              Type="Pommel"
              scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="aserai_lance_1_t5"
+               name="{=hsRwbHSk}Mamluke Lance"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.aserai">
+    <Pieces>
+      <Piece id="spear_blade_5"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_handle_13"
+             Type="Handle"
+             scale_factor="162" />
     </Pieces>
   </CraftedItem>
   <!-- #endregion -->

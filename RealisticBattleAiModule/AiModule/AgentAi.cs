@@ -21,7 +21,7 @@ namespace RealisticBattleAiModule
                 float effectiveSkillLevel = Utilities.CalculateAILevel(agent, effectiveSkill);    //num2
                 float meleeDefensivness = meleeLevel + agent.Defensiveness;             //num3
 
-                agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 4f;
+                agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 7f;
                 agentDrivenProperties.AIBlockOnDecideAbility = MBMath.ClampFloat(meleeLevel * 0.5f, 0.15f, 0.45f);
                 agentDrivenProperties.AIParryOnDecideAbility = MBMath.ClampFloat((meleeLevel * 0.25f) + 0.15f, 0.1f, 0.45f);
                 agentDrivenProperties.AIRealizeBlockingFromIncorrectSideAbility = MBMath.ClampFloat((meleeLevel * 0.3f) - 0.05f, 0.01f, 0.25f);

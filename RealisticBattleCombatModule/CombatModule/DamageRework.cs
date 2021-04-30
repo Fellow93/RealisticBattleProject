@@ -187,10 +187,22 @@ namespace RealisticBattleCombatModule
             {
                 weaponWeight += 0f;
             }
-            float num2 = 0.5f * weaponWeight * num * num * 0.10f * XmlConfig.dict["Global.ThrustModifier"];
-            if (num2 > (weaponWeight * 15.0f * XmlConfig.dict["Global.ThrustModifier"]))
+            float CouchedSkillBonus = 0.5f * 2.5f * num * num * 0.10f * XmlConfig.dict["Global.ThrustModifier"];
+            float LanceKE = 0.5f * weaponWeight * num * num * 0.10f * XmlConfig.dict["Global.ThrustModifier"];
+            float num2 = CouchedSkillBonus + LanceKE;
+            if (num2 > (23f * XmlConfig.dict["Global.ThrustModifier"]) && LanceKE < (23f * XmlConfig.dict["Global.ThrustModifier"]))
             {
-                num2 = weaponWeight * 15.0f * XmlConfig.dict["Global.ThrustModifier"];
+                num2 = 23f * XmlConfig.dict["Global.ThrustModifier"];
+            }
+
+            if (LanceKE >= (23f * XmlConfig.dict["Global.ThrustModifier"]))
+            {
+                num2 = LanceKE;
+            }
+
+            if (num2 > (43f * XmlConfig.dict["Global.ThrustModifier"]))
+            {
+                num2 = 43f * XmlConfig.dict["Global.ThrustModifier"];
             }
             return num2;
 
@@ -418,7 +430,7 @@ namespace RealisticBattleCombatModule
                                     }
                                 case DamageTypes.Cut:
                                     {
-                                        dmgMultiplier *= 1.5f;
+                                        dmgMultiplier *= 2f;
                                         break;
                                     }
                                 case DamageTypes.Blunt:
@@ -568,6 +580,7 @@ namespace RealisticBattleCombatModule
                             case "OneHandedAxe":
                             case "TwoHandedAxe":
                             case "OneHandedBastardAxe":
+                            case "TwoHandedPolearm":
                                 {
                                     num *= 2.0f;
                                     break;
@@ -576,11 +589,11 @@ namespace RealisticBattleCombatModule
                                 {
                                     if (attackCollisionData.DamageType == 0)
                                     {
-                                        num *= 1.0f;
+                                        num *= 1.5f;
                                     }
                                     else
                                     {
-                                        num *= 0.5f;
+                                        num *= 1f;
                                     }
                                     break;
                                 }
@@ -1554,7 +1567,7 @@ namespace RealisticBattleCombatModule
                 if (victimAgent.HasMount && !isInitialBlowShrugOff)
                 {
                     //bool flag = (float)blow.InflictedDamage / victimAgent.HealthLimit > 0.25f;
-                    bool flag = blow.BaseMagnitude > 9f;
+                    bool flag = blow.BaseMagnitude > 7f;
                     bool flag2 = MBMath.IsBetween((int)blow.VictimBodyPart, 0, 5);
                     if (!(victimAgent.Health - (float)collisionData.InflictedDamage >= 1f && flag && flag2))
                     {
