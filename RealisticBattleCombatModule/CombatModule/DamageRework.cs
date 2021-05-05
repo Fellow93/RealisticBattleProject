@@ -99,18 +99,15 @@ namespace RealisticBattleCombatModule
                         //missileTotalDamage *= 0.01f;
                         //missileTotalDamage = 1f;
                     }
-                    else
+                    if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow"))
                     {
-                        if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow"))
-                        {
-                            missileTotalDamage -= 100f;
-                            missileTotalDamage *= 0.01f;
-                        }
-                        if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt"))
-                        {
-                            missileTotalDamage -= 100f;
-                            missileTotalDamage *= 0.01f;
-                        }
+                        missileTotalDamage -= 100f;
+                        missileTotalDamage *= 0.01f;
+                    }
+                    if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt"))
+                    {
+                        missileTotalDamage -= 100f;
+                        missileTotalDamage *= 0.01f;
                     }
                 }
 
@@ -364,8 +361,8 @@ namespace RealisticBattleCombatModule
                             }
                             break;
                         }
-                    case BoneBodyPartType.BipedalArmLeft:
-                    case BoneBodyPartType.BipedalArmRight:
+                    case BoneBodyPartType.ArmLeft:
+                    case BoneBodyPartType.ArmRight:
                         {
                             switch (damageType)
                             {
@@ -392,7 +389,7 @@ namespace RealisticBattleCombatModule
                             }
                             break;
                         }
-                    case BoneBodyPartType.BipedalLegs:
+                    case BoneBodyPartType.Legs:
                         {
                             switch (damageType)
                             {
@@ -1291,14 +1288,11 @@ namespace RealisticBattleCombatModule
                         case BoneBodyPartType.ShoulderRight:
                             equipmentIndex = EquipmentIndex.Body;
                             break;
-                        case BoneBodyPartType.BipedalArmLeft:
-                        case BoneBodyPartType.BipedalArmRight:
-                        case BoneBodyPartType.QuadrupedalArmLeft:
-                        case BoneBodyPartType.QuadrupedalArmRight:
+                        case BoneBodyPartType.ArmLeft:
+                        case BoneBodyPartType.ArmRight:
                             equipmentIndex = EquipmentIndex.Gloves;
                             break;
-                        case BoneBodyPartType.BipedalLegs:
-                        case BoneBodyPartType.QuadrupedalLegs:
+                        case BoneBodyPartType.Legs:
                             equipmentIndex = EquipmentIndex.Leg;
                             break;
                         case BoneBodyPartType.Head:

@@ -11,6 +11,7 @@ using static TaleWorlds.MountAndBlade.SiegeTower;
 using SandBox;
 using TaleWorlds.CampaignSystem;
 using static TaleWorlds.MountAndBlade.FormationAI;
+using static TaleWorlds.MountAndBlade.HumanAIComponent;
 
 namespace RealisticBattleAiModule
 {
@@ -197,7 +198,7 @@ namespace RealisticBattleAiModule
                 //    _isFireAtWill = flag;
                 //    formation.FiringOrder = (_isFireAtWill ? FiringOrder.FiringOrderFireAtWill : FiringOrder.FiringOrderHoldYourFire);
                 //}
-                ___formation.MovementOrder = ____currentOrder;
+                ___formation.SetMovementOrder(____currentOrder);
                 ___formation.FacingOrder = ___CurrentFacingOrder;
                 return false;
             }
@@ -733,7 +734,7 @@ namespace RealisticBattleAiModule
             method.DeclaringType.GetMethod("CalculateCurrentOrder");
             method.Invoke(__instance, new object[] { });
 
-            ___formation.MovementOrder = ____currentOrder;
+            ___formation.SetMovementOrder(____currentOrder);
             ___formation.FacingOrder = ___CurrentFacingOrder;
             if (___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && ___formation.QuerySystem.AveragePosition.DistanceSquared(___formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MedianPosition.AsVec2) > 1600f && ___formation.QuerySystem.UnderRangedAttackRatio > 0.2f - ((___formation.ArrangementOrder.OrderEnum == ArrangementOrder.ArrangementOrderEnum.Loose) ? 0.1f : 0f))
             {
@@ -861,7 +862,7 @@ namespace RealisticBattleAiModule
         [HarmonyPatch("OnBehaviorActivatedAux")]
         static bool PrefixOnBehaviorActivatedAux(ref Formation ___formation, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder)
         {
-            ___formation.MovementOrder = ____currentOrder;
+            ___formation.SetMovementOrder(____currentOrder);
             ___formation.FacingOrder = ___CurrentFacingOrder;
             ___formation.ArrangementOrder = ArrangementOrder.ArrangementOrderScatter;
             ___formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
@@ -874,7 +875,7 @@ namespace RealisticBattleAiModule
         [HarmonyPatch("TickOccasionally")]
         static bool PrefixTickOccasionally(ref Formation ___formation, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref TacticalPosition ____tacticalArcherPosition)
         {
-            ___formation.MovementOrder = ____currentOrder;
+            ___formation.SetMovementOrder(____currentOrder);
             ___formation.FacingOrder = ___CurrentFacingOrder;
             if (____tacticalArcherPosition != null)
             {
@@ -906,7 +907,7 @@ namespace RealisticBattleAiModule
             method.DeclaringType.GetMethod("ResetOrderPositions");
             method.Invoke(__instance, new object[] { });
 
-            ___formation.MovementOrder = ____currentOrder;
+            ___formation.SetMovementOrder(____currentOrder);
             ___formation.FacingOrder = ___CurrentFacingOrder;
             ___formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
             ___formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
@@ -1127,7 +1128,7 @@ namespace RealisticBattleAiModule
         static bool PrefixTickOccasionally(ref FacingOrder ____readyFacingOrder, ref FacingOrder ____waitFacingOrder, ref BehaviorDefendCastleKeyPosition __instance, ref bool ____isInShieldWallDistance, ref TeamAISiegeComponent ____teamAISiegeDefender, ref bool ____isDefendingWideGap, ref FacingOrder ___CurrentFacingOrder, FormationAI.BehaviorSide ___behaviorSide, ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate, ref Formation ___formation, ref TacticalPosition ____tacticalMiddlePos, ref TacticalPosition ____tacticalWaitPos, ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviourState ____behaviourState)
         {
             IEnumerable<SiegeWeapon> source = from sw in Mission.Current.ActiveMissionObjects.FindAllWithType<SiegeWeapon>()
-                                              where sw is IPrimarySiegeWeapon && (sw as IPrimarySiegeWeapon).WeaponSide == FormationAI.BehaviorSide.Middle && !(sw as IPrimarySiegeWeapon).HoldLadders
+                                              where sw is IPrimarySiegeWeapon && (((sw as IPrimarySiegeWeapon).WeaponSide == FormationAI.BehaviorSide.Middle && !(sw as IPrimarySiegeWeapon).HoldLadders) || (sw as IPrimarySiegeWeapon).WeaponSide != FormationAI.BehaviorSide.Middle && (sw as IPrimarySiegeWeapon).SendLadders)
                                               //where sw is IPrimarySiegeWeapon
                                               select sw;
 
@@ -1157,7 +1158,7 @@ namespace RealisticBattleAiModule
             method.DeclaringType.GetMethod("CalculateCurrentOrder");
             method.Invoke(__instance, new object[] { });
 
-            ___formation.MovementOrder = ____currentOrder;
+            ___formation.SetMovementOrder(____currentOrder);
             ___formation.FacingOrder = ___CurrentFacingOrder;
             if (____behaviourState == BehaviourState.Ready && ____tacticalMiddlePos != null)
             {
@@ -1351,7 +1352,206 @@ namespace RealisticBattleAiModule
         //}
     }
 
-    [HarmonyPatch(typeof(FormationMovementComponent))]
+    [HarmonyPatch(typeof(BehaviorTacticalCharge))]
+    class OverrideBehaviorTacticalCharge
+    {
+        private enum ChargeState
+        {
+            Undetermined,
+            Charging,
+            ChargingPast,
+            Reforming,
+            Bracing
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch("CalculateCurrentOrder")]
+        static bool CalculateCurrentOrderPrefix(ref BehaviorTacticalCharge __instance, ref Vec2 ____initialChargeDirection,  ref FormationQuerySystem ____lastTarget,  ref Formation ___formation,
+            ref ChargeState ____chargeState, ref Timer ____chargingPastTimer, ref Timer ____reformTimer, ref MovementOrder ____currentOrder, ref Vec2 ____bracePosition,
+            ref float ____desiredChargeStopDistance, ref FacingOrder ___CurrentFacingOrder, ref WorldPosition ____lastReformDestination)
+        {
+            
+            if (___formation.QuerySystem.ClosestEnemyFormation == null)
+            {
+                ____currentOrder = MovementOrder.MovementOrderCharge;
+                return false;
+            }
+
+            //
+            ____desiredChargeStopDistance = 120f;
+            ChargeState result = ____chargeState;
+            if (___formation.QuerySystem.ClosestEnemyFormation == null)
+            {
+                result = ChargeState.Undetermined;
+            }
+            else
+            {
+                switch (____chargeState)
+                {
+                    case ChargeState.Undetermined:
+                        if (___formation.QuerySystem.ClosestEnemyFormation != null && ((!___formation.QuerySystem.IsCavalryFormation && !___formation.QuerySystem.IsRangedCavalryFormation) || ___formation.QuerySystem.AveragePosition.Distance(___formation.QuerySystem.ClosestEnemyFormation.MedianPosition.AsVec2) / ___formation.QuerySystem.MovementSpeedMaximum <= 5f))
+                        {
+                            result = ChargeState.Charging;
+                        }
+                        break;
+                    case ChargeState.Charging:
+                        if (!___formation.QuerySystem.IsCavalryFormation && !___formation.QuerySystem.IsRangedCavalryFormation)
+                        {
+                            if (!___formation.QuerySystem.IsInfantryFormation || !___formation.QuerySystem.ClosestEnemyFormation.IsCavalryFormation)
+                            {
+                                result = ChargeState.Charging;
+                                break;
+                            }
+                            Vec2 vec2 = ___formation.QuerySystem.AveragePosition - ___formation.QuerySystem.ClosestEnemyFormation.AveragePosition;
+                            float num3 = vec2.Normalize();
+                            Vec2 currentVelocity2 = ___formation.QuerySystem.ClosestEnemyFormation.CurrentVelocity;
+                            float num4 = currentVelocity2.Normalize();
+                            if (num3 / num4 <= 6f && vec2.DotProduct(currentVelocity2) > 0.5f)
+                            {
+                                ____chargeState = ChargeState.Bracing;
+                            }
+                        }
+                        else if (____initialChargeDirection.DotProduct(___formation.QuerySystem.ClosestEnemyFormation.MedianPosition.AsVec2 - ___formation.QuerySystem.AveragePosition) <= 1f)
+                        {
+                            result = ChargeState.ChargingPast;
+                        }
+                        break;
+                    case ChargeState.ChargingPast:
+                        if (____chargingPastTimer.Check(MBCommon.GetTime(MBCommon.TimeType.Mission)))
+                        {
+                            result = ChargeState.Reforming;
+                        }
+                        break;
+                    case ChargeState.Reforming:
+                        if (____reformTimer.Check(MBCommon.GetTime(MBCommon.TimeType.Mission)) )
+                        {
+                            result = ChargeState.Charging;
+                        }
+                        break;
+                    case ChargeState.Bracing:
+                        {
+                            bool flag = false;
+                            if (___formation.QuerySystem.IsInfantryFormation && ___formation.QuerySystem.ClosestEnemyFormation.IsCavalryFormation)
+                            {
+                                Vec2 vec = ___formation.QuerySystem.AveragePosition - ___formation.QuerySystem.ClosestEnemyFormation.AveragePosition;
+                                float num = vec.Normalize();
+                                Vec2 currentVelocity = ___formation.QuerySystem.ClosestEnemyFormation.CurrentVelocity;
+                                float num2 = currentVelocity.Normalize();
+                                if (num / num2 <= 8f && vec.DotProduct(currentVelocity) > 0.33f)
+                                {
+                                    flag = true;
+                                }
+                            }
+                            if (!flag)
+                            {
+                                ____bracePosition = Vec2.Invalid;
+                                ____chargeState = ChargeState.Charging;
+                            }
+                            break;
+                        }
+                }
+            }
+            ChargeState chargeState = result;
+
+            //
+            //MethodInfo method = typeof(BehaviorTacticalCharge).GetMethod("CheckAndChangeState", BindingFlags.NonPublic | BindingFlags.Instance);
+            //method.DeclaringType.GetMethod("CheckAndChangeState");
+            //ChargeState chargeState = (ChargeState)method.Invoke(__instance, new object[] { });
+
+            if (chargeState != ____chargeState)
+            {
+                ____chargeState = chargeState;
+                switch (____chargeState)
+                {
+                    case ChargeState.Undetermined:
+                        ____currentOrder = MovementOrder.MovementOrderCharge;
+                        break;
+                    case ChargeState.Charging:
+                        ____lastTarget = ___formation.QuerySystem.ClosestEnemyFormation;
+                        if (___formation.QuerySystem.IsCavalryFormation || ___formation.QuerySystem.IsRangedCavalryFormation)
+                        {
+                            ____initialChargeDirection = ____lastTarget.MedianPosition.AsVec2 - ___formation.QuerySystem.AveragePosition;
+                            float value = ____initialChargeDirection.Normalize();
+                            ____desiredChargeStopDistance = 120f;
+                        }
+                        break;
+                    case ChargeState.ChargingPast:
+                        ____chargingPastTimer = new Timer(MBCommon.GetTime(MBCommon.TimeType.Mission), 14f);
+                        break;
+                    case ChargeState.Reforming:
+                        ____reformTimer = new Timer(MBCommon.GetTime(MBCommon.TimeType.Mission), 10f);
+                        break;
+                    case ChargeState.Bracing:
+                        {
+                            Vec2 vec = (___formation.QuerySystem.Team.MedianTargetFormationPosition.AsVec2 - ___formation.QuerySystem.AveragePosition).Normalized();
+                            ____bracePosition = ___formation.QuerySystem.AveragePosition + vec * 5f;
+                            break;
+                        }
+                }
+            }
+
+            switch (____chargeState)
+            {
+                case ChargeState.Undetermined:
+                    if (___formation.QuerySystem.ClosestEnemyFormation != null && (___formation.QuerySystem.IsCavalryFormation || ___formation.QuerySystem.IsRangedCavalryFormation))
+                    {
+                        ____currentOrder = MovementOrder.MovementOrderMove(___formation.QuerySystem.ClosestEnemyFormation.MedianPosition);
+                    }
+                    else
+                    {
+                        ____currentOrder = MovementOrder.MovementOrderCharge;
+                    }
+                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
+                    break;
+                case ChargeState.Charging:
+                    {
+                        if (!___formation.QuerySystem.IsCavalryFormation && !___formation.QuerySystem.IsRangedCavalryFormation)
+                        {
+                            WorldPosition medianPosition2 = ___formation.QuerySystem.ClosestEnemyFormation.MedianPosition;
+                            ____currentOrder = MovementOrder.MovementOrderMove(medianPosition2);
+                            ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
+                            break;
+                        }
+                        Vec2 vec4 = (____lastTarget.MedianPosition.AsVec2 - ___formation.QuerySystem.AveragePosition).Normalized();
+                        WorldPosition medianPosition3 = ____lastTarget.MedianPosition;
+                        Vec2 vec5 = medianPosition3.AsVec2 + vec4 * ____desiredChargeStopDistance;
+                        medianPosition3.SetVec2(vec5);
+                        ____currentOrder = MovementOrder.MovementOrderMove(medianPosition3);
+                        ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec4);
+                        break;
+                    }
+                case ChargeState.ChargingPast:
+                    {
+                        Vec2 vec2 = ___formation.QuerySystem.AveragePosition - ____lastTarget.MedianPosition.AsVec2;
+                        if (!(vec2.Normalize() > 20f))
+                        {
+                            _ = ____initialChargeDirection;
+                        }
+                        ____lastReformDestination = ____lastTarget.MedianPosition;
+                        Vec2 vec3 = ____lastTarget.MedianPosition.AsVec2 + vec2 * ____desiredChargeStopDistance;
+                        ____lastReformDestination.SetVec2(vec3);
+                        ____currentOrder = MovementOrder.MovementOrderMove(____lastReformDestination);
+                        ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec2);
+                        break;
+                    }
+                case ChargeState.Reforming:
+                    ____currentOrder = MovementOrder.MovementOrderMove(____lastReformDestination);
+                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
+                    break;
+                case ChargeState.Bracing:
+                    {
+                        WorldPosition medianPosition = ___formation.QuerySystem.MedianPosition;
+                        medianPosition.SetVec2(____bracePosition);
+                        ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
+                        break;
+                    }
+            }
+            return false;
+        }
+
+    }
+
+    [HarmonyPatch(typeof(HumanAIComponent))]
     class OverrideFormationMovementComponent
     {
         internal enum MovementOrderEnum
@@ -1378,19 +1578,19 @@ namespace RealisticBattleAiModule
             StandGround
         }
 
-        private static readonly MethodInfo IsUnitDetached =
-            typeof(Formation).GetMethod("IsUnitDetached", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly MethodInfo IsUnitDetachedForDebug =
+            typeof(Formation).GetMethod("IsUnitDetachedForDebug", BindingFlags.Instance | BindingFlags.NonPublic);
 
         [HarmonyPrefix]
         [HarmonyPatch("GetFormationFrame")]
-        static bool PrefixGetFormationFrame(ref bool __result,ref Agent ___Agent, ref FormationCohesionComponent ____cohesionComponent, ref WorldPosition formationPosition, ref Vec2 formationDirection, ref float speedLimit, ref bool isSettingDestinationSpeed, ref bool limitIsMultiplier)
+        static bool PrefixGetFormationFrame(ref bool __result,ref Agent ___Agent, ref HumanAIComponent __instance, ref WorldPosition formationPosition, ref Vec2 formationDirection, ref float speedLimit, ref bool isSettingDestinationSpeed, ref bool limitIsMultiplier)
         {
             if(___Agent != null)
             {
                 var formation = ___Agent.Formation;
-                if (!___Agent.IsMount && formation != null && (formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && !(bool)IsUnitDetached.Invoke(formation, new object[] { ___Agent }))
+                if (!___Agent.IsMount && formation != null && (formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && !(bool)IsUnitDetachedForDebug.Invoke(formation, new object[] { ___Agent }))
                 {
-                    if (formation.MovementOrder.OrderType == OrderType.ChargeWithTarget)
+                    if (formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget)
                     {
                         if (___Agent != null && formation != null)
                         {
@@ -1398,7 +1598,7 @@ namespace RealisticBattleAiModule
                             formationPosition = formation.GetOrderPositionOfUnit(___Agent);
                             formationDirection = formation.GetDirectionOfUnit(___Agent);
                             limitIsMultiplier = true;
-                            speedLimit = ____cohesionComponent != null && FormationCohesionComponent.FormationSpeedAdjustmentEnabled ? ____cohesionComponent.GetDesiredSpeedInFormation(false) : -1f;
+                            speedLimit = __instance != null && HumanAIComponent.FormationSpeedAdjustmentEnabled ? __instance.GetDesiredSpeedInFormation(false) : -1f;
                             __result = true;
                             return false;
                         }
@@ -1480,7 +1680,7 @@ namespace RealisticBattleAiModule
                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
                     return false;
                 }
-                if (unit.Formation.MovementOrder.OrderType == OrderType.ChargeWithTarget)
+                if (unit.Formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget)
                 {
                     if (unit.Formation.QuerySystem.IsInfantryFormation)
                     {
@@ -1629,7 +1829,7 @@ namespace RealisticBattleAiModule
                 Formation formation = __instance.Formation;
                 if(formation != null)
                 {
-                    if ((formation.QuerySystem.IsInfantryFormation ||  formation.QuerySystem.IsRangedFormation) && (formation.MovementOrder.OrderType == OrderType.ChargeWithTarget))
+                    if ((formation.QuerySystem.IsInfantryFormation ||  formation.QuerySystem.IsRangedFormation) && (formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget))
                     {
                         formations = Utilities.FindSignificantFormations(formation);
                         if(formations.Count > 0)
@@ -1658,7 +1858,7 @@ namespace RealisticBattleAiModule
         static bool PrefixGetOrderPositionOfUnit(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ___detachedUnits, ref WorldPosition __result)
         {
             //if (__instance.MovementOrder.OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
-            if (unit != null && (__instance.MovementOrder.OrderType == OrderType.ChargeWithTarget || __instance.MovementOrder.OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation || __instance.QuerySystem.IsCavalryFormation) && !___detachedUnits.Contains(unit))
+            if (unit != null && (__instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation || __instance.QuerySystem.IsCavalryFormation) && !___detachedUnits.Contains(unit))
             {
                 Formation significantEnemy = __instance.TargetFormation;
                 if (significantEnemy != null)
@@ -1794,7 +1994,7 @@ namespace RealisticBattleAiModule
             {
                 //InformationManager.DisplayMessage(new InformationMessage(__instance.AI.ActiveBehavior.GetType().Name + " " + __instance.MovementOrder.OrderType.ToString()));
                 bool exludedWhenAiControl = !(__instance.IsAIControlled && (__instance.AI.ActiveBehavior.GetType().Name.Contains("Regroup") || __instance.AI.ActiveBehavior.GetType().Name.Contains("Advance")));
-                bool exludedWhenPlayerControl = !(!__instance.IsAIControlled && (__instance.MovementOrder.OrderType.ToString().Contains("Advance")));
+                bool exludedWhenPlayerControl = !(!__instance.IsAIControlled && (__instance.GetReadonlyMovementOrderReference().OrderType.ToString().Contains("Advance")));
 
                 if (exludedWhenAiControl && exludedWhenPlayerControl && !___detachedUnits.Contains(unit))
                 {
@@ -1903,11 +2103,11 @@ namespace RealisticBattleAiModule
                 {
                     if (selectedFormation.QuerySystem.ClosestEnemyFormation == null)
                     {
-                        selectedFormation.MovementOrder = MovementOrder.MovementOrderCharge;
+                        selectedFormation.SetMovementOrder(MovementOrder.MovementOrderCharge);
                     }
                     else
                     {
-                        selectedFormation.MovementOrder = MovementOrder.MovementOrderChargeToTarget(selectedFormation.QuerySystem.ClosestEnemyFormation.Formation);
+                        selectedFormation.SetMovementOrder(MovementOrder.MovementOrderChargeToTarget(selectedFormation.QuerySystem.ClosestEnemyFormation.Formation));
                     }
                 }
             }
@@ -1999,58 +2199,58 @@ namespace RealisticBattleAiModule
             //}
         }
 
-        [HarmonyPatch(typeof(SiegeTower))]
-        class OverrideSiegeTower
-        {
+        //[HarmonyPatch(typeof(SiegeTower))]
+        //class OverrideSiegeTower
+        //{
 
-            [HarmonyPostfix]
-            [HarmonyPatch("OnTick")]
-            static void PostfixOnTick(ref SiegeTower __instance, ref GameEntity ____cleanState, ref GateState ____state)
-            {
-                List<GameEntity> list2 = ____cleanState.CollectChildrenEntitiesWithTag("ladder");
+        //    [HarmonyPostfix]
+        //    [HarmonyPatch("OnTick")]
+        //    static void PostfixOnTick(ref SiegeTower __instance, ref GameEntity ____cleanState, ref GateState ____state)
+        //    {
+        //        List<GameEntity> list2 = ____cleanState.CollectChildrenEntitiesWithTag("ladder");
 
-                if (____state == GateState.Open)
-                {
-                    FieldInfo property = typeof(SiegeTower).GetField("ActiveWaitStandingPoint", BindingFlags.NonPublic | BindingFlags.Instance);
-                    property.DeclaringType.GetField("ActiveWaitStandingPoint");
-                    GameEntity sp = (GameEntity)property.GetValue(__instance);
+        //        if (____state == GateState.Open)
+        //        {
+        //            FieldInfo property = typeof(SiegeTower).GetField("ActiveWaitStandingPoint", BindingFlags.NonPublic | BindingFlags.Instance);
+        //            property.DeclaringType.GetField("ActiveWaitStandingPoint");
+        //            GameEntity sp = (GameEntity)property.GetValue(__instance);
 
-                    PropertyInfo property2 = typeof(SiegeTower).GetProperty("WaitStandingPoints", BindingFlags.NonPublic | BindingFlags.Instance);
-                    property2.DeclaringType.GetProperty("WaitStandingPoints");
-                    List<GameEntity> WaitStandingPoints = (List<GameEntity>)property2.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
-                    //WaitStandingPoints[0].SetLocalPosition(new Vec3(-100, -100, 0f));
-                    sp = WaitStandingPoints[0];
-                    property.SetValue(__instance, sp, BindingFlags.NonPublic | BindingFlags.SetField, null, null);
-                    //property2.SetValue(__instance, WaitStandingPoints, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-                    //property.SetValue(__instance, WaitStandingPoints[0], BindingFlags.NonPublic | BindingFlags.SetProperty, null, null);
+        //            PropertyInfo property2 = typeof(SiegeTower).GetProperty("WaitStandingPoints", BindingFlags.NonPublic | BindingFlags.Instance);
+        //            property2.DeclaringType.GetProperty("WaitStandingPoints");
+        //            List<GameEntity> WaitStandingPoints = (List<GameEntity>)property2.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+        //            //WaitStandingPoints[0].SetLocalPosition(new Vec3(-100, -100, 0f));
+        //            sp = WaitStandingPoints[0];
+        //            property.SetValue(__instance, sp, BindingFlags.NonPublic | BindingFlags.SetField, null, null);
+        //            //property2.SetValue(__instance, WaitStandingPoints, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+        //            //property.SetValue(__instance, WaitStandingPoints[0], BindingFlags.NonPublic | BindingFlags.SetProperty, null, null);
 
-                    //Vec3 boundingBoxMin = list2.ElementAt(2).GetBoundingBoxMin();
-                    //Vec3 boundingBoxMax = list2.ElementAt(2).GetBoundingBoxMax();
-                    //Vec2 vec = (boundingBoxMax.AsVec2 + boundingBoxMin.AsVec2) * 0.5f;
-                    //Vec2 asVec = list2.ElementAt(2).GetGlobalFrame().TransformToParent(vec.ToVec3()).AsVec2;
-                    //foreach (Agent item in Mission.Current.GetAgentsInRange(asVec, 0.1f, true))
-                    //{
-                    //    Vec3 pos = item.Position;
-                    //    {
-                    //        int random = MBRandom.RandomInt(3);
-                    //        if (random == 0)
-                    //        {
-                    //            pos.y += 0.1f;
-                    //            pos.x += 0.1f;
-                    //            item.TeleportToPosition(pos);
+        //            //Vec3 boundingBoxMin = list2.ElementAt(2).GetBoundingBoxMin();
+        //            //Vec3 boundingBoxMax = list2.ElementAt(2).GetBoundingBoxMax();
+        //            //Vec2 vec = (boundingBoxMax.AsVec2 + boundingBoxMin.AsVec2) * 0.5f;
+        //            //Vec2 asVec = list2.ElementAt(2).GetGlobalFrame().TransformToParent(vec.ToVec3()).AsVec2;
+        //            //foreach (Agent item in Mission.Current.GetAgentsInRange(asVec, 0.1f, true))
+        //            //{
+        //            //    Vec3 pos = item.Position;
+        //            //    {
+        //            //        int random = MBRandom.RandomInt(3);
+        //            //        if (random == 0)
+        //            //        {
+        //            //            pos.y += 0.1f;
+        //            //            pos.x += 0.1f;
+        //            //            item.TeleportToPosition(pos);
 
-                    //        }
-                    //        else if (random == 1)
-                    //        {
-                    //            pos.y -= 0.1f;
-                    //            pos.x -= 0.1f;
-                    //            item.TeleportToPosition(pos);
-                    //        }
-                    //    }
-                    //}
-                }
-            }
-        }
+        //            //        }
+        //            //        else if (random == 1)
+        //            //        {
+        //            //            pos.y -= 0.1f;
+        //            //            pos.x -= 0.1f;
+        //            //            item.TeleportToPosition(pos);
+        //            //        }
+        //            //    }
+        //            //}
+        //        }
+        //    }
+        //}
 
         [HarmonyPatch(typeof(SiegeMissionTroopSpawnHandler))]
         class OverrideAfterStart

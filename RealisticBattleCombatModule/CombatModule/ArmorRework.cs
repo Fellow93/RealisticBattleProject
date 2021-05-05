@@ -35,16 +35,13 @@ namespace RealisticBattleCombatModule
                             __result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead) * 0.66f;
                             break;
                         }
-                    case BoneBodyPartType.BipedalLegs:
-                    case BoneBodyPartType.QuadrupedalLegs:
+                    case BoneBodyPartType.Legs:
                         {
                             __result = getLegArmor(__instance);
                             break;
                         }
-                    case BoneBodyPartType.BipedalArmLeft:
-                    case BoneBodyPartType.BipedalArmRight:
-                    case BoneBodyPartType.QuadrupedalArmLeft:
-                    case BoneBodyPartType.QuadrupedalArmRight:
+                    case BoneBodyPartType.ArmLeft:
+                    case BoneBodyPartType.ArmRight:
                         {
                             __result = getArmArmor(__instance);
                             break;

@@ -429,18 +429,18 @@ namespace RealisticBattleAiModule
                 __result = Utilities.HasBattleBeenJoined( ____cavalry, ____hasBattleBeenJoined, 45f);
             }
 
-            [HarmonyPostfix]
-            [HarmonyPatch("GetTacticWeight")]
-            static void PostfixGetAiWeight(TacticFrontalCavalryCharge __instance, ref float __result)
-            {
-                FieldInfo teamField = typeof(TacticFrontalCavalryCharge).GetField("team", BindingFlags.NonPublic | BindingFlags.Instance);
-                teamField.DeclaringType.GetField("team");
-                Team currentTeam = (Team)teamField.GetValue(__instance);
-                    if (currentTeam.QuerySystem.CavalryRatio > 0.1f)
-                    {
-                        __result = currentTeam.QuerySystem.CavalryRatio * 4f;
-                    }
-            }
+            //[HarmonyPostfix]
+            //[HarmonyPatch("GetTacticWeight")]
+            //static void PostfixGetAiWeight(TacticFrontalCavalryCharge __instance, ref float __result)
+            //{
+            //    FieldInfo teamField = typeof(TacticFrontalCavalryCharge).GetField("team", BindingFlags.NonPublic | BindingFlags.Instance);
+            //    teamField.DeclaringType.GetField("team");
+            //    Team currentTeam = (Team)teamField.GetValue(__instance);
+            //        if (currentTeam.QuerySystem.CavalryRatio > 0.1f)
+            //        {
+            //            __result = currentTeam.QuerySystem.CavalryRatio * 4f;
+            //        }
+            //}
         }
 
         [HarmonyPatch(typeof(TacticRangedHarrassmentOffensive))]

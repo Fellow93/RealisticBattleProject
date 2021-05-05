@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using TaleWorlds.Library;
 using System.Collections;
 using static TaleWorlds.MountAndBlade.Mission;
+using TaleWorlds.Engine;
 
 namespace RealisticBattleCombatModule
 {
@@ -43,11 +44,11 @@ namespace RealisticBattleCombatModule
                     if (__instance.Equipment != null && !__instance.Equipment[equipmentIndex].IsEmpty)
                     {
                         WeaponStatsData[] wsd = __instance.Equipment[equipmentIndex].GetWeaponStatsData();
-                        //if ((wsd[0].WeaponClass == (int)WeaponClass.SmallShield) || (wsd[0].WeaponClass == (int)WeaponClass.LargeShield))
-                        //{
-                        //    //__instance.AttachWeaponToWeapon(equipmentIndex, __instance.Equipment[equipmentIndex], __instance.GetWeaponEntityFromEquipmentSlot(equipmentIndex), ref wsd[0].WeaponFrame);
-                        //    //__instance.AttachWeaponToBone(__instance.Equipment[equipmentIndex], __instance.GetWeaponEntityFromEquipmentSlot(equipmentIndex), 5 , ref wsd[0].WeaponFrame);
-                        //}
+                        if ((wsd[0].WeaponClass == (int)WeaponClass.SmallShield) || (wsd[0].WeaponClass == (int)WeaponClass.LargeShield))
+                        {
+                            //__instance.AttachWeaponToWeapon(equipmentIndex, __instance.Equipment[equipmentIndex], __instance.GetWeaponEntityFromEquipmentSlot(equipmentIndex), ref wsd[0].WeaponFrame);
+                            //__instance.AttachWeaponToBone(__instance.Equipment[equipmentIndex], __instance.AgentVisuals.GetEntity(), 5, ref wsd[0].WeaponFrame);
+                        }
                         if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
                         {
                             stringRangedWeapons.Add(__instance.Equipment[equipmentIndex]);
