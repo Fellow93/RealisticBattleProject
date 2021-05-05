@@ -10,9 +10,9 @@
       <Piece id="spear_blade_23"
              Type="Blade"
              scale_factor="100" />
-      <Piece id="spear_handle_23"
+      <Piece id="spear_handle_13"
              Type="Handle"
-             scale_factor="112" />
+             scale_factor="115" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="empire_lance_1_t3"
@@ -64,9 +64,9 @@
       <Piece id="spear_blade_20"
              Type="Blade"
              scale_factor="100" />
-      <Piece id="spear_handle_13"
+      <Piece id="spear_handle_23"
              Type="Handle"
-             scale_factor="153" />
+             scale_factor="136" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="sturgia_lance_1_t4"
@@ -163,9 +163,9 @@
       <Piece id="spear_blade_5"
              Type="Blade"
              scale_factor="100" />
-      <Piece id="spear_handle_13"
+      <Piece id="spear_handle_23"
              Type="Handle"
-             scale_factor="162" />
+             scale_factor="140" />
     </Pieces>
   </CraftedItem>
   <!-- #endregion -->
@@ -507,6 +507,72 @@
       <Piece id="spear_pommel_9"
              Type="Pommel"
              scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <!-- #region Used Pikes -->
+  <!-- #region Tier 2 -->
+  <CraftedItem id="simple_pike_t2"
+               name="{=GKzw7E8a}Simple Pike"
+               crafting_template="Pike">
+    <Pieces>
+      <Piece id="spear_blade_9"
+             Type="Blade"
+             scale_factor="90" />
+      <Piece id="spear_handle_27"
+             Type="Handle"
+             scale_factor="90" />
+    </Pieces>
+  </CraftedItem>
+  <!-- #region Tier 3 -->
+  <CraftedItem id="military_fork_pike_t3"
+               name="{=kR1blV2k}Notched Military Fork"
+               crafting_template="Pike">
+    <Pieces>
+      <Piece id="spear_blade_25"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_handle_27"
+             Type="Handle"
+             scale_factor="90" />
+    </Pieces>
+  </CraftedItem>
+  <!-- #region Tier 4 -->
+  <CraftedItem id="thamaskene_pike_t4"
+               name="{=RwpJFXxc}Thamaskene Pike"
+               crafting_template="Pike">
+    <Pieces>
+      <Piece id="spear_blade_41"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_handle_7"
+             Type="Handle"
+             scale_factor="200" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="fine_pike_t4"
+               name="{=dkuzrKJF}Fine Pike"
+               crafting_template="Pike">
+    <Pieces>
+      <Piece id="spear_blade_11"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_handle_7"
+             Type="Handle"
+             scale_factor="150" />
+    </Pieces>
+  </CraftedItem>
+  <!-- #region Tier 5 -->
+  <CraftedItem id="vlandia_pike_1_t5"
+               name="{=WrlIl4nW}Western Pike"
+               crafting_template="Pike"
+               culture="Culture.vlandia">
+    <Pieces>
+      <Piece id="spear_blade_6"
+             Type="Blade"
+             scale_factor="110" />
+      <Piece id="spear_handle_7"
+             Type="Handle"
+             scale_factor="110" />
     </Pieces>
   </CraftedItem>
   <!-- #endregion -->

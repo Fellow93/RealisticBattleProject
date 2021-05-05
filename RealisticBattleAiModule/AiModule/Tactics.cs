@@ -283,7 +283,7 @@ namespace RealisticBattleAiModule
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined( ____mainInfantry, ____hasBattleBeenJoined, 16f);
+                __result = Utilities.HasBattleBeenJoined( ____mainInfantry, ____hasBattleBeenJoined, 27f);
             }
 
             [HarmonyPostfix]
@@ -426,7 +426,20 @@ namespace RealisticBattleAiModule
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____cavalry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined( ____cavalry, ____hasBattleBeenJoined, 22f);
+                __result = Utilities.HasBattleBeenJoined( ____cavalry, ____hasBattleBeenJoined, 45f);
+            }
+
+            [HarmonyPostfix]
+            [HarmonyPatch("GetTacticWeight")]
+            static void PostfixGetAiWeight(TacticFrontalCavalryCharge __instance, ref float __result)
+            {
+                FieldInfo teamField = typeof(TacticFrontalCavalryCharge).GetField("team", BindingFlags.NonPublic | BindingFlags.Instance);
+                teamField.DeclaringType.GetField("team");
+                Team currentTeam = (Team)teamField.GetValue(__instance);
+                    if (currentTeam.QuerySystem.CavalryRatio > 0.1f)
+                    {
+                        __result = currentTeam.QuerySystem.CavalryRatio * 4f;
+                    }
             }
         }
 
@@ -484,7 +497,7 @@ namespace RealisticBattleAiModule
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined( ____mainInfantry, ____hasBattleBeenJoined, 16f);
+                __result = Utilities.HasBattleBeenJoined( ____mainInfantry, ____hasBattleBeenJoined, 27f);
             }
 
             [HarmonyPostfix]
@@ -577,7 +590,7 @@ namespace RealisticBattleAiModule
             [HarmonyPatch("HasBattleBeenJoined")]
             static bool PrefixHasBattleBeenJoined(ref Formation ____mainInfantry, ref bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined( ____mainInfantry, ____hasBattleBeenJoined, 14f);
+                __result = Utilities.HasBattleBeenJoined( ____mainInfantry, ____hasBattleBeenJoined, 27f);
                 return false;
             }
 
@@ -638,7 +651,7 @@ namespace RealisticBattleAiModule
             [HarmonyPatch("HasBattleBeenJoined")]
             static bool PrefixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 14f);
+                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 27f);
                 return false;
             }
 

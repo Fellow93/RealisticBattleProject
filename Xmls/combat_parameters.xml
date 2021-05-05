@@ -838,7 +838,7 @@
                       collision_check_starting_percent="0.35"
                       collision_damage_starting_percent="0.0"
                       collision_check_ending_percent="0.7"
-                      weapon_offset="0,0,0.0"
+                      weapon_offset="0,0,0"
                       vertical_rot_limit_multiplier_up="thrust_vertical_rot_limit"
                       vertical_rot_limit_multiplier_down="0.5"
                       left_rider_rot_limit="thrust_rider_rot_limit_left"
@@ -854,7 +854,7 @@
                       collision_check_starting_percent="0.35"
                       collision_damage_starting_percent="0.0"
                       collision_check_ending_percent="0.7"
-                      weapon_offset="0,0,0.0"
+                      weapon_offset="0,0,0.6"
                       vertical_rot_limit_multiplier_up="thrust_vertical_rot_limit"
                       vertical_rot_limit_multiplier_down="0.7"
                       left_rider_rot_limit="thrust_rider_rot_limit_left"
@@ -1862,7 +1862,7 @@
 -->
     <combat_parameter id="couched_lance_params"
                       vertical_rot_limit_multiplier_up="couched_lance_vertical_rot_limit"
-                      vertical_rot_limit_multiplier_down="couched_lance_vertical_rot_limit"
+                      vertical_rot_limit_multiplier_down="0.27"
                       left_rider_rot_limit="couched_lance_rider_rot_limit_left"
                       left_rider_min_rot_limit="couched_lance_min_rider_rot_limit_left"
                       right_rider_rot_limit="couched_lance_rider_rot_limit_right"
@@ -1870,7 +1870,9 @@
                       rider_look_down_limit="couched_lance_rider_look_down_limit"
                       collision_check_starting_percent="0.0"
                       collision_check_ending_percent="1"
+                      weapon_offset="0,0,0.30"
                       hit_bone_index="27" />
+
 
     <combat_parameter id="polearm_brace"
                       vertical_rot_limit_multiplier_up="brace_vertical_rot_limit"
@@ -1976,7 +1978,8 @@
                       left_rider_min_rot_limit="throwing_min_rider_rot_limit_left"
                       right_rider_min_rot_limit="throwing_min_rider_rot_limit_right"
                       left_ladder_rot_limit="throwing_ladder_rot_limit_left"
-                      right_ladder_rot_limit="throwing_ladder_rot_limit_right" />
+                      right_ladder_rot_limit="throwing_ladder_rot_limit_right" 
+                      weapon_offset="0,0,-0.2"/>
 
     <combat_parameter id="throwing_ready_release"
                       vertical_rot_limit_multiplier_up="bow_vertical_rot_limit"

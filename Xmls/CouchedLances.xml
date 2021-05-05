@@ -80,14 +80,14 @@
     </Materials>
   </CraftingPiece>
    <!-- #Pikes -->
-  <CraftingPiece id="spear_handle_7" name="{=Nhhmj7bz}Hard Maple Pike Shaft" tier="5" piece_type="Handle" mesh="spear_handle_7" length="295" weight="0.7" excluded_item_usage_features="long:swing" CraftingCost="150">
+  <CraftingPiece id="spear_handle_7" name="{=Nhhmj7bz}Hard Maple Pike Shaft" tier="5" piece_type="Handle" mesh="spear_handle_7" length="295" weight="0.7" excluded_item_usage_features="swing" CraftingCost="150">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:TwoHandedPolearm_Bracing:OneHandedPolearm:Javelin" />
     <BuildData piece_offset="100.0" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-     <!-- #vlandia_lance_1_t3;vlandia_lance_2_t4 -normal length 1H normal weight -->
+   <!-- #vlandia_lance_2_t4;empire_lance_2_t4;aserai_lance_1_t5 -normal length 1H normal weight -->
   <CraftingPiece id="spear_handle_23" name="{=GsBQCQEF}Reinforced Long Pine Shaft" tier="3" piece_type="Handle" mesh="spear_handle_23" length="250" weight="2.29">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
     <BuildData piece_offset="65.0" />
@@ -96,7 +96,7 @@
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-       <!-- #vlandia_lance_3_t5; sturgia_lance_2_t5 -normal length 1H heavy -->
+  <!-- #vlandia_lance_3_t5; sturgia_lance_2_t5 -normal length 1H heavy -->
   <CraftingPiece id="spear_handle_19" name="{=e1DF7wbz}Hardened Ashen Staff" tier="5" piece_type="Handle" mesh="spear_handle_19" length="210" weight="2.115">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
     <BuildData piece_offset="50.0" />
@@ -104,10 +104,10 @@
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-  <!-- #empire_lance_1_t3; empire_lance_2_t4;aserai_lance_1_t5 -normal length 1H normal weight -->
+  <!-- #empire_lance_1_t3;vlandia_lance_1_t3  -short 1H normal weight -->
   <CraftingPiece id="spear_handle_13" name="{=pocRP9dq}Long Ash Staff" tier="3" piece_type="Handle" mesh="spear_handle_13" length="228" weight="2.088" CraftingCost="110">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
-    <BuildData piece_offset="54.0" />
+    <BuildData piece_offset="40.0" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
@@ -123,7 +123,7 @@
   <!-- #khuzait_lance_1_t3;khuzait_lance_2_t4;khuzait_lance_3_t5; -long 1H light -->
   <CraftingPiece id="spear_handle_20" name="{=tgJ3dSOx}Oaken Long Spear Staff" tier="4" piece_type="Handle" mesh="spear_handle_20" length="220" weight="1.612">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin" />
-    <BuildData piece_offset="52.0" />
+    <BuildData piece_offset="55.0" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
