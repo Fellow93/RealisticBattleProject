@@ -48,66 +48,76 @@ namespace RealisticBattleCombatModule
 
                 if (weaponItem != null && weaponItem.PrimaryWeapon != null)
                 {
-                    if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Boulder") ||
-                        weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Stone"))
+                    switch (weaponItem.PrimaryWeapon.WeaponClass.ToString())
                     {
-                        missileTotalDamage *= 0.01f;
-                    }
-                    if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingAxe") ||
-                        weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingKnife"))
-                    {
-                        length -= 5f;
-                        if (length < 5.0f)
-                        {
-                            length = 5f;
-                        }
-                        //length += -(7.0f);
-                        //if (length < 5.0f)
-                        //{
-                        //    length = 5.0f;
-                        //} 
-                    }
-                    if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
-                    {
-                        length -= 10f;
-                        if (length < 5.0f)
-                        {
-                            length = 5f;
-                        }
-                        //missileTotalDamage += 168.0f;
-                        //missileTotalDamage *= 0.01f;
-                        //missileTotalDamage = 1f;
-                    }
-                    if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm"))
-                    {
-                        length -= 10f;
-                        if (length < 5.0f)
-                        {
-                            length = 5f;
-                        }
-                        //missileTotalDamage -= 25f;
-                        //missileTotalDamage = 1f;
-                    }
-                    if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("LowGripPolearm"))
-                    {
-                        length -= 10f;
-                        if (length < 5.0f)
-                        {
-                            length = 5f;
-                        }
-                        //missileTotalDamage -= 25f;
-                        //missileTotalDamage *= 0.01f;
-                        //missileTotalDamage = 1f;
-                    }
-                    if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow"))
-                    {
-                        missileTotalDamage -= 100f;
-                        missileTotalDamage *= 0.01f;
-                    }
-                    if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt"))
-                    {
-                        missileTotalDamage -= 100f;
-                        missileTotalDamage *= 0.01f;
+                        case "Boulder":
+                        case "Stone":
+                            {
+                                missileTotalDamage *= 0.01f;
+                                break;
+                            }
+                        case "ThrowingAxe":
+                        case "ThrowingKnife":
+                            {
+                                length -= 5f;
+                                if (length < 5.0f)
+                                {
+                                    length = 5f;
+                                }
+                                //length += -(7.0f);
+                                //if (length < 5.0f)
+                                //{
+                                //    length = 5.0f;
+                                //} 
+                                break;
+                            }
+                        case "Javelin":
+                            {
+                                length -= 10f;
+                                if (length < 5.0f)
+                                {
+                                    length = 5f;
+                                }
+                                //missileTotalDamage += 168.0f;
+                                //missileTotalDamage *= 0.01f;
+                                //missileTotalDamage = 1f;
+                                break;
+                            }
+                        case "OneHandedPolearm":
+                            {
+                                length -= 10f;
+                                if (length < 5.0f)
+                                {
+                                    length = 5f;
+                                }
+                                //missileTotalDamage -= 25f;
+                                //missileTotalDamage = 1f;
+                                break;
+                            }
+                        case "LowGripPolearm":
+                            {
+                                length -= 10f;
+                                if (length < 5.0f)
+                                {
+                                    length = 5f;
+                                }
+                                //missileTotalDamage -= 25f;
+                                //missileTotalDamage *= 0.01f;
+                                //missileTotalDamage = 1f;
+                                break;
+                            }
+                        case "Arrow":
+                            {
+                                missileTotalDamage -= 100f;
+                                missileTotalDamage *= 0.01f;
+                                break;
+                            }
+                        case "Bolt":
+                            {
+                                missileTotalDamage -= 100f;
+                                missileTotalDamage *= 0.01f;
+                                break;
+                            }
                     }
                 }
 
@@ -1190,6 +1200,19 @@ namespace RealisticBattleCombatModule
                         if (node2.Name == "CraftedItem")
                         {
                             if (node.Attribute("id").Value.Equals(node2.Attribute("id").Value)){
+                                toRemove.Add(node);
+                            }
+                        }
+                    }
+                }
+                if (node.Name == "Item")
+                {
+                    foreach (XElement node2 in xDocument2.Root.Elements())
+                    {
+                        if (node2.Name == "Item")
+                        {
+                            if (node.Attribute("id").Value.Equals(node2.Attribute("id").Value))
+                            {
                                 toRemove.Add(node);
                             }
                         }
