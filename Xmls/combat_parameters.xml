@@ -1905,7 +1905,7 @@
                       weapon_offset="0,0,-0.6"
                       hit_bone_index="27" />
 
-    <!-- shield defence combat parameters -->
+    <!-- shield defense combat parameters -->
     <combat_parameter id="shield_defence"
                       vertical_rot_limit_multiplier_up="0.0"
                       vertical_rot_limit_multiplier_down="0.0"
