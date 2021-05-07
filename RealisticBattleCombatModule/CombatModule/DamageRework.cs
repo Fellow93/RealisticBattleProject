@@ -189,6 +189,8 @@ namespace RealisticBattleCombatModule
 
         private static float CalculateStrikeMagnitudeForThrust(float thrustWeaponSpeed, float weaponWeight, float extraLinearSpeed, bool isThrown)
         {
+            const float ashBreakTreshold = 43f;
+
             float num = extraLinearSpeed;
             if (!isThrown)
             {
@@ -207,9 +209,9 @@ namespace RealisticBattleCombatModule
                 num2 = LanceKE;
             }
 
-            if (num2 > (43f * XmlConfig.dict["Global.ThrustModifier"]))
+            if (num2 > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"]))
             {
-                num2 = 43f * XmlConfig.dict["Global.ThrustModifier"];
+                num2 = ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"];
             }
             return num2;
 
