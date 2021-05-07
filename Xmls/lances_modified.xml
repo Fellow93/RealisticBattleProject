@@ -256,174 +256,200 @@
   
   <!-- #endregion -->
 <!-- #region Used Javelins -->
-  <!-- #region Tier 2 -->
+  <!-- #Pine -->
   <CraftedItem id="western_javelin_1_t2"
 				value="500"
-               name="{=0NLJnGfF}Simple Javelin"
+               name="Pine Throwing Dart"
                crafting_template="Javelin">
     <Pieces>
       <Piece id="spear_blade_15"
              Type="Blade"
-             scale_factor="100" />
+             scale_factor="70" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
       <Piece id="spear_handle_2"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="150" />
       <Piece id="default_polearm_pommel"
              Type="Pommel"
              scale_factor="100" />
     </Pieces>
   </CraftedItem>
+  
   <CraftedItem id="northern_javelin_1_t2"
 				value="600"
-               name="{=1oQWbXJw}Fish Harpoon"
+               name="Pine Javelin"
                crafting_template="Javelin"
                culture="Culture.sturgia">
     <Pieces>
-      <Piece id="spear_blade_16"
+      <Piece id="spear_blade_1"
              Type="Blade"
-             scale_factor="90" />
-      <Piece id="spear_guard_15"
-             Type="Guard"
-             scale_factor="90" />
-      <Piece id="spear_handle_12"
-             Type="Handle"
-             scale_factor="100" />
-      <Piece id="default_polearm_pommel"
-             Type="Pommel"
-             scale_factor="100" />
-    </Pieces>
-  </CraftedItem>
-  <CraftedItem id="eastern_javelin_1_t2"
-               name="{=4SadJFch}Eastern Jagged Javelin"
-               crafting_template="Javelin"
-			   value ="2200"
-               culture="Culture.khuzait">
-    <Pieces>
-      <Piece id="spear_blade_35"
-             Type="Blade"
-             scale_factor="100" />
+             scale_factor="70" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
-      <Piece id="spear_handle_9"
+      <Piece id="spear_handle_2"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="200" />
       <Piece id="default_polearm_pommel"
              Type="Pommel"
              scale_factor="100" />
     </Pieces>
   </CraftedItem>
   <!-- #endregion -->
-  <!-- #region Tier 3 -->
+  <!-- Ash -->
   <CraftedItem id="western_javelin_2_t3"
-               name="{=Z8Kc6XlP}Western Javelin"
+               name="Pine Throwing Lance"
                crafting_template="Javelin"
 			   value="5200"
                culture="Culture.vlandia">
     <Pieces>
-      <Piece id="spear_blade_1"
+      <Piece id="spear_blade_42"
              Type="Blade"
-             scale_factor="100" />
+             scale_factor="80" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
-      <Piece id="spear_handle_11"
+      <Piece id="spear_handle_2"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="300" />
       <Piece id="default_polearm_pommel"
              Type="Pommel"
              scale_factor="100" />
     </Pieces>
   </CraftedItem>
+  
   <CraftedItem id="generic_javelin_1_t3"
-               name="{=YPUDAJDH}Harpoon"
+               name="Ash Throwing Lance"
 			   value="8500"
                crafting_template="Javelin">
     <Pieces>
-      <Piece id="spear_blade_10"
+      <Piece id="spear_blade_42"
              Type="Blade"
              scale_factor="90" />
-      <Piece id="spear_guard_15"
+      <Piece id="default_polearm_guard"
              Type="Guard"
-             scale_factor="90" />
-      <Piece id="spear_handle_11"
-             Type="Handle"
              scale_factor="100" />
+      <Piece id="spear_handle_9"
+             Type="Handle"
+             scale_factor="300" />
       <Piece id="default_polearm_pommel"
              Type="Pommel"
              scale_factor="100" />
     </Pieces>
   </CraftedItem>
     <CraftedItem id="northern_javelin_2_t3"
-               name="{=ObGN145P}Woodland Javelin"
+               name="Ash Javelin"
                crafting_template="Javelin"
 			   value="5400"
                culture="Culture.battania">
     <Pieces>
-      <Piece id="spear_blade_14"
+      <Piece id="spear_blade_1"
              Type="Blade"
-             scale_factor="100" />
+             scale_factor="80" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
-      <Piece id="spear_handle_2"
+      <Piece id="spear_handle_9"
              Type="Handle"
-             scale_factor="100" />
-      <Piece id="default_polearm_pommel"
-             Type="Pommel"
-             scale_factor="100" />
-    </Pieces>
-  </CraftedItem>
-  <CraftedItem id="eastern_javelin_2_t3"
-               name="{=NmLEZfiI}Eastern Javelin"
-               crafting_template="Javelin"
-			   value="4500"
-               culture="Culture.khuzait">
-    <Pieces>
-      <Piece id="spear_blade_37"
-             Type="Blade"
-             scale_factor="100" />
-      <Piece id="default_polearm_guard"
-             Type="Guard"
-             scale_factor="100" />
-      <Piece id="spear_handle_10"
-             Type="Handle"
-             scale_factor="100" />
+             scale_factor="200" />
       <Piece id="default_polearm_pommel"
              Type="Pommel"
              scale_factor="100" />
     </Pieces>
   </CraftedItem>
   <!-- #endregion -->
-  <!-- #region Tier 4 -->
+  <!-- Oak -->
   <CraftedItem id="western_javelin_3_t4"
-               name="{=vmz4vfu5}Hooked Javelin"
+               name="Oaken Throwing Lance"
                crafting_template="Javelin"
 			   value="10000"
                culture="Culture.vlandia">
     <Pieces>
-      <Piece id="spear_blade_10"
+      <Piece id="spear_blade_42"
              Type="Blade"
-             scale_factor="100" />
+             scale_factor="110" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
-      <Piece id="spear_handle_11"
+      <Piece id="spear_handle_10"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="300" />
       <Piece id="spear_pommel_5"
              Type="Pommel"
              scale_factor="100" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="northern_javelin_3_t4"
-               name="{=ppiy9Cwl}Broad Blade Javelin"
+               name="Oaken Aegon"
                crafting_template="Javelin"
 			   value="8000"
                  culture="Culture.sturgia">
+    <Pieces>
+      <Piece id="spear_blade_27"
+             Type="Blade"
+             scale_factor="110" />
+      <Piece id="default_polearm_guard"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_10"
+             Type="Handle"
+             scale_factor="200" />
+      <Piece id="spear_pommel_5"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+
+  <!-- Mahagony -->
+  <CraftedItem id="eastern_javelin_1_t2"
+               name="Mahagony Throwing Dart"
+               crafting_template="Javelin"
+			   value ="2200"
+               culture="Culture.khuzait">
+    <Pieces>
+      <Piece id="spear_blade_1"
+             Type="Blade"
+             scale_factor="80" />
+      <Piece id="default_polearm_guard"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_11"
+             Type="Handle"
+             scale_factor="150" />
+      <Piece id="default_polearm_pommel"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>  
+  
+  <CraftedItem id="eastern_javelin_2_t3"
+               name="Mahagony Javelin"
+               crafting_template="Javelin"
+			   value="4500"
+               culture="Culture.khuzait">
+    <Pieces>
+      <Piece id="spear_blade_27"
+             Type="Blade"
+             scale_factor="50" />
+      <Piece id="default_polearm_guard"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_11"
+             Type="Handle"
+             scale_factor="200" />
+      <Piece id="default_polearm_pommel"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>  
+  
+  <CraftedItem id="eastern_javelin_3_t4"
+               name="Mahagony Throwing Lance"
+			   value="11500"
+               crafting_template="Javelin"
+               culture="Culture.aserai">
     <Pieces>
       <Piece id="spear_blade_42"
              Type="Blade"
@@ -433,27 +459,7 @@
              scale_factor="100" />
       <Piece id="spear_handle_11"
              Type="Handle"
-             scale_factor="100" />
-      <Piece id="spear_pommel_5"
-             Type="Pommel"
-             scale_factor="100" />
-    </Pieces>
-  </CraftedItem>
-  <CraftedItem id="eastern_javelin_3_t4"
-               name="{=Z6Ak3H6G}Jereed"
-			   value="11500"
-               crafting_template="Javelin"
-               culture="Culture.aserai">
-    <Pieces>
-      <Piece id="spear_blade_27"
-             Type="Blade"
-             scale_factor="100" />
-      <Piece id="default_polearm_guard"
-             Type="Guard"
-             scale_factor="100" />
-      <Piece id="spear_handle_10"
-             Type="Handle"
-             scale_factor="100" />
+             scale_factor="300" />
       <Piece id="spear_pommel_12"
              Type="Pommel"
              scale_factor="100" />
@@ -461,12 +467,46 @@
   </CraftedItem>
   <!-- #endregion -->
   <!-- Pilum -->
-    <CraftedItem id="imperial_throwing_spear_1_t4" name="{=v3lIxLvX}Pila" crafting_template="TwoHandedPolearm" culture="Culture.empire">
+    <CraftedItem id="imperial_throwing_spear_1_t4" name="{=v3lIxLvX}Pila" crafting_template="Javelin" culture="Culture.empire">
     <Pieces>
       <Piece id="spear_blade_38" Type="Blade" scale_factor="280" />
       <Piece id="default_polearm_guard" Type="Guard" scale_factor="100" />
       <Piece id="spear_handle_14" Type="Handle" scale_factor="81" />
       <Piece id="default_polearm_pommel" Type="Pommel" scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  
+  <CraftedItem id="eastern_throwing_spear_2_t4"
+               name="{=kJzIZMBR}Triangular Throwing Spear"
+               crafting_template="Javelin"
+               culture="Culture.khuzait">
+    <Pieces>
+      <Piece id="spear_blade_13"
+             Type="Blade"
+             scale_factor="90" />
+      <Piece id="spear_guard_7"
+             Type="Guard"
+             scale_factor="90" />
+      <Piece id="spear_handle_14"
+             Type="Handle"
+             scale_factor="100" />
+      <Piece id="default_polearm_pommel"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  
+  <CraftedItem id="eastern_throwing_spear_1_t3"
+               name="{=EgrNdBct}Jagged Throwing Spear"
+               crafting_template="Javelin"
+               culture="Culture.khuzait">
+    <Pieces>
+      <Piece id="spear_blade_35"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_handle_14"
+             Type="Handle"
+             scale_factor="90" />
     </Pieces>
   </CraftedItem>
   <!-- Pilum -->

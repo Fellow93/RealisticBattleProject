@@ -123,9 +123,9 @@ namespace RealisticBattleCombatModule
 
                 float physicalDamage = ((length * length) * (weaponItem.Weight)) / 2;
 
-                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin") && physicalDamage > (weaponItem.Weight) * 300f)
+                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin") && physicalDamage > 300f)
                 {
-                    physicalDamage = (weaponItem.Weight) * 300f;
+                    physicalDamage = 300f;
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") && physicalDamage > (weaponItem.Weight) * 300f)
@@ -147,12 +147,12 @@ namespace RealisticBattleCombatModule
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
                 {
-                    baseMagnitude = physicalDamage * momentumRemaining + ((missileTotalDamage * 0.6f) - 42f);
+                    baseMagnitude = physicalDamage * momentumRemaining + (missileTotalDamage - 20f);
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingAxe"))
                 {
-                    baseMagnitude = physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f);
+                    baseMagnitude = physicalDamage * momentumRemaining + (missileTotalDamage * 1f);
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingKnife"))
@@ -674,7 +674,7 @@ namespace RealisticBattleCombatModule
                     }
                 case "ThrowingKnife":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_thrust, armorReduction, damageType, armorEffectiveness,
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, armorReduction, damageType, armorEffectiveness,
                                 XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }

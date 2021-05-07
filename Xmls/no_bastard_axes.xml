@@ -183,6 +183,138 @@
                    mp_piece="true" />
     </UsablePieces>
   </CraftingTemplate>
+  
+  <CraftingTemplate id="Javelin"
+                    item_modifier_group="spear_dart_throwing"
+                    item_holsters="javelins:javelins_2"
+                    default_item_holster_position_offset="0,0,0.2"
+					always_show_holster_with_weapon="true"
+                    piece_type_to_scale_holster_with="Handle">
+    <PieceDatas>
+      <PieceData piece_type="Handle"
+                 build_order="0" />
+      <PieceData piece_type="Guard"
+                 build_order="1" />
+      <PieceData piece_type="Blade"
+                 build_order="2" />
+      <PieceData piece_type="Pommel"
+                 build_order="-1" />
+    </PieceDatas>
+    <WeaponUsageDatas>
+      <WeaponUsageData id="Javelin" />
+      <WeaponUsageData id="OneHandedPolearm_JavelinAlternative" />
+    </WeaponUsageDatas>
+    <StatsData usage_data="Javelin">
+      <StatData stat_type="Weight"
+                max_value="7.0" />
+      <StatData stat_type="WeaponReach"
+                max_value="300" />
+      <StatData stat_type="MissileDamage"
+                max_value="500" />
+      <StatData stat_type="MissileSpeed"
+                max_value="200" />
+      <StatData stat_type="Accuracy"
+                max_value="100" />
+    </StatsData>
+    <StatsData usage_data="OneHandedPolearm_JavelinAlternative">
+      <StatData stat_type="Weight"
+                max_value="7.0" />
+      <StatData stat_type="WeaponReach"
+                max_value="300" />
+      <StatData stat_type="ThrustSpeed"
+                max_value="200" />
+      <StatData stat_type="SwingSpeed"
+                max_value="200" />
+      <StatData stat_type="ThrustDamage"
+                max_value="500" />
+      <StatData stat_type="SwingDamage"
+                max_value="500" />
+      <StatData stat_type="Handling"
+                max_value="200" />
+      <!--<StatData stat_type="FollowUp" max_value="200" />-->
+    </StatsData>
+    <UsablePieces>
+      <UsablePiece piece_id="spear_blade_1" />
+      <UsablePiece piece_id="spear_blade_9" />
+      <UsablePiece piece_id="spear_blade_10" />
+      <UsablePiece piece_id="spear_blade_41" />
+      <UsablePiece piece_id="spear_blade_13" />
+      <UsablePiece piece_id="spear_blade_14" />
+      <UsablePiece piece_id="spear_blade_15" />
+      <UsablePiece piece_id="spear_blade_15_blunt" />
+      <UsablePiece piece_id="spear_blade_16" />
+      <UsablePiece piece_id="spear_blade_27" />
+      <UsablePiece piece_id="spear_blade_35" />
+      <UsablePiece piece_id="spear_blade_35_blunt" />
+      <UsablePiece piece_id="spear_blade_37" />
+      <UsablePiece piece_id="spear_blade_37_blunt" />
+      <UsablePiece piece_id="spear_blade_38" />
+      <UsablePiece piece_id="spear_blade_42" />
+      <UsablePiece piece_id="spear_handle_2" />
+      <UsablePiece piece_id="spear_handle_9" />
+      <UsablePiece piece_id="spear_handle_10" />
+      <UsablePiece piece_id="spear_handle_11" />
+      <UsablePiece piece_id="spear_handle_12" />
+      <UsablePiece piece_id="spear_handle_14" />
+
+      <UsablePiece piece_id="default_polearm_guard" />
+      <UsablePiece piece_id="spear_guard_15" />
+      <UsablePiece piece_id="spear_guard_7" />
+      <UsablePiece piece_id="mp_default_polearm_guard" />
+      <UsablePiece piece_id="mp_spear_guard_4" />
+      <UsablePiece piece_id="mp_spear_guard_7" />
+      <UsablePiece piece_id="mp_spear_guard_15" />
+
+      <UsablePiece piece_id="default_polearm_pommel" />
+      <UsablePiece piece_id="spear_pommel_5" />
+      <UsablePiece piece_id="spear_pommel_12" />
+      <UsablePiece piece_id="mp_default_polearm_pommel" />
+      <UsablePiece piece_id="mp_spear_pommel_12" />
+      <UsablePiece piece_id="mp_spear_pommel_8" />
+
+      <UsablePiece piece_id="mp_javelin_blade"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_javelin_handle"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_javelin_blade_extraammo"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_javelin_handle_extraammo"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_light_javelin_blade"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_light_javelin_handle"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_pilum_blade"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_pilum_blade_extraammo"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_jereed_blade"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_jereed_blade_extra"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_jereed_handle"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_sturgia_harpoon_blade"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_sturgia_harpoon_blade_extra"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_sturgia_harpoon_blade_strong"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_sturgia_harpoon_handle"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_battania_javelin_blade"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_battania_javelin_blade_extra"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_battania_javelin_handle"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_plumbata_blade"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_plumbata_handle"
+                   mp_piece="true" />
+
+    </UsablePieces>
+  </CraftingTemplate>
 
 </CraftingTemplates>
 
