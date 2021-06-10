@@ -1621,18 +1621,10 @@ namespace RealisticBattleCombatModule
         [HarmonyPatch("GetSurvivalChance")]
         static bool PrefixGetAiWeight(ref float __result, PartyBase party, CharacterObject character, DamageTypes damageType, PartyBase enemyParty = null)
         {
-            if (character.IsHero)
+            if (character.IsPlayerCharacter || (character.IsHero && !character.HeroObject.CanDie()))
             {
-                if (character.HeroObject.AlwaysDie)
-                {
-                    __result = 0f;
-                    return false;
-                }
-                if (character.HeroObject.AlwaysUnconscious)
-                {
-                    __result = 1f;
-                    return false;
-                }
+                __result = 1f;
+                return false;
             }
             //if (damageType == DamageTypes.Blunt)
             //{
