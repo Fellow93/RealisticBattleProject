@@ -794,11 +794,9 @@ namespace RealisticBattleAiModule
                     }
                 case BehaviorState.AttackEntity:
                     {
-                        MethodInfo method = typeof(Formation).GetMethod("FormAttackEntityDetachment", BindingFlags.NonPublic | BindingFlags.Instance);
-                        method.DeclaringType.GetMethod("FormAttackEntityDetachment");
                         if (____attackEntityOrderInnerGate.TargetEntity != null)
                         {
-                            method.Invoke(__instance.Formation, new object[] { ____attackEntityOrderInnerGate.TargetEntity });
+                            __instance.Formation.FormAttackEntityDetachment(____attackEntityOrderInnerGate.TargetEntity);
                         }
 
                         //___CurrentArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
@@ -810,21 +808,12 @@ namespace RealisticBattleAiModule
                         
                         if(__instance.Formation.AI.Side == BehaviorSide.Middle)
                         {
-                            MethodInfo method = typeof(Formation).GetMethod("DisbandAttackEntityDetachment", BindingFlags.NonPublic | BindingFlags.Instance);
-                            method.DeclaringType.GetMethod("DisbandAttackEntityDetachment");
-                            method.Invoke(__instance.Formation, new object[] { });
+                            __instance.Formation.DisbandAttackEntityDetachment();
 
-                            FieldInfo field = typeof(Formation).GetField("_detachments", BindingFlags.NonPublic | BindingFlags.Instance);
-                            field.DeclaringType.GetField("_detachments");
-                            List<IDetachment> detachments = (List<IDetachment>)field.GetValue(__instance.Formation);
-
-                            foreach (IDetachment detach in detachments.ToList())
+                            foreach (IDetachment detach in __instance.Formation.Detachments.ToList())
                             {
-                                MethodInfo method2 = typeof(Formation).GetMethod("LeaveDetachment", BindingFlags.NonPublic | BindingFlags.Instance);
-                                method2.DeclaringType.GetMethod("LeaveDetachment");
-                                method2.Invoke(__instance.Formation, new object[] { detach });
+                                __instance.Formation.LeaveDetachment(detach);
                             }
-
                         }
 
                         if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
@@ -879,10 +868,7 @@ namespace RealisticBattleAiModule
             __instance.Formation.FacingOrder = ___CurrentFacingOrder;
             if (____tacticalArcherPosition != null)
             {
-                PropertyInfo property = typeof(TacticalPosition).GetProperty("Width", BindingFlags.NonPublic | BindingFlags.Instance);
-                property.DeclaringType.GetProperty("Width");
-                float Width = (float)property.GetValue(____tacticalArcherPosition, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
-                __instance.Formation.FormOrder = FormOrder.FormOrderCustom(Width*5f);
+                __instance.Formation.FormOrder = FormOrder.FormOrderCustom(____tacticalArcherPosition.Width * 5f);
             }
             return false;
         }
@@ -976,16 +962,8 @@ namespace RealisticBattleAiModule
             }
             if (____tacticalMiddlePos != null)
             {
-                PropertyInfo property = typeof(TacticalPosition).GetProperty("Direction", BindingFlags.NonPublic | BindingFlags.Instance);
-                property.DeclaringType.GetProperty("Direction");
-                Vec2 direction = (Vec2)property.GetValue(____tacticalMiddlePos, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
-                ____readyFacingOrder = FacingOrder.FacingOrderLookAtDirection(direction);
-
-                PropertyInfo property2 = typeof(TacticalPosition).GetProperty("Position", BindingFlags.NonPublic | BindingFlags.Instance);
-                property2.DeclaringType.GetProperty("Position");
-                WorldPosition position = (WorldPosition)property2.GetValue(____tacticalMiddlePos, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
-
-                ____readyOrder = MovementOrder.MovementOrderMove(position);
+                ____readyFacingOrder = FacingOrder.FacingOrderLookAtDirection(____tacticalMiddlePos.Direction);
+                ____readyOrder = MovementOrder.MovementOrderMove(____tacticalMiddlePos.Position);
             }
             else if (worldFrame.Origin.IsValid)
             {
@@ -1000,15 +978,8 @@ namespace RealisticBattleAiModule
             }
             if (____tacticalWaitPos != null)
             {
-                PropertyInfo property = typeof(TacticalPosition).GetProperty("Direction", BindingFlags.NonPublic | BindingFlags.Instance);
-                property.DeclaringType.GetProperty("Direction");
-                Vec2 direction = (Vec2)property.GetValue(____tacticalWaitPos, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
-                ____waitFacingOrder = FacingOrder.FacingOrderLookAtDirection(direction);
-
-                PropertyInfo property2 = typeof(TacticalPosition).GetProperty("Position", BindingFlags.NonPublic | BindingFlags.Instance);
-                property2.DeclaringType.GetProperty("Position");
-                WorldPosition position = (WorldPosition)property2.GetValue(____tacticalWaitPos, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
-                ____waitOrder = MovementOrder.MovementOrderMove(position);
+                ____waitFacingOrder = FacingOrder.FacingOrderLookAtDirection(____tacticalWaitPos.Direction);
+                ____waitOrder = MovementOrder.MovementOrderMove(____tacticalWaitPos.Position);
             }
             else if (worldFrame2.Origin.IsValid)
             {
@@ -1024,17 +995,11 @@ namespace RealisticBattleAiModule
 
             if (____behaviourState == BehaviourState.Ready && ____tacticalMiddlePos != null)
             {
-                PropertyInfo property = typeof(TacticalPosition).GetProperty("Width", BindingFlags.NonPublic | BindingFlags.Instance);
-                property.DeclaringType.GetProperty("Width");
-                float Width = (float)property.GetValue(____tacticalMiddlePos, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
-                __instance.Formation.FormOrder = FormOrder.FormOrderCustom(Width * 2f);
+                __instance.Formation.FormOrder = FormOrder.FormOrderCustom(____tacticalMiddlePos.Width * 2f);
             }
             else if (____behaviourState == BehaviourState.Waiting && ____tacticalWaitPos != null)
             {
-                PropertyInfo property = typeof(TacticalPosition).GetProperty("Width", BindingFlags.NonPublic | BindingFlags.Instance);
-                property.DeclaringType.GetProperty("Width");
-                float Width = (float)property.GetValue(____tacticalWaitPos, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
-                __instance.Formation.FormOrder = FormOrder.FormOrderCustom(Width * 2f);
+                __instance.Formation.FormOrder = FormOrder.FormOrderCustom(____tacticalWaitPos.Width * 2f);
             }
             else
             {
@@ -1081,9 +1046,7 @@ namespace RealisticBattleAiModule
 
                 if (____innerGate != null && !____innerGate.IsDestroyed)
                 {
-                    PropertyInfo property = typeof(TacticalPosition).GetProperty("Position", BindingFlags.NonPublic | BindingFlags.Instance);
-                    property.DeclaringType.GetProperty("Position");
-                    WorldPosition position = (WorldPosition)property.GetValue(____tacticalMiddlePos, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+                    WorldPosition position = ____tacticalMiddlePos.Position;
                     if (____behaviourState == BehaviourState.Ready)
                     {
                         Vec2 direction = (____innerGate.GetPosition().AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2).Normalized();
@@ -1097,10 +1060,7 @@ namespace RealisticBattleAiModule
 
             if (__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && ____tacticalMiddlePos != null && ____innerGate == null && ____outerGate == null)
             {
-                PropertyInfo property = typeof(TacticalPosition).GetProperty("Position", BindingFlags.NonPublic | BindingFlags.Instance);
-                property.DeclaringType.GetProperty("Position");
-                WorldPosition position = (WorldPosition)property.GetValue(____tacticalMiddlePos, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
-
+                WorldPosition position = ____tacticalMiddlePos.Position;
                 Formation correctEnemy = Utilities.FindSignificantEnemyToPosition(__instance.Formation, position, true, false, false, false, false, true);
                 if(correctEnemy != null)
                 {
@@ -1162,17 +1122,11 @@ namespace RealisticBattleAiModule
             __instance.Formation.FacingOrder = ___CurrentFacingOrder;
             if (____behaviourState == BehaviourState.Ready && ____tacticalMiddlePos != null)
             {
-                PropertyInfo property = typeof(TacticalPosition).GetProperty("Width", BindingFlags.NonPublic | BindingFlags.Instance);
-                property.DeclaringType.GetProperty("Width");
-                float Width = (float)property.GetValue(____tacticalMiddlePos, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
-                __instance.Formation.FormOrder = FormOrder.FormOrderCustom(Width * 2f);
+                __instance.Formation.FormOrder = FormOrder.FormOrderCustom(____tacticalMiddlePos.Width * 2f);
             }
             else if (____behaviourState == BehaviourState.Waiting && ____tacticalWaitPos != null)
             {
-                PropertyInfo property = typeof(TacticalPosition).GetProperty("Width", BindingFlags.NonPublic | BindingFlags.Instance);
-                property.DeclaringType.GetProperty("Width");
-                float Width = (float)property.GetValue(____tacticalWaitPos, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
-                __instance.Formation.FormOrder = FormOrder.FormOrderCustom(Width * 2f);
+                __instance.Formation.FormOrder = FormOrder.FormOrderCustom(____tacticalWaitPos.Width * 2f);
             }
             bool flag = ____isDefendingWideGap && ____behaviourState == BehaviourState.Ready && __instance.Formation.QuerySystem.ClosestEnemyFormation != null && (__instance.Formation.QuerySystem.IsUnderRangedAttack || __instance.Formation.QuerySystem.AveragePosition.DistanceSquared(____currentOrder.GetPosition(__instance.Formation).AsVec2) < 25f + (____isInShieldWallDistance ? 75f : 0f));
             if (flag == ____isInShieldWallDistance)
