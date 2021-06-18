@@ -26698,37 +26698,6 @@
                     civilian="true" />
     </Equipments>
   </NPCCharacter>
-  <NPCCharacter id="npc_disguised_hero_template"
-                default_group="Infantry"
-                is_hero="false"
-                level="1"
-                name="{=sMI3wMZu}disguise_equipment_set"
-                culture="Culture.empire"
-                skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
-    <face>
-      <face_key_template value="BodyProperty.fighter_vlandia" />
-    </face>
-    <Traits>
-      <Trait id="IsEquipmentTemplate"
-             value="1" />
-    </Traits>
-    <Equipments>
-      <EquipmentRoster civilian="true">
-      <equipment slot="Item0"
-                 id="Item.celtic_dagger" />
-      <equipment slot="Item1"
-                 id="Item.throwing_stone" />
-      <equipment slot="Head"
-                 id="Item.pilgrim_hood" />
-      <equipment slot="Body"
-                 id="Item.ragged_robes" />
-      <equipment slot="Leg"
-                 id="Item.ragged_boots" />
-      <equipment slot="Gloves"
-                 id="Item.ragged_armwraps" />
-      </EquipmentRoster>
-    </Equipments>
-  </NPCCharacter>
   <!-- #endregion -->
   <!-- #endregion -->
   <!-- #endregion -->
