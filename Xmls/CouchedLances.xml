@@ -174,7 +174,7 @@
   <!-- #endregion pila and throwing spears -->
   <CraftingPiece id="spear_blade_13" name="{=MpVC0RXl}Northern Triangular Spear" tier="5" piece_type="Blade" mesh="spear_blade_13" length="50.864" weight="0.4592" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
-    <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_axe_quiver_1">
+    <BladeData stack_amount="2" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_axe_quiver_1">
       <Thrust damage_type="Pierce" damage_factor="4.6" />
     </BladeData>
     <Flags>
@@ -186,7 +186,7 @@
   </CraftingPiece>
   <CraftingPiece id="spear_blade_35" name="{=ZUp9mm79}Jagged Spear Head" tier="3" piece_type="Blade" mesh="spear_blade_35" length="41" weight="0.3256" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
-    <BladeData stack_amount="4" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_axe_quiver_1">
+    <BladeData stack_amount="2" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_axe_quiver_1">
       <Thrust damage_type="Pierce" damage_factor="5.0" />
     </BladeData>
     <Flags>
