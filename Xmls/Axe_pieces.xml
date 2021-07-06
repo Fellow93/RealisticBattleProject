@@ -107,7 +107,7 @@
     <PieceUsages unavailable_usages="" />
     <BuildData piece_offset="-5.4" />
     <BladeData stack_amount="3" blade_length="9.683" blade_width="18.004" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Swing damage_type="Blunt" damage_factor="4.8" />
+      <Swing damage_type="Cut" damage_factor="4.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -150,7 +150,7 @@
     <PieceUsages unavailable_usages="" />
     <BuildData piece_offset="-4.6" />
     <BladeData stack_amount="3" blade_length="8.442" blade_width="19.527" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Swing damage_type="Blunt" damage_factor="4.8" />
+      <Swing damage_type="Cut" damage_factor="4.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -443,7 +443,7 @@
     <PieceUsages unavailable_usages="" />
     <BuildData piece_offset="-5.8" />
     <BladeData stack_amount="3" blade_length="13.923" blade_width="21.94" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Swing damage_type="Blunt" damage_factor="2.5" />
+      <Swing damage_type="Cut" damage_factor="4.51" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -537,6 +537,34 @@
     <Materials>
       <Material id="Iron2" count="2" />
     </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="axe_craft_13_head_blunt"
+                 name="{=yrdrYLA9}Blunt Throwing Axe Head"
+                 tier="4"
+                 piece_type="Blade"
+                 mesh="axe_craft_13_head"
+                 distance_to_next_piece="2.7"
+                 distance_to_previous_piece="1.6"
+                 weight="0.481"
+                 is_hidden="true">
+    <BuildData piece_offset="-3.2" />
+    <BladeData stack_amount="3"
+               blade_length="8.707"
+               blade_width="16.898"
+               physics_material="metal_weapon"
+               body_name="bo_axe_longer_b"
+               holster_mesh="throwing_axe_quiver_1">
+      <Swing damage_type="Cut"
+             damage_factor="3.1" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron4"
+                count="3" />
+    </Materials>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse"
+            type="ItemFlags" />
+    </Flags>
   </CraftingPiece>
   <!-- #endregion -->
   <!-- #region Axe Blade Pieces -->

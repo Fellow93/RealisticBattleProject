@@ -32,8 +32,8 @@
   <CraftingPiece id="vlandian_blade_1_blunt" name="{=dNk7UZVD}Fullered Narrow Blunt Arming Sword Blade" tier="2" piece_type="Blade" mesh="vlandian_blade_1" culture="Culture.vlandia" length="94.6" weight="0.65" is_hidden="true">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="vlandian_blade_1_scabbard_1">
-      <Thrust damage_type="Blunt" damage_factor="4.3" />
-      <Swing damage_type="Blunt" damage_factor="3.1" />
+      <Thrust damage_type="Pierce" damage_factor="4.3" />
+      <Swing damage_type="Cut" damage_factor="4.7" />
     </BladeData>
     <Flags>
       <Flag name="Civilian" type="ItemFlags" />
@@ -54,9 +54,9 @@
   </CraftingPiece>
   <CraftingPiece id="vlandian_blade_3_blunt" name="{=PvB0pW1Q}Wide Fullered Blunt Blade" tier="1" piece_type="Blade" mesh="vlandian_blade_3" culture="Culture.vlandia" length="100.1" weight="0.65" is_hidden="true">
     <PieceUsages unavailable_usages="" />
-    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="vlandian_blade_2_scabbard_2">
-      <Thrust damage_type="Blunt" damage_factor="1.9" />
-      <Swing damage_type="Blunt" damage_factor="1.9" />
+    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="vlandian_blade_4_scabbard_4">
+      <Thrust damage_type="Pierce" damage_factor="5.4" />
+      <Swing damage_type="Cut" damage_factor="5.4" />
     </BladeData>
     <Materials>
       <Material id="Iron2" count="3" />
@@ -129,8 +129,8 @@
     <PieceUsages unavailable_usages="" />
     <BuildData previous_piece_offset="-0.4" />
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="empire_blade_1_scabbard_1">
-      <Thrust damage_type="Blunt" damage_factor="2.5" />
-      <Swing damage_type="Blunt" damage_factor="3.0" />
+      <Thrust damage_type="Pierce" damage_factor="3.7" />
+      <Swing damage_type="Cut" damage_factor="4.5" />
     </BladeData>
     <Flags>
       <Flag name="Civilian" type="ItemFlags" />
@@ -208,8 +208,8 @@
   <CraftingPiece id="aserai_blade_3_blunt" name="{=NkV2CAmL}Iron Blunt Scimitar Blade" tier="2" piece_type="Blade" mesh="aserai_blade_3" culture="Culture.aserai" length="93.2" weight="0.64" is_hidden="true">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="aserai_blade_3_scabbard_3">
-      <Thrust damage_type="Blunt" damage_factor="2.0" />
-      <Swing damage_type="Blunt" damage_factor="3.2" />
+      <Thrust damage_type="Pierce" damage_factor="3.0" />
+      <Swing damage_type="Cut" damage_factor="4.7" />
     </BladeData>
     <Flags>
       <Flag name="Civilian" type="ItemFlags" />
@@ -234,8 +234,8 @@
   <CraftingPiece id="aserai_blade_4_blunt" name="{=5l0PBFAe}Iron Flyssa Blunt Blade" tier="2" piece_type="Blade" mesh="aserai_blade_4" culture="Culture.aserai" length="104" weight="0.7" is_hidden="true">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="aserai_blade_4_scabbard_4">
-      <Thrust damage_type="Blunt" damage_factor="2.1" />
-      <Swing damage_type="Blunt" damage_factor="3.1" />
+      <Thrust damage_type="Pierce" damage_factor="3.1" />
+      <Swing damage_type="Cut" damage_factor="4.7" />
     </BladeData>
     <Flags>
       <Flag name="Civilian" type="ItemFlags" />
@@ -339,8 +339,8 @@
   <CraftingPiece id="khuzait_blade_7_blunt" name="{=lz8rSkzE}Thick Blunt Sabre Blade" tier="2" piece_type="Blade" mesh="khuzait_blade_7" culture="Culture.khuzait" length="82.5" weight="0.56" is_hidden="true">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed">
-      <Thrust damage_type="Blunt" damage_factor="2.1" />
-      <Swing damage_type="Blunt" damage_factor="3.1" />
+      <Thrust damage_type="Pierce" damage_factor="3.1" />
+      <Swing damage_type="Cut" damage_factor="4.6" />
     </BladeData>
     <Flags>
       <Flag name="Civilian" type="ItemFlags" />
@@ -365,8 +365,8 @@
   <CraftingPiece id="sturgian_blade_1_blunt" name="{=AlIRh9mz}Tapered Blunt Northern Blade" tier="2" piece_type="Blade" mesh="sturgian_blade_1" culture="Culture.sturgia" length="73.7" weight="0.5" is_hidden="true">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="sturgian_blade_1_scabbard_1">
-      <Thrust damage_type="Blunt" damage_factor="2.1" />
-      <Swing damage_type="Blunt" damage_factor="4.7" />
+      <Thrust damage_type="Pierce" damage_factor="3.1" />
+      <Swing damage_type="Cut" damage_factor="4.7" />
     </BladeData>
     <Flags>
       <Flag name="Civilian" type="ItemFlags" />
@@ -518,8 +518,8 @@
   <CraftingPiece id="battania_blade_3_iron_blunt" name="{=oXXWEUYY}Iron Blunt Broadsword Blade" tier="2" piece_type="Blade" mesh="battania_blade_3_iron" culture="Culture.battania" length="80.8" weight="1.0" is_hidden="true">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="battania_blade_3_scabbard_3">
-      <Thrust damage_type="Blunt" damage_factor="2.2" />
-      <Swing damage_type="Blunt" damage_factor="3.1" />
+      <Thrust damage_type="Pierce" damage_factor="3.3" />
+      <Swing damage_type="Cut" damage_factor="4.6" />
     </BladeData>
     <Flags>
       <Flag name="Civilian" type="ItemFlags" />
@@ -791,7 +791,7 @@
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="battania_noble_blade_1_scabbard_1">
       <Thrust damage_type="Pierce" damage_factor="5.0" />
-      <Swing damage_type="Cut" damage_factor="9.0" />
+      <Swing damage_type="Cut" damage_factor="7.8" />
     </BladeData>
     <Flags>
       <Flag name="BonusAgainstShield" />
@@ -888,9 +888,9 @@
   <CraftingPiece id="empire_blade_3_blunt" name="{=wsVbMK6L}Tournament Flat Blade" tier="1" piece_type="Blade" mesh="empire_blade_3" culture="Culture.empire" length="91.3" weight="0.64">
     <PieceUsages unavailable_usages="" />
     <BuildData previous_piece_offset="-0.4" />
-    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="empire_blade_1_scabbard_1">
-      <Thrust damage_type="Blunt" damage_factor="1.6" />
-      <Swing damage_type="Blunt" damage_factor="2.1" />
+    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="empire_noble_blade_2_scabbard_2">
+      <Thrust damage_type="Pierce" damage_factor="5.0" />
+      <Swing damage_type="Cut" damage_factor="4.7" />
     </BladeData>
     <Materials>
       <Material id="Iron2" count="3" />
@@ -1052,6 +1052,34 @@
     </Flags>
     <Materials>
       <Material id="Iron6" count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="dagger_blade_13_blunt"
+                 name="{=GFBFgA7R}Broad Blunt Dagger Blade"
+                 tier="2"
+                 piece_type="Blade"
+                 mesh="dagger_blade_13"
+                 length="29"
+                 weight="0.475"
+                 is_hidden="true">
+    <PieceUsages unavailable_usages="" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_knife_a"
+               holster_mesh="throwing_dagger_quiver_1"
+               holster_mesh_length="35.8">
+      <Thrust damage_type="Pierce"
+              damage_factor="2.4" />
+      <Swing damage_type="Cut"
+             damage_factor="3.5" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron3"
+                count="2" />
     </Materials>
   </CraftingPiece>
   <!-- #endregion -->
