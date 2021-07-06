@@ -186,10 +186,12 @@
   
   <CraftingTemplate id="Javelin"
                     item_modifier_group="spear_dart_throwing"
-                    item_holsters="javelins:javelins_2"
-                    default_item_holster_position_offset="0,0,0.2"
-					always_show_holster_with_weapon="true"
-                    piece_type_to_scale_holster_with="Handle">
+                    item_holsters="javelins:javelins_2:bow_hip:bow_hip_2"
+                    default_item_holster_position_offset="0,0,-0.10"
+                    piece_type_to_scale_holster_with="Pommel"
+                    hidden_piece_types_on_holster="Guard,Handle,Pommel"
+                    rotate_weapon_in_holster="true"
+                    always_show_holster_with_weapon="true">
     <PieceDatas>
       <PieceData piece_type="Handle"
                  build_order="0" />

@@ -24,9 +24,21 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
+	<Item id="sturgia_boots_d" name="{=FptcHNb9}Wrapped Boots" mesh="sturgia_boots_d" culture="Culture.sturgia" weight="1" appearance="1" Type="LegArmor" value="1050">
+		<ItemComponent>
+			<Armor leg_armor="20" covers_legs="true" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
 	<Item id="strapped_shoes" name="{=LOPavWRp}Strapped Shoes" mesh="strapped_shoes" culture="Culture.vlandia" weight="0.7" appearance="1" Type="LegArmor" value="1150" difficulty="0">
 		<ItemComponent>
 			<Armor leg_armor="22" covers_legs="true" modifier_group="cloth" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="sturgia_boots_c" name="{=4KZekKff}Tied Boots" mesh="sturgia_boots_c" culture="Culture.sturgia" weight="1.2" appearance="1" Type="LegArmor" value="1200">
+		<ItemComponent>
+			<Armor leg_armor="23" covers_legs="true" modifier_group="leather" material_type="Leather"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
@@ -51,6 +63,12 @@
 	<Item id="highland_boots" name="{=42KNket2}Highland Boots" mesh="pict_armor_boot" culture="Culture.battania" weight="1" appearance="1" Type="LegArmor" value="1350" difficulty="0">
 		<ItemComponent>
 			<Armor leg_armor="26" covers_legs="true" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="sturgia_boots_a" name="{=DhHBBpPf}Simple Leather Boots" mesh="sturgia_boots_a" culture="Culture.sturgia" weight="1.55" appearance="1" Type="LegArmor" value="1400">
+		<ItemComponent>
+			<Armor leg_armor="27" covers_legs="true" modifier_group="leather" material_type="Leather"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
@@ -85,6 +103,12 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="steppe_leather_boots" name="{=6Ls9naf4}Eastern Steppe Leather Boots" mesh="khuzait_leather_armor_foot" culture="Culture.khuzait" weight="0.8" appearance="1" Type="LegArmor" value="1500" difficulty="0">
+		<ItemComponent>
+			<Armor leg_armor="29" covers_legs="true" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="sturgia_boots_b" name="{=6QNQosHv}Tied Leather Boots" mesh="sturgia_boots_b" culture="Culture.sturgia" weight="1.8" appearance="1" Type="LegArmor" value="1500">
 		<ItemComponent>
 			<Armor leg_armor="29" covers_legs="true" modifier_group="leather" material_type="Leather"/>
 		</ItemComponent>
