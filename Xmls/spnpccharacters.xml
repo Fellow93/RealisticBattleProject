@@ -15574,7 +15574,7 @@
       <skill id="TwoHanded"
              value="80" />
       <skill id="Polearm"
-             value="80" />
+             value="130" />
       <skill id="Bow"
              value="60" />
       <skill id="Crossbow"
@@ -15587,6 +15587,24 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.empire_noble_sword_3_t5" />
+      <equipment slot="Item1"
+                 id="Item.fortified_kite_shield" />
+      <equipment slot="Item2"
+                 id="Item.imperial_throwing_spear_1_t4" />
+      <equipment slot="Body"
+                 id="Item.imperial_lamellar" />
+      <equipment slot="Gloves"
+                 id="Item.lamellar_plate_gauntlets" />
+      <equipment slot="Leg"
+                 id="Item.plated_strip_boots" />
+      <equipment slot="Head"
+                 id="Item.empire_helmet_with_metal_strips" />
+      <equipment slot="Cape"
+                 id="Item.imperial_lamellar_shoulders" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.empire_mace_4_t5" />
       <equipment slot="Item1"
                  id="Item.fortified_kite_shield" />
       <equipment slot="Item2"
@@ -17890,7 +17908,7 @@
       <equipment slot="Body"
                  id="Item.brass_lamellar_over_mail" />
       <equipment slot="Head"
-                 id="Item.khuzait_noble_helmet_with_fur" />
+                 id="Item.eastern_vendel_helmet" />
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Gloves"
@@ -17905,12 +17923,10 @@
                  id="Item.steppe_guardian_shield" />
       <equipment slot="Item2"
                  id="Item.eastern_spear_5_t5" />
-      <equipment slot="Item3"
-                 id="Item.eastern_throwing_spear_2_t4" />
       <equipment slot="Body"
                  id="Item.brass_lamellar_over_mail" />
       <equipment slot="Head"
-                 id="Item.khuzait_noble_helmet_with_fur" />
+                 id="Item.eastern_vendel_helmet" />
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Gloves"
@@ -17924,11 +17940,11 @@
       <equipment slot="Item1"
                  id="Item.steppe_guardian_shield" />
       <equipment slot="Item2"
-                 id="Item.khuzait_mace_4_t5" />
+                 id="Item.khuzait_noble_sword_3_t5" />
       <equipment slot="Body"
                  id="Item.brass_lamellar_over_mail" />
       <equipment slot="Head"
-                 id="Item.khuzait_noble_helmet_with_fur" />
+                 id="Item.eastern_vendel_helmet" />
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Gloves"
@@ -21034,6 +21050,8 @@
                  id="Item.stronger_reinforced_kite_shield" />
       <equipment slot="Item2"
                  id="Item.western_spear_4_t4" />
+      <equipment slot="Item3"
+                 id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
                  id="Item.hauberk" />
       <equipment slot="Leg"
@@ -21052,6 +21070,8 @@
                  id="Item.stronger_reinforced_kite_shield" />
       <equipment slot="Item2"
                  id="Item.western_spear_4_t4" />
+      <equipment slot="Item3"
+                 id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
                  id="Item.hauberk" />
       <equipment slot="Leg"
@@ -21068,6 +21088,8 @@
                  id="Item.stronger_reinforced_kite_shield" />
       <equipment slot="Item2"
                  id="Item.western_spear_4_t4" />
+      <equipment slot="Item3"
+                 id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
                  id="Item.hauberk" />
       <equipment slot="Leg"
@@ -21086,6 +21108,8 @@
                  id="Item.stronger_reinforced_kite_shield" />
       <equipment slot="Item2"
                  id="Item.western_spear_4_t4" />
+      <equipment slot="Item3"
+                 id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
                  id="Item.hauberk" />
       <equipment slot="Leg"
@@ -21863,7 +21887,7 @@
       <equipment slot="Leg"
                  id="Item.mail_cavalier_boots" />
       <equipment slot="Head"
-                 id="Item.visored_helmet_over_laced_coif" />
+                 id="Item.vlandian_faceguard_helmet_b" />
       <equipment slot="Gloves"
                  id="Item.mail_mitten" />
       <equipment slot="Cape"
@@ -21881,7 +21905,7 @@
       <equipment slot="Leg"
                  id="Item.mail_chausses" />
       <equipment slot="Head"
-                 id="Item.visored_helmet_over_padded_cloth" />
+                 id="Item.vlandian_faceguard_helmet_a" />
       <equipment slot="Gloves"
                  id="Item.mail_mitten" />
       <equipment slot="Cape"
@@ -21899,7 +21923,7 @@
       <equipment slot="Leg"
                  id="Item.mail_chausses" />
       <equipment slot="Head"
-                 id="Item.visored_helmet_over_mail_coif" />
+                 id="Item.vlandian_faceguard_helmet_a" />
       <equipment slot="Gloves"
                  id="Item.mail_mitten" />
       <equipment slot="Cape"

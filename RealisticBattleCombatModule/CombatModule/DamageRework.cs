@@ -147,7 +147,7 @@ namespace RealisticBattleCombatModule
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
                 {
-                    baseMagnitude = physicalDamage * momentumRemaining + (missileTotalDamage - 20f);
+                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage - 20f)) * XmlConfig.dict["Global.ThrustModifier"];
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingAxe"))
@@ -567,12 +567,12 @@ namespace RealisticBattleCombatModule
                                 }
                             case "OneHandedPolearm":
                                 {
-                                    num *= 100.0f;
+                                    num *= 2.5f;
                                     break;
                                 }
                             case "LowGripPolearm":
                                 {
-                                    num *= 100.0f;
+                                    num *= 2.5f;
                                     break;
                                 }
                             default:
@@ -748,7 +748,7 @@ namespace RealisticBattleCombatModule
                     }
                 case "Javelin":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, armorReduction, damageType, armorEffectiveness,
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_thrust, armorReduction, damageType, armorEffectiveness,
                             XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }
