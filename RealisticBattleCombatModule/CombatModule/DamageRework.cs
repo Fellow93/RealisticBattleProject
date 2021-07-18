@@ -1003,6 +1003,53 @@ namespace RealisticBattleCombatModule
     }
 
     [HarmonyPatch(typeof(DefaultItemValueModel))]
+    [HarmonyPatch("CalculateRangedWeaponTier")]
+    class OverrideCalculateRangedWeaponTier
+    {
+
+
+        static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
+        {
+            WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
+            //float num;
+            float RangedTier;
+            float DrawWeight = (float)weaponComponentData.MissileSpeed * 1f;
+            switch (weaponComponent.Item?.ItemType ?? ItemObject.ItemTypeEnum.Invalid)
+            {
+                default:
+                    RangedTier = (DrawWeight - 60f) * 0.049f;
+                    break;
+                case ItemObject.ItemTypeEnum.Crossbow:
+                    RangedTier = (DrawWeight - 450f) * 0.008f;
+                    break;
+            }
+            //num = RangedTier;
+            __result = RangedTier;
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(DefaultItemValueModel))]
+    [HarmonyPatch("CalculateAmmoTier")]
+    class OverrideCalculateAmmoTier
+    {
+
+
+        static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
+        {
+            WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
+            //float num;
+            float ArrowTier;
+            float ArrowWeight = (float)weaponComponentData.MissileSpeed * 1f;
+
+            ArrowTier = (ArrowWeight - 40f) * 0.1f;
+            //num = ArrowTier;
+            __result = ArrowTier;
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(DefaultItemValueModel))]
     [HarmonyPatch("CalculateArmorTier")]
     class OverrideCalculateArmorTier
     {
