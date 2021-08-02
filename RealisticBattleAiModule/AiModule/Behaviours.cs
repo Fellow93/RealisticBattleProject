@@ -607,7 +607,7 @@ namespace RealisticBattleAiModule
     [HarmonyPatch(typeof(BehaviorProtectFlank))]
     class OverrideBehaviorProtectFlank
     {
-        private enum BehaviourState
+        private enum BehaviorState
         {
             HoldingFlank,
             Charging,
@@ -616,14 +616,14 @@ namespace RealisticBattleAiModule
 
         [HarmonyPrefix]
         [HarmonyPatch("CalculateCurrentOrder")]
-        static bool PrefixCalculateCurrentOrder(ref BehaviorProtectFlank __instance, ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviourState ____protectFlankState,  ref Formation ____mainFormation, ref FormationAI.BehaviorSide ___behaviorSide)
+        static bool PrefixCalculateCurrentOrder(ref BehaviorProtectFlank __instance, ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviorState ____protectFlankState,  ref Formation ____mainFormation, ref FormationAI.BehaviorSide ___behaviorSide)
         {
             if (____mainFormation == null || __instance.Formation.QuerySystem.ClosestEnemyFormation == null)
             {
                 ____currentOrder = MovementOrder.MovementOrderStop;
                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
             }
-            else if (____protectFlankState == BehaviourState.HoldingFlank || ____protectFlankState == BehaviourState.Returning)
+            else if (____protectFlankState == BehaviorState.HoldingFlank || ____protectFlankState == BehaviorState.Returning)
             {
                 Vec2 direction = ____mainFormation.Direction;
                 Vec2 v = (__instance.Formation.QuerySystem.Team.MedianTargetFormationPosition.AsVec2 - ____mainFormation.QuerySystem.MedianPosition.AsVec2).Normalized();
@@ -655,12 +655,12 @@ namespace RealisticBattleAiModule
 
         [HarmonyPrefix]
         [HarmonyPatch("CheckAndChangeState")]
-        static bool PrefixCheckAndChangeState(ref BehaviorMountedSkirmish __instance, ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviourState ____protectFlankState,  ref Formation ____mainFormation, ref FormationAI.BehaviorSide ___behaviorSide)
+        static bool PrefixCheckAndChangeState(ref BehaviorMountedSkirmish __instance, ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviorState ____protectFlankState,  ref Formation ____mainFormation, ref FormationAI.BehaviorSide ___behaviorSide)
         {
             WorldPosition position = ____movementOrder.GetPosition(__instance.Formation);
             switch (____protectFlankState)
             {
-                case BehaviourState.HoldingFlank:
+                case BehaviorState.HoldingFlank:
                     if (__instance.Formation.QuerySystem.ClosestEnemyFormation != null)
                     {
                         float num = 150f + (__instance.Formation.Depth + __instance.Formation.QuerySystem.ClosestEnemyFormation.Formation.Depth) / 2f;
@@ -668,30 +668,30 @@ namespace RealisticBattleAiModule
                         {
                             ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestEnemyFormation.Formation);
                             ____currentOrder = ____chargeToTargetOrder;
-                            ____protectFlankState = BehaviourState.Charging;
+                            ____protectFlankState = BehaviorState.Charging;
                         }
                     }
                     break;
-                case BehaviourState.Charging:
+                case BehaviorState.Charging:
                     {
                         if (__instance.Formation.QuerySystem.ClosestEnemyFormation == null)
                         {
                             ____currentOrder = ____movementOrder;
-                            ____protectFlankState = BehaviourState.Returning;
+                            ____protectFlankState = BehaviorState.Returning;
                             break;
                         }
                         float num2 = 160f + (__instance.Formation.Depth + __instance.Formation.QuerySystem.ClosestEnemyFormation.Formation.Depth) / 2f;
                         if (__instance.Formation.QuerySystem.AveragePosition.DistanceSquared(position.AsVec2) > num2 * num2)
                         {
                             ____currentOrder = ____movementOrder;
-                            ____protectFlankState = BehaviourState.Returning;
+                            ____protectFlankState = BehaviorState.Returning;
                         }
                         break;
                     }
-                case BehaviourState.Returning:
+                case BehaviorState.Returning:
                     if (__instance.Formation.QuerySystem.AveragePosition.DistanceSquared(position.AsVec2) < 400f)
                     {
-                        ____protectFlankState = BehaviourState.HoldingFlank;
+                        ____protectFlankState = BehaviorState.HoldingFlank;
                     }
                     break;
             }
@@ -778,11 +778,11 @@ namespace RealisticBattleAiModule
 
         [HarmonyPostfix]
         [HarmonyPatch("CalculateCurrentOrder")]
-        static void PostfixCalculateCurrentOrder(ref BehaviorAssaultWalls __instance, ref MovementOrder ____attackEntityOrderOuterGate, ref ArrangementOrder ___CurrentArrangementOrder, ref MovementOrder ____chargeOrder, ref TeamAISiegeComponent ____teamAISiegeComponent,  ref MovementOrder ____currentOrder, ref BehaviorState ____behaviourState, ref MovementOrder ____attackEntityOrderInnerGate)
+        static void PostfixCalculateCurrentOrder(ref BehaviorAssaultWalls __instance, ref MovementOrder ____attackEntityOrderOuterGate, ref ArrangementOrder ___CurrentArrangementOrder, ref MovementOrder ____chargeOrder, ref TeamAISiegeComponent ____teamAISiegeComponent,  ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState, ref MovementOrder ____attackEntityOrderInnerGate)
         {
 
             //____attackEntityOrderInnerGate = MovementOrder.MovementOrderAttackEntity(____teamAISiegeComponent.InnerGate.GameEntity, surroundEntity: false);
-            switch (____behaviourState)
+            switch (____behaviorState)
             {
                 case BehaviorState.ClimbWall:
                     {
@@ -799,14 +799,14 @@ namespace RealisticBattleAiModule
                             __instance.Formation.FormAttackEntityDetachment(____attackEntityOrderInnerGate.TargetEntity);
                         }
 
-                        //___CurrentArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
+                        ___CurrentArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
                         break;
                     }
                 case BehaviorState.Charging:
                 case BehaviorState.TakeControl:
                     {
-                        
-                        if(__instance.Formation.AI.Side == BehaviorSide.Middle)
+
+                        if (__instance.Formation.AI.Side == BehaviorSide.Middle)
                         {
                             __instance.Formation.DisbandAttackEntityDetachment();
 
@@ -878,7 +878,7 @@ namespace RealisticBattleAiModule
     class OverrideBehaviorDefendCastleKeyPosition
     {
 
-        private enum BehaviourState
+        private enum BehaviorState
         {
             UnSet,
             Waiting,
@@ -887,7 +887,7 @@ namespace RealisticBattleAiModule
 
         [HarmonyPrefix]
         [HarmonyPatch("OnBehaviorActivatedAux")]
-        static bool PrefixOnBehaviorActivatedAux(ref BehaviorDefendCastleKeyPosition __instance, ref FacingOrder ____waitFacingOrder, ref FacingOrder ____readyFacingOrder, ref TeamAISiegeComponent ____teamAISiegeDefender, ref bool ____isDefendingWideGap, ref FacingOrder ___CurrentFacingOrder, FormationAI.BehaviorSide ___behaviorSide, ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate,  ref TacticalPosition ____tacticalMiddlePos, ref TacticalPosition ____tacticalWaitPos, ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviourState ____behaviourState)
+        static bool PrefixOnBehaviorActivatedAux(ref BehaviorDefendCastleKeyPosition __instance, ref FacingOrder ____waitFacingOrder, ref FacingOrder ____readyFacingOrder, ref TeamAISiegeComponent ____teamAISiegeDefender, ref bool ____isDefendingWideGap, ref FacingOrder ___CurrentFacingOrder, FormationAI.BehaviorSide ___behaviorSide, ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate,  ref TacticalPosition ____tacticalMiddlePos, ref TacticalPosition ____tacticalWaitPos, ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState)
         {
             MethodInfo method = typeof(BehaviorDefendCastleKeyPosition).GetMethod("ResetOrderPositions", BindingFlags.NonPublic | BindingFlags.Instance);
             method.DeclaringType.GetMethod("ResetOrderPositions");
@@ -904,7 +904,7 @@ namespace RealisticBattleAiModule
 
         [HarmonyPrefix]
         [HarmonyPatch("ResetOrderPositions")]
-        static bool PrefixResetOrderPositions(ref BehaviorDefendCastleKeyPosition __instance, ref FacingOrder ____waitFacingOrder, ref FacingOrder ____readyFacingOrder, ref TeamAISiegeComponent ____teamAISiegeDefender, ref bool ____isDefendingWideGap, ref FacingOrder ___CurrentFacingOrder, FormationAI.BehaviorSide ___behaviorSide, ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate,  ref TacticalPosition ____tacticalMiddlePos, ref TacticalPosition ____tacticalWaitPos, ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviourState ____behaviourState)
+        static bool PrefixResetOrderPositions(ref BehaviorDefendCastleKeyPosition __instance, ref FacingOrder ____waitFacingOrder, ref FacingOrder ____readyFacingOrder, ref TeamAISiegeComponent ____teamAISiegeDefender, ref bool ____isDefendingWideGap, ref FacingOrder ___CurrentFacingOrder, FormationAI.BehaviorSide ___behaviorSide, ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate,  ref TacticalPosition ____tacticalMiddlePos, ref TacticalPosition ____tacticalWaitPos, ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState)
         {
             ___behaviorSide = __instance.Formation.AI.Side;
             ____innerGate = null;
@@ -993,11 +993,11 @@ namespace RealisticBattleAiModule
                 ____waitFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
             }
 
-            if (____behaviourState == BehaviourState.Ready && ____tacticalMiddlePos != null)
+            if (____behaviorState == BehaviorState.Ready && ____tacticalMiddlePos != null)
             {
                 __instance.Formation.FormOrder = FormOrder.FormOrderCustom(____tacticalMiddlePos.Width * 2f);
             }
-            else if (____behaviourState == BehaviourState.Waiting && ____tacticalWaitPos != null)
+            else if (____behaviorState == BehaviorState.Waiting && ____tacticalWaitPos != null)
             {
                 __instance.Formation.FormOrder = FormOrder.FormOrderCustom(____tacticalWaitPos.Width * 2f);
             }
@@ -1006,14 +1006,14 @@ namespace RealisticBattleAiModule
                 //__instance.Formation.FormOrder = FormOrder.FormOrderCustom(30f);
             }
 
-             ____currentOrder = ((____behaviourState == BehaviourState.Ready) ? ____readyOrder : ____waitOrder);
-            ___CurrentFacingOrder = ((__instance.Formation.QuerySystem.ClosestEnemyFormation != null && TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation.QuerySystem.ClosestEnemyFormation.Formation, includeOnlyPositionedUnits: true)) ? FacingOrder.FacingOrderLookAtEnemy : ((____behaviourState == BehaviourState.Ready) ? ____readyFacingOrder : ____waitFacingOrder));
+             ____currentOrder = ((____behaviorState == BehaviorState.Ready) ? ____readyOrder : ____waitOrder);
+            ___CurrentFacingOrder = ((__instance.Formation.QuerySystem.ClosestEnemyFormation != null && TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation.QuerySystem.ClosestEnemyFormation.Formation, includeOnlyPositionedUnits: true)) ? FacingOrder.FacingOrderLookAtEnemy : ((____behaviorState == BehaviorState.Ready) ? ____readyFacingOrder : ____waitFacingOrder));
             return false;
         }
 
         [HarmonyPostfix]
         [HarmonyPatch("ResetOrderPositions")]
-        static void PostfixResetOrderPositions(ref BehaviorDefendCastleKeyPosition __instance, ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate,  ref TacticalPosition ____tacticalMiddlePos, ref TacticalPosition ____tacticalWaitPos, ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviourState ____behaviourState)
+        static void PostfixResetOrderPositions(ref BehaviorDefendCastleKeyPosition __instance, ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate,  ref TacticalPosition ____tacticalMiddlePos, ref TacticalPosition ____tacticalWaitPos, ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState)
         {
             ____laddersOnThisSide.Clear();
             if (____tacticalMiddlePos != null)
@@ -1047,7 +1047,7 @@ namespace RealisticBattleAiModule
                 if (____innerGate != null && !____innerGate.IsDestroyed)
                 {
                     WorldPosition position = ____tacticalMiddlePos.Position;
-                    if (____behaviourState == BehaviourState.Ready)
+                    if (____behaviorState == BehaviorState.Ready)
                     {
                         Vec2 direction = (____innerGate.GetPosition().AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2).Normalized();
                         WorldPosition newPosition = position;
@@ -1085,19 +1085,19 @@ namespace RealisticBattleAiModule
 
         [HarmonyPrefix]
         [HarmonyPatch("TickOccasionally")]
-        static bool PrefixTickOccasionally(ref FacingOrder ____readyFacingOrder, ref FacingOrder ____waitFacingOrder, ref BehaviorDefendCastleKeyPosition __instance, ref bool ____isInShieldWallDistance, ref TeamAISiegeComponent ____teamAISiegeDefender, ref bool ____isDefendingWideGap, ref FacingOrder ___CurrentFacingOrder, FormationAI.BehaviorSide ___behaviorSide, ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate,  ref TacticalPosition ____tacticalMiddlePos, ref TacticalPosition ____tacticalWaitPos, ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviourState ____behaviourState)
+        static bool PrefixTickOccasionally(ref FacingOrder ____readyFacingOrder, ref FacingOrder ____waitFacingOrder, ref BehaviorDefendCastleKeyPosition __instance, ref bool ____isInShieldWallDistance, ref TeamAISiegeComponent ____teamAISiegeDefender, ref bool ____isDefendingWideGap, ref FacingOrder ___CurrentFacingOrder, FormationAI.BehaviorSide ___behaviorSide, ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate,  ref TacticalPosition ____tacticalMiddlePos, ref TacticalPosition ____tacticalWaitPos, ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState)
         {
             IEnumerable<SiegeWeapon> source = from sw in Mission.Current.ActiveMissionObjects.FindAllWithType<SiegeWeapon>()
                                               where sw is IPrimarySiegeWeapon && (((sw as IPrimarySiegeWeapon).WeaponSide == FormationAI.BehaviorSide.Middle && !(sw as IPrimarySiegeWeapon).HoldLadders) || (sw as IPrimarySiegeWeapon).WeaponSide != FormationAI.BehaviorSide.Middle && (sw as IPrimarySiegeWeapon).SendLadders)
                                               //where sw is IPrimarySiegeWeapon
                                               select sw;
 
-            BehaviourState behaviourState = ____teamAISiegeDefender == null || !source.Any() ? BehaviourState.Waiting : BehaviourState.Ready;
-            if (behaviourState != ____behaviourState)
+            BehaviorState BehaviorState = ____teamAISiegeDefender == null || !source.Any() ? BehaviorState.Waiting : BehaviorState.Ready;
+            if (BehaviorState != ____behaviorState)
             {
-                ____behaviourState = behaviourState;
-                ____currentOrder = ((____behaviourState == BehaviourState.Ready) ? ____readyOrder : ____waitOrder);
-                ___CurrentFacingOrder = ((____behaviourState == BehaviourState.Ready) ? ____readyFacingOrder : ____waitFacingOrder);
+                ____behaviorState = BehaviorState;
+                ____currentOrder = ((____behaviorState == BehaviorState.Ready) ? ____readyOrder : ____waitOrder);
+                ___CurrentFacingOrder = ((____behaviorState == BehaviorState.Ready) ? ____readyFacingOrder : ____waitFacingOrder);
             }
             if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.Siege)
             {
@@ -1120,15 +1120,15 @@ namespace RealisticBattleAiModule
 
             __instance.Formation.SetMovementOrder(____currentOrder);
             __instance.Formation.FacingOrder = ___CurrentFacingOrder;
-            if (____behaviourState == BehaviourState.Ready && ____tacticalMiddlePos != null)
+            if (____behaviorState == BehaviorState.Ready && ____tacticalMiddlePos != null)
             {
                 __instance.Formation.FormOrder = FormOrder.FormOrderCustom(____tacticalMiddlePos.Width * 2f);
             }
-            else if (____behaviourState == BehaviourState.Waiting && ____tacticalWaitPos != null)
+            else if (____behaviorState == BehaviorState.Waiting && ____tacticalWaitPos != null)
             {
                 __instance.Formation.FormOrder = FormOrder.FormOrderCustom(____tacticalWaitPos.Width * 2f);
             }
-            bool flag = ____isDefendingWideGap && ____behaviourState == BehaviourState.Ready && __instance.Formation.QuerySystem.ClosestEnemyFormation != null && (__instance.Formation.QuerySystem.IsUnderRangedAttack || __instance.Formation.QuerySystem.AveragePosition.DistanceSquared(____currentOrder.GetPosition(__instance.Formation).AsVec2) < 25f + (____isInShieldWallDistance ? 75f : 0f));
+            bool flag = ____isDefendingWideGap && ____behaviorState == BehaviorState.Ready && __instance.Formation.QuerySystem.ClosestEnemyFormation != null && (__instance.Formation.QuerySystem.IsUnderRangedAttack || __instance.Formation.QuerySystem.AveragePosition.DistanceSquared(____currentOrder.GetPosition(__instance.Formation).AsVec2) < 25f + (____isInShieldWallDistance ? 75f : 0f));
             if (flag == ____isInShieldWallDistance)
             {
                 return false;
@@ -1155,9 +1155,9 @@ namespace RealisticBattleAiModule
 
         [HarmonyPostfix]
         [HarmonyPatch("Initialize")]
-        static void PostfixInitialize(ref BattleSideEnum managedSide, Vec3 managedDirection,  ref float queueBeginDistance, ref int ____maxUserCount, ref float ____agentSpacing, ref float ____queueBeginDistance, ref float ____queueRowSize, ref float ____costPerRow, ref float ____baseCost)
+        static void PostfixInitialize(ref BattleSideEnum managedSide, Vec3 managedDirection, ref float queueBeginDistance, ref int ____maxUserCount, ref float ____agentSpacing, ref float ____queueBeginDistance, ref float ____queueRowSize, ref float ____costPerRow, ref float ____baseCost)
         {
-            if(queueBeginDistance != 3f && ____maxUserCount > 1)
+            if (queueBeginDistance != 3f && ____maxUserCount > 1)
             {
                 ____agentSpacing = 1.1f;
                 ____queueBeginDistance = 7f;
@@ -1175,7 +1175,7 @@ namespace RealisticBattleAiModule
             //    ____queueRowSize = 5f;
             //    ____maxUserCount = 10;
             //}
-            
+
         }
     }
 
@@ -1201,7 +1201,7 @@ namespace RealisticBattleAiModule
                     identity.rotation.RotateAboutSide((float)Math.PI / 2f);
                     identity.rotation.RotateAboutForward((float)Math.PI / 8f);
 
-                    ladderQueueManager0.Initialize(list2.ElementAt(0).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, 0f, 1f), BattleSideEnum.Attacker, 3, (float)Math.PI * 3f / 4f, 7f, 1.1f, 30f, 50f, blockUsage: false, 1.1f, 4f, 5f);
+                    ladderQueueManager0.Initialize(list2.ElementAt(0).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, -1f), BattleSideEnum.Attacker, 15, (float)Math.PI / 4f, 7f, 1.1f, 30f, 50f, blockUsage: false, 1.1f, 4f, 5f);
                     ____queueManagers.Add(ladderQueueManager0);
                 }
                 if (ladderQueueManager1 != null)
@@ -1210,7 +1210,7 @@ namespace RealisticBattleAiModule
                     identity.rotation.RotateAboutSide((float)Math.PI / 2f);
                     identity.rotation.RotateAboutForward((float)Math.PI / 8f);
 
-                    ladderQueueManager1.Initialize(list2.ElementAt(1).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, 0f, 1f), BattleSideEnum.Attacker, 3, (float)Math.PI * 3f / 4f, 7f, 1.1f, 30f, 50f, blockUsage: false, 1.1f, 4f, 5f);
+                    ladderQueueManager1.Initialize(list2.ElementAt(1).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, -1f), BattleSideEnum.Attacker, 15, (float)Math.PI / 4f, 7f, 1.1f, 30f, 50f, blockUsage: false, 1.1f, 4f, 5f);
                     ____queueManagers.Add(ladderQueueManager1);
                 }
                 if (ladderQueueManager2 != null)
@@ -1219,7 +1219,7 @@ namespace RealisticBattleAiModule
                     identity.rotation.RotateAboutSide((float)Math.PI / 2f);
                     identity.rotation.RotateAboutForward((float)Math.PI / 8f);
 
-                    ladderQueueManager2.Initialize(list2.ElementAt(2).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, 0f, 1f), BattleSideEnum.Attacker, 3, (float)Math.PI * 3f / 4f, 7f, 1.1f, 30f, 50f, blockUsage: false, 1.1f, 4f, 5f);
+                    ladderQueueManager2.Initialize(list2.ElementAt(2).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, -1f), BattleSideEnum.Attacker, 15, (float)Math.PI / 4f, 7f, 1.1f, 2f, 1f, blockUsage: false, 1.1f, 0f, 5f);
                     ____queueManagers.Add(ladderQueueManager2);
                 }
                 foreach (LadderQueueManager queueManager in ____queueManagers)
@@ -1246,8 +1246,8 @@ namespace RealisticBattleAiModule
                     ____cleanState.Scene.SetAbilityOfFacesWithId(queueManager.ManagedNavigationFaceId, isEnabled: false);
                     queueManager.IsDeactivated = true;
                 }
+            }
         }
-    }
 
         [HarmonyPostfix]
         [HarmonyPatch("OnDeploymentStateChanged")]
