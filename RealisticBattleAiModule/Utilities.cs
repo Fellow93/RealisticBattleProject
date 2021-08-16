@@ -474,6 +474,27 @@ namespace RealisticBattleAiModule
 
             return !(has_neg && has_pos);
         }
+
+        public static bool CheckIfSkirmisherAgent(Agent agent)
+        {
+            CharacterObject characterObject = agent.Character as CharacterObject;
+            if(characterObject != null && characterObject.Tier > 3)
+            {
+                return false;
+            }
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+            {
+                if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
+                {
+                    WeaponStatsData[] wsd = agent.Equipment[equipmentIndex].GetWeaponStatsData();
+                    if (wsd[0].WeaponClass == (int)WeaponClass.Javelin && agent.Equipment[equipmentIndex].Amount > 0)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
     }
 }
 
