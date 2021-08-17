@@ -292,8 +292,8 @@
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:OneHandedPolearm" />
     <BuildData piece_offset="-8" />
     <BladeData stack_amount="3" blade_length="23.118" blade_width="18.371" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Thrust damage_type="Pierce" damage_factor="10" />
-      <Swing damage_type="Cut" damage_factor="7.7" />
+      <Thrust damage_type="Pierce" damage_factor="9" />
+      <Swing damage_type="Cut" damage_factor="6.1" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
