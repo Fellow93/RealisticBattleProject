@@ -1857,7 +1857,7 @@ namespace RealisticBattleAiModule
                         if (agents.Count() > 3)
                         {
                             unit.LookDirection = direction.ToVec3();
-                            if (MBRandom.RandomInt(50) == 0)
+                            if (MBRandom.RandomInt(75) == 0)
                             {
                                 //if (targetAgent != null)
                                 //{
@@ -1881,7 +1881,7 @@ namespace RealisticBattleAiModule
                                     IEnumerable<Agent> agentsRight = mission.GetNearbyAllyAgents(unitPosition + lookDirection.RightVec() * 0.8f, 1f, unit.Team);
                                     if (agentsLeft.Count() > 3 && agentsRight.Count() > 3)
                                     {
-                                        if (MBRandom.RandomInt(50) == 0)
+                                        if (MBRandom.RandomInt(75) == 0)
                                         {
                                             if (MBRandom.RandomInt(2) == 0)
                                             {
@@ -1974,12 +1974,12 @@ namespace RealisticBattleAiModule
                                         {
                                             if (MBRandom.RandomInt(unitPower / 4) == 0)
                                             {
-                                                __result = unit.GetWorldPosition();
-                                                return false;
+                                                return true;
                                             }
                                             else
                                             {
-                                                return true;
+                                                __result = unit.GetWorldPosition();
+                                                return false;
                                             }
                                         }
                                     }
