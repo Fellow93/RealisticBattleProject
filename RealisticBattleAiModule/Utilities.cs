@@ -250,11 +250,15 @@ namespace RealisticBattleAiModule
                             }
                             foreach (Formation enemyFormation in team.Formations.ToList())
                             {
-                                if (enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
+                                if (formation != null && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
                                 {
                                      formations.Add(enemyFormation);
                                 }
-                                if (enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
+                                if (formation != null && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
+                                {
+                                    formations.Add(enemyFormation);
+                                }
+                                if (formation != null && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsCavalryFormation)
                                 {
                                     formations.Add(enemyFormation);
                                 }
@@ -419,6 +423,11 @@ namespace RealisticBattleAiModule
 
         public static float GetCombatAIDifficultyMultiplier()
         {
+            MissionState missionState = (MissionState)Game.Current.GameStateManager.ActiveState;
+            if (missionState.MissionName.Equals("EnhancedBattleTestFieldBattle") || missionState.MissionName.Equals("EnhancedBattleTestSiegeBattle"))
+            {
+                return 1.0f;
+            }
             switch (CampaignOptions.CombatAIDifficulty)
             {
                 case CampaignOptions.Difficulty.VeryEasy:

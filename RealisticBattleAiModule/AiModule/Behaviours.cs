@@ -1542,7 +1542,7 @@ namespace RealisticBattleAiModule
             if(___Agent != null)
             {
                 var formation = ___Agent.Formation;
-                if (!___Agent.IsMount && formation != null && (formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && !(bool)IsUnitDetachedForDebug.Invoke(formation, new object[] { ___Agent }))
+                if (!___Agent.IsMount && formation != null && (formation.QuerySystem.IsCavalryFormation || formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && !(bool)IsUnitDetachedForDebug.Invoke(formation, new object[] { ___Agent }))
                 {
                     if (formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget)
                     {
@@ -1830,9 +1830,6 @@ namespace RealisticBattleAiModule
             //if (__instance.MovementOrder.OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
             if (unit != null && (__instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation || __instance.QuerySystem.IsCavalryFormation) && !____detachedUnits.Contains(unit))
             {
-                Formation significantEnemy = __instance.TargetFormation;
-                if (significantEnemy != null)
-                {
                     var targetAgent = unit.GetTargetAgent();
                     Mission mission = Mission.Current;
                     if (targetAgent != null)
@@ -1841,11 +1838,18 @@ namespace RealisticBattleAiModule
                         Vec2 unitPosition = unit.GetWorldPosition().AsVec2;
 
                         float distance = unitPosition.Distance(targetAgent.GetWorldPosition().AsVec2);
-                        if (distance > 25f)
-                        {
+                        if (targetAgent.HasMount) {
+                        if (distance > 100f){
                             __result = targetAgent.GetWorldPosition();
                             return false;
                         }
+                        }else {
+                            if (distance > 25f){
+                                __result = targetAgent.GetWorldPosition();
+                                return false;
+                            }
+                        }
+                        
 
                         Vec2 direction = (targetAgent.GetWorldPosition().AsVec2 - unitPosition).Normalized();
                         IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unitPosition + lookDirection * 0.8f, 1f, unit.Team);
@@ -1900,14 +1904,14 @@ namespace RealisticBattleAiModule
                                         if (MBRandom.RandomInt(2) == 0)
                                         {
                                             WorldPosition leftPosition = unit.GetWorldPosition();
-                                            leftPosition.SetVec2(unitPosition + lookDirection.LeftVec());
+                                            leftPosition.SetVec2(unitPosition + direction.LeftVec());
                                             __result = leftPosition;
                                             return false;
                                         }
                                         else
                                         {
                                             WorldPosition rightPosition = unit.GetWorldPosition();
-                                            rightPosition.SetVec2(unitPosition + lookDirection.RightVec());
+                                            rightPosition.SetVec2(unitPosition + direction.RightVec());
                                             __result = rightPosition;
                                             return false;
                                         }
@@ -1915,14 +1919,14 @@ namespace RealisticBattleAiModule
                                     else if (agentsLeft.Count() <= 3)
                                     {
                                         WorldPosition leftPosition = unit.GetWorldPosition();
-                                        leftPosition.SetVec2(unitPosition + lookDirection.LeftVec());
+                                        leftPosition.SetVec2(unitPosition + direction.LeftVec());
                                         __result = leftPosition;
                                         return false;
                                     }
                                     else if (agentsRight.Count() <= 3)
                                     {
                                         WorldPosition rightPosition = unit.GetWorldPosition();
-                                        rightPosition.SetVec2(unitPosition + lookDirection.RightVec());
+                                        rightPosition.SetVec2(unitPosition + direction.RightVec());
                                         __result = rightPosition;
                                         return false;
                                     }
@@ -1937,9 +1941,34 @@ namespace RealisticBattleAiModule
                                         }
                                         if (randInt < (unitPower / 2 + hasShieldBonus))
                                         {
-                                            WorldPosition backPosition = unit.GetWorldPosition();
-                                            __result = mission.GetClosestAllyAgent(unit.Team, backPosition.GetGroundVec3(), 4f).GetWorldPosition();
-                                            return false;
+                                            WorldPosition closeAllyPosition = unit.GetWorldPosition();
+                                            IEnumerable<Agent> nearbyAllyAgents = mission.GetNearbyAllyAgents(unitPosition, 4f, unit.Team);
+                                            if (nearbyAllyAgents.Count() > 0)
+                                            {
+                                                List<Agent> allyAgentList = nearbyAllyAgents.ToList();
+                                                if (allyAgentList.Count() == 1)
+                                                {
+                                                    __result = allyAgentList.ElementAt(0).GetWorldPosition();
+                                                    return false;
+                                                }
+                                                allyAgentList.Remove(unit);
+                                                float dist = 10000f;
+                                                foreach (Agent agent in allyAgentList)
+                                                {
+                                                    float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
+                                                    if (dist > newDist)
+                                                    {
+                                                        __result = agent.GetWorldPosition();
+                                                        dist = newDist;
+                                                    }
+                                                }
+                                                return false;
+                                            }
+                                            else
+                                            {
+                                                __result = mission.GetClosestAllyAgent(unit.Team, closeAllyPosition.GetGroundVec3(), 4f).GetWorldPosition();
+                                                return false;
+                                            }
                                         }
                                         else
                                         {
@@ -1969,38 +1998,23 @@ namespace RealisticBattleAiModule
                         }
                         if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
                         {
-                            IEnumerable<Agent> enemyAgents10f = mission.GetNearbyEnemyAgents(unitPosition + direction * 10f, 5f, unit.Team);
-                            IEnumerable<Agent> enemyAgents0f = mission.GetNearbyEnemyAgents(unitPosition, 5f, unit.Team);
-                            IEnumerable<Agent> enemyAgentsImmidiate = mission.GetNearbyEnemyAgents(unitPosition, 4f, unit.Team);
+                        IEnumerable<Agent> enemyAgents10f = mission.GetNearbyEnemyAgents(unitPosition + direction * 10f, 5f, unit.Team);
+                        IEnumerable<Agent> enemyAgents0f = mission.GetNearbyEnemyAgents(unitPosition, 5f, unit.Team);
+                        IEnumerable<Agent> enemyAgentsImmidiate = mission.GetNearbyEnemyAgents(unitPosition, 4f, unit.Team);
+                        if (targetAgent.HasMount)
+                        {
+                            
+                            IEnumerable<Agent> enemyAgents20f = mission.GetNearbyEnemyAgents(unitPosition + direction * 20f, 5f, unit.Team);
+                            IEnumerable<Agent> enemyAgents30f = mission.GetNearbyEnemyAgents(unitPosition + direction * 30f, 5f, unit.Team);
+                            IEnumerable<Agent> enemyAgents40f = mission.GetNearbyEnemyAgents(unitPosition + direction * 40f, 5f, unit.Team);
+                            IEnumerable<Agent> enemyAgents50f = mission.GetNearbyEnemyAgents(unitPosition + direction * 50f, 5f, unit.Team);
+                            IEnumerable<Agent> enemyAgents60f = mission.GetNearbyEnemyAgents(unitPosition + direction * 60f, 5f, unit.Team);
+                            IEnumerable<Agent> enemyAgents70f = mission.GetNearbyEnemyAgents(unitPosition + direction * 70f, 5f, unit.Team);
+                            IEnumerable<Agent> enemyAgents80f = mission.GetNearbyEnemyAgents(unitPosition + direction * 80f, 5f, unit.Team);
+                            IEnumerable<Agent> enemyAgents90f = mission.GetNearbyEnemyAgents(unitPosition + direction * 90f, 5f, unit.Team);
 
-                            //if (Utilities.CheckIfSkirmisherAgent(unit))
-                            //{
-                            //    IEnumerable<Agent> enemyAgents40f = mission.GetNearbyEnemyAgents(unitPosition + direction * 40f, 5f, unit.Team);
-                            //    IEnumerable<Agent> enemyAgents30f = mission.GetNearbyEnemyAgents(unitPosition + direction * 30f, 5f, unit.Team);
-                            //    IEnumerable<Agent> enemyAgents20f = mission.GetNearbyEnemyAgents(unitPosition + direction * 20f, 5f, unit.Team);
-
-                            //    if (enemyAgents0f.Count() > 2 || enemyAgents10f.Count() > 2 || enemyAgents20f.Count() > 2 || enemyAgents30f.Count() > 2 || enemyAgents40f.Count() > 2){
-                            //        {
-                            //            int randInt = MBRandom.RandomInt(50);
-                            //            if (randInt < 17)
-                            //            {
-                            //                unit.SetFiringOrder(0);
-                            //                __result = unit.GetWorldPosition();
-                            //                return false;
-                            //            }
-                            //            else if (randInt < 50)
-                            //            {
-                            //                unit.SetFiringOrder(1);
-
-                            //                WorldPosition backPosition = unit.GetWorldPosition();
-                            //                backPosition.SetVec2(unitPosition - lookDirection * 3f);
-                            //                __result = backPosition;
-                            //                return false;
-                            //            }
-                            //        }
-                            //    }
-                            //}
-                            if (enemyAgents0f.Count() > 3 || enemyAgents10f.Count() > 3)
+                            if (enemyAgents0f.Count() > 3 || enemyAgents10f.Count() > 3 || enemyAgents20f.Count() > 3 || enemyAgents30f.Count() > 3 || enemyAgents40f.Count() > 3 || enemyAgents50f.Count() > 3 || enemyAgents60f.Count() > 3
+                                || enemyAgents70f.Count() > 3 || enemyAgents80f.Count() > 3 || enemyAgents90f.Count() > 3)
                             {
                                 //unit.SetFiringOrder(1);
                                 int unitPower = (int)Math.Floor(unit.Character.GetPower() * 100);
@@ -2008,7 +2022,7 @@ namespace RealisticBattleAiModule
                                 int hasShieldBonus = 0;
                                 if (unit.HasShieldCached)
                                 {
-                                    hasShieldBonus = 30;
+                                    hasShieldBonus = 50;
                                 }
                                 if (randInt < 0)
                                 {
@@ -2022,9 +2036,8 @@ namespace RealisticBattleAiModule
                                     __result = backPosition;
                                     return false;
                                 }
-                                else if (randInt < (unitPower / 2 + hasShieldBonus))
+                                else if (randInt < unitPower)
                                 {
-
                                     if (randInt < (unitPower / 2 + hasShieldBonus))
                                     {
 
@@ -2036,8 +2049,34 @@ namespace RealisticBattleAiModule
                                             return false;
                                         }
                                         WorldPosition closeAllyPosition = unit.GetWorldPosition();
-                                        __result = mission.GetClosestAllyAgent(unit.Team, closeAllyPosition.GetGroundVec3(), 4f).GetWorldPosition();
-                                        return false;
+                                        IEnumerable<Agent> nearbyAllyAgents = mission.GetNearbyAllyAgents(unitPosition , 4f, unit.Team);
+                                        if(nearbyAllyAgents.Count() > 0)
+                                        {
+                                            List<Agent> allyAgentList = nearbyAllyAgents.ToList();
+                                            if (allyAgentList.Count() == 1)
+                                            {
+                                                __result = allyAgentList.ElementAt(0).GetWorldPosition();
+                                                return false;
+                                            }
+                                            allyAgentList.Remove(unit);
+                                            float dist = 10000f;
+                                            foreach(Agent agent in allyAgentList)
+                                            {
+                                                float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
+                                                if (dist > newDist)
+                                                {
+                                                    __result = agent.GetWorldPosition();
+                                                    dist = newDist;
+                                                }
+                                            }
+                                            return false;
+                                        }
+                                        else
+                                        {
+                                            __result = mission.GetClosestAllyAgent(unit.Team, closeAllyPosition.GetGroundVec3(), 4f).GetWorldPosition();
+                                            return false;
+                                        }
+                                        
                                     }
                                     else
                                     {
@@ -2055,21 +2094,108 @@ namespace RealisticBattleAiModule
                                         }
                                     }
 
-                                    //}
-
                                 }
-                                else if (randInt < unitPower)
+                                else if (randInt < unitPower )
                                 {
                                     return true;
                                 }
                             }
+
                         }
-                        else
+                       
+                        if (enemyAgents0f.Count() > 3 || enemyAgents10f.Count() > 3)
                         {
-                            return true;
+                            unit.LookDirection = direction.ToVec3();
+                            unit.SetFiringOrder(1);
+                            int unitPower = (int)Math.Floor(unit.Character.GetPower() * 100);
+                            int randInt = MBRandom.RandomInt(unitPower + 10);
+                            int hasShieldBonus = 0;
+                            if (unit.HasShieldCached)
+                            {
+                                hasShieldBonus = 30;
+                            }
+                            if (randInt < 0)
+                            {
+                                __result = unit.GetWorldPosition();
+                                return false;
+                            }
+                            if (enemyAgentsImmidiate.Count() > 7)
+                            {
+                                WorldPosition backPosition = unit.GetWorldPosition();
+                                backPosition.SetVec2(unitPosition - lookDirection * 1.5f);
+                                __result = backPosition;
+                                return false;
+                            }
+                            else if (randInt < (unitPower / 2 + hasShieldBonus))
+                            {
+
+                                if (randInt < (unitPower / 2 + hasShieldBonus))
+                                {
+
+                                    if (enemyAgents0f.Count() > 5)
+                                    {
+                                        WorldPosition backPosition = unit.GetWorldPosition();
+                                        backPosition.SetVec2(unitPosition - lookDirection * 1.5f);
+                                        __result = backPosition;
+                                        return false;
+                                    }
+                                    WorldPosition closeAllyPosition = unit.GetWorldPosition();
+                                    IEnumerable<Agent> nearbyAllyAgents = mission.GetNearbyAllyAgents(unitPosition, 4f, unit.Team);
+                                    if (nearbyAllyAgents.Count() > 0)
+                                    {
+                                        List<Agent> allyAgentList = nearbyAllyAgents.ToList();
+                                        if (allyAgentList.Count() == 1)
+                                        {
+                                            __result = allyAgentList.ElementAt(0).GetWorldPosition();
+                                            return false;
+                                        }
+                                        allyAgentList.Remove(unit);
+                                        float dist = 10000f;
+                                        foreach (Agent agent in allyAgentList)
+                                        {
+                                            float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
+                                            if (dist > newDist)
+                                            {
+                                                __result = agent.GetWorldPosition();
+                                                dist = newDist;
+                                            }
+                                        }
+                                        return false;
+                                    }
+                                    else
+                                    {
+                                        __result = mission.GetClosestAllyAgent(unit.Team, closeAllyPosition.GetGroundVec3(), 4f).GetWorldPosition();
+                                        return false;
+                                    }
+                                }
+                                else
+                                {
+                                    if (MBRandom.RandomInt(unitPower / 4) == 0)
+                                    {
+                                        __result = unit.GetWorldPosition();
+                                        return false;
+                                    }
+                                    else
+                                    {
+                                        WorldPosition backPosition = unit.GetWorldPosition();
+                                        backPosition.SetVec2(unitPosition - lookDirection * 1.5f);
+                                        __result = backPosition;
+                                        return false;
+                                    }
+                                }
+
+                            }
+                            else if (randInt < unitPower)
+                            {
+                                return true;
+                            }
                         }
                     }
-                    //}
+                    else
+                    {
+                        return true;
+                    }
+                //}
                 }
                 return false;
             }
