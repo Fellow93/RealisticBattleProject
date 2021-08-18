@@ -1904,7 +1904,7 @@
       <equipment slot="Item1"
                  id="Item.adarga" />
       <equipment slot="Head"
-                 id="Item.aserai_civil_e_hscarf" />
+                 id="Item.desert_cap" />
       <equipment slot="Body"
                  id="Item.aserai_civil_e" />
       <equipment slot="Leg"
@@ -1916,7 +1916,7 @@
       <equipment slot="Item1"
                  id="Item.adarga" />
       <equipment slot="Head"
-                 id="Item.aserai_civil_c_head" />
+                 id="Item.desert_cap" />
       <equipment slot="Body"
                  id="Item.aserai_civil_c" />
       <equipment slot="Leg"
@@ -1928,7 +1928,7 @@
       <equipment slot="Item1"
                  id="Item.adarga" />
       <equipment slot="Head"
-                 id="Item.aserai_civil_e_hscarf" />
+                 id="Item.desert_cap" />
       <equipment slot="Body"
                  id="Item.aserai_civil_e" />
       <equipment slot="Leg"
@@ -1942,7 +1942,7 @@
       <equipment slot="Item1"
                  id="Item.adarga" />
       <equipment slot="Head"
-                 id="Item.aserai_civil_c_head" />
+                 id="Item.desert_cap" />
       <equipment slot="Body"
                  id="Item.aserai_civil_e" />
       <equipment slot="Leg"
@@ -3864,6 +3864,8 @@
                  id="Item.battania_civil_cloak" />
       <equipment slot="Leg"
                  id="Item.rough_tied_boots" />
+      <equipment slot="Head"
+                 id="Item.thinhide_coif" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -3880,6 +3882,8 @@
                  id="Item.rough_tied_boots" />
       <equipment slot="Gloves"
                  id="Item.buttoned_leather_bracers" />
+      <equipment slot="Head"
+                 id="Item.thinhide_coif" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -3894,6 +3898,8 @@
                  id="Item.rough_tied_boots" />
       <equipment slot="Gloves"
                  id="Item.buttoned_leather_bracers" />
+      <equipment slot="Head"
+                 id="Item.thinhide_coif" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -3908,6 +3914,8 @@
                  id="Item.rough_tied_boots" />
       <equipment slot="Gloves"
                  id="Item.buttoned_leather_bracers" />
+      <equipment slot="Head"
+                 id="Item.thinhide_coif" />
       </EquipmentRoster>
       <EquipmentSet id="battania_troop_civilian_template_t1"
                     civilian="true" />
@@ -5912,7 +5920,7 @@
       <equipment slot="Item1"
                  id="Item.leather_bound_kite_shield" />
       <equipment slot="Head"
-                 id="Item.leather_cap" />
+                 id="Item.imperial_padded_coif" />
       <equipment slot="Body"
                  id="Item.tunic_with_shoulder_pads" />
       <equipment slot="Leg"
@@ -5924,7 +5932,7 @@
       <equipment slot="Item1"
                  id="Item.leather_bound_kite_shield" />
       <equipment slot="Head"
-                 id="Item.merchants_hat" />
+                 id="Item.imperial_padded_coif" />
       <equipment slot="Body"
                  id="Item.footmans_tunic" />
       <equipment slot="Leg"
@@ -5939,6 +5947,8 @@
                  id="Item.tied_cloth_tunic" />
       <equipment slot="Leg"
                  id="Item.empire_horseman_boots" />
+      <equipment slot="Head"
+                 id="Item.imperial_padded_coif" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -5949,6 +5959,8 @@
                  id="Item.tied_cloth_tunic" />
       <equipment slot="Leg"
                  id="Item.empire_horseman_boots" />
+      <equipment slot="Head"
+                 id="Item.imperial_padded_coif" />
       </EquipmentRoster>
       <EquipmentSet id="empire_troop_civilian_template_t1"
                     civilian="true" />
@@ -9555,6 +9567,8 @@
                  id="Item.tundra_tunic" />
       <equipment slot="Leg"
                  id="Item.highland_leg_wrappings" />
+      <equipment slot="Head"
+                 id="Item.nordic_fur_cap" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -9569,6 +9583,8 @@
                  id="Item.ragged_armwraps" />
       <equipment slot="Cape"
                  id="Item.scarf" />
+      <equipment slot="Head"
+                 id="Item.nordic_fur_cap" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -9579,6 +9595,8 @@
                  id="Item.tundra_tunic" />
       <equipment slot="Leg"
                  id="Item.highland_leg_wrappings" />
+      <equipment slot="Head"
+                 id="Item.nordic_fur_cap" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -9589,6 +9607,8 @@
                  id="Item.tundra_tunic" />
       <equipment slot="Leg"
                  id="Item.highland_leg_wrappings" />
+      <equipment slot="Head"
+                 id="Item.nordic_fur_cap" />
       </EquipmentRoster>
       <EquipmentSet id="sturgia_troop_civilian_template_t1"
                     civilian="true" />

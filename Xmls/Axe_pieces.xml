@@ -509,7 +509,6 @@
     </Materials>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
-	  <Flag name="BonusAgainstShield" />
     </Flags>
   </CraftingPiece>
   <CraftingPiece id="axe_craft_13_head" name="{=hSSk6tTn}Throwing Axe Head" tier="4" piece_type="Blade" mesh="axe_craft_13_head" distance_to_next_piece="2.7" distance_to_previous_piece="1.6" weight="0.440">
@@ -522,7 +521,6 @@
     </Materials>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
-	  <Flag name="BonusAgainstShield" />
     </Flags>
   </CraftingPiece>
   <CraftingPiece id="axe_craft_31_head" name="{=sNJNDDKN}Small Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_31_head" distance_to_next_piece="6.7" distance_to_previous_piece="4" weight="0.493">
@@ -532,7 +530,6 @@
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
-	  <Flag name="BonusAgainstShield" />
     </Flags>
     <Materials>
       <Material id="Iron2" count="2" />
