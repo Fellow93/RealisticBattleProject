@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using System.Reflection;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -70,4 +71,5 @@ namespace RealisticBattleAiModule
             }
         }
     }
+
 }

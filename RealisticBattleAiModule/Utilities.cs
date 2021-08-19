@@ -258,10 +258,10 @@ namespace RealisticBattleAiModule
                                 {
                                     formations.Add(enemyFormation);
                                 }
-                                if (formation != null && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsCavalryFormation)
-                                {
-                                    formations.Add(enemyFormation);
-                                }
+                                //if (formation != null && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsCavalryFormation)
+                                //{
+                                //    formations.Add(enemyFormation);
+                                //}
                             }
                         }
                     }

@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Helpers;
+using JetBrains.Annotations;
 using SandBox;
 using System;
 using System.Collections.Generic;
@@ -1291,7 +1292,95 @@ namespace RealisticBattleCombatModule
                 weaponType = attackerWeapon.Item.PrimaryWeapon.WeaponClass.ToString();
             }
 
-            if ((collisionData.CollisionResult == CombatCollisionResult.Parried && !collisionData.AttackBlockedWithShield) || (collisionData.AttackBlockedWithShield && !collisionData.CorrectSideShieldBlock))
+            if((attackerAgent.IsDoingPassiveAttack && collisionData.CollisionResult == CombatCollisionResult.StrikeAgent))
+            {
+                if (attackerAgent.Team != victimAgent.Team)
+                {
+                    __result.BlowFlag |= BlowFlags.KnockDown;
+                    return;
+                }
+            }
+
+            //if ((collisionData.CollisionResult == CombatCollisionResult.Blocked) || (collisionData.CollisionResult == CombatCollisionResult.StrikeAgent) || (collisionData.CollisionResult == CombatCollisionResult.Parried))
+            //{
+            //    switch (weaponType)
+            //    {
+            //        case "TwoHandedPolearm":
+            //            if (attackerAgent.Team != victimAgent.Team)
+            //            {
+
+            //                //AttackCollisionData newdata = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(false, false, false, true, false, false, false, false, false, true, false, collisionData.CollisionResult, collisionData.AffectorWeaponSlotOrMissileIndex,
+            //                //    collisionData.StrikeType, collisionData.StrikeType, collisionData.CollisionBoneIndex, BoneBodyPartType.Chest, collisionData.AttackBoneIndex, collisionData.AttackDirection, collisionData.PhysicsMaterialIndex,
+            //                //    collisionData.CollisionHitResultFlags, collisionData.AttackProgress, collisionData.CollisionDistanceOnWeapon, collisionData.AttackerStunPeriod, collisionData.DefenderStunPeriod, collisionData.MissileTotalDamage,
+            //                //    0, collisionData.ChargeVelocity, collisionData.FallSpeed, collisionData.WeaponRotUp, collisionData.WeaponBlowDir, collisionData.CollisionGlobalPosition, collisionData.MissileVelocity,
+            //                //    collisionData.MissileStartingPosition, collisionData.VictimAgentCurVelocity, collisionData.CollisionGlobalNormal);
+
+            //                //collisionData = newdata;
+
+            //                sbyte weaponAttachBoneIndex = (sbyte)(attackerWeapon.IsEmpty ? (-1) : attackerAgent.Monster.GetBoneToAttachForItemFlags(attackerWeapon.Item.ItemFlags));
+            //                __result.WeaponRecord.FillAsMeleeBlow(attackerWeapon.Item, attackerWeapon.CurrentUsageItem, collisionData.AffectorWeaponSlotOrMissileIndex, weaponAttachBoneIndex);
+            //                __result.StrikeType = (StrikeType)collisionData.StrikeType;
+            //                __result.DamageType = ((!attackerWeapon.IsEmpty && true && !collisionData.IsAlternativeAttack) ? ((DamageTypes)collisionData.DamageType) : DamageTypes.Blunt);
+            //                __result.NoIgnore = collisionData.IsAlternativeAttack;
+            //                __result.AttackerStunPeriod = collisionData.AttackerStunPeriod;
+            //                __result.DefenderStunPeriod = collisionData.DefenderStunPeriod;
+            //                __result.BlowFlag = BlowFlags.None;
+            //                __result.Position = collisionData.CollisionGlobalPosition;
+            //                __result.BoneIndex = collisionData.CollisionBoneIndex;
+            //                __result.Direction = blowDirection;
+            //                __result.SwingDirection = swingDirection;
+            //                //__result.InflictedDamage = 1;
+            //                __result.VictimBodyPart = collisionData.VictimHitBodyPart;
+            //                __result.BlowFlag |= BlowFlags.KnockBack;
+            //                victimAgent.RegisterBlow(__result);
+            //                foreach (MissionBehaviour missionBehaviour in __instance.MissionBehaviours)
+            //                {
+            //                    missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, null, __result, ref collisionData, in attackerWeapon);
+            //                }
+            //                return;
+            //            }
+            //            break;
+            //    }
+            //}
+
+            if ((attackerAgent.IsDoingPassiveAttack && collisionData.CollisionResult == CombatCollisionResult.Blocked))
+            {
+                if (attackerAgent.Team != victimAgent.Team)
+                {
+
+                    //AttackCollisionData newdata = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(false, false, false, true, false, false, false, false, false, true, false, collisionData.CollisionResult, collisionData.AffectorWeaponSlotOrMissileIndex,
+                    //    collisionData.StrikeType, collisionData.StrikeType, collisionData.CollisionBoneIndex, BoneBodyPartType.Chest, collisionData.AttackBoneIndex, collisionData.AttackDirection, collisionData.PhysicsMaterialIndex,
+                    //    collisionData.CollisionHitResultFlags, collisionData.AttackProgress, collisionData.CollisionDistanceOnWeapon, collisionData.AttackerStunPeriod, collisionData.DefenderStunPeriod, collisionData.MissileTotalDamage,
+                    //    0, collisionData.ChargeVelocity, collisionData.FallSpeed, collisionData.WeaponRotUp, collisionData.WeaponBlowDir, collisionData.CollisionGlobalPosition, collisionData.MissileVelocity,
+                    //    collisionData.MissileStartingPosition, collisionData.VictimAgentCurVelocity, collisionData.CollisionGlobalNormal);
+
+                    //collisionData = newdata;
+
+                    sbyte weaponAttachBoneIndex = (sbyte)(attackerWeapon.IsEmpty ? (-1) : attackerAgent.Monster.GetBoneToAttachForItemFlags(attackerWeapon.Item.ItemFlags));
+                    __result.WeaponRecord.FillAsMeleeBlow(attackerWeapon.Item, attackerWeapon.CurrentUsageItem, collisionData.AffectorWeaponSlotOrMissileIndex, weaponAttachBoneIndex);
+                    __result.StrikeType = (StrikeType)collisionData.StrikeType;
+                    __result.DamageType = ((!attackerWeapon.IsEmpty && true && !collisionData.IsAlternativeAttack) ? ((DamageTypes)collisionData.DamageType) : DamageTypes.Blunt);
+                    __result.NoIgnore = collisionData.IsAlternativeAttack;
+                    __result.AttackerStunPeriod = collisionData.AttackerStunPeriod;
+                    __result.DefenderStunPeriod = collisionData.DefenderStunPeriod;
+                    __result.BlowFlag = BlowFlags.None;
+                    __result.Position = collisionData.CollisionGlobalPosition;
+                    __result.BoneIndex = collisionData.CollisionBoneIndex;
+                    __result.Direction = blowDirection;
+                    __result.SwingDirection = swingDirection;
+                    //__result.InflictedDamage = 1;
+                    __result.VictimBodyPart = collisionData.VictimHitBodyPart;
+                    __result.BlowFlag |= BlowFlags.KnockBack;
+                    victimAgent.RegisterBlow(__result);
+                    foreach (MissionBehaviour missionBehaviour in __instance.MissionBehaviours)
+                    {
+                        missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, null, __result, ref collisionData, in attackerWeapon);
+                    }
+                    return;
+                }
+            }
+
+            if ((collisionData.CollisionResult == CombatCollisionResult.Parried && !collisionData.AttackBlockedWithShield) || (collisionData.AttackBlockedWithShield && !collisionData.CorrectSideShieldBlock) )
             {
                 switch (weaponType)
                 {
@@ -1331,18 +1420,36 @@ namespace RealisticBattleCombatModule
         }
     }
 
+    //[UsedImplicitly]
+    //[MBCallback]
     //[HarmonyPatch(typeof(Mission))]
     //[HarmonyPatch("MeleeHitCallback")]
     //class MeleeHitCallbackPatch
     //{
-    //    static void Postfix(ref AttackCollisionData collisionData, Agent attacker, Agent victim, GameEntity realHitEntity, ref float inOutMomentumRemaining, ref MeleeCollisionReaction colReaction, CrushThroughState crushThroughState, Vec3 blowDir, Vec3 swingDir, ref HitParticleResultData hitParticleResultData, bool crushedThroughWithoutAgentCollision)
+    //    static bool Prefix(ref AttackCollisionData collisionData, Agent attacker, Agent victim, GameEntity realHitEntity, ref float inOutMomentumRemaining, ref MeleeCollisionReaction colReaction, CrushThroughState crushThroughState, Vec3 blowDir, Vec3 swingDir, ref HitParticleResultData hitParticleResultData, bool crushedThroughWithoutAgentCollision)
     //    {
+    //        //EquipmentIndex shieldindex = victim.GetWieldedItemIndex(Agent.HandIndex.OffHand);
+    //        //if(shieldindex != EquipmentIndex.None)
+    //        //{
+    //        //    AttackCollisionData newdata = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(true, false, false, true, false, false, false, false, false, collisionData.ThrustTipHit, false, CombatCollisionResult.Blocked, collisionData.AffectorWeaponSlotOrMissileIndex,
+    //        //        collisionData.StrikeType, collisionData.StrikeType,18, BoneBodyPartType.ArmLeft, collisionData.AttackBoneIndex, collisionData.AttackDirection, collisionData.PhysicsMaterialIndex,
+    //        //        collisionData.CollisionHitResultFlags, collisionData.AttackProgress, collisionData.CollisionDistanceOnWeapon, 0.2f, 0.2f, collisionData.MissileTotalDamage,
+    //        //        0, collisionData.ChargeVelocity, collisionData.FallSpeed, collisionData.WeaponRotUp, collisionData.WeaponBlowDir, collisionData.CollisionGlobalPosition, collisionData.MissileVelocity,
+    //        //        collisionData.MissileStartingPosition, collisionData.VictimAgentCurVelocity, collisionData.CollisionGlobalNormal);
+    //        //    newdata.InflictedDamage = -2147483648;
+    //        //    newdata.BaseMagnitude = -1;
+    //        //    newdata.AbsorbedByArmor = -2147483648;
+    //        //    newdata.MovementSpeedDamageModifier = -1;
+    //        //    newdata.SelfInflictedDamage = -2147483648;
+    //        //    collisionData = newdata;
+    //        //}
+    //        return true;
     //    }
     //}
 
     [HarmonyPatch(typeof(Agent))]
     [HarmonyPatch("HandleBlow")]
-    class MeleeHitCallbackPatch
+    class HandleBlowPatch
     {
 
         private static ArmorComponent.ArmorMaterialTypes GetProtectorArmorMaterialOfBone(Agent agent,sbyte boneIndex)
@@ -1410,7 +1517,7 @@ namespace RealisticBattleCombatModule
             method.DeclaringType.GetMethod("UpdateLastAttackAndHitTimes");
             method.Invoke(__instance, new object[] { agent, b.IsMissile });
 
-            bool isKnockBack = (b.BlowFlag & BlowFlags.NonTipThrust) != 0;
+            bool isKnockBack = ((b.BlowFlag & BlowFlags.NonTipThrust) != 0) || ((b.BlowFlag & BlowFlags.KnockDown) != 0) || ((b.BlowFlag & BlowFlags.KnockBack) != 0);
             if(b.AttackType == AgentAttackType.Bash || b.AttackType == AgentAttackType.Kick)
             {
                 if(b.InflictedDamage <= 0)
