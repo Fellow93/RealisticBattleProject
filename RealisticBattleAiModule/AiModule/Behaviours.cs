@@ -1856,7 +1856,7 @@ namespace RealisticBattleAiModule
                         if (agents.Count() > 3)
                         {
                             unit.LookDirection = direction.ToVec3();
-                            unit.SetLookAgent(targetAgent);
+                            //unit.SetLookAgent(targetAgent);
                             if (MBRandom.RandomInt(75) == 0)
                             {
                                 //if (targetAgent != null)
@@ -2106,7 +2106,7 @@ namespace RealisticBattleAiModule
                         if (enemyAgents0f.Count() > 3 || enemyAgents10f.Count() > 3)
                         {
                             unit.LookDirection = direction.ToVec3();
-                            unit.SetLookAgent(targetAgent);
+                            //unit.SetLookAgent(targetAgent);
 
                             unit.SetFiringOrder(1);
                             int unitPower = (int)Math.Floor(unit.Character.GetPower() * 100);
