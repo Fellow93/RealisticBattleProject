@@ -405,7 +405,7 @@
   <!-- #endregion -->
   <CraftingPiece id="hammer_head_11" name="{=LFfUtZrT}Hammer Head" tier="2" piece_type="Blade" mesh="mace_head_24" length="12.6" weight="0.519" full_scale="true" excluded_item_usage_features="shield:thrust">
     <!--WOOD-->
-    <PieceUsages unavailable_usages="OneHandedPolearm:TwoHandedPolearm_Couchable:Javelin" />
+    <PieceUsages unavailable_usages="OneHandedPolearm:TwoHandedPolearm_Couchable:Javelin:TwoHandedPolearm_Bracing" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="2.8" />
     </BladeData>

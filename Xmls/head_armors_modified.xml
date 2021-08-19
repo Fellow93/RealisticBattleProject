@@ -456,12 +456,6 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="empire_crown" name="{=FZ6VCoKI}empire_crown" mesh="empire_crown" culture="Culture.empire" weight="3.1" appearance="6" Type="HeadArmor" value="40000" is_merchandise="false">
-		<ItemComponent>
-			<Armor head_armor="46" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
 	<Item id="leatherlame_roundkettle" name="{=qoT97j7u}Bronze Roundkettle" mesh="empire_helmet_j__a" culture="Culture.empire" weight="1.8" appearance="1" Type="HeadArmor" value="7200" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="47" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate"/>
@@ -707,6 +701,12 @@
 			<Armor head_armor="65" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
 		</ItemComponent>
 		<Flags/>
+	</Item>
+	<Item id="empire_crown_v2" name="{=u5eafobF}Imperial Jeweled Band" mesh="empire_crown_v2" culture="Culture.empire" weight="0.85" appearance="6" Type="HeadArmor" value="10000" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="15" has_gender_variations="false" hair_cover_type="none" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="false"/>
 	</Item>
 	<Item id="closed_desert_helmet_with_mail" name="{=vwAaIwnD}Closed Southern Helmet With Mail" mesh="aserai_helmet_k" culture="Culture.aserai" weight="3.2" appearance="1.3" Type="HeadArmor" value="10200">
 		<ItemComponent>
@@ -1140,11 +1140,23 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
+	<Item id="vlandian_faceguard_helmet_b" name="{=zkt4AwSi}Knight Helmet With Brass Faceguard" mesh="vlandian_faceguard_helmet_b" culture="Culture.vlandia" weight="2.3" appearance="1.5" Type="HeadArmor" value="14850" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="98" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
 	<Item id="visored_helmet_over_padded_coif" name="{=agqzAXa9}Visored Helmet Over Padded Coif" mesh="vlandia_helmet_m_b" culture="Culture.vlandia" weight="2.5" appearance="1" Type="HeadArmor" value="15000" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="99" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="sturgian_crown" name="{=5kAqcWac}Jeweled Fur Rimmed Helmet" mesh="sturgian_crown" culture="Culture.sturgia" weight="2.4" appearance="2" Type="HeadArmor" value="15000" difficulty="0" subtype="head_armor" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="50" has_gender_variations="false" hair_cover_type="type1" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
 	</Item>
 	<Item id="heavy_nasalhelm_over_imperial_padding" name="{=WCbpw1wM}Heavy Nasalhelm Over Imperial Padding" mesh="empire_helmet_g_b" culture="Culture.empire" weight="3.2" appearance="1.3" Type="HeadArmor" value="15150" difficulty="0" subtype="head_armor">
 		<ItemComponent>
@@ -1173,6 +1185,12 @@
 	<Item id="khuzait_noble_helmet_with_neckguard" name="{=bQXR1jzG}Eastern Noble Helmet with Neckguard" mesh="khuzait_lord_helmet_b" culture="Culture.khuzait" weight="4" appearance="3.6" Type="headArmor" value="15450" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="102" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="vlandian_faceguard_helmet_a" name="{=axaK9y6E}Closed Knight Helmet" mesh="vlandian_faceguard_helmet_a" culture="Culture.vlandia" weight="2.2" appearance="1" Type="HeadArmor" value="15500" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="103" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -1368,6 +1386,12 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
+	<Item id="battania_battle_crown" name="{=KbW3IFOd}Two Pronged Brass Crown" mesh="battania_battle_crown" culture="Culture.battania" weight="2.3" appearance="3" Type="HeadArmor" value="20000" difficulty="0" subtype="head_armor" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="66" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
 	<Item id="decorated_goggled_helmet" name="{=X3FAb6Wm}Northern Decorated Visored Helmet" mesh="sturgia_helmet_n" culture="Culture.sturgia" weight="4.2" appearance="3" Type="HeadArmor" value="20100">
 		<ItemComponent>
 			<Armor head_armor="133" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
@@ -1398,15 +1422,21 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="battania_battle_crown" name="{=KbW3IFOd}Two Pronged Brass Crown" mesh="battania_battle_crown" culture="Culture.battania" weight="2.3" appearance="3" Type="HeadArmor" value="20000" difficulty="0" subtype="head_armor" is_merchandise="false">
+	<Item id="sturgian_battle_crown" name="{=OFxwPQyA}Battle Crown" mesh="sturgian_battle_crown" culture="Culture.sturgia" weight="2.2" appearance="3" Type="HeadArmor" value="25000">
 		<ItemComponent>
-			<Armor head_armor="66" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+			<Armor head_armor="125" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags/>
 	</Item>
 	<Item id="empire_battle_crown_west" name="{=EOplBvKz}Imperial Plumed Helmet" mesh="empire_battle_crown_west" culture="Culture.empire" weight="3.1" appearance="3" Type="HeadArmor" value="30000" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="109" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="empire_crown" name="{=FZ6VCoKI}empire_crown" mesh="empire_crown" culture="Culture.empire" weight="3.1" appearance="6" Type="HeadArmor" value="40000" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="46" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -1416,40 +1446,22 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="empire_crown_v2" name="{=u5eafobF}Imperial Jeweled Band" mesh="empire_crown_v2" culture="Culture.empire" weight="0.85" appearance="6" Type="HeadArmor" value="10000" is_merchandise="false">
+	<Item id="battania_crown" name="{=sDWEWefz}Highland Ceremonial Crown" mesh="battania_crown" culture="Culture.battania" weight="0.5" appearance="8.5" Type="HeadArmor" value="30000" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="15" has_gender_variations="false" hair_cover_type="none" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
 		</ItemComponent>
-		<Flags Civilian="true" UseTeamColor="false"/>
+		<Flags/>
 	</Item>
-	<Item id="empire_crown_female_v2" name="{=Vnhtxx41}Imperial Crown" mesh="empire_crown_female_v2" culture="Culture.empire" weight="0.85" appearance="6" Type="HeadArmor" value="10000" is_merchandise="false">
+	<Item id="empire_crown_north" name="{=WF14UrdR}Golden Laurel Crown" mesh="empire_crown_north" culture="Culture.empire" weight="0.3" appearance="7" Type="HeadArmor" value="30000" is_merchandise="false">
 		<ItemComponent>
 			<Armor head_armor="15" has_gender_variations="false" hair_cover_type="none" modifier_group="plate" material_type="Plate"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="false"/>
 	</Item>
-	<Item id="sturgian_crown" name="{=5kAqcWac}Jeweled Fur Rimmed Helmet" mesh="sturgian_crown" culture="Culture.sturgia" weight="2.4" appearance="2" Type="HeadArmor" value="15000" difficulty="0" subtype="head_armor" is_merchandise="false">
+	<Item id="empire_crown_west" name="{=u5eafobF}Imperial Jeweled Band" mesh="empire_crown_west" culture="Culture.empire" weight="0.5" appearance="6" Type="HeadArmor" value="30000" is_merchandise="false">
 		<ItemComponent>
-			<Armor head_armor="50" has_gender_variations="false" hair_cover_type="type1" modifier_group="plate" material_type="Plate"/>
+			<Armor head_armor="15" has_gender_variations="false" hair_cover_type="none" modifier_group="plate" material_type="Plate"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
-	</Item>
-	<Item id="sturgian_battle_crown" name="{=OFxwPQyA}Battle Crown" mesh="sturgian_battle_crown" culture="Culture.sturgia" weight="2.2" appearance="3" Type="HeadArmor" value="25000">
-		<ItemComponent>
-			<Armor head_armor="125" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
-	<Item id="vlandian_faceguard_helmet_a" name="{=axaK9y6E}Closed Knight Helmet" mesh="vlandian_faceguard_helmet_a" culture="Culture.vlandia" weight="2.2" appearance="1" Type="HeadArmor" value="15500" difficulty="0" subtype="head_armor">
-		<ItemComponent>
-			<Armor head_armor="103" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
-	<Item id="vlandian_faceguard_helmet_b" name="{=zkt4AwSi}Knight Helmet With Brass Faceguard" mesh="vlandian_faceguard_helmet_b" culture="Culture.vlandia" weight="2.3" appearance="1.5" Type="HeadArmor" value="14850" difficulty="0" subtype="head_armor">
-		<ItemComponent>
-			<Armor head_armor="98" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
-		</ItemComponent>
-		<Flags/>
+		<Flags Civilian="true" UseTeamColor="false"/>
 	</Item>
 </Items>

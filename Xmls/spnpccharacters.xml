@@ -4955,11 +4955,11 @@
       <skill id="Riding"
              value="60" />
       <skill id="OneHanded"
-             value="100" />
+             value="130" />
       <skill id="TwoHanded"
-             value="100" />
-      <skill id="Polearm"
              value="80" />
+      <skill id="Polearm"
+             value="130" />
       <skill id="Bow"
              value="60" />
       <skill id="Crossbow"
@@ -4971,13 +4971,13 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_axe_3_t5" />
       <equipment slot="Item1"
                  id="Item.battania_large_shield_b" />
       <equipment slot="Item2"
                  id="Item.western_javelin_3_t4" />
       <equipment slot="Item3"
-                 id="Item.eastern_throwing_spear_2_t4" />
+                 id="Item.western_javelin_3_t4" />
       <equipment slot="Body"
                  id="Item.kilt_over_plated_leather" />
       <equipment slot="Leg"
@@ -4991,13 +4991,13 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_axe_3_t5" />
       <equipment slot="Item1"
                  id="Item.battania_large_shield_b" />
       <equipment slot="Item2"
                  id="Item.western_javelin_3_t4" />
       <equipment slot="Item3"
-                 id="Item.eastern_throwing_spear_2_t4" />
+                 id="Item.western_javelin_3_t4" />
       <equipment slot="Body"
                  id="Item.battanian_chainmail_armor_d" />
       <equipment slot="Leg"
@@ -5011,13 +5011,13 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_axe_3_t5" />
       <equipment slot="Item1"
                  id="Item.battania_large_shield_b" />
       <equipment slot="Item2"
                  id="Item.western_javelin_3_t4" />
       <equipment slot="Item3"
-                 id="Item.eastern_throwing_spear_2_t4" />
+                 id="Item.western_javelin_3_t4" />
       <equipment slot="Body"
                  id="Item.battania_woodland_chainmail" />
       <equipment slot="Leg"
@@ -11871,8 +11871,6 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.vlandia_polearm_1_t5" />
-      <equipment slot="Item1"
-                 id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
                  id="Item.coat_of_plates_over_mail" />
       <equipment slot="Leg"
@@ -11887,8 +11885,6 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.vlandia_polearm_1_t5" />
-      <equipment slot="Item1"
-                 id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
                  id="Item.coat_of_plates_over_mail" />
       <equipment slot="Leg"
@@ -11903,8 +11899,6 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.vlandia_polearm_1_t5" />
-      <equipment slot="Item1"
-                 id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
                  id="Item.coat_of_plates_over_mail" />
       <equipment slot="Leg"
@@ -12226,8 +12220,6 @@
                  id="Item.stronger_reinforced_kite_shield" />
       <equipment slot="Item2"
                  id="Item.western_spear_4_t4" />
-      <equipment slot="Item3"
-                 id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
                  id="Item.hauberk" />
       <equipment slot="Leg"
@@ -12246,8 +12238,6 @@
                  id="Item.stronger_reinforced_kite_shield" />
       <equipment slot="Item2"
                  id="Item.western_spear_4_t4" />
-      <equipment slot="Item3"
-                 id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
                  id="Item.hauberk" />
       <equipment slot="Leg"
@@ -12264,8 +12254,6 @@
                  id="Item.stronger_reinforced_kite_shield" />
       <equipment slot="Item2"
                  id="Item.western_spear_4_t4" />
-      <equipment slot="Item3"
-                 id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
                  id="Item.hauberk" />
       <equipment slot="Leg"
@@ -12284,8 +12272,6 @@
                  id="Item.stronger_reinforced_kite_shield" />
       <equipment slot="Item2"
                  id="Item.western_spear_4_t4" />
-      <equipment slot="Item3"
-                 id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
                  id="Item.hauberk" />
       <equipment slot="Leg"
