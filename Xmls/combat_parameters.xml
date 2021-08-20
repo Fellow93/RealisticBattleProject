@@ -530,20 +530,6 @@
                       left_ladder_rot_limit="85.9"
                       right_ladder_rot_limit="85.9" />
 
-    <combat_parameter id="2h_Rot_Limit"
-                      collision_check_starting_percent="0.29"
-                      collision_check_ending_percent="0.39"
-                      vertical_rot_limit_multiplier_up="0.4"
-                      vertical_rot_limit_multiplier_down="0.4"
-                      left_rider_rot_limit="overswing_rider_rot_limit_left"
-                      left_rider_min_rot_limit="up_min_rider_rot_limit_left"
-                      right_rider_rot_limit="overswing_rider_rot_limit_right"
-                      right_rider_min_rot_limit="up_min_rider_rot_limit_right"
-                      rider_look_down_limit="overswing_rider_look_down_limit"
-                      left_ladder_rot_limit="overswing_ladder_rot_limit_left"
-                      right_ladder_rot_limit="overswing_ladder_rot_limit_right"
-                      hit_bone_index="27" />
-
     <combat_parameter id="2h_ready_Rot_Limit"
                       vertical_rot_limit_multiplier_up="0.5"
                       vertical_rot_limit_multiplier_down="0.2"
@@ -1875,8 +1861,8 @@
 
 
     <combat_parameter id="polearm_brace"
-                      vertical_rot_limit_multiplier_up="brace_vertical_rot_limit"
-                      vertical_rot_limit_multiplier_down="brace_vertical_rot_limit"
+                      vertical_rot_limit_multiplier_up="0.2"
+                      vertical_rot_limit_multiplier_down="0.25"
                       collision_check_starting_percent="0.0"
                       collision_check_ending_percent="1"
                       hit_bone_index="27"

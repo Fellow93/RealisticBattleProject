@@ -80,9 +80,9 @@
     </Materials>
   </CraftingPiece>
    <!-- #Pikes -->
-  <CraftingPiece id="spear_handle_7" name="{=Nhhmj7bz}Hard Maple Pike Shaft" tier="5" piece_type="Handle" mesh="spear_handle_7" length="295" weight="0.767" excluded_item_usage_features="swing" CraftingCost="150">
+  <CraftingPiece id="spear_handle_7" name="{=Nhhmj7bz}Hard Maple Pike Shaft" tier="5" piece_type="Handle" mesh="spear_handle_7" length="295" weight="2.36" excluded_item_usage_features="swing" CraftingCost="150">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:OneHandedPolearm:Javelin:TwoHandedPolearm_Thrown" />
-    <BuildData piece_offset="100.0" />
+    <BuildData piece_offset="70.0" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>

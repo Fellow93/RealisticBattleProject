@@ -11945,7 +11945,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.thamaskene_pike_t4" />
+                 id="Item.vlandia_pike_1_t5" />
       <equipment slot="Body"
                  id="Item.coat_of_plates_over_mail" />
 	  <equipment slot="Cape"
@@ -11959,7 +11959,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.fine_pike_t4" />
+                 id="Item.vlandia_pike_1_t5" />
       <equipment slot="Body"
                  id="Item.coat_of_plates_over_mail" />
 	  <equipment slot="Cape"
