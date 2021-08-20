@@ -1349,6 +1349,7 @@ namespace RealisticBattleAiModule
                             {
                                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
                             }
+                            __instance.Formation.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
                             __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
                             return false;
                         }
@@ -1358,6 +1359,7 @@ namespace RealisticBattleAiModule
 
                 if (significantEnemy != null)
                 {
+                    __instance.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
                     ____currentOrder = MovementOrder.MovementOrderChargeToTarget(significantEnemy);
                     return false;
                 }
