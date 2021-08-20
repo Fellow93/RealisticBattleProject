@@ -24,7 +24,7 @@ namespace RealisticBattleCombatModule
         [HarmonyPatch("ComputeBlowMagnitudeMissile")]
         class RealArrowDamage
         {
-            static bool Prefix(ref AttackCollisionData acd, ItemObject weaponItem, bool isVictimAgentNull, float momentumRemaining, float missileTotalDamage, out float baseMagnitude, out float specialMagnitude, Vec3 victimVel)
+            static bool Prefix(ref AttackCollisionData acd, ItemObject weaponItem, bool isVictimAgentNull, float momentumRemaining, float missileTotalDamage, out float baseMagnitude, out float specialMagnitude, Vec2 victimVelocity)
             {
 
                 //Vec3 gcn = acd.CollisionGlobalNormal;
@@ -38,7 +38,7 @@ namespace RealisticBattleCombatModule
                 float length;
                 if (!isVictimAgentNull)
                 {
-                    length = (victimVel - acd.MissileVelocity).Length;
+                    length = (victimVelocity.ToVec3() - acd.MissileVelocity).Length;
                 }
                 else
                 {
@@ -1131,24 +1131,21 @@ namespace RealisticBattleCombatModule
     [HarmonyPatch("ComputeBlowMagnitudeFromHorseCharge")]
     class ChangeHorseDamageCalculation
     {
-        static bool Prefix(ref AttackCollisionData acd, Vec3 attackerAgentMovementDirection, Vec3 attackerAgentVelocity, float agentMountChargeDamageProperty, Vec3 victimAgentVelocity, Vec3 victimAgentPosition, out float baseMagnitude, out float specialMagnitude)
+        static bool Prefix(ref AttackCollisionData acd, Vec2 attackerAgentMovementDirection, Vec2 attackerAgentVelocity, float agentMountChargeDamageProperty, Vec2 victimAgentVelocity, Vec3 victimAgentPosition, out float baseMagnitude, out float specialMagnitude)
         {
-            Vec3 v = victimAgentVelocity.ProjectOnUnitVector(attackerAgentMovementDirection);
-            Vec3 vec = attackerAgentVelocity - v;
+            Vec2 vec = attackerAgentMovementDirection * Vec2.DotProduct(victimAgentVelocity, attackerAgentMovementDirection);
+            Vec2 vec2 = attackerAgentVelocity - vec;
             float num = ChargeDamageDotProduct(victimAgentPosition, attackerAgentMovementDirection, acd.CollisionGlobalPosition);
-            float num2 = vec.Length * num;
+            float num2 = vec2.Length * num;
             baseMagnitude = (num2 * num2 * num * agentMountChargeDamageProperty) / 2500f;
             specialMagnitude = baseMagnitude;
 
             return false;
         }
 
-        private static float ChargeDamageDotProduct(Vec3 victimPosition, Vec3 chargerMovementDirection, Vec3 collisionPoint)
+        private static float ChargeDamageDotProduct(Vec3 victimPosition, Vec2 chargerMovementDirection, Vec3 collisionPoint)
         {
-            Vec2 va = victimPosition.AsVec2 - collisionPoint.AsVec2;
-            va.Normalize();
-            Vec2 asVec = chargerMovementDirection.AsVec2;
-            return Vec2.DotProduct(va, asVec);
+            return Vec2.DotProduct((victimPosition.AsVec2 - collisionPoint.AsVec2).Normalized(), chargerMovementDirection);
         }
     }
 

@@ -386,15 +386,15 @@ namespace RealisticBattleAiModule
                                         dist = newDist;
                                     }
                                 }
-                                //if (formation != null && includeCavalry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsCavalryFormation && !CheckIfMountedSkirmishFormation(enemyFormation) && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
-                                //{
-                                //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
-                                //    if (newDist < dist)
-                                //    {
-                                //        significantEnemy = enemyFormation;
-                                //        dist = newDist;
-                                //    }
-                                //}
+                                if (formation != null && includeCavalry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsCavalryFormation && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
+                                {
+                                    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                                    if (newDist < dist)
+                                    {
+                                        significantEnemy = enemyFormation;
+                                        dist = newDist;
+                                    }
+                                }
                                 //if (formation != null && includeMountedSkirmishers && enemyFormation.CountOfUnits > 0 && CheckIfMountedSkirmishFormation(enemyFormation))
                                 //{
                                 //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
