@@ -244,9 +244,9 @@ namespace RealisticBattleCombatModule
                 {
                     thrust = kineticEnergy;
                 }
-                if (thrust > 250f)
+                if (thrust > 200f)
                 {
-                    thrust = 250f; 
+                    thrust = 200f; 
                 }
                 __result =  0.125f * thrust * XmlConfig.dict["Global.ThrustModifier"];
                 return false;
