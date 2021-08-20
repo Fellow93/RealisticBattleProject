@@ -193,9 +193,9 @@ namespace RealisticBattleCombatModule
             const float ashBreakTreshold = 43f;
 
             float num = extraLinearSpeed;
-            if (!isThrown)
+            if (!isThrown && weaponWeight < 1.5f)
             {
-                weaponWeight += 0f;
+                weaponWeight += 1.0f;
             }
             float CouchedSkillBonus = 0.5f * 2.5f * num * num * 0.10f * XmlConfig.dict["Global.ThrustModifier"];
             float LanceKE = 0.5f * weaponWeight * num * num * 0.10f * XmlConfig.dict["Global.ThrustModifier"];
