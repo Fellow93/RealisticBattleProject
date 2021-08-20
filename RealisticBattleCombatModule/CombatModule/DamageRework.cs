@@ -228,17 +228,27 @@ namespace RealisticBattleCombatModule
             float combinedSpeed = thrustWeaponSpeed + extraLinearSpeed;
             if (combinedSpeed > 0f)
             {
-                if (!isThrown)
+                if (!isThrown && weaponWeight < 1.5f)
                 {
-                    weaponWeight += 2.5f;
+                    weaponWeight += 0.5f;
                 }
                 float kineticEnergy = 0.5f * weaponWeight * combinedSpeed * combinedSpeed;
-                float handLimit = 0.5f * weaponWeight * thrustWeaponSpeed * thrustWeaponSpeed * 1.5f;
+                float handBonus = 0.5f * (weaponWeight + 1.5f) * combinedSpeed * combinedSpeed;
+                float handLimit = 120f;
+                if (handBonus > handLimit)
+                {
+                    handBonus = handLimit;
+                }
+                float thrust = handBonus;
                 if (kineticEnergy > handLimit)
                 {
-                    kineticEnergy = handLimit;
+                    thrust = kineticEnergy;
                 }
-                __result =  0.125f * kineticEnergy * XmlConfig.dict["Global.ThrustModifier"];
+                if (thrust > 250f)
+                {
+                    thrust = 250f; 
+                }
+                __result =  0.125f * thrust * XmlConfig.dict["Global.ThrustModifier"];
                 return false;
             }
             __result = 0f;
