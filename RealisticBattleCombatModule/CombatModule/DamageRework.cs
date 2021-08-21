@@ -1250,7 +1250,7 @@ namespace RealisticBattleCombatModule
 
             foreach(XElement node in xDocument.Root.Elements())
             {
-                if(node.Name == "CraftedItem")
+                if(node.Name == "CraftedItem" && xmlDocument2.BaseURI.Contains("RealisticBattle"))
                 {
                     foreach (XElement node2 in xDocument2.Root.Elements())
                     {
@@ -1262,7 +1262,7 @@ namespace RealisticBattleCombatModule
                         }
                     }
                 }
-                if (node.Name == "Item")
+                if (node.Name == "Item" && xmlDocument2.BaseURI.Contains("RealisticBattle"))
                 {
                     foreach (XElement node2 in xDocument2.Root.Elements())
                     {
@@ -1275,7 +1275,46 @@ namespace RealisticBattleCombatModule
                         }
                     }
                 }
+                if (node.Name == "NPCCharacter" && xmlDocument2.BaseURI.Contains("RealisticBattle"))
+                {
+                    foreach (XElement nodeEquip in node.Elements())
+                    {
+                        if (nodeEquip.Name == "Equipments")
+                        {
+                            foreach (XElement nodeEquipRoster in nodeEquip.Elements())
+                            {
+                                if (nodeEquipRoster.Name == "EquipmentRoster")
+                                {
+                                    foreach (XElement node2 in xDocument2.Root.Elements())
+                                    {
+                                        if (node.Attribute("id").Value.Equals(node2.Attribute("id").Value))
+                                        {
+                                            foreach (XElement nodeEquip2 in node2.Elements())
+                                            {
+                                                if (nodeEquip2.Name == "Equipments")
+                                                {
+                                                    foreach (XElement nodeEquipRoster2 in nodeEquip2.Elements())
+                                                    {
+                                                        if (nodeEquipRoster2.Name == "EquipmentRoster")
+                                                        {
+                                                            if (!toRemove.Contains(nodeEquipRoster))
+                                                            {
+                                                                toRemove.Add(nodeEquipRoster);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
+
             foreach (XElement node in toRemove)
             {
                 node.Remove();
