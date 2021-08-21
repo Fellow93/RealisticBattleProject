@@ -1243,41 +1243,43 @@ namespace RealisticBattleCombatModule
     {
         static bool Prefix(XmlDocument xmlDocument1, XmlDocument xmlDocument2, ref XmlDocument __result)
         {
-            XDocument xDocument = MBObjectManager.ToXDocument(xmlDocument1);
-            XDocument xDocument2 = MBObjectManager.ToXDocument(xmlDocument2);
+            XDocument originalXml = MBObjectManager.ToXDocument(xmlDocument1);
+            XDocument mergedXml = MBObjectManager.ToXDocument(xmlDocument2);
 
-            List<XElement> toRemove = new List<XElement>();
+            List<XElement> nodesToRemoveArray = new List<XElement>();
 
-            foreach(XElement node in xDocument.Root.Elements())
+            foreach(XElement origNode in originalXml.Root.Elements())
             {
-                if(node.Name == "CraftedItem" && xmlDocument2.BaseURI.Contains("RealisticBattle"))
+                if(origNode.Name == "CraftedItem" && xmlDocument2.BaseURI.Contains("RealisticBattle"))
                 {
-                    foreach (XElement node2 in xDocument2.Root.Elements())
+                    foreach (XElement mergedNode in mergedXml.Root.Elements())
                     {
-                        if (node2.Name == "CraftedItem")
+                        if (mergedNode.Name == "CraftedItem")
                         {
-                            if (node.Attribute("id").Value.Equals(node2.Attribute("id").Value)){
-                                toRemove.Add(node);
+                            if (origNode.Attribute("id").Value.Equals(mergedNode.Attribute("id").Value)){
+                                nodesToRemoveArray.Add(origNode);
                             }
                         }
                     }
                 }
-                if (node.Name == "Item" && xmlDocument2.BaseURI.Contains("RealisticBattle"))
+
+                if (origNode.Name == "Item" && xmlDocument2.BaseURI.Contains("RealisticBattle"))
                 {
-                    foreach (XElement node2 in xDocument2.Root.Elements())
+                    foreach (XElement mergedNode in mergedXml.Root.Elements())
                     {
-                        if (node2.Name == "Item")
+                        if (mergedNode.Name == "Item")
                         {
-                            if (node.Attribute("id").Value.Equals(node2.Attribute("id").Value))
+                            if (origNode.Attribute("id").Value.Equals(mergedNode.Attribute("id").Value))
                             {
-                                toRemove.Add(node);
+                                nodesToRemoveArray.Add(origNode);
                             }
                         }
                     }
                 }
-                if (node.Name == "NPCCharacter" && xmlDocument2.BaseURI.Contains("RealisticBattle"))
+
+                if (origNode.Name == "NPCCharacter" && xmlDocument2.BaseURI.Contains("RealisticBattle"))
                 {
-                    foreach (XElement nodeEquip in node.Elements())
+                    foreach (XElement nodeEquip in origNode.Elements())
                     {
                         if (nodeEquip.Name == "Equipments")
                         {
@@ -1285,26 +1287,25 @@ namespace RealisticBattleCombatModule
                             {
                                 if (nodeEquipRoster.Name == "EquipmentRoster")
                                 {
-                                    foreach (XElement node2 in xDocument2.Root.Elements())
+                                    foreach (XElement mergedNode in mergedXml.Root.Elements())
                                     {
-                                        if (node.Attribute("id").Value.Equals(node2.Attribute("id").Value))
+                                        if (origNode.Attribute("id").Value.Equals(mergedNode.Attribute("id").Value))
                                         {
-                                            foreach (XElement nodeEquip2 in node2.Elements())
+                                            foreach (XElement mergedNodeEquip in mergedNode.Elements())
                                             {
-                                                if (nodeEquip2.Name == "Equipments")
+                                                if (mergedNodeEquip.Name == "Equipments")
                                                 {
-                                                    foreach (XElement nodeEquipRoster2 in nodeEquip2.Elements())
+                                                    foreach (XElement mergedNodeRoster in mergedNodeEquip.Elements())
                                                     {
-                                                        if (nodeEquipRoster2.Name == "EquipmentRoster")
+                                                        if (mergedNodeRoster.Name == "EquipmentRoster")
                                                         {
-                                                            if (!toRemove.Contains(nodeEquipRoster))
+                                                            if (!nodesToRemoveArray.Contains(origNode))
                                                             {
-                                                                toRemove.Add(nodeEquipRoster);
+                                                                nodesToRemoveArray.Add(origNode);
                                                             }
                                                         }
                                                     }
                                                 }
-
                                             }
                                         }
                                     }
@@ -1315,13 +1316,16 @@ namespace RealisticBattleCombatModule
                 }
             }
 
-            foreach (XElement node in toRemove)
+            if(nodesToRemoveArray.Count > 0)
             {
-                node.Remove();
+                foreach (XElement node in nodesToRemoveArray)
+                {
+                    node.Remove();
+                }
             }
 
-            xDocument.Root.Add(xDocument2.Root.Elements());
-            __result = MBObjectManager.ToXmlDocument(xDocument);
+            originalXml.Root.Add(mergedXml.Root.Elements());
+            __result = MBObjectManager.ToXmlDocument(originalXml);
             return false;
         }
     }
