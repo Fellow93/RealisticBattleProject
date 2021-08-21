@@ -607,9 +607,9 @@
                crafting_template="Pike"
                culture="Culture.vlandia">
     <Pieces>
-      <Piece id="spear_blade_6"
+      <Piece id="spear_blade_11"
              Type="Blade"
-             scale_factor="110" />
+             scale_factor="120" />
       <Piece id="spear_handle_7"
              Type="Handle"
              scale_factor="100" />
