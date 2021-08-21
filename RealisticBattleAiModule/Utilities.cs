@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
@@ -423,21 +422,28 @@ namespace RealisticBattleAiModule
 
         public static float GetCombatAIDifficultyMultiplier()
         {
-            MissionState missionState = (MissionState)Game.Current.GameStateManager.ActiveState;
-            if (missionState.MissionName.Equals("EnhancedBattleTestFieldBattle") || missionState.MissionName.Equals("EnhancedBattleTestSiegeBattle"))
+            MissionState missionState = Game.Current.GameStateManager.ActiveState as MissionState;
+            if(missionState != null)
             {
-                return 1.0f;
+                if (missionState.MissionName.Equals("EnhancedBattleTestFieldBattle") || missionState.MissionName.Equals("EnhancedBattleTestSiegeBattle"))
+                {
+                    return 1.0f;
+                }
+                switch (CampaignOptions.CombatAIDifficulty)
+                {
+                    case CampaignOptions.Difficulty.VeryEasy:
+                        return 0.70f;
+                    case CampaignOptions.Difficulty.Easy:
+                        return 0.85f;
+                    case CampaignOptions.Difficulty.Realistic:
+                        return 1.0f;
+                    default:
+                        return 1.0f;
+                }
             }
-            switch (CampaignOptions.CombatAIDifficulty)
+            else
             {
-                case CampaignOptions.Difficulty.VeryEasy:
-                    return 0.70f;
-                case CampaignOptions.Difficulty.Easy:
-                    return 0.85f;
-                case CampaignOptions.Difficulty.Realistic:
-                    return 1.0f;
-                default:
-                    return 1.0f;
+                return 1f;
             }
         }
 
