@@ -1248,6 +1248,12 @@ namespace RealisticBattleCombatModule
 
             List<XElement> nodesToRemoveArray = new List<XElement>();
 
+            if(XmlConfig.dict["Global.TroopOverhaulActive"] == 0 && xmlDocument2.BaseURI.Contains("unit_overhaul"))
+            {
+                __result = MBObjectManager.ToXmlDocument(originalXml);
+                return false;
+            }
+
             foreach(XElement origNode in originalXml.Root.Elements())
             {
                 if(origNode.Name == "CraftedItem" && xmlDocument2.BaseURI.Contains("RealisticBattle"))

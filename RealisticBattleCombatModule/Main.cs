@@ -3,6 +3,8 @@ using TaleWorlds.Library;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Xml;
+using TaleWorlds.Localization;
+using TaleWorlds.Engine.Screens;
 
 namespace RealisticBattleCombatModule
 {
@@ -33,6 +35,11 @@ namespace RealisticBattleCombatModule
                 }
             }
             MyPatcher.DoPatching();
+
+            //Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("RBM Configuration"), 3, delegate
+            //{
+            //    ScreenManager.PushScreen(new RbmConfigScreen());
+            //}, () => (false, new TextObject("Realistic Battle Configuration"))));
         }
     }
 }
