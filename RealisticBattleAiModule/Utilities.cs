@@ -510,6 +510,31 @@ namespace RealisticBattleAiModule
             }
             return false;
         }
+
+        public static bool CheckIfCanBrace(Agent agent)
+        {
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+            {
+                if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
+                {
+                    MissionWeapon weapon = agent.Equipment[equipmentIndex];
+                    if (weapon.IsEmpty)
+                    {
+                        return false;
+                    }
+                    foreach (WeaponComponentData weapon2 in weapon.Item.Weapons)
+                    {
+                        string weaponUsageId = weapon2.WeaponUsageId;
+                        if (weaponUsageId != null && weaponUsageId.IndexOf("bracing", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }
+            return false;
+        }
     }
 }
 

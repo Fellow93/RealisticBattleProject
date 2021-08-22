@@ -1349,7 +1349,17 @@ namespace RealisticBattleAiModule
                             {
                                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
                             }
-                            __instance.Formation.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
+                            //__instance.Formation.ApplyActionOnEachUnit(delegate (Agent agent) {
+                            //    if (Utilities.CheckIfCanBrace(agent))
+                            //    {
+                            //        agent.SetFiringOrder(1);
+                            //    }
+                            //    else
+                            //    {
+                            //        agent.SetFiringOrder(0);
+                            //    }
+                            //});
+                            //__instance.Formation.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
                             __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
                             return false;
                         }
@@ -1850,15 +1860,15 @@ namespace RealisticBattleAiModule
         static bool PrefixGetTargetAgent(ref Agent __instance, ref Agent __result)
         {
             List<Formation> formations;
-            if(__instance != null)
+            if (__instance != null)
             {
                 Formation formation = __instance.Formation;
-                if(formation != null)
+                if (formation != null)
                 {
-                    if ((formation.QuerySystem.IsInfantryFormation ||  formation.QuerySystem.IsRangedFormation) && (formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget))
+                    if ((formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && (formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget))
                     {
                         formations = Utilities.FindSignificantFormations(formation);
-                        if(formations.Count > 0)
+                        if (formations.Count > 0)
                         {
                             __result = Utilities.NearestAgentFromMultipleFormations(__instance.Position.AsVec2, formations);
                             return false;
@@ -1869,6 +1879,56 @@ namespace RealisticBattleAiModule
                         //    __result = Utilities.NearestAgentFromFormation(__instance.Position.AsVec2, enemyFormation);
                         //    return false;
                         //}
+                    }
+                }
+            }
+            return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch("SetFiringOrder")]
+        static bool PrefixSetFiringOrder(ref Agent __instance, ref int order)
+        {
+            if (__instance.Formation != null && __instance.Formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget)
+            {
+                if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
+                {
+                    Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false);
+
+                    if (__instance.Formation.QuerySystem.IsInfantryFormation && !Utilities.FormationFightingInMelee(__instance.Formation))
+                    {
+                        Formation enemyCav = Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
+
+                        if (enemyCav != null && !enemyCav.QuerySystem.IsCavalryFormation)
+                        {
+                            enemyCav = null;
+                        }
+
+                        float cavDist = 0f;
+                        float signDist = 1f;
+                        if (enemyCav != null && significantEnemy != null)
+                        {
+                            Vec2 cavDirection = enemyCav.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
+                            cavDist = cavDirection.Normalize();
+
+                            Vec2 signDirection = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
+                            signDist = signDirection.Normalize();
+                        }
+
+                        if ((enemyCav != null) && (cavDist <= signDist) && (enemyCav.CountOfUnits > __instance.Formation.CountOfUnits / 10) && (signDist > 35f))
+                        {
+                            if (enemyCav.TargetFormation == __instance.Formation && (enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge))
+                            {
+                                if (Utilities.CheckIfCanBrace(__instance))
+                                {
+                                    order = 1;
+                                }
+                                else
+                                {
+                                    order = 0;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -2068,7 +2128,7 @@ namespace RealisticBattleAiModule
                                 //}
                             }
                         }
-                        if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
+                        if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && !targetAgent.HasMount)
                         {
                         IEnumerable<Agent> enemyAgents10f = mission.GetNearbyEnemyAgents(unitPosition + direction * 10f, 5f, unit.Team);
                         IEnumerable<Agent> enemyAgents0f = mission.GetNearbyEnemyAgents(unitPosition, 5f, unit.Team);
@@ -2511,6 +2571,16 @@ namespace RealisticBattleAiModule
                                 {
                                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
                                 }
+                                //__instance.Formation.ApplyActionOnEachUnit(delegate (Agent agent) {
+                                //    if (Utilities.CheckIfCanBrace(agent))
+                                //    {
+                                //        agent.SetFiringOrder(1);
+                                //    }
+                                //    else
+                                //    {
+                                //        agent.SetFiringOrder(0);
+                                //    }
+                                //});
                                 __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
                                 return false;
                             }
