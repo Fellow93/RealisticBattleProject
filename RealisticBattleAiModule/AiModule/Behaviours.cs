@@ -1328,7 +1328,7 @@ namespace RealisticBattleAiModule
                         signDist = signDirection.Normalize();
                     }
 
-                    if ((enemyCav != null) && (cavDist <= signDist) && (enemyCav.CountOfUnits > __instance.Formation.CountOfUnits / 10) && (signDist > 35f))
+                    if ((enemyCav != null) && (cavDist <= signDist) && (enemyCav.CountOfUnits > __instance.Formation.CountOfUnits / 10) && (signDist > 35f || significantEnemy == enemyCav))
                     {
                         if (enemyCav.TargetFormation == __instance.Formation && (enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge))
                         {
@@ -1921,6 +1921,7 @@ namespace RealisticBattleAiModule
                             {
                                 if (Utilities.CheckIfCanBrace(__instance))
                                 {
+                                    //__instance.SetLookAgent(__instance.GetTargetAgent());
                                     order = 1;
                                 }
                                 else
@@ -1984,8 +1985,8 @@ namespace RealisticBattleAiModule
                             
                         Vec2 direction = (targetAgent.GetWorldPosition().AsVec2 - unitPosition).Normalized();
                         IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unitPosition + lookDirection * 0.8f, 1f, unit.Team);
-                        
-                        if (agents.Count() > 3)
+
+                        if (agents.Count() > 3 && !unit.IsDoingPassiveAttack)
                         {
                             unit.LookDirection = direction.ToVec3();
                             //unit.SetLookAgent(targetAgent);
