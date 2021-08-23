@@ -16,7 +16,7 @@
   <!-- Crossbows -->
   <ItemModifier id="masterwork_crossbow" name="{=8Tal0XIj}Masterwork {ITEMNAME}" damage="0" speed="10" missile_speed="100" price_factor="2.0" />
   <ItemModifier id="tuned_crossbow" name="{=WbaIorOh}Tuned {ITEMNAME}" damage="0" speed="5" missile_speed="50" price_factor="1.5" />
-  <ItemModifier id="bent_crossbow" name="{=eb4miTUB}Bent {ITEMNAME}" damage="0" speed="-10" missile_speed="-70" price_factor="0.5" />
+  <ItemModifier id="bent_crossbow" name="{=eb4miTUB}Bent {ITEMNAME}" damage="0" speed="-10" missile_speed="-45" price_factor="0.5" />
   <!-- Arrows -->
   <ItemModifier id="balanced_arrows" name="{=fdgcpipH}Balanced {ITEMNAME}" damage="10" price_factor="2.0" />
   <ItemModifier id="large_bag_arrows" name="{=3JaHZA3Y}Large Bag of {ITEMNAME}" damage="0" stack_count="2" price_factor="1.5" />
