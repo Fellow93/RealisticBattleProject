@@ -259,6 +259,7 @@
   <!-- Files & Classes -->
   <ItemGroup>
     <Compile Include="CombatModule\ArmorRework.cs" />
+    <Compile Include="CombatModule\RangedAmmoCombo.cs" />
     <Compile Include="CombatModule\RbmConfigData.cs" />
     <Compile Include="CombatModule\RbmConfigScreen.cs" />
     <Compile Include="CombatModule\DamageRework.cs" />

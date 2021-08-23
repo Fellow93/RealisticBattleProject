@@ -32,6 +32,8 @@ namespace RealisticBattleAiModule
                 agentDrivenProperties.AiRangedHorsebackMissileRange = 0.7f;
                 agentDrivenProperties.AiUseShieldAgainstEnemyMissileProbability = 0.95f;
                 agentDrivenProperties.AiFlyingMissileCheckRadius = 250f;
+
+                agentDrivenProperties.AiShooterError = 0.0001f;
             }
         }
     }

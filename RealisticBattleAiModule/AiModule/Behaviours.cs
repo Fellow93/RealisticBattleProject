@@ -83,7 +83,7 @@ namespace RealisticBattleAiModule
         [HarmonyPatch(typeof(BehaviorDefend))]
         class OverrideBehaviorDefend
         {
-            static WorldPosition medianPositionOld;
+            public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
 
             [HarmonyPostfix]
             [HarmonyPatch("CalculateCurrentOrder")]
@@ -102,7 +102,9 @@ namespace RealisticBattleAiModule
                         float distance = enemyDirection.Normalize();
                         if (distance < (180f))
                         {
-                            ____currentOrder = MovementOrder.MovementOrderMove(medianPositionOld);
+                            WorldPosition newPosition = WorldPosition.Invalid;
+                            positionsStorage.TryGetValue(__instance.Formation, out newPosition);
+                            ____currentOrder = MovementOrder.MovementOrderMove(newPosition);
                             ___IsCurrentOrderChanged = true;
                             ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
                         }
@@ -110,15 +112,18 @@ namespace RealisticBattleAiModule
                         {
                             if (__instance.DefensePosition.IsValid)
                             {
-                                medianPositionOld = __instance.DefensePosition;
-                                medianPositionOld.SetVec2(medianPositionOld.AsVec2 + __instance.Formation.Direction * 10f);
-                                ____currentOrder = MovementOrder.MovementOrderMove(medianPositionOld);
+                                WorldPosition newPosition = __instance.DefensePosition;
+                                newPosition.SetVec2(newPosition.AsVec2 + __instance.Formation.Direction * 10f);
+                                ____currentOrder = MovementOrder.MovementOrderMove(newPosition);
+                                positionsStorage[__instance.Formation] = newPosition;
+
                                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
                             }
                             else
                             {
-                                medianPositionOld = medianPositionNew;
-                                medianPositionOld.SetVec2(medianPositionOld.AsVec2 + __instance.Formation.Direction * 10f);
+                                WorldPosition newPosition = medianPositionNew;
+                                newPosition.SetVec2(newPosition.AsVec2 + __instance.Formation.Direction * 10f);
+                                positionsStorage[__instance.Formation] = newPosition;
                                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
                             }
                         }
@@ -130,7 +135,7 @@ namespace RealisticBattleAiModule
         [HarmonyPatch(typeof(BehaviorHoldHighGround))]
         class OverrideBehaviorHoldHighGround
         {
-            static WorldPosition medianPositionOld;
+            public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
 
             [HarmonyPostfix]
             [HarmonyPatch("CalculateCurrentOrder")]
@@ -150,14 +155,17 @@ namespace RealisticBattleAiModule
 
                         if (distance < (180f))
                         {
-                            ____currentOrder = MovementOrder.MovementOrderMove(medianPositionOld);
+                            WorldPosition newPosition = WorldPosition.Invalid;
+                            positionsStorage.TryGetValue(__instance.Formation, out newPosition);
+                            ____currentOrder = MovementOrder.MovementOrderMove(newPosition);
                             ___IsCurrentOrderChanged = true;
                             ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
                         }
                         else
                         {
-                            medianPositionOld = medianPositionNew;
-                            medianPositionOld.SetVec2(medianPositionOld.AsVec2 + __instance.Formation.Direction * 10f);
+                            WorldPosition newPosition = medianPositionNew;
+                            newPosition.SetVec2(newPosition.AsVec2 + __instance.Formation.Direction * 10f);
+                            positionsStorage[__instance.Formation] = newPosition;
                             ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
                         }
                     }
@@ -674,13 +682,13 @@ namespace RealisticBattleAiModule
             {
                 case BehaviorState.HoldingFlank:
                     {
-                        Formation closestFormation = __instance.Formation.QuerySystem.ClosestEnemyFormation.Formation;
-                        if (closestFormation != null && (closestFormation.QuerySystem.IsCavalryFormation || closestFormation.QuerySystem.IsRangedCavalryFormation))
+                        FormationQuerySystem closestFormation = __instance.Formation.QuerySystem.ClosestEnemyFormation;
+                        if (closestFormation != null && closestFormation.Formation != null && (closestFormation.Formation.QuerySystem.IsCavalryFormation || closestFormation.Formation.QuerySystem.IsRangedCavalryFormation))
                         {
-                            float changeToChargeDistance = 150f + (__instance.Formation.Depth + closestFormation.Depth) / 2f;
-                            if (closestFormation.QuerySystem.MedianPosition.AsVec2.DistanceSquared(position) < changeToChargeDistance * changeToChargeDistance)
+                            float changeToChargeDistance = 150f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
+                            if (closestFormation.Formation.QuerySystem.MedianPosition.AsVec2.DistanceSquared(position) < changeToChargeDistance * changeToChargeDistance)
                             {
-                                ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(closestFormation);
+                                ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(closestFormation.Formation);
                                 ____currentOrder = ____chargeToTargetOrder;
                                 ____protectFlankState = BehaviorState.Charging;
                             }
@@ -690,14 +698,14 @@ namespace RealisticBattleAiModule
                     
                 case BehaviorState.Charging:
                     {
-                        Formation closestFormation = __instance.Formation.QuerySystem.ClosestEnemyFormation.Formation;
+                        FormationQuerySystem closestFormation = __instance.Formation.QuerySystem.ClosestEnemyFormation;
                         if (closestFormation == null)
                         {
                             ____currentOrder = ____movementOrder;
                             ____protectFlankState = BehaviorState.Returning;
                             break;
                         }
-                        float num2 = 160f + (__instance.Formation.Depth + closestFormation.Depth) / 2f;
+                        float num2 = 160f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
                         if (__instance.Formation.QuerySystem.AveragePosition.DistanceSquared(position) > num2 * num2)
                         {
                             ____currentOrder = ____movementOrder;
@@ -1298,7 +1306,7 @@ namespace RealisticBattleAiModule
     [HarmonyPatch(typeof(BehaviorCharge))]
     class OverrideBehaviorCharge
     {
-        static WorldPosition medianPositionOld;
+        public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
 
         [HarmonyPrefix]
         [HarmonyPatch("CalculateCurrentOrder")]
@@ -1334,15 +1342,18 @@ namespace RealisticBattleAiModule
                         {
                             Vec2 vec = enemyCav.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                             WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
-                            if (!medianPositionOld.IsValid)
-                            {
-                                medianPositionOld = positionNew;
-                                ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
 
+                            WorldPosition storedPosition = WorldPosition.Invalid;
+                            positionsStorage.TryGetValue(__instance.Formation, out storedPosition);
+
+                            if (!storedPosition.IsValid)
+                            {
+                                positionsStorage.Add(__instance.Formation, positionNew);
+                                ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
                             }
                             else
                             {
-                                ____currentOrder = MovementOrder.MovementOrderMove(medianPositionOld);
+                                ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
 
                             }
                             if (cavDist > 70f)
@@ -1359,11 +1370,10 @@ namespace RealisticBattleAiModule
                             //        agent.SetFiringOrder(0);
                             //    }
                             //});
-                            //__instance.Formation.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
                             __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
                             return false;
                         }
-                        medianPositionOld = WorldPosition.Invalid;
+                        positionsStorage.Remove(__instance.Formation);
                     }
                 }
 
@@ -2129,7 +2139,7 @@ namespace RealisticBattleAiModule
                                 //}
                             }
                         }
-                        if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && !targetAgent.HasMount)
+                        if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle )
                         {
                         IEnumerable<Agent> enemyAgents10f = mission.GetNearbyEnemyAgents(unitPosition + direction * 10f, 5f, unit.Team);
                         IEnumerable<Agent> enemyAgents0f = mission.GetNearbyEnemyAgents(unitPosition, 5f, unit.Team);
@@ -2520,7 +2530,7 @@ namespace RealisticBattleAiModule
         class OverrideBehaviorAdvance
         {
 
-            static WorldPosition medianPositionOld = WorldPosition.Invalid;
+            public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
 
             [HarmonyPrefix]
             [HarmonyPatch("CalculateCurrentOrder")]
@@ -2557,15 +2567,18 @@ namespace RealisticBattleAiModule
                             {
                                 Vec2 vec = enemyCav.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                                 WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
-                                if (!medianPositionOld.IsValid)
-                                {
-                                    medianPositionOld = positionNew;
-                                    ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
 
+                                WorldPosition storedPosition = WorldPosition.Invalid;
+                                positionsStorage.TryGetValue(__instance.Formation, out storedPosition);
+
+                                if (!storedPosition.IsValid)
+                                {
+                                    positionsStorage.Add(__instance.Formation, positionNew);
+                                    ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
                                 }
                                 else
                                 {
-                                    ____currentOrder = MovementOrder.MovementOrderMove(medianPositionOld);
+                                    ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
 
                                 }
                                 if (cavDist > 70f)
@@ -2585,7 +2598,8 @@ namespace RealisticBattleAiModule
                                 __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
                                 return false;
                             }
-                            medianPositionOld = WorldPosition.Invalid;
+                            positionsStorage.Remove(__instance.Formation);
+                            //medianPositionOld = WorldPosition.Invalid;
                         }
                     }
 
