@@ -2209,11 +2209,11 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.eastern_javelin_2_t3" />
+                 id="Item.eastern_javelin_1_t2" />
       <equipment slot="Item1"
                  id="Item.studded_adarga" />
       <equipment slot="Item2"
-                 id="Item.eastern_javelin_2_t3" />
+                 id="Item.eastern_javelin_1_t2" />
       <equipment slot="Item3"
                  id="Item.aserai_mace_3_t3" />
       <equipment slot="Head"
@@ -2229,11 +2229,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.eastern_javelin_2_t3" />
+                 id="Item.eastern_javelin_1_t2" />
       <equipment slot="Item1"
                  id="Item.studded_adarga" />
       <equipment slot="Item2"
-                 id="Item.eastern_javelin_2_t3" />
+                 id="Item.eastern_javelin_1_t2" />
       <equipment slot="Item3"
                  id="Item.aserai_mace_3_t3" />
       <equipment slot="Head"
@@ -2249,11 +2249,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.eastern_javelin_2_t3" />
+                 id="Item.eastern_javelin_1_t2" />
       <equipment slot="Item1"
                  id="Item.studded_adarga" />
       <equipment slot="Item2"
-                 id="Item.eastern_javelin_2_t3" />
+                 id="Item.eastern_javelin_1_t2" />
       <equipment slot="Item3"
                  id="Item.aserai_mace_3_t3" />
       <equipment slot="Head"
@@ -2611,9 +2611,9 @@
       <equipment slot="Item1"
                  id="Item.southern_oval_shield" />
       <equipment slot="Item2"
-                 id="Item.eastern_spear_4_t4" />
+                 id="Item.eastern_throwing_spear_1_t3" />
       <equipment slot="Item3"
-                 id="Item.eastern_javelin_3_t4" />
+                 id="Item.eastern_throwing_spear_1_t3" />
       <equipment slot="Head"
                  id="Item.desert_mail_coif" />
       <equipment slot="Body"
@@ -2631,9 +2631,9 @@
       <equipment slot="Item1"
                  id="Item.southern_oval_shield" />
       <equipment slot="Item2"
-                 id="Item.eastern_spear_4_t4" />
+                 id="Item.eastern_throwing_spear_1_t3" />
       <equipment slot="Item3"
-                 id="Item.eastern_javelin_3_t4" />
+                 id="Item.eastern_throwing_spear_1_t3" />
       <equipment slot="Head"
                  id="Item.pointed_skullcap_over_mail_coif" />
       <equipment slot="Body"
@@ -2651,9 +2651,9 @@
       <equipment slot="Item1"
                  id="Item.southern_oval_shield" />
       <equipment slot="Item2"
-                 id="Item.eastern_spear_4_t4" />
+                 id="Item.eastern_throwing_spear_1_t3" />
       <equipment slot="Item3"
-                 id="Item.eastern_javelin_3_t4" />
+                 id="Item.eastern_throwing_spear_1_t3" />
       <equipment slot="Head"
                  id="Item.pointed_skullcap_over_mail" />
       <equipment slot="Body"
@@ -4702,11 +4702,11 @@
       <equipment slot="Item0"
                  id="Item.battania_axe_1_t2" />
       <equipment slot="Item1"
-                 id="Item.northern_javelin_1_t2" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Item2"
                  id="Item.studded_round_shield" />
       <equipment slot="Item3"
-                 id="Item.northern_javelin_1_t2" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Body"
                  id="Item.fur_armor" />
       <equipment slot="Head"
@@ -4722,11 +4722,11 @@
       <equipment slot="Item0"
                  id="Item.battania_sword_1_t2" />
       <equipment slot="Item1"
-                 id="Item.northern_javelin_1_t2" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Item2"
                  id="Item.studded_round_shield" />
       <equipment slot="Item3"
-                 id="Item.northern_javelin_1_t2" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Body"
                  id="Item.fur_armor" />
       <equipment slot="Head"
@@ -4742,11 +4742,11 @@
       <equipment slot="Item0"
                  id="Item.battania_axe_1_t2" />
       <equipment slot="Item1"
-                 id="Item.northern_javelin_1_t2" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Item2"
                  id="Item.studded_round_shield" />
       <equipment slot="Item3"
-                 id="Item.northern_javelin_1_t2" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Body"
                  id="Item.fur_armor" />
       <equipment slot="Head"
@@ -4882,9 +4882,9 @@
       <equipment slot="Item1"
                  id="Item.battania_targe_b" />
       <equipment slot="Item2"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Item3"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Body"
                  id="Item.woven_leather_coat" />
       <equipment slot="Leg"
@@ -4902,9 +4902,9 @@
       <equipment slot="Item1"
                  id="Item.battania_targe_b" />
       <equipment slot="Item2"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Item3"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Body"
                  id="Item.woven_leather_coat" />
       <equipment slot="Leg"
@@ -4922,9 +4922,9 @@
       <equipment slot="Item1"
                  id="Item.battania_targe_b" />
       <equipment slot="Item2"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Item3"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Body"
                  id="Item.battanian_chainmail_armor_b" />
       <equipment slot="Leg"
@@ -4975,9 +4975,9 @@
       <equipment slot="Item1"
                  id="Item.battania_large_shield_b" />
       <equipment slot="Item2"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.northern_javelin_3_t4" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.northern_javelin_3_t4" />
       <equipment slot="Body"
                  id="Item.kilt_over_plated_leather" />
       <equipment slot="Leg"
@@ -4995,9 +4995,9 @@
       <equipment slot="Item1"
                  id="Item.battania_large_shield_b" />
       <equipment slot="Item2"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.northern_javelin_3_t4" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.northern_javelin_3_t4" />
       <equipment slot="Body"
                  id="Item.battanian_chainmail_armor_d" />
       <equipment slot="Leg"
@@ -5015,9 +5015,9 @@
       <equipment slot="Item1"
                  id="Item.battania_large_shield_b" />
       <equipment slot="Item2"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.northern_javelin_3_t4" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.northern_javelin_3_t4" />
       <equipment slot="Body"
                  id="Item.battania_woodland_chainmail" />
       <equipment slot="Leg"
@@ -6075,7 +6075,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="20" />
+             value="40" />
       <skill id="Riding"
              value="40" />
       <skill id="OneHanded"
@@ -6089,7 +6089,7 @@
       <skill id="Crossbow"
              value="5" />
       <skill id="Throwing"
-             value="5" />
+             value="40" />
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.imperial_equite" />
@@ -6102,6 +6102,8 @@
                  id="Item.light_horsemans_kite_shield" />
       <equipment slot="Item2"
                  id="Item.empire_sword_1_t2" />
+      <equipment slot="Item3"
+                 id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Body"
                  id="Item.empire_warrior_padded_armor_g" />
       <equipment slot="Leg"
@@ -6120,6 +6122,8 @@
                  id="Item.light_horsemans_kite_shield" />
       <equipment slot="Item2"
                  id="Item.empire_sword_1_t2" />
+      <equipment slot="Item3"
+                 id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Body"
                  id="Item.woven_leather_coat" />
       <equipment slot="Leg"
@@ -6138,6 +6142,8 @@
                  id="Item.light_horsemans_kite_shield" />
       <equipment slot="Item2"
                  id="Item.empire_sword_1_t2" />
+      <equipment slot="Item3"
+                 id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Body"
                  id="Item.basic_imperial_leather_armor" />
       <equipment slot="Leg"
@@ -6578,7 +6584,7 @@
       <equipment slot="Item1"
                  id="Item.reinforced_flat_kite_shield" />
       <equipment slot="Item2"
-                 id="Item.western_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Item3"
                  id="Item.empire_sword_3_t3" />
       <equipment slot="Body"
@@ -6598,7 +6604,7 @@
       <equipment slot="Item1"
                  id="Item.reinforced_flat_kite_shield" />
       <equipment slot="Item2"
-                 id="Item.western_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Item3"
                  id="Item.empire_sword_3_t3" />
       <equipment slot="Body"
@@ -6618,7 +6624,7 @@
       <equipment slot="Item1"
                  id="Item.reinforced_flat_kite_shield" />
       <equipment slot="Item2"
-                 id="Item.western_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Item3"
                  id="Item.imperial_axe_t3" />
       <equipment slot="Body"
@@ -10344,7 +10350,7 @@
       <equipment slot="Item2"
                  id="Item.sturgia_axe_5_t5" />
       <equipment slot="Item3"
-                 id="Item.eastern_throwing_spear_2_t4" />
+                 id="Item.western_javelin_3_t4" />
       <equipment slot="Body"
                  id="Item.northern_brass_lamellar_over_mail" />
       <equipment slot="Leg"
@@ -10368,7 +10374,7 @@
       <equipment slot="Item2"
                  id="Item.sturgia_axe_5_t5" />
       <equipment slot="Item3"
-                 id="Item.eastern_throwing_spear_2_t4" />
+                 id="Item.western_javelin_3_t4" />
       <equipment slot="Body"
                  id="Item.northern_brass_lamellar_over_mail" />
       <equipment slot="Leg"
@@ -10392,7 +10398,7 @@
       <equipment slot="Item2"
                  id="Item.sturgia_axe_5_t5" />
       <equipment slot="Item3"
-                 id="Item.eastern_throwing_spear_2_t4" />
+                 id="Item.western_javelin_3_t4" />
       <equipment slot="Body"
                  id="Item.northern_brass_lamellar_over_mail" />
       <equipment slot="Leg"
@@ -10450,7 +10456,7 @@
       <equipment slot="Item2"
                  id="Item.sturgia_axe_5_t5" />
       <equipment slot="Item3"
-                 id="Item.eastern_throwing_spear_2_t4" />
+                 id="Item.western_javelin_3_t4" />
       <equipment slot="Gloves"
                  id="Item.northern_plated_gloves" />
       <equipment slot="Body"
@@ -10474,7 +10480,7 @@
       <equipment slot="Item2"
                  id="Item.sturgia_axe_5_t5" />
       <equipment slot="Item3"
-                 id="Item.eastern_throwing_spear_2_t4" />				 
+                 id="Item.western_javelin_3_t4" />				 
       <equipment slot="Gloves"
                  id="Item.northern_plated_gloves" />
       <equipment slot="Body"
@@ -10498,7 +10504,7 @@
       <equipment slot="Item2"
                  id="Item.khuzait_mace_4_t5" />
       <equipment slot="Item3"
-                 id="Item.eastern_throwing_spear_2_t4" />
+                 id="Item.western_javelin_3_t4" />
       <equipment slot="Gloves"
                  id="Item.northern_plated_gloves" />
       <equipment slot="Body"
@@ -11136,9 +11142,9 @@
       <equipment slot="Item1"
                  id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
-                 id="Item.northern_javelin_3_t4" />
+                 id="Item.generic_javelin_1_t3" />
       <equipment slot="Item3"
-                 id="Item.northern_javelin_3_t4" />
+                 id="Item.generic_javelin_1_t3" />
       <equipment slot="Head"
                  id="Item.sturgian_helmet_b_open" />
       <equipment slot="Body"
@@ -11160,9 +11166,9 @@
       <equipment slot="Item1"
                  id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
-                 id="Item.northern_javelin_3_t4" />
+                 id="Item.generic_javelin_1_t3" />
       <equipment slot="Item3"
-                 id="Item.northern_javelin_3_t4" />
+                 id="Item.generic_javelin_1_t3" />
       <equipment slot="Head"
                  id="Item.sturgian_helmet_b_open" />
       <equipment slot="Body"
@@ -11184,9 +11190,9 @@
       <equipment slot="Item1"
                  id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
-                 id="Item.northern_javelin_3_t4" />
+                 id="Item.generic_javelin_1_t3" />
       <equipment slot="Item3"
-                 id="Item.northern_javelin_3_t4" />
+                 id="Item.generic_javelin_1_t3" />
       <equipment slot="Head"
                  id="Item.northern_goggled_helmet" />
       <equipment slot="Body"
@@ -12507,7 +12513,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_a" />
       <equipment slot="Item1"
-                 id="Item.tournament_bolts" />
+                 id="Item.bolt_e" />
       <equipment slot="Item2"
                  id="Item.vlandia_sword_1_t2" />
       <equipment slot="Body"
@@ -12525,7 +12531,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_a" />
       <equipment slot="Item1"
-                 id="Item.tournament_bolts" />
+                 id="Item.bolt_e" />
       <equipment slot="Item2"
                  id="Item.vlandia_sword_1_t2" />
       <equipment slot="Body"
@@ -12543,7 +12549,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_a" />
       <equipment slot="Item1"
-                 id="Item.tournament_bolts" />
+                 id="Item.bolt_e" />
       <equipment slot="Item2"
                  id="Item.vlandia_sword_1_t2" />
       <equipment slot="Body"
@@ -17177,7 +17183,7 @@
       <equipment slot="Item2"
                  id="Item.oval_shield" />
       <equipment slot="Item3"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.eastern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.trailed_desert_helmet" />
       <equipment slot="Body"
@@ -17195,7 +17201,7 @@
       <equipment slot="Item2"
                  id="Item.oval_shield" />
       <equipment slot="Item3"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.eastern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.closed_desert_helmet" />
       <equipment slot="Body"
@@ -17213,7 +17219,7 @@
       <equipment slot="Item2"
                  id="Item.oval_shield" />
       <equipment slot="Item3"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.eastern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.open_desert_helmet" />
       <equipment slot="Body"
@@ -17231,7 +17237,7 @@
       <equipment slot="Item2"
                  id="Item.oval_shield" />
       <equipment slot="Item3"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.eastern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.open_desert_helmet" />
       <equipment slot="Body"
@@ -17541,7 +17547,7 @@
       <equipment slot="Item2"
                  id="Item.heavy_heater_shield" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.nasal_helmet_over_laced_coif" />
       <equipment slot="Gloves"
@@ -17559,7 +17565,7 @@
       <equipment slot="Item2"
                  id="Item.bracketed_heater_shield" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.nasal_helmet_over_padded_cloth" />
       <equipment slot="Gloves"
@@ -17577,7 +17583,7 @@
       <equipment slot="Item2"
                  id="Item.bracketed_heater_shield" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.nasal_helmet_over_laced_coif" />
       <equipment slot="Gloves"
@@ -17595,7 +17601,7 @@
       <equipment slot="Item2"
                  id="Item.bracketed_heater_shield" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.nasal_helmet_over_laced_coif" />
       <equipment slot="Gloves"
@@ -17628,7 +17634,7 @@
       <equipment slot="Item2"
                  id="Item.heavy_heater_shield" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.peaked_helmet_over_padded_cloth" />
       <equipment slot="Gloves"
@@ -17646,7 +17652,7 @@
       <equipment slot="Item2"
                  id="Item.bracketed_heater_shield" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.peaked_helmet_over_padded_cloth" />
       <equipment slot="Gloves"
@@ -17664,7 +17670,7 @@
       <equipment slot="Item2"
                  id="Item.bracketed_heater_shield" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.peaked_helmet_over_padded_cloth" />
       <equipment slot="Gloves"
@@ -17682,7 +17688,7 @@
       <equipment slot="Item2"
                  id="Item.bracketed_heater_shield" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.peaked_helmet_over_padded_cloth" />
       <equipment slot="Gloves"
@@ -17905,7 +17911,7 @@
       <equipment slot="Item2"
                  id="Item.woodland_axe_t3" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.battania_fur_helmet" />
       <equipment slot="Cape"
@@ -17925,7 +17931,7 @@
       <equipment slot="Item2"
                  id="Item.woodland_axe_t3" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.battania_fur_helmet" />
       <equipment slot="Body"
@@ -17943,7 +17949,7 @@
       <equipment slot="Item2"
                  id="Item.woodland_axe_t3" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.battania_fur_helmet" />
       <equipment slot="Body"
@@ -17963,7 +17969,7 @@
       <equipment slot="Item2"
                  id="Item.woodland_axe_t3" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.battania_fur_helmet" />
       <equipment slot="Body"
@@ -17998,7 +18004,7 @@
       <equipment slot="Item2"
                  id="Item.battania_axe_2_t4" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.roughscale_helmet" />
       <equipment slot="Cape"
@@ -18018,7 +18024,7 @@
       <equipment slot="Item2"
                  id="Item.battania_axe_2_t4" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.roughscale_helmet" />
       <equipment slot="Body"
@@ -18036,7 +18042,7 @@
       <equipment slot="Item2"
                  id="Item.battania_axe_2_t4" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.roughscale_helmet" />
       <equipment slot="Body"
@@ -18056,7 +18062,7 @@
       <equipment slot="Item2"
                  id="Item.battania_axe_2_t4" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.roughscale_helmet" />
       <equipment slot="Body"
@@ -18269,7 +18275,7 @@
       <equipment slot="Item2"
                  id="Item.reinforced_kite_shield" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.imperial_open_mail_coif" />
       <equipment slot="Cape"
@@ -18289,7 +18295,7 @@
       <equipment slot="Item2"
                  id="Item.reinforced_kite_shield" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.leather_cap" />
       <equipment slot="Body"
@@ -18307,7 +18313,7 @@
       <equipment slot="Item2"
                  id="Item.reinforced_kite_shield" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.leather_cap" />
       <equipment slot="Body"
@@ -18325,7 +18331,7 @@
       <equipment slot="Item2"
                  id="Item.reinforced_kite_shield" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.imperial_mail_coif" />
       <equipment slot="Body"
@@ -18358,7 +18364,7 @@
       <equipment slot="Item2"
                  id="Item.reinforced_kite_shield" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Head"
                  id="Item.imperial_nasal_helm" />
       <equipment slot="Cape"
@@ -18378,7 +18384,7 @@
       <equipment slot="Item2"
                  id="Item.reinforced_kite_shield" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Head"
                  id="Item.imperial_nasal_helm" />
       <equipment slot="Body"
@@ -18396,7 +18402,7 @@
       <equipment slot="Item2"
                  id="Item.reinforced_kite_shield" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Head"
                  id="Item.imperial_nasal_helm" />
       <equipment slot="Body"
@@ -18414,7 +18420,7 @@
       <equipment slot="Item2"
                  id="Item.reinforced_kite_shield" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Head"
                  id="Item.imperial_nasal_helm" />
       <equipment slot="Body"
@@ -18629,7 +18635,7 @@
       <equipment slot="Item2"
                  id="Item.northern_round_shield" />
       <equipment slot="Item3"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.nasalhelm_over_leather" />
       <equipment slot="Cape"
@@ -18649,7 +18655,7 @@
       <equipment slot="Item2"
                  id="Item.northern_round_shield" />
       <equipment slot="Item3"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.nasalhelm_over_leather" />
       <equipment slot="Cape"
@@ -18671,7 +18677,7 @@
       <equipment slot="Item2"
                  id="Item.northern_round_shield" />
       <equipment slot="Item3"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.roughhide_cap" />
       <equipment slot="Cape"
@@ -18691,7 +18697,7 @@
       <equipment slot="Item2"
                  id="Item.northern_round_shield" />
       <equipment slot="Item3"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.roughhide_cap" />
       <equipment slot="Cape"
@@ -19013,7 +19019,7 @@
       <equipment slot="Item2"
                  id="Item.stronger_footmans_wicker_shield" />
       <equipment slot="Item3"
-                 id="Item.eastern_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.upturned_fur_cap" />
       <equipment slot="Body"
@@ -19033,7 +19039,7 @@
       <equipment slot="Item2"
                  id="Item.stronger_footmans_wicker_shield" />
       <equipment slot="Item3"
-                 id="Item.eastern_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.upturned_fur_cap" />
       <equipment slot="Body"
@@ -19051,7 +19057,7 @@
       <equipment slot="Item2"
                  id="Item.stronger_footmans_wicker_shield" />
       <equipment slot="Item3"
-                 id="Item.eastern_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.fur_hood" />
       <equipment slot="Cape"
@@ -19071,7 +19077,7 @@
       <equipment slot="Item2"
                  id="Item.stronger_footmans_wicker_shield" />
       <equipment slot="Item3"
-                 id="Item.eastern_javelin_2_t3" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.fur_hood" />
       <equipment slot="Cape"
@@ -19106,7 +19112,7 @@
       <equipment slot="Item2"
                  id="Item.stronger_footmans_wicker_shield" />
       <equipment slot="Item3"
-                 id="Item.eastern_javelin_3_t4" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.nomad_helmet" />
       <equipment slot="Body"
@@ -19126,7 +19132,7 @@
       <equipment slot="Item2"
                  id="Item.stronger_footmans_wicker_shield" />
       <equipment slot="Item3"
-                 id="Item.eastern_javelin_3_t4" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.nomad_helmet" />
       <equipment slot="Body"
@@ -19144,7 +19150,7 @@
       <equipment slot="Item2"
                  id="Item.stronger_footmans_wicker_shield" />
       <equipment slot="Item3"
-                 id="Item.eastern_javelin_3_t4" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.steppe_helmet" />
       <equipment slot="Cape"
@@ -19164,7 +19170,7 @@
       <equipment slot="Item2"
                  id="Item.stronger_footmans_wicker_shield" />
       <equipment slot="Item3"
-                 id="Item.eastern_javelin_3_t4" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.steppe_helmet" />
       <equipment slot="Cape"
