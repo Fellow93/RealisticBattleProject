@@ -1421,6 +1421,7 @@ namespace RealisticBattleCombatModule
                 switch (weaponType)
                 {
                     case "TwoHandedAxe":
+                    case "OneHandedAxe":
                     case "OneHandedBastardAxe":
                     case "TwoHandedPolearm":
                     case "TwoHandedMace":
