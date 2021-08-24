@@ -1381,6 +1381,10 @@ namespace RealisticBattleAiModule
                 {
                     __instance.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
                     ____currentOrder = MovementOrder.MovementOrderChargeToTarget(significantEnemy);
+                    if(__instance.Formation.TargetFormation != null && __instance.Formation.TargetFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall)
+                    {
+                        __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderShieldWall;
+                    }
                     return false;
                 }
             }
@@ -1987,20 +1991,25 @@ namespace RealisticBattleAiModule
                         //    return false;
                         //}
                         //}else {
+                        Vec2 direction = (targetAgent.GetWorldPosition().AsVec2 - unitPosition).Normalized();
+
                         if (distance > 30f){
+
                             __result = targetAgent.GetWorldPosition();
                             return false;
                         }
                         //}
                             
-                        Vec2 direction = (targetAgent.GetWorldPosition().AsVec2 - unitPosition).Normalized();
-                        IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unitPosition + lookDirection * 0.8f, 1f, unit.Team);
+                        IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unitPosition + direction * 0.8f, 1f, unit.Team);
 
                         if (agents.Count() > 3 && !unit.IsDoingPassiveAttack)
                         {
                             unit.LookDirection = direction.ToVec3();
-                            //unit.SetLookAgent(targetAgent);
-                            if (MBRandom.RandomInt(75) == 0)
+                            //if (!unit.IsRetreating() && !unit.IsRunningAway)
+                            //{
+                            //    unit.SetLookAgent(targetAgent);
+                            //}
+                        if (MBRandom.RandomInt(75) == 0)
                             {
                                 //if (targetAgent != null)
                                 //{
@@ -2020,8 +2029,8 @@ namespace RealisticBattleAiModule
                                 //{
                                 if (unit != null)
                                 {
-                                    IEnumerable<Agent> agentsLeft = mission.GetNearbyAllyAgents(unitPosition + lookDirection.LeftVec() * 0.8f, 1f, unit.Team);
-                                    IEnumerable<Agent> agentsRight = mission.GetNearbyAllyAgents(unitPosition + lookDirection.RightVec() * 0.8f, 1f, unit.Team);
+                                    IEnumerable<Agent> agentsLeft = mission.GetNearbyAllyAgents(unitPosition + direction.LeftVec() * 0.8f, 1f, unit.Team);
+                                    IEnumerable<Agent> agentsRight = mission.GetNearbyAllyAgents(unitPosition + direction.RightVec() * 0.8f, 1f, unit.Team);
                                     if (agentsLeft.Count() > 3 && agentsRight.Count() > 3)
                                     {
                                         if (MBRandom.RandomInt(75) == 0)
@@ -2029,14 +2038,14 @@ namespace RealisticBattleAiModule
                                             if (MBRandom.RandomInt(2) == 0)
                                             {
                                                 WorldPosition leftPosition = unit.GetWorldPosition();
-                                                leftPosition.SetVec2(unitPosition + lookDirection.LeftVec());
+                                                leftPosition.SetVec2(unitPosition + direction.LeftVec());
                                                 __result = leftPosition;
                                                 return false;
                                             }
                                             else
                                             {
                                                 WorldPosition rightPosition = unit.GetWorldPosition();
-                                                rightPosition.SetVec2(unitPosition + lookDirection.RightVec());
+                                                rightPosition.SetVec2(unitPosition + direction.RightVec());
                                                 __result = rightPosition;
                                                 return false;
                                             }
@@ -2246,10 +2255,13 @@ namespace RealisticBattleAiModule
 
                         //}
                        
-                        if (enemyAgents0f.Count() > 3 || enemyAgents10f.Count() > 3)
+                        if (enemyAgents0f.Count()> 3 || enemyAgents10f.Count() > 3)
                         {
                             unit.LookDirection = direction.ToVec3();
-                            //unit.SetLookAgent(targetAgent);
+                            //if(!unit.IsRetreating() && !unit.IsRunningAway)
+                            //{
+                            //    unit.SetLookAgent(targetAgent);
+                            //}
 
                             unit.SetFiringOrder(1);
                             int unitPower = (int)Math.Floor(unit.Character.GetPower() * 100);

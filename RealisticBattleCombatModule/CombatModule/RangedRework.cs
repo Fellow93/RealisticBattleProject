@@ -166,8 +166,6 @@ namespace RealisticBattleCombatModule
             }
             static void Postfix(Agent __instance)
             {
-                int i = 0;
-                int j = 0;
                 for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                 {
 

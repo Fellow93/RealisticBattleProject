@@ -60,7 +60,7 @@ internal class RbmMenuViewModel : ViewModel
 		_sliderValueText = _sliderValue.ToString();
 		_booleanValue = true;
 		RefreshValues();
-		RbmConfigData data;
+		//RbmConfigData data;
 		List<string> troopOverhaulOnOff = new List<string> { "Active", "Inactive",};
 		ActiveTroopOverhaulText = new TextViewModel(new TextObject("RBM Troop Overhaul"));
 		ActiveTroopOverhaul = new SelectorVM<SelectorItemVM>(troopOverhaulOnOff, 0, null);
