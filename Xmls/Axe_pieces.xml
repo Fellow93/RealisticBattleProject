@@ -625,7 +625,7 @@
   </CraftingPiece>
   <CraftingPiece id="axe_craft_24_handle" name="{=SraI0yxb}Hardened Long Oaken Handle" tier="5" piece_type="Handle" mesh="axe_craft_24_handle" length="110" weight="0.296">
     <PieceUsages unavailable_usages="" />
-    <BuildData piece_offset="21" next_piece_offset="1.5" />
+    <BuildData piece_offset="30" next_piece_offset="1.5" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
