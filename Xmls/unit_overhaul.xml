@@ -1253,7 +1253,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_lance_3_t5" />
+                 id="Item.vlandia_lance_3_t5" />
       <equipment slot="Item1"
                  id="Item.western_riders_kite_sparring_shield" />
       <equipment slot="Item3"
@@ -1367,7 +1367,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_lance_3_t5" />
+                 id="Item.vlandia_lance_3_t5" />
       <equipment slot="Item1"
                  id="Item.western_riders_kite_sparring_shield" />
       <equipment slot="Item3"
@@ -1379,7 +1379,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_lance_3_t5" />
+                 id="Item.vlandia_lance_3_t5" />
       <equipment slot="Item1"
                  id="Item.western_riders_kite_sparring_shield" />
       <equipment slot="Item3"
@@ -1425,7 +1425,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_lance_3_t5" />
+                 id="Item.vlandia_lance_3_t5" />
       <equipment slot="Item1"
                  id="Item.western_riders_kite_sparring_shield" />
       <equipment slot="Item3"
@@ -1475,7 +1475,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_lance_3_t5" />
+                 id="Item.vlandia_lance_3_t5" />
       <equipment slot="Item1"
                  id="Item.western_riders_kite_sparring_shield" />
       <equipment slot="Item3"
@@ -1519,7 +1519,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_lance_3_t5" />
+                 id="Item.vlandia_lance_3_t5" />
       <equipment slot="Item1"
                  id="Item.western_riders_kite_sparring_shield" />
       <equipment slot="Item3"
@@ -1531,7 +1531,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_lance_3_t5" />
+                 id="Item.vlandia_lance_3_t5" />
       <equipment slot="Item1"
                  id="Item.western_riders_kite_sparring_shield" />
       <equipment slot="Item3"
