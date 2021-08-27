@@ -626,7 +626,7 @@ namespace RealisticBattleAiModule
         [HarmonyPatch("CalculateCurrentOrder")]
         static bool PrefixCalculateCurrentOrder(ref BehaviorProtectFlank __instance, ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviorState ____protectFlankState,  ref Formation ____mainFormation, ref FormationAI.BehaviorSide ___behaviorSide)
         {
-            if (____mainFormation == null || __instance.Formation.QuerySystem.ClosestEnemyFormation == null)
+            if (____mainFormation == null || __instance.Formation == null || __instance.Formation.QuerySystem.ClosestEnemyFormation == null)
             {
                 ____currentOrder = MovementOrder.MovementOrderStop;
                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
@@ -677,50 +677,57 @@ namespace RealisticBattleAiModule
         [HarmonyPatch("CheckAndChangeState")]
         static bool PrefixCheckAndChangeState(ref BehaviorMountedSkirmish __instance, ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviorState ____protectFlankState,  ref Formation ____mainFormation, ref FormationAI.BehaviorSide ___behaviorSide)
         {
-            Vec2 position = ____movementOrder.GetPosition(__instance.Formation);
-            switch (____protectFlankState)
+            if(__instance.Formation != null && ____movementOrder != null)
             {
-                case BehaviorState.HoldingFlank:
-                    {
-                        FormationQuerySystem closestFormation = __instance.Formation.QuerySystem.ClosestEnemyFormation;
-                        if (closestFormation != null && closestFormation.Formation != null && (closestFormation.Formation.QuerySystem.IsCavalryFormation || closestFormation.Formation.QuerySystem.IsRangedCavalryFormation))
+                Vec2 position = ____movementOrder.GetPosition(__instance.Formation);
+                switch (____protectFlankState)
+                {
+                    case BehaviorState.HoldingFlank:
                         {
-                            float changeToChargeDistance = 150f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
-                            if (closestFormation.Formation.QuerySystem.MedianPosition.AsVec2.DistanceSquared(position) < changeToChargeDistance * changeToChargeDistance)
+                            FormationQuerySystem closestFormation = __instance.Formation.QuerySystem.ClosestEnemyFormation;
+                            if (closestFormation != null && closestFormation.Formation != null && (closestFormation.Formation.QuerySystem.IsCavalryFormation || closestFormation.Formation.QuerySystem.IsRangedCavalryFormation))
                             {
-                                ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(closestFormation.Formation);
-                                ____currentOrder = ____chargeToTargetOrder;
-                                ____protectFlankState = BehaviorState.Charging;
+                                float changeToChargeDistance = 150f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
+                                if (closestFormation.Formation.QuerySystem.MedianPosition.AsVec2.DistanceSquared(position) < changeToChargeDistance * changeToChargeDistance)
+                                {
+                                    ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(closestFormation.Formation);
+                                    ____currentOrder = ____chargeToTargetOrder;
+                                    ____protectFlankState = BehaviorState.Charging;
+                                }
                             }
-                        }
-                        break;
-                    }
-                    
-                case BehaviorState.Charging:
-                    {
-                        FormationQuerySystem closestFormation = __instance.Formation.QuerySystem.ClosestEnemyFormation;
-                        if (closestFormation == null)
-                        {
-                            ____currentOrder = ____movementOrder;
-                            ____protectFlankState = BehaviorState.Returning;
                             break;
                         }
-                        float num2 = 160f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
-                        if (__instance.Formation.QuerySystem.AveragePosition.DistanceSquared(position) > num2 * num2)
+                    case BehaviorState.Charging:
                         {
-                            ____currentOrder = ____movementOrder;
-                            ____protectFlankState = BehaviorState.Returning;
+
+                            FormationQuerySystem closestFormation = __instance.Formation.QuerySystem.ClosestEnemyFormation;
+                            if (closestFormation != null && closestFormation.Formation != null)
+                            {
+                                if (closestFormation == null)
+                                {
+                                    ____currentOrder = ____movementOrder;
+                                    ____protectFlankState = BehaviorState.Returning;
+                                    break;
+                                }
+                                float num2 = 160f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
+                                if (__instance.Formation.QuerySystem.AveragePosition.DistanceSquared(position) > num2 * num2)
+                                {
+                                    ____currentOrder = ____movementOrder;
+                                    ____protectFlankState = BehaviorState.Returning;
+                                }
+                            }
+                            break;
+                        }
+                    case BehaviorState.Returning:
+                        if (__instance.Formation.QuerySystem.AveragePosition.DistanceSquared(position) < 400f)
+                        {
+                            ____protectFlankState = BehaviorState.HoldingFlank;
                         }
                         break;
-                    }
-                case BehaviorState.Returning:
-                    if (__instance.Formation.QuerySystem.AveragePosition.DistanceSquared(position) < 400f)
-                    {
-                        ____protectFlankState = BehaviorState.HoldingFlank;
-                    }
-                    break;
+                }
+                return false;
             }
-            return false;
+            return true;
         }
     }
 
