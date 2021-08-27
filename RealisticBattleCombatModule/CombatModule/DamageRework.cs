@@ -148,7 +148,7 @@ namespace RealisticBattleCombatModule
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
                 {
-                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage - 150f)*0.5f) * XmlConfig.dict["Global.ThrustModifier"];
+                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage - 150f) * 0.5f) * XmlConfig.dict["Global.ThrustModifier"];
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingAxe"))
@@ -246,9 +246,9 @@ namespace RealisticBattleCombatModule
                 }
                 if (thrust > 200f)
                 {
-                    thrust = 200f; 
+                    thrust = 200f;
                 }
-                __result =  0.125f * thrust * XmlConfig.dict["Global.ThrustModifier"];
+                __result = 0.125f * thrust * XmlConfig.dict["Global.ThrustModifier"];
                 return false;
             }
             __result = 0f;
@@ -493,13 +493,13 @@ namespace RealisticBattleCombatModule
                             }
                             break;
                         }
-                    default: 
+                    default:
                         {
                             dmgMultiplier *= 1f;
                             break;
                         }
                 }
-                
+
                 dmgMultiplier *= combatDifficultyMultiplier;
             }
 
@@ -824,8 +824,8 @@ namespace RealisticBattleCombatModule
                                 }
                             }
                         }
-                            break;
-                        
+                        break;
+
                     }
                 case DamageTypes.Pierce:
                     {
@@ -1008,7 +1008,7 @@ namespace RealisticBattleCombatModule
             {
                 num2 = 5.5f;
             }
-            __result =  num2;
+            __result = num2;
             return false;
         }
     }
@@ -1095,7 +1095,7 @@ namespace RealisticBattleCombatModule
             {
                 ArmorTier = 0f;
             }
-            __result =  ArmorTier;
+            __result = ArmorTier;
             return false;
         }
     }
@@ -1248,21 +1248,21 @@ namespace RealisticBattleCombatModule
 
             List<XElement> nodesToRemoveArray = new List<XElement>();
 
-            if(XmlConfig.dict["Global.TroopOverhaulActive"] == 0 && xmlDocument2.BaseURI.Contains("unit_overhaul"))
+            if (XmlConfig.dict["Global.TroopOverhaulActive"] == 0 && xmlDocument2.BaseURI.Contains("unit_overhaul"))
             {
                 __result = MBObjectManager.ToXmlDocument(originalXml);
                 return false;
             }
 
-            foreach(XElement origNode in originalXml.Root.Elements())
+            foreach (XElement origNode in originalXml.Root.Elements())
             {
-                if(origNode.Name == "CraftedItem" && xmlDocument2.BaseURI.Contains("RealisticBattle"))
+                if (origNode.Name == "CraftedItem" && xmlDocument2.BaseURI.Contains("RealisticBattle"))
                 {
                     foreach (XElement mergedNode in mergedXml.Root.Elements())
                     {
                         if (mergedNode.Name == "CraftedItem")
                         {
-                            if (origNode.Attribute("id").Value.Equals(mergedNode.Attribute("id").Value)){
+                            if (origNode.Attribute("id").Value.Equals(mergedNode.Attribute("id").Value)) {
                                 nodesToRemoveArray.Add(origNode);
                             }
                         }
@@ -1322,7 +1322,7 @@ namespace RealisticBattleCombatModule
                 }
             }
 
-            if(nodesToRemoveArray.Count > 0)
+            if (nodesToRemoveArray.Count > 0)
             {
                 foreach (XElement node in nodesToRemoveArray)
                 {
@@ -1340,7 +1340,7 @@ namespace RealisticBattleCombatModule
     [HarmonyPatch("CreateMeleeBlow")]
     class CreateMeleeBlowPatch
     {
-        static void Postfix(ref Mission __instance, ref Blow __result, Agent attackerAgent, Agent victimAgent,ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
+        static void Postfix(ref Mission __instance, ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
         {
             string weaponType = "otherDamage";
             if (attackerWeapon.Item != null && attackerWeapon.Item.PrimaryWeapon != null)
@@ -1348,7 +1348,7 @@ namespace RealisticBattleCombatModule
                 weaponType = attackerWeapon.Item.PrimaryWeapon.WeaponClass.ToString();
             }
 
-            if((attackerAgent.IsDoingPassiveAttack && collisionData.CollisionResult == CombatCollisionResult.StrikeAgent))
+            if ((attackerAgent.IsDoingPassiveAttack && collisionData.CollisionResult == CombatCollisionResult.StrikeAgent))
             {
                 if (attackerAgent.Team != victimAgent.Team)
                 {
@@ -1416,7 +1416,7 @@ namespace RealisticBattleCombatModule
                 }
             }
 
-            if ((collisionData.CollisionResult == CombatCollisionResult.Parried && !collisionData.AttackBlockedWithShield) || (collisionData.AttackBlockedWithShield && !collisionData.CorrectSideShieldBlock) )
+            if ((collisionData.CollisionResult == CombatCollisionResult.Parried && !collisionData.AttackBlockedWithShield) || (collisionData.AttackBlockedWithShield && !collisionData.CorrectSideShieldBlock))
             {
                 switch (weaponType)
                 {
@@ -1426,7 +1426,7 @@ namespace RealisticBattleCombatModule
                     case "TwoHandedPolearm":
                     case "TwoHandedMace":
                         {
-                            if(attackerAgent.Team != victimAgent.Team)
+                            if (attackerAgent.Team != victimAgent.Team)
                             {
                                 sbyte weaponAttachBoneIndex = (sbyte)(attackerWeapon.IsEmpty ? (-1) : attackerAgent.Monster.GetBoneToAttachForItemFlags(attackerWeapon.Item.ItemFlags));
                                 __result.WeaponRecord.FillAsMeleeBlow(attackerWeapon.Item, attackerWeapon.CurrentUsageItem, collisionData.AffectorWeaponSlotOrMissileIndex, weaponAttachBoneIndex);
@@ -1454,6 +1454,24 @@ namespace RealisticBattleCombatModule
                 }
             }
 
+        }
+    }
+
+    [HarmonyPatch(typeof(Mission))]
+    [HarmonyPatch("RegisterBlow")]
+    class RegisterBlowPatch
+    {
+        static bool Prefix(ref Mission __instance, Agent attacker, Agent victim, GameEntity realHitEntity, Blow b, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, ref CombatLogData combatLogData)
+        {
+            if (!collisionData.AttackBlockedWithShield && !collisionData.CollidedWithShieldOnBack)
+            {
+                return true;
+            }
+            foreach (MissionBehaviour missionBehaviour in __instance.MissionBehaviours)
+            {
+                missionBehaviour.OnRegisterBlow(attacker, victim, realHitEntity, b, ref collisionData, in attackerWeapon);
+            }
+            return false;
         }
     }
 
@@ -1839,8 +1857,18 @@ namespace RealisticBattleCombatModule
                 ExplainedNumber stat2 = new ExplainedNumber(1f / stat.ResultNumber);
                 if (character.IsHero)
                 {
-                    PerkHelper.AddPerkBonusForParty(DefaultPerks.Medicine.CheatDeath, mobileParty, isPrimaryBonus: false, ref stat2);
-                    PerkHelper.AddPerkBonusForParty(DefaultPerks.Medicine.FortitudeTonic, mobileParty, isPrimaryBonus: true, ref stat2);
+                    if (party.IsMobile && party.MobileParty.HasPerk(DefaultPerks.Medicine.CheatDeath, checkSecondaryRole: true))
+                    {
+                        stat2.AddFactor(DefaultPerks.Medicine.CheatDeath.SecondaryBonus, DefaultPerks.Medicine.CheatDeath.Name);
+                    }
+                    if (character.HeroObject.Clan == Clan.PlayerClan)
+                    {
+                        float clanMemberDeathChanceMultiplier = Campaign.Current.Models.DifficultyModel.GetClanMemberDeathChanceMultiplier();
+                        if (!clanMemberDeathChanceMultiplier.ApproximatelyEqualsTo(0f))
+                        {
+                            stat2.AddFactor(clanMemberDeathChanceMultiplier, GameTexts.FindText("str_game_difficulty"));
+                        }
+                    }
                 }
                 __result = 1f - MBMath.ClampFloat(stat2.ResultNumber, 0f, 1f);
                 return false;

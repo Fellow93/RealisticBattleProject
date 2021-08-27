@@ -233,6 +233,11 @@ namespace RealisticBattleCombatModule
                 MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
                 WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
 
+                if(!shooterAgent.IsMainAgent && (wsd[0].WeaponClass == (int)WeaponClass.Javelin || wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe))
+                {
+                    velocity.z = velocity.z - 1.4f;
+                }
+
                 if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
                 {
                     float ammoWeight = missionWeapon.AmmoWeapon.GetWeight();
