@@ -148,7 +148,7 @@ namespace RealisticBattleCombatModule
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
                 {
-                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage - 150f) * 0.5f) * XmlConfig.dict["Global.ThrustModifier"];
+                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage - 150f) * 0.3f) * XmlConfig.dict["Global.ThrustModifier"];
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingAxe"))
@@ -667,7 +667,7 @@ namespace RealisticBattleCombatModule
                 mag_1h_thrust = magnitude;
                 mag_2h_thrust = magnitude;
                 mag_1h_sword_thrust = magnitude * 1.35f;
-                mag_2h_sword_thrust = magnitude * 1.07f;
+                mag_2h_sword_thrust = magnitude * 1.00f;
             }
             else
             {

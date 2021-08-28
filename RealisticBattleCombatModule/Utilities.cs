@@ -45,14 +45,12 @@ namespace RealisticBattleCombatModule
             return calculatedMissileSpeed;
         }
 
-        public static int calculateThrowableSpeed(float ammoWeight, int correctiveMissileSpeed)
+        public static int calculateThrowableSpeed(float ammoWeight)
         {
-            int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt(115f * 2f / ammoWeight));
-            calculatedThrowingSpeed += correctiveMissileSpeed;
-            //calculatedThrowingSpeed += 7;
-            if (calculatedThrowingSpeed > 25)
+            int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt(200f * 2f / ammoWeight));
+            if (calculatedThrowingSpeed > 22)
             {
-                calculatedThrowingSpeed = 25;
+                calculatedThrowingSpeed = 22;
             }
             return calculatedThrowingSpeed;
         }
@@ -60,11 +58,11 @@ namespace RealisticBattleCombatModule
         public static void assignThrowableMissileSpeed(MissionWeapon throwable, int index, int correctiveMissileSpeed)
         {
             float ammoWeight = throwable.GetWeight() / throwable.Amount;
-            int calculatedThrowingSpeed = calculateThrowableSpeed(ammoWeight, correctiveMissileSpeed);
+            int calculatedThrowingSpeed = calculateThrowableSpeed(ammoWeight);
             PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
             property.DeclaringType.GetProperty("MissileSpeed");
             throwable.CurrentUsageIndex = index;
-            //calculatedThrowingSpeed += correctiveMissileSpeed;
+            calculatedThrowingSpeed += correctiveMissileSpeed;
             property.SetValue(throwable.CurrentUsageItem, calculatedThrowingSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
             throwable.CurrentUsageIndex = 0;
         }
