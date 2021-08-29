@@ -152,7 +152,7 @@
 		</ItemComponent>
 		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandSecondaryItemBone="true"/>
 	</Item>
-	<Item id="battania_targe_b" name="{=MnmUBlbL}Targe" body_name="bo_cap_battania_targe_b" shield_body_name="bo_battania_targe_b" recalculate_body="false" mesh="battania_targe_b" using_tableau="true" weight="2.5" appearance="1.1" Type="Shield" item_holsters="left_forearm" has_lower_holster_priority="true" holster_position_shift="-0.1,0.0,0" value="4000" culture="Culture.battania">
+	<Item id="battania_targe_b" name="{=MnmUBlbL}Targe" body_name="bo_cap_battania_targe_b" shield_body_name="bo_battania_targe_b" recalculate_body="false" mesh="battania_targe_b" using_tableau="true" weight="2.5" appearance="1.1" Type="Shield" item_holsters="left_forearm_shield" has_lower_holster_priority="true" holster_position_shift="-0.1,0.0,0" value="4000" culture="Culture.battania">
 		<ItemComponent>
 			<Weapon weapon_class="LargeShield" body_armor="4" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.02,-0.05, 0.02" rotation="3.70,9.50,36.40" weapon_length="70" center_of_mass="-0.0, 0.12, 0.1" hit_points="530">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
