@@ -311,7 +311,7 @@ namespace RealisticBattleAiModule
                 {
                     List<Agent> mountedSkirmishersList = new List<Agent>();
                     List<Agent> mountedMeleeList = new List<Agent>();
-                    ____leftCavalry.ApplyActionOnEachUnit(delegate (Agent agent)
+                    ____leftCavalry.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                     {
                         bool ismountedSkrimisher = false;
                         for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
@@ -334,7 +334,7 @@ namespace RealisticBattleAiModule
                         }
                     });
 
-                    ____rightCavalry.ApplyActionOnEachUnit(delegate (Agent agent)
+                    ____rightCavalry.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                     {
                         bool ismountedSkrimisher = false;
                         for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
@@ -511,7 +511,7 @@ namespace RealisticBattleAiModule
                 {
                     List<Agent> mountedSkirmishersList = new List<Agent>();
                     List<Agent> mountedMeleeList = new List<Agent>();
-                    ____leftCavalry.ApplyActionOnEachUnit(delegate (Agent agent)
+                    ____leftCavalry.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                     {
                         bool ismountedSkrimisher = false;
                         for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
@@ -534,7 +534,7 @@ namespace RealisticBattleAiModule
                         }
                     });
 
-                    ____rightCavalry.ApplyActionOnEachUnit(delegate (Agent agent)
+                    ____rightCavalry.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                     {
                         bool ismountedSkrimisher = false;
                         for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)

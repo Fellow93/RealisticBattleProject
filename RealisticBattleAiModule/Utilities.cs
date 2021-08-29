@@ -57,7 +57,7 @@ namespace RealisticBattleAiModule
             if (formation != null && formation.QuerySystem.IsCavalryFormation)
             {
                 int mountedSkirmishersCount = 0;
-                formation.ApplyActionOnEachUnit(delegate (Agent agent)
+                formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
                     bool ismountedSkrimisher = false;
                     for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
@@ -148,7 +148,7 @@ namespace RealisticBattleAiModule
         {
             Agent targetAgent = null;
             float distance = 10000f;
-            targetFormation.ApplyActionOnEachUnit(delegate (Agent agent)
+            targetFormation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
             {
                 float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
                 if (newDist < distance)
@@ -166,7 +166,7 @@ namespace RealisticBattleAiModule
             float distance = 10000f;
             foreach(Formation formation in formations.ToList())
             {
-                formation.ApplyActionOnEachUnit(delegate (Agent agent)
+                formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
                     float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
                     if (newDist < distance)
@@ -190,7 +190,7 @@ namespace RealisticBattleAiModule
                 {
                     foreach (Formation enemyFormation in team.Formations.ToList())
                     {
-                        enemyFormation.ApplyActionOnEachUnit(delegate (Agent agent)
+                        enemyFormation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                         {
                             float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
                             if (newDist < distance)
@@ -205,13 +205,59 @@ namespace RealisticBattleAiModule
             return targetAgent;
         }
 
+        public static bool FormationActiveSkirmishersRatio(Formation formation, float desiredRatio)
+        {
+            float ratio = 0f;
+            int countOfSkirmishers = 0;
+            if(formation != null)
+            {
+                formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+                {
+                    //float currentTime = MBCommon.TimeType.Mission.GetTime();
+                    //if (currentTime - agent.LastRangedAttackTime < 6f)
+                    //{
+                    //    countOfSkirmishers++;
+                    //}
+                    bool isActiveSkrimisher = false;
+                    float countedUnits = 0f;
+                    float currentTime = MBCommon.TimeType.Mission.GetTime();
+                    if (currentTime - agent.LastRangedAttackTime < 6f && ratio <= desiredRatio && 1f-((float)countedUnits / (float)formation.CountOfUnits) >= desiredRatio)
+                    {
+                        for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                        {
+                            if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
+                            {
+                                if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.Equipment[equipmentIndex].Amount > 1)
+                                {
+                                    isActiveSkrimisher = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (isActiveSkrimisher)
+                    {
+                        countOfSkirmishers++;
+                    }
+                    countedUnits++;
+                    ratio = (float)countOfSkirmishers / (float)formation.CountOfUnits;
+                    
+                });
+                if (ratio > desiredRatio)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static bool FormationFightingInMelee(Formation formation)
         {
             bool fightingInMelee = false;           
             float currentTime = MBCommon.TimeType.Mission.GetTime();
             float countOfUnits = 0;
             float countOfUnitsFightingInMelee = 0;
-            formation.ApplyActionOnEachUnit(delegate (Agent agent)
+            formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
             {
                 if (agent != null)
                 {

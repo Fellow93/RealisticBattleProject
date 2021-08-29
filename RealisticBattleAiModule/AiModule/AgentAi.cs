@@ -53,10 +53,9 @@ namespace RealisticBattleAiModule
                 agentDrivenProperties.AiShootFreq = MBMath.ClampFloat(meleeLevel * 1.5f, 0.1f, 0.9f); // when set to 0 AI never shoots
                 //agentDrivenProperties.AiWaitBeforeShootFactor = 0f;
 
-                //agentDrivenProperties.AiMinimumDistanceToContinueFactor = 0.1f; //2f + 0.3f * (3f - meleeSkill);
+                //agentDrivenProperties.AiMinimumDistanceToContinueFactor = 5f; //2f + 0.3f * (3f - meleeSkill);
                 //agentDrivenProperties.AIHoldingReadyMaxDuration = 0.1f; //MBMath.Lerp(0.25f, 0f, MBMath.Min(1f, num * 1.2f));
                 //agentDrivenProperties.AIHoldingReadyVariationPercentage = //num;
-
             }
         }
     }
@@ -69,22 +68,29 @@ namespace RealisticBattleAiModule
         {
             if (!formation.QuerySystem.IsCavalryFormation && !formation.QuerySystem.IsRangedCavalryFormation)
             {
+                float currentTime = MBCommon.TimeType.Mission.GetTime();
+                if ( currentTime - unit.LastRangedAttackTime < 5f)
+                {
+                    __result = Agent.UsageDirection.None;
+                    return;
+                }
                 switch (orderEnum)
                 {
                     case ArrangementOrderEnum.Line:
                     case ArrangementOrderEnum.Loose:
                         {
-                            float currentTime = MBCommon.TimeType.Mission.GetTime();
+                            //float currentTime = MBCommon.TimeType.Mission.GetTime();
                             float lastMeleeAttackTime = unit.LastMeleeAttackTime;
                             float lastMeleeHitTime = unit.LastMeleeHitTime;
                             float lastRangedHit = unit.LastRangedHitTime;
-                            if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
-                            {
-                                __result = Agent.UsageDirection.None;
-                            }
-                            else if (Mission.Current.IsFieldBattle && ((currentTime - lastRangedHit < 10f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.04f))
+                            //if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
+                            //{
+                            //    __result = Agent.UsageDirection.None;
+                            //}
+                            if (Mission.Current.IsFieldBattle && (((currentTime - lastRangedHit < 10f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.04f)))
                             {
                                 __result = Agent.UsageDirection.DefendDown;
+                                return;
                             }
                             //else
                             //{

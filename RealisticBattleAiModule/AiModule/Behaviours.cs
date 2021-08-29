@@ -1354,6 +1354,7 @@ namespace RealisticBattleAiModule
     class OverrideBehaviorCharge
     {
         public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
+        public static Dictionary<Formation, float> timeToMoveStorage = new Dictionary<Formation, float> { };
 
         [HarmonyPrefix]
         [HarmonyPatch("CalculateCurrentOrder")]
@@ -1374,13 +1375,17 @@ namespace RealisticBattleAiModule
 
                     float cavDist = 0f;
                     float signDist = 1f;
-                    if (enemyCav != null && significantEnemy != null)
+
+                    if (significantEnemy != null)
+                    {
+                        Vec2 signDirection = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
+                        signDist = signDirection.Normalize();
+                    }
+
+                    if (enemyCav != null)
                     {
                         Vec2 cavDirection = enemyCav.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                         cavDist = cavDirection.Normalize();
-
-                        Vec2 signDirection = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
-                        signDist = signDirection.Normalize();
                     }
 
                     if ((enemyCav != null) && (cavDist <= signDist) && (enemyCav.CountOfUnits > __instance.Formation.CountOfUnits / 10) && (signDist > 35f || significantEnemy == enemyCav))
@@ -1407,7 +1412,7 @@ namespace RealisticBattleAiModule
                             {
                                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
                             }
-                            //__instance.Formation.ApplyActionOnEachUnit(delegate (Agent agent) {
+                            //__instance.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent) {
                             //    if (Utilities.CheckIfCanBrace(agent))
                             //    {
                             //        agent.SetFiringOrder(1);
@@ -1421,7 +1426,31 @@ namespace RealisticBattleAiModule
                             return false;
                         }
                         positionsStorage.Remove(__instance.Formation);
+                    }else if(significantEnemy != null && signDist < 60f && Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.35f))
+                    {
+                        WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
+                        positionNew.SetVec2(positionNew.AsVec2 - __instance.Formation.Direction * 10f);
+
+                        WorldPosition storedPosition = WorldPosition.Invalid;
+                        positionsStorage.TryGetValue(__instance.Formation, out storedPosition);
+
+                        if (!storedPosition.IsValid)
+                        {
+                            positionsStorage.Add(__instance.Formation, positionNew);
+                            ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
+                        }
+                        else
+                        {
+                            ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
+
+                        }
+                        __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+                        return false;
+                        //__instance.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent) {
+                        //    agent.SetMaximumSpeedLimit(0.1f, true);
+                        //});
                     }
+                    positionsStorage.Remove(__instance.Formation);
                 }
 
                 if (significantEnemy != null)
@@ -2612,13 +2641,17 @@ namespace RealisticBattleAiModule
 
                         float cavDist = 0f;
                         float signDist = 1f;
-                        if (enemyCav != null && significantEnemy != null)
+
+                        if(significantEnemy != null)
+                        {
+                            Vec2 signDirection = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
+                            signDist = signDirection.Normalize();
+                        }
+
+                        if (enemyCav != null )
                         {
                             Vec2 cavDirection = enemyCav.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                             cavDist = cavDirection.Normalize();
-
-                            Vec2 signDirection = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
-                            signDist = signDirection.Normalize();
                         }
 
                         if ((enemyCav != null) && (cavDist <= signDist) && (enemyCav.CountOfUnits > __instance.Formation.CountOfUnits / 10) && (signDist > 35f))
@@ -2645,7 +2678,7 @@ namespace RealisticBattleAiModule
                                 {
                                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
                                 }
-                                //__instance.Formation.ApplyActionOnEachUnit(delegate (Agent agent) {
+                                //__instance.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent) {
                                 //    if (Utilities.CheckIfCanBrace(agent))
                                 //    {
                                 //        agent.SetFiringOrder(1);
@@ -2661,6 +2694,30 @@ namespace RealisticBattleAiModule
                             positionsStorage.Remove(__instance.Formation);
                             //medianPositionOld = WorldPosition.Invalid;
                         }
+                        else if (significantEnemy != null && signDist < 60f && Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.35f))
+                        {
+                            WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
+
+                            WorldPosition storedPosition = WorldPosition.Invalid;
+                            positionsStorage.TryGetValue(__instance.Formation, out storedPosition);
+
+                            if (!storedPosition.IsValid)
+                            {
+                                positionsStorage.Add(__instance.Formation, positionNew);
+                                ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
+                            }
+                            else
+                            {
+                                ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
+
+                            }
+                            __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+                            return false;
+                            //__instance.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent) {
+                            //    agent.SetMaximumSpeedLimit(0.1f, true);
+                            //});
+                        }
+                        positionsStorage.Remove(__instance.Formation);
                     }
 
                     if (significantEnemy != null)
