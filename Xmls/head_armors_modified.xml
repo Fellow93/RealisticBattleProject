@@ -1434,18 +1434,6 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="empire_crown" name="{=FZ6VCoKI}empire_crown" mesh="empire_crown" culture="Culture.empire" weight="3.1" appearance="6" Type="HeadArmor" value="40000" is_merchandise="false">
-		<ItemComponent>
-			<Armor head_armor="46" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
-	<Item id="empire_battle_crown_north" name="{=AK0lNDmN}Jeweled Plumed Battle Crown" mesh="empire_battle_crown_north" culture="Culture.empire" weight="2.1" appearance="3" Type="HeadArmor" value="40000" difficulty="0" subtype="head_armor">
-		<ItemComponent>
-			<Armor head_armor="104" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
 	<Item id="battania_crown" name="{=sDWEWefz}Highland Ceremonial Crown" mesh="battania_crown" culture="Culture.battania" weight="0.5" appearance="8.5" Type="HeadArmor" value="30000" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="15" has_gender_variations="false" hair_cover_type="none" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
@@ -1463,5 +1451,23 @@
 			<Armor head_armor="15" has_gender_variations="false" hair_cover_type="none" modifier_group="plate" material_type="Plate"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="false"/>
+	</Item>
+	<Item id="empire_crown" name="{=FZ6VCoKI}empire_crown" mesh="empire_crown" culture="Culture.empire" weight="3.1" appearance="6" Type="HeadArmor" value="40000" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="46" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="empire_battle_crown_north" name="{=AK0lNDmN}Jeweled Plumed Battle Crown" mesh="empire_battle_crown_north" culture="Culture.empire" weight="2.1" appearance="3" Type="HeadArmor" value="40000" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="104" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="khuzait_battle_crown" name="{=5c4cHL9Z}Khuzait Battle Crown" mesh="khuzait_battle_crown" culture="Culture.khuzait" weight="2.7" appearance="4" Type="HeadArmor" value="25000" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="90" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
 	</Item>
 </Items>
