@@ -8,7 +8,6 @@ using System.Collections;
 using System.Collections.Generic;
 using TaleWorlds.Localization;
 using RealisticBattleCombatModule.CombatModule;
-using System;
 
 namespace RealisticBattleCombatModule
 {
@@ -233,7 +232,7 @@ namespace RealisticBattleCombatModule
                 MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
                 WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
 
-                if(!shooterAgent.IsMainAgent && (wsd[0].WeaponClass == (int)WeaponClass.Javelin || wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe))
+                if(Mission.Current.IsFieldBattle && !shooterAgent.IsMainAgent && (wsd[0].WeaponClass == (int)WeaponClass.Javelin || wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe))
                 {
                     velocity.z = velocity.z - 1.4f;
                 }
@@ -326,8 +325,6 @@ namespace RealisticBattleCombatModule
         [HarmonyPatch("ShootProjectileAux")]
         static bool PrefixShootProjectileAux(RangedSiegeWeapon __instance, ref string[] ___skeletonNames, ItemObject missileItem, Agent ____lastShooterAgent)
         {
-
-
             if (___skeletonNames != null && ___skeletonNames.Length > 0 && ___skeletonNames[0].Contains("ballista"))
             {
 
@@ -363,6 +360,7 @@ namespace RealisticBattleCombatModule
             }
         }
     }
+
 
     [HarmonyPatch(typeof(Mangonel))]
     class OverrideMangonel

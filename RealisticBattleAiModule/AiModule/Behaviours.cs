@@ -910,7 +910,7 @@ namespace RealisticBattleAiModule
     {
         [HarmonyPrefix]
         [HarmonyPatch("GetAiWeight")]
-        static bool PrefixOnBehaviorActivatedAux(ref BehaviorUseSiegeMachines __instance, ref float __result, ref TeamAISiegeComponent ____teamAISiegeComponent, List<UsableMachine> ____primarySiegeWeapons)
+        static bool PrefixGetAiWeight(ref BehaviorUseSiegeMachines __instance, ref float __result, ref TeamAISiegeComponent ____teamAISiegeComponent, List<UsableMachine> ____primarySiegeWeapons)
         {
             float result = 0f;
             if (____teamAISiegeComponent != null && ____primarySiegeWeapons.Any() && ____primarySiegeWeapons.All((UsableMachine psw) => !(psw as IPrimarySiegeWeapon).HasCompletedAction()))
@@ -919,6 +919,30 @@ namespace RealisticBattleAiModule
             }
             __result = result;
             return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(BehaviorWaitForLadders))]
+    class OverrideBehaviorWaitForLadders
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch("GetAiWeight")]
+        static bool PrefixOnGetAiWeight(ref BehaviorUseSiegeMachines __instance, MovementOrder ____followOrder, ref TacticalPosition ____followTacticalPosition, ref float __result, ref TeamAISiegeComponent ____teamAISiegeComponent)
+        {
+            if(____followTacticalPosition != null)
+            {
+                float result = 0f;
+                if (____followTacticalPosition.Position.AsVec2.Distance(__instance.Formation.QuerySystem.AveragePosition) > 7f)
+                {
+                    if (____followOrder.OrderEnum != 0 && !____teamAISiegeComponent.AreLaddersReady)
+                    {
+                        result = ((!____teamAISiegeComponent.IsCastleBreached()) ? 2f : 1f);
+                    }
+                    __result = result;
+                }
+                return false;
+            }
+            return true;
         }
     }
 
@@ -1112,7 +1136,7 @@ namespace RealisticBattleAiModule
                 Formation correctEnemy = Utilities.FindSignificantEnemyToPosition(__instance.Formation, position, true, false, false, false, false, true);
                 if (correctEnemy != null)
                 {
-                    if (TeamAISiegeComponent.IsFormationInsideCastle(correctEnemy, includeOnlyPositionedUnits: false, 0.01f))
+                    if (TeamAISiegeComponent.IsFormationInsideCastle(correctEnemy, includeOnlyPositionedUnits: false, 0.15f))
                     {
                         ____readyOrder = MovementOrder.MovementOrderChargeToTarget(correctEnemy);
                         ____currentOrder = ____readyOrder;

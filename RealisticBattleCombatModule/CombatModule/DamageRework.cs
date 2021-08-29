@@ -15,6 +15,7 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.ObjectSystem;
+using static TaleWorlds.MountAndBlade.Mission;
 
 namespace RealisticBattleCombatModule
 {
@@ -1475,32 +1476,33 @@ namespace RealisticBattleCombatModule
         }
     }
 
-    //[UsedImplicitly]
-    //[MBCallback]
-    //[HarmonyPatch(typeof(Mission))]
-    //[HarmonyPatch("MeleeHitCallback")]
-    //class MeleeHitCallbackPatch
-    //{
-    //    static bool Prefix(ref AttackCollisionData collisionData, Agent attacker, Agent victim, GameEntity realHitEntity, ref float inOutMomentumRemaining, ref MeleeCollisionReaction colReaction, CrushThroughState crushThroughState, Vec3 blowDir, Vec3 swingDir, ref HitParticleResultData hitParticleResultData, bool crushedThroughWithoutAgentCollision)
-    //    {
-    //        //EquipmentIndex shieldindex = victim.GetWieldedItemIndex(Agent.HandIndex.OffHand);
-    //        //if(shieldindex != EquipmentIndex.None)
-    //        //{
-    //        //    AttackCollisionData newdata = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(true, false, false, true, false, false, false, false, false, collisionData.ThrustTipHit, false, CombatCollisionResult.Blocked, collisionData.AffectorWeaponSlotOrMissileIndex,
-    //        //        collisionData.StrikeType, collisionData.StrikeType,18, BoneBodyPartType.ArmLeft, collisionData.AttackBoneIndex, collisionData.AttackDirection, collisionData.PhysicsMaterialIndex,
-    //        //        collisionData.CollisionHitResultFlags, collisionData.AttackProgress, collisionData.CollisionDistanceOnWeapon, 0.2f, 0.2f, collisionData.MissileTotalDamage,
-    //        //        0, collisionData.ChargeVelocity, collisionData.FallSpeed, collisionData.WeaponRotUp, collisionData.WeaponBlowDir, collisionData.CollisionGlobalPosition, collisionData.MissileVelocity,
-    //        //        collisionData.MissileStartingPosition, collisionData.VictimAgentCurVelocity, collisionData.CollisionGlobalNormal);
-    //        //    newdata.InflictedDamage = -2147483648;
-    //        //    newdata.BaseMagnitude = -1;
-    //        //    newdata.AbsorbedByArmor = -2147483648;
-    //        //    newdata.MovementSpeedDamageModifier = -1;
-    //        //    newdata.SelfInflictedDamage = -2147483648;
-    //        //    collisionData = newdata;
-    //        //}
-    //        return true;
-    //    }
-    //}
+    [HarmonyPatch(typeof(BattleAgentLogic))]
+    [HarmonyPatch("OnAgentHit")]
+    class OnAgentHitPatch
+    {
+        static bool Prefix(Agent affectedAgent, Agent affectorAgent, int damage, in MissionWeapon attackerWeapon)
+        {
+            if (affectedAgent.Character != null && affectorAgent != null && affectorAgent.Character != null && affectedAgent.State == AgentState.Active)
+            {
+                bool isFatal = affectedAgent.Health - (float)damage < 1f;
+                bool isTeamKill;
+                if (affectedAgent.Team != null )
+                {
+                    isTeamKill = affectedAgent.Team.Side == affectorAgent.Team.Side;
+                }
+                else
+                {
+                    isTeamKill = true;
+                }
+                affectorAgent.Origin.OnScoreHit(affectedAgent.Character, affectorAgent.Formation?.Captain?.Character, damage, isFatal, isTeamKill, attackerWeapon.CurrentUsageItem);
+                if (Mission.Current.Mode == MissionMode.Battle)
+                {
+                    _ = affectedAgent.Team;
+                }
+            }
+            return false;
+        }
+    }
 
     [HarmonyPatch(typeof(Agent))]
     [HarmonyPatch("HandleBlow")]
