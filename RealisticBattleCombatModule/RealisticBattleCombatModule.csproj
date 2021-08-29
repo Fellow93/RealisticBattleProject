@@ -297,7 +297,10 @@ xcopy /d /y "$(SolutionDir)Xmls\horses_modified.xml" "$(SolutionDir)..\Realistic
 xcopy /d /y "$(SolutionDir)Xmls\Gladius_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
 xcopy /d /y "$(SolutionDir)Xmls\arrow_visuals_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
 xcopy /d /y "$(SolutionDir)Xmls\no_bastard_axes.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\siege_engines_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"</PostBuildEvent>
+xcopy /d /y "$(SolutionDir)Xmls\siege_engines_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\spear_managed_core_parameters.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\spear_combat_parameters.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\bow_shields.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
