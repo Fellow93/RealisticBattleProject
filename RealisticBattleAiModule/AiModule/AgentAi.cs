@@ -53,9 +53,10 @@ namespace RealisticBattleAiModule
                 agentDrivenProperties.AiShootFreq = MBMath.ClampFloat(meleeLevel * 1.5f, 0.1f, 0.9f); // when set to 0 AI never shoots
                 //agentDrivenProperties.AiWaitBeforeShootFactor = 0f;
 
-                //agentDrivenProperties.AiMinimumDistanceToContinueFactor = 5f; //2f + 0.3f * (3f - meleeSkill);
+                //agentDrivenProperties.AiMinimumDistanceToContinueFactor = 0.1f; //2f + 0.3f * (3f - meleeSkill);
                 //agentDrivenProperties.AIHoldingReadyMaxDuration = 0.1f; //MBMath.Lerp(0.25f, 0f, MBMath.Min(1f, num * 1.2f));
                 //agentDrivenProperties.AIHoldingReadyVariationPercentage = //num;
+
             }
         }
     }
