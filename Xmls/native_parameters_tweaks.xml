@@ -12,7 +12,7 @@
 	<native_parameter id="smaller_humanoid_physics_capsule_radius_multiplier_for_static_bodies" value="0.3"/>
     <native_parameter id="smaller_humanoid_physics_capsule_radius_multiplier_for_agents" value="1.10"/>
 
-    <native_parameter id="max_logical_distance_allowed_for_defend" value="2"/>
-    <native_parameter id="max_logical_distance_allowed_for_shield_defend" value="2"/>
+    <native_parameter id="max_logical_distance_allowed_for_defend" value="0.6"/>
+    <native_parameter id="max_logical_distance_allowed_for_shield_defend" value="0.8"/>
   </native_parameters>
 </base>

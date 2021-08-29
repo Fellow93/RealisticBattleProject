@@ -4,5 +4,7 @@
   <XMLDirectory>..\WOTS\Modules\RealisticBattleCombatModule\</XMLDirectory>
   <ModuleAssemblyDirectory>..\WOTS\bin\</ModuleAssemblyDirectory>
   <file id="soln_combat_system" name="ModuleData/native_parameters_tweaks.xml" type="native_parameters" />
-  <file id="soln_combat_system" name="ModuleData/bone_body_types_tweaks.xml" type="bone_body_types" />
+  <file id="soln_item_holsters" name="ModuleData/bow_shields.xml" type="item_holster" />
+  <file id="soln_combat_system" name="ModuleData/spear_combat_parameters.xml" type="animation_combat_parameters" />
+  <file id="soln_managed_core_paramaters" name="ModuleData/spear_managed_core_paramaters.xml" type="managed_core_parameters" />
 </base>

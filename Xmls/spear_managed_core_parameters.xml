@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="combat_parameters">
+  <managed_core_parameters>
+    <!-- campaign related-->
+    <!-- Set 1 for activating tutorials at the campaign-->
+    <managed_core_parameter id="EnableCampaignTutorials" value="1"/>
+    <!-- missile related (AirFrictionArrow and HeavyAttackMomentumMultiplier have twins in native_core_paramters)-->
+    <!-- 		speed -= air_friction_constant * (speed * speed) * MISSILE_SIMULATION_DT;	//add drag -->
+    <!-- AirFriction = surfaceArea * FrictionCoefficient / mass-->
+    <managed_core_parameter id="AirFrictionJavelin" value="0.002"/>
+    <managed_core_parameter id="AirFrictionArrow" value="0.003"/>
+    <managed_core_parameter id="AirFrictionBullet" value="0.004"/>
+    <managed_core_parameter id="AirFrictionKnife" value="0.007"/>
+    <managed_core_parameter id="AirFrictionAxe" value="0.007"/>
+    <!--Increases defender stun-->
+    <managed_core_parameter id="HeavyAttackMomentumMultiplier" value="1.15"/>
+    <!-- combat related -->
+    <managed_core_parameter id="ReducedMouseSensitivityMultiplier" value="0.8"/>
+    <managed_core_parameter id="MeleeAddedElevationForCrosshair" value="-0.1"/>
+    <managed_core_parameter id="BipedalRadius" value="0.38"/>
+    <!--Also used in native_paramaters.xml-->
+    <managed_core_parameter id="QuadrupedalRadius" value="0.8"/>
+    <!--Also used in native_paramaters.xml-->
+    <managed_core_parameter id="BipedalCombatSpeedMinMultiplier" value="0.74"/>
+    <managed_core_parameter id="BipedalCombatSpeedMaxMultiplier" value="0.84"/>
+    <managed_core_parameter id="BipedalRangedReadySpeedMultiplier" value="0.6"/>
+    <managed_core_parameter id="BipedalRangedReloadSpeedMultiplier" value="0.95"/>
+
+    <!-- damage related -->
+    <managed_core_parameter id="DamageInterruptAttackthresholdPierce" value="5.0"/>
+    <managed_core_parameter id="DamageInterruptAttackthresholdCut" value="5.0"/>
+    <managed_core_parameter id="DamageInterruptAttackthresholdBlunt" value="5.0"/>
+    <managed_core_parameter id="MakesRearAttackDamageThreshold" value="15.0"/>
+    <managed_core_parameter id="MissileMinimumDamageToStick" value="3.0"/>
+    <managed_core_parameter id="BreakableProjectileMinimumBreakSpeed" value="60.0"/>
+    <managed_core_parameter id="FallDamageMultiplier" value="0.575"/>
+    <managed_core_parameter id="FallDamageAbsorption" value="54.0"/>
+    <managed_core_parameter id="FallSpeedReductionMultiplierForRiderDamage" value="0.77"/>
+    <!--While mounted fall speed will be multiplied with this value for rider's damage calculation. Mount's speed will not be effected.-->
+    <managed_core_parameter id="FistFightDamageMultiplier" value="4.0" />
+
+    <managed_core_parameter id="SwingHitWithArmDamageMultiplier" value="1.0" />
+    <managed_core_parameter id="ThrustHitWithArmDamageMultiplier" value="1.0" />
+    <managed_core_parameter id="NonTipThrustHitDamageMultiplier" value="1.0" />
+
+    <!-- damage graph related -->
+    <!-- link for the function -->
+    <!-- https://www.desmos.com/calculator/dnhpcqilvg -->
+    <managed_core_parameter id="SwingCombatSpeedGraphZeroProgressValue" value="0.3"/>
+    <managed_core_parameter id="SwingCombatSpeedGraphFirstMaximumPoint" value="0.15"/>
+    <managed_core_parameter id="SwingCombatSpeedGraphSecondMaximumPoint" value="0.54"/>
+    <managed_core_parameter id="SwingCombatSpeedGraphOneProgressValue" value="0.01"/>
+
+    <managed_core_parameter id="OverSwingCombatSpeedGraphZeroProgressValue" value="0.75"/>
+    <managed_core_parameter id="OverSwingCombatSpeedGraphFirstMaximumPoint" value="0.3333"/>
+    <managed_core_parameter id="OverSwingCombatSpeedGraphSecondMaximumPoint" value="0.7"/>
+    <managed_core_parameter id="OverSwingCombatSpeedGraphOneProgressValue" value="0.75"/>
+
+    <managed_core_parameter id="ThrustCombatSpeedGraphZeroProgressValue" value="0.4"/>
+    <managed_core_parameter id="ThrustCombatSpeedGraphFirstMaximumPoint" value="0.3"/>
+    <managed_core_parameter id="ThrustCombatSpeedGraphSecondMaximumPoint" value="0.85"/>
+    <managed_core_parameter id="ThrustCombatSpeedGraphOneProgressValue" value="0"/>
+
+    <!-- stun calc related -->
+    <managed_core_parameter id="StunPeriodAttackerSwing" value="0.1"/>
+    <managed_core_parameter id="StunPeriodAttackerThrust" value="0.67"/>
+    <managed_core_parameter id="StunDefendWeaponWeightOffsetShield" value="0.1"/>
+    <managed_core_parameter id="StunDefendWeaponWeightMultiplierWeaponWeight" value="0.25"/>
+    <managed_core_parameter id="StunDefendWeaponWeightBonusTwoHanded" value="0.25"/>
+    <managed_core_parameter id="StunDefendWeaponWeightBonusPolearm" value="0.35"/>
+
+    <managed_core_parameter id="StunMomentumTransferFactor" value="0.0055"/>
+
+    <managed_core_parameter id="StunDefendWeaponWeightParryMultiplier" value="0.2"/>
+    <managed_core_parameter id="StunDefendWeaponWeightBonusRightStance" value="0.0"/>
+
+    <managed_core_parameter id="StunDefendWeaponWeightBonusActiveBlocked" value="0.1"/>
+    <managed_core_parameter id="StunDefendWeaponWeightBonusChamberBlocked" value="0.4"/>
+    <managed_core_parameter id="StunPeriodAttackerFriendlyFire" value="0.4"/>
+    <managed_core_parameter id="StunPeriodMax" value="0.8"/>
+
+    <!-- penetration limits -->
+    <managed_core_parameter id="ProjectileMaxPenetrationSpeed" value="120.0" />
+    <managed_core_parameter id="ObjectMinPenetration" value="0.03" />
+    <managed_core_parameter id="ObjectMaxPenetration" value="0.25" />
+    <managed_core_parameter id="ProjectileMinPenetration" value="0.1" />
+    <managed_core_parameter id="ProjectileMaxPenetration" value="0.4" />
+    <managed_core_parameter id="RotatingProjectileMinPenetration" value="0.04" />
+    <managed_core_parameter id="RotatingProjectileMaxPenetration" value="0.08" />
+
+    <!-- hit point normal weights for rotating projectiles, 1 = equal to hit direction -->
+    <managed_core_parameter id="ProjectileNormalWeight" value="0.9" />
+    <managed_core_parameter id="AgentProjectilenormalWeight" value="0.4" />
+
+    <!-- shield damage multipliers -->
+    <managed_core_parameter id="ShieldRightStanceBlockDamageMultiplier" value="1.00" />
+    <managed_core_parameter id="ShieldCorrectSideBlockDamageMultiplier" value="0.70" />
+
+    <!-- shield penetration -->
+    <managed_core_parameter id="ShieldPenetrationOffset" value="30.0" />
+    <managed_core_parameter id="ShieldPenetrationFactor" value="3.0" />
+
+    <managed_core_parameter id="ActivateHeroTest" value="0" />
+
+  </managed_core_parameters>
+</base>
