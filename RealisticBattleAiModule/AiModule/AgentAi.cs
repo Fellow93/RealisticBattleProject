@@ -77,18 +77,18 @@ namespace RealisticBattleAiModule
                             float lastMeleeAttackTime = unit.LastMeleeAttackTime;
                             float lastMeleeHitTime = unit.LastMeleeHitTime;
                             float lastRangedHit = unit.LastRangedHitTime;
-                            if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
-                            {
-                                __result = Agent.UsageDirection.None;
-                            }
-                            else if ((currentTime - lastRangedHit < 10f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.04f)
+                            //if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
+                            //{
+                            //    __result = Agent.UsageDirection.None;
+                            //}
+                            if ((currentTime - lastRangedHit < 10f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.04f)
                             {
                                 __result = Agent.UsageDirection.DefendDown;
                             }
-                            else
-                            {
-                                __result = Agent.UsageDirection.None;
-                            }
+                            //else
+                            //{
+                            //    __result = Agent.UsageDirection.None;
+                            //}
                             break;
                         }
                 }
