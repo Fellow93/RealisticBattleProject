@@ -134,12 +134,12 @@
                    name ="{=MaBSSg7I}Battering Ram"
                    description ="{=*}A battering ram can be used to break the gate and open access to the inner courtyard."
                    difficulty="40"
-                   max_hit_points="6000"
+                   max_hit_points="3000"
                    man_day_cost="12"/>
   <SiegeEngineType id="improved_ram"
                    name ="{=zt0bVSsU}Improved Ram"
                    description ="{=*}A more powerful version of the regular battering ram."
                    difficulty="110"
-                   max_hit_points="10000"
+                   max_hit_points="5000"
                    man_day_cost="16"/>
 </SiegeEngineTypes>
