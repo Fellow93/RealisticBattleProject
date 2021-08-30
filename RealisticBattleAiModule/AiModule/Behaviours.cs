@@ -1364,7 +1364,7 @@ namespace RealisticBattleAiModule
             {
                 Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false);
 
-                if (__instance.Formation.QuerySystem.IsInfantryFormation && !Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
+                if (Mission.Current.IsFieldBattle && __instance.Formation.QuerySystem.IsInfantryFormation && !Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
                 {
                     Formation enemyCav = Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
 
