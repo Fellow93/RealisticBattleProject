@@ -17,28 +17,29 @@ namespace RealisticBattleAiModule
         {
             if (mainInfantry != null)
             {
-                if (FormationFightingInMelee(mainInfantry, 0.5f))
+                if (FormationFightingInMelee(mainInfantry, 0.4f))
                 {
                     mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
                     return true;
                 }
                 else
                 {
-                    if(mainInfantry.QuerySystem.ClosestEnemyFormation != null && mainInfantry.QuerySystem.ClosestEnemyFormation.Formation != null)
-                    {
-                        Formation enemyForamtion = Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false);
-                        if (enemyForamtion != null)
-                        {
-                            float distanceSpeedValue = mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(enemyForamtion.QuerySystem.MedianPosition.AsVec2) / enemyForamtion.QuerySystem.MovementSpeedMaximum;
-                            if (distanceSpeedValue <= 6f)
-                            {
-                                mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
-                            }
-                            return (distanceSpeedValue <= (battleJoinRange + (hasBattleBeenJoined ? 5f : 0f)));
-                        }
-                    }
-                    
+                    mainInfantry.FiringOrder = FiringOrder.FiringOrderFireAtWill;
                 }
+                if(mainInfantry.QuerySystem.ClosestEnemyFormation != null && mainInfantry.QuerySystem.ClosestEnemyFormation.Formation != null)
+                {
+                    Formation enemyForamtion = Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false);
+                    if (enemyForamtion != null)
+                    {
+                        float distanceSpeedValue = mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(enemyForamtion.QuerySystem.MedianPosition.AsVec2) / enemyForamtion.QuerySystem.MovementSpeedMaximum;
+                        //if (distanceSpeedValue <= 6f)
+                        //{
+                        //    mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
+                        //}
+                        return (distanceSpeedValue <= (battleJoinRange + (hasBattleBeenJoined ? 5f : 0f)));
+                    }
+                }
+                    
             }
             return true;
         }
