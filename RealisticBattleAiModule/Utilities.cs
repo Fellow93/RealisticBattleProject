@@ -229,7 +229,7 @@ namespace RealisticBattleAiModule
                         {
                             if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
                             {
-                                if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.Equipment[equipmentIndex].Amount > 2)
+                                if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.Equipment[equipmentIndex].Amount > 1)
                                 {
                                     isActiveSkrimisher = true;
                                     break;

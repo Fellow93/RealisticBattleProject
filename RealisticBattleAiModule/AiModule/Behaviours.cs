@@ -1427,10 +1427,10 @@ namespace RealisticBattleAiModule
                         }
                         positionsStorage.Remove(__instance.Formation);
                     }
-                    else if (significantEnemy != null && signDist < 70f && Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.30f))
+                    else if (significantEnemy != null && signDist < 50f && Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.30f))
                     {
                         WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
-                        positionNew.SetVec2(positionNew.AsVec2 - __instance.Formation.Direction * 5f);
+                        positionNew.SetVec2(positionNew.AsVec2 - __instance.Formation.Direction * 7f);
 
                         WorldPosition storedPosition = WorldPosition.Invalid;
                         positionsStorage.TryGetValue(__instance.Formation, out storedPosition);

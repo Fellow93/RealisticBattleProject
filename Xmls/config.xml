@@ -132,7 +132,7 @@
 	
 	<Javelin>
 		<ExtraBluntFactorCut>0.05</ExtraBluntFactorCut>
-		<ExtraBluntFactorPierce>0.15</ExtraBluntFactorPierce>
+		<ExtraBluntFactorPierce>0.20</ExtraBluntFactorPierce>
 		<ExtraBluntFactorBlunt>1.0</ExtraBluntFactorBlunt>
 		<ExtraArmorThresholdFactorPierce>4.0</ExtraArmorThresholdFactorPierce>
 		<ExtraArmorThresholdFactorCut>3.0</ExtraArmorThresholdFactorCut>

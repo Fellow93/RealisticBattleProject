@@ -13145,7 +13145,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.vlandia_mace_3_t5" />
+                 id="Item.vlandia_lance_3_t5" />
       <equipment slot="Item1"
                  id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
@@ -13163,7 +13163,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.vlandia_mace_3_t5" />
+                 id="Item.vlandia_lance_3_t5" />
       <equipment slot="Item1"
                  id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
@@ -13181,7 +13181,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.vlandia_mace_3_t5" />
+                 id="Item.vlandia_lance_3_t5" />
       <equipment slot="Item1"
                  id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
