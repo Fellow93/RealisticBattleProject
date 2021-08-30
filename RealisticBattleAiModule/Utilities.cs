@@ -222,13 +222,13 @@ namespace RealisticBattleAiModule
                     bool isActiveSkrimisher = false;
                     float countedUnits = 0f;
                     float currentTime = MBCommon.TimeType.Mission.GetTime();
-                    if (currentTime - agent.LastRangedAttackTime < 7f && ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
+                    if (currentTime - agent.LastRangedAttackTime < 10f && ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
                     {
                         for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                         {
                             if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
                             {
-                                if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.Equipment[equipmentIndex].Amount > 1)
+                                if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.Equipment[equipmentIndex].Amount > 2)
                                 {
                                     isActiveSkrimisher = true;
                                     break;

@@ -75,7 +75,7 @@ namespace RealisticBattleAiModule
             if (!formation.QuerySystem.IsCavalryFormation && !formation.QuerySystem.IsRangedCavalryFormation)
             {
                 float currentTime = MBCommon.TimeType.Mission.GetTime();
-                if (currentTime - unit.LastRangedAttackTime < 5f)
+                if (currentTime - unit.LastRangedAttackTime < 7f)
                 {
                     __result = Agent.UsageDirection.None;
                     return;
@@ -94,7 +94,7 @@ namespace RealisticBattleAiModule
                                 __result = Agent.UsageDirection.None;
                                 return;
                             }
-                            if (Mission.Current.IsFieldBattle && (((currentTime - lastRangedHit < 10f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.04f)))
+                            if (Mission.Current.IsFieldBattle && (((currentTime - lastRangedHit < 2f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.08f)))
                             {
                                 __result = Agent.UsageDirection.DefendDown;
                                 return;

@@ -1426,10 +1426,11 @@ namespace RealisticBattleAiModule
                             return false;
                         }
                         positionsStorage.Remove(__instance.Formation);
-                    }else if(significantEnemy != null && signDist < 60f && Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.35f))
+                    }
+                    else if (significantEnemy != null && signDist < 70f && Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.30f))
                     {
                         WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
-                        positionNew.SetVec2(positionNew.AsVec2 - __instance.Formation.Direction * 10f);
+                        positionNew.SetVec2(positionNew.AsVec2 - __instance.Formation.Direction * 5f);
 
                         WorldPosition storedPosition = WorldPosition.Invalid;
                         positionsStorage.TryGetValue(__instance.Formation, out storedPosition);
