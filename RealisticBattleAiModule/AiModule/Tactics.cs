@@ -154,11 +154,11 @@ namespace RealisticBattleAiModule
                     {
                         return TargetIconType.HorseArcher_Light.ToString();
                     }
-                    if (formation.QuerySystem.IsCavalryFormation && !Utilities.CheckIfMountedSkirmishFormation(formation))
+                    if (formation.QuerySystem.IsCavalryFormation && !Utilities.CheckIfMountedSkirmishFormation(formation, 0.6f))
                     {
                         return TargetIconType.Cavalry_Light.ToString();
                     }
-                    if (formation.QuerySystem.IsCavalryFormation && Utilities.CheckIfMountedSkirmishFormation(formation))
+                    if (formation.QuerySystem.IsCavalryFormation && Utilities.CheckIfMountedSkirmishFormation(formation, 0.6f))
                     {
                         return TargetIconType.Special_JavelinThrower.ToString();
                     }
@@ -321,6 +321,7 @@ namespace RealisticBattleAiModule
                                 if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.MountAgent != null)
                                 {
                                     ismountedSkrimisher = true;
+                                    break;
                                 }
                             }
                         }
@@ -344,6 +345,7 @@ namespace RealisticBattleAiModule
                                 if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.MountAgent != null)
                                 {
                                     ismountedSkrimisher = true;
+                                    break;
                                 }
                             }
                         }
@@ -521,6 +523,7 @@ namespace RealisticBattleAiModule
                                 if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.MountAgent != null)
                                 {
                                     ismountedSkrimisher = true;
+                                    break;
                                 }
                             }
                         }
@@ -544,6 +547,7 @@ namespace RealisticBattleAiModule
                                 if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.MountAgent != null)
                                 {
                                     ismountedSkrimisher = true;
+                                    break;
                                 }
                             }
                         }

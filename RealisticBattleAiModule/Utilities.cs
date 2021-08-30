@@ -17,7 +17,7 @@ namespace RealisticBattleAiModule
         {
             if (mainInfantry != null)
             {
-                if (FormationFightingInMelee(mainInfantry))
+                if (FormationFightingInMelee(mainInfantry, 0.5f))
                 {
                     mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
                     return true;
@@ -30,7 +30,7 @@ namespace RealisticBattleAiModule
                         if (enemyForamtion != null)
                         {
                             float distanceSpeedValue = mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(enemyForamtion.QuerySystem.MedianPosition.AsVec2) / enemyForamtion.QuerySystem.MovementSpeedMaximum;
-                            if (distanceSpeedValue <= 5f)
+                            if (distanceSpeedValue <= 6f)
                             {
                                 mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
                             }
@@ -52,21 +52,27 @@ namespace RealisticBattleAiModule
             }
         }
 
-        public static bool CheckIfMountedSkirmishFormation(Formation formation)
+        public static bool CheckIfMountedSkirmishFormation(Formation formation, float desiredRatio)
         {
             if (formation != null && formation.QuerySystem.IsCavalryFormation)
             {
+                float ratio = 0f;
                 int mountedSkirmishersCount = 0;
+                int countedUnits = 0;
                 formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
                     bool ismountedSkrimisher = false;
-                    for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                    if(ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
                     {
-                        if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
+                        for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                         {
-                            if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.Equipment[equipmentIndex].Amount > 0 && agent.MountAgent != null)
+                            if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
                             {
-                                ismountedSkrimisher = true;
+                                if (agent.MountAgent != null && agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.Equipment[equipmentIndex].Amount > 0)
+                                {
+                                    ismountedSkrimisher = true;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -74,21 +80,16 @@ namespace RealisticBattleAiModule
                     {
                         mountedSkirmishersCount++;
                     }
+                    countedUnits++;
+                    ratio = (float)mountedSkirmishersCount / (float)formation.CountOfUnits;
                 });
 
-                float mountedSkirmishersRatio = (float)mountedSkirmishersCount / (float)formation.CountOfUnits;
-                if (mountedSkirmishersRatio > 0.6f)
+                if (ratio > desiredRatio)
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
-            }else
-            {
-                return false;
             }
+                return false;
         }
 
         public static bool CheckIfTwoHandedPolearmInfantry(Agent agent)
@@ -221,7 +222,7 @@ namespace RealisticBattleAiModule
                     bool isActiveSkrimisher = false;
                     float countedUnits = 0f;
                     float currentTime = MBCommon.TimeType.Mission.GetTime();
-                    if (currentTime - agent.LastRangedAttackTime < 6f && ratio <= desiredRatio && 1f-((float)countedUnits / (float)formation.CountOfUnits) >= desiredRatio)
+                    if (currentTime - agent.LastRangedAttackTime < 7f && ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
                     {
                         for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                         {
@@ -251,30 +252,30 @@ namespace RealisticBattleAiModule
             return false;
         }
 
-        public static bool FormationFightingInMelee(Formation formation)
+        public static bool FormationFightingInMelee(Formation formation, float desiredRatio)
         {
-            bool fightingInMelee = false;           
             float currentTime = MBCommon.TimeType.Mission.GetTime();
-            float countOfUnits = 0;
+            float countedUnits = 0;
+            float ratio = 0f;
             float countOfUnitsFightingInMelee = 0;
             formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
             {
-                if (agent != null)
+                if (agent != null && ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
                 {
-                    countOfUnits++;
                     float lastMeleeAttackTime = agent.LastMeleeAttackTime;
                     float lastMeleeHitTime = agent.LastMeleeHitTime;
                     if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
                     {
                         countOfUnitsFightingInMelee++;
                     }
+                    countedUnits++;
                 }
             });
-            if (countOfUnitsFightingInMelee / countOfUnits >= 0.5f)
+            if (countOfUnitsFightingInMelee / formation.CountOfUnits >= desiredRatio)
             {
-                fightingInMelee = true;
+                return true;
             }
-            return fightingInMelee;
+            return false;
         }
 
         public static List<Formation> FindSignificantFormations(Formation formation)

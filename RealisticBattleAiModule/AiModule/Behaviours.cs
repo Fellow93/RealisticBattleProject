@@ -596,7 +596,7 @@ namespace RealisticBattleAiModule
         [HarmonyPatch("GetAiWeight")]
         static void PostfixGetAiWeight(ref BehaviorMountedSkirmish __instance, ref float __result)
         {
-            if (Utilities.CheckIfMountedSkirmishFormation(__instance.Formation))
+            if (Utilities.CheckIfMountedSkirmishFormation(__instance.Formation, 0.6f))
             {
                 __result = 5f;
             }
@@ -1364,7 +1364,7 @@ namespace RealisticBattleAiModule
             {
                 Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false);
 
-                if (__instance.Formation.QuerySystem.IsInfantryFormation && !Utilities.FormationFightingInMelee(__instance.Formation))
+                if (__instance.Formation.QuerySystem.IsInfantryFormation && !Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
                 {
                     Formation enemyCav = Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
 
@@ -1985,7 +1985,7 @@ namespace RealisticBattleAiModule
                 {
                     Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false);
 
-                    if (__instance.Formation.QuerySystem.IsInfantryFormation && !Utilities.FormationFightingInMelee(__instance.Formation))
+                    if (__instance.Formation.QuerySystem.IsInfantryFormation && !Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
                     {
                         Formation enemyCav = Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
 
@@ -2630,7 +2630,7 @@ namespace RealisticBattleAiModule
 
                     Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false);
 
-                    if (__instance.Formation.QuerySystem.IsInfantryFormation && !Utilities.FormationFightingInMelee(__instance.Formation))
+                    if (__instance.Formation.QuerySystem.IsInfantryFormation && !Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
                     {
                         Formation enemyCav = Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
 

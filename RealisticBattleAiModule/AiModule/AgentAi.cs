@@ -1,8 +1,14 @@
 ﻿using HarmonyLib;
+using NetworkMessages.FromClient;
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 using TaleWorlds.Core;
+using TaleWorlds.Engine;
+using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.MountAndBlade.Network;
 using static TaleWorlds.MountAndBlade.ArrangementOrder;
 
 namespace RealisticBattleAiModule
@@ -69,7 +75,7 @@ namespace RealisticBattleAiModule
             if (!formation.QuerySystem.IsCavalryFormation && !formation.QuerySystem.IsRangedCavalryFormation)
             {
                 float currentTime = MBCommon.TimeType.Mission.GetTime();
-                if ( currentTime - unit.LastRangedAttackTime < 5f)
+                if (currentTime - unit.LastRangedAttackTime < 5f)
                 {
                     __result = Agent.UsageDirection.None;
                     return;
@@ -83,10 +89,11 @@ namespace RealisticBattleAiModule
                             float lastMeleeAttackTime = unit.LastMeleeAttackTime;
                             float lastMeleeHitTime = unit.LastMeleeHitTime;
                             float lastRangedHit = unit.LastRangedHitTime;
-                            //if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
-                            //{
-                            //    __result = Agent.UsageDirection.None;
-                            //}
+                            if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
+                            {
+                                __result = Agent.UsageDirection.None;
+                                return;
+                            }
                             if (Mission.Current.IsFieldBattle && (((currentTime - lastRangedHit < 10f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.04f)))
                             {
                                 __result = Agent.UsageDirection.DefendDown;
