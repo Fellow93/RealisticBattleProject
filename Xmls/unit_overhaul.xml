@@ -3345,7 +3345,7 @@
       <skill id="Riding"
              value="50" />
       <skill id="OneHanded"
-             value="20" />
+             value="40" />
       <skill id="TwoHanded"
              value="5" />
       <skill id="Polearm"
@@ -3438,7 +3438,7 @@
       <skill id="Riding"
              value="80" />
       <skill id="OneHanded"
-             value="30" />
+             value="50" />
       <skill id="TwoHanded"
              value="10" />
       <skill id="Polearm"
@@ -3538,7 +3538,7 @@
       <skill id="Riding"
              value="100" />
       <skill id="OneHanded"
-             value="70" />
+             value="90" />
       <skill id="TwoHanded"
              value="15" />
       <skill id="Polearm"
@@ -3558,7 +3558,7 @@
       <equipment slot="Item0"
                  id="Item.eastern_spear_4_t4" />
       <equipment slot="Item1"
-                 id="Item.bound_adarga" />
+                 id="Item.studded_adarga" />
       <equipment slot="Item2"
                  id="Item.eastern_javelin_3_t4" />
       <equipment slot="Item3"
@@ -3578,7 +3578,7 @@
       <equipment slot="Item0"
                  id="Item.eastern_spear_4_t4" />
       <equipment slot="Item1"
-                 id="Item.bound_adarga" />
+                 id="Item.studded_adarga" />
       <equipment slot="Item2"
                  id="Item.eastern_javelin_3_t4" />
       <equipment slot="Item3"
@@ -3598,7 +3598,7 @@
       <equipment slot="Item0"
                  id="Item.eastern_spear_4_t4" />
       <equipment slot="Item1"
-                 id="Item.bound_adarga" />
+                 id="Item.studded_adarga" />
       <equipment slot="Item2"
                  id="Item.eastern_javelin_3_t4" />
       <equipment slot="Item3"
@@ -3657,7 +3657,7 @@
       <equipment slot="Item0"
                  id="Item.eastern_spear_4_t4" />
       <equipment slot="Item1"
-                 id="Item.studded_adarga" />
+                 id="Item.large_adarga" />
       <equipment slot="Item2"
                  id="Item.eastern_javelin_3_t4" />
       <equipment slot="Item3"
@@ -3677,7 +3677,7 @@
       <equipment slot="Item0"
                  id="Item.eastern_spear_4_t4" />
       <equipment slot="Item1"
-                 id="Item.studded_adarga" />
+                 id="Item.large_adarga" />
       <equipment slot="Item2"
                  id="Item.eastern_javelin_3_t4" />
       <equipment slot="Item3"
@@ -3697,7 +3697,7 @@
       <equipment slot="Item0"
                  id="Item.eastern_spear_4_t4" />
       <equipment slot="Item1"
-                 id="Item.studded_adarga" />
+                 id="Item.large_adarga" />
       <equipment slot="Item2"
                  id="Item.eastern_javelin_3_t4" />
       <equipment slot="Item3"
@@ -3718,7 +3718,7 @@
     <equipment slot="Horse"
                id="Item.t2_aserai_horse" />
     <equipment slot="HorseHarness"
-               id="Item.half_mail_and_plate_barding" />
+               id="Item.mail_and_plate_barding" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="aserai_vanguard_faris"
@@ -9572,7 +9572,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_round_shield" />
+                 id="Item.sturgia_old_shield_b" />
       <equipment slot="Item1"
                  id="Item.northern_spear_1_t2" />
       <equipment slot="Body"
@@ -9584,7 +9584,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_round_shield" />
+                 id="Item.sturgia_old_shield_b" />
       <equipment slot="Item1"
                  id="Item.northern_spear_1_t2" />
       <equipment slot="Body"
@@ -9659,7 +9659,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_round_shield" />
+                 id="Item.sturgia_old_shield_c" />
       <equipment slot="Item1"
                  id="Item.northern_spear_1_t2" />
       <equipment slot="Item3"
@@ -9695,7 +9695,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_round_shield" />
+                 id="Item.viking_round_shield" />
       <equipment slot="Item1"
                  id="Item.northern_spear_1_t2" />
       <equipment slot="Item2"
@@ -9753,7 +9753,7 @@
       <equipment slot="Item0"
                  id="Item.northern_spear_2_t3" />
       <equipment slot="Item1"
-                 id="Item.northern_round_shield" />
+                 id="Item.sturgia_old_shield_c" />
       <equipment slot="Item2"
                  id="Item.sturgia_axe_3_t3" />
       <equipment slot="Item3"
@@ -9773,7 +9773,7 @@
       <equipment slot="Item0"
                  id="Item.northern_spear_2_t3" />
       <equipment slot="Item1"
-                 id="Item.northern_round_shield" />
+                 id="Item.sturgia_old_shield_c" />
       <equipment slot="Item2"
                  id="Item.sturgia_axe_3_t3" />
       <equipment slot="Item3"
@@ -9793,7 +9793,7 @@
       <equipment slot="Item0"
                  id="Item.northern_spear_2_t3" />
       <equipment slot="Item1"
-                 id="Item.northern_round_shield" />
+                 id="Item.sturgia_old_shield_c" />
       <equipment slot="Item2"
                  id="Item.sturgia_axe_3_t3" />
       <equipment slot="Item3"
@@ -9813,7 +9813,7 @@
       <equipment slot="Item0"
                  id="Item.northern_spear_2_t3" />
       <equipment slot="Item1"
-                 id="Item.northern_round_shield" />
+                 id="Item.sturgia_old_shield_a" />
       <equipment slot="Item3"
                  id="Item.northern_throwing_axe_1_t1" />
       <equipment slot="Head"
@@ -9831,7 +9831,7 @@
       <equipment slot="Item0"
                  id="Item.northern_spear_2_t3" />
       <equipment slot="Item1"
-                 id="Item.northern_round_shield" />
+                 id="Item.sturgia_old_shield_a" />
       <equipment slot="Item3"
                  id="Item.northern_throwing_axe_1_t1" />
       <equipment slot="Head"
@@ -9849,7 +9849,7 @@
       <equipment slot="Item0"
                  id="Item.northern_spear_2_t3" />
       <equipment slot="Item1"
-                 id="Item.northern_round_shield" />
+                 id="Item.sturgia_old_shield_a" />
       <equipment slot="Item3"
                  id="Item.northern_throwing_axe_1_t1" />
       <equipment slot="Head"
@@ -9988,7 +9988,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_axe_5_t5" />
       <equipment slot="Item1"
-                 id="Item.heavy_round_shield" />
+                 id="Item.strapped_round_shield" />
       <equipment slot="Item2"
                  id="Item.northern_javelin_3_t4" />
       <equipment slot="Item3"
@@ -11375,7 +11375,7 @@
       <equipment slot="Item0"
                  id="Item.northern_spear_3_t4" />
       <equipment slot="Item1"
-                 id="Item.leather_round_shield" />
+                 id="Item.strapped_round_shield" />
       <equipment slot="Item2"
                  id="Item.sturgia_axe_4_t4" />
       <equipment slot="Item3"
@@ -11395,7 +11395,7 @@
       <equipment slot="Item0"
                  id="Item.northern_spear_3_t4" />
       <equipment slot="Item1"
-                 id="Item.leather_round_shield" />
+                 id="Item.strapped_round_shield" />
       <equipment slot="Item2"
                  id="Item.sturgia_axe_4_t4" />
       <equipment slot="Item3"
@@ -13013,7 +13013,7 @@
       <EquipmentSet id="vlandia_troop_civilian_template_t2"
                     civilian="true" />
     <equipment slot="Horse"
-               id="Item.hunter" />
+               id="Item.vlandia_horse" />
     <equipment slot="HorseHarness"
                id="Item.stripped_leather_harness" />
     </Equipments>
