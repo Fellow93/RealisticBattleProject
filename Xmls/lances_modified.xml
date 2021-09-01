@@ -558,9 +558,9 @@
       <Piece id="spear_blade_9"
              Type="Blade"
              scale_factor="90" />
-      <Piece id="spear_handle_27"
+      <Piece id="spear_handle_7"
              Type="Handle"
-             scale_factor="90" />
+             scale_factor="100" />
     </Pieces>
   </CraftedItem>
   <!-- #region Tier 3 -->
@@ -571,9 +571,9 @@
       <Piece id="spear_blade_25"
              Type="Blade"
              scale_factor="100" />
-      <Piece id="spear_handle_27"
+      <Piece id="spear_handle_7"
              Type="Handle"
-             scale_factor="90" />
+             scale_factor="110" />
     </Pieces>
   </CraftedItem>
   <!-- #region Tier 4 -->
@@ -583,10 +583,10 @@
     <Pieces>
       <Piece id="spear_blade_41"
              Type="Blade"
-             scale_factor="100" />
+             scale_factor="110" />
       <Piece id="spear_handle_7"
              Type="Handle"
-             scale_factor="200" />
+             scale_factor="130" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="fine_pike_t4"
@@ -598,7 +598,7 @@
              scale_factor="100" />
       <Piece id="spear_handle_7"
              Type="Handle"
-             scale_factor="150" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <!-- #region Tier 5 -->
@@ -609,10 +609,10 @@
     <Pieces>
       <Piece id="spear_blade_11"
              Type="Blade"
-             scale_factor="120" />
+             scale_factor="110" />
       <Piece id="spear_handle_7"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="140" />
     </Pieces>
   </CraftedItem>
   <!-- #endregion -->

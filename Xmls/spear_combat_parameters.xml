@@ -1861,11 +1861,11 @@
 
 
     <combat_parameter id="polearm_brace"
-                      vertical_rot_limit_multiplier_up="0.2"
+                      vertical_rot_limit_multiplier_up="0.20"
                       vertical_rot_limit_multiplier_down="0.25"
-                      collision_check_starting_percent="0.0"
-                      collision_check_ending_percent="1"
-                      hit_bone_index="7"
+                      collision_check_starting_percent="0"
+                      collision_check_ending_percent="0.1"
+                      hit_bone_index="27"
                       weapon_offset="0,0,0.7" />
 					  
 
