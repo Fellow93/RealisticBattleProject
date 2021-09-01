@@ -483,13 +483,13 @@
     <Pieces>
       <Piece id="spear_blade_13"
              Type="Blade"
-             scale_factor="90" />
+             scale_factor="100" />
       <Piece id="spear_guard_7"
              Type="Guard"
              scale_factor="90" />
       <Piece id="spear_handle_14"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="120" />
       <Piece id="default_polearm_pommel"
              Type="Pommel"
              scale_factor="100" />
@@ -503,10 +503,10 @@
     <Pieces>
       <Piece id="spear_blade_35"
              Type="Blade"
-             scale_factor="100" />
+             scale_factor="110" />
       <Piece id="spear_handle_14"
              Type="Handle"
-             scale_factor="90" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <!-- Pilum -->

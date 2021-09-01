@@ -11943,7 +11943,7 @@
       <skill id="OneHanded"
              value="80" />
       <skill id="TwoHanded"
-             value="160" />
+             value="140" />
       <skill id="Polearm"
              value="190" />
       <skill id="Bow"
@@ -11958,6 +11958,8 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.vlandia_pike_1_t5" />
+      <equipment slot="Item1"
+                 id="Item.western_2hsword_t4" />
       <equipment slot="Body"
                  id="Item.coat_of_plates_over_mail" />
 	  <equipment slot="Cape"
@@ -11972,6 +11974,8 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.vlandia_pike_1_t5" />
+      <equipment slot="Item1"
+                 id="Item.western_2hsword_t4" />
       <equipment slot="Body"
                  id="Item.coat_of_plates_over_mail" />
 	  <equipment slot="Cape"
@@ -11986,6 +11990,8 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.vlandia_pike_1_t5" />
+      <equipment slot="Item1"
+                 id="Item.western_2hsword_t4" />
       <equipment slot="Body"
                  id="Item.coat_of_plates_over_mail" />
 	  <equipment slot="Cape"
@@ -12235,9 +12241,9 @@
       <equipment slot="Body"
                  id="Item.hauberk" />
       <equipment slot="Leg"
-                 id="Item.mail_chausses" />
+                 id="Item.northern_plated_boots" />
       <equipment slot="Head"
-                 id="Item.visored_helmet_over_padded_cloth" />
+                 id="Item.visored_helmet_over_mail_coif" />
       <equipment slot="Gloves"
                  id="Item.lordly_mail_mitten" />
       <equipment slot="Cape"
@@ -12253,9 +12259,9 @@
       <equipment slot="Body"
                  id="Item.hauberk" />
       <equipment slot="Leg"
-                 id="Item.mail_chausses" />
+                 id="Item.northern_plated_boots" />
       <equipment slot="Head"
-                 id="Item.peaked_helmet_over_mail" />
+                 id="Item.full_helm_over_cloth_headwrap" />
       <equipment slot="Gloves"
                  id="Item.lordly_mail_mitten" />
       <equipment slot="Cape"
@@ -12269,9 +12275,9 @@
       <equipment slot="Body"
                  id="Item.hauberk" />
       <equipment slot="Leg"
-                 id="Item.mail_chausses" />
+                 id="Item.northern_plated_boots" />
       <equipment slot="Head"
-                 id="Item.segmented_skullcap_over_mail_coif" />
+                 id="Item.full_helm_over_laced_coif" />
       <equipment slot="Gloves"
                  id="Item.lordly_mail_mitten" />
       <equipment slot="Cape"
@@ -12289,7 +12295,7 @@
       <equipment slot="Leg"
                  id="Item.mail_chausses" />
       <equipment slot="Head"
-                 id="Item.visored_helmet_over_laced_coif" />
+                 id="Item.visored_helmet_over_mail_coif" />
       <equipment slot="Gloves"
                  id="Item.lordly_mail_mitten" />
       <equipment slot="Cape"
