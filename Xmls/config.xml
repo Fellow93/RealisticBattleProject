@@ -42,7 +42,7 @@
 	
 	<TwoHandedSword>
 		<ExtraBluntFactorCut>0.25</ExtraBluntFactorCut>
-		<ExtraBluntFactorPierce>0.40</ExtraBluntFactorPierce>
+		<ExtraBluntFactorPierce>0.25</ExtraBluntFactorPierce>
 		<ExtraBluntFactorBlunt>1.0</ExtraBluntFactorBlunt>
 		<ExtraArmorThresholdFactorPierce>2.5</ExtraArmorThresholdFactorPierce>
 		<ExtraArmorThresholdFactorCut>4</ExtraArmorThresholdFactorCut>
@@ -78,7 +78,7 @@
 	
 	<OneHandedPolearm>
 		<ExtraBluntFactorCut>0.2</ExtraBluntFactorCut>
-		<ExtraBluntFactorPierce>0.3</ExtraBluntFactorPierce>
+		<ExtraBluntFactorPierce>0.25</ExtraBluntFactorPierce>
 		<ExtraBluntFactorBlunt>1.0</ExtraBluntFactorBlunt>
 		<ExtraArmorThresholdFactorPierce>4.0</ExtraArmorThresholdFactorPierce>
 		<ExtraArmorThresholdFactorCut>4</ExtraArmorThresholdFactorCut>
@@ -87,7 +87,7 @@
 	
 	<TwoHandedPolearm>
 		<ExtraBluntFactorCut>0.30</ExtraBluntFactorCut>
-		<ExtraBluntFactorPierce>0.35</ExtraBluntFactorPierce>
+		<ExtraBluntFactorPierce>0.25</ExtraBluntFactorPierce>
 		<ExtraBluntFactorBlunt>1.0</ExtraBluntFactorBlunt>
 		<ExtraArmorThresholdFactorPierce>4.0</ExtraArmorThresholdFactorPierce>
 		<ExtraArmorThresholdFactorCut>4</ExtraArmorThresholdFactorCut>

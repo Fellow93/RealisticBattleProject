@@ -10545,9 +10545,9 @@
       <skill id="Riding"
              value="15" />
       <skill id="OneHanded"
-             value="40" />
+             value="20" />
       <skill id="TwoHanded"
-             value="15" />
+             value="40" />
       <skill id="Polearm"
              value="20" />
       <skill id="Bow"
