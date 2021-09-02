@@ -11958,8 +11958,6 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.vlandia_pike_1_t5" />
-      <equipment slot="Item1"
-                 id="Item.western_2hsword_t4" />
       <equipment slot="Body"
                  id="Item.coat_of_plates_over_mail" />
 	  <equipment slot="Cape"
@@ -11974,8 +11972,6 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.vlandia_pike_1_t5" />
-      <equipment slot="Item1"
-                 id="Item.western_2hsword_t4" />
       <equipment slot="Body"
                  id="Item.coat_of_plates_over_mail" />
 	  <equipment slot="Cape"
@@ -11990,8 +11986,6 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.vlandia_pike_1_t5" />
-      <equipment slot="Item1"
-                 id="Item.western_2hsword_t4" />
       <equipment slot="Body"
                  id="Item.coat_of_plates_over_mail" />
 	  <equipment slot="Cape"

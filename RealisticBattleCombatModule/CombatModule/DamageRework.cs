@@ -198,8 +198,8 @@ namespace RealisticBattleCombatModule
             {
                 weaponWeight += 1.0f;
             }
-            float CouchedSkillBonus = 0.5f * 2.5f * num * num * 0.10f * XmlConfig.dict["Global.ThrustModifier"];
-            float LanceKE = 0.5f * weaponWeight * num * num * 0.10f * XmlConfig.dict["Global.ThrustModifier"];
+            float CouchedSkillBonus = 0.5f * 2.5f * num * num * XmlConfig.dict["Global.ThrustModifier"];
+            float LanceKE = 0.5f * weaponWeight * num * num * XmlConfig.dict["Global.ThrustModifier"];
             float num2 = CouchedSkillBonus + LanceKE;
             if (num2 > (23f * XmlConfig.dict["Global.ThrustModifier"]) && LanceKE < (23f * XmlConfig.dict["Global.ThrustModifier"]))
             {
@@ -229,27 +229,34 @@ namespace RealisticBattleCombatModule
             float combinedSpeed = thrustWeaponSpeed + extraLinearSpeed;
             if (combinedSpeed > 0f)
             {
+                float basedamage = 120f * (combinedSpeed / thrustWeaponSpeed) * (combinedSpeed / thrustWeaponSpeed);
                 if (!isThrown && weaponWeight < 1.5f)
                 {
                     weaponWeight += 0.5f;
                 }
                 float kineticEnergy = 0.5f * weaponWeight * combinedSpeed * combinedSpeed;
-                float handBonus = 0.5f * (weaponWeight + 1.5f) * combinedSpeed * combinedSpeed;
-                float handLimit = 120f;
-                if (handBonus > handLimit)
-                {
-                    handBonus = handLimit;
-                }
-                float thrust = handBonus;
-                if (kineticEnergy > handLimit)
+                //float handBonus = 0.5f * (weaponWeight + 1.5f) * combinedSpeed * combinedSpeed;
+                //float handLimit = 120f;
+                //if (handBonus > handLimit)
+                //{
+                //    handBonus = handLimit;
+                //}
+                //float thrust = handBonus;
+                //if (kineticEnergy > handLimit)
+                //{
+                //    thrust = kineticEnergy;
+                //}
+                float thrust = basedamage;
+                if (kineticEnergy > basedamage)
                 {
                     thrust = kineticEnergy;
                 }
+
                 if (thrust > 200f)
                 {
                     thrust = 200f;
                 }
-                __result = 0.125f * thrust * XmlConfig.dict["Global.ThrustModifier"];
+                __result = thrust * XmlConfig.dict["Global.ThrustModifier"];
                 return false;
             }
             __result = 0f;
@@ -659,9 +666,9 @@ namespace RealisticBattleCombatModule
             if (damageType == DamageTypes.Pierce)
             {
                 mag_1h_thrust = magnitude * XmlConfig.dict["Global.OneHandedThrustBonus"];
-                mag_2h_thrust = magnitude * XmlConfig.dict["Global.TwoHandedThrustBonus"];
-                mag_1h_sword_thrust = magnitude * 1.15f * XmlConfig.dict["Global.OneHandedThrustBonus"];
-                mag_2h_sword_thrust = magnitude * 2.0f * XmlConfig.dict["Global.TwoHandedThrustBonus"];
+                mag_2h_thrust = magnitude * 1.5f * XmlConfig.dict["Global.TwoHandedThrustBonus"];
+                mag_1h_sword_thrust = magnitude * 1.0f * XmlConfig.dict["Global.OneHandedThrustBonus"];
+                mag_2h_sword_thrust = magnitude * 1.5f * XmlConfig.dict["Global.TwoHandedThrustBonus"];
             }
             else if (damageType == DamageTypes.Cut)
             {

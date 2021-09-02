@@ -612,7 +612,7 @@
              scale_factor="110" />
       <Piece id="spear_handle_7"
              Type="Handle"
-             scale_factor="140" />
+             scale_factor="125" />
     </Pieces>
   </CraftedItem>
   <!-- #endregion -->

@@ -175,7 +175,7 @@
   <CraftingPiece id="spear_blade_13" name="{=MpVC0RXl}Northern Triangular Spear" tier="5" piece_type="Blade" mesh="spear_blade_13" length="50.864" weight="0.4592" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="2" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_5_1" holster_body_name="bo_throwing_spear_quiver_5_1" holster_mesh_length="96.7">
-      <Thrust damage_type="Pierce" damage_factor="9.2" />
+      <Thrust damage_type="Pierce" damage_factor="1.1" />
     </BladeData>
     <Flags>
       <Flag name="BonusAgainstShield" />
@@ -184,10 +184,10 @@
       <Material id="Iron5" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="spear_blade_35" name="{=ZUp9mm79}Jagged Spear Head" tier="3" piece_type="Blade" mesh="spear_blade_35" length="41" weight="0.3256" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_35" name="{=ZUp9mm79}Jagged Spear Head" tier="5" piece_type="Blade" mesh="spear_blade_35" length="41" weight="0.3256" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="2" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_5_1" holster_body_name="bo_throwing_spear_quiver_5_1" holster_mesh_length="96.7">
-      <Thrust damage_type="Pierce" damage_factor="10.0" />
+      <Thrust damage_type="Pierce" damage_factor="1.1" />
     </BladeData>
     <Flags>
       <Flag name="BonusAgainstShield" />	  
@@ -197,10 +197,10 @@
     </Materials>
   </CraftingPiece>
   
-    <CraftingPiece id="spear_blade_35_blunt" name="{=ZUp9mm79}Jagged Spear Head" tier="3" piece_type="Blade" mesh="spear_blade_35" length="41" weight="0.3256" excluded_item_usage_features="swing">
+    <CraftingPiece id="spear_blade_35_blunt" name="{=ZUp9mm79}Jagged Spear Head" tier="5" piece_type="Blade" mesh="spear_blade_35" length="41" weight="0.3256" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="2" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_5_1" holster_body_name="bo_throwing_spear_quiver_5_1" holster_mesh_length="96.7">
-      <Thrust damage_type="Pierce" damage_factor="10.0" />
+      <Thrust damage_type="Pierce" damage_factor="1.1" />
     </BladeData>
     <Flags>
       <Flag name="BonusAgainstShield" />	  
@@ -210,10 +210,10 @@
     </Materials>
   </CraftingPiece>
   
-  <CraftingPiece id="spear_blade_38" name="{=nr3K4od2}Pilum Head" tier="4" piece_type="Blade" mesh="spear_blade_38" length="23.7" weight="0.250" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_38" name="{=nr3K4od2}Pilum Head" tier="6" piece_type="Blade" mesh="spear_blade_38" length="23.7" weight="0.250" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable" />
     <BladeData stack_amount="2" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_3_2" holster_body_name="bo_throwing_spear_quiver_3_2" holster_mesh_length="96.8">
-      <Thrust damage_type="Pierce" damage_factor="11.0" />
+      <Thrust damage_type="Pierce" damage_factor="1.2" />
     </BladeData>
     <Flags>
       <Flag name="BonusAgainstShield" />
@@ -226,7 +226,7 @@
 <CraftingPiece id="spear_blade_43" name="{=wait0O6m}Warrazor Head" tier="4" piece_type="Blade" mesh="spear_blade_43" length="64.4" weight="0.23" excluded_item_usage_features="shield">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:OneHandedPolearm:TwoHandedPolearm_Bracing:TwoHandedPolearm_Thrown" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-	  <Thrust damage_type="Pierce" damage_factor="6.0" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
       <Swing damage_type="Cut" damage_factor="6.7" />
     </BladeData>
     <Materials>
@@ -237,7 +237,7 @@
   <CraftingPiece id="spear_blade_7" name="{=dXRt8jY4}Menavlion Head" tier="4" piece_type="Blade" mesh="spear_blade_7" length="52.924" weight="0.2656">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="7.2" />
+      <Thrust damage_type="Pierce" damage_factor="1" />
       <Swing damage_type="Cut" damage_factor="4.7" />
     </BladeData>
     <Materials>
@@ -248,7 +248,7 @@
   <CraftingPiece id="spear_blade_18" name="{=qSV6C2tp}Swordstaff Head" tier="5" piece_type="Blade" mesh="spear_blade_18" length="70" weight="0.3096">
     <PieceUsages unavailable_usages="OneHandedPolearm:TwoHandedPolearm_Thrown" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="6.6" />
+      <Thrust damage_type="Pierce" damage_factor="1.1" />
       <Swing damage_type="Cut" damage_factor="4.2" />
     </BladeData>
     <Materials>
@@ -259,7 +259,7 @@
   <CraftingPiece id="spear_blade_19" name="{=OBeOZ27b}Glaive Head" tier="4" piece_type="Blade" mesh="spear_blade_19" length="37.4" weight="0.2408">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:OneHandedPolearm:TwoHandedPolearm_Thrown" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="5.0" />
+      <Thrust damage_type="Pierce" damage_factor="0.8" />
       <Swing damage_type="Cut" damage_factor="6.3" />
     </BladeData>
     <Materials>
@@ -270,7 +270,7 @@
   <CraftingPiece id="spear_blade_19_blunt" name="{=OBeOZ27b}Glaive Head" tier="4" piece_type="Blade" mesh="spear_blade_19" length="37.4" weight="0.2408">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:OneHandedPolearm:TwoHandedPolearm_Thrown" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="5.0" />
+      <Thrust damage_type="Pierce" damage_factor="0.8" />
       <Swing damage_type="Cut" damage_factor="6.3" />
     </BladeData>
     <Materials>
@@ -281,7 +281,7 @@
   <CraftingPiece id="spear_blade_24" name="{=bjQ8J71a}Long Glaive Head" tier="5" piece_type="Blade" mesh="spear_blade_24" length="68" weight="0.2">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:OneHandedPolearm:TwoHandedPolearm_Thrown" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="5.7" />
+      <Thrust damage_type="Pierce" damage_factor="0.9" />
       <Swing damage_type="Cut" damage_factor="7.2" />
     </BladeData>
     <Materials>
@@ -293,7 +293,7 @@
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:OneHandedPolearm:TwoHandedPolearm_Thrown" />
     <BuildData piece_offset="-8" />
     <BladeData stack_amount="3" blade_length="23.118" blade_width="18.371" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Thrust damage_type="Pierce" damage_factor="9" />
+      <Thrust damage_type="Pierce" damage_factor="0.9" />
       <Swing damage_type="Cut" damage_factor="6.1" />
     </BladeData>
     <Flags>
@@ -340,7 +340,7 @@
     <CraftingPiece id="spear_blade_22" name="{=3ged5Ozt}Exceptional Eastern Glaive" tier="4" piece_type="Blade" mesh="spear_blade_22" length="89" weight="0.2456">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:OneHandedPolearm" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="6.1" />
+      <Thrust damage_type="Pierce" damage_factor="0.9" />
       <Swing damage_type="Cut" damage_factor="6.3" />
     </BladeData>
     <Materials>
@@ -351,7 +351,7 @@
   <CraftingPiece id="spear_blade_44" name="{=PmPxx2gK}Bent Razor Head" tier="4" piece_type="Blade" mesh="spear_blade_44" length="80" weight="0.33" excluded_item_usage_features="">
     <PieceUsages unavailable_usages="OneHandedPolearm:TwoHandedPolearm_Couchable:Javelin:thrust:TwoHandedPolearm_Thrown:TwoHandedPolearm_Bracing" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="2.6" />
+      <Thrust damage_type="Pierce" damage_factor="0.7" />
       <Swing damage_type="Cut" damage_factor="4.1" />
     </BladeData>
     <Materials>
@@ -363,7 +363,7 @@
   <CraftingPiece id="spear_blade_45" name="{=LNDbMUK0}Voulge Head" tier="4" piece_type="Blade" mesh="spear_blade_45" length="40" weight="0.33" excluded_item_usage_features="">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:OneHandedPolearm:TwoHandedPolearm_Bracing" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="2.6" />
+      <Thrust damage_type="Pierce" damage_factor="0.7" />
       <Swing damage_type="Cut" damage_factor="4.1" />
     </BladeData>
     <Materials>
@@ -376,7 +376,7 @@
   <CraftingPiece id="spear_blade_23" name="{=OryiZr9d}Kontarion" tier="3" piece_type="Blade" mesh="spear_blade_23" length="42" weight="0.1" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="10.0" />
+      <Thrust damage_type="Pierce" damage_factor="1" />
     </BladeData>
     <Materials>
       <Material id="Iron3" count="2" />
@@ -389,7 +389,7 @@
   <CraftingPiece id="spear_blade_23_blunt" name="{=OryiZr9d}Kontarion" tier="3" piece_type="Blade" mesh="spear_blade_23" length="42" weight="0.1" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="10.0" />
+      <Thrust damage_type="Pierce" damage_factor="1" />
     </BladeData>
     <Materials>
       <Material id="Iron3" count="2" />
@@ -402,7 +402,7 @@
   <CraftingPiece id="spear_blade_20" name="{=uwG8iwBc}Long Grassland Spear" tier="4" piece_type="Blade" mesh="spear_blade_20" length="46" weight="0.15" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="10.0" />
+      <Thrust damage_type="Pierce" damage_factor="1" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="1" />
@@ -415,7 +415,7 @@
   <CraftingPiece id="spear_blade_20_blunt" name="{=uwG8iwBc}Long Grassland Spear" tier="4" piece_type="Blade" mesh="spear_blade_20" length="46" weight="0.15" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="10.0" />
+      <Thrust damage_type="Pierce" damage_factor="1" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="1" />
@@ -428,7 +428,7 @@
   <CraftingPiece id="spear_blade_5" name="{=QwfDN06p}Knightly Lance Head" tier="5" piece_type="Blade" mesh="spear_blade_5" length="52.242" weight="0.20" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="10.0" />
+      <Thrust damage_type="Pierce" damage_factor="1" />
     </BladeData>
     <Materials>
       <Material id="Iron5" count="1" />
@@ -443,7 +443,7 @@
   <CraftingPiece id="spear_blade_6" name="{=S75vUGzK}Fine Steel Hewing Spear Head" tier="5" piece_type="Blade" mesh="spear_blade_6" length="84.4" weight="0.3">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="9.1" />
+      <Thrust damage_type="Pierce" damage_factor="1" />
       <Swing damage_type="Cut" damage_factor="4" />
     </BladeData>
     <Materials>
@@ -454,7 +454,7 @@
   <CraftingPiece id="spear_blade_1" name="{=Oxew9WCe}Imperial Simple Spear Head" tier="2" piece_type="Blade" mesh="spear_blade_1" length="48" weight="0.26" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="4" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_4" holster_body_name="bo_throwing_spear_quiver_4" holster_mesh_length="96.2">
-      <Thrust damage_type="Pierce" damage_factor="8.3" />
+      <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Materials>
       <Material id="Iron2" count="1" />
@@ -464,7 +464,7 @@
   <CraftingPiece id="spear_blade_8" name="{=CdBAvJdP}Kontos Head" tier="3" piece_type="Blade" mesh="spear_blade_8" length="60.153" weight="0.4" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="8.4" />
+      <Thrust damage_type="Pierce" damage_factor="0.9" />
     </BladeData>
     <Materials>
       <Material id="Iron3" count="2" />
@@ -474,7 +474,7 @@
   <CraftingPiece id="spear_blade_4" name="{=ZcUNAfKT}Extra Long Fine Steel Spear Head" tier="4" piece_type="Blade" mesh="spear_blade_4" length="72.558" weight="0.4168" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="9.2" />
+      <Thrust damage_type="Pierce" damage_factor="1" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="2" />
@@ -484,7 +484,7 @@
   <CraftingPiece id="spear_blade_42" name="{=9aYBy1RN}Fine Steel Leaf Spear Head" tier="4" piece_type="Blade" mesh="spear_blade_42" length="42" weight="0.2456" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="2" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_4_1" holster_body_name="bo_throwing_spear_quiver_4_1" holster_mesh_length="96.2">
-      <Thrust damage_type="Pierce" damage_factor="9.2" />
+      <Thrust damage_type="Pierce" damage_factor="1" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="2" />
@@ -494,7 +494,7 @@
   <CraftingPiece id="spear_blade_14" name="{=T1aiDuOp}Narrow Menavlon Head" tier="3" piece_type="Blade" mesh="spear_blade_14" length="46.28" weight="0.3268" excluded_item_usage_features="swing:TwoHandedPolearm_Bracing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="5" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_4" holster_body_name="bo_throwing_spear_quiver_4" holster_mesh_length="96.2">
-      <Thrust damage_type="Pierce" damage_factor="9.3" />
+      <Thrust damage_type="Pierce" damage_factor="0.9" />
     </BladeData>
     <Materials>
       <Material id="Iron3" count="1" />
@@ -504,7 +504,7 @@
   <CraftingPiece id="spear_blade_37" name="{=XSabsFbx}Weighted Awl Pike Head" tier="3" piece_type="Blade" mesh="spear_blade_37" length="23.7" weight="0.4104" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="5" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_5" holster_body_name="bo_throwing_spear_quiver_5" holster_mesh_length="96.7">
-      <Thrust damage_type="Pierce" damage_factor="8.7" />
+      <Thrust damage_type="Pierce" damage_factor="0.9" />
     </BladeData>
     <Materials>
       <Material id="Iron3" count="2" />
@@ -514,7 +514,7 @@
   <CraftingPiece id="spear_blade_27" name="{=1rGNXUaJ}Thin Fine Steel Hewing Spear Head" tier="5" piece_type="Blade" mesh="spear_blade_27" length="69.5" weight="0.4">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_2" holster_body_name="bo_throwing_spear_quiver_2" holster_mesh_length="94.6">
-      <Thrust damage_type="Pierce" damage_factor="10.0" />
+      <Thrust damage_type="Pierce" damage_factor="1.1" />
       <Swing damage_type="Cut" damage_factor="4" />
     </BladeData>
     <Materials>
@@ -525,7 +525,7 @@
   <CraftingPiece id="spear_blade_40" name="{=NAHHwS3G}Broad Leaf Shaped Spear Tip" tier="3" piece_type="Blade" mesh="spear_blade_40" length="42" weight="0.3928">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="8.4" />
+      <Thrust damage_type="Pierce" damage_factor="0.85" />
       <Swing damage_type="Cut" damage_factor="3.3" />
     </BladeData>
     <Materials>
@@ -536,7 +536,7 @@
   <CraftingPiece id="spear_blade_36" name="{=nRKOX66b}Jagged Fine Steel Spear Head" tier="4" piece_type="Blade" mesh="spear_blade_36" length="42.5" weight="0.268" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="9.4" />
+      <Thrust damage_type="Pierce" damage_factor="1" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="2" />
@@ -546,7 +546,7 @@
   <CraftingPiece id="spear_blade_15" name="{=Y4tIQnS4}Short Simple Spear Head" tier="2" piece_type="Blade" mesh="spear_blade_15" length="22.862" weight="0.100" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="4" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_1_1" holster_body_name="bo_throwing_spear_quiver_1_1" holster_mesh_length="68.9">
-      <Thrust damage_type="Pierce" damage_factor="7.5" />
+      <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Materials>
       <Material id="Iron2" count="1" />
@@ -556,7 +556,7 @@
     <CraftingPiece id="spear_blade_15_blunt" name="{=Y4tIQnS4}Short Simple Spear Head" tier="2" piece_type="Blade" mesh="spear_blade_15" length="22.862" weight="0.100" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="4" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_1_1" holster_body_name="bo_throwing_spear_quiver_1_1" holster_mesh_length="68.9">
-      <Thrust damage_type="Pierce" damage_factor="7.5" />
+      <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Materials>
       <Material id="Iron2" count="1" />
@@ -566,7 +566,7 @@
   <CraftingPiece id="spear_blade_41" name="{=TKVxb6QD}Thamaskene Steel Leaf Shaped Spear Head" tier="4" piece_type="Blade" mesh="spear_blade_41" length="53.2" weight="0.2792" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="1" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="9.3" />
+      <Thrust damage_type="Pierce" damage_factor="1" />
     </BladeData>
     <Materials>
       <Material id="Iron5" count="2" />
@@ -576,7 +576,7 @@
   <CraftingPiece id="spear_blade_10" name="{=emUoygLE}Harpoon Head" tier="2" piece_type="Blade" mesh="spear_blade_10" length="39.775" weight="0.44" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="5" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_1" holster_body_name="bo_throwing_spear_quiver_1" holster_mesh_length="68.9">
-      <Thrust damage_type="Pierce" damage_factor="9.3" />
+      <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Materials>
       <Material id="Iron3" count="1" />
@@ -586,7 +586,7 @@
   <CraftingPiece id="spear_blade_16" name="{=Js1FKwrL}Javelin Head" tier="2" piece_type="Blade" mesh="spear_blade_16" length="23.328" weight="0.100" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="4" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_3_1" holster_body_name="bo_throwing_spear_quiver_3_1" holster_mesh_length="96.8">
-      <Thrust damage_type="Pierce" damage_factor="7.8" />
+      <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Materials>
       <Material id="Iron2" count="1" />
@@ -596,7 +596,7 @@
   <CraftingPiece id="spear_blade_11" name="{=S9zZO7qJ}Fine Steel Pike Head" tier="4" piece_type="Blade" mesh="spear_blade_11" length="34.56" weight="0.3096" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="9.0" />
+      <Thrust damage_type="Pierce" damage_factor="1" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="1" />
@@ -606,7 +606,7 @@
   <CraftingPiece id="spear_blade_9" name="{=r3R6RM9G}Short Simple Pike Head" tier="1" piece_type="Blade" mesh="spear_blade_9" length="23.328" weight="0.204" excluded_item_usage_features="swing" is_default="true">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_3_1" holster_body_name="bo_throwing_spear_quiver_3_1" holster_mesh_length="96.8">
-      <Thrust damage_type="Pierce" damage_factor="7.6" />
+      <Thrust damage_type="Pierce" damage_factor="0.75" />
     </BladeData>
     <Materials>
       <Material id="Iron2" count="1" />
@@ -616,7 +616,7 @@
   <CraftingPiece id="spear_blade_3" name="{=ZAoWK9Gt}Rounded Imperial Spear Head" tier="2" piece_type="Blade" mesh="spear_blade_3" length="57.143" weight="0.3536" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="7.5" />
+      <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Materials>
       <Material id="Iron2" count="1" />
@@ -626,7 +626,7 @@
   <CraftingPiece id="spear_blade_26" name="{=Y0gbKTgZ}Sturgian Military Fork Head" tier="2" piece_type="Blade" mesh="spear_blade_26" length="29.8" weight="0.3584" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="8.0" />
+      <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags></Flags>
     <Materials>
@@ -637,7 +637,7 @@
   <CraftingPiece id="spear_blade_2" name="{=U30HpvtI}Triangular Iron Northern Spear Head" tier="3" piece_type="Blade" mesh="spear_blade_2" length="47.843" weight="0.2912" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="8.4" />
+      <Thrust damage_type="Pierce" damage_factor="0.9" />
     </BladeData>
     <Materials>
       <Material id="Iron3" count="2" />
@@ -647,7 +647,7 @@
   <CraftingPiece id="spear_blade_39" name="{=8T7gNbfM}Drilled Wide Leaf Shaped Spear Head" tier="4" piece_type="Blade" mesh="spear_blade_39" length="54.2" weight="0.3216" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="9.3" />
+      <Thrust damage_type="Pierce" damage_factor="1" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="2" />
@@ -657,7 +657,7 @@
   <CraftingPiece id="spear_blade_25" name="{=mrTkURKV}Notched Fork Head" tier="3" piece_type="Blade" mesh="spear_blade_25" length="42.5" weight="0.3504" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="8.9" />
+      <Thrust damage_type="Pierce" damage_factor="0.9" />
     </BladeData>
     <Flags></Flags>
     <Materials>

@@ -48,7 +48,7 @@
     <!-- https://www.desmos.com/calculator/dnhpcqilvg -->
     <managed_core_parameter id="SwingCombatSpeedGraphZeroProgressValue" value="0.3"/>
     <managed_core_parameter id="SwingCombatSpeedGraphFirstMaximumPoint" value="0.15"/>
-    <managed_core_parameter id="SwingCombatSpeedGraphSecondMaximumPoint" value="0.54"/>
+    <managed_core_parameter id="SwingCombatSpeedGraphSecondMaximumPoint" value="0.7"/>
     <managed_core_parameter id="SwingCombatSpeedGraphOneProgressValue" value="0.01"/>
 
     <managed_core_parameter id="OverSwingCombatSpeedGraphZeroProgressValue" value="0.75"/>
@@ -56,9 +56,9 @@
     <managed_core_parameter id="OverSwingCombatSpeedGraphSecondMaximumPoint" value="0.7"/>
     <managed_core_parameter id="OverSwingCombatSpeedGraphOneProgressValue" value="0.75"/>
 
-    <managed_core_parameter id="ThrustCombatSpeedGraphZeroProgressValue" value="0.4"/>
-    <managed_core_parameter id="ThrustCombatSpeedGraphFirstMaximumPoint" value="0.3"/>
-    <managed_core_parameter id="ThrustCombatSpeedGraphSecondMaximumPoint" value="0.85"/>
+    <managed_core_parameter id="ThrustCombatSpeedGraphZeroProgressValue" value="0.3"/>
+    <managed_core_parameter id="ThrustCombatSpeedGraphFirstMaximumPoint" value="0.05"/>
+    <managed_core_parameter id="ThrustCombatSpeedGraphSecondMaximumPoint" value="0.95"/>
     <managed_core_parameter id="ThrustCombatSpeedGraphOneProgressValue" value="0"/>
 
     <!-- stun calc related -->
