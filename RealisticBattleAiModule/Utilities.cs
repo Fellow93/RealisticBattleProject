@@ -502,21 +502,21 @@ namespace RealisticBattleAiModule
             return MBMath.ClampFloat((float)relevantSkillLevel / 250f * difficultyModifier, 0f, 1f);
         }
 
-        public static int GetMeleeSkill(Agent agent, WeaponComponentData equippedItem, WeaponComponentData secondaryItem)
-        {
-            SkillObject skill = DefaultSkills.Athletics;
-            if (equippedItem != null)
-            {
-                SkillObject relevantSkill = equippedItem.RelevantSkill;
-                skill = ((relevantSkill == DefaultSkills.OneHanded || relevantSkill == DefaultSkills.Polearm) ? relevantSkill : ((relevantSkill != DefaultSkills.TwoHanded) ? DefaultSkills.OneHanded : ((secondaryItem == null) ? DefaultSkills.TwoHanded : DefaultSkills.OneHanded)));
-            }
-            return GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
-        }
+        //public static int GetMeleeSkill(Agent agent, WeaponComponentData equippedItem, WeaponComponentData secondaryItem)
+        //{
+        //    SkillObject skill = DefaultSkills.Athletics;
+        //    if (equippedItem != null)
+        //    {
+        //        SkillObject relevantSkill = equippedItem.RelevantSkill;
+        //        skill = ((relevantSkill == DefaultSkills.OneHanded || relevantSkill == DefaultSkills.Polearm) ? relevantSkill : ((relevantSkill != DefaultSkills.TwoHanded) ? DefaultSkills.OneHanded : ((secondaryItem == null) ? DefaultSkills.TwoHanded : DefaultSkills.OneHanded)));
+        //    }
+        //    return GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
+        //}
 
-        public static int GetEffectiveSkill(BasicCharacterObject agentCharacter, IAgentOriginBase agentOrigin, Formation agentFormation, SkillObject skill)
-        {
-            return agentCharacter.GetSkillValue(skill);
-        }
+        //public static int GetEffectiveSkill(BasicCharacterObject agentCharacter, IAgentOriginBase agentOrigin, Formation agentFormation, SkillObject skill)
+        //{
+        //    return agentCharacter.GetSkillValue(skill);
+        //}
 
         public static float sign(Vec2 p1, Vec2 p2, Vec2 p3)
         {

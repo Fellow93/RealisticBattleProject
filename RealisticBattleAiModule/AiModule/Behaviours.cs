@@ -259,7 +259,7 @@ namespace RealisticBattleAiModule
                         case BehaviorState.Shooting:
                             if (waitCountShooting > 50)
                             {
-                                if (__instance.Formation.QuerySystem.MakingRangedAttackRatio < 0.4f && distance > 30f)
+                                if (__instance.Formation.QuerySystem.MakingRangedAttackRatio < 0.3f && distance > 40f)
                                 {
                                     WorldPosition medianPosition = __instance.Formation.QuerySystem.MedianPosition;
                                     medianPosition.SetVec2(medianPosition.AsVec2 + enemyDirection * 5f);

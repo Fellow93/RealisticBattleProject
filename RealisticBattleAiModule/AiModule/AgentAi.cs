@@ -19,11 +19,17 @@ namespace RealisticBattleAiModule
         [HarmonyPatch("SetAiRelatedProperties")]
         class OverrideSetAiRelatedProperties
         {
-            static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem)
+            static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem, AgentStatCalculateModel __instance)
             {
-                int meleeSkill = Utilities.GetMeleeSkill(agent, equippedItem, secondaryItem);
+                MethodInfo method = typeof(AgentStatCalculateModel).GetMethod("GetMeleeSkill", BindingFlags.NonPublic | BindingFlags.Instance);
+                method.DeclaringType.GetMethod("GetMeleeSkill");
+
+                //int meleeSkill = Utilities.GetMeleeSkill(agent, equippedItem, secondaryItem);
+                //int effectiveSkill = Utilities.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
+
                 SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
-                int effectiveSkill = Utilities.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
+                int meleeSkill = (int)method.Invoke(__instance, new object[] { agent, equippedItem, secondaryItem });
+                int effectiveSkill = __instance.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
                 float meleeLevel = Utilities.CalculateAILevel(agent, meleeSkill);                 //num
                 float effectiveSkillLevel = Utilities.CalculateAILevel(agent, effectiveSkill);    //num2
                 float meleeDefensivness = meleeLevel + agent.Defensiveness;             //num3
@@ -74,6 +80,7 @@ namespace RealisticBattleAiModule
         {
             if (!formation.QuerySystem.IsCavalryFormation && !formation.QuerySystem.IsRangedCavalryFormation)
             {
+
                 float currentTime = MBCommon.TimeType.Mission.GetTime();
                 if (currentTime - unit.LastRangedAttackTime < 7f)
                 {

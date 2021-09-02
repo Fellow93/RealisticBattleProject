@@ -304,6 +304,84 @@ namespace RealisticBattleCombatModule
                 weaponType = attackerWeapon.Item.PrimaryWeapon.WeaponClass.ToString();
             }
 
+            IAgentOriginBase attackerAgentOrigin = attackInformation.AttackerAgentOrigin;
+            Formation attackerFormation = attackInformation.AttackerFormation;
+            SkillObject skill = (attackerWeapon.CurrentUsageItem == null) ? DefaultSkills.Athletics : attackerWeapon.CurrentUsageItem.RelevantSkill;
+
+            int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgentCharacter, attackerAgentOrigin, attackerFormation, skill);
+            bool isPassiveUsage = attackInformation.IsAttackerAgentDoingPassiveAttack;
+
+            switch (weaponType)
+            {
+                case "Dagger":
+                case "OneHandedSword":
+                case "TwoHandedSword":
+                    {
+                        if (damageType == DamageTypes.Cut)
+                        {
+                            magnitude = magnitude * 0.66f + (effectiveSkill * 0.5f);
+                        }
+                        else
+                        {
+                            magnitude = magnitude * 0.8f + (effectiveSkill * 0.2f);
+                        }
+                        break;
+                    }
+                case "OneHandedAxe":
+                case "OneHandedBastardAxe":
+                case "TwoHandedAxe":
+                    {
+                        magnitude = magnitude * 0.66f + (effectiveSkill * 0.35f);
+
+                        break;
+                    }
+                case "Mace":
+                case "TwoHandedMace":
+                    {
+                        magnitude = magnitude * 0.66f + (effectiveSkill * 0.2f);
+
+                        break;
+                    }
+                case "OneHandedPolearm":
+                    {
+                        if (damageType == DamageTypes.Cut)
+                        {
+                            magnitude = magnitude * 0.66f + (effectiveSkill * 0.3f);
+                        }
+                        else
+                        {
+                            if (isPassiveUsage)
+                            {
+                                magnitude = magnitude * 0.5f + (effectiveSkill * 0.0025f);
+                            }
+                            else
+                            {
+                                magnitude = magnitude * 0.8f + (effectiveSkill * 0.2f);
+                            }
+                        }
+                        break;
+                    }
+                case "TwoHandedPolearm":
+                    {
+                        if (damageType == DamageTypes.Cut)
+                        {
+                            magnitude = magnitude * 0.66f + (effectiveSkill * 0.3f);
+                        }
+                        else
+                        {
+                            if (isPassiveUsage)
+                            {
+                                magnitude = magnitude * 0.5f + (effectiveSkill * 0.0025f);
+                            }
+                            else
+                            {
+                                magnitude = magnitude * 0.8f + (effectiveSkill * 0.2f);
+                            }
+                        }
+                        break;
+                    }
+            }
+
             float dmgMultiplier = 1f;
 
             if (!attackBlockedWithShield && !isFallDamage)
