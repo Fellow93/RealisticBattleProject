@@ -191,7 +191,7 @@ namespace RealisticBattleCombatModule
 
         private static float CalculateStrikeMagnitudeForThrust(float thrustWeaponSpeed, float weaponWeight, float extraLinearSpeed, bool isThrown)
         {
-            const float ashBreakTreshold = 43f;
+            const float ashBreakTreshold = 430f;
 
             float num = extraLinearSpeed;
             if (!isThrown && weaponWeight < 1.5f)
@@ -302,6 +302,7 @@ namespace RealisticBattleCombatModule
                 int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgentCharacter, attackerAgentOrigin, attackerFormation, skill);
                 bool isPassiveUsage = attackInformation.IsAttackerAgentDoingPassiveAttack;
                 float skillBasedDamage = 0f;
+                const float ashBreakTreshold = 430f;
 
                 switch (weaponType)
                 {
@@ -345,7 +346,6 @@ namespace RealisticBattleCombatModule
                             {
                                 magnitude = skillBasedDamage;
                             }
-
                             break;
                         }
                     case "OneHandedBastardAxe":
@@ -355,7 +355,6 @@ namespace RealisticBattleCombatModule
                             {
                                 magnitude = skillBasedDamage;
                             }
-
                             break;
                         }
                     case "TwoHandedAxe":
@@ -365,7 +364,6 @@ namespace RealisticBattleCombatModule
                             {
                                 magnitude = skillBasedDamage;
                             }
-
                             break;
                         }
                     case "Mace":
@@ -375,7 +373,6 @@ namespace RealisticBattleCombatModule
                             {
                                 magnitude = skillBasedDamage;
                             }
-
                             break;
                         }
                     case "TwoHandedMace":
@@ -385,7 +382,6 @@ namespace RealisticBattleCombatModule
                             {
                                 magnitude = skillBasedDamage;
                             }
-
                             break;
                         }
                     case "OneHandedPolearm":
@@ -398,24 +394,25 @@ namespace RealisticBattleCombatModule
                             {
                                 if (isPassiveUsage)
                                 {
-                                    const float ashBreakTreshold = 43f;
-                                    float CouchedSkill = 0.5f + effectiveSkill * 0.0225f;
-                                    float SkillCap = (10f + effectiveSkill * 0.13f);
+                                    float couchedSkill = 0.5f + effectiveSkill * 0.0225f;
+                                    float skillCap = (100f + effectiveSkill * 1.3f);
 
-                                    if (!isThrown && weaponWeight < 1.5f)
+                                    float weaponWeight = attackerWeapon.Item.Weight;
+
+                                    if (weaponWeight < 1.5f)
                                     {
                                         weaponWeight += 0.5f;
                                     }
-                                    float LanceBalistics = (magnitude * 2f) / weaponWeight;
-                                    magnitude = LanceBalistics * (weaponWeight + CouchedSkill);
-                                    if (magnitude > (SkillCap * XmlConfig.dict["Global.ThrustModifier"]) && LanceBalistics < (SkillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                    float lanceBalistics = (magnitude * 2f) / weaponWeight;
+                                    magnitude = lanceBalistics * (weaponWeight + couchedSkill);
+                                    if (magnitude > (skillCap * XmlConfig.dict["Global.ThrustModifier"]) && lanceBalistics < (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
                                     {
-                                        magnitude = SkillCap * XmlConfig.dict["Global.ThrustModifier"];
+                                        magnitude = skillCap * XmlConfig.dict["Global.ThrustModifier"];
                                     }
 
-                                    if (LanceBalistics >= (SkillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                    if (lanceBalistics >= (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
                                     {
-                                        magnitude = LanceBalistics;
+                                        magnitude = lanceBalistics;
                                     }
 
                                     if (magnitude > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"]))
@@ -428,7 +425,7 @@ namespace RealisticBattleCombatModule
                                     skillBasedDamage = magnitude * 0.4f + 60f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.26f * XmlConfig.dict["Global.ThrustModifier"]);
                                 }
                             }
-                            if (magnitude > 1f)
+                            if (magnitude > 1f && !isPassiveUsage)
                             {
                                 magnitude = skillBasedDamage;
                             }
@@ -444,24 +441,25 @@ namespace RealisticBattleCombatModule
                             {
                                 if (isPassiveUsage)
                                 {
-                                    const float ashBreakTreshold = 43f;
                                     float CouchedSkill = 0.5f + effectiveSkill * 0.0225f;
-                                    float SkillCap = (10f + effectiveSkill * 0.13f);
+                                    float SkillCap = (100f + effectiveSkill * 1.3f);
 
-                                    if (!isThrown && weaponWeight < 1.5f)
+                                    float weaponWeight = attackerWeapon.Item.Weight;
+
+                                    if (weaponWeight < 1.5f)
                                     {
                                         weaponWeight += 0.5f;
                                     }
-                                    float LanceBalistics = (magnitude * 2f) / weaponWeight;
-                                    magnitude = LanceBalistics * (weaponWeight + CouchedSkill);
-                                    if (magnitude > (SkillCap * XmlConfig.dict["Global.ThrustModifier"]) && LanceBalistics < (SkillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                    float lanceBalistics = (magnitude * 2f) / weaponWeight;
+                                    magnitude = lanceBalistics * (weaponWeight + CouchedSkill);
+                                    if (magnitude > (SkillCap * XmlConfig.dict["Global.ThrustModifier"]) && lanceBalistics < (SkillCap * XmlConfig.dict["Global.ThrustModifier"]))
                                     {
                                         magnitude = SkillCap * XmlConfig.dict["Global.ThrustModifier"];
                                     }
 
-                                    if (LanceBalistics >= (SkillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                    if (lanceBalistics >= (SkillCap * XmlConfig.dict["Global.ThrustModifier"]))
                                     {
-                                        magnitude = LanceBalistics;
+                                        magnitude = lanceBalistics;
                                     }
 
                                     if (magnitude > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"]))
@@ -474,7 +472,7 @@ namespace RealisticBattleCombatModule
                                     skillBasedDamage = (magnitude * 0.4f + 60f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.26f * XmlConfig.dict["Global.ThrustModifier"])) * 1.3f;
                                 }
                             }
-                            if (magnitude > 1f)
+                            if (magnitude > 1f && !isPassiveUsage)
                             {
                                 magnitude = skillBasedDamage;
                             }
@@ -737,7 +735,7 @@ namespace RealisticBattleCombatModule
                         weaponType = attackerWeapon.WeaponClass.ToString();
                     }
 
-                    float num = MyComputeDamage(weaponType, damageType, blowMagnitude, (float)shieldArmorForCurrentUsage, absorbedDamageRatio);
+                    float inflictedDamage = MyComputeDamage(weaponType, damageType, blowMagnitude, (float)shieldArmorForCurrentUsage, absorbedDamageRatio);
 
                     if (attackCollisionData.IsMissile)
                     {
@@ -745,37 +743,37 @@ namespace RealisticBattleCombatModule
                         {
                             case "Arrow":
                                 {
-                                    num *= 1.0f;
+                                    inflictedDamage *= 1.0f;
                                     break;
                                 }
                             case "Bolt":
                                 {
-                                    num *= 1.0f;
+                                    inflictedDamage *= 1.0f;
                                     break;
                                 }
                             case "Javelin":
                                 {
-                                    num *= 2.5f;
+                                    inflictedDamage *= 2.5f;
                                     break;
                                 }
                             case "ThrowingAxe":
                                 {
-                                    num *= 2.0f;
+                                    inflictedDamage *= 2.0f;
                                     break;
                                 }
                             case "OneHandedPolearm":
                                 {
-                                    num *= 2.5f;
+                                    inflictedDamage *= 2.5f;
                                     break;
                                 }
                             case "LowGripPolearm":
                                 {
-                                    num *= 2.5f;
+                                    inflictedDamage *= 2.5f;
                                     break;
                                 }
                             default:
                                 {
-                                    num *= 0.1f;
+                                    inflictedDamage *= 0.1f;
                                     break;
                                 }
                         }
@@ -789,18 +787,22 @@ namespace RealisticBattleCombatModule
                             case "OneHandedBastardAxe":
                             case "TwoHandedPolearm":
                                 {
-                                    num *= 2.0f;
+                                    inflictedDamage *= 2.0f;
                                     break;
                                 }
                             default:
                                 {
-                                    if (attackCollisionData.DamageType == 0)
+                                    if (attackCollisionData.DamageType == 0) //cut
                                     {
-                                        num *= 1.5f;
+                                        inflictedDamage *= 1.5f;
                                     }
-                                    else
+                                    else if(attackCollisionData.DamageType == 1)//pierce
                                     {
-                                        num *= 1f;
+                                        inflictedDamage *= 0.09f;
+                                    }
+                                    else if (attackCollisionData.DamageType == 2)//blunt
+                                    {
+                                        inflictedDamage *= 1f;
                                     }
                                     break;
                                 }
@@ -809,22 +811,22 @@ namespace RealisticBattleCombatModule
 
                     if (attackerWeapon != null && attackerWeapon.WeaponFlags.HasAnyFlag(WeaponFlags.BonusAgainstShield))
                     {
-                        num *= 5f;
+                        inflictedDamage *= 5f;
                     }
 
-                    if (num > 0f)
+                    if (inflictedDamage > 0f)
                     {
                         if (!isVictimAgentLeftStance)
                         {
-                            num *= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.ShieldRightStanceBlockDamageMultiplier);
+                            inflictedDamage *= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.ShieldRightStanceBlockDamageMultiplier);
                         }
                         if (attackCollisionData.CorrectSideShieldBlock)
                         {
-                            num *= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.ShieldCorrectSideBlockDamageMultiplier);
+                            inflictedDamage *= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.ShieldCorrectSideBlockDamageMultiplier);
                         }
 
-                        num = MissionGameModels.Current.AgentApplyDamageModel.CalculateShieldDamage(num);
-                        attackCollisionData.InflictedDamage = (int)num;
+                        inflictedDamage = MissionGameModels.Current.AgentApplyDamageModel.CalculateShieldDamage(inflictedDamage);
+                        attackCollisionData.InflictedDamage = (int)inflictedDamage;
                     }
                 }
 
