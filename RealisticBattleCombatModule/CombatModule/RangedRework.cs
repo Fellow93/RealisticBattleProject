@@ -46,40 +46,50 @@ namespace RealisticBattleCombatModule
                 MissionWeapon arrow = MissionWeapon.Invalid;
                 bool firstProjectile = true;
 
+                PropertyInfo swingSpeedProperty = typeof(WeaponComponentData).GetProperty("SwingSpeed");
+                swingSpeedProperty.DeclaringType.GetProperty("SwingSpeed");
+
+                PropertyInfo thrustSpeedProperty = typeof(WeaponComponentData).GetProperty("ThrustSpeed");
+                thrustSpeedProperty.DeclaringType.GetProperty("ThrustSpeed");
+
+                PropertyInfo handlingProperty = typeof(WeaponComponentData).GetProperty("Handling");
+                handlingProperty.DeclaringType.GetProperty("Handling");
+
                 for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                 {
                     if (__instance.Equipment != null && !__instance.Equipment[equipmentIndex].IsEmpty)
                     {
                         MissionWeapon mw = __instance.Equipment[equipmentIndex];
                         WeaponStatsData[] wsd = mw.GetWeaponStatsData();
+
+                        SkillObject skill = (mw.CurrentUsageItem == null) ? DefaultSkills.Athletics : mw.CurrentUsageItem.RelevantSkill;
+                        int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance.Character, __instance.Origin, __instance.Formation, skill);
+
                         if ((wsd[0].WeaponClass == (int)WeaponClass.SmallShield) || (wsd[0].WeaponClass == (int)WeaponClass.LargeShield))
                         {
                             //__instance.AttachWeaponToWeapon(equipmentIndex, __instance.Equipment[equipmentIndex], __instance.GetWeaponEntityFromEquipmentSlot(equipmentIndex), ref wsd[0].WeaponFrame);
                             //__instance.AttachWeaponToBone(__instance.Equipment[equipmentIndex], __instance.AgentVisuals.GetEntity(), 5, ref wsd[0].WeaponFrame);
                         }
-                        if ((wsd[0].WeaponClass == (int)WeaponClass.OneHandedSword))
+                        if ((wsd[0].WeaponClass == (int)WeaponClass.OneHandedSword) || (wsd[0].WeaponClass == (int)WeaponClass.Dagger) || (wsd[0].WeaponClass == (int)WeaponClass.LowGripPolearm)
+                             || (wsd[0].WeaponClass == (int)WeaponClass.Mace) || (wsd[0].WeaponClass == (int)WeaponClass.OneHandedAxe) || (wsd[0].WeaponClass == (int)WeaponClass.OneHandedPolearm)
+                              || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedAxe) || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedMace) || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedPolearm)
+                               || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedSword))
                         {
-                            float skillModifier = 1f + __instance.Character.GetSkillValue(DefaultSkills.OneHanded) / 1000f;
+                            float skillModifier = 1f + effectiveSkill / 1000f;
 
                             WeaponComponentData weapon = mw.CurrentUsageItem;
 
-                            PropertyInfo swingSpeedProperty = typeof(WeaponComponentData).GetProperty("SwingSpeed");
-                            swingSpeedProperty.DeclaringType.GetProperty("SwingSpeed");
                             int swingSpeed = (int)swingSpeedProperty.GetValue(weapon, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
                             originalItemSwingSpeed[mw.GetModifiedItemName()] = swingSpeed;
-                            swingSpeedProperty.SetValue(weapon, MathF.Ceiling(swingSpeed * skillModifier), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                            swingSpeedProperty.SetValue(weapon, MathF.Ceiling((swingSpeed * 0.83f) * skillModifier), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
 
-                            PropertyInfo thrustSpeedProperty = typeof(WeaponComponentData).GetProperty("ThrustSpeed");
-                            thrustSpeedProperty.DeclaringType.GetProperty("ThrustSpeed");
                             int thrustSpeed = (int)thrustSpeedProperty.GetValue(weapon, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
                             originalItemThrustSpeed[mw.GetModifiedItemName()] = thrustSpeed;
-                            thrustSpeedProperty.SetValue(weapon, MathF.Ceiling(thrustSpeed * skillModifier), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-
-                            PropertyInfo handlingProperty = typeof(WeaponComponentData).GetProperty("Handling");
-                            handlingProperty.DeclaringType.GetProperty("Handling");
+                            thrustSpeedProperty.SetValue(weapon, MathF.Ceiling((thrustSpeed * 0.83f) * skillModifier), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                            
                             int handling = (int)handlingProperty.GetValue(weapon, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
                             originalItemHandling[mw.GetModifiedItemName()] = handling;
-                            handlingProperty.SetValue(weapon, MathF.Ceiling(handling * skillModifier), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                            handlingProperty.SetValue(weapon, MathF.Ceiling((handling * 0.83f) * skillModifier), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                         }
                         if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
                         {
@@ -173,7 +183,10 @@ namespace RealisticBattleCombatModule
                         MissionWeapon mw = __instance.Equipment[equipmentIndex];
                         WeaponStatsData[] wsd = __instance.Equipment[equipmentIndex].GetWeaponStatsData();
 
-                        if ((wsd[0].WeaponClass == (int)WeaponClass.OneHandedSword))
+                        if ((wsd[0].WeaponClass == (int)WeaponClass.OneHandedSword) || (wsd[0].WeaponClass == (int)WeaponClass.Dagger) || (wsd[0].WeaponClass == (int)WeaponClass.LowGripPolearm)
+                             || (wsd[0].WeaponClass == (int)WeaponClass.Mace) || (wsd[0].WeaponClass == (int)WeaponClass.OneHandedAxe) || (wsd[0].WeaponClass == (int)WeaponClass.OneHandedPolearm)
+                              || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedAxe) || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedMace) || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedPolearm)
+                               || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedSword))
                         {
                             WeaponComponentData weapon = __instance.Equipment[equipmentIndex].CurrentUsageItem;
 
