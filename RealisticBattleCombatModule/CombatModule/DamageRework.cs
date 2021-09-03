@@ -434,6 +434,7 @@ namespace RealisticBattleCombatModule
                                 {
                                     skillBasedDamage = magnitude * 0.5f + (effectiveSkill * 0.0025f * XmlConfig.dict["Global.ThrustModifier"]);
                                 }
+                                else
                                 {
                                     skillBasedDamage = (magnitude * 0.4f + 60f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.26f * XmlConfig.dict["Global.ThrustModifier"])) * 1.3f;
                                 }
