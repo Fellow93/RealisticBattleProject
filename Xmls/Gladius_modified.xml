@@ -106,7 +106,7 @@
              scale_factor="110" />
       <Piece id="mace_handle_6"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="empire_mace_1_t2"
@@ -119,7 +119,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_3"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="aserai_mace_1_t2"
@@ -132,7 +132,7 @@
              scale_factor="110" />
       <Piece id="mace_handle_6"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="aserai_mace_2_t2"
@@ -145,7 +145,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_6"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="khuzait_mace_1_t2"
@@ -158,7 +158,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_8"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="battania_mace_1_t2"
@@ -171,7 +171,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_3"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="battania_mace_2_t2"
@@ -184,7 +184,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_6"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <!-- #endregion -->
@@ -199,7 +199,7 @@
              scale_factor="110" />
       <Piece id="mace_handle_7"
              Type="Handle"
-             scale_factor="110" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <!-- RENAME CIHAN -->
@@ -212,7 +212,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_12"
              Type="Handle"
-             scale_factor="110" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <!-- RENAME CIHAN -->
@@ -226,7 +226,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_4"
              Type="Handle"
-             scale_factor="110" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="morningstar_mace_t3"
@@ -238,7 +238,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_1"
              Type="Handle"
-             scale_factor="110" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <!-- #endregion -->
@@ -253,7 +253,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_10"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="empire_mace_2_t4"
@@ -266,7 +266,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_9"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="empire_mace_3_t4"
@@ -279,7 +279,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_10"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="aserai_mace_4_t4"
@@ -292,7 +292,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_5"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="khuzait_mace_2_t4"
@@ -305,7 +305,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_5"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="khuzait_mace_3_t4"
@@ -318,7 +318,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_4"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="shishpar_mace_t4"
@@ -344,7 +344,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_11"
              Type="Handle"
-             scale_factor="110" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <!-- #endregion -->
@@ -359,7 +359,7 @@
              scale_factor="110" />
       <Piece id="mace_handle_9"
              Type="Handle"
-             scale_factor="110" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="empire_mace_4_t5"
@@ -372,7 +372,7 @@
              scale_factor="110" />
       <Piece id="mace_handle_13"
              Type="Handle"
-             scale_factor="110" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="empire_mace_5_t5"
@@ -385,7 +385,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_5"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="khuzait_mace_4_t5"
@@ -397,7 +397,7 @@
              Type="Blade" />
       <Piece id="mace_handle_15"
              Type="Handle"
-             scale_factor="105" />
+             scale_factor="120" />
     </Pieces>
   </CraftedItem>
 </Items>
