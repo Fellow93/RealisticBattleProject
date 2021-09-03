@@ -310,6 +310,7 @@ namespace RealisticBattleCombatModule
 
             int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgentCharacter, attackerAgentOrigin, attackerFormation, skill);
             bool isPassiveUsage = attackInformation.IsAttackerAgentDoingPassiveAttack;
+            float SkillBasedDamage = 0f;
 
             switch (weaponType)
             {
@@ -319,11 +320,15 @@ namespace RealisticBattleCombatModule
                     {
                         if (damageType == DamageTypes.Cut)
                         {
-                            magnitude = magnitude * 0.66f + (effectiveSkill * 0.5f);
+                            SkillBasedDamage = magnitude * 0.66f + (effectiveSkill * 0.5f);
                         }
                         else
                         {
-                            magnitude = magnitude * 0.8f + (effectiveSkill * 0.2f);
+                            SkillBasedDamage = magnitude * 0.8f + (effectiveSkill * 0.2f * XmlConfig.dict["Global.ThrustModifier"]);
+                        }
+                        if (magnitude > 1f)
+                        {
+                            magnitude = SkillBasedDamage;
                         }
                         break;
                     }
@@ -331,14 +336,22 @@ namespace RealisticBattleCombatModule
                 case "OneHandedBastardAxe":
                 case "TwoHandedAxe":
                     {
-                        magnitude = magnitude * 0.66f + (effectiveSkill * 0.35f);
+                        SkillBasedDamage = magnitude * 0.66f + (effectiveSkill * 0.35f);
+                        if (magnitude > 1f)
+                        {
+                            magnitude = SkillBasedDamage;
+                        }
 
                         break;
                     }
                 case "Mace":
                 case "TwoHandedMace":
                     {
-                        magnitude = magnitude * 0.66f + (effectiveSkill * 0.2f);
+                        SkillBasedDamage = magnitude * 0.66f + (effectiveSkill * 0.2f);
+                        if (magnitude > 1f)
+                        {
+                            magnitude = SkillBasedDamage;
+                        }
 
                         break;
                     }
@@ -346,18 +359,22 @@ namespace RealisticBattleCombatModule
                     {
                         if (damageType == DamageTypes.Cut)
                         {
-                            magnitude = magnitude * 0.66f + (effectiveSkill * 0.3f);
+                            SkillBasedDamage = magnitude * 0.66f + (effectiveSkill * 0.3f);
                         }
                         else
                         {
                             if (isPassiveUsage)
                             {
-                                magnitude = magnitude * 0.5f + (effectiveSkill * 0.0025f);
+                                SkillBasedDamage = magnitude * 0.5f + (effectiveSkill * 0.0025f * XmlConfig.dict["Global.ThrustModifier"]);
                             }
                             else
                             {
-                                magnitude = magnitude * 0.8f + (effectiveSkill * 0.2f);
+                                SkillBasedDamage = magnitude * 0.8f + (effectiveSkill * 0.2f * XmlConfig.dict["Global.ThrustModifier"]);
                             }
+                        }
+                        if (magnitude > 1f)
+                        {
+                            magnitude = SkillBasedDamage;
                         }
                         break;
                     }
@@ -365,18 +382,22 @@ namespace RealisticBattleCombatModule
                     {
                         if (damageType == DamageTypes.Cut)
                         {
-                            magnitude = magnitude * 0.66f + (effectiveSkill * 0.3f);
+                            SkillBasedDamage = magnitude * 0.66f + (effectiveSkill * 0.3f);
                         }
                         else
                         {
                             if (isPassiveUsage)
                             {
-                                magnitude = magnitude * 0.5f + (effectiveSkill * 0.0025f);
+                                SkillBasedDamage = magnitude * 0.5f + (effectiveSkill * 0.0025f * XmlConfig.dict["Global.ThrustModifier"]);
                             }
                             else
                             {
-                                magnitude = magnitude * 0.8f + (effectiveSkill * 0.2f);
+                                SkillBasedDamage = magnitude * 0.8f + (effectiveSkill * 0.2f * XmlConfig.dict["Global.ThrustModifier"]);
                             }
+                        }
+                        if (magnitude > 1f)
+                        {
+                            magnitude = SkillBasedDamage;
                         }
                         break;
                     }
@@ -744,9 +765,9 @@ namespace RealisticBattleCombatModule
             if (damageType == DamageTypes.Pierce)
             {
                 mag_1h_thrust = magnitude * XmlConfig.dict["Global.OneHandedThrustBonus"];
-                mag_2h_thrust = magnitude * 1.5f * XmlConfig.dict["Global.TwoHandedThrustBonus"];
+                mag_2h_thrust = magnitude * 1.3f * XmlConfig.dict["Global.TwoHandedThrustBonus"];
                 mag_1h_sword_thrust = magnitude * 1.0f * XmlConfig.dict["Global.OneHandedThrustBonus"];
-                mag_2h_sword_thrust = magnitude * 1.5f * XmlConfig.dict["Global.TwoHandedThrustBonus"];
+                mag_2h_sword_thrust = magnitude * 1.3f * XmlConfig.dict["Global.TwoHandedThrustBonus"];
             }
             else if (damageType == DamageTypes.Cut)
             {
