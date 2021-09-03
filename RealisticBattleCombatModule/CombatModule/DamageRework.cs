@@ -196,20 +196,9 @@ namespace RealisticBattleCombatModule
             float num = extraLinearSpeed;
             if (!isThrown && weaponWeight < 1.5f)
             {
-                weaponWeight += 1.0f;
+                weaponWeight += 0.5f;
             }
-            float CouchedSkillBonus = 0.5f * 2.5f * num * num * XmlConfig.dict["Global.ThrustModifier"];
-            float LanceKE = 0.5f * weaponWeight * num * num * XmlConfig.dict["Global.ThrustModifier"];
-            float num2 = CouchedSkillBonus + LanceKE;
-            if (num2 > (23f * XmlConfig.dict["Global.ThrustModifier"]) && LanceKE < (23f * XmlConfig.dict["Global.ThrustModifier"]))
-            {
-                num2 = 23f * XmlConfig.dict["Global.ThrustModifier"];
-            }
-
-            if (LanceKE >= (23f * XmlConfig.dict["Global.ThrustModifier"]))
-            {
-                num2 = LanceKE;
-            }
+            float num2 = 0.5f * weaponWeight * num * num * XmlConfig.dict["Global.ThrustModifier"];
 
             if (num2 > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"]))
             {
@@ -409,7 +398,30 @@ namespace RealisticBattleCombatModule
                             {
                                 if (isPassiveUsage)
                                 {
-                                    skillBasedDamage = magnitude * 0.5f + (effectiveSkill * 0.0025f * XmlConfig.dict["Global.ThrustModifier"]);
+                                    const float ashBreakTreshold = 43f;
+                                    float CouchedSkill = 0.5f + effectiveSkill * 0.0225f;
+                                    float SkillCap = (10f + effectiveSkill * 0.13f);
+
+                                    if (!isThrown && weaponWeight < 1.5f)
+                                    {
+                                        weaponWeight += 0.5f;
+                                    }
+                                    float LanceBalistics = (magnitude * 2f) / weaponWeight;
+                                    magnitude = LanceBalistics * (weaponWeight + CouchedSkill);
+                                    if (magnitude > (SkillCap * XmlConfig.dict["Global.ThrustModifier"]) && LanceBalistics < (SkillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                    {
+                                        magnitude = SkillCap * XmlConfig.dict["Global.ThrustModifier"];
+                                    }
+
+                                    if (LanceBalistics >= (SkillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                    {
+                                        magnitude = LanceBalistics;
+                                    }
+
+                                    if (magnitude > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"]))
+                                    {
+                                        magnitude = ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"];
+                                    }
                                 }
                                 else
                                 {
@@ -432,7 +444,30 @@ namespace RealisticBattleCombatModule
                             {
                                 if (isPassiveUsage)
                                 {
-                                    skillBasedDamage = magnitude * 0.5f + (effectiveSkill * 0.0025f * XmlConfig.dict["Global.ThrustModifier"]);
+                                    const float ashBreakTreshold = 43f;
+                                    float CouchedSkill = 0.5f + effectiveSkill * 0.0225f;
+                                    float SkillCap = (10f + effectiveSkill * 0.13f);
+
+                                    if (!isThrown && weaponWeight < 1.5f)
+                                    {
+                                        weaponWeight += 0.5f;
+                                    }
+                                    float LanceBalistics = (magnitude * 2f) / weaponWeight;
+                                    magnitude = LanceBalistics * (weaponWeight + CouchedSkill);
+                                    if (magnitude > (SkillCap * XmlConfig.dict["Global.ThrustModifier"]) && LanceBalistics < (SkillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                    {
+                                        magnitude = SkillCap * XmlConfig.dict["Global.ThrustModifier"];
+                                    }
+
+                                    if (LanceBalistics >= (SkillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                    {
+                                        magnitude = LanceBalistics;
+                                    }
+
+                                    if (magnitude > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"]))
+                                    {
+                                        magnitude = ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"];
+                                    }
                                 }
                                 else
                                 {
