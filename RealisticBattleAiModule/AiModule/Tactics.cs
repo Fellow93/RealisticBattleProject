@@ -201,6 +201,7 @@ namespace RealisticBattleAiModule
                                 team.AddTacticOption(new TacticDefensiveLine(team));
                                 team.AddTacticOption(new TacticFullScaleAttack(team));
                                 team.AddTacticOption(new TacticCharge(team));
+                                team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
                                 //team.AddTacticOption(new TacticHoldChokePoint(team));
                                 //team.AddTacticOption(new TacticHoldTheHill(team));
                                 //team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));

@@ -99,7 +99,7 @@ namespace RealisticBattleAiModule
                     {
                         Vec2 enemyDirection = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                         float distance = enemyDirection.Normalize();
-                        if (distance < (180f))
+                        if (distance < (200f))
                         {
                             WorldPosition newPosition = WorldPosition.Invalid;
                             positionsStorage.TryGetValue(__instance.Formation, out newPosition);
@@ -152,7 +152,7 @@ namespace RealisticBattleAiModule
                         Vec2 enemyDirection = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                         float distance = enemyDirection.Normalize();
 
-                        if (distance < (180f))
+                        if (distance < (200f))
                         {
                             WorldPosition newPosition = WorldPosition.Invalid;
                             positionsStorage.TryGetValue(__instance.Formation, out newPosition);
@@ -236,10 +236,9 @@ namespace RealisticBattleAiModule
             PullingBack
         }
 
-        private static int waitCountShooting = 0;
-        private static int waitCountApproaching = 0;
-
-        private static Vec2 approachingRanging;
+        public static Dictionary<Formation, Vec2> approachingRangingStorage = new Dictionary<Formation, Vec2> { };
+        public static Dictionary<Formation, int> waitCountShootingStorage = new Dictionary<Formation, int> { };
+        public static Dictionary<Formation, int> waitCountApproachingStorage = new Dictionary<Formation, int> { };
 
         [HarmonyPostfix]
         [HarmonyPatch("CalculateCurrentOrder")]
@@ -249,54 +248,95 @@ namespace RealisticBattleAiModule
             {
                 Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false);
 
+                int waitCountShooting;
+                int waitCountApproaching;
+                Vec2 approachingRangingPos;
+                if (!waitCountShootingStorage.TryGetValue(__instance.Formation, out waitCountShooting))
+                {
+                    waitCountShootingStorage[__instance.Formation] = 0;
+                }
+                if (!waitCountApproachingStorage.TryGetValue(__instance.Formation, out waitCountApproaching))
+                {
+                    waitCountApproachingStorage[__instance.Formation] = 0;
+                }
+                if (!waitCountApproachingStorage.TryGetValue(__instance.Formation, out waitCountApproaching))
+                {
+                    waitCountApproachingStorage[__instance.Formation] = 0;
+                }
+                if (!approachingRangingStorage.TryGetValue(__instance.Formation, out approachingRangingPos))
+                {
+                    approachingRangingStorage[__instance.Formation] = __instance.Formation.QuerySystem.MedianPosition.AsVec2;
+                }
+
                 if (significantEnemy != null)
                 {
                     Vec2 enemyDirection = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                     float distance = enemyDirection.Normalize();
-
                     switch (____behaviorState)
                     {
                         case BehaviorState.Shooting:
-                            if (waitCountShooting > 50)
+                            if (waitCountShootingStorage[__instance.Formation] > 45)
                             {
+                                if (distance > 100f)
+                                {
+                                    WorldPosition medianPosition = __instance.Formation.QuerySystem.MedianPosition;
+                                    medianPosition.SetVec2(medianPosition.AsVec2 + enemyDirection * 5f);
+                                    ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
+                                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
+                                    waitCountShootingStorage[__instance.Formation] = 0;
+                                    break;
+                                }
+                                if (distance < 40f && distance > 25f)
+                                {
+                                    WorldPosition medianPosition = __instance.Formation.QuerySystem.MedianPosition;
+                                    medianPosition.SetVec2(medianPosition.AsVec2 - enemyDirection * 5f);
+                                    ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
+                                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(__instance.Formation.Direction);
+                                    //___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
+                                    waitCountShootingStorage[__instance.Formation] = 0;
+                                    break;
+                                }
                                 if (__instance.Formation.QuerySystem.MakingRangedAttackRatio < 0.3f && distance > 40f)
                                 {
                                     WorldPosition medianPosition = __instance.Formation.QuerySystem.MedianPosition;
                                     medianPosition.SetVec2(medianPosition.AsVec2 + enemyDirection * 5f);
                                     ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
                                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
+                                    waitCountShootingStorage[__instance.Formation] = 0;
+                                    break;
                                 }
-                                waitCountShooting = 0;
+                               
                             }
                             else
                             {
                                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
-                                waitCountShooting++;
+                                waitCountShootingStorage[__instance.Formation] = waitCountShootingStorage[__instance.Formation] + 1;
                             }
 
                             break;
                         case BehaviorState.Approaching:
-                            if (waitCountApproaching > 20)
+                            if (waitCountApproachingStorage[__instance.Formation] > 20)
                             {
-                                if (distance < 200f)
-                                {
+                                //if (distance < 200f)
+                                //{
                                     WorldPosition medianPosition = __instance.Formation.QuerySystem.MedianPosition;
                                     medianPosition.SetVec2(medianPosition.AsVec2 + enemyDirection * 5f);
-                                    approachingRanging = medianPosition.AsVec2;
+                                    approachingRangingStorage[__instance.Formation] = medianPosition.AsVec2;
                                     ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
                                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
-                                }
-                                waitCountApproaching = 0;
+                                //}
+                                    waitCountApproachingStorage[__instance.Formation] = 0;
                             }
                             else
                             {
                                 WorldPosition medianPosition = __instance.Formation.QuerySystem.MedianPosition;
-                                medianPosition.SetVec2(approachingRanging);
+                                medianPosition.SetVec2(approachingRangingStorage[__instance.Formation]);
                                 ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
                                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
-                                waitCountApproaching++;
+                                waitCountApproachingStorage[__instance.Formation] = waitCountApproachingStorage[__instance.Formation] + 1;
                             }
                             break;
+
                     }
                 }
             }
@@ -314,8 +354,8 @@ namespace RealisticBattleAiModule
             PullingBack
         }
 
-        private static int waitCountApproaching = 0;
-        private static int waitCountShooting = 0;
+        public static Dictionary<Formation, int> waitCountShootingStorage = new Dictionary<Formation, int> { };
+        public static Dictionary<Formation, int> waitCountApproachingStorage = new Dictionary<Formation, int> { };
 
         [HarmonyPostfix]
         [HarmonyPatch("CalculateCurrentOrder")]
@@ -327,6 +367,18 @@ namespace RealisticBattleAiModule
 
                 if (significantEnemy != null)
                 {
+
+                    int waitCountShooting = 0;
+                    int waitCountApproaching = 0;
+                    if (!waitCountShootingStorage.TryGetValue(__instance.Formation, out waitCountShooting))
+                    {
+                        waitCountShootingStorage[__instance.Formation] = 0;
+                    }
+                    if (!waitCountApproachingStorage.TryGetValue(__instance.Formation, out waitCountApproaching))
+                    {
+                        waitCountApproachingStorage[__instance.Formation] = 0;
+                    }
+
                     Vec2 vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                     float distance = vec.Normalize();
 
@@ -334,7 +386,7 @@ namespace RealisticBattleAiModule
                     {
                         case BehaviorState.Shooting:
                             {
-                                if (waitCountShooting > 75)
+                                if (waitCountShootingStorage[__instance.Formation] > 70)
                                 {
                                     if (distance > 100f)
                                     {
@@ -344,13 +396,13 @@ namespace RealisticBattleAiModule
                                         ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
                                     }
                                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
-                                    waitCountShooting = 0;
-                                    waitCountApproaching = 0;
+                                    waitCountShootingStorage[__instance.Formation] = 0;
+                                    waitCountApproachingStorage[__instance.Formation] = 0;
                                 }
                                 else
                                 {
                                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
-                                    waitCountShooting++;
+                                    waitCountShootingStorage[__instance.Formation] = waitCountShootingStorage[__instance.Formation] + 1;
                                 }
                                 break;
                             }
@@ -366,9 +418,9 @@ namespace RealisticBattleAiModule
                                 }
                                 else
                                 {
-                                    if (waitCountApproaching > 30)
+                                    if (waitCountApproachingStorage[__instance.Formation] > 30)
                                     {
-                                        if (distance < 210f)
+                                        if (distance < 200f)
                                         {
                                             WorldPosition medianPosition = __instance.Formation.QuerySystem.MedianPosition;
                                             medianPosition.SetVec2(medianPosition.AsVec2 + vec * 5f);
@@ -376,44 +428,46 @@ namespace RealisticBattleAiModule
                                             ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
                                         }
 
-                                        waitCountApproaching = 0;
+                                        waitCountApproachingStorage[__instance.Formation] = 0;
                                     }
                                     else
                                     {
-                                        if (distance < 210f)
+                                        if (distance < 200f)
                                         {
                                             WorldPosition medianPosition = __instance.Formation.QuerySystem.MedianPosition;
                                             medianPosition.SetVec2(____shootPosition);
                                             ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
                                         }
                                         ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
-                                        waitCountApproaching++;
+                                        waitCountApproachingStorage[__instance.Formation] = waitCountApproachingStorage[__instance.Formation] + 1;
                                     }
                                 }
                                 break;
                             }
                         case BehaviorState.PullingBack:
                             {
-                                if (waitCountApproaching > 30)
+                                if (waitCountApproachingStorage[__instance.Formation] > 30)
                                 {
-                                    if (distance < 210f)
+                                    if (distance < 200f)
                                     {
                                         WorldPosition medianPosition = __instance.Formation.QuerySystem.MedianPosition;
                                         medianPosition.SetVec2(medianPosition.AsVec2 - vec * 10f);
                                         ____shootPosition = medianPosition.AsVec2 + vec * 5f;
                                         ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
                                     }
-                                    waitCountApproaching = 0;
+                                    waitCountApproachingStorage[__instance.Formation] = 0;
+
                                 }
                                 else
                                 {
-                                    if (distance < 210f)
+                                    if (distance < 200f)
                                     {
                                         WorldPosition medianPosition = __instance.Formation.QuerySystem.MedianPosition;
                                         medianPosition.SetVec2(____shootPosition);
                                         ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
                                     }
-                                    waitCountApproaching++;
+                                    waitCountApproachingStorage[__instance.Formation] = waitCountApproachingStorage[__instance.Formation] + 1;
+
                                 }
                                 break;
                             }

@@ -68,6 +68,8 @@ namespace RealisticBattleAiModule
                 //agentDrivenProperties.AiMinimumDistanceToContinueFactor = 5f; //2f + 0.3f * (3f - meleeSkill);
                 //agentDrivenProperties.AIHoldingReadyMaxDuration = 0.1f; //MBMath.Lerp(0.25f, 0f, MBMath.Min(1f, num * 1.2f));
                 //agentDrivenProperties.AIHoldingReadyVariationPercentage = //num;
+
+                //agentDrivenProperties.ReloadSpeed = 0.2f;
             }
         }
     }

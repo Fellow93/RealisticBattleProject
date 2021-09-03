@@ -245,6 +245,12 @@ namespace RealisticBattleCombatModule
                     //property2.DeclaringType.GetProperty("MissileSpeed");
                     //property2.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
 
+                    RangedWeaponStats rws;
+                    if(!rangedWeaponStats.TryGetValue(missionWeapon.GetModifiedItemName().ToString(),out rws))
+                    {
+                        rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()] = new RangedWeaponStats(missionWeapon.GetModifiedMissileSpeedForCurrentUsage());
+                    }
+
                     int calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon, rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight());
 
                     Vec3 shooterAgentVelocity = new Vec3(shooterAgent.Velocity, -1);
