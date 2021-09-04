@@ -1980,7 +1980,7 @@
       <skill id="Crossbow"
              value="5" />
       <skill id="Throwing"
-             value="20" />
+             value="30" />
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.aserai_skirmisher" />
@@ -1992,6 +1992,10 @@
                  id="Item.eastern_spear_1_t2" />
       <equipment slot="Item1"
                  id="Item.oval_shield" />
+      <equipment slot="Item2"
+                 id="Item.eastern_javelin_1_t2" />
+      <equipment slot="Item3"
+                 id="Item.eastern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.desert_cap" />
       <equipment slot="Body"
@@ -2008,6 +2012,10 @@
                  id="Item.eastern_spear_1_t2" />
       <equipment slot="Item1"
                  id="Item.oval_shield" />
+      <equipment slot="Item2"
+                 id="Item.eastern_javelin_1_t2" />
+      <equipment slot="Item3"
+                 id="Item.eastern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.desert_cap" />
       <equipment slot="Body"
@@ -2024,6 +2032,10 @@
                  id="Item.eastern_spear_1_t2" />
       <equipment slot="Item1"
                  id="Item.oval_shield" />
+      <equipment slot="Item2"
+                 id="Item.eastern_javelin_1_t2" />
+      <equipment slot="Item3"
+                 id="Item.eastern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.desert_cap" />
       <equipment slot="Body"
@@ -2209,11 +2221,11 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.eastern_javelin_1_t2" />
+                 id="Item.eastern_javelin_2_t3" />
       <equipment slot="Item1"
                  id="Item.desert_oval_shield" />
       <equipment slot="Item2"
-                 id="Item.eastern_javelin_1_t2" />
+                 id="Item.eastern_javelin_2_t3" />
       <equipment slot="Item3"
                  id="Item.aserai_mace_3_t3" />
       <equipment slot="Head"
@@ -2229,11 +2241,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.eastern_javelin_1_t2" />
+                 id="Item.eastern_javelin_2_t3" />
       <equipment slot="Item1"
                  id="Item.desert_oval_shield" />
       <equipment slot="Item2"
-                 id="Item.eastern_javelin_1_t2" />
+                 id="Item.eastern_javelin_2_t3" />
       <equipment slot="Item3"
                  id="Item.aserai_mace_3_t3" />
       <equipment slot="Head"
@@ -2249,11 +2261,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.eastern_javelin_1_t2" />
+                 id="Item.eastern_javelin_2_t3" />
       <equipment slot="Item1"
                  id="Item.desert_oval_shield" />
       <equipment slot="Item2"
-                 id="Item.eastern_javelin_1_t2" />
+                 id="Item.eastern_javelin_2_t3" />
       <equipment slot="Item3"
                  id="Item.aserai_mace_3_t3" />
       <equipment slot="Head"
@@ -7509,7 +7521,7 @@
       <equipment slot="Gloves"
                  id="Item.reinforced_padded_mitten" />
       <equipment slot="Body"
-                 id="Item.imperial_mail_vest" />
+                 id="Item.legionary_mail" />
       <equipment slot="Leg"
                  id="Item.leather_cavalier_boots" />
       <equipment slot="Head"
@@ -7529,7 +7541,7 @@
       <equipment slot="Gloves"
                  id="Item.reinforced_padded_mitten" />
       <equipment slot="Body"
-                 id="Item.imperial_mail_vest" />
+                 id="Item.imperial_mail_over_leather" />
       <equipment slot="Leg"
                  id="Item.leather_cavalier_boots" />
       <equipment slot="Head" 
@@ -7580,7 +7592,7 @@
       <equipment slot="Item3"
                  id="Item.fortified_kite_shield" />
       <equipment slot="Body"
-                 id="Item.legionary_mail" />
+                 id="Item.imperial_lamellar" />
       <equipment slot="Gloves"
                  id="Item.plated_strip_gauntlets" />
       <equipment slot="Leg"
@@ -7600,7 +7612,7 @@
       <equipment slot="Item3"
                  id="Item.fortified_kite_shield" />
       <equipment slot="Body"
-                 id="Item.imperial_lamellar_over_leather" />
+                 id="Item.imperial_lamellar" />
       <equipment slot="Gloves"
                  id="Item.plated_strip_gauntlets" />
       <equipment slot="Leg"
@@ -7620,7 +7632,7 @@
       <equipment slot="Item3"
                  id="Item.fortified_kite_shield" />
       <equipment slot="Body"
-                 id="Item.legionary_mail" />
+                 id="Item.imperial_lamellar" />
       <equipment slot="Gloves"
                  id="Item.plated_strip_gauntlets" />
       <equipment slot="Leg"
@@ -12215,7 +12227,7 @@
       <skill id="TwoHanded"
              value="100" />
       <skill id="Polearm"
-             value="130" />
+             value="150" />
       <skill id="Bow"
              value="20" />
       <skill id="Crossbow"
@@ -12233,7 +12245,7 @@
       <equipment slot="Item2"
                  id="Item.western_spear_4_t4" />
       <equipment slot="Body"
-                 id="Item.hauberk" />
+                 id="Item.sturgian_fortified_armor" />
       <equipment slot="Leg"
                  id="Item.northern_plated_boots" />
       <equipment slot="Head"
@@ -12251,7 +12263,7 @@
       <equipment slot="Item2"
                  id="Item.western_spear_4_t4" />
       <equipment slot="Body"
-                 id="Item.hauberk" />
+                 id="Item.sturgian_fortified_armor" />
       <equipment slot="Leg"
                  id="Item.northern_plated_boots" />
       <equipment slot="Head"
@@ -12267,7 +12279,7 @@
       <equipment slot="Item2"
                  id="Item.western_spear_4_t4" />
       <equipment slot="Body"
-                 id="Item.hauberk" />
+                 id="Item.coat_of_plates_over_mail" />
       <equipment slot="Leg"
                  id="Item.northern_plated_boots" />
       <equipment slot="Head"
@@ -12285,7 +12297,7 @@
       <equipment slot="Item2"
                  id="Item.western_spear_4_t4" />
       <equipment slot="Body"
-                 id="Item.hauberk" />
+                 id="Item.coat_of_plates_over_mail" />
       <equipment slot="Leg"
                  id="Item.mail_chausses" />
       <equipment slot="Head"
@@ -12715,7 +12727,7 @@
       <equipment slot="Item3"
                  id="Item.pavise_shield" />
       <equipment slot="Body"
-                 id="Item.vlandia_chainmail" />
+                 id="Item.white_coat_over_mail" />
       <equipment slot="Leg"
                  id="Item.leather_cavalier_boots" />
       <equipment slot="Head"
@@ -12735,7 +12747,7 @@
       <equipment slot="Item3"
                  id="Item.pavise_shield" />
       <equipment slot="Body"
-                 id="Item.vlandia_chainmail" />
+                 id="Item.white_coat_over_mail" />
       <equipment slot="Leg"
                  id="Item.leather_cavalier_boots" />
       <equipment slot="Head"
@@ -12755,7 +12767,7 @@
       <equipment slot="Item3"
                  id="Item.pavise_shield" />
       <equipment slot="Body"
-                 id="Item.vlandia_chainmail" />
+                 id="Item.white_coat_over_mail" />
       <equipment slot="Leg"
                  id="Item.leather_cavalier_boots" />
       <equipment slot="Head"
@@ -12807,7 +12819,7 @@
       <equipment slot="Item3"
                  id="Item.pavise_shield" />
       <equipment slot="Body"
-                 id="Item.white_coat_over_mail" />
+                 id="Item.hauberk" />
       <equipment slot="Leg"
                  id="Item.strapped_mail_chausses" />
       <equipment slot="Head"
@@ -12827,7 +12839,7 @@
       <equipment slot="Item3"
                  id="Item.pavise_shield" />
       <equipment slot="Body"
-                 id="Item.white_coat_over_mail" />
+                 id="Item.hauberk" />
       <equipment slot="Leg"
                  id="Item.strapped_mail_chausses" />
       <equipment slot="Head"
@@ -12847,7 +12859,7 @@
       <equipment slot="Item3"
                  id="Item.pavise_shield" />
       <equipment slot="Body"
-                 id="Item.white_coat_over_mail" />
+                 id="Item.hauberk" />
       <equipment slot="Leg"
                  id="Item.mail_chausses" />
       <equipment slot="Head"

@@ -396,6 +396,10 @@ namespace RealisticBattleCombatModule
                         {
                             case "bow":
                             case "long_bow":
+                                {
+                                    agentDrivenProperties.ReloadSpeed = 0.19f * (1 + (0.005f * effectiveSkill));
+                                    break;
+                                }
                             case "crossbow_fast":
                                 {
                                     agentDrivenProperties.ReloadSpeed = 0.19f * (1 + (0.0025f * effectiveSkill));
