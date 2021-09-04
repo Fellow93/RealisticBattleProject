@@ -35,7 +35,7 @@ namespace RealisticBattleAiModule
                 float meleeDefensivness = meleeLevel + agent.Defensiveness;             //num3
 
                 agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 5f;
-                agentDrivenProperties.AIBlockOnDecideAbility = MBMath.ClampFloat(meleeLevel * 0.6f, 0.15f, 0.45f); // chance for directed blocking
+                agentDrivenProperties.AIBlockOnDecideAbility = MBMath.ClampFloat(0.1f + meleeLevel * 0.6f, 0.2f, 0.45f); // chance for directed blocking
                 agentDrivenProperties.AIParryOnDecideAbility = MBMath.ClampFloat((meleeLevel * 0.30f) + 0.15f, 0.1f, 0.45f);
                 agentDrivenProperties.AIRealizeBlockingFromIncorrectSideAbility = MBMath.ClampFloat((meleeLevel * 0.3f) - 0.05f, 0.01f, 0.25f);
                 agentDrivenProperties.AIDecideOnAttackChance = MBMath.ClampFloat(meleeLevel + 0.1f, 0f, 0.95f);
@@ -69,7 +69,7 @@ namespace RealisticBattleAiModule
                 //agentDrivenProperties.AIHoldingReadyMaxDuration = 0.1f; //MBMath.Lerp(0.25f, 0f, MBMath.Min(1f, num * 1.2f));
                 //agentDrivenProperties.AIHoldingReadyVariationPercentage = //num;
 
-                //agentDrivenProperties.ReloadSpeed = 0.2f;
+                //agentDrivenProperties.ReloadSpeed = 0.19f; //0.12 for heavy crossbows, 0.19f for light crossbows, composite bows and longbows.
             }
         }
     }

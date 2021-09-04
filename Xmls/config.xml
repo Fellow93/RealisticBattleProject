@@ -96,19 +96,19 @@
 	
 	<Mace>
 		<ExtraBluntFactorCut>0.1</ExtraBluntFactorCut>
-		<ExtraBluntFactorPierce>0.1</ExtraBluntFactorPierce>
+		<ExtraBluntFactorPierce>0.25</ExtraBluntFactorPierce>
 		<ExtraBluntFactorBlunt>1.0</ExtraBluntFactorBlunt>
-		<ExtraArmorThresholdFactorPierce>1.0</ExtraArmorThresholdFactorPierce>
-		<ExtraArmorThresholdFactorCut>1.0</ExtraArmorThresholdFactorCut>
+		<ExtraArmorThresholdFactorPierce>2.0</ExtraArmorThresholdFactorPierce>
+		<ExtraArmorThresholdFactorCut>4.0</ExtraArmorThresholdFactorCut>
 		<ExtraArmorSkillDamageAbsorb>1.0</ExtraArmorSkillDamageAbsorb>
 	</Mace>
 	
 	<TwoHandedMace>
 		<ExtraBluntFactorCut>0.1</ExtraBluntFactorCut>
-		<ExtraBluntFactorPierce>0.1</ExtraBluntFactorPierce>
+		<ExtraBluntFactorPierce>0.25</ExtraBluntFactorPierce>
 		<ExtraBluntFactorBlunt>1.0</ExtraBluntFactorBlunt>
-		<ExtraArmorThresholdFactorPierce>1.0</ExtraArmorThresholdFactorPierce>
-		<ExtraArmorThresholdFactorCut>1.0</ExtraArmorThresholdFactorCut>
+		<ExtraArmorThresholdFactorPierce>2.0</ExtraArmorThresholdFactorPierce>
+		<ExtraArmorThresholdFactorCut>4.0</ExtraArmorThresholdFactorCut>
 		<ExtraArmorSkillDamageAbsorb>1.0</ExtraArmorSkillDamageAbsorb>
 	</TwoHandedMace>
 	

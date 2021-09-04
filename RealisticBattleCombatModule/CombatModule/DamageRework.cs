@@ -368,7 +368,14 @@ namespace RealisticBattleCombatModule
                         }
                     case "Mace":
                         {
-                            skillBasedDamage = magnitude * 0.5f + 30f + (effectiveSkill * 0.13f);
+                            if (damageType == DamageTypes.Pierce)
+                            { 
+                                skillBasedDamage = magnitude * 0.2f + 40f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.4f * XmlConfig.dict["Global.ThrustModifier"]); 
+                            }
+                            else
+                            { 
+                                skillBasedDamage = magnitude * 0.5f + 30f + (effectiveSkill * 0.13f); 
+                            }
                             if (magnitude > 1f)
                             {
                                 magnitude = skillBasedDamage;
@@ -377,7 +384,14 @@ namespace RealisticBattleCombatModule
                         }
                     case "TwoHandedMace":
                         {
-                            skillBasedDamage = magnitude * 0.5f + (30f + (effectiveSkill * 0.13f)) * 1.3f;
+                            if (damageType == DamageTypes.Pierce)
+                            {
+                                skillBasedDamage = (magnitude * 0.2f + 40f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.4f * XmlConfig.dict["Global.ThrustModifier"])) * 1.3f;
+                            }
+                            else
+                            {
+                                skillBasedDamage = magnitude * 0.5f +  (30f + (effectiveSkill * 0.13f) * 1.3f);
+                            }
                             if (magnitude > 1f)
                             {
                                 magnitude = skillBasedDamage;

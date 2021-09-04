@@ -7483,7 +7483,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.empire_mace_3_t4" />
+                 id="Item.empire_sword_5_t4" />
       <equipment slot="Item3"
                  id="Item.reinforced_kite_shield" />
       <equipment slot="Gloves"
@@ -7503,7 +7503,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.empire_mace_3_t4" />
+                 id="Item.empire_mace_2_t4" />
       <equipment slot="Item3"
                  id="Item.reinforced_kite_shield" />
       <equipment slot="Gloves"
@@ -7596,7 +7596,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_b" />
       <equipment slot="Item2"
-                 id="Item.empire_mace_2_t4" />
+                 id="Item.empire_mace_4_t5" />
       <equipment slot="Item3"
                  id="Item.fortified_kite_shield" />
       <equipment slot="Body"
@@ -7616,7 +7616,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_b" />
       <equipment slot="Item2"
-                 id="Item.empire_mace_2_t4" />
+                 id="Item.empire_mace_5_t5" />
       <equipment slot="Item3"
                  id="Item.fortified_kite_shield" />
       <equipment slot="Body"
@@ -12522,6 +12522,8 @@
                  id="Item.bolt_e" />
       <equipment slot="Item2"
                  id="Item.vlandia_sword_1_t2" />
+      <equipment slot="Item3"
+                 id="Item.western_kite_shield" />
       <equipment slot="Body"
                  id="Item.leather_coat_over_cloth" />
       <equipment slot="Leg"
@@ -12540,6 +12542,8 @@
                  id="Item.bolt_e" />
       <equipment slot="Item2"
                  id="Item.vlandia_sword_1_t2" />
+      <equipment slot="Item3"
+                 id="Item.western_kite_shield" />
       <equipment slot="Body"
                  id="Item.padded_leather_shirt" />
       <equipment slot="Leg"
@@ -12557,7 +12561,9 @@
       <equipment slot="Item1"
                  id="Item.bolt_e" />
       <equipment slot="Item2"
-                 id="Item.vlandia_sword_1_t2" />
+                 id="Item.vlandia_mace_1_t2" />
+      <equipment slot="Item3"
+                 id="Item.western_kite_shield" />
       <equipment slot="Body"
                  id="Item.gambeson_b" />
       <equipment slot="Leg"
@@ -12610,7 +12616,9 @@
       <equipment slot="Item1"
                  id="Item.bolt_d" />
       <equipment slot="Item2"
-                 id="Item.vlandia_sword_1_t2" />
+                 id="Item.vlandia_sword_2_t3" />
+      <equipment slot="Item3"
+                 id="Item.reinforced_kite_shield" />
       <equipment slot="Body"
                  id="Item.sleeveless_padded_short_coat" />
       <equipment slot="Leg"
@@ -12628,7 +12636,9 @@
       <equipment slot="Item1"
                  id="Item.bolt_d" />
       <equipment slot="Item2"
-                 id="Item.vlandia_sword_1_t2" />
+                 id="Item.vlandia_mace_1_t2" />
+      <equipment slot="Item3"
+                 id="Item.reinforced_kite_shield" />
       <equipment slot="Body"
                  id="Item.padded_short_coat" />
       <equipment slot="Leg"
@@ -12646,7 +12656,9 @@
       <equipment slot="Item1"
                  id="Item.bolt_d" />
       <equipment slot="Item2"
-                 id="Item.vlandia_sword_1_t2" />
+                 id="Item.vlandia_axe_1_t3" />
+      <equipment slot="Item3"
+                 id="Item.reinforced_kite_shield" />
       <equipment slot="Body"
                  id="Item.leather_scale_armor" />
       <equipment slot="Leg"
@@ -12699,7 +12711,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_b" />
       <equipment slot="Item2"
-                 id="Item.vlandia_sword_2_t3" />
+                 id="Item.vlandia_sword_4_t4" />
       <equipment slot="Item3"
                  id="Item.pavise_shield" />
       <equipment slot="Body"
@@ -12719,7 +12731,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_b" />
       <equipment slot="Item2"
-                 id="Item.vlandia_sword_2_t3" />
+                 id="Item.vlandia_axe_2_t4" />
       <equipment slot="Item3"
                  id="Item.pavise_shield" />
       <equipment slot="Body"
@@ -12739,7 +12751,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_b" />
       <equipment slot="Item2"
-                 id="Item.vlandia_sword_2_t3" />
+                 id="Item.vlandia_mace_2_t4" />
       <equipment slot="Item3"
                  id="Item.pavise_shield" />
       <equipment slot="Body"
@@ -15547,13 +15559,13 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="60" />
+             value="90" />
       <skill id="Riding"
              value="20" />
       <skill id="OneHanded"
              value="15" />
       <skill id="TwoHanded"
-             value="50" />
+             value="90" />
       <skill id="Polearm"
              value="15" />
       <skill id="Bow"
@@ -15571,13 +15583,13 @@
       <equipment slot="Item0"
                  id="Item.bastard_sword_t2" />
       <equipment slot="Body"
-                 id="Item.empire_warrior_padded_armor_a" />
+                 id="Item.woven_leather_coat" />
       <equipment slot="Head"
                  id="Item.imperial_open_mail_coif" />
       <equipment slot="Leg"
                  id="Item.leather_shoes" />
       <equipment slot="Gloves"
-                 id="Item.armwraps" />
+                 id="Item.woven_leather_bracers" />
       <equipment slot="Cape"
                  id="Item.woven_leather_shoulders" />
       </EquipmentRoster>
