@@ -115,7 +115,7 @@ namespace RealisticBattleCombatModule
                             {
                                 if (wsd[i].MissileSpeed != 0)
                                 {
-                                    Utilities.assignThrowableMissileSpeed(mw, i, 10);
+                                    Utilities.assignThrowableMissileSpeed(mw, i, 10, effectiveSkill);
                                 }
                             }
                         }
@@ -125,7 +125,7 @@ namespace RealisticBattleCombatModule
                             {
                                 if (wsd[i].MissileSpeed != 0)
                                 {
-                                    Utilities.assignThrowableMissileSpeed(mw, i, 10);
+                                    Utilities.assignThrowableMissileSpeed(mw, i, 10, effectiveSkill);
                                 }
                             }
                         }
@@ -135,7 +135,7 @@ namespace RealisticBattleCombatModule
                             {
                                 if (wsd[i].MissileSpeed != 0)
                                 {
-                                    Utilities.assignThrowableMissileSpeed(mw, i, 5);
+                                    Utilities.assignThrowableMissileSpeed(mw, i, 5, effectiveSkill);
                                 }
                             }
                         }

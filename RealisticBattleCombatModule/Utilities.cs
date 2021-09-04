@@ -50,7 +50,7 @@ namespace RealisticBattleCombatModule
             return calculatedThrowingSpeed;
         }
 
-        public static void assignThrowableMissileSpeed(MissionWeapon throwable, int index, int correctiveMissileSpeed)
+        public static void assignThrowableMissileSpeed(MissionWeapon throwable, int index, int correctiveMissileSpeed, int effectiveSkill)
         {
             float ammoWeight = throwable.GetWeight() / throwable.Amount;
             int calculatedThrowingSpeed = calculateThrowableSpeed(ammoWeight);
