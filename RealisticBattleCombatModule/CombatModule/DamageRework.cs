@@ -293,10 +293,11 @@ namespace RealisticBattleCombatModule
                 weaponType = attackerWeapon.Item.PrimaryWeapon.WeaponClass.ToString();
             }
 
-            if (!attackInformation.IsAttackerAgentMount)
+            IAgentOriginBase attackerAgentOrigin = attackInformation.AttackerAgentOrigin;
+            Formation attackerFormation = attackInformation.AttackerFormation;
+
+            if (!attackInformation.IsAttackerAgentMount && attackerAgentOrigin != null && attackInformation.AttackerAgentCharacter != null)
             {
-                IAgentOriginBase attackerAgentOrigin = attackInformation.AttackerAgentOrigin;
-                Formation attackerFormation = attackInformation.AttackerFormation;
                 SkillObject skill = (attackerWeapon.CurrentUsageItem == null) ? DefaultSkills.Athletics : attackerWeapon.CurrentUsageItem.RelevantSkill;
 
                 int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgentCharacter, attackerAgentOrigin, attackerFormation, skill);
