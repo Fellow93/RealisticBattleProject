@@ -1,5 +1,7 @@
 ﻿using TaleWorlds.MountAndBlade;
 using HarmonyLib;
+using TaleWorlds.Core;
+using TaleWorlds.Library;
 
 namespace RealisticBattleAiModule
 {
@@ -18,5 +20,12 @@ namespace RealisticBattleAiModule
         {
             MyPatcher.DoPatching();
         }
+
+        protected override void OnBeforeInitialModuleScreenSetAsRoot()
+        {
+            InformationManager.DisplayMessage(new InformationMessage("RBM AI Module Active", Color.FromUint(4282569842u)));
+        }
     }
+
+
 }

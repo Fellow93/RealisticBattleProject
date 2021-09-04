@@ -378,6 +378,41 @@ namespace RealisticBattleCombatModule
                 return true;
             }
         }
+
+        [HarmonyPatch(typeof(AgentStatCalculateModel))]
+        [HarmonyPatch("SetAiRelatedProperties")]
+        class OverrideSetAiRelatedProperties
+        {
+            static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem, AgentStatCalculateModel __instance)
+            {
+                if (XmlConfig.dict["Global.RealisticRangedReload"] == 1)
+                {
+                    SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
+                    int effectiveSkill = __instance.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
+
+                    if (equippedItem != null)
+                    {
+                        switch (equippedItem.ItemUsage)
+                        {
+                            case "bow":
+                            case "long_bow":
+                            case "crossbow_fast":
+                                {
+                                    agentDrivenProperties.ReloadSpeed = 0.19f * (1 + (0.0025f * effectiveSkill));
+                                    break;
+                                }
+                            case "crossbow":
+                                {
+                                    agentDrivenProperties.ReloadSpeed = 0.12f * (1 + (0.0025f * effectiveSkill));
+                                    break;
+                                }
+                        }
+                    }
+                }
+                
+                //0.12 for heavy crossbows, 0.19f for light crossbows, composite bows and longbows.
+            }
+        }
     }
 
 

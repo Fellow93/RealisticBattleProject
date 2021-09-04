@@ -9,6 +9,7 @@
 		<ArmorPenetrationMessage>0</ArmorPenetrationMessage>
 		<ThrustModifier>0.3</ThrustModifier>
 		<TroopOverhaulActive>1</TroopOverhaulActive>
+		<RealisticRangedReload>0</RealisticRangedReload>
 	</Global>
 		<!-- Armor works like this -->
 		<!-- Damage that penetrates armor = damage caused by the weapon - (armor of body part * ExtraArmorThresholdFactor)-->

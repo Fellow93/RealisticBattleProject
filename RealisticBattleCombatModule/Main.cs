@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Xml;
 using TaleWorlds.Localization;
 using TaleWorlds.Engine.Screens;
+using TaleWorlds.Core;
 
 namespace RealisticBattleCombatModule
 {
@@ -40,6 +41,11 @@ namespace RealisticBattleCombatModule
             //{
             //    ScreenManager.PushScreen(new RbmConfigScreen());
             //}, () => (false, new TextObject("Realistic Battle Configuration"))));
+        }
+
+        protected override void OnBeforeInitialModuleScreenSetAsRoot()
+        {
+            InformationManager.DisplayMessage(new InformationMessage("RBM Combat Module Active", Color.FromUint(4282569842u)));
         }
     }
 }
