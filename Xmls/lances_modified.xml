@@ -307,7 +307,7 @@
     <Pieces>
       <Piece id="spear_blade_42"
              Type="Blade"
-             scale_factor="80" />
+             scale_factor="170" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -327,7 +327,7 @@
     <Pieces>
       <Piece id="spear_blade_42"
              Type="Blade"
-             scale_factor="90" />
+             scale_factor="180" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -369,7 +369,7 @@
     <Pieces>
       <Piece id="spear_blade_42"
              Type="Blade"
-             scale_factor="110" />
+             scale_factor="200" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -453,7 +453,7 @@
     <Pieces>
       <Piece id="spear_blade_42"
              Type="Blade"
-             scale_factor="100" />
+             scale_factor="190" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -489,7 +489,7 @@
              scale_factor="90" />
       <Piece id="spear_handle_14"
              Type="Handle"
-             scale_factor="120" />
+             scale_factor="180" />
       <Piece id="default_polearm_pommel"
              Type="Pommel"
              scale_factor="100" />
@@ -506,7 +506,7 @@
              scale_factor="110" />
       <Piece id="spear_handle_14"
              Type="Handle"
-             scale_factor="120" />
+             scale_factor="180" />
     </Pieces>
   </CraftedItem>
   <!-- Pilum -->
