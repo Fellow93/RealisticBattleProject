@@ -37,9 +37,6 @@ namespace RealisticBattleCombatModule
         [HarmonyPatch("EquipItemsFromSpawnEquipment")]
         class OverrideEquipItemsFromSpawnEquipment
         {
-
-            //private static ArrayList _oldMissileSpeeds = new ArrayList();
-
             static bool Prefix(ref Agent __instance)
             {
                 ArrayList stringRangedWeapons = new ArrayList();
@@ -57,6 +54,7 @@ namespace RealisticBattleCombatModule
 
                 for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                 {
+
                     if (__instance.Equipment != null && !__instance.Equipment[equipmentIndex].IsEmpty)
                     {
                         MissionWeapon mw = __instance.Equipment[equipmentIndex];
@@ -86,7 +84,7 @@ namespace RealisticBattleCombatModule
                             int thrustSpeed = (int)thrustSpeedProperty.GetValue(weapon, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
                             originalItemThrustSpeed[mw.GetModifiedItemName()] = thrustSpeed;
                             thrustSpeedProperty.SetValue(weapon, MathF.Ceiling((thrustSpeed * 0.83f) * skillModifier), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-                            
+
                             int handling = (int)handlingProperty.GetValue(weapon, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
                             originalItemHandling[mw.GetModifiedItemName()] = handling;
                             handlingProperty.SetValue(weapon, MathF.Ceiling((handling * 0.83f) * skillModifier), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
@@ -151,6 +149,10 @@ namespace RealisticBattleCombatModule
                         }
                     }
                 }
+
+                PropertyInfo propertyMissileSpeed = typeof(WeaponComponentData).GetProperty("MissileSpeed");
+                propertyMissileSpeed.DeclaringType.GetProperty("MissileSpeed");
+
                 foreach (MissionWeapon missionWeapon in stringRangedWeapons)
                 {
                     int calculatedMissileSpeed = 50;
@@ -159,15 +161,11 @@ namespace RealisticBattleCombatModule
                         float ammoWeight = arrow.GetWeight() / arrow.Amount;
                         calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon, rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight());
 
-                        PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
-                        property.DeclaringType.GetProperty("MissileSpeed");
-                        property.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                        propertyMissileSpeed.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                     }
                     else if (!missionWeapon.Equals(MissionWeapon.Invalid))
                     {
-                        PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
-                        property.DeclaringType.GetProperty("MissileSpeed");
-                        property.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                        propertyMissileSpeed.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                     }
                 }
 
@@ -175,6 +173,18 @@ namespace RealisticBattleCombatModule
             }
             static void Postfix(Agent __instance)
             {
+                PropertyInfo propertyMissileSpeed = typeof(WeaponComponentData).GetProperty("MissileSpeed");
+                propertyMissileSpeed.DeclaringType.GetProperty("MissileSpeed");
+
+                PropertyInfo swingSpeedProperty = typeof(WeaponComponentData).GetProperty("SwingSpeed");
+                swingSpeedProperty.DeclaringType.GetProperty("SwingSpeed");
+
+                PropertyInfo thrustSpeedProperty = typeof(WeaponComponentData).GetProperty("ThrustSpeed");
+                thrustSpeedProperty.DeclaringType.GetProperty("ThrustSpeed");
+
+                PropertyInfo handlingProperty = typeof(WeaponComponentData).GetProperty("Handling");
+                handlingProperty.DeclaringType.GetProperty("Handling");
+
                 for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                 {
 
@@ -182,49 +192,24 @@ namespace RealisticBattleCombatModule
                     {
                         MissionWeapon mw = __instance.Equipment[equipmentIndex];
                         WeaponStatsData[] wsd = __instance.Equipment[equipmentIndex].GetWeaponStatsData();
+                        WeaponComponentData weapon = __instance.Equipment[equipmentIndex].CurrentUsageItem;
 
                         if ((wsd[0].WeaponClass == (int)WeaponClass.OneHandedSword) || (wsd[0].WeaponClass == (int)WeaponClass.Dagger) || (wsd[0].WeaponClass == (int)WeaponClass.LowGripPolearm)
                              || (wsd[0].WeaponClass == (int)WeaponClass.Mace) || (wsd[0].WeaponClass == (int)WeaponClass.OneHandedAxe) || (wsd[0].WeaponClass == (int)WeaponClass.OneHandedPolearm)
                               || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedAxe) || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedMace) || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedPolearm)
                                || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedSword))
                         {
-                            WeaponComponentData weapon = __instance.Equipment[equipmentIndex].CurrentUsageItem;
-
-                            PropertyInfo swingSpeedProperty = typeof(WeaponComponentData).GetProperty("SwingSpeed");
-                            swingSpeedProperty.DeclaringType.GetProperty("SwingSpeed");
                             swingSpeedProperty.SetValue(weapon, originalItemSwingSpeed[mw.GetModifiedItemName()], BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-                            
-                            PropertyInfo thrustSpeedProperty = typeof(WeaponComponentData).GetProperty("ThrustSpeed");
-                            thrustSpeedProperty.DeclaringType.GetProperty("ThrustSpeed");
-                            thrustSpeedProperty.SetValue(weapon, originalItemThrustSpeed[mw.GetModifiedItemName()], BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-                            
-                            PropertyInfo handlingProperty = typeof(WeaponComponentData).GetProperty("Handling");
-                            handlingProperty.DeclaringType.GetProperty("Handling");
-                            handlingProperty.SetValue(weapon, originalItemHandling[mw.GetModifiedItemName()], BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
 
+                            thrustSpeedProperty.SetValue(weapon, originalItemThrustSpeed[mw.GetModifiedItemName()], BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+
+                            handlingProperty.SetValue(weapon, originalItemHandling[mw.GetModifiedItemName()], BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                         }
 
-                        //if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
-                        //{
-                        //    MissionWeapon missionWeapon = __instance.Equipment[equipmentIndex];
-
-                        //    PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
-                        //    property.DeclaringType.GetProperty("MissileSpeed");
-                        //    if (missionWeapon.ItemModifier != null)
-                        //    {
-                        //        FieldInfo field = typeof(ItemModifier).GetField("_missileSpeed", BindingFlags.NonPublic | BindingFlags.Instance);
-                        //        field.DeclaringType.GetField("_missileSpeed");
-                        //        int missileSpeedModifier = (int)field.GetValue(missionWeapon.ItemModifier);
-
-                        //        property.SetValue(missionWeapon.CurrentUsageItem, rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight() - missileSpeedModifier, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-
-                        //    }
-                        //    else
-                        //    {
-                        //        property.SetValue(missionWeapon.CurrentUsageItem, rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-                        //    }
-                        //    i++;
-                        //}
+                        if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
+                        {
+                            propertyMissileSpeed.SetValue(weapon, rangedWeaponStats[mw.GetModifiedItemName().ToString()].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                        }
                     }
                 }
                 //_oldMissileSpeeds.Clear();
@@ -245,7 +230,7 @@ namespace RealisticBattleCombatModule
                 MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
                 WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
 
-                if(Mission.Current.IsFieldBattle && !shooterAgent.IsMainAgent && (wsd[0].WeaponClass == (int)WeaponClass.Javelin || wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe))
+                if (Mission.Current.IsFieldBattle && !shooterAgent.IsMainAgent && (wsd[0].WeaponClass == (int)WeaponClass.Javelin || wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe))
                 {
                     velocity.z = velocity.z - 1.2f;
                 }
@@ -259,7 +244,7 @@ namespace RealisticBattleCombatModule
                     //property2.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
 
                     RangedWeaponStats rws;
-                    if(!rangedWeaponStats.TryGetValue(missionWeapon.GetModifiedItemName().ToString(),out rws))
+                    if (!rangedWeaponStats.TryGetValue(missionWeapon.GetModifiedItemName().ToString(), out rws))
                     {
                         rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()] = new RangedWeaponStats(missionWeapon.GetModifiedMissileSpeedForCurrentUsage());
                     }
@@ -289,14 +274,14 @@ namespace RealisticBattleCombatModule
 
             static void Postfix(Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
             {
-                //MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
-                //WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
-                //if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
-                //{
-                //    PropertyInfo property2 = typeof(WeaponComponentData).GetProperty("MissileSpeed");
-                //    property2.DeclaringType.GetProperty("MissileSpeed");
-                //    property2.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, _oldMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-                //}
+                MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
+                WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
+                if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
+                {
+                    PropertyInfo property2 = typeof(WeaponComponentData).GetProperty("MissileSpeed");
+                    property2.DeclaringType.GetProperty("MissileSpeed");
+                    property2.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                }
             }
         }
     }
@@ -308,7 +293,7 @@ namespace RealisticBattleCombatModule
         [HarmonyPatch("CalculateShootingRange")]
         static bool PrefixCalculateShootingRange(ref float __result, ref string[] ___skeletonNames, float heightDifference)
         {
-            if(___skeletonNames != null && ___skeletonNames.Length > 0 && ___skeletonNames[0].Contains("ballista"))
+            if (___skeletonNames != null && ___skeletonNames.Length > 0 && ___skeletonNames[0].Contains("ballista"))
             {
                 __result = Mission.GetMissileRange(60f, heightDifference);
                 return false;
@@ -321,7 +306,7 @@ namespace RealisticBattleCombatModule
 
         [HarmonyPrefix]
         [HarmonyPatch("GetTargetReleaseAngle")]
-        static bool PrefixGetTargetReleaseAngle(RangedSiegeWeapon __instance, ref float __result, Vec3 target,  ref string[] ___skeletonNames, ItemObject ___OriginalMissileItem)
+        static bool PrefixGetTargetReleaseAngle(RangedSiegeWeapon __instance, ref float __result, Vec3 target, ref string[] ___skeletonNames, ItemObject ___OriginalMissileItem)
         {
             if (___skeletonNames != null && ___skeletonNames.Length > 0 && ___skeletonNames[0].Contains("ballista"))
             {
@@ -417,7 +402,6 @@ namespace RealisticBattleCombatModule
                 {
                     SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
                     int effectiveSkill = __instance.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
-
                     if (equippedItem != null)
                     {
                         switch (equippedItem.ItemUsage)
@@ -460,8 +444,8 @@ namespace RealisticBattleCombatModule
             __instance.ProjectileSpeed = baseSpeed + (((___currentReleaseAngle * MathF.RadToDeg)) * speedIncrease);
 
             return true;
-            
+
         }
-        
+
     }
 }
