@@ -297,6 +297,7 @@ namespace RealisticBattleCombatModule
                     RangedWeaponStats rws;
                     if (!rangedWeaponStats.TryGetValue(missionWeapon.GetModifiedItemName().ToString(), out rws))
                     {
+                        rangedWeaponMW[missionWeapon.GetModifiedItemName().ToString()] = missionWeapon;
                         rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()] = new RangedWeaponStats(missionWeapon.GetModifiedMissileSpeedForCurrentUsage());
                     }
 
