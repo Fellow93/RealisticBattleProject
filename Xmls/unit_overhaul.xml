@@ -12440,7 +12440,7 @@
       <equipment slot="Item1"
                  id="Item.heavy_heater_shield" />
       <equipment slot="Item2"
-                 id="Item.vlandia_mace_2_t4" />
+                 id="Item.vlandia_mace_3_t5" />
       <equipment slot="Body"
                  id="Item.coat_of_plates_over_mail" />
       <equipment slot="Leg"
@@ -12458,7 +12458,7 @@
       <equipment slot="Item1"
                  id="Item.heavy_heater_shield" />
       <equipment slot="Item2"
-                 id="Item.vlandia_mace_2_t4" />
+                 id="Item.sturgia_axe_5_t5" />
       <equipment slot="Body"
                  id="Item.coat_of_plates_over_mail" />
       <equipment slot="Leg"
@@ -12476,7 +12476,7 @@
       <equipment slot="Item1"
                  id="Item.heavy_heater_shield" />
       <equipment slot="Item2"
-                 id="Item.western_2hsword_t4" />
+                 id="Item.vlandia_sword_5_t5" />
       <equipment slot="Body"
                  id="Item.coat_of_plates_over_mail" />
       <equipment slot="Leg"
@@ -13209,7 +13209,7 @@
       <equipment slot="Item1"
                  id="Item.reinforced_horsemans_kite_shield" />
       <equipment slot="Item2"
-                 id="Item.sturgia_axe_5_t5" />
+                 id="Item.vlandia_mace_3_t5" />
       <equipment slot="Body"
                  id="Item.coat_of_plates_over_mail" />
       <equipment slot="Leg"
@@ -13267,7 +13267,7 @@
       <equipment slot="Body"
                  id="Item.sturgian_fortified_armor" />
       <equipment slot="Leg"
-                 id="Item.strapped_mail_chausses" />
+                 id="Item.lamellar_plate_boots" />
       <equipment slot="Head"
                  id="Item.full_helm_over_mail_coif" />
       <equipment slot="Gloves"
@@ -13281,11 +13281,11 @@
       <equipment slot="Item1"
                  id="Item.chivalric_kite_shield" />
       <equipment slot="Item2"
-                 id="Item.sturgia_axe_5_t5" />
+                 id="Item.vlandia_mace_3_t5" />
       <equipment slot="Body"
                  id="Item.sturgian_fortified_armor" />
       <equipment slot="Leg"
-                 id="Item.mail_chausses" />
+                 id="Item.lamellar_plate_boots" />
       <equipment slot="Head"
                  id="Item.full_helm_over_mail_coif" />
       <equipment slot="Gloves"
@@ -13303,7 +13303,7 @@
       <equipment slot="Body"
                  id="Item.sturgian_fortified_armor" />
       <equipment slot="Leg"
-                 id="Item.mail_chausses" />
+                 id="Item.lamellar_plate_boots" />
       <equipment slot="Head"
                  id="Item.full_helm_over_mail_coif" />
       <equipment slot="Gloves"

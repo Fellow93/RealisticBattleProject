@@ -223,11 +223,11 @@
     </Materials>
   </CraftingPiece>
 <!-- #endregion cut polearms -->
-<CraftingPiece id="spear_blade_43" name="{=wait0O6m}Warrazor Head" tier="4" piece_type="Blade" mesh="spear_blade_43" length="64.4" weight="0.33" excluded_item_usage_features="shield">
+<CraftingPiece id="spear_blade_43" name="{=wait0O6m}Warrazor Head" tier="6" piece_type="Blade" mesh="spear_blade_43" length="64.4" weight="0.33" excluded_item_usage_features="shield">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:OneHandedPolearm:TwoHandedPolearm_Bracing:TwoHandedPolearm_Thrown" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
 	  <Thrust damage_type="Pierce" damage_factor="0.8" />
-      <Swing damage_type="Cut" damage_factor="6.7" />
+      <Swing damage_type="Cut" damage_factor="1.3" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="2" />
@@ -238,7 +238,7 @@
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="1" />
-      <Swing damage_type="Cut" damage_factor="3.7" />
+      <Swing damage_type="Cut" damage_factor="0.9" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="1" />
@@ -249,7 +249,7 @@
     <PieceUsages unavailable_usages="OneHandedPolearm:TwoHandedPolearm_Thrown" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="1.1" />
-      <Swing damage_type="Cut" damage_factor="4.2" />
+      <Swing damage_type="Cut" damage_factor="1.1" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="2" />
@@ -260,7 +260,7 @@
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:OneHandedPolearm:TwoHandedPolearm_Thrown" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="0.8" />
-      <Swing damage_type="Cut" damage_factor="7.3" />
+      <Swing damage_type="Cut" damage_factor="0.9" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="1" />
@@ -271,7 +271,7 @@
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:OneHandedPolearm:TwoHandedPolearm_Thrown" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="0.8" />
-      <Swing damage_type="Cut" damage_factor="7.3" />
+      <Swing damage_type="Cut" damage_factor="0.9" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="1" />
@@ -282,7 +282,7 @@
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:OneHandedPolearm:TwoHandedPolearm_Thrown" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="0.9" />
-      <Swing damage_type="Cut" damage_factor="8.2" />
+      <Swing damage_type="Cut" damage_factor="1.1" />
     </BladeData>
     <Materials>
       <Material id="Iron5" count="2" />
@@ -294,7 +294,7 @@
     <BuildData piece_offset="-8" />
     <BladeData stack_amount="3" blade_length="23.118" blade_width="18.371" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Thrust damage_type="Pierce" damage_factor="0.9" />
-      <Swing damage_type="Cut" damage_factor="10.1" />
+      <Swing damage_type="Cut" damage_factor="0.9" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -307,7 +307,7 @@
   <CraftingPiece id="spear_blade_33" name="{=R62maL2H}Bill Head" tier="2" piece_type="Blade" mesh="spear_blade_33" length="35.5" weight="0.3296" excluded_item_usage_features="shield:thrust">
     <PieceUsages unavailable_usages="OneHandedPolearm:TwoHandedPolearm_Couchable:Javelin:TwoHandedPolearm_Thrown" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Swing damage_type="Cut" damage_factor="6.1" />
+      <Swing damage_type="Cut" damage_factor="0.5" />
     </BladeData>
     <Materials>
       <Material id="Iron2" count="1" />
@@ -317,17 +317,17 @@
     <CraftingPiece id="spear_blade_33_blunt" name="{=R62maL2H}Bill Head" tier="2" piece_type="Blade" mesh="spear_blade_33" length="35.5" weight="0.3296" excluded_item_usage_features="shield:thrust">
     <PieceUsages unavailable_usages="OneHandedPolearm:TwoHandedPolearm_Couchable:Javelin:TwoHandedPolearm_Thrown" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Swing damage_type="Cut" damage_factor="6.1" />
+      <Swing damage_type="Cut" damage_factor="0.5" />
     </BladeData>
     <Materials>
       <Material id="Iron2" count="1" />
     </Materials>
   </CraftingPiece>
   
-  <CraftingPiece id="battania_blade_7" name="{=1Ia3Wxbf}Fine Steel Falx Blade" tier="4" piece_type="Blade" mesh="battania_blade_7" culture="Culture.battania" length="75" weight="0.4" excluded_item_usage_features="shield:thrust">
+  <CraftingPiece id="battania_blade_7" name="{=1Ia3Wxbf}Fine Steel Falx Blade" tier="6" piece_type="Blade" mesh="battania_blade_7" culture="Culture.battania" length="75" weight="0.4" excluded_item_usage_features="shield:thrust">
     <PieceUsages unavailable_usages="OneHandedPolearm:TwoHandedPolearm_Couchable:Javelin:TwoHandedPolearm_Thrown:TwoHandedPolearm_Bracing" />
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed">
-      <Swing damage_type="Cut" damage_factor="7.3" />
+      <Swing damage_type="Cut" damage_factor="1.3" />
     </BladeData>
     <Flags>
       <Flag name="BonusAgainstShield" />
@@ -337,11 +337,11 @@
     </Materials>
   </CraftingPiece>
   
-    <CraftingPiece id="spear_blade_22" name="{=3ged5Ozt}Exceptional Eastern Glaive" tier="4" piece_type="Blade" mesh="spear_blade_22" length="89" weight="0.40">
+    <CraftingPiece id="spear_blade_22" name="{=3ged5Ozt}Exceptional Eastern Glaive" tier="6" piece_type="Blade" mesh="spear_blade_22" length="89" weight="0.40">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:OneHandedPolearm" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="0.9" />
-      <Swing damage_type="Cut" damage_factor="8.3" />
+      <Swing damage_type="Cut" damage_factor="1.3" />
     </BladeData>
     <Materials>
       <Material id="Iron5" count="2" />
@@ -352,7 +352,7 @@
     <PieceUsages unavailable_usages="OneHandedPolearm:TwoHandedPolearm_Couchable:Javelin:thrust:TwoHandedPolearm_Thrown:TwoHandedPolearm_Bracing" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="0.7" />
-      <Swing damage_type="Cut" damage_factor="5.1" />
+      <Swing damage_type="Cut" damage_factor="0.9" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="2" />
@@ -364,7 +364,7 @@
     <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:OneHandedPolearm:TwoHandedPolearm_Bracing" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="0.7" />
-      <Swing damage_type="Cut" damage_factor="5.1" />
+      <Swing damage_type="Cut" damage_factor="0.9" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="2" />
@@ -444,7 +444,7 @@
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="1" />
-      <Swing damage_type="Cut" damage_factor="4" />
+      <Swing damage_type="Cut" damage_factor="1.1" />
     </BladeData>
     <Materials>
       <Material id="Iron5" count="1" />
@@ -515,7 +515,7 @@
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_2" holster_body_name="bo_throwing_spear_quiver_2" holster_mesh_length="94.6">
       <Thrust damage_type="Pierce" damage_factor="1.1" />
-      <Swing damage_type="Cut" damage_factor="4" />
+      <Swing damage_type="Cut" damage_factor="1.1" />
     </BladeData>
     <Materials>
       <Material id="Iron5" count="2" />
@@ -526,7 +526,7 @@
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="0.85" />
-      <Swing damage_type="Cut" damage_factor="3.3" />
+      <Swing damage_type="Cut" damage_factor="0.7" />
     </BladeData>
     <Materials>
       <Material id="Iron3" count="2" />
@@ -670,7 +670,7 @@
    <CraftingPiece id="battania_blade_6" name="{=IUlApNGp}Long Falx Blade" tier="4" piece_type="Blade" mesh="battania_blade_6" culture="Culture.battania" length="95.6" weight="1.0" excluded_item_usage_features="thrust:TwoHandedPolearm_Bracing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed">
-      <Swing damage_type="Cut" damage_factor="6.0" />
+      <Swing damage_type="Cut" damage_factor="1.4" />
     </BladeData>
     <Flags>
       <Flag name="BonusAgainstShield" />
@@ -694,7 +694,7 @@
                physics_material="wood_weapon"
                body_name="bo_spear_b">
       <Swing damage_type="Cut"
-             damage_factor="1.3" />
+             damage_factor="0.3" />
     </BladeData>
     <Materials>
       <Material id="Iron1"

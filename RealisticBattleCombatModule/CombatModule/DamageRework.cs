@@ -149,7 +149,7 @@ namespace RealisticBattleCombatModule
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
                 {
-                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage - 150f) * 0.3f) * XmlConfig.dict["Global.ThrustModifier"];
+                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage - 70f)) * XmlConfig.dict["Global.ThrustModifier"];
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingAxe"))
@@ -312,7 +312,7 @@ namespace RealisticBattleCombatModule
                         {
                             if (damageType == DamageTypes.Cut)
                             {
-                                skillBasedDamage = magnitude * 0.2f + 40f + (effectiveSkill * 0.53f);
+                                skillBasedDamage = magnitude + 40f + (effectiveSkill * 0.53f);
                             }
                             else
                             {
@@ -328,7 +328,7 @@ namespace RealisticBattleCombatModule
                         {
                             if (damageType == DamageTypes.Cut)
                             {
-                                skillBasedDamage = magnitude * 0.2f + (40f + (effectiveSkill * 0.53f)) * 1.3f;
+                                skillBasedDamage = magnitude + (40f + (effectiveSkill * 0.53f)) * 1.3f;
                             }
                             else
                             {
@@ -342,7 +342,7 @@ namespace RealisticBattleCombatModule
                         }
                     case "OneHandedAxe":
                         {
-                            skillBasedDamage = magnitude * 0.2f + 60f + (effectiveSkill * 0.4f);
+                            skillBasedDamage = magnitude + 60f + (effectiveSkill * 0.4f);
                             if (magnitude > 1f)
                             {
                                 magnitude = skillBasedDamage;
@@ -351,7 +351,7 @@ namespace RealisticBattleCombatModule
                         }
                     case "OneHandedBastardAxe":
                         {
-                            skillBasedDamage = magnitude * 0.2f + (60f + (effectiveSkill * 0.4f)) * 1.15f;
+                            skillBasedDamage = magnitude + (60f + (effectiveSkill * 0.4f)) * 1.15f;
                             if (magnitude > 1f)
                             {
                                 magnitude = skillBasedDamage;
@@ -360,7 +360,7 @@ namespace RealisticBattleCombatModule
                         }
                     case "TwoHandedAxe":
                         {
-                            skillBasedDamage = magnitude * 0.2f + (60f + (effectiveSkill * 0.4f)) * 1.3f;
+                            skillBasedDamage = magnitude + (60f + (effectiveSkill * 0.4f)) * 1.3f;
                             if (magnitude > 1f)
                             {
                                 magnitude = skillBasedDamage;
@@ -375,7 +375,7 @@ namespace RealisticBattleCombatModule
                             }
                             else
                             { 
-                                skillBasedDamage = magnitude * 0.5f + 30f + (effectiveSkill * 0.13f); 
+                                skillBasedDamage = magnitude + 30f + (effectiveSkill * 0.13f); 
                             }
                             if (magnitude > 1f)
                             {
@@ -391,7 +391,7 @@ namespace RealisticBattleCombatModule
                             }
                             else
                             {
-                                skillBasedDamage = magnitude * 0.5f +  (30f + (effectiveSkill * 0.13f) * 1.3f);
+                                skillBasedDamage = magnitude +  (30f + (effectiveSkill * 0.13f) * 1.3f);
                             }
                             if (magnitude > 1f)
                             {
@@ -403,7 +403,7 @@ namespace RealisticBattleCombatModule
                         {
                             if (damageType == DamageTypes.Cut)
                             {
-                                skillBasedDamage = magnitude * 0.2f + 50f + (effectiveSkill * 0.46f);
+                                skillBasedDamage = magnitude + 50f + (effectiveSkill * 0.46f);
                             }
                             else
                             {
@@ -450,7 +450,7 @@ namespace RealisticBattleCombatModule
                         {
                             if (damageType == DamageTypes.Cut)
                             {
-                                skillBasedDamage = magnitude * 0.2f + (50f + (effectiveSkill * 0.46f)) * 1.3f;
+                                skillBasedDamage = magnitude + (50f + (effectiveSkill * 0.46f)) * 1.3f;
                             }
                             else
                             {

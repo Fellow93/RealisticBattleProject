@@ -5,10 +5,10 @@
 		<!-- RealisticRangedReload: 1-Historically accurate reload speed + skill scaling for reload || 2-Less reduced reload speeds + skill scaling for reload|| 0-Vanilla reload speeds -->
 	<Global>
 		<ArmorMultiplier>2.0</ArmorMultiplier>
-		<OneHandedThrustBonus>3.34</OneHandedThrustBonus>
-		<TwoHandedThrustBonus>3.34</TwoHandedThrustBonus>
+		<OneHandedThrustBonus>10</OneHandedThrustBonus>
+		<TwoHandedThrustBonus>10</TwoHandedThrustBonus>
 		<ArmorPenetrationMessage>0</ArmorPenetrationMessage>
-		<ThrustModifier>0.3</ThrustModifier>
+		<ThrustModifier>0.1</ThrustModifier>
 		<TroopOverhaulActive>1</TroopOverhaulActive>
 		<RealisticRangedReload>2</RealisticRangedReload>
 	</Global>
