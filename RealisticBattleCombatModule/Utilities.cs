@@ -50,25 +50,27 @@ namespace RealisticBattleCombatModule
             return calculatedThrowingSpeed;
         }
 
-        public static void assignThrowableMissileSpeed(MissionWeapon throwable, int index, int correctiveMissileSpeed, int effectiveSkill)
+        public static int assignThrowableMissileSpeed(MissionWeapon throwable, int correctiveMissileSpeed, int effectiveSkill)
         {
             float ammoWeight = throwable.GetWeight() / throwable.Amount;
             int calculatedThrowingSpeed = calculateThrowableSpeed(ammoWeight,effectiveSkill);
-            PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
-            property.DeclaringType.GetProperty("MissileSpeed");
-            throwable.CurrentUsageIndex = index;
+            //PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
+            //property.DeclaringType.GetProperty("MissileSpeed");
+            //throwable.CurrentUsageIndex = index;
             calculatedThrowingSpeed += correctiveMissileSpeed;
-            property.SetValue(throwable.CurrentUsageItem, calculatedThrowingSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-            throwable.CurrentUsageIndex = 0;
+            return calculatedThrowingSpeed;
+            //property.SetValue(throwable.CurrentUsageItem, calculatedThrowingSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+            //throwable.CurrentUsageIndex = 0;
         }
 
-        public static void assignStoneMissileSpeed(MissionWeapon throwable, int index)
+        public static int assignStoneMissileSpeed(MissionWeapon throwable)
         {
-            PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
-            property.DeclaringType.GetProperty("MissileSpeed");
-            throwable.CurrentUsageIndex = index;
-            property.SetValue(throwable.CurrentUsageItem, 25, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-            throwable.CurrentUsageIndex = 0;
+            //PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
+            //property.DeclaringType.GetProperty("MissileSpeed");
+            //throwable.CurrentUsageIndex = index;
+            //property.SetValue(throwable.CurrentUsageItem, 25, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+            //throwable.CurrentUsageIndex = 0;
+            return 25;
         }
     }
 }
