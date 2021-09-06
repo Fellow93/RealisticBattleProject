@@ -300,7 +300,9 @@ xcopy /d /y "$(SolutionDir)Xmls\no_bastard_axes.xml" "$(SolutionDir)..\Realistic
 xcopy /d /y "$(SolutionDir)Xmls\siege_engines_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
 xcopy /d /y "$(SolutionDir)Xmls\spear_managed_core_parameters.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
 xcopy /d /y "$(SolutionDir)Xmls\spear_combat_parameters.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\bow_shields.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"</PostBuildEvent>
+xcopy /d /y "$(SolutionDir)Xmls\bow_shields.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\siege_ranged_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\SubModule.xml" "$(SolutionDir)..\RealisticBattleCombatModule\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
