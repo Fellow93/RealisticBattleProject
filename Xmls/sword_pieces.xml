@@ -1833,7 +1833,7 @@
                  mesh="vlandian_pommel_1"
                  culture="Culture.vlandia"
                  length="5.189"
-                 weight="0.2">
+                 weight="0.1">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron2"
@@ -1847,7 +1847,7 @@
                  mesh="vlandian_pommel_6"
                  culture="Culture.vlandia"
                  length="5.7"
-                 weight="0.15">
+                 weight="0.07">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron3"
@@ -1861,7 +1861,7 @@
                  mesh="vlandian_pommel_7"
                  culture="Culture.vlandia"
                  length="5.231"
-                 weight="0.12">
+                 weight="0.06">
     <PieceUsages unavailable_usages="" />
     <BuildData next_piece_offset="-0.2" />
     <Materials>
@@ -1876,7 +1876,7 @@
                  mesh="vlandian_pommel_9"
                  culture="Culture.vlandia"
                  length="5.275"
-                 weight="0.2">
+                 weight="0.1">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron4"
@@ -1890,7 +1890,7 @@
                  mesh="empire_pommel_1"
                  culture="Culture.empire"
                  length="2.2"
-                 weight="0.111">
+                 weight="0.05">
     <PieceUsages unavailable_usages="" />
     <BuildData next_piece_offset="0.2" />
     <Materials>
@@ -1905,7 +1905,7 @@
                  mesh="empire_pommel_4"
                  culture="Culture.empire"
                  length="6.795"
-                 weight="0.170">
+                 weight="0.070">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron3"
@@ -1919,7 +1919,7 @@
                  mesh="empire_pommel_5"
                  culture="Culture.empire"
                  length="6.911"
-                 weight="0.2">
+                 weight="0.15">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <BuildData next_piece_offset="0" />
     <Materials>
@@ -1934,7 +1934,7 @@
                  mesh="empire_pommel_3"
                  culture="Culture.empire"
                  length="6.564"
-                 weight="0.18">
+                 weight="0.1">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron5"
@@ -1948,7 +1948,7 @@
                  mesh="aserai_pommel_1"
                  culture="Culture.aserai"
                  length="4.882"
-                 weight="0.15">
+                 weight="0.10">
     <PieceUsages unavailable_usages="" />
     <BuildData next_piece_offset="-0.2" />
     <Materials>
@@ -1963,7 +1963,7 @@
                  mesh="aserai_pommel_3"
                  culture="Culture.aserai"
                  length="6.875"
-                 weight="0.12">
+                 weight="0.06">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron3"
@@ -1977,7 +1977,7 @@
                  mesh="aserai_pommel_5"
                  culture="Culture.aserai"
                  length="7"
-                 weight="0.160">
+                 weight="0.1">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron2"
@@ -1991,7 +1991,7 @@
                  mesh="aserai_pommel_8"
                  culture="Culture.aserai"
                  length="7.299"
-                 weight="0.151">
+                 weight="0.10">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron5"
@@ -2005,7 +2005,7 @@
                  mesh="khuzait_pommel_2"
                  culture="Culture.khuzait"
                  length="1.17"
-                 weight="0.08"
+                 weight="0.04"
                  is_default="true">
     <PieceUsages unavailable_usages="" />
     <Materials>
@@ -2020,7 +2020,7 @@
                  mesh="khuzait_pommel_3"
                  culture="Culture.khuzait"
                  length="1.741"
-                 weight="0.12">
+                 weight="0.06">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron2"
@@ -2034,7 +2034,7 @@
                  mesh="khuzait_pommel_4"
                  culture="Culture.khuzait"
                  length="1.508"
-                 weight="0.18">
+                 weight="0.10">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron4"
@@ -2048,7 +2048,7 @@
                  mesh="sturgian_pommel_7"
                  culture="Culture.khuzait"
                  length="1.711"
-                 weight="0.05">
+                 weight="0.03">
     <PieceUsages unavailable_usages="" />
     <BuildData next_piece_offset="-0.2" />
     <Materials>
@@ -2063,7 +2063,7 @@
                  mesh="sturgian_pommel_3"
                  culture="Culture.sturgia"
                  length="3.587"
-                 weight="0.13">
+                 weight="0.07">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron2"
@@ -2077,7 +2077,7 @@
                  mesh="sturgian_pommel_8"
                  culture="Culture.sturgia"
                  length="1.864"
-                 weight="0.14">
+                 weight="0.07">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron4"
@@ -2091,7 +2091,7 @@
                  mesh="sturgian_pommel_12"
                  culture="Culture.sturgia"
                  length="5.1"
-                 weight="0.17">
+                 weight="0.06">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron5"
@@ -2105,7 +2105,7 @@
                  mesh="battania_pommel_1"
                  culture="Culture.battania"
                  length="4.027"
-                 weight="0.12">
+                 weight="0.06">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron2"
@@ -2119,7 +2119,7 @@
                  mesh="battania_pommel_3"
                  culture="Culture.battania"
                  length="3.1"
-                 weight="0.140">
+                 weight="0.07">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron3"
@@ -2133,7 +2133,7 @@
                  mesh="battania_pommel_4"
                  culture="Culture.battania"
                  length="6.6"
-                 weight="0.181">
+                 weight="0.10">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron4"
@@ -2147,7 +2147,7 @@
                  mesh="battania_pommel_8"
                  culture="Culture.battania"
                  length="2.5"
-                 weight="0.14">
+                 weight="0.09">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron5"
@@ -2161,7 +2161,7 @@
                  mesh="sturgian_pommel_4"
                  culture="Culture.sturgia"
                  length="3.76"
-                 weight="0.15">
+                 weight="0.10">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron2"
@@ -2175,7 +2175,7 @@
                  mesh="battania_pommel_9"
                  culture="Culture.battania"
                  length="5.4"
-                 weight="0.12">
+                 weight="0.07">
     <PieceUsages unavailable_usages="" />
     <BuildData next_piece_offset="-0.3" />
     <Materials>
@@ -2190,7 +2190,7 @@
                  mesh="vlandian_pommel_10"
                  culture="Culture.vlandia"
                  length="5.5"
-                 weight="0.15">
+                 weight="0.10">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron2"
@@ -2204,7 +2204,7 @@
                  mesh="aserai_pommel_2"
                  culture="Culture.aserai"
                  length="4.841"
-                 weight="0.12">
+                 weight="0.06">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron2"
@@ -2217,7 +2217,7 @@
                  piece_type="Pommel"
                  mesh="cleaver_pommel_1"
                  length="5.255"
-                 weight="0.14">
+                 weight="0.07">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron2"
@@ -2232,7 +2232,7 @@
                  mesh="empire_pommel_2"
                  culture="Culture.empire"
                  length="6.496"
-                 weight="0.250">
+                 weight="0.150">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron2"
@@ -2246,7 +2246,7 @@
                  mesh="cleaver_pommel_2"
                  culture="Culture.aserai"
                  length="6.692"
-                 weight="0.14">
+                 weight="0.09">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron3"
@@ -2260,7 +2260,7 @@
                  mesh="khuzait_pommel_6"
                  culture="Culture.aserai"
                  length="2.616"
-                 weight="0.11">
+                 weight="0.06">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron2"
@@ -2274,7 +2274,7 @@
                  mesh="vlandian_pommel_8"
                  culture="Culture.vlandia"
                  length="7.77"
-                 weight="0.24">
+                 weight="0.14">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron3"
@@ -2288,7 +2288,7 @@
                  mesh="sturgian_pommel_1"
                  culture="Culture.sturgia"
                  length="3.539"
-                 weight="0.150">
+                 weight="0.1">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron3"
@@ -2302,7 +2302,7 @@
                  mesh="khuzait_noble_pommel_4"
                  culture="Culture.khuzait"
                  length="3.1"
-                 weight="0.26">
+                 weight="0.16">
     <PieceUsages unavailable_usages="" />
     <BuildData next_piece_offset="-0.3" />
     <Materials>
@@ -2317,7 +2317,7 @@
                  mesh="aserai_noble_pommel_1"
                  culture="Culture.aserai"
                  length="5.1"
-                 weight="0.284">
+                 weight="0.184">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron4"
@@ -2331,7 +2331,7 @@
                  mesh="vlandian_noble_pommel_4"
                  culture="Culture.vlandia"
                  length="6"
-                 weight="0.15">
+                 weight="0.10">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron5"
@@ -2345,7 +2345,7 @@
                  mesh="vlandian_noble_pommel_1"
                  culture="Culture.vlandia"
                  length="7.1"
-                 weight="0.15">
+                 weight="0.10">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron5"
@@ -2359,7 +2359,7 @@
                  mesh="empire_noble_pommel_3"
                  culture="Culture.empire"
                  length="6.8"
-                 weight="0.2"
+                 weight="0.1"
                  appearance="0.9">
     <PieceUsages unavailable_usages="" />
     <Materials>
@@ -2374,7 +2374,7 @@
                  mesh="empire_noble_pommel_4"
                  culture="Culture.empire"
                  length="7"
-                 weight="0.2"
+                 weight="0.1"
                  appearance="0.9">
     <PieceUsages unavailable_usages="" />
     <Materials>
@@ -2389,7 +2389,7 @@
                  mesh="aserai_noble_pommel_2"
                  culture="Culture.aserai"
                  length="6.4"
-                 weight="0.284">
+                 weight="0.184">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron5"
@@ -2403,7 +2403,7 @@
                  mesh="aserai_noble_pommel_4"
                  culture="Culture.aserai"
                  length="6.4"
-                 weight="0.284">
+                 weight="0.184">
     <PieceUsages unavailable_usages="" />
     <BuildData next_piece_offset="-0.3" />
     <Materials>
@@ -2418,7 +2418,7 @@
                  mesh="khuzait_noble_pommel_1"
                  culture="Culture.khuzait"
                  length="3.6"
-                 weight="0.26">
+                 weight="0.16">
     <PieceUsages unavailable_usages="" />
     <BuildData next_piece_offset="0" />
     <Materials>
@@ -2433,7 +2433,7 @@
                  mesh="khuzait_noble_pommel_2"
                  culture="Culture.khuzait"
                  length="4.3"
-                 weight="0.26">
+                 weight="0.16">
     <PieceUsages unavailable_usages="" />
     <BuildData next_piece_offset="0" />
     <Materials>
@@ -2448,7 +2448,7 @@
                  mesh="sturgian_noble_pommel_3"
                  culture="Culture.sturgia"
                  length="3.9"
-                 weight="0.17">
+                 weight="0.07">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron5"
@@ -2462,7 +2462,7 @@
                  mesh="sturgian_noble_pommel_4"
                  culture="Culture.sturgia"
                  length="5.4"
-                 weight="0.17">
+                 weight="0.07">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron5"
@@ -2476,7 +2476,7 @@
                  mesh="battania_pommel_5"
                  culture="Culture.battania"
                  length="10"
-                 weight="0.450">
+                 weight="0.150">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <BuildData next_piece_offset="0.2" />
     <Materials>
@@ -2491,7 +2491,7 @@
                  mesh="vlandian_pommel_4"
                  culture="Culture.vlandia"
                  length="7"
-                 weight="0.16">
+                 weight="0.08">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron3"
@@ -2505,7 +2505,7 @@
                  mesh="aserai_pommel_9"
                  culture="Culture.aserai"
                  length="6.288"
-                 weight="0.284">
+                 weight="0.184">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron3"
@@ -2519,7 +2519,7 @@
                  mesh="sturgian_pommel_10"
                  culture="Culture.sturgia"
                  length="4.645"
-                 weight="0.18">
+                 weight="0.08">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron3"
@@ -2536,7 +2536,7 @@
                  mesh="empire_pommel_6"
                  culture="Culture.empire"
                  length="5.4"
-                 weight="0.2"
+                 weight="0.1"
                  appearance="0.9">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
@@ -2551,7 +2551,7 @@
                  mesh="empire_noble_pommel_1"
                  culture="Culture.empire"
                  length="7"
-                 weight="0.2"
+                 weight="0.1"
                  appearance="0.9">
     <PieceUsages unavailable_usages="" />
     <Materials>
@@ -2566,7 +2566,7 @@
                  mesh="empire_noble_pommel_2"
                  culture="Culture.empire"
                  length="6.5"
-                 weight="0.2"
+                 weight="0.1"
                  appearance="0.9">
     <PieceUsages unavailable_usages="" />
     <Materials>
@@ -2581,7 +2581,7 @@
                  mesh="sturgian_pommel_2"
                  culture="Culture.sturgia"
                  length="4.876"
-                 weight="0.120">
+                 weight="0.06">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <BuildData next_piece_offset="-0.2" />
     <Materials>
@@ -2596,7 +2596,7 @@
                  mesh="sturgian_pommel_5"
                  culture="Culture.sturgia"
                  length="2.072"
-                 weight="0.12">
+                 weight="0.06">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron1"
@@ -2611,7 +2611,7 @@
                  mesh="sturgian_pommel_6"
                  culture="Culture.sturgia"
                  length="4.783"
-                 weight="0.14">
+                 weight="0.07">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <BuildData next_piece_offset="-0.1" />
     <Materials>
@@ -2626,7 +2626,7 @@
                  mesh="sturgian_pommel_9"
                  culture="Culture.sturgia"
                  length="4.744"
-                 weight="0.2">
+                 weight="0.1">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron3"
@@ -2640,7 +2640,7 @@
                  mesh="sturgian_pommel_11"
                  culture="Culture.sturgia"
                  length="5"
-                 weight="0.22">
+                 weight="0.12">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron4"
@@ -2654,7 +2654,7 @@
                  mesh="sturgian_noble_pommel_1"
                  culture="Culture.sturgia"
                  length="4.3"
-                 weight="0.17">
+                 weight="0.08">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron3"
@@ -2668,7 +2668,7 @@
                  mesh="sturgian_noble_pommel_2"
                  culture="Culture.sturgia"
                  length="4.7"
-                 weight="0.17">
+                 weight="0.08">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron4"
@@ -2682,7 +2682,7 @@
                  mesh="khuzait_pommel_1"
                  culture="Culture.khuzait"
                  length="6.588"
-                 weight="0.12">
+                 weight="0.07">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron2"
@@ -2696,7 +2696,7 @@
                  mesh="khuzait_pommel_5"
                  culture="Culture.khuzait"
                  length="7.268"
-                 weight="0.2">
+                 weight="0.1">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron5"
@@ -2710,7 +2710,7 @@
                  mesh="khuzait_pommel_7"
                  culture="Culture.khuzait"
                  length="5.652"
-                 weight="0.26">
+                 weight="0.16">
     <PieceUsages unavailable_usages="" />
     <BuildData next_piece_offset="0" />
     <Materials>
@@ -2725,7 +2725,7 @@
                  mesh="khuzait_noble_pommel_3"
                  culture="Culture.khuzait"
                  length="5.6"
-                 weight="0.26">
+                 weight="0.16">
     <PieceUsages unavailable_usages="" />
     <BuildData next_piece_offset="0" />
     <Materials>
@@ -2740,7 +2740,7 @@
                  mesh="vlandian_pommel_2"
                  culture="Culture.vlandia"
                  length="7.9"
-                 weight="0.17">
+                 weight="0.08">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <BuildData next_piece_offset="0.1" />
     <Materials>
@@ -2755,7 +2755,7 @@
                  mesh="vlandian_pommel_3"
                  culture="Culture.vlandia"
                  length="6.05"
-                 weight="0.25">
+                 weight="0.15">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron3"
@@ -2769,7 +2769,7 @@
                  mesh="vlandian_pommel_5"
                  culture="Culture.vlandia"
                  length="4.114"
-                 weight="0.14">
+                 weight="0.06">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron2"
@@ -2783,7 +2783,7 @@
                  mesh="vlandian_noble_pommel_2"
                  culture="Culture.vlandia"
                  length="10"
-                 weight="0.15">
+                 weight="0.07">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron4"
@@ -2797,7 +2797,7 @@
                  mesh="vlandian_noble_pommel_3"
                  culture="Culture.vlandia"
                  length="5"
-                 weight="0.15">
+                 weight="0.07">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron4"
@@ -2811,7 +2811,7 @@
                  mesh="cleaver_pommel_3"
                  culture="Culture.aserai"
                  length="7.8"
-                 weight="0.146">
+                 weight="0.07">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <BuildData next_piece_offset="-0.2" />
     <Materials>
@@ -2825,7 +2825,7 @@
                  piece_type="Pommel"
                  mesh="cleaver_pommel_4"
                  length="1.07"
-                 weight="0.08">
+                 weight="0.05">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron2"
@@ -2839,7 +2839,7 @@
                  mesh="aserai_pommel_4"
                  culture="Culture.empire"
                  length="7.797"
-                 weight="0.4">
+                 weight="0.2">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <BuildData next_piece_offset="-0.3" />
     <Materials>
@@ -2854,7 +2854,7 @@
                  mesh="aserai_pommel_6"
                  culture="Culture.aserai"
                  length="4.038"
-                 weight="0.181">
+                 weight="0.09">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron4"
@@ -2868,7 +2868,7 @@
                  mesh="aserai_noble_pommel_3"
                  culture="Culture.aserai"
                  length="6.7"
-                 weight="0.284">
+                 weight="0.184">
     <PieceUsages unavailable_usages="" />
     <Materials>
       <Material id="Iron5"
@@ -2882,7 +2882,7 @@
                  mesh="battania_pommel_2"
                  culture="Culture.battania"
                  length="2.4"
-                 weight="0.12">
+                 weight="0.06">
     <PieceUsages unavailable_usages="" />
     <BuildData next_piece_offset="-0.3" />
     <Materials>
@@ -2897,7 +2897,7 @@
                  mesh="battania_pommel_6"
                  culture="Culture.empire"
                  length="10"
-                 weight="0.250">
+                 weight="0.150">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Wood"
@@ -2911,7 +2911,7 @@
                  mesh="battania_pommel_7"
                  culture="Culture.battania"
                  length="10"
-                 weight="0.250">
+                 weight="0.150">
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
       <Material id="Iron4"
@@ -2925,7 +2925,7 @@
                  mesh="battania_noble_pommel_1"
                  culture="Culture.battania"
                  length="4.1"
-                 weight="0.12">
+                 weight="0.07">
     <PieceUsages unavailable_usages="" />
     <BuildData next_piece_offset="0" />
     <Materials>
@@ -2939,7 +2939,7 @@
                  piece_type="Pommel"
                  mesh="wood_pommel_1"
                  length="3.8"
-                 weight="0.069">
+                 weight="0.03">
     <!--WOOD-->
     <PieceUsages unavailable_usages="ThrowingKnife" />
     <Materials>
