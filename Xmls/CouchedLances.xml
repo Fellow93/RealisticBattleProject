@@ -138,7 +138,7 @@
   </CraftingPiece>
   <!-- 2h cutting polearms -->
   <!-- heavy ones, mostly tier 5 -->  
-    <CraftingPiece id="spear_handle_8" name="{=aQa3tp6Q}Decorated Long Pine Shaft" tier="5" piece_type="Handle" mesh="spear_handle_8" length="230" weight="0.65" CraftingCost="110">
+    <CraftingPiece id="spear_handle_8" name="{=aQa3tp6Q}Decorated Long Pine Shaft" tier="5" piece_type="Handle" mesh="spear_handle_8" length="230" weight="0.55" CraftingCost="110">
     <PieceUsages unavailable_usages="Javelin:TwoHandedPolearm_Thrown" />
     <BuildData piece_offset="10.0" />
     <Materials>
@@ -146,7 +146,7 @@
     </Materials>
   </CraftingPiece>
   <!-- warrazor and hewing spear -->  
-    <CraftingPiece id="spear_handle_26" name="{=ELpWa0K5}Cured Oaken Pike Shaft" tier="5" piece_type="Handle" mesh="spear_handle_26" length="280" weight="0.75">
+    <CraftingPiece id="spear_handle_26" name="{=ELpWa0K5}Cured Oaken Pike Shaft" tier="5" piece_type="Handle" mesh="spear_handle_26" length="280" weight="0.65">
     <PieceUsages unavailable_usages="Javelin:TwoHandedPolearm_Thrown" />
     <BuildData piece_offset="10.0" />
     <Materials>
@@ -154,7 +154,7 @@
     </Materials>
   </CraftingPiece>
   <!-- light ones, tier 4 -->  
-    <CraftingPiece id="spear_handle_15" name="{=NQb8boHt}Hardened Ash Shaft" tier="4" piece_type="Handle" mesh="spear_handle_15" length="170" weight="0.55">
+    <CraftingPiece id="spear_handle_15" name="{=NQb8boHt}Hardened Ash Shaft" tier="4" piece_type="Handle" mesh="spear_handle_15" length="170" weight="0.45">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin:TwoHandedPolearm_Thrown" />
     <BuildData piece_offset="10.0" />
     <Materials>
@@ -178,6 +178,7 @@
       <Thrust damage_type="Pierce" damage_factor="1.1" />
     </BladeData>
     <Flags>
+      <Flag name="BonusAgainstShield" />
     </Flags>
     <Materials>
       <Material id="Iron5" count="2" />
@@ -188,7 +189,8 @@
     <BladeData stack_amount="2" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_5_1" holster_body_name="bo_throwing_spear_quiver_5_1" holster_mesh_length="96.7">
       <Thrust damage_type="Pierce" damage_factor="1.1" />
     </BladeData>
-    <Flags>	  
+    <Flags>
+      <Flag name="BonusAgainstShield" />	  
     </Flags>
     <Materials>
       <Material id="Iron3" count="3" />
@@ -200,7 +202,8 @@
     <BladeData stack_amount="2" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_5_1" holster_body_name="bo_throwing_spear_quiver_5_1" holster_mesh_length="96.7">
       <Thrust damage_type="Pierce" damage_factor="1.1" />
     </BladeData>
-    <Flags>  
+    <Flags>
+      <Flag name="BonusAgainstShield" />	  
     </Flags>
     <Materials>
       <Material id="Iron3" count="3" />
@@ -379,6 +382,7 @@
       <Material id="Iron3" count="2" />
     </Materials>
     <Flags>
+      <Flag name="BonusAgainstShield" />
     </Flags>
   </CraftingPiece>
   
@@ -391,6 +395,7 @@
       <Material id="Iron3" count="2" />
     </Materials>
     <Flags>
+      <Flag name="BonusAgainstShield" />
     </Flags>
   </CraftingPiece>
 
@@ -403,6 +408,7 @@
       <Material id="Iron4" count="1" />
     </Materials>
     <Flags>
+      <Flag name="BonusAgainstShield" />
     </Flags>
   </CraftingPiece>
   
@@ -415,6 +421,7 @@
       <Material id="Iron4" count="1" />
     </Materials>
     <Flags>
+      <Flag name="BonusAgainstShield" />
     </Flags>
   </CraftingPiece>
 
@@ -427,6 +434,7 @@
       <Material id="Iron5" count="1" />
     </Materials>
     <Flags>
+      <Flag name="BonusAgainstShield" />
     </Flags>
   </CraftingPiece>
   

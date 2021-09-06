@@ -250,8 +250,7 @@
   <!-- Post-Build -->
   <PropertyGroup>
     <PostBuildEvent>xcopy /d /y "$(SolutionDir)Xmls\native_parameters_tweaks.xml" "$(SolutionDir)..\RealisticBattleAiModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)AIXmls\project.mbproj" "$(SolutionDir)..\RealisticBattleAiModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)AIXmls\SubModule.xml" "$(SolutionDir)..\RealisticBattleAiModule\"</PostBuildEvent>
+xcopy /d /y "$(SolutionDir)AIXmls\project.mbproj" "$(SolutionDir)..\RealisticBattleAiModule\ModuleData\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
