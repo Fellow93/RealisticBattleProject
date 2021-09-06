@@ -50,6 +50,7 @@ namespace RealisticBattleCombatModule
                         if(skill != null) { 
                             int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance.Character, __instance.Origin, __instance.Formation, skill);
 
+<<<<<<< Updated upstream
                             if ((weaponStatsData[i].WeaponClass == (int)WeaponClass.OneHandedSword) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.Dagger) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.LowGripPolearm)
                                      || (weaponStatsData[i].WeaponClass == (int)WeaponClass.Mace) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.OneHandedAxe) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.OneHandedPolearm)
                                       || (weaponStatsData[i].WeaponClass == (int)WeaponClass.TwoHandedAxe) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.TwoHandedMace) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.TwoHandedPolearm)
@@ -78,6 +79,56 @@ namespace RealisticBattleCombatModule
                             {
                                 weaponStatsData[i].MissileSpeed = Utilities.assignStoneMissileSpeed(__instance.Equipment[equipmentSlot]);
                             }
+=======
+                        if ((weaponStatsData[i].WeaponClass == (int)WeaponClass.LowGripPolearm)
+                                 || (weaponStatsData[i].WeaponClass == (int)WeaponClass.Mace) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.OneHandedAxe) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.OneHandedPolearm)
+                                  || (weaponStatsData[i].WeaponClass == (int)WeaponClass.TwoHandedAxe) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.TwoHandedMace) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.TwoHandedPolearm))
+                        {
+
+                            float swingskillModifier = 1f + (effectiveSkill / 1000f);
+                            float thrustskillModifier = 1f + (effectiveSkill / 700f);
+                            float handlingskillModifier = 1f + (effectiveSkill / 700f);
+
+                            weaponStatsData[i].SwingSpeed = MathF.Ceiling((weaponStatsData[i].SwingSpeed * 0.83f) * swingskillModifier);
+                            weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.83f) * thrustskillModifier);
+                            weaponStatsData[i].DefendSpeed = MathF.Ceiling((weaponStatsData[i].DefendSpeed * 0.83f) * handlingskillModifier);
+                        }
+                        else if ((weaponStatsData[i].WeaponClass == (int)WeaponClass.OneHandedSword) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.Dagger) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.TwoHandedSword))
+                        {
+
+                            float swingskillModifier = 1f + (effectiveSkill / 600f);
+                            float thrustskillModifier = 1f + (effectiveSkill / 600f);
+                            float handlingskillModifier = 1f + (effectiveSkill / 600f);
+
+                            weaponStatsData[i].SwingSpeed = MathF.Ceiling((weaponStatsData[i].SwingSpeed * 0.83f) * swingskillModifier);
+                            weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.83f) * thrustskillModifier);
+                            weaponStatsData[i].DefendSpeed = MathF.Ceiling((weaponStatsData[i].DefendSpeed * 0.83f) * handlingskillModifier);
+                        }
+                        else if (weaponStatsData[i].WeaponClass == (int)WeaponClass.Bow)
+                        {
+
+                            float DrawSpeedskillModifier = 1 + (effectiveSkill * 0.01f);
+
+                            weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.1f) * DrawSpeedskillModifier);
+                        }
+
+
+                        if ((weaponStatsData[i].WeaponClass == (int)WeaponClass.OneHandedPolearm) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.LowGripPolearm))
+                        {
+                            weaponStatsData[i].MissileSpeed =  Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot], 10, effectiveSkill);
+                        }
+                        if (weaponStatsData[i].WeaponClass == (int)WeaponClass.Javelin)
+                        {
+                            weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot], 10, effectiveSkill);
+                        }
+                        if ((weaponStatsData[i].WeaponClass == (int)WeaponClass.ThrowingAxe) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.ThrowingKnife))
+                        {
+                            weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot], 5, effectiveSkill);
+                        }
+                        if (weaponStatsData[i].WeaponClass == (int)WeaponClass.Stone)
+                        {
+                            weaponStatsData[i].MissileSpeed = Utilities.assignStoneMissileSpeed(__instance.Equipment[equipmentSlot]);
+>>>>>>> Stashed changes
                         }
                     }
                 }
