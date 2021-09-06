@@ -74,11 +74,11 @@
       <Material id="Iron4" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_25_head" name="{=m6CVEgTU}Spiked Battle Axe Blade" tier="4" piece_type="Blade" mesh="axe_craft_25_head" distance_to_next_piece="13.9" distance_to_previous_piece="4" weight="0.3">
+  <CraftingPiece id="axe_craft_25_head" name="{=m6CVEgTU}Spiked Battle Axe Blade" tier="5" piece_type="Blade" mesh="axe_craft_25_head" distance_to_next_piece="13.9" distance_to_previous_piece="4" weight="0.3">
     <PieceUsages unavailable_usages="" />
     <BuildData piece_offset="-8" />
     <BladeData stack_amount="3" blade_length="25.328" blade_width="31.023" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Swing damage_type="Cut" damage_factor="1.1" />
+      <Swing damage_type="Cut" damage_factor="1.3" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -219,11 +219,11 @@
       <Material id="Iron5" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_8_head" name="{=WkTkxQfw}Rectangular Bit Blade" tier="5" piece_type="Blade" mesh="axe_craft_8_head" distance_to_next_piece="11.156" distance_to_previous_piece="1.96" weight="0.351">
+  <CraftingPiece id="axe_craft_8_head" name="{=WkTkxQfw}Rectangular Bit Blade" tier="6" piece_type="Blade" mesh="axe_craft_8_head" distance_to_next_piece="11.156" distance_to_previous_piece="1.96" weight="0.351">
     <PieceUsages unavailable_usages="" />
     <BuildData piece_offset="-3.92" />
     <BladeData stack_amount="3" blade_length="22.332" blade_width="23.205" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Swing damage_type="Cut" damage_factor="1.3" />
+      <Swing damage_type="Cut" damage_factor="1.5" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -322,11 +322,11 @@
   </CraftingPiece>
   <!-- #endregion -->
   <!-- #region Used 2h Axe Blade Pieces -->
-  <CraftingPiece id="axe_craft_7_head" name="{=USWfzbuW}Northern Broad Great Axe Head" tier="3" piece_type="Blade" mesh="axe_craft_7_head" distance_to_next_piece="14.96" distance_to_previous_piece="2.712" weight="0.4">
+  <CraftingPiece id="axe_craft_7_head" name="{=USWfzbuW}Northern Broad Great Axe Head" tier="4" piece_type="Blade" mesh="axe_craft_7_head" distance_to_next_piece="14.96" distance_to_previous_piece="2.712" weight="0.4">
     <PieceUsages unavailable_usages="" />
     <BuildData piece_offset="-5.424" />
     <BladeData stack_amount="3" blade_length="28.366" blade_width="28.192" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Swing damage_type="Cut" damage_factor="0.9" />
+      <Swing damage_type="Cut" damage_factor="1.1" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -395,11 +395,11 @@
       <Material id="Iron4" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_1_head" name="{=NfPgejKk}Drilled Sparth Blade" tier="4" piece_type="Blade" mesh="axe_craft_1_head" distance_to_next_piece="5.402" distance_to_previous_piece="2.747" weight="0.35">
+  <CraftingPiece id="axe_craft_1_head" name="{=NfPgejKk}Drilled Sparth Blade" tier="5" piece_type="Blade" mesh="axe_craft_1_head" distance_to_next_piece="5.402" distance_to_previous_piece="2.747" weight="0.35">
     <PieceUsages unavailable_usages="" />
     <BuildData piece_offset="-8.241" />
     <BladeData stack_amount="3" blade_length="16.651" blade_width="26.744" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Swing damage_type="Cut" damage_factor="1.1" />
+      <Swing damage_type="Cut" damage_factor="1.3" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -410,11 +410,11 @@
       <Material id="Iron3" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_22_head" name="{=IxCaIvUk}Large Northern Broad Head With Decorated Neck" tier="5" piece_type="Blade" mesh="axe_craft_22_head" distance_to_next_piece="9.3" distance_to_previous_piece="2" weight="0.3">
+  <CraftingPiece id="axe_craft_22_head" name="{=IxCaIvUk}Large Northern Broad Head With Decorated Neck" tier="6" piece_type="Blade" mesh="axe_craft_22_head" distance_to_next_piece="9.3" distance_to_previous_piece="2" weight="0.3">
     <PieceUsages unavailable_usages="" />
     <BuildData piece_offset="-4" />
     <BladeData stack_amount="3" blade_length="20.781" blade_width="30.384" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Swing damage_type="Cut" damage_factor="1.3" />
+      <Swing damage_type="Cut" damage_factor="1.5" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -467,11 +467,11 @@
       <Material id="Iron2" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_3_head" name="{=gSdybwMN}Large Drilled Norse Bearded Head" tier="3" piece_type="Blade" mesh="axe_craft_3_head" distance_to_next_piece="13.057" distance_to_previous_piece="2.314" weight="0.35">
+  <CraftingPiece id="axe_craft_3_head" name="{=gSdybwMN}Large Drilled Norse Bearded Head" tier="4" piece_type="Blade" mesh="axe_craft_3_head" distance_to_next_piece="13.057" distance_to_previous_piece="2.314" weight="0.35">
     <PieceUsages unavailable_usages="" />
     <BuildData piece_offset="-4.628" />
     <BladeData stack_amount="3" blade_length="23.005" blade_width="22.407" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Swing damage_type="Cut" damage_factor="0.9" />
+      <Swing damage_type="Cut" damage_factor="1.1" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />

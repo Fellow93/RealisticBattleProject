@@ -1133,9 +1133,9 @@ namespace RealisticBattleCombatModule
         static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
         {
             WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
-            float val = ((float)weaponComponentData.ThrustDamage * XmlConfig.dict["Global.OneHandedThrustBonus"] - 50f) * 0.1f * GetFactor(weaponComponentData.ThrustDamageType) * ((float)weaponComponentData.ThrustSpeed * 0.01f);
-            float num = ((float)weaponComponentData.SwingDamage - 50f) * 0.1f * GetFactor(weaponComponentData.SwingDamageType) * ((float)weaponComponentData.SwingSpeed * 0.01f);
-            float maceTier = ((float)weaponComponentData.SwingDamage - 30f) * 0.2f * ((float)weaponComponentData.SwingSpeed * 0.01f);
+            float val = ((float)weaponComponentData.ThrustDamage * XmlConfig.dict["Global.OneHandedThrustBonus"] - 75f) * 0.1f * GetFactor(weaponComponentData.ThrustDamageType) * ((float)weaponComponentData.ThrustSpeed * 0.01f);
+            float num = ((float)weaponComponentData.SwingDamage) * 0.2f * GetFactor(weaponComponentData.SwingDamageType) * ((float)weaponComponentData.SwingSpeed * 0.01f);
+            float maceTier = ((float)weaponComponentData.SwingDamage - 3f) * 0.23f * ((float)weaponComponentData.SwingSpeed * 0.01f);
             if (val < 0f)
             {
                 val = 0f;
@@ -1155,52 +1155,60 @@ namespace RealisticBattleCombatModule
                 case WeaponClass.OneHandedSword:
                 case WeaponClass.Dagger:
                     {
-                        num2 = (val + num) * 0.5f - 1f;
+                        num2 = (val + num) * 0.5f;
                         break;
                     }
                 case WeaponClass.TwoHandedSword:
+                    {
+                        num2 = (val + num) * 0.5f / 1.3f;
+                        break;
+                    }
                 case WeaponClass.TwoHandedPolearm:
                 case WeaponClass.LowGripPolearm:
                     {
-                        num2 = (val + num) * 0.4f - 1f;
+                        num2 = val + (num * 0.5f);
                         break;
                     }
                 case WeaponClass.TwoHandedAxe:
-                case WeaponClass.TwoHandedMace:
                     {
-                        num2 = num * 0.75f - 1f;
+                        num2 = num / 1.3f;
                         break;
                     }
                 case WeaponClass.OneHandedAxe:
                 case WeaponClass.Pick:
                     {
-                        num2 = num * (float)weaponComponentData.WeaponLength * 0.014f - 1f;
+                        num2 = num * (float)weaponComponentData.WeaponLength * 0.014f;
+                        break;
+                    }
+                case WeaponClass.TwoHandedMace:
+                    {
+                        num2 = maceTier * (float)weaponComponentData.WeaponLength * 0.014f / 1.3f;
                         break;
                     }
                 case WeaponClass.Mace:
                     {
-                        num2 = maceTier * (float)weaponComponentData.WeaponLength * 0.014f - 1f;
+                        num2 = maceTier * (float)weaponComponentData.WeaponLength * 0.014f;
                         break;
                     }
                 case WeaponClass.ThrowingKnife:
                 case WeaponClass.ThrowingAxe:
                     {
-                        num2 = (float)weaponComponentData.SwingDamage * 0.05f - 1f;
+                        num2 = (float)weaponComponentData.SwingDamage * 0.05f;
                         break;
                     }
                 case WeaponClass.Javelin:
                     {
-                        num2 = ((float)weaponComponentData.ThrustDamage * XmlConfig.dict["Global.OneHandedThrustBonus"] - 100f) * 0.34f - 1f;
+                        num2 = ((float)weaponComponentData.ThrustDamage * XmlConfig.dict["Global.OneHandedThrustBonus"] - 55f) * 0.1f; //XmlConfig.dict["Global.ThrustModifier"];
                         break;
                     }
                 case WeaponClass.OneHandedPolearm:
                     {
-                        num2 = val - 0.1f;
+                        num2 = val + (num * 0.5f);
                         break;
                     }
                 default:
                     {
-                        num2 = (val + num) * 0.5f - 1f;
+                        num2 = (val + num) * 0.5f;
                         break;
                     }
             }
@@ -1208,9 +1216,9 @@ namespace RealisticBattleCombatModule
             {
                 num2 = 0f;
             }
-            if (num2 > 5.5f)
+            if (num2 > 5.1f)
             {
-                num2 = 5.5f;
+                num2 = 5.1f;
             }
             __result = num2;
             return false;
