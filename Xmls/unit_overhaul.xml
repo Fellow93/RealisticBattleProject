@@ -6034,6 +6034,8 @@
                  id="Item.western_spear_2_t2" />
       <equipment slot="Item1"
                  id="Item.worn_kite_shield" />
+      <equipment slot="Item2"
+                 id="Item.empire_sword_1_t2" />
       <equipment slot="Head"
                  id="Item.open_mail_coif" />
       <equipment slot="Body"
@@ -6050,18 +6052,22 @@
                  id="Item.western_spear_2_t2" />
       <equipment slot="Item1"
                  id="Item.worn_kite_shield" />
+      <equipment slot="Item2"
+                 id="Item.empire_sword_1_t2" />
       <equipment slot="Head"
                  id="Item.imperial_open_mail_coif" />
       <equipment slot="Body"
                  id="Item.empire_warrior_padded_armor_c" />
       <equipment slot="Leg"
                  id="Item.empire_horseman_boots" />
+      <equipment slot="Gloves"
+                 id="Item.buttoned_leather_bracers" />
       <equipment slot="Cape"
                  id="Item.a_empire_plated_shoulder_a" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_sword_1_t2" />
+                 id="Item.western_spear_2_t2" />
       <equipment slot="Item1"
                  id="Item.worn_kite_shield" />
       <equipment slot="Head"
@@ -6077,7 +6083,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_sword_1_t2" />
+                 id="Item.western_spear_2_t2" />
       <equipment slot="Item1"
                  id="Item.worn_kite_shield" />
       <equipment slot="Head"
@@ -6612,13 +6618,13 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_3_t3" />
+                 id="Item.triangluar_spear_t3" />
       <equipment slot="Item1"
                  id="Item.leather_bound_kite_shield" />
       <equipment slot="Item2"
                  id="Item.western_javelin_1_t2" />
       <equipment slot="Item3"
-                 id="Item.empire_sword_3_t3" />
+                 id="Item.gladius_b" />
       <equipment slot="Body"
                  id="Item.eastern_studded_leather" />
       <equipment slot="Cape"
@@ -6632,7 +6638,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_3_t3" />
+                 id="Item.triangluar_spear_t3" />
       <equipment slot="Item1"
                  id="Item.leather_bound_kite_shield" />
       <equipment slot="Item2"
@@ -6652,7 +6658,25 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_3_t3" />
+                 id="Item.triangluar_spear_t3" />
+      <equipment slot="Item1"
+                 id="Item.leather_bound_kite_shield" />
+      <equipment slot="Item2"
+                 id="Item.western_javelin_1_t2" />
+      <equipment slot="Body"
+                 id="Item.eastern_studded_leather" />
+      <equipment slot="Cape"
+                 id="Item.a_empire_plated_shoulder_b" />
+      <equipment slot="Gloves"
+                 id="Item.guarded_padded_vambrace" />
+      <equipment slot="Leg"
+                 id="Item.leather_cavalier_boots" />
+      <equipment slot="Head"
+                 id="Item.leatherlame_nasalhelm_over_imperial_leather" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.triangluar_spear_t3" />
       <equipment slot="Item1"
                  id="Item.leather_bound_kite_shield" />
       <equipment slot="Item2"
@@ -6707,7 +6731,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.gladius_b" />
+                 id="Item.empire_polearm_1_t4" />
       <equipment slot="Item1"
                  id="Item.reinforced_kite_shield" />
       <equipment slot="Item2"
@@ -11856,9 +11880,9 @@
       <skill id="OneHanded"
              value="60" />
       <skill id="TwoHanded"
-             value="100" />
+             value="110" />
       <skill id="Polearm"
-             value="100" />
+             value="110" />
       <skill id="Bow"
              value="15" />
       <skill id="Crossbow"
