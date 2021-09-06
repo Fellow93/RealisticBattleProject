@@ -804,7 +804,13 @@ namespace RealisticBattleCombatModule
                             case "OneHandedBastardAxe":
                             case "TwoHandedPolearm":
                                 {
+                                    if (attackCollisionData.DamageType == 1)//pierce
+                                    {
+                                        inflictedDamage *= 0.09f;
+                                        break;
+                                    }
                                     inflictedDamage *= 2.0f;
+
                                     break;
                                 }
                             default:
@@ -1571,25 +1577,30 @@ namespace RealisticBattleCombatModule
                 }
             }
 
+            
+
             if ((collisionData.CollisionResult == CombatCollisionResult.StrikeAgent) && (collisionData.DamageType == (int)DamageTypes.Pierce))
             {
-                switch (weaponType)
+                if (attackerAgent.Team != victimAgent.Team)
                 {
-                    case "TwoHandedPolearm":
-                        if (attackerAgent.Team != victimAgent.Team)
-                        {
+                    switch (weaponType)
+                    {
+                        case "TwoHandedPolearm":
+                            if (attackerAgent.Team != victimAgent.Team)
+                            {
 
-                            //AttackCollisionData newdata = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(false, false, false, true, false, false, false, false, false, true, false, collisionData.CollisionResult, collisionData.AffectorWeaponSlotOrMissileIndex,
-                            //    collisionData.StrikeType, collisionData.StrikeType, collisionData.CollisionBoneIndex, BoneBodyPartType.Chest, collisionData.AttackBoneIndex, collisionData.AttackDirection, collisionData.PhysicsMaterialIndex,
-                            //    collisionData.CollisionHitResultFlags, collisionData.AttackProgress, collisionData.CollisionDistanceOnWeapon, collisionData.AttackerStunPeriod, collisionData.DefenderStunPeriod, collisionData.MissileTotalDamage,
-                            //    0, collisionData.ChargeVelocity, collisionData.FallSpeed, collisionData.WeaponRotUp, collisionData.WeaponBlowDir, collisionData.CollisionGlobalPosition, collisionData.MissileVelocity,
-                            //    collisionData.MissileStartingPosition, collisionData.VictimAgentCurVelocity, collisionData.CollisionGlobalNormal);
+                                //AttackCollisionData newdata = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(false, false, false, true, false, false, false, false, false, true, false, collisionData.CollisionResult, collisionData.AffectorWeaponSlotOrMissileIndex,
+                                //    collisionData.StrikeType, collisionData.StrikeType, collisionData.CollisionBoneIndex, BoneBodyPartType.Chest, collisionData.AttackBoneIndex, collisionData.AttackDirection, collisionData.PhysicsMaterialIndex,
+                                //    collisionData.CollisionHitResultFlags, collisionData.AttackProgress, collisionData.CollisionDistanceOnWeapon, collisionData.AttackerStunPeriod, collisionData.DefenderStunPeriod, collisionData.MissileTotalDamage,
+                                //    0, collisionData.ChargeVelocity, collisionData.FallSpeed, collisionData.WeaponRotUp, collisionData.WeaponBlowDir, collisionData.CollisionGlobalPosition, collisionData.MissileVelocity,
+                                //    collisionData.MissileStartingPosition, collisionData.VictimAgentCurVelocity, collisionData.CollisionGlobalNormal);
 
-                            //collisionData = newdata;
+                                //collisionData = newdata;
 
-                            __result.BlowFlag |= BlowFlags.KnockBack;
-                        }
-                        break;
+                                __result.BlowFlag |= BlowFlags.KnockBack;
+                            }
+                            break;
+                    }
                 }
             }
 
@@ -1666,6 +1677,12 @@ namespace RealisticBattleCombatModule
                             break;
                         }
                 }
+            }
+
+            if (attackerAgent.Team == victimAgent.Team && (__result.BlowFlag.HasAnyFlag(BlowFlags.KnockBack) || __result.BlowFlag.HasAnyFlag(BlowFlags.KnockDown)))
+            {
+                __result.BlowFlag = BlowFlags.NonTipThrust;
+                return;
             }
 
         }
@@ -1799,7 +1816,7 @@ namespace RealisticBattleCombatModule
             {
                 b.InflictedDamage = 1;
             }
-            if(b.DamageCalculated == false && b.InflictedDamage == 1)
+            if( b.InflictedDamage == 1 && isKnockBack)
             {
 
             }
@@ -2007,32 +2024,21 @@ namespace RealisticBattleCombatModule
         {
             if (!blow.IsMissile)
             {
-                if (victimAgent.HasMount && !isInitialBlowShrugOff)
+                if (victimAgent!= null && victimAgent.HasMount && victimAgent.Character != null && victimAgent.Origin != null)
                 {
-                    //bool flag = (float)blow.InflictedDamage / victimAgent.HealthLimit > 0.25f;
-                    bool flag = blow.BaseMagnitude > 7f;
-                    bool flag2 = MBMath.IsBetween((int)blow.VictimBodyPart, 0, 5);
-                    if (!(victimAgent.Health - (float)collisionData.InflictedDamage >= 1f && flag && flag2))
-                    {
-                        return false;
-                    }
-                    if (attackerWeapon != null && attackerWeapon.ItemUsage != null && blow.StrikeType == StrikeType.Thrust && attackerWeapon.ItemUsage.Equals("polearm_couch"))//&& blow.WeaponRecord.WeaponFlags.HasAnyFlag(WeaponFlags.CanDismount))
+                    int ridingSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(victimAgent.Character, victimAgent.Origin, victimAgent.Formation, DefaultSkills.Riding);
+                    if (attackerWeapon != null && attackerWeapon.ItemUsage != null && blow.StrikeType == StrikeType.Thrust && blow.BaseMagnitude > (20f + (ridingSkill * 0.05f)) &&
+                    (blow.VictimBodyPart == BoneBodyPartType.Head || blow.VictimBodyPart == BoneBodyPartType.Neck || blow.VictimBodyPart == BoneBodyPartType.Chest || blow.VictimBodyPart == BoneBodyPartType.ShoulderLeft || blow.VictimBodyPart == BoneBodyPartType.ShoulderRight) && 
+                    (attackerWeapon.ItemUsage.Equals("polearm_couch") || attackerWeapon.ItemUsage.Equals("polearm_bracing")))
                     {
                         blow.BlowFlag |= BlowFlags.CanDismount;
                         return false;
                     }
-                    float num = 0f;
-                    num += MissionGameModels.Current.AgentApplyDamageModel.CalculateDismountChanceBonus(attackerAgent, attackerWeapon);
-                    if ((MBMath.IsBetween(num, 0f, 1f) ? MBRandom.RandomFloat : 0.1f) <= num)
+                    else
                     {
-                        blow.BlowFlag |= BlowFlags.CanDismount;
+                        return true;
                     }
                 }
-                else
-                {
-                    _ = victimAgent.HasMount;
-                }
-                return false;
             }
             return true;
         }
