@@ -1824,4 +1824,1128 @@
     </Materials>
   </CraftingPiece>
   <!-- #endregion -->
+ 
+  <!-- #region Used Sword Pommel Pieces -->
+  <CraftingPiece id="vlandian_pommel_1"
+                 name="{=joN8ZeJ6}Wheel Pommel"
+                 tier="2"
+                 piece_type="Pommel"
+                 mesh="vlandian_pommel_1"
+                 culture="Culture.vlandia"
+                 length="5.189"
+                 weight="0.2">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_pommel_6"
+                 name="{=booEob1z}Disc Pommel"
+                 tier="2"
+                 piece_type="Pommel"
+                 mesh="vlandian_pommel_6"
+                 culture="Culture.vlandia"
+                 length="5.7"
+                 weight="0.15">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_pommel_7"
+                 name="{=wvLoXrFV}Western Great Pommel"
+                 tier="4"
+                 piece_type="Pommel"
+                 mesh="vlandian_pommel_7"
+                 culture="Culture.vlandia"
+                 length="5.231"
+                 weight="0.12">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="-0.2" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_pommel_9"
+                 name="{=ugQrq53t}Fan Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="vlandian_pommel_9"
+                 culture="Culture.vlandia"
+                 length="5.275"
+                 weight="0.2">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="empire_pommel_1"
+                 name="{=aZp1ur9Q}Chalice Pommel"
+                 tier="2"
+                 piece_type="Pommel"
+                 mesh="empire_pommel_1"
+                 culture="Culture.empire"
+                 length="2.2"
+                 weight="0.111">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.2" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="empire_pommel_4"
+                 name="{=d4aLa7tz}Top Pommel"
+                 tier="3"
+                 piece_type="Pommel"
+                 mesh="empire_pommel_4"
+                 culture="Culture.empire"
+                 length="6.795"
+                 weight="0.170">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="empire_pommel_5"
+                 name="{=MGD7zTLf}Faceted Wheel Pommel"
+                 tier="4"
+                 piece_type="Pommel"
+                 mesh="empire_pommel_5"
+                 culture="Culture.empire"
+                 length="6.911"
+                 weight="0.2">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <BuildData next_piece_offset="0" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="empire_pommel_3"
+                 name="{=tLa3nYAQ}Faceted Chalice Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="empire_pommel_3"
+                 culture="Culture.empire"
+                 length="6.564"
+                 weight="0.18">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron5"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_pommel_1"
+                 name="{=LryUJnu7}Smooth Pommel"
+                 tier="2"
+                 piece_type="Pommel"
+                 mesh="aserai_pommel_1"
+                 culture="Culture.aserai"
+                 length="4.882"
+                 weight="0.15">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="-0.2" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_pommel_3"
+                 name="{=aalvbENh}Desert Pommel"
+                 tier="3"
+                 piece_type="Pommel"
+                 mesh="aserai_pommel_3"
+                 culture="Culture.aserai"
+                 length="6.875"
+                 weight="0.12">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_pommel_5"
+                 name="{=eeFrva8L}Holed Pommel"
+                 tier="4"
+                 piece_type="Pommel"
+                 mesh="aserai_pommel_5"
+                 culture="Culture.aserai"
+                 length="7"
+                 weight="0.160">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_pommel_8"
+                 name="{=dbmuyJcf}Southern Faceted Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="aserai_pommel_8"
+                 culture="Culture.aserai"
+                 length="7.299"
+                 weight="0.151">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron5"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_pommel_2"
+                 name="{=a860bQ4f}Flat Pommel"
+                 tier="1"
+                 piece_type="Pommel"
+                 mesh="khuzait_pommel_2"
+                 culture="Culture.khuzait"
+                 length="1.17"
+                 weight="0.08"
+                 is_default="true">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_pommel_3"
+                 name="{=1pvLe1Mh}Simple Ild Pommel"
+                 tier="1"
+                 piece_type="Pommel"
+                 mesh="khuzait_pommel_3"
+                 culture="Culture.khuzait"
+                 length="1.741"
+                 weight="0.12">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_pommel_4"
+                 name="{=lv9oJyKJ}Eastern Flat Pommel"
+                 tier="3"
+                 piece_type="Pommel"
+                 mesh="khuzait_pommel_4"
+                 culture="Culture.khuzait"
+                 length="1.508"
+                 weight="0.18">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_pommel_7"
+                 name="{=sHwhgRzK}Crescent Pommel"
+                 tier="1"
+                 piece_type="Pommel"
+                 mesh="sturgian_pommel_7"
+                 culture="Culture.khuzait"
+                 length="1.711"
+                 weight="0.05">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="-0.2" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_pommel_3"
+                 name="{=9qaanOpL}Simple Northern Pommel"
+                 tier="1"
+                 piece_type="Pommel"
+                 mesh="sturgian_pommel_3"
+                 culture="Culture.sturgia"
+                 length="3.587"
+                 weight="0.13">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_pommel_8"
+                 name="{=1ajbJdao}Bar Pommel"
+                 tier="4"
+                 piece_type="Pommel"
+                 mesh="sturgian_pommel_8"
+                 culture="Culture.sturgia"
+                 length="1.864"
+                 weight="0.14">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_pommel_12"
+                 name="{=fHKHwvsW}Bronze Banded Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="sturgian_pommel_12"
+                 culture="Culture.sturgia"
+                 length="5.1"
+                 weight="0.17">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron5"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="battania_pommel_1"
+                 name="{=dgjXkbuA}Owlseye Pommel"
+                 tier="2"
+                 piece_type="Pommel"
+                 mesh="battania_pommel_1"
+                 culture="Culture.battania"
+                 length="4.027"
+                 weight="0.12">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="battania_pommel_3"
+                 name="{=dTkiV4i6}Fishing Boat Pommel"
+                 tier="3"
+                 piece_type="Pommel"
+                 mesh="battania_pommel_3"
+                 culture="Culture.battania"
+                 length="3.1"
+                 weight="0.140">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="battania_pommel_4"
+                 name="{=RBoqow67}Egg Pommel"
+                 tier="4"
+                 piece_type="Pommel"
+                 mesh="battania_pommel_4"
+                 culture="Culture.battania"
+                 length="6.6"
+                 weight="0.181">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="battania_pommel_8"
+                 name="{=BKHKQ15N}Turqouise Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="battania_pommel_8"
+                 culture="Culture.battania"
+                 length="2.5"
+                 weight="0.14">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron5"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_pommel_4"
+                 name="{=61hjmt0T}Triangular Pommel"
+                 tier="2"
+                 piece_type="Pommel"
+                 mesh="sturgian_pommel_4"
+                 culture="Culture.sturgia"
+                 length="3.76"
+                 weight="0.15">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="battania_pommel_9"
+                 name="{=jZnVKvJN}Three Branched Pommel"
+                 tier="4"
+                 piece_type="Pommel"
+                 mesh="battania_pommel_9"
+                 culture="Culture.battania"
+                 length="5.4"
+                 weight="0.12">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="-0.3" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_pommel_10"
+                 name="{=5NeanDJM}Ring Pommel"
+                 tier="1"
+                 piece_type="Pommel"
+                 mesh="vlandian_pommel_10"
+                 culture="Culture.vlandia"
+                 length="5.5"
+                 weight="0.15">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_pommel_2"
+                 name="{=wfK63ZQn}Saber Pommel"
+                 tier="1"
+                 piece_type="Pommel"
+                 mesh="aserai_pommel_2"
+                 culture="Culture.aserai"
+                 length="4.841"
+                 weight="0.12">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="cleaver_pommel_1"
+                 name="{=WkLj6xAo}Trapezoid Pommel"
+                 tier="1"
+                 piece_type="Pommel"
+                 mesh="cleaver_pommel_1"
+                 length="5.255"
+                 weight="0.14">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron2"
+                count="2" />
+    </Materials>
+    <BuildData next_piece_offset="-0.2" />
+  </CraftingPiece>
+  <CraftingPiece id="empire_pommel_2"
+                 name="{=T62Cmrrh}Faceted Pommel"
+                 tier="2"
+                 piece_type="Pommel"
+                 mesh="empire_pommel_2"
+                 culture="Culture.empire"
+                 length="6.496"
+                 weight="0.250">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="cleaver_pommel_2"
+                 name="{=RWm1h40B}Highland Pommel"
+                 tier="3"
+                 piece_type="Pommel"
+                 mesh="cleaver_pommel_2"
+                 culture="Culture.aserai"
+                 length="6.692"
+                 weight="0.14">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_pommel_6"
+                 name="{=u89rP5qY}Wide Brimmed Pommel"
+                 tier="1"
+                 piece_type="Pommel"
+                 mesh="khuzait_pommel_6"
+                 culture="Culture.aserai"
+                 length="2.616"
+                 weight="0.11">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_pommel_8"
+                 name="{=yzsneaL6}Rimmed Wheel Pommel"
+                 tier="3"
+                 piece_type="Pommel"
+                 mesh="vlandian_pommel_8"
+                 culture="Culture.vlandia"
+                 length="7.77"
+                 weight="0.24">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_pommel_1"
+                 name="{=aGtEhibt}Northern Round Pommel"
+                 tier="3"
+                 piece_type="Pommel"
+                 mesh="sturgian_pommel_1"
+                 culture="Culture.sturgia"
+                 length="3.539"
+                 weight="0.150">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_noble_pommel_4"
+                 name="{=DzncFcGk}Kheshigs Pommel"
+                 tier="4"
+                 piece_type="Pommel"
+                 mesh="khuzait_noble_pommel_4"
+                 culture="Culture.khuzait"
+                 length="3.1"
+                 weight="0.26">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="-0.3" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_noble_pommel_1"
+                 name="{=lcjkq4bA}Southern Decorated Pommel"
+                 tier="4"
+                 piece_type="Pommel"
+                 mesh="aserai_noble_pommel_1"
+                 culture="Culture.aserai"
+                 length="5.1"
+                 weight="0.284">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_noble_pommel_4"
+                 name="{=gTMThdRJ}Lordly Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="vlandian_noble_pommel_4"
+                 culture="Culture.vlandia"
+                 length="6"
+                 weight="0.15">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron5"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_noble_pommel_1"
+                 name="{=HuYwPEmh}Ornamental Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="vlandian_noble_pommel_1"
+                 culture="Culture.vlandia"
+                 length="7.1"
+                 weight="0.15">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron5"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="empire_noble_pommel_3"
+                 name="{=9Y1zUaE7}Imperial Round Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="empire_noble_pommel_3"
+                 culture="Culture.empire"
+                 length="6.8"
+                 weight="0.2"
+                 appearance="0.9">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron5"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="empire_noble_pommel_4"
+                 name="{=GI6XD77j}Imperial Decorated Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="empire_noble_pommel_4"
+                 culture="Culture.empire"
+                 length="7"
+                 weight="0.2"
+                 appearance="0.9">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron5"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_noble_pommel_2"
+                 name="{=rn6tttI2}Southern Ornamental Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="aserai_noble_pommel_2"
+                 culture="Culture.aserai"
+                 length="6.4"
+                 weight="0.284">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron5"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_noble_pommel_4"
+                 name="{=1nGcpiom}Rounded Ornamental Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="aserai_noble_pommel_4"
+                 culture="Culture.aserai"
+                 length="6.4"
+                 weight="0.284">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="-0.3" />
+    <Materials>
+      <Material id="Iron5"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_noble_pommel_1"
+                 name="{=W5tvNbjY}Eastern Ornamented Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="khuzait_noble_pommel_1"
+                 culture="Culture.khuzait"
+                 length="3.6"
+                 weight="0.26">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0" />
+    <Materials>
+      <Material id="Iron5"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_noble_pommel_2"
+                 name="{=26KZ6S7F}Eastern Decorated Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="khuzait_noble_pommel_2"
+                 culture="Culture.khuzait"
+                 length="4.3"
+                 weight="0.26">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0" />
+    <Materials>
+      <Material id="Iron5"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_noble_pommel_3"
+                 name="{=HuYwPEmh}Ornamental Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="sturgian_noble_pommel_3"
+                 culture="Culture.sturgia"
+                 length="3.9"
+                 weight="0.17">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron5"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_noble_pommel_4"
+                 name="{=usVYZYYD}Northern Lordly Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="sturgian_noble_pommel_4"
+                 culture="Culture.sturgia"
+                 length="5.4"
+                 weight="0.17">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron5"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="battania_pommel_5"
+                 name="{=OW7w3Mth}Fian's Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="battania_pommel_5"
+                 culture="Culture.battania"
+                 length="10"
+                 weight="0.450">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <BuildData next_piece_offset="0.2" />
+    <Materials>
+      <Material id="Iron5"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_pommel_4"
+                 name="{=nZ5e678J}Simple Wheel Pommel"
+                 tier="3"
+                 piece_type="Pommel"
+                 mesh="vlandian_pommel_4"
+                 culture="Culture.vlandia"
+                 length="7"
+                 weight="0.16">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_pommel_9"
+                 name="{=ukYW8FVm}Bulbous Saber Pommel"
+                 tier="3"
+                 piece_type="Pommel"
+                 mesh="aserai_pommel_9"
+                 culture="Culture.aserai"
+                 length="6.288"
+                 weight="0.284">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_pommel_10"
+                 name="{=GqwD99cu}Embellished Pommel"
+                 tier="3"
+                 piece_type="Pommel"
+                 mesh="sturgian_pommel_10"
+                 culture="Culture.sturgia"
+                 length="4.645"
+                 weight="0.18">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+    <BuildData next_piece_offset="-0.1" />
+  </CraftingPiece>
+  <!-- #endregion -->
+  <!-- #region Sword Pommel Pieces -->
+  <CraftingPiece id="empire_pommel_6"
+                 name="{=Ibaju3oe}Eaglehead Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="empire_pommel_6"
+                 culture="Culture.empire"
+                 length="5.4"
+                 weight="0.2"
+                 appearance="0.9">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron5"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="empire_noble_pommel_1"
+                 name="{=kbh6i0M7}Fine Gladius Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="empire_noble_pommel_1"
+                 culture="Culture.empire"
+                 length="7"
+                 weight="0.2"
+                 appearance="0.9">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron5"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="empire_noble_pommel_2"
+                 name="{=PUAi75mb}Imperial Ring Pommel"
+                 tier="4"
+                 piece_type="Pommel"
+                 mesh="empire_noble_pommel_2"
+                 culture="Culture.empire"
+                 length="6.5"
+                 weight="0.2"
+                 appearance="0.9">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_pommel_2"
+                 name="{=8ZbL3exH}Lobed Pommel"
+                 tier="4"
+                 piece_type="Pommel"
+                 mesh="sturgian_pommel_2"
+                 culture="Culture.sturgia"
+                 length="4.876"
+                 weight="0.120">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <BuildData next_piece_offset="-0.2" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_pommel_5"
+                 name="{=38vt2VVz}Broad Pommel"
+                 tier="2"
+                 piece_type="Pommel"
+                 mesh="sturgian_pommel_5"
+                 culture="Culture.sturgia"
+                 length="2.072"
+                 weight="0.12">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron1"
+                count="1" />
+    </Materials>
+    <BuildData next_piece_offset="-0.1" />
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_pommel_6"
+                 name="{=mVjshtzg}Cone Hat Pommel"
+                 tier="2"
+                 piece_type="Pommel"
+                 mesh="sturgian_pommel_6"
+                 culture="Culture.sturgia"
+                 length="4.783"
+                 weight="0.14">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <BuildData next_piece_offset="-0.1" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_pommel_9"
+                 name="{=HmsEarnz}Teardrop Pommel"
+                 tier="3"
+                 piece_type="Pommel"
+                 mesh="sturgian_pommel_9"
+                 culture="Culture.sturgia"
+                 length="4.744"
+                 weight="0.2">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_pommel_11"
+                 name="{=ldvppRXj}Patterned Pommel"
+                 tier="4"
+                 piece_type="Pommel"
+                 mesh="sturgian_pommel_11"
+                 culture="Culture.sturgia"
+                 length="5"
+                 weight="0.22">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_noble_pommel_1"
+                 name="{=Ao7c1VrC}Northern Triangular Pommel"
+                 tier="3"
+                 piece_type="Pommel"
+                 mesh="sturgian_noble_pommel_1"
+                 culture="Culture.sturgia"
+                 length="4.3"
+                 weight="0.17">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_noble_pommel_2"
+                 name="{=LDRnfLRh}Decorated Northern Pommel"
+                 tier="4"
+                 piece_type="Pommel"
+                 mesh="sturgian_noble_pommel_2"
+                 culture="Culture.sturgia"
+                 length="4.7"
+                 weight="0.17">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_pommel_1"
+                 name="{=faZasq1G}Eastern Ring Pommel"
+                 tier="1"
+                 piece_type="Pommel"
+                 mesh="khuzait_pommel_1"
+                 culture="Culture.khuzait"
+                 length="6.588"
+                 weight="0.12">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_pommel_5"
+                 name="{=BQ3hMy9D}Horsehead Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="khuzait_pommel_5"
+                 culture="Culture.khuzait"
+                 length="7.268"
+                 weight="0.2">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron5"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_pommel_7"
+                 name="{=S2MYKoII}Tall Eastern Pommel"
+                 tier="3"
+                 piece_type="Pommel"
+                 mesh="khuzait_pommel_7"
+                 culture="Culture.khuzait"
+                 length="5.652"
+                 weight="0.26">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_noble_pommel_3"
+                 name="{=zoQhOBku}Round Spiked Pommel"
+                 tier="4"
+                 piece_type="Pommel"
+                 mesh="khuzait_noble_pommel_3"
+                 culture="Culture.khuzait"
+                 length="5.6"
+                 weight="0.26">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_pommel_2"
+                 name="{=8gW1o7iH}Western Lobed Pommel"
+                 tier="4"
+                 piece_type="Pommel"
+                 mesh="vlandian_pommel_2"
+                 culture="Culture.vlandia"
+                 length="7.9"
+                 weight="0.17">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <BuildData next_piece_offset="0.1" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_pommel_3"
+                 name="{=AO2BfABx}Mushroom Pommel"
+                 tier="3"
+                 piece_type="Pommel"
+                 mesh="vlandian_pommel_3"
+                 culture="Culture.vlandia"
+                 length="6.05"
+                 weight="0.25">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_pommel_5"
+                 name="{=zIbAD527}Wedge Pommel"
+                 tier="2"
+                 piece_type="Pommel"
+                 mesh="vlandian_pommel_5"
+                 culture="Culture.vlandia"
+                 length="4.114"
+                 weight="0.14">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_noble_pommel_2"
+                 name="{=h4DmfRfb}Knightly Pommel"
+                 tier="4"
+                 piece_type="Pommel"
+                 mesh="vlandian_noble_pommel_2"
+                 culture="Culture.vlandia"
+                 length="10"
+                 weight="0.15">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_noble_pommel_3"
+                 name="{=Udo97SZC}Western Decorated Pommel"
+                 tier="4"
+                 piece_type="Pommel"
+                 mesh="vlandian_noble_pommel_3"
+                 culture="Culture.vlandia"
+                 length="5"
+                 weight="0.15">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="cleaver_pommel_3"
+                 name="{=Dsf9JE8N}Wooden Hook"
+                 tier="2"
+                 piece_type="Pommel"
+                 mesh="cleaver_pommel_3"
+                 culture="Culture.aserai"
+                 length="7.8"
+                 weight="0.146">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <BuildData next_piece_offset="-0.2" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="cleaver_pommel_4"
+                 name="{=V0khEGns}Flat Pommel"
+                 tier="1"
+                 piece_type="Pommel"
+                 mesh="cleaver_pommel_4"
+                 length="1.07"
+                 weight="0.08">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_pommel_4"
+                 name="{=GyOxvJpB}Globe Pommel"
+                 tier="1"
+                 piece_type="Pommel"
+                 mesh="aserai_pommel_4"
+                 culture="Culture.empire"
+                 length="7.797"
+                 weight="0.4">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <BuildData next_piece_offset="-0.3" />
+    <Materials>
+      <Material id="Iron2"
+                count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_pommel_6"
+                 name="{=bEQETxjB}Ridged Pommel"
+                 tier="4"
+                 piece_type="Pommel"
+                 mesh="aserai_pommel_6"
+                 culture="Culture.aserai"
+                 length="4.038"
+                 weight="0.181">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_noble_pommel_3"
+                 name="{=emryrbYV}Braided Pommel"
+                 tier="5"
+                 piece_type="Pommel"
+                 mesh="aserai_noble_pommel_3"
+                 culture="Culture.aserai"
+                 length="6.7"
+                 weight="0.284">
+    <PieceUsages unavailable_usages="" />
+    <Materials>
+      <Material id="Iron5"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="battania_pommel_2"
+                 name="{=Wd3bU57P}Bronze Crescent Pommel"
+                 tier="2"
+                 piece_type="Pommel"
+                 mesh="battania_pommel_2"
+                 culture="Culture.battania"
+                 length="2.4"
+                 weight="0.12">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="-0.3" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="battania_pommel_6"
+                 name="{=xZ70rbRt}Round Wooden Pommel"
+                 tier="1"
+                 piece_type="Pommel"
+                 mesh="battania_pommel_6"
+                 culture="Culture.empire"
+                 length="10"
+                 weight="0.250">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Wood"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="battania_pommel_7"
+                 name="{=G9cBw5sV}Highland Round Pommel"
+                 tier="4"
+                 piece_type="Pommel"
+                 mesh="battania_pommel_7"
+                 culture="Culture.battania"
+                 length="10"
+                 weight="0.250">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="battania_noble_pommel_1"
+                 name="{=Oz6xANFb}Highland Ornamental Pommel"
+                 tier="4"
+                 piece_type="Pommel"
+                 mesh="battania_noble_pommel_1"
+                 culture="Culture.battania"
+                 length="4.1"
+                 weight="0.12">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="wood_pommel_1"
+                 name="{=dvm8sTr9}Wooden Pommel"
+                 tier="1"
+                 piece_type="Pommel"
+                 mesh="wood_pommel_1"
+                 length="3.8"
+                 weight="0.069">
+    <!--WOOD-->
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <Materials>
+      <Material id="Wood"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+    <!--END-->
 </CraftingPieces>

@@ -149,7 +149,7 @@ namespace RealisticBattleCombatModule
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
                 {
-                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage - 70f)) * XmlConfig.dict["Global.ThrustModifier"];
+                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage - 70f) * 0.5f) * XmlConfig.dict["Global.ThrustModifier"];
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingAxe"))
@@ -647,17 +647,17 @@ namespace RealisticBattleCombatModule
                             {
                                 case DamageTypes.Pierce:
                                     {
-                                        dmgMultiplier *= 2f;
+                                        dmgMultiplier *= 1.5f;
                                         break;
                                     }
                                 case DamageTypes.Cut:
                                     {
-                                        dmgMultiplier *= 2f;
+                                        dmgMultiplier *= 1.5f;
                                         break;
                                     }
                                 case DamageTypes.Blunt:
                                     {
-                                        dmgMultiplier *= 2f;
+                                        dmgMultiplier *= 1.5f;
                                         break;
                                     }
                                 default:
@@ -674,17 +674,17 @@ namespace RealisticBattleCombatModule
                             {
                                 case DamageTypes.Pierce:
                                     {
-                                        dmgMultiplier *= 2f;
+                                        dmgMultiplier *= 1.5f;
                                         break;
                                     }
                                 case DamageTypes.Cut:
                                     {
-                                        dmgMultiplier *= 2f;
+                                        dmgMultiplier *= 1.5f;
                                         break;
                                     }
                                 case DamageTypes.Blunt:
                                     {
-                                        dmgMultiplier *= 2f;
+                                        dmgMultiplier *= 1.5f;
                                         break;
                                     }
                                 default:
@@ -872,7 +872,7 @@ namespace RealisticBattleCombatModule
             {
                 mag_1h_thrust = magnitude;
                 mag_2h_thrust = magnitude;
-                mag_1h_sword_thrust = magnitude * 1.35f;
+                mag_1h_sword_thrust = magnitude * 1.0f;
                 mag_2h_sword_thrust = magnitude * 1.00f;
             }
             else

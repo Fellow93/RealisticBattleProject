@@ -211,9 +211,9 @@
   <CraftedItem id="battania_polearm_1_t5" name="{=V4b2ZRTH}Rhomphalia" crafting_template="TwoHandedPolearm" culture="Culture.battania">
     <Pieces>
       <Piece id="battania_blade_7" Type="Blade" scale_factor="150" />
-      <Piece id="spear_guard_7" Type="Guard" scale_factor="90" />
-      <Piece id="spear_handle_8" Type="Handle" scale_factor="45" />
-      <Piece id="default_polearm_pommel" Type="Pommel" scale_factor="100" />
+      <Piece id="sturgian_guard_6" Type="Guard" scale_factor="150" />
+      <Piece id="sturgian_grip_20" Type="Handle" scale_factor="250" />
+      <Piece id="battania_pommel_9" Type="Pommel" scale_factor="150" />
     </Pieces>
   </CraftedItem>
   
