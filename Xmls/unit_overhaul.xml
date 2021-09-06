@@ -2488,17 +2488,17 @@
       <skill id="Riding"
              value="45" />
       <skill id="OneHanded"
-             value="100" />
+             value="80" />
       <skill id="TwoHanded"
              value="60" />
       <skill id="Polearm"
-             value="100" />
+             value="90" />
       <skill id="Bow"
              value="45" />
       <skill id="Crossbow"
              value="15" />
       <skill id="Throwing"
-             value="60" />
+             value="100" />
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.aserai_veteran_infantry" />
@@ -2566,7 +2566,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.aserai_mace_4_t4" />
+                 id="Item.eastern_javelin_2_t3" />
       <equipment slot="Item1"
                  id="Item.desert_oval_shield" />
       <equipment slot="Item2"
@@ -2660,6 +2660,26 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.shishpar_mace_t4" />
+      <equipment slot="Item1"
+                 id="Item.southern_oval_shield" />
+      <equipment slot="Item2"
+                 id="Item.eastern_javelin_3_t4" />
+      <equipment slot="Item3"
+                 id="Item.eastern_javelin_3_t4" />
+      <equipment slot="Head"
+                 id="Item.pointed_skullcap_over_mail_coif" />
+      <equipment slot="Body"
+                 id="Item.desert_lamellar" />
+      <equipment slot="Leg"
+                 id="Item.plated_strip_boots" />
+      <equipment slot="Cape"
+                 id="Item.desert_scale_shoulders" />
+      <equipment slot="Gloves"
+                 id="Item.mail_mitten" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.wide_leaf_spear_t4" />
       <equipment slot="Item1"
                  id="Item.southern_oval_shield" />
       <equipment slot="Item2"
@@ -11716,6 +11736,22 @@
       <equipment slot="Cape"
                  id="Item.hood" />
       </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.western_spear_1_t2" />
+      <equipment slot="Item1"
+                 id="Item.ironrim_kite_shield" />
+      <equipment slot="Body"
+                 id="Item.padded_coat" />
+      <equipment slot="Leg"
+                 id="Item.empire_horseman_boots" />
+      <equipment slot="Head"
+                 id="Item.padded_leather_cape" />
+      <equipment slot="Gloves"
+                 id="Item.buttoned_leather_bracers" />
+      <equipment slot="Cape"
+                 id="Item.hood" />
+      </EquipmentRoster>
       <EquipmentSet id="vlandia_troop_civilian_template_t1"
                     civilian="true" />
     </Equipments>
@@ -11773,7 +11809,7 @@
       <equipment slot="Item1"
                  id="Item.leather_bound_kite_shield" />
       <equipment slot="Body"
-                 id="Item.padded_coat" />
+                 id="Item.mail_shirt" />
       <equipment slot="Leg"
                  id="Item.empire_horseman_boots" />
       <equipment slot="Head"
@@ -11841,7 +11877,7 @@
       <equipment slot="Item1"
                  id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
-                 id="Item.nordic_sloven_over_mail" />
+                 id="Item.red_coat_over_mail" />
       <equipment slot="Leg"
                  id="Item.leather_cavalier_boots" />
       <equipment slot="Head"
@@ -11865,7 +11901,7 @@
       <equipment slot="Gloves"
                  id="Item.padded_vambrace" />
       <equipment slot="Cape"
-                 id="Item.padded_leather_shoulders" />
+                 id="Item.mail_shoulders" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -11873,7 +11909,7 @@
       <equipment slot="Item1"
                  id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
-                 id="Item.nordic_sloven_over_mail" />
+                 id="Item.red_coat_over_mail" />
       <equipment slot="Leg"
                  id="Item.leather_cavalier_boots" />
       <equipment slot="Head"
@@ -12052,11 +12088,11 @@
       <skill id="Riding"
              value="40" />
       <skill id="OneHanded"
-             value="70" />
+             value="80" />
       <skill id="TwoHanded"
              value="40" />
       <skill id="Polearm"
-             value="70" />
+             value="80" />
       <skill id="Bow"
              value="10" />
       <skill id="Crossbow"
@@ -12077,7 +12113,7 @@
       <equipment slot="Item2"
                  id="Item.western_spear_3_t3" />
       <equipment slot="Body"
-                 id="Item.padded_coat" />
+                 id="Item.veteran_mercenary_armor" />
       <equipment slot="Leg"
                  id="Item.empire_horseman_boots" />
       <equipment slot="Head"
@@ -12113,7 +12149,7 @@
       <equipment slot="Item2"
                  id="Item.western_spear_3_t3" />
       <equipment slot="Body"
-                 id="Item.padded_coat" />
+                 id="Item.mail_shirt" />
       <equipment slot="Leg"
                  id="Item.empire_horseman_boots" />
       <equipment slot="Head"
@@ -12142,11 +12178,11 @@
       <skill id="Riding"
              value="45" />
       <skill id="OneHanded"
-             value="100" />
+             value="110" />
       <skill id="TwoHanded"
              value="60" />
       <skill id="Polearm"
-             value="100" />
+             value="110" />
       <skill id="Bow"
              value="15" />
       <skill id="Crossbow"
@@ -12166,7 +12202,7 @@
       <equipment slot="Item2"
                  id="Item.studded_bound_kite_shield" />
       <equipment slot="Body"
-                 id="Item.mail_shirt" />
+                 id="Item.red_coat_over_mail" />
       <equipment slot="Leg"
                  id="Item.strapped_mail_chausses" />
       <equipment slot="Head"
@@ -12184,7 +12220,7 @@
       <equipment slot="Item2"
                  id="Item.studded_bound_kite_shield" />
       <equipment slot="Body"
-                 id="Item.white_coat_over_mail" />
+                 id="Item.hauberk" />
       <equipment slot="Leg"
                  id="Item.strapped_mail_chausses" />
       <equipment slot="Head"
@@ -12192,7 +12228,7 @@
       <equipment slot="Gloves"
                  id="Item.padded_mitten" />
       <equipment slot="Cape"
-                 id="Item.padded_leather_shoulders" />
+                 id="Item.mail_shoulders" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -12218,7 +12254,7 @@
       <equipment slot="Item2"
                  id="Item.studded_bound_kite_shield" />
       <equipment slot="Body"
-                 id="Item.mail_shirt" />
+                 id="Item.red_coat_over_mail" />
       <equipment slot="Leg"
                  id="Item.strapped_mail_chausses" />
       <equipment slot="Head"
@@ -12226,7 +12262,7 @@
       <equipment slot="Gloves"
                  id="Item.padded_mitten" />
       <equipment slot="Cape"
-                 id="Item.padded_leather_shoulders" />
+                 id="Item.mail_shoulders" />
       </EquipmentRoster>
       <EquipmentSet id="vlandia_troop_civilian_template_t2"
                     civilian="true" />
@@ -12771,7 +12807,7 @@
       <equipment slot="Item3"
                  id="Item.pavise_shield" />
       <equipment slot="Body"
-                 id="Item.white_coat_over_mail" />
+                 id="Item.mail_shirt" />
       <equipment slot="Leg"
                  id="Item.leather_cavalier_boots" />
       <equipment slot="Head"
@@ -12791,7 +12827,7 @@
       <equipment slot="Item3"
                  id="Item.pavise_shield" />
       <equipment slot="Body"
-                 id="Item.white_coat_over_mail" />
+                 id="Item.mail_shirt" />
       <equipment slot="Leg"
                  id="Item.leather_cavalier_boots" />
       <equipment slot="Head"
