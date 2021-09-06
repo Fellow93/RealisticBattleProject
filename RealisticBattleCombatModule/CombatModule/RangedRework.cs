@@ -47,35 +47,37 @@ namespace RealisticBattleCombatModule
                     for (int i = 0; i < weaponStatsData.Length; i++)
                     {
                         SkillObject skill = (weaponData.GetItemObject() == null) ? DefaultSkills.Athletics : weaponData.GetItemObject().RelevantSkill;
-                        int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance.Character, __instance.Origin, __instance.Formation, skill);
+                        if(skill != null) { 
+                            int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance.Character, __instance.Origin, __instance.Formation, skill);
 
-                        if ((weaponStatsData[i].WeaponClass == (int)WeaponClass.OneHandedSword) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.Dagger) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.LowGripPolearm)
-                                 || (weaponStatsData[i].WeaponClass == (int)WeaponClass.Mace) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.OneHandedAxe) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.OneHandedPolearm)
-                                  || (weaponStatsData[i].WeaponClass == (int)WeaponClass.TwoHandedAxe) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.TwoHandedMace) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.TwoHandedPolearm)
-                                   || (weaponStatsData[i].WeaponClass == (int)WeaponClass.TwoHandedSword))
-                        {
+                            if ((weaponStatsData[i].WeaponClass == (int)WeaponClass.OneHandedSword) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.Dagger) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.LowGripPolearm)
+                                     || (weaponStatsData[i].WeaponClass == (int)WeaponClass.Mace) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.OneHandedAxe) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.OneHandedPolearm)
+                                      || (weaponStatsData[i].WeaponClass == (int)WeaponClass.TwoHandedAxe) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.TwoHandedMace) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.TwoHandedPolearm)
+                                       || (weaponStatsData[i].WeaponClass == (int)WeaponClass.TwoHandedSword))
+                            {
 
-                            float skillModifier = 1f + effectiveSkill / 1000f;
+                                float skillModifier = 1f + effectiveSkill / 1000f;
 
-                            weaponStatsData[i].SwingSpeed = MathF.Ceiling((weaponStatsData[i].SwingSpeed * 0.83f) * skillModifier);
-                            weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.83f) * skillModifier);
-                            weaponStatsData[i].DefendSpeed = MathF.Ceiling((weaponStatsData[i].DefendSpeed * 0.83f) * skillModifier);
-                        }
-                        if ((weaponStatsData[i].WeaponClass == (int)WeaponClass.OneHandedPolearm) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.LowGripPolearm))
-                        {
-                            weaponStatsData[i].MissileSpeed =  Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot], 10, effectiveSkill);
-                        }
-                        if (weaponStatsData[i].WeaponClass == (int)WeaponClass.Javelin)
-                        {
-                            weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot], 10, effectiveSkill);
-                        }
-                        if ((weaponStatsData[i].WeaponClass == (int)WeaponClass.ThrowingAxe) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.ThrowingKnife))
-                        {
-                            weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot], 5, effectiveSkill);
-                        }
-                        if (weaponStatsData[i].WeaponClass == (int)WeaponClass.Stone)
-                        {
-                            weaponStatsData[i].MissileSpeed = Utilities.assignStoneMissileSpeed(__instance.Equipment[equipmentSlot]);
+                                weaponStatsData[i].SwingSpeed = MathF.Ceiling((weaponStatsData[i].SwingSpeed * 0.83f) * skillModifier);
+                                weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.83f) * skillModifier);
+                                weaponStatsData[i].DefendSpeed = MathF.Ceiling((weaponStatsData[i].DefendSpeed * 0.83f) * skillModifier);
+                            }
+                            if ((weaponStatsData[i].WeaponClass == (int)WeaponClass.OneHandedPolearm) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.LowGripPolearm))
+                            {
+                                weaponStatsData[i].MissileSpeed =  Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot], 10, effectiveSkill);
+                            }
+                            if (weaponStatsData[i].WeaponClass == (int)WeaponClass.Javelin)
+                            {
+                                weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot], 10, effectiveSkill);
+                            }
+                            if ((weaponStatsData[i].WeaponClass == (int)WeaponClass.ThrowingAxe) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.ThrowingKnife))
+                            {
+                                weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot], 5, effectiveSkill);
+                            }
+                            if (weaponStatsData[i].WeaponClass == (int)WeaponClass.Stone)
+                            {
+                                weaponStatsData[i].MissileSpeed = Utilities.assignStoneMissileSpeed(__instance.Equipment[equipmentSlot]);
+                            }
                         }
                     }
                 }
@@ -110,92 +112,95 @@ namespace RealisticBattleCombatModule
                         MissionWeapon mw = __instance.Equipment[equipmentIndex];
                         WeaponStatsData[] wsd = mw.GetWeaponStatsData();
 
-                        SkillObject skill = (mw.CurrentUsageItem == null) ? DefaultSkills.Athletics : mw.CurrentUsageItem.RelevantSkill;
-                        int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance.Character, __instance.Origin, __instance.Formation, skill);
-
-                        //if ((wsd[0].WeaponClass == (int)WeaponClass.SmallShield) || (wsd[0].WeaponClass == (int)WeaponClass.LargeShield))
+                        //SkillObject skill = (mw.CurrentUsageItem == null) ? DefaultSkills.Athletics : mw.CurrentUsageItem.RelevantSkill;
+                        //if (skill != null)
                         //{
-                        //    __instance.AttachWeaponToWeapon(equipmentIndex, __instance.Equipment[equipmentIndex], __instance.GetWeaponEntityFromEquipmentSlot(equipmentIndex), ref wsd[0].WeaponFrame);
-                        //    __instance.AttachWeaponToBone(__instance.Equipment[equipmentIndex], __instance.AgentVisuals.GetEntity(), 5, ref wsd[0].WeaponFrame);
-                        //}
-                        //if ((wsd[0].WeaponClass == (int)WeaponClass.OneHandedSword) || (wsd[0].WeaponClass == (int)WeaponClass.Dagger) || (wsd[0].WeaponClass == (int)WeaponClass.LowGripPolearm)
-                        //     || (wsd[0].WeaponClass == (int)WeaponClass.Mace) || (wsd[0].WeaponClass == (int)WeaponClass.OneHandedAxe) || (wsd[0].WeaponClass == (int)WeaponClass.OneHandedPolearm)
-                        //      || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedAxe) || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedMace) || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedPolearm)
-                        //       || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedSword))
-                        //{
-                        //    float skillModifier = 1f + effectiveSkill / 1000f;
+                        //    int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance.Character, __instance.Origin, __instance.Formation, skill);
 
-                        //    WeaponComponentData weapon = mw.CurrentUsageItem;
+                            //if ((wsd[0].WeaponClass == (int)WeaponClass.SmallShield) || (wsd[0].WeaponClass == (int)WeaponClass.LargeShield))
+                            //{
+                            //    __instance.AttachWeaponToWeapon(equipmentIndex, __instance.Equipment[equipmentIndex], __instance.GetWeaponEntityFromEquipmentSlot(equipmentIndex), ref wsd[0].WeaponFrame);
+                            //    __instance.AttachWeaponToBone(__instance.Equipment[equipmentIndex], __instance.AgentVisuals.GetEntity(), 5, ref wsd[0].WeaponFrame);
+                            //}
+                            //if ((wsd[0].WeaponClass == (int)WeaponClass.OneHandedSword) || (wsd[0].WeaponClass == (int)WeaponClass.Dagger) || (wsd[0].WeaponClass == (int)WeaponClass.LowGripPolearm)
+                            //     || (wsd[0].WeaponClass == (int)WeaponClass.Mace) || (wsd[0].WeaponClass == (int)WeaponClass.OneHandedAxe) || (wsd[0].WeaponClass == (int)WeaponClass.OneHandedPolearm)
+                            //      || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedAxe) || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedMace) || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedPolearm)
+                            //       || (wsd[0].WeaponClass == (int)WeaponClass.TwoHandedSword))
+                            //{
+                            //    float skillModifier = 1f + effectiveSkill / 1000f;
 
-                        //    int swingSpeed = (int)swingSpeedProperty.GetValue(weapon, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
-                        //    originalItemSwingSpeed[mw.GetModifiedItemName()] = swingSpeed;
-                        //    swingSpeedProperty.SetValue(weapon, MathF.Ceiling((swingSpeed * 0.83f) * skillModifier), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                            //    WeaponComponentData weapon = mw.CurrentUsageItem;
 
-                        //    int thrustSpeed = (int)thrustSpeedProperty.GetValue(weapon, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
-                        //    originalItemThrustSpeed[mw.GetModifiedItemName()] = thrustSpeed;
-                        //    thrustSpeedProperty.SetValue(weapon, MathF.Ceiling((thrustSpeed * 0.83f) * skillModifier), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                            //    int swingSpeed = (int)swingSpeedProperty.GetValue(weapon, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+                            //    originalItemSwingSpeed[mw.GetModifiedItemName()] = swingSpeed;
+                            //    swingSpeedProperty.SetValue(weapon, MathF.Ceiling((swingSpeed * 0.83f) * skillModifier), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
 
-                        //    int handling = (int)handlingProperty.GetValue(weapon, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
-                        //    originalItemHandling[mw.GetModifiedItemName()] = handling;
-                        //    handlingProperty.SetValue(weapon, MathF.Ceiling((handling * 0.83f) * skillModifier), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-                        //}
-                        if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
-                        {
-                            RangedWeaponStats rangedWeaponStatNew = new RangedWeaponStats(mw.GetModifiedMissileSpeedForCurrentUsage());
-                            RangedWeaponStats rangedWeaponStatOld;
-                            if (!rangedWeaponStats.TryGetValue(mw.GetModifiedItemName().ToString(), out rangedWeaponStatOld))
+                            //    int thrustSpeed = (int)thrustSpeedProperty.GetValue(weapon, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+                            //    originalItemThrustSpeed[mw.GetModifiedItemName()] = thrustSpeed;
+                            //    thrustSpeedProperty.SetValue(weapon, MathF.Ceiling((thrustSpeed * 0.83f) * skillModifier), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+
+                            //    int handling = (int)handlingProperty.GetValue(weapon, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+                            //    originalItemHandling[mw.GetModifiedItemName()] = handling;
+                            //    handlingProperty.SetValue(weapon, MathF.Ceiling((handling * 0.83f) * skillModifier), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                            //}
+                            if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
                             {
-                                rangedWeaponStats[mw.GetModifiedItemName().ToString()] = rangedWeaponStatNew;
+                                RangedWeaponStats rangedWeaponStatNew = new RangedWeaponStats(mw.GetModifiedMissileSpeedForCurrentUsage());
+                                RangedWeaponStats rangedWeaponStatOld;
+                                if (!rangedWeaponStats.TryGetValue(mw.GetModifiedItemName().ToString(), out rangedWeaponStatOld))
+                                {
+                                    rangedWeaponStats[mw.GetModifiedItemName().ToString()] = rangedWeaponStatNew;
+                                }
+                                stringRangedWeapons.Add(mw);
                             }
-                            stringRangedWeapons.Add(mw);
-                        }
-                        if ((wsd[0].WeaponClass == (int)WeaponClass.Arrow) || (wsd[0].WeaponClass == (int)WeaponClass.Bolt))
-                        {
-                            if (firstProjectile)
+                            if ((wsd[0].WeaponClass == (int)WeaponClass.Arrow) || (wsd[0].WeaponClass == (int)WeaponClass.Bolt))
                             {
-                                arrow = mw;
-                                firstProjectile = false;
+                                if (firstProjectile)
+                                {
+                                    arrow = mw;
+                                    firstProjectile = false;
+                                }
                             }
-                        }
-                        //if ((wsd[0].WeaponClass == (int)WeaponClass.OneHandedPolearm) || (wsd[0].WeaponClass == (int)WeaponClass.LowGripPolearm))
-                        //{
-                        //    for (int i = 0; i < wsd.Length; i++)
-                        //    {
-                        //        if (wsd[i].MissileSpeed != 0)
-                        //        {
-                        //            Utilities.assignThrowableMissileSpeed(mw, i, 10, effectiveSkill);
-                        //        }
-                        //    }
-                        //}
-                        //if (wsd[0].WeaponClass == (int)WeaponClass.Javelin)
-                        //{
-                        //    for (int i = 0; i < wsd.Length; i++)
-                        //    {
-                        //        if (wsd[i].MissileSpeed != 0)
-                        //        {
-                        //            Utilities.assignThrowableMissileSpeed(mw, i, 10, effectiveSkill);
-                        //        }
-                        //    }
-                        //}
-                        //if ((wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe) || (wsd[0].WeaponClass == (int)WeaponClass.ThrowingKnife))
-                        //{
-                        //    for (int i = 0; i < wsd.Length; i++)
-                        //    {
-                        //        if (wsd[i].MissileSpeed != 0)
-                        //        {
-                        //            Utilities.assignThrowableMissileSpeed(mw, i, 5, effectiveSkill);
-                        //        }
-                        //    }
-                        //}
-                        //if (wsd[0].WeaponClass == (int)WeaponClass.Stone)
-                        //{
-                        //    for (int i = 0; i < wsd.Length; i++)
-                        //    {
-                        //        if (wsd[i].MissileSpeed != 0)
-                        //        {
-                        //            Utilities.assignStoneMissileSpeed(mw, i);
-                        //        }
-                        //    }
+                            //if ((wsd[0].WeaponClass == (int)WeaponClass.OneHandedPolearm) || (wsd[0].WeaponClass == (int)WeaponClass.LowGripPolearm))
+                            //{
+                            //    for (int i = 0; i < wsd.Length; i++)
+                            //    {
+                            //        if (wsd[i].MissileSpeed != 0)
+                            //        {
+                            //            Utilities.assignThrowableMissileSpeed(mw, i, 10, effectiveSkill);
+                            //        }
+                            //    }
+                            //}
+                            //if (wsd[0].WeaponClass == (int)WeaponClass.Javelin)
+                            //{
+                            //    for (int i = 0; i < wsd.Length; i++)
+                            //    {
+                            //        if (wsd[i].MissileSpeed != 0)
+                            //        {
+                            //            Utilities.assignThrowableMissileSpeed(mw, i, 10, effectiveSkill);
+                            //        }
+                            //    }
+                            //}
+                            //if ((wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe) || (wsd[0].WeaponClass == (int)WeaponClass.ThrowingKnife))
+                            //{
+                            //    for (int i = 0; i < wsd.Length; i++)
+                            //    {
+                            //        if (wsd[i].MissileSpeed != 0)
+                            //        {
+                            //            Utilities.assignThrowableMissileSpeed(mw, i, 5, effectiveSkill);
+                            //        }
+                            //    }
+                            //}
+                            //if (wsd[0].WeaponClass == (int)WeaponClass.Stone)
+                            //{
+                            //    for (int i = 0; i < wsd.Length; i++)
+                            //    {
+                            //        if (wsd[i].MissileSpeed != 0)
+                            //        {
+                            //            Utilities.assignStoneMissileSpeed(mw, i);
+                            //        }
+                            //    }
+                            //}
                         //}
                     }
                 }
@@ -359,6 +364,85 @@ namespace RealisticBattleCombatModule
             }
         }
 
+        //[HarmonyPatch(typeof(MissionEquipment))]
+        //class OverrideCheckLoadedAmmos
+        //{
+        //    [HarmonyPrefix]
+        //    [HarmonyPatch("CheckLoadedAmmos")]
+        //    static bool PrefixOnTick(ref MissionEquipment __instance, ref MissionWeapon[] ____weaponSlots)
+        //    {
+        //        for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+        //        {
+        //            if (!__instance[equipmentIndex].IsEmpty && __instance[equipmentIndex].Item.PrimaryWeapon.WeaponClass == WeaponClass.Crossbow)
+        //            {
+        //                __instance.GetAmmoCountAndIndexOfType(__instance[equipmentIndex].Item.Type, out var _, out var eIndex);
+        //                if (eIndex != EquipmentIndex.None)
+        //                {
+        //                    MissionWeapon ammoWeapon = ____weaponSlots[(int)eIndex].Consume(Math.Min(__instance[equipmentIndex].MaxAmmo, ____weaponSlots[(int)eIndex].Amount));
+        //                    ____weaponSlots[(int)equipmentIndex].ReloadAmmo(ammoWeapon, 2);
+        //                }
+        //            }
+        //        }
+        //        return false;
+        //    }
+        //}
+
+        //[MBCallback]
+        //[HarmonyPatch(typeof(Agent))]
+        //class OverrideOnWeaponAmmoReload
+        //{
+        //    [HarmonyPrefix]
+        //    [HarmonyPatch("OnWeaponAmmoReload")]
+        //    static bool PrefixOnWeaponAmmoReload(ref Agent __instance, EquipmentIndex slotIndex, EquipmentIndex ammoSlotIndex, short totalAmmo)
+        //    {
+        //        if (__instance.Equipment[slotIndex].CurrentUsageItem.IsRangedWeapon)
+        //        {
+        //            if(__instance.Equipment[slotIndex].CurrentUsageItem.WeaponClass == WeaponClass.Bow || __instance.Equipment[slotIndex].CurrentUsageItem.WeaponClass == WeaponClass.Crossbow)
+        //            {
+        //                WeaponData weaponData = WeaponData.InvalidWeaponData;
+        //                WeaponStatsData[] weaponStatsData = null;
+        //                WeaponData ammoWeaponData = WeaponData.InvalidWeaponData;
+        //                WeaponStatsData[] ammoWeaponStatsData = null;
+
+        //                if (!__instance.Equipment[slotIndex].IsEmpty && !__instance.Equipment[ammoSlotIndex].IsEmpty)
+        //                {
+        //                    float ammoWeight = __instance.Equipment[ammoSlotIndex].GetWeight() / __instance.Equipment[ammoSlotIndex].Amount;
+        //                    RangedWeaponStats rws;
+        //                    if (!rangedWeaponStats.TryGetValue(__instance.Equipment[slotIndex].GetModifiedItemName().ToString(), out rws))
+        //                    {
+        //                        rangedWeaponMW[__instance.Equipment[slotIndex].GetModifiedItemName().ToString()] = __instance.Equipment[slotIndex];
+        //                        rangedWeaponStats[__instance.Equipment[slotIndex].GetModifiedItemName().ToString()] = new RangedWeaponStats(__instance.Equipment[slotIndex].GetModifiedMissileSpeedForCurrentUsage());
+        //                    }
+        //                    int calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, __instance.Equipment[slotIndex], rangedWeaponStats[__instance.Equipment[slotIndex].GetModifiedItemName().ToString()].getDrawWeight());
+
+        //                    if (calculatedMissileSpeed != __instance.Equipment[slotIndex].CurrentUsageItem.MissileSpeed)
+        //                    {
+        //                        PropertyInfo propertyMissileSpeed = typeof(WeaponComponentData).GetProperty("MissileSpeed");
+        //                        propertyMissileSpeed.DeclaringType.GetProperty("MissileSpeed");
+        //                        propertyMissileSpeed.SetValue(__instance.Equipment[slotIndex].CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+
+        //                        weaponData = __instance.Equipment[slotIndex].GetWeaponData(needBatchedVersionForMeshes: true);
+        //                        weaponStatsData = __instance.Equipment[slotIndex].GetWeaponStatsData();
+
+        //                        MethodInfo method = typeof(Agent).GetMethod("WeaponEquipped", BindingFlags.NonPublic | BindingFlags.Instance);
+        //                        method.DeclaringType.GetMethod("WeaponEquipped");
+        //                        method.Invoke(__instance, new object[] { slotIndex, weaponData, weaponStatsData, ammoWeaponData, ammoWeaponStatsData, null, true, true });
+
+        //                       __instance.Equipment[slotIndex].ReloadAmmo(__instance.Equipment[ammoSlotIndex], 2);
+
+        //                        __instance.TryToWieldWeaponInSlot(slotIndex, Agent.WeaponWieldActionType.WithAnimation, false);
+
+        //                        //__instance.Equipment.SetReloadPhaseOfSlot(slotIndex, 2);
+        //                    }
+        //                }
+        //                weaponData.DeinitializeManagedPointers();
+        //                ammoWeaponData.DeinitializeManagedPointers();
+        //            }
+        //        }
+        //        return true;
+        //    }
+        //}
+
     }
 
     [HarmonyPatch(typeof(RangedSiegeWeapon))]
@@ -448,55 +532,62 @@ namespace RealisticBattleCombatModule
                 if (XmlConfig.dict["Global.RealisticRangedReload"] == 1)
                 {
                     SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
-                    int effectiveSkill = __instance.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
-
-                    if (equippedItem != null)
+                    if(skill != null)
                     {
-                        switch (equippedItem.ItemUsage)
+                        int effectiveSkill = __instance.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
+
+                        if (equippedItem != null)
                         {
-                            case "bow":
-                            case "long_bow":
-                                {
-                                    agentDrivenProperties.ReloadSpeed = 0.19f * (1 + (0.005f * effectiveSkill));
-                                    break;
-                                }
-                            case "crossbow_fast":
-                                {
-                                    agentDrivenProperties.ReloadSpeed = 0.19f * (1 + (0.0025f * effectiveSkill));
-                                    break;
-                                }
-                            case "crossbow":
-                                {
-                                    agentDrivenProperties.ReloadSpeed = 0.12f * (1 + (0.0025f * effectiveSkill));
-                                    break;
-                                }
+                            switch (equippedItem.ItemUsage)
+                            {
+                                case "bow":
+                                case "long_bow":
+                                    {
+                                        agentDrivenProperties.ReloadSpeed = 0.19f * (1 + (0.005f * effectiveSkill));
+                                        break;
+                                    }
+                                case "crossbow_fast":
+                                    {
+                                        agentDrivenProperties.ReloadSpeed = 0.19f * (1 + (0.0025f * effectiveSkill));
+                                        break;
+                                    }
+                                case "crossbow":
+                                    {
+                                        agentDrivenProperties.ReloadSpeed = 0.12f * (1 + (0.0025f * effectiveSkill));
+                                        break;
+                                    }
+                            }
                         }
                     }
+                    
                 }
                 else if (XmlConfig.dict["Global.RealisticRangedReload"] == 2)
                 {
                     SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
-                    int effectiveSkill = __instance.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
-                    if (equippedItem != null)
+                    if (skill != null)
                     {
-                        switch (equippedItem.ItemUsage)
+                        int effectiveSkill = __instance.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
+                        if (equippedItem != null)
                         {
-                            case "bow":
-                            case "long_bow":
-                                {
-                                    agentDrivenProperties.ReloadSpeed = 0.38f * (1 + (0.005f * effectiveSkill));
-                                    break;
-                                }
-                            case "crossbow_fast":
-                                {
-                                    agentDrivenProperties.ReloadSpeed = 0.38f * (1 + (0.0025f * effectiveSkill));
-                                    break;
-                                }
-                            case "crossbow":
-                                {
-                                    agentDrivenProperties.ReloadSpeed = 0.24f * (1 + (0.0025f * effectiveSkill));
-                                    break;
-                                }
+                            switch (equippedItem.ItemUsage)
+                            {
+                                case "bow":
+                                case "long_bow":
+                                    {
+                                        agentDrivenProperties.ReloadSpeed = 0.38f * (1 + (0.005f * effectiveSkill));
+                                        break;
+                                    }
+                                case "crossbow_fast":
+                                    {
+                                        agentDrivenProperties.ReloadSpeed = 0.38f * (1 + (0.0025f * effectiveSkill));
+                                        break;
+                                    }
+                                case "crossbow":
+                                    {
+                                        agentDrivenProperties.ReloadSpeed = 0.24f * (1 + (0.0025f * effectiveSkill));
+                                        break;
+                                    }
+                            }
                         }
                     }
                 }

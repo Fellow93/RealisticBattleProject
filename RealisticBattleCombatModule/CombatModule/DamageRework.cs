@@ -296,203 +296,205 @@ namespace RealisticBattleCombatModule
             IAgentOriginBase attackerAgentOrigin = attackInformation.AttackerAgentOrigin;
             Formation attackerFormation = attackInformation.AttackerFormation;
 
-            if (!attackInformation.IsAttackerAgentMount && attackerAgentOrigin != null && attackInformation.AttackerAgentCharacter != null)
+            if (!attackCollisionData.IsAlternativeAttack && !attackInformation.IsAttackerAgentMount && attackerAgentOrigin != null && attackInformation.AttackerAgentCharacter != null)
             {
                 SkillObject skill = (attackerWeapon.CurrentUsageItem == null) ? DefaultSkills.Athletics : attackerWeapon.CurrentUsageItem.RelevantSkill;
-
-                int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgentCharacter, attackerAgentOrigin, attackerFormation, skill);
-                bool isPassiveUsage = attackInformation.IsAttackerAgentDoingPassiveAttack;
-                float skillBasedDamage = 0f;
-                const float ashBreakTreshold = 430f;
-
-                switch (weaponType)
+                if (skill != null)
                 {
-                    case "Dagger":
-                    case "OneHandedSword":
-                        {
-                            if (damageType == DamageTypes.Cut)
+                    int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgentCharacter, attackerAgentOrigin, attackerFormation, skill);
+                    bool isPassiveUsage = attackInformation.IsAttackerAgentDoingPassiveAttack;
+                    float skillBasedDamage = 0f;
+                    const float ashBreakTreshold = 430f;
+
+                    switch (weaponType)
+                    {
+                        case "Dagger":
+                        case "OneHandedSword":
                             {
-                                skillBasedDamage = magnitude + 40f + (effectiveSkill * 0.53f);
-                            }
-                            else
-                            {
-                                skillBasedDamage = magnitude * 0.2f + 50f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.46f * XmlConfig.dict["Global.ThrustModifier"]);
-                            }
-                            if (magnitude > 1f)
-                            {
-                                magnitude = skillBasedDamage;
-                            }
-                            break;
-                        }
-                    case "TwoHandedSword":
-                        {
-                            if (damageType == DamageTypes.Cut)
-                            {
-                                skillBasedDamage = magnitude + (40f + (effectiveSkill * 0.53f)) * 1.3f;
-                            }
-                            else
-                            {
-                                skillBasedDamage = (magnitude * 0.2f + 50f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.46f * XmlConfig.dict["Global.ThrustModifier"])) * 1.3f;
-                            }
-                            if (magnitude > 1f)
-                            {
-                                magnitude = skillBasedDamage;
-                            }
-                            break;
-                        }
-                    case "OneHandedAxe":
-                        {
-                            skillBasedDamage = magnitude + 60f + (effectiveSkill * 0.4f);
-                            if (magnitude > 1f)
-                            {
-                                magnitude = skillBasedDamage;
-                            }
-                            break;
-                        }
-                    case "OneHandedBastardAxe":
-                        {
-                            skillBasedDamage = magnitude + (60f + (effectiveSkill * 0.4f)) * 1.15f;
-                            if (magnitude > 1f)
-                            {
-                                magnitude = skillBasedDamage;
-                            }
-                            break;
-                        }
-                    case "TwoHandedAxe":
-                        {
-                            skillBasedDamage = magnitude + (60f + (effectiveSkill * 0.4f)) * 1.3f;
-                            if (magnitude > 1f)
-                            {
-                                magnitude = skillBasedDamage;
-                            }
-                            break;
-                        }
-                    case "Mace":
-                        {
-                            if (damageType == DamageTypes.Pierce)
-                            { 
-                                skillBasedDamage = magnitude * 0.2f + 40f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.4f * XmlConfig.dict["Global.ThrustModifier"]); 
-                            }
-                            else
-                            { 
-                                skillBasedDamage = magnitude + 30f + (effectiveSkill * 0.13f); 
-                            }
-                            if (magnitude > 1f)
-                            {
-                                magnitude = skillBasedDamage;
-                            }
-                            break;
-                        }
-                    case "TwoHandedMace":
-                        {
-                            if (damageType == DamageTypes.Pierce)
-                            {
-                                skillBasedDamage = (magnitude * 0.2f + 40f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.4f * XmlConfig.dict["Global.ThrustModifier"])) * 1.3f;
-                            }
-                            else
-                            {
-                                skillBasedDamage = magnitude +  (30f + (effectiveSkill * 0.13f) * 1.3f);
-                            }
-                            if (magnitude > 1f)
-                            {
-                                magnitude = skillBasedDamage;
-                            }
-                            break;
-                        }
-                    case "OneHandedPolearm":
-                        {
-                            if (damageType == DamageTypes.Cut)
-                            {
-                                skillBasedDamage = magnitude + 50f + (effectiveSkill * 0.46f);
-                            }
-                            else
-                            {
-                                if (isPassiveUsage)
+                                if (damageType == DamageTypes.Cut)
                                 {
-                                    float couchedSkill = 0.5f + effectiveSkill * 0.0225f;
-                                    float skillCap = (100f + effectiveSkill * 1.3f);
-
-                                    float weaponWeight = attackerWeapon.Item.Weight;
-
-                                    if (weaponWeight < 1.5f)
-                                    {
-                                        weaponWeight += 0.5f;
-                                    }
-                                    float lanceBalistics = (magnitude * 2f) / weaponWeight;
-                                    magnitude = lanceBalistics * (weaponWeight + couchedSkill);
-                                    if (magnitude > (skillCap * XmlConfig.dict["Global.ThrustModifier"]) && lanceBalistics < (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
-                                    {
-                                        magnitude = skillCap * XmlConfig.dict["Global.ThrustModifier"];
-                                    }
-
-                                    if (lanceBalistics >= (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
-                                    {
-                                        magnitude = lanceBalistics;
-                                    }
-
-                                    if (magnitude > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"]))
-                                    {
-                                        magnitude = ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"];
-                                    }
+                                    skillBasedDamage = magnitude + 40f + (effectiveSkill * 0.53f);
                                 }
                                 else
                                 {
-                                    skillBasedDamage = magnitude * 0.4f + 60f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.26f * XmlConfig.dict["Global.ThrustModifier"]);
+                                    skillBasedDamage = magnitude * 0.2f + 50f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.46f * XmlConfig.dict["Global.ThrustModifier"]);
                                 }
-                            }
-                            if (magnitude > 1f && !isPassiveUsage)
-                            {
-                                magnitude = skillBasedDamage;
-                            }
-                            break;
-                        }
-                    case "TwoHandedPolearm":
-                        {
-                            if (damageType == DamageTypes.Cut)
-                            {
-                                skillBasedDamage = magnitude + (50f + (effectiveSkill * 0.46f)) * 1.3f;
-                            }
-                            else
-                            {
-                                if (isPassiveUsage)
+                                if (magnitude > 1f)
                                 {
-                                    float CouchedSkill = 0.5f + effectiveSkill * 0.0225f;
-                                    float SkillCap = (100f + effectiveSkill * 1.3f);
-
-                                    float weaponWeight = attackerWeapon.Item.Weight;
-
-                                    if (weaponWeight < 1.5f)
-                                    {
-                                        weaponWeight += 0.5f;
-                                    }
-                                    float lanceBalistics = (magnitude * 2f) / weaponWeight;
-                                    magnitude = lanceBalistics * (weaponWeight + CouchedSkill);
-                                    if (magnitude > (SkillCap * XmlConfig.dict["Global.ThrustModifier"]) && lanceBalistics < (SkillCap * XmlConfig.dict["Global.ThrustModifier"]))
-                                    {
-                                        magnitude = SkillCap * XmlConfig.dict["Global.ThrustModifier"];
-                                    }
-
-                                    if (lanceBalistics >= (SkillCap * XmlConfig.dict["Global.ThrustModifier"]))
-                                    {
-                                        magnitude = lanceBalistics;
-                                    }
-
-                                    if (magnitude > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"]))
-                                    {
-                                        magnitude = ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"];
-                                    }
+                                    magnitude = skillBasedDamage;
+                                }
+                                break;
+                            }
+                        case "TwoHandedSword":
+                            {
+                                if (damageType == DamageTypes.Cut)
+                                {
+                                    skillBasedDamage = magnitude + (40f + (effectiveSkill * 0.53f)) * 1.3f;
                                 }
                                 else
                                 {
-                                    skillBasedDamage = (magnitude * 0.4f + 60f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.26f * XmlConfig.dict["Global.ThrustModifier"])) * 1.3f;
+                                    skillBasedDamage = (magnitude * 0.2f + 50f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.46f * XmlConfig.dict["Global.ThrustModifier"])) * 1.3f;
                                 }
+                                if (magnitude > 1f)
+                                {
+                                    magnitude = skillBasedDamage;
+                                }
+                                break;
                             }
-                            if (magnitude > 1f && !isPassiveUsage)
+                        case "OneHandedAxe":
                             {
-                                magnitude = skillBasedDamage;
+                                skillBasedDamage = magnitude + 60f + (effectiveSkill * 0.4f);
+                                if (magnitude > 1f)
+                                {
+                                    magnitude = skillBasedDamage;
+                                }
+                                break;
                             }
-                            break;
-                        }
+                        case "OneHandedBastardAxe":
+                            {
+                                skillBasedDamage = magnitude + (60f + (effectiveSkill * 0.4f)) * 1.15f;
+                                if (magnitude > 1f)
+                                {
+                                    magnitude = skillBasedDamage;
+                                }
+                                break;
+                            }
+                        case "TwoHandedAxe":
+                            {
+                                skillBasedDamage = magnitude + (60f + (effectiveSkill * 0.4f)) * 1.3f;
+                                if (magnitude > 1f)
+                                {
+                                    magnitude = skillBasedDamage;
+                                }
+                                break;
+                            }
+                        case "Mace":
+                            {
+                                if (damageType == DamageTypes.Pierce)
+                                {
+                                    skillBasedDamage = magnitude * 0.2f + 40f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.4f * XmlConfig.dict["Global.ThrustModifier"]);
+                                }
+                                else
+                                {
+                                    skillBasedDamage = magnitude + 30f + (effectiveSkill * 0.13f);
+                                }
+                                if (magnitude > 1f)
+                                {
+                                    magnitude = skillBasedDamage;
+                                }
+                                break;
+                            }
+                        case "TwoHandedMace":
+                            {
+                                if (damageType == DamageTypes.Pierce)
+                                {
+                                    skillBasedDamage = (magnitude * 0.2f + 40f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.4f * XmlConfig.dict["Global.ThrustModifier"])) * 1.3f;
+                                }
+                                else
+                                {
+                                    skillBasedDamage = magnitude + (30f + (effectiveSkill * 0.13f) * 1.3f);
+                                }
+                                if (magnitude > 1f)
+                                {
+                                    magnitude = skillBasedDamage;
+                                }
+                                break;
+                            }
+                        case "OneHandedPolearm":
+                            {
+                                if (damageType == DamageTypes.Cut)
+                                {
+                                    skillBasedDamage = magnitude + 50f + (effectiveSkill * 0.46f);
+                                }
+                                else
+                                {
+                                    if (isPassiveUsage)
+                                    {
+                                        float couchedSkill = 0.5f + effectiveSkill * 0.0225f;
+                                        float skillCap = (100f + effectiveSkill * 1.3f);
+
+                                        float weaponWeight = attackerWeapon.Item.Weight;
+
+                                        if (weaponWeight < 1.5f)
+                                        {
+                                            weaponWeight += 0.5f;
+                                        }
+                                        float lanceBalistics = (magnitude * 2f) / weaponWeight;
+                                        magnitude = lanceBalistics * (weaponWeight + couchedSkill);
+                                        if (magnitude > (skillCap * XmlConfig.dict["Global.ThrustModifier"]) && lanceBalistics < (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                        {
+                                            magnitude = skillCap * XmlConfig.dict["Global.ThrustModifier"];
+                                        }
+
+                                        if (lanceBalistics >= (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                        {
+                                            magnitude = lanceBalistics;
+                                        }
+
+                                        if (magnitude > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"]))
+                                        {
+                                            magnitude = ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"];
+                                        }
+                                    }
+                                    else
+                                    {
+                                        skillBasedDamage = magnitude * 0.4f + 60f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.26f * XmlConfig.dict["Global.ThrustModifier"]);
+                                    }
+                                }
+                                if (magnitude > 1f && !isPassiveUsage)
+                                {
+                                    magnitude = skillBasedDamage;
+                                }
+                                break;
+                            }
+                        case "TwoHandedPolearm":
+                            {
+                                if (damageType == DamageTypes.Cut)
+                                {
+                                    skillBasedDamage = magnitude + (50f + (effectiveSkill * 0.46f)) * 1.3f;
+                                }
+                                else
+                                {
+                                    if (isPassiveUsage)
+                                    {
+                                        float CouchedSkill = 0.5f + effectiveSkill * 0.0225f;
+                                        float SkillCap = (100f + effectiveSkill * 1.3f);
+
+                                        float weaponWeight = attackerWeapon.Item.Weight;
+
+                                        if (weaponWeight < 1.5f)
+                                        {
+                                            weaponWeight += 0.5f;
+                                        }
+                                        float lanceBalistics = (magnitude * 2f) / weaponWeight;
+                                        magnitude = lanceBalistics * (weaponWeight + CouchedSkill);
+                                        if (magnitude > (SkillCap * XmlConfig.dict["Global.ThrustModifier"]) && lanceBalistics < (SkillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                        {
+                                            magnitude = SkillCap * XmlConfig.dict["Global.ThrustModifier"];
+                                        }
+
+                                        if (lanceBalistics >= (SkillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                        {
+                                            magnitude = lanceBalistics;
+                                        }
+
+                                        if (magnitude > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"]))
+                                        {
+                                            magnitude = ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"];
+                                        }
+                                    }
+                                    else
+                                    {
+                                        skillBasedDamage = (magnitude * 0.4f + 60f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.26f * XmlConfig.dict["Global.ThrustModifier"])) * 1.3f;
+                                    }
+                                }
+                                if (magnitude > 1f && !isPassiveUsage)
+                                {
+                                    magnitude = skillBasedDamage;
+                                }
+                                break;
+                            }
+                    }
                 }
             }
 
