@@ -1178,6 +1178,30 @@ namespace RealisticBattleCombatModule
     }
 
     [HarmonyPatch(typeof(DefaultItemValueModel))]
+    [HarmonyPatch("CalculateHorseTier")]
+    class OverrideCalculateHorseTier
+    {
+        static bool Prefix(ref DefaultItemValueModel __instance, HorseComponent horseComponent, ref float __result)
+        {
+            float tier = 0f;
+            if (horseComponent.IsPackAnimal)
+            {
+                tier = (25f / 13f) - 8f;
+            }
+            else
+            {
+                tier += 0.6f * (float)horseComponent.Maneuver;
+                tier += (float)horseComponent.Speed;
+                tier += 1.5f * (float)horseComponent.ChargeDamage;
+                tier += 0.1f * (float)horseComponent.HitPoints;
+                tier = (tier / 13f) - 8f;
+            }
+            __result = tier;
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(DefaultItemValueModel))]
     [HarmonyPatch("CalculateTierMeleeWeapon")]
     class OverrideCalculateTierMeleeWeapon
     {
@@ -1633,9 +1657,9 @@ namespace RealisticBattleCombatModule
                 }
             }
 
-            //if(victimAgent.Character != null && victimAgent.Character.IsPlayerCharacter)
+            //if (victimAgent.Character != null && victimAgent.Character.IsPlayerCharacter)
             //{
-            //    if(!collisionData.AttackBlockedWithShield && (collisionData.CollisionResult == CombatCollisionResult.Blocked || collisionData.CollisionResult == CombatCollisionResult.Parried || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked))
+            //    if (!collisionData.AttackBlockedWithShield && (collisionData.CollisionResult == CombatCollisionResult.Blocked || collisionData.CollisionResult == CombatCollisionResult.Parried || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked))
             //    {
             //        CharacterObject affectedCharacter = (CharacterObject)victimAgent.Character;
             //        Hero heroObject = affectedCharacter.HeroObject;
@@ -1648,7 +1672,7 @@ namespace RealisticBattleCombatModule
             //        {
             //            SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(parryWeapon);
             //            float num2 = ((skillForWeapon == DefaultSkills.Bow) ? 0.5f : 1f);
-            //            affectedCharacter.HeroObject.AddSkillXp(skillForWeapon,experience);
+            //            affectedCharacter.HeroObject.AddSkillXp(skillForWeapon, experience);
             //        }
             //        else
             //        {
@@ -2203,6 +2227,17 @@ namespace RealisticBattleCombatModule
         }
     }
 
+    //[HarmonyPatch(typeof(StoryModeGenericXpModel))]
+    //[HarmonyPatch("GetXpMultiplier")]
+    //class AddSkillXpPatch
+    //{
+    //    static bool Prefix(StoryModeGenericXpModel __instance, Hero hero, ref float __result)
+    //    {
+    //        __result = 1f;
+    //        return false;
+    //    }
+    //}
+
     //[HarmonyPatch(typeof(StoryModeCombatXpModel))]
     //class GetXpFromHitPatch
     //{
@@ -2210,7 +2245,7 @@ namespace RealisticBattleCombatModule
     //    [HarmonyPatch("GetXpFromHit")]
     //    static bool PrefixGetXpFromHit(ref StoryModeCombatXpModel __instance, CharacterObject attackerTroop, CharacterObject captain, CharacterObject attackedTroop, PartyBase party, int damage, bool isFatal, MissionTypeEnum missionType, out int xpAmount)
     //    {
-    //        if(missionType == MissionTypeEnum.Battle || missionType == MissionTypeEnum.PracticeFight)
+    //        if (missionType == MissionTypeEnum.Battle || missionType == MissionTypeEnum.PracticeFight)
     //        {
     //            int num = attackedTroop.MaxHitPoints();
     //            float num2 = 0f;
@@ -2297,4 +2332,5 @@ namespace RealisticBattleCombatModule
     //        return true;
     //    }
     //}
+
 }
