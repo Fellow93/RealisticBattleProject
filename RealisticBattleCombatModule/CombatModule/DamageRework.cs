@@ -1137,23 +1137,23 @@ namespace RealisticBattleCombatModule
             }
             else if (item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
             {
-                price = (int)(50f + (float)item.ArmorComponent.ArmArmor * materialPriceModifier);
+                price = (int)(50f + (float)item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f);
             }
             else if (item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
             {
-                price = (int)(100f + (float)item.ArmorComponent.HeadArmor * materialPriceModifier);
+                price = (int)(100f + (float)item.ArmorComponent.HeadArmor * materialPriceModifier * 1.2f);
             }
             else if (item.ItemType == ItemObject.ItemTypeEnum.Cape)
             {
-                price = (int)(50f + (float)item.ArmorComponent.BodyArmor * materialPriceModifier + (float)item.ArmorComponent.ArmArmor * materialPriceModifier);
+                price = (int)(50f + (float)item.ArmorComponent.BodyArmor * materialPriceModifier * 0.8f + (float)item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f);
             }
             else if (item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
             {
-                price = (int)(200f + (float)item.ArmorComponent.BodyArmor * materialPriceModifier + (float)item.ArmorComponent.LegArmor * materialPriceModifier + (float)item.ArmorComponent.ArmArmor * materialPriceModifier);
+                price = (int)(200f + (float)item.ArmorComponent.BodyArmor * materialPriceModifier * 2.5f + (float)item.ArmorComponent.LegArmor * materialPriceModifier + (float)item.ArmorComponent.ArmArmor * materialPriceModifier) * 0.8f;
             }
             else if (item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
             {
-                price = (int)(100f + ((float)item.ArmorComponent.BodyArmor - 10f) * 500f);
+                price = (int)(100f + ((float)item.ArmorComponent.BodyArmor) * 450f);
             }
             else if (item.ItemComponent is WeaponComponent)
             {

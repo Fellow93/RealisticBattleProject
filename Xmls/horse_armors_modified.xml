@@ -17,6 +17,7 @@
              modifier_group="cloth"
              material_type="Cloth" />
     </ItemComponent>
+    <Flags Civilian="true" />
     <Flags />
   </Item>
   <Item multiplayer_item="false"
@@ -35,7 +36,7 @@
              modifier_group="cloth"
              material_type="Cloth" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item multiplayer_item="false"
         id="bandit_saddle_highland"
@@ -53,7 +54,7 @@
              modifier_group="cloth"
              material_type="Cloth" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item id="light_harness"
         name="{=O37kzdXO}Light Harness"
@@ -71,7 +72,7 @@
              modifier_group="leather"
              material_type="Leather" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item id="halfchain_barding"
         name="{=Yms2FQ7g}Halfchain Barding"
@@ -90,7 +91,7 @@
              modifier_group="chain"
              material_type="Chainmail" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item id="chain_barding"
         name="{=aHQCG5Tn}Chain Barding"
@@ -109,7 +110,7 @@
              modifier_group="chain"
              material_type="Chainmail" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item multiplayer_item="false"
         id="chain_horse_harness"
@@ -133,7 +134,7 @@
              reins_mesh="horse_harness_e_rein"
              material_type="Chainmail" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item multiplayer_item="false"
         id="stripped_leather_harness"
@@ -152,7 +153,7 @@
              reins_mesh="horse_harness_imperial_a_rein"
              material_type="Leather" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item id="imperial_riding_harness"
         name="{=NUmDuEqI}Imperial Riding Harness"
@@ -168,7 +169,7 @@
 			 reins_mesh="horse_harness_a_new_rein"
              material_type="Leather" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item multiplayer_item="false"
         id="half_scale_barding"
@@ -187,7 +188,7 @@
              reins_mesh="horse_harness_imperial_c_rein"
              material_type="Chainmail" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item multiplayer_item="false"
         id="imperial_scale_barding"
@@ -206,7 +207,7 @@
              reins_mesh="horse_harness_imperial_b_rein"
              material_type="Chainmail" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item multiplayer_item="false"
         id="studded_steppe_barding"
@@ -225,7 +226,7 @@
              reins_mesh="horse_harness_khuzait_c_rein"
              material_type="Chainmail" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item multiplayer_item="false"
         id="desert_cloth_harness"
@@ -244,7 +245,7 @@
              modifier_group="cloth"
              material_type="Cloth" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item multiplayer_item="false"
         id="aseran_village_harness"
@@ -263,7 +264,7 @@
              reins_mesh="horse_harness_aserai_b_rein"
              material_type="Cloth" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item multiplayer_item="false"
         id="half_mail_and_plate_barding"
@@ -282,7 +283,7 @@
              reins_mesh="horse_harness_aserai_d_rein"
              material_type="Plate" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item multiplayer_item="false"
         id="mail_and_plate_barding"
@@ -301,7 +302,7 @@
              reins_mesh="horse_harness_aserai_c_rein"
              material_type="Plate" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item multiplayer_item="false"
         id="steppe_harness"
@@ -320,7 +321,7 @@
              reins_mesh="horse_harness_khuzait_b_rein"
              material_type="Chainmail" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item multiplayer_item="false"
         id="steppe_fur_harness"
@@ -339,7 +340,7 @@
              reins_mesh="horse_harness_khuzait_a_rein"
              material_type="Chainmail" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item multiplayer_item="false"
         id="steppe_half_barding"
@@ -358,7 +359,7 @@
              reins_mesh="horse_harness_khuzait_d_rein"
              material_type="Chainmail" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <!--<Item multiplayer_item="false" id="studded_steppe_barding" name="Studded Steppe Barding" modifier_group="chain" mesh="horse_harness_khuzait_c" subtype="body_armor" value="6409" weight="65" difficulty="0">
     <ItemComponent>
@@ -382,7 +383,7 @@
 			 reins_mesh="horse_harness_roman_b_new_rein"
              material_type="Leather" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item id="northern_noble_harness"
         name="{=LWbJKKK1}Northern Noble Harness"
@@ -398,7 +399,7 @@
              reins_mesh="horse_harness_sturgia_b_rein"
              material_type="Leather" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item id="northern_ring_barding"
         name="{=ZjAZNjvu}Northern Ring Barding"
@@ -414,7 +415,7 @@
              reins_mesh="horse_harness_sturgia_a_rein"
              material_type="Chainmail" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item id="battania_horse_harness"
         name="{=33aaUcaX}Battania Horse Harness"
@@ -429,7 +430,7 @@
              modifier_group="leather"
              material_type="Leather" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item id="battania_horse_harness_halfscaled"
         name="{=85q9uY76}Highland Half Scaled Harness"
@@ -444,7 +445,7 @@
              modifier_group="chain"
              material_type="Chainmail" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item id="battania_horse_harness_scaled"
         name="{=DbNdyJgQ}Highland Scaled Harness"
@@ -459,7 +460,7 @@
              modifier_group="chain"
              material_type="Chainmail" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <!-- #endregion -->
     <Item id="fortunas_choice"
@@ -480,7 +481,7 @@
              modifier_group="chain"
              material_type="Chainmail" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item id="celtic_frost"
         name="{=XkwOTdVQ}Celtic Frost"
@@ -500,7 +501,7 @@
              modifier_group="chain"
              material_type="Chainmail" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
   <Item id="saddle_of_aeneas"
         name="{=k3dvbLDi}Saddle of Aeneas"
@@ -520,6 +521,6 @@
              modifier_group="chain"
              material_type="Chainmail" />
     </ItemComponent>
-    <Flags />
+    <Flags Civilian="true" />
   </Item>
 </Items>
