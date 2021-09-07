@@ -1186,16 +1186,16 @@ namespace RealisticBattleCombatModule
             float tier = 0f;
             if (horseComponent.IsPackAnimal)
             {
-                tier = (25f / 13f) - 8f;
+                tier = 1f;
             }
             else
             {
-                tier += 0.6f * (float)horseComponent.Maneuver;
-                tier += (float)horseComponent.Speed;
-                tier += 1.5f * (float)horseComponent.ChargeDamage;
-                tier += 0.1f * (float)horseComponent.HitPoints;
-                tier = (tier / 13f) - 8f;
+                tier += 0.009f * (float)horseComponent.HitPointBonus;
+                tier += 0.030f * (float)horseComponent.Maneuver;
+                tier += 0.030f * (float)horseComponent.Speed;
             }
+            //tier += 1.5f * (float)horseComponent.ChargeDamage;
+            //tier = (tier / 13f) - 8f;
             __result = tier;
             return false;
         }
