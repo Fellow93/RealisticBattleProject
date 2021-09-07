@@ -1,13 +1,14 @@
 ﻿using HarmonyLib;
 using Helpers;
-using JetBrains.Annotations;
 using SandBox;
+using StoryMode.GameModels;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Linq;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.CharacterDevelopment.Managers;
 using TaleWorlds.CampaignSystem.SandBox.GameComponents.Map;
 using TaleWorlds.Core;
 using TaleWorlds.DotNet;
@@ -15,7 +16,7 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.ObjectSystem;
-using static TaleWorlds.MountAndBlade.Mission;
+using static TaleWorlds.CampaignSystem.CombatXpModel;
 
 namespace RealisticBattleCombatModule
 {
@@ -1087,70 +1088,88 @@ namespace RealisticBattleCombatModule
     [HarmonyPatch("CalculateValue")]
     class OverrideCalculateValue
     {
-        static bool Prefix(ref DefaultItemValueModel __instance, ItemObject item, ref int __result, ArmorComponent armorComponent)
+        static bool Prefix(ref DefaultItemValueModel __instance, ItemObject item, ref int __result)
         {
             float price = 0;
-            float num = 1f;
+            float tier = 1f;
+
             if (item.ItemComponent != null)
             {
-                num = __instance.GetEquipmentValueFromTier(item.Tierf);
+                tier = __instance.GetEquipmentValueFromTier(item.Tierf);
             }
-            float num2 = 1f;
 
-
-                if (item.ItemType == ItemObject.ItemTypeEnum.LegArmor)
+            float materialPriceModifier = 1f;
+            if(item.ArmorComponent != null)
+            {
+                switch (item.ArmorComponent.MaterialType)
                 {
-                    price = (int)(75f + (float)armorComponent.LegArmor * 140f);
+                    case ArmorComponent.ArmorMaterialTypes.Cloth:
+                        {
+                            materialPriceModifier = 50f;
+                            break;
+                        }
+                    case ArmorComponent.ArmorMaterialTypes.Leather:
+                        {
+                            materialPriceModifier = 75f;
+                            break;
+                        }
+                    case ArmorComponent.ArmorMaterialTypes.Chainmail:
+                        {
+                            materialPriceModifier = 100f;
+                            break;
+                        }
+                    case ArmorComponent.ArmorMaterialTypes.Plate:
+                        {
+                            materialPriceModifier = 120f;
+                            break;
+                        }
+                    default:
+                        {
+                            materialPriceModifier = 50f;
+                            break;
+                        }
                 }
-
-                else if (item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
-                {
-                    price = (int)(50f + (float)armorComponent.ArmArmor * 120f);
-                }
-
-                else if (item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
-                {
-                    price = (int)(100f + (float)armorComponent.HeadArmor * 150f);
-                }
-
-                else if (item.ItemType == ItemObject.ItemTypeEnum.Cape)
-                {
-                    price = (int)(50f + (float)armorComponent.BodyArmor * 120f + (float)armorComponent.ArmArmor * 120f);
-                }
-
-                else if (item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
-                {
-                    price = (int)(200f + (float)armorComponent.BodyArmor * 250f + (float)armorComponent.LegArmor * 140f + (float)armorComponent.ArmArmor * 120f);
-                }
-
-
-
-
-
-                else if (item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
-                {
-                    price = (int)(100f + ((float)armorComponent.BodyArmor - 10f) * 500f);
-                }
-
-
+            }
+            
+            if (item.ItemType == ItemObject.ItemTypeEnum.LegArmor)
+            {
+                price = (int)(75f + (float)item.ArmorComponent.LegArmor * materialPriceModifier);
+            }
+            else if (item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
+            {
+                price = (int)(50f + (float)item.ArmorComponent.ArmArmor * materialPriceModifier);
+            }
+            else if (item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
+            {
+                price = (int)(100f + (float)item.ArmorComponent.HeadArmor * materialPriceModifier);
+            }
+            else if (item.ItemType == ItemObject.ItemTypeEnum.Cape)
+            {
+                price = (int)(50f + (float)item.ArmorComponent.BodyArmor * materialPriceModifier + (float)item.ArmorComponent.ArmArmor * materialPriceModifier);
+            }
+            else if (item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
+            {
+                price = (int)(200f + (float)item.ArmorComponent.BodyArmor * materialPriceModifier + (float)item.ArmorComponent.LegArmor * materialPriceModifier + (float)item.ArmorComponent.ArmArmor * materialPriceModifier);
+            }
+            else if (item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+            {
+                price = (int)(100f + ((float)item.ArmorComponent.BodyArmor - 10f) * 500f);
+            }
             else if (item.ItemComponent is WeaponComponent)
             {
-                num2 = 200f;
-                price = (int)(num2 * num * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
+                price = (int)(200f * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
             }
             else if (item.ItemComponent is HorseComponent)
             {
-                num2 = 100f;
-                price = (int)(num2 * num * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
+                price = (int)(100f * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
             }
             else if (item.ItemComponent is TradeItemComponent)
             {
-                num2 = 100f;
-                price = (int)(num2 * num * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
+                price = (int)(100f * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
             }
-            else 
-            { 
-                price = 1; 
+            else
+            {
+                price = 1;
             }
 
             __result = (int)price;
@@ -1614,7 +1633,55 @@ namespace RealisticBattleCombatModule
                 }
             }
 
-            
+            //if(victimAgent.Character != null && victimAgent.Character.IsPlayerCharacter)
+            //{
+            //    if(!collisionData.AttackBlockedWithShield && (collisionData.CollisionResult == CombatCollisionResult.Blocked || collisionData.CollisionResult == CombatCollisionResult.Parried || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked))
+            //    {
+            //        CharacterObject affectedCharacter = (CharacterObject)victimAgent.Character;
+            //        Hero heroObject = affectedCharacter.HeroObject;
+
+            //        float experience = 1f;
+            //        Campaign.Current.Models.CombatXpModel.GetXpFromHit(heroObject.CharacterObject, null, affectedCharacter, heroObject.PartyBelongedTo?.Party, (int)collisionData.BaseMagnitude, false, CombatXpModel.MissionTypeEnum.Battle, out var xpAmount);
+            //        experience = xpAmount;
+            //        WeaponComponentData parryWeapon = victimAgent.WieldedWeapon.CurrentUsageItem;
+            //        if (parryWeapon != null)
+            //        {
+            //            SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(parryWeapon);
+            //            float num2 = ((skillForWeapon == DefaultSkills.Bow) ? 0.5f : 1f);
+            //            affectedCharacter.HeroObject.AddSkillXp(skillForWeapon,experience);
+            //        }
+            //        else
+            //        {
+            //            heroObject.AddSkillXp(DefaultSkills.Athletics, MBRandom.RoundRandomized(experience));
+            //        }
+            //        if (victimAgent.HasMount)
+            //        {
+            //            float num3 = 0.1f;
+            //            float speedBonusFromMovement = collisionData.MovementSpeedDamageModifier;
+            //            if (speedBonusFromMovement > 0f)
+            //            {
+            //                num3 *= 1f + speedBonusFromMovement;
+            //            }
+            //            if (num3 > 0f)
+            //            {
+            //                heroObject.AddSkillXp(DefaultSkills.Riding, MBRandom.RoundRandomized(num3 * experience));
+            //            }
+            //        }
+            //        else
+            //        {
+            //            float num5 = 0.2f;
+            //            float speedBonusFromMovement = collisionData.MovementSpeedDamageModifier;
+            //            if (speedBonusFromMovement > 0f)
+            //            {
+            //                num5 += 1.5f * speedBonusFromMovement;
+            //            }
+            //            if (num5 > 0f)
+            //            {
+            //                heroObject.AddSkillXp(DefaultSkills.Athletics, num5 * experience);
+            //            }
+            //        }
+            //    }
+            //}
 
             if ((collisionData.CollisionResult == CombatCollisionResult.StrikeAgent) && (collisionData.DamageType == (int)DamageTypes.Pierce))
             {
@@ -2135,4 +2202,99 @@ namespace RealisticBattleCombatModule
             return false;
         }
     }
+
+    //[HarmonyPatch(typeof(StoryModeCombatXpModel))]
+    //class GetXpFromHitPatch
+    //{
+    //    [HarmonyPrefix]
+    //    [HarmonyPatch("GetXpFromHit")]
+    //    static bool PrefixGetXpFromHit(ref StoryModeCombatXpModel __instance, CharacterObject attackerTroop, CharacterObject captain, CharacterObject attackedTroop, PartyBase party, int damage, bool isFatal, MissionTypeEnum missionType, out int xpAmount)
+    //    {
+    //        if(missionType == MissionTypeEnum.Battle || missionType == MissionTypeEnum.PracticeFight)
+    //        {
+    //            int num = attackedTroop.MaxHitPoints();
+    //            float num2 = 0f;
+    //            num2 = ((party?.MapEvent == null) ? Campaign.Current.Models.MilitaryPowerModel.GetTroopPowerBasedOnContext(attackerTroop) : Campaign.Current.Models.MilitaryPowerModel.GetTroopPowerBasedOnContext(attackerTroop, party.MapEvent.EventType, party.Side, missionType == MissionTypeEnum.SimulationBattle));
+    //            float num3 = 0.4f * ((num2 + 0.5f) * (float)(Math.Min(damage, num) + (isFatal ? num : 0)));
+    //            float num4 = num3;
+    //            float num5;
+    //            switch (missionType)
+    //            {
+    //                default:
+    //                    num5 = 1f;
+    //                    break;
+    //                case MissionTypeEnum.Battle:
+    //                    num5 = 1f;
+    //                    break;
+    //                case MissionTypeEnum.SimulationBattle:
+    //                    num5 = 0.9f;
+    //                    break;
+    //                case MissionTypeEnum.Tournament:
+    //                    num5 = 0.33f;
+    //                    break;
+    //                case MissionTypeEnum.PracticeFight:
+    //                    num5 = 0.0625f;
+    //                    break;
+    //                case MissionTypeEnum.NoXp:
+    //                    num5 = 0f;
+    //                    break;
+    //            }
+    //            num3 = num4 * num5;
+    //            ExplainedNumber xpToGain = new ExplainedNumber(num3);
+    //            if (party != null)
+    //            {
+    //                if (party.IsMobile && party.MobileParty.LeaderHero != null)
+    //                {
+    //                    if (!attackerTroop.IsArcher && party.MobileParty.HasPerk(DefaultPerks.OneHanded.Trainer, checkSecondaryRole: true))
+    //                    {
+    //                        xpToGain.AddFactor(DefaultPerks.OneHanded.Trainer.SecondaryBonus * 0.01f, DefaultPerks.OneHanded.Trainer.Name);
+    //                    }
+    //                    if (attackerTroop.HasThrowingWeapon() && party.MobileParty.HasPerk(DefaultPerks.Throwing.Resourceful, checkSecondaryRole: true))
+    //                    {
+    //                        xpToGain.AddFactor(DefaultPerks.Throwing.Resourceful.SecondaryBonus * 0.01f, DefaultPerks.Throwing.Resourceful.Name);
+    //                    }
+    //                    if (attackerTroop.IsInfantry)
+    //                    {
+    //                        if (party.MobileParty.HasPerk(DefaultPerks.OneHanded.CorpsACorps))
+    //                        {
+    //                            xpToGain.AddFactor(DefaultPerks.OneHanded.CorpsACorps.PrimaryBonus * 0.01f, DefaultPerks.OneHanded.CorpsACorps.Name);
+    //                        }
+    //                        if (party.MobileParty.HasPerk(DefaultPerks.TwoHanded.BaptisedInBlood, checkSecondaryRole: true))
+    //                        {
+    //                            xpToGain.AddFactor(DefaultPerks.TwoHanded.BaptisedInBlood.SecondaryBonus * 0.01f, DefaultPerks.TwoHanded.BaptisedInBlood.Name);
+    //                        }
+    //                    }
+    //                    if (party.MobileParty.HasPerk(DefaultPerks.OneHanded.LeadByExample))
+    //                    {
+    //                        xpToGain.AddFactor(DefaultPerks.OneHanded.LeadByExample.PrimaryBonus * 0.01f, DefaultPerks.OneHanded.LeadByExample.Name);
+    //                    }
+    //                    if (attackerTroop.IsArcher && party.MobileParty.HasPerk(DefaultPerks.Crossbow.MountedCrossbowman, checkSecondaryRole: true))
+    //                    {
+    //                        xpToGain.AddFactor(DefaultPerks.Crossbow.MountedCrossbowman.SecondaryBonus * 0.01f, DefaultPerks.Crossbow.MountedCrossbowman.Name);
+    //                    }
+    //                    if (attackerTroop.Culture.IsBandit && party.MobileParty.HasPerk(DefaultPerks.Roguery.NoRestForTheWicked))
+    //                    {
+    //                        xpToGain.AddFactor(DefaultPerks.Roguery.NoRestForTheWicked.PrimaryBonus * 0.01f, DefaultPerks.Roguery.NoRestForTheWicked.Name);
+    //                    }
+    //                }
+    //                if (party.IsMobile && party.MobileParty.IsGarrison && party.MobileParty.CurrentSettlement?.Town.Governor != null)
+    //                {
+    //                    PerkHelper.AddPerkBonusForTown(DefaultPerks.TwoHanded.ArrowDeflection, party.MobileParty.CurrentSettlement.Town, ref xpToGain);
+    //                    if (attackerTroop.IsMounted)
+    //                    {
+    //                        PerkHelper.AddPerkBonusForTown(DefaultPerks.Polearm.Guards, party.MobileParty.CurrentSettlement.Town, ref xpToGain);
+    //                    }
+    //                }
+    //            }
+    //            if (captain != null && captain.IsHero && captain.GetPerkValue(DefaultPerks.Leadership.InspiringLeader))
+    //            {
+    //                xpToGain.AddFactor(DefaultPerks.Leadership.InspiringLeader.SecondaryBonus, DefaultPerks.Leadership.InspiringLeader.Name);
+    //            }
+    //            xpAmount = TaleWorlds.Library.MathF.Round(xpToGain.ResultNumber);
+    //            return false;
+    //        }
+    //        xpAmount = 0;
+    //        return true;
+    //    }
+    //}
 }

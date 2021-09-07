@@ -65,6 +65,10 @@
       <HintPath>..\..\SandBox\bin\Win64_Shipping_Client\SandBox.ViewModelCollection.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="StoryMode">
+      <HintPath>..\..\StoryMode\bin\Win64_Shipping_Client\StoryMode.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="StoryMode.GauntletUI">
       <HintPath>..\..\StoryMode\bin\Win64_Shipping_Client\StoryMode.GauntletUI.dll</HintPath>
       <Private>False</Private>
