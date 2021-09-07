@@ -1087,36 +1087,73 @@ namespace RealisticBattleCombatModule
     [HarmonyPatch("CalculateValue")]
     class OverrideCalculateValue
     {
-        static bool Prefix(ref DefaultItemValueModel __instance, ItemObject item, ref int __result)
+        static bool Prefix(ref DefaultItemValueModel __instance, ItemObject item, ref int __result, ArmorComponent armorComponent)
         {
+            float price = 0;
             float num = 1f;
             if (item.ItemComponent != null)
             {
                 num = __instance.GetEquipmentValueFromTier(item.Tierf);
             }
             float num2 = 1f;
-            if (item.ItemComponent is ArmorComponent)
-            {
-                num2 = ((item.ItemType == ItemObject.ItemTypeEnum.BodyArmor) ? 120 : ((item.ItemType == ItemObject.ItemTypeEnum.HandArmor) ? 120 : ((item.ItemType == ItemObject.ItemTypeEnum.LegArmor) ? 120 : 100)));
-            }
+
+
+                if (item.ItemType == ItemObject.ItemTypeEnum.LegArmor)
+                {
+                    price = (int)(75f + (float)armorComponent.LegArmor * 140f);
+                }
+
+                else if (item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
+                {
+                    price = (int)(50f + (float)armorComponent.ArmArmor * 120f);
+                }
+
+                else if (item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
+                {
+                    price = (int)(100f + (float)armorComponent.HeadArmor * 150f);
+                }
+
+                else if (item.ItemType == ItemObject.ItemTypeEnum.Cape)
+                {
+                    price = (int)(50f + (float)armorComponent.BodyArmor * 120f + (float)armorComponent.ArmArmor * 120f);
+                }
+
+                else if (item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
+                {
+                    price = (int)(200f + (float)armorComponent.BodyArmor * 250f + (float)armorComponent.LegArmor * 140f + (float)armorComponent.ArmArmor * 120f);
+                }
+
+
+
+
+
+                else if (item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+                {
+                    price = (int)(100f + ((float)armorComponent.BodyArmor - 10f) * 500f);
+                }
+
+
             else if (item.ItemComponent is WeaponComponent)
             {
                 num2 = 200f;
-
+                price = (int)(num2 * num * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
             }
             else if (item.ItemComponent is HorseComponent)
             {
                 num2 = 100f;
-            }
-            else if (item.ItemComponent is SaddleComponent)
-            {
-                num2 = 100f;
+                price = (int)(num2 * num * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
             }
             else if (item.ItemComponent is TradeItemComponent)
             {
                 num2 = 100f;
+                price = (int)(num2 * num * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
             }
-            __result = (int)(num2 * num * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
+            else 
+            { 
+                price = 1; 
+            }
+
+            __result = (int)price;
             return false;
         }
     }
