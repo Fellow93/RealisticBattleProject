@@ -1161,7 +1161,7 @@ namespace RealisticBattleCombatModule
             }
             else if (item.ItemComponent is HorseComponent)
             {
-                price = (int)(100f * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
+                price = (int)(200f * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
             }
             else if (item.ItemComponent is TradeItemComponent)
             {
@@ -1353,7 +1353,7 @@ namespace RealisticBattleCombatModule
             float ArrowTier;
             float ArrowWeight = (float)weaponComponentData.MissileSpeed * 1f;
 
-            ArrowTier = (ArrowWeight - 40f) * 0.1f;
+            ArrowTier = (ArrowWeight - 40f) * 0.066f;
             //num = ArrowTier;
             __result = ArrowTier;
             return false;
