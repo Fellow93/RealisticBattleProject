@@ -2,6 +2,68 @@
 <CraftingPieces>
   <!-- #region Axe Pieces -->
   <!-- #region Used Axe Blade Pieces -->
+  
+  <CraftingPiece id="axe_craft_32_head"
+                 name="{=KhHXgQJb}Common Wrought Iron Axe Head"
+                 tier="1"
+                 piece_type="Blade"
+                 mesh="axe_craft_32_head"
+                 distance_to_next_piece="4.3"
+                 distance_to_previous_piece="2.7"
+                 weight="0.332"
+                 is_default="true">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-5.4" />
+    <BladeData stack_amount="3"
+               blade_length="9.664"
+               blade_width="17.21"
+               physics_material="metal_weapon"
+               body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut"
+             damage_factor="0.6" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse"
+            type="ItemFlags" />
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2"
+                count="2" />
+    </Materials>
+  </CraftingPiece>  
+  
+  <CraftingPiece id="axe_craft_37_head"
+                 name="{=aPr8NPdo}Western Iron Polearm Head"
+                 tier="1"
+                 piece_type="Blade"
+                 mesh="axe_craft_37_head"
+                 distance_to_next_piece="10.4"
+                 distance_to_previous_piece="3.4"
+                 weight="0.332">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-6.8" />
+    <BladeData stack_amount="3"
+               blade_length="15.764"
+               blade_width="12"
+               physics_material="metal_weapon"
+               body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut"
+             damage_factor="0.6" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse"
+            type="ItemFlags" />
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron1"
+                count="2" />
+    </Materials>
+  </CraftingPiece>
+
   <CraftingPiece id="axe_craft_36_head" name="{=cEU66ABf}Northern Battle Axe Blade" tier="3" piece_type="Blade" mesh="axe_craft_36_head" distance_to_next_piece="10.4" distance_to_previous_piece="3.4" weight="0.266">
     <PieceUsages unavailable_usages="" />
     <BuildData piece_offset="-6.8" />
@@ -322,6 +384,41 @@
   </CraftingPiece>
   <!-- #endregion -->
   <!-- #region Used 2h Axe Blade Pieces -->
+  
+  <CraftingPiece id="axe_craft_15_head"
+                 name="{=LSrJljDL}Adze Head"
+                 tier="1"
+                 piece_type="Blade"
+                 mesh="axe_craft_15_head"
+                 distance_to_next_piece="4.1"
+                 distance_to_previous_piece="3.2"
+                 weight="0.4"
+                 is_default="true">
+    <PieceUsages unavailable_usages="" />
+    <BuildData piece_offset="-6.4" />
+    <BladeData stack_amount="3"
+               blade_length="4.552"
+               blade_width="25.764"
+               physics_material="metal_weapon"
+               body_name="bo_axe_longer_b">
+      <Swing damage_type="Cut"
+             damage_factor="0.6" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse"
+            type="ItemFlags" />
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron1"
+                count="4" />
+    </Materials>
+  </CraftingPiece>  
+  
+  
+  
+  
   <CraftingPiece id="axe_craft_7_head" name="{=USWfzbuW}Northern Broad Great Axe Head" tier="4" piece_type="Blade" mesh="axe_craft_7_head" distance_to_next_piece="14.96" distance_to_previous_piece="2.712" weight="0.4">
     <PieceUsages unavailable_usages="" />
     <BuildData piece_offset="-5.424" />

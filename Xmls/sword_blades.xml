@@ -1097,4 +1097,437 @@
       <Material id="Iron3" count="1" />
     </Materials>
   </CraftingPiece>
+  
+   <!-- #region Dagger Pieces -->
+  <!-- #region Dagger Blade Pieces -->
+  <CraftingPiece id="dagger_blade_1"
+                 name="{=gXUXjtuL}Kama Blade"
+                 tier="1"
+                 piece_type="Blade"
+                 mesh="dagger_blade_1"
+                 length="39"
+                 weight="0.105"
+                 is_default="true">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_knife_a"
+               holster_mesh="">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.6" />
+      <Swing damage_type="Cut"
+             damage_factor="0.6" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="dagger_blade_2"
+                 name="{=dtSrK9bs}Broad Seax Blade"
+                 tier="2"
+                 piece_type="Blade"
+                 mesh="dagger_blade_2"
+                 length="40"
+                 weight="0.255">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_knife_a"
+               holster_mesh="">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.7" />
+      <Swing damage_type="Cut"
+             damage_factor="0.7" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="dagger_blade_3"
+                 name="{=aBnaaaHv}Long Seax Blade"
+                 tier="3"
+                 piece_type="Blade"
+                 mesh="dagger_blade_3"
+                 length="47"
+                 weight="0.15">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_knife_a"
+               holster_mesh="">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.8" />
+      <Swing damage_type="Cut"
+             damage_factor="0.8" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse"
+            type="ItemFlags" />
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="dagger_blade_3_blunt"
+                 name="{=27Oaoras}Long Blunt Seax Blade"
+                 tier="3"
+                 piece_type="Blade"
+                 mesh="dagger_blade_3"
+                 length="47"
+                 weight="0.15"
+                 is_hidden="true">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_knife_a"
+               holster_mesh="">
+      <Thrust damage_type="Blunt"
+              damage_factor="0.8" />
+      <Swing damage_type="Blunt"
+             damage_factor="0.8" />
+    </BladeData>
+    <Flags>
+      <Flag name="CanBePickedUpFromCorpse"
+            type="ItemFlags" />
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="dagger_blade_4"
+                 name="{=pb4zUxzA}Makhaira Blade"
+                 tier="3"
+                 piece_type="Blade"
+                 mesh="dagger_blade_4"
+                 length="38"
+                 weight="0.15">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_knife_a"
+               holster_mesh="">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.8" />
+      <Swing damage_type="Cut"
+             damage_factor="0.8" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4"
+                count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="dagger_blade_5"
+                 name="{=ZbSKazZG}Short Seax Blade"
+                 tier="1"
+                 piece_type="Blade"
+                 mesh="dagger_blade_5"
+                 length="32"
+                 weight="0.125">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_knife_a"
+               holster_mesh="">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.6" />
+      <Swing damage_type="Cut"
+             damage_factor="0.6" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="dagger_blade_6"
+                 name="{=f0syWNR7}Poniard Blade"
+                 tier="3"
+                 piece_type="Blade"
+                 mesh="dagger_blade_6"
+                 length="44.7"
+                 weight="0.17">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_knife_a"
+               holster_mesh="">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.8" />
+      <Swing damage_type="Cut"
+             damage_factor=".08" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4"
+                count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="dagger_blade_6_blunt"
+                 name="{=Xo7l8eae}Blunt Blade"
+                 tier="1"
+                 piece_type="Blade"
+                 mesh="dagger_blade_6"
+                 length="44.7"
+                 weight="0.17"
+                 is_hidden="true">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_knife_a"
+               holster_mesh="">
+      <Thrust damage_type="Blunt"
+              damage_factor="0.6" />
+      <Swing damage_type="Blunt"
+             damage_factor="0.6" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="dagger_blade_7"
+                 name="{=KNisROi1}Broad Skaen Blade"
+                 tier="2"
+                 piece_type="Blade"
+                 mesh="dagger_blade_7"
+                 length="40"
+                 weight="0.225">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_knife_a"
+               holster_mesh="">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.7" />
+      <Swing damage_type="Cut"
+             damage_factor="0.7" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="dagger_blade_8"
+                 name="{=b30mn7KF}Khanjar Blade"
+                 tier="3"
+                 piece_type="Blade"
+                 mesh="dagger_blade_8"
+                 length="37.9"
+                 weight="0.335">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_knife_a"
+               holster_mesh="">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.8" />
+      <Swing damage_type="Cut"
+             damage_factor="0.8" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4"
+                count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="dagger_blade_9"
+                 name="{=SgJH5KtP}Sica Blade"
+                 tier="3"
+                 piece_type="Blade"
+                 mesh="dagger_blade_9"
+                 length="43"
+                 weight="0.375">
+    <PieceUsages unavailable_usages="ThrowingKnife" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_knife_a"
+               holster_mesh="">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.8" />
+      <Swing damage_type="Cut"
+             damage_factor="0.8" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="dagger_blade_10"
+                 name="{=TLtaGEcB}Wide Makhaira Blade"
+                 tier="2"
+                 piece_type="Blade"
+                 mesh="dagger_blade_10"
+                 length="30"
+                 weight="0.375">
+    <PieceUsages unavailable_usages="" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_knife_a"
+               holster_mesh="throwing_dagger_quiver_2"
+               holster_mesh_length="35.8">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.7" />
+      <Swing damage_type="Cut"
+             damage_factor="0.7" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="dagger_blade_12"
+                 name="{=HysmKS5a}Ridged Wide Dagger Blade"
+                 tier="1"
+                 piece_type="Blade"
+                 mesh="dagger_blade_12"
+                 length="25.2"
+                 weight="0.375">
+    <PieceUsages unavailable_usages="" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_knife_a"
+               holster_mesh="throwing_dagger_quiver_3"
+               holster_mesh_length="35.8">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.6" />
+      <Swing damage_type="Cut"
+             damage_factor="0.6" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="dagger_blade_13"
+                 name="{=5o5DaSHZ}Broad Dagger Blade"
+                 tier="2"
+                 piece_type="Blade"
+                 mesh="dagger_blade_13"
+                 length="29"
+                 weight="0.375">
+    <PieceUsages unavailable_usages="" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_knife_a"
+               holster_mesh="throwing_dagger_quiver_1"
+               holster_mesh_length="35.8">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.7" />
+      <Swing damage_type="Cut"
+             damage_factor="0.7" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron3"
+                count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="dagger_blade_13_blunt"
+                 name="{=GFBFgA7R}Broad Blunt Dagger Blade"
+                 tier="2"
+                 piece_type="Blade"
+                 mesh="dagger_blade_13"
+                 length="29"
+                 weight="0.375"
+                 is_hidden="true">
+    <PieceUsages unavailable_usages="" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_knife_a"
+               holster_mesh="throwing_dagger_quiver_1"
+               holster_mesh_length="35.8">
+      <Thrust damage_type="Blunt"
+              damage_factor="0.7" />
+      <Swing damage_type="Blunt"
+             damage_factor="0.7" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron3"
+                count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="dagger_blade_14"
+                 name="{=QH0oIiIz}Long Broad Dagger Blade"
+                 tier="3"
+                 piece_type="Blade"
+                 mesh="dagger_blade_14"
+                 length="35"
+                 weight="0.375">
+    <PieceUsages unavailable_usages="" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_knife_a"
+               holster_mesh="throwing_dagger_quiver_4"
+               holster_mesh_length="35.8">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.8" />
+      <Swing damage_type="Cut"
+             damage_factor="0.8" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <!-- #endregion -->
 </CraftingPieces>

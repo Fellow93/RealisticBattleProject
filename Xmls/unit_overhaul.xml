@@ -7306,7 +7306,7 @@
       <equipment slot="Item1"
                  id="Item.vlandic_arrows" />
       <equipment slot="Item2"
-                 id="Item.empire_noble_sword_2_t5" />
+                 id="Item.empire_mace_5_t5" />
       <equipment slot="Item3"
                  id="Item.battania_targe_b" />
       <equipment slot="Body"
@@ -7326,7 +7326,7 @@
       <equipment slot="Item1"
                  id="Item.vlandic_arrows" />
       <equipment slot="Item2"
-                 id="Item.empire_noble_sword_3_t5" />
+                 id="Item.imperial_axe_t3" />
       <equipment slot="Item3"
                  id="Item.battania_targe_b" />
       <equipment slot="Body"
@@ -12919,7 +12919,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_a" />
       <equipment slot="Item2"
-                 id="Item.vlandia_mace_2_t4" />
+                 id="Item.vlandia_axe_2_t4" />
       <equipment slot="Item3"
                  id="Item.pavise_shield" />
       <equipment slot="Body"

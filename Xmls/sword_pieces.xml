@@ -2948,4 +2948,803 @@
     </Materials>
   </CraftingPiece>
     <!--END-->
+  <!-- #region Dagger Guard Pieces -->
+  <CraftingPiece id="empire_dagger_guard_1"
+                 name="{=4FnOKgB6}Imperial Crescent Dagger Guard"
+                 tier="1"
+                 piece_type="Guard"
+                 mesh="empire_dagger_guard_1"
+                 culture="Culture.battania"
+                 length="2.3"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="2" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="empire_dagger_guard_2"
+                 name="{=37DVF96v}Knobbed Crescent Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="empire_dagger_guard_2"
+                 culture="Culture.battania"
+                 length="2.4"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="3" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="empire_dagger_guard_3"
+                 name="{=PjMeZcwO}Lipped Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="empire_dagger_guard_3"
+                 culture="Culture.battania"
+                 length="2.7"
+                 weight="0.097"
+                 is_default="true">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="0" />
+    <Materials>
+      <Material id="Iron3"
+                count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="empire_dagger_guard_4"
+                 name="{=m0uOH4el}Curved Imperial Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="empire_dagger_guard_4"
+                 culture="Culture.battania"
+                 length="2.2"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="3" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="empire_dagger_guard_5"
+                 name="{=V6YQykoc}Pointed Crescent Dagger Guard"
+                 tier="1"
+                 piece_type="Guard"
+                 mesh="empire_dagger_guard_5"
+                 culture="Culture.battania"
+                 length="3.1"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="5" />
+  </CraftingPiece>
+  <CraftingPiece id="empire_dagger_guard_6"
+                 name="{=zKaNmT8r}Half Moon Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="empire_dagger_guard_6"
+                 culture="Culture.battania"
+                 length="2.3"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="2" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_dagger_guard_1"
+                 name="{=mQCQF6TL}Narrow Northern Dagger Guard"
+                 tier="1"
+                 piece_type="Guard"
+                 mesh="sturgian_dagger_guard_1"
+                 culture="Culture.battania"
+                 length="1.2"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="0" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_dagger_guard_2"
+                 name="{=huaGi2zw}Concave Northern Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="sturgian_dagger_guard_2"
+                 culture="Culture.battania"
+                 length="0.8"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="2" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_dagger_guard_3"
+                 name="{=IvUO8nJc}Wide Concave Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="sturgian_dagger_guard_3"
+                 culture="Culture.battania"
+                 length="0.8"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="2" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_dagger_guard_4"
+                 name="{=A1m12E8N}Long-Armed Dagger Guard"
+                 tier="3"
+                 piece_type="Guard"
+                 mesh="sturgian_dagger_guard_4"
+                 culture="Culture.battania"
+                 length="0.8"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="4" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_dagger_guard_5"
+                 name="{=EbucFMZq}Broad Concave Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="sturgian_dagger_guard_5"
+                 culture="Culture.battania"
+                 length="0.7"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="2" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_dagger_guard_6"
+                 name="{=edg8bnXX}Ridged Northern Dagger Guard"
+                 tier="1"
+                 piece_type="Guard"
+                 mesh="sturgian_dagger_guard_6"
+                 culture="Culture.battania"
+                 length="1.2"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="0" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_dagger_guard_7"
+                 name="{=PbxZzhZx}Narrow Seax Guard"
+                 tier="1"
+                 piece_type="Guard"
+                 mesh="sturgian_dagger_guard_7"
+                 culture="Culture.battania"
+                 length="1.4"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="0" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_dagger_guard_8"
+                 name="{=mQCQF6TL}Narrow Northern Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="sturgian_dagger_guard_8"
+                 culture="Culture.battania"
+                 length="1"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="1" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_dagger_guard_9"
+                 name="{=i9Ja7Uib}Thick Dagger Guard With Engravings"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="sturgian_dagger_guard_9"
+                 culture="Culture.battania"
+                 length="1.8"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="1" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_dagger_guard_10"
+                 name="{=WXBkfAbb}Embroiled Rectangular Northern Dagger Guard"
+                 tier="3"
+                 piece_type="Guard"
+                 mesh="sturgian_dagger_guard_10"
+                 culture="Culture.battania"
+                 length="2"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="3" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_dagger_guard_11"
+                 name="{=muv8N0Wo}Bronze Dagger Guard With Engravings"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="sturgian_dagger_guard_11"
+                 culture="Culture.battania"
+                 length="2"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="0" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_dagger_guard_12"
+                 name="{=2LrkLq5M}Northern Long Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="sturgian_dagger_guard_12"
+                 culture="Culture.battania"
+                 length="3.1"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="2" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_dagger_guard_1"
+                 name="{=bGaOu7rO}Eastern Flat Dagger Guard"
+                 tier="1"
+                 piece_type="Guard"
+                 mesh="khuzait_dagger_guard_1"
+                 culture="Culture.battania"
+                 length="1.1"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="0" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_dagger_guard_2"
+                 name="{=hKKIijPr}Concave Disc Dagger Guard"
+                 tier="1"
+                 piece_type="Guard"
+                 mesh="khuzait_dagger_guard_2"
+                 culture="Culture.battania"
+                 length="0.7"
+                 weight="0.097"
+                 is_default="true">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="1" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_dagger_guard_3"
+                 name="{=dCco8dRt}Disc Dagger Guard"
+                 tier="1"
+                 piece_type="Guard"
+                 mesh="khuzait_dagger_guard_3"
+                 culture="Culture.battania"
+                 length="1.1"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="0" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_dagger_guard_4"
+                 name="{=AA4WhCGw}Flat Dagger Guard"
+                 tier="1"
+                 piece_type="Guard"
+                 mesh="khuzait_dagger_guard_4"
+                 culture="Culture.battania"
+                 length="0.5"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="2" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_dagger_guard_5"
+                 name="{=3VCyUu2h}Thin Eastern Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="khuzait_dagger_guard_5"
+                 culture="Culture.battania"
+                 length="1"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="4" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_dagger_guard_6"
+                 name="{=xb6e2YaV}Eastern Simple Oval Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="khuzait_dagger_guard_6"
+                 culture="Culture.battania"
+                 length="0.7"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="1" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_dagger_guard_7"
+                 name="{=bZbW2UEE}Broad Eastern Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="khuzait_dagger_guard_7"
+                 culture="Culture.battania"
+                 length="0.7"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="3" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_dagger_guard_8"
+                 name="{=xWZuE1aE}Thick Concave Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="khuzait_dagger_guard_8"
+                 culture="Culture.battania"
+                 length="1.4"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="1" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_dagger_guard_9"
+                 name="{=opUK4WmL}Rounded Flat Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="khuzait_dagger_guard_9"
+                 culture="Culture.battania"
+                 length="0.5"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="3" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_dagger_guard_1"
+                 name="{=85jApGfe}Knobbed Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="vlandian_dagger_guard_1"
+                 culture="Culture.battania"
+                 length="1.5"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="3" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_dagger_guard_2"
+                 name="{=m8eUrnVj}Thin Western Dagger Guard"
+                 tier="3"
+                 piece_type="Guard"
+                 mesh="vlandian_dagger_guard_2"
+                 culture="Culture.battania"
+                 length="1.7"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="4" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_dagger_guard_3"
+                 name="{=aYnTt86Y}Winged Bronze Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="vlandian_dagger_guard_3"
+                 culture="Culture.battania"
+                 length="0.9"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="1" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_dagger_guard_4"
+                 name="{=Zmtfwmh1}Tapered Thin Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="vlandian_dagger_guard_4"
+                 culture="Culture.battania"
+                 length="0.9"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="3" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_dagger_guard_5"
+                 name="{=9phikaHT}Western Crescent Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="vlandian_dagger_guard_5"
+                 culture="Culture.battania"
+                 length="0.6"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="4" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_dagger_guard_6"
+                 name="{=3cIsT4ZK}Broad-Armed Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="vlandian_dagger_guard_6"
+                 culture="Culture.battania"
+                 length="0.7"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="4" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_dagger_guard_7"
+                 name="{=jre8aFdB}Pointed Western Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="vlandian_dagger_guard_7"
+                 culture="Culture.battania"
+                 length="1.1"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="4" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_dagger_guard_8"
+                 name="{=az6t2tOm}Ridged Western Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="vlandian_dagger_guard_8"
+                 culture="Culture.battania"
+                 length="0.8"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="3" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_dagger_guard_1"
+                 name="{=M08i7S6M}Tapered Desert Dagger Guard"
+                 tier="1"
+                 piece_type="Guard"
+                 mesh="aserai_dagger_guard_1"
+                 culture="Culture.battania"
+                 length="4.5"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="0" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_dagger_guard_3"
+                 name="{=AM6iuDAv}Knobbed Diamond Dagger Guard"
+                 tier="3"
+                 piece_type="Guard"
+                 mesh="aserai_dagger_guard_3"
+                 culture="Culture.battania"
+                 length="1.8"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.2" />
+    <StatContributions armor_bonus="4" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_dagger_guard_4"
+                 name="{=ZfEiEOsK}Southern Crowned Dagger Guard"
+                 tier="1"
+                 piece_type="Guard"
+                 mesh="aserai_dagger_guard_4"
+                 culture="Culture.battania"
+                 length="4.6"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="0" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_dagger_guard_5"
+                 name="{=r8KoZCBy}Faceted Oval Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="aserai_dagger_guard_5"
+                 culture="Culture.battania"
+                 length="3.7"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="0" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_dagger_guard_6"
+                 name="{=DEpwMMql}Punctured Southern Dagger Guard"
+                 tier="1"
+                 piece_type="Guard"
+                 mesh="aserai_dagger_guard_6"
+                 culture="Culture.battania"
+                 length="2.4"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="2" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_dagger_guard_7"
+                 name="{=MRqIJXqv}Southern Diamond Dagger Guard"
+                 tier="3"
+                 piece_type="Guard"
+                 mesh="aserai_dagger_guard_7"
+                 culture="Culture.battania"
+                 length="1.8"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="4" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_dagger_guard_8"
+                 name="{=bCZ6V3uY}Snakehead Dagger Guard"
+                 tier="3"
+                 piece_type="Guard"
+                 mesh="aserai_dagger_guard_8"
+                 culture="Culture.battania"
+                 length="2.8"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="4" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_dagger_guard_9"
+                 name="{=bzr1DEgS}Southern Star Dagger Guard"
+                 tier="3"
+                 piece_type="Guard"
+                 mesh="aserai_dagger_guard_9"
+                 culture="Culture.battania"
+                 length="2.5"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="3" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="battania_dagger_guard_1"
+                 name="{=OHl66gsX}Bronze Bollocks Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="battania_guard_1"
+                 culture="Culture.battania"
+                 length="5.5"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="battania_dagger_guard_3"
+                 name="{=Bej5R7tP}Crown Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="battania_guard_3"
+                 culture="Culture.battania"
+                 length="2.1"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="1" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="battania_dagger_guard_5"
+                 name="{=qjxXq3P5}Etched Highland Dagger Guard"
+                 tier="3"
+                 piece_type="Guard"
+                 mesh="battania_guard_5"
+                 culture="Culture.battania"
+                 length="5.7"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="2" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="battania_dagger_guard_6"
+                 name="{=tq0eDwck}Bowl Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="battania_guard_6"
+                 culture="Culture.battania"
+                 length="5.7"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="1" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="battania_dagger_guard_7"
+                 name="{=JSba9OCN}Knobbed Iron Dagger Guard"
+                 tier="1"
+                 piece_type="Guard"
+                 mesh="battania_guard_7"
+                 culture="Culture.battania"
+                 length="5.7"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="2" />
+    <Materials>
+      <Material id="Iron2"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="battania_dagger_guard_8"
+                 name="{=PZYq0hBO}Layered Bronze Dagger Guard"
+                 tier="2"
+                 piece_type="Guard"
+                 mesh="battania_guard_8"
+                 culture="Culture.battania"
+                 length="2.1"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="0" />
+    <Materials>
+      <Material id="Iron3"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="battania_dagger_guard_9"
+                 name="{=l1YxVZil}Knobbed Bronze Dagger Guard"
+                 tier="3"
+                 piece_type="Guard"
+                 mesh="battania_guard_9"
+                 culture="Culture.battania"
+                 length="2.9"
+                 weight="0.097">
+    <PieceUsages unavailable_usages="" />
+    <BuildData next_piece_offset="0.6" />
+    <StatContributions armor_bonus="3" />
+    <Materials>
+      <Material id="Iron4"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <!-- #endregion -->
 </CraftingPieces>

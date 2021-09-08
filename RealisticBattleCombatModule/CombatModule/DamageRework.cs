@@ -160,7 +160,7 @@ namespace RealisticBattleCombatModule
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingKnife"))
                 {
-                    baseMagnitude = physicalDamage * momentumRemaining + (missileTotalDamage * 0f);
+                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0f)) * XmlConfig.dict["Global.ThrustModifier"];
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") ||
@@ -900,7 +900,7 @@ namespace RealisticBattleCombatModule
                     }
                 case "ThrowingKnife":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, armorReduction, damageType, armorEffectiveness,
+                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_sword_thrust, armorReduction, damageType, armorEffectiveness,
                                 XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }
@@ -1242,6 +1242,7 @@ namespace RealisticBattleCombatModule
             {
                 case WeaponClass.OneHandedSword:
                 case WeaponClass.Dagger:
+                case WeaponClass.ThrowingKnife:
                     {
                         num2 = (val + num) * 0.5f;
                         break;
@@ -1278,7 +1279,6 @@ namespace RealisticBattleCombatModule
                         num2 = maceTier * (float)weaponComponentData.WeaponLength * 0.014f;
                         break;
                     }
-                case WeaponClass.ThrowingKnife:
                 case WeaponClass.ThrowingAxe:
                     {
                         num2 = (float)weaponComponentData.SwingDamage * 0.05f;

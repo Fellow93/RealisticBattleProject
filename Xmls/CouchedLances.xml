@@ -345,11 +345,11 @@
     </Materials>
   </CraftingPiece>
 
-  <CraftingPiece id="spear_blade_44" name="{=PmPxx2gK}Bent Razor Head" tier="4" piece_type="Blade" mesh="spear_blade_44" length="80" weight="0.33" excluded_item_usage_features="">
+  <CraftingPiece id="spear_blade_44" name="{=PmPxx2gK}Bent Razor Head" tier="1" piece_type="Blade" mesh="spear_blade_44" length="80" weight="0.33" excluded_item_usage_features="">
     <PieceUsages unavailable_usages="OneHandedPolearm:TwoHandedPolearm_Couchable:Javelin:thrust:TwoHandedPolearm_Thrown:TwoHandedPolearm_Bracing" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="0.7" />
-      <Swing damage_type="Cut" damage_factor="0.9" />
+      <Thrust damage_type="Pierce" damage_factor="0.4" />
+      <Swing damage_type="Cut" damage_factor="0.6" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="2" />
@@ -690,6 +690,146 @@
     </BladeData>
     <Materials>
       <Material id="Iron1"
+                count="2" />
+    </Materials>
+  </CraftingPiece>
+  
+   <CraftingPiece id="sickle_blade_1_polearm"
+                 name="{=vxqrW5GN}Sickle Blade"
+                 tier="1"
+                 piece_type="Blade"
+                 mesh="sickle_blade_1"
+                 length="38.5"
+                 weight="0.262"
+                 full_scale="true"
+                 excluded_item_usage_features="shield:thrust">
+    <PieceUsages unavailable_usages="OneHandedPolearm:TwoHandedPolearm_Couchable:TwoHandedPolearm_Thrown:Javelin" />
+    <BladeData stack_amount="3"
+               physics_material="wood_weapon"
+               body_name="bo_mace_a">
+      <Swing damage_type="Cut"
+             damage_factor="0.3" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron2"
+                count="2" />
+    </Materials>
+  </CraftingPiece>
+  
+  <CraftingPiece id="spear_blade_12"
+                 name="{=5ALE9Joh}War Scythe Head"
+                 tier="2"
+                 piece_type="Blade"
+                 mesh="spear_blade_12"
+                 length="63"
+                 weight="0.3248"
+                 excluded_item_usage_features="shield:thrust">
+    <PieceUsages unavailable_usages="OneHandedPolearm:TwoHandedPolearm_Couchable:TwoHandedPolearm_Thrown:Javelin" />
+    <BladeData stack_amount="3"
+               physics_material="wood_weapon"
+               body_name="bo_spear_b">
+      <Swing damage_type="Cut"
+             damage_factor="0.5" />
+    </BladeData>
+  </CraftingPiece>
+  <CraftingPiece id="spear_blade_21"
+                 name="{=GMwWb6SE}Wooden Spear Head"
+                 tier="1"
+                 piece_type="Blade"
+                 mesh="spear_blade_21"
+                 length="23.5"
+                 weight="0.332"
+                 excluded_item_usage_features="shield:thrust"
+                 CraftingCost="75">
+    <!--WOOD-->
+    <PieceUsages unavailable_usages="OneHandedPolearm:TwoHandedPolearm_Couchable:TwoHandedPolearm_Thrown:Javelin" />
+    <BladeData stack_amount="3"
+               physics_material="wood_weapon"
+               body_name="bo_spear_b">
+      <Swing damage_type="Cut"
+             damage_factor="0.3" />
+    </BladeData>
+  </CraftingPiece>
+  <CraftingPiece id="spear_blade_28"
+                 name="{=f4GSe3UB}Shovel Head"
+                 tier="1"
+                 piece_type="Blade"
+                 mesh="spear_blade_28"
+                 length="29.7"
+                 weight="0.228"
+                 excluded_item_usage_features="shield:thrust">
+    <!--WOOD-->
+    <PieceUsages unavailable_usages="OneHandedPolearm:TwoHandedPolearm_Couchable:TwoHandedPolearm_Thrown:Javelin" />
+    <BladeData stack_amount="3"
+               physics_material="wood_weapon"
+               body_name="bo_spear_b">
+      <Swing damage_type="Cut"
+             damage_factor="0.3" />
+    </BladeData>
+  </CraftingPiece>
+  <CraftingPiece id="spear_blade_30"
+                 name="{=QNe7mQlZ}Rake Head"
+                 tier="1"
+                 piece_type="Blade"
+                 mesh="spear_blade_30"
+                 length="42.5"
+                 weight="0.268"
+                 excluded_item_usage_features="swing">
+    <!--WOOD-->
+    <PieceUsages unavailable_usages="" />
+    <BladeData stack_amount="3"
+               physics_material="wood_weapon"
+               body_name="bo_spear_b">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.4" />
+    </BladeData>
+  </CraftingPiece>
+  <CraftingPiece id="spear_blade_32"
+                 name="{=SVBYn9KW}Iron Fork"
+                 tier="1"
+                 piece_type="Blade"
+                 mesh="spear_blade_32"
+                 length="32.7"
+                 weight="0.4"
+                 excluded_item_usage_features="swing">
+    <PieceUsages unavailable_usages="" />
+    <BladeData stack_amount="3"
+               physics_material="wood_weapon"
+               body_name="bo_spear_b">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.4" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron1"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="spear_blade_29"
+                 name="{=ZgCUNieQ}Fork Head"
+                 tier="1"
+                 piece_type="Blade"
+                 mesh="spear_blade_29"
+                 length="42.5"
+                 weight="0.172"
+                 excluded_item_usage_features="swing">
+    <!--WOOD-->
+    <PieceUsages unavailable_usages="" />
+    <BladeData stack_amount="3"
+               physics_material="wood_weapon"
+               body_name="bo_spear_b">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.3" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Wood"
                 count="2" />
     </Materials>
   </CraftingPiece>
