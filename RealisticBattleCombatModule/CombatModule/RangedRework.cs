@@ -76,10 +76,11 @@ namespace RealisticBattleCombatModule
                             }
                             else if (weaponStatsData[i].WeaponClass == (int)WeaponClass.Bow)
                             {
-
-                                float DrawSpeedskillModifier = 1 + (effectiveSkill * 0.01f);
-
-                                weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.1f) * DrawSpeedskillModifier);
+                                if(XmlConfig.dict["Global.RealisticRangedReload"] == 1 || XmlConfig.dict["Global.RealisticRangedReload"] == 2)
+                                {
+                                    float DrawSpeedskillModifier = 1 + (effectiveSkill * 0.01f);
+                                    weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.1f) * DrawSpeedskillModifier);
+                                }
                             }
                             if ((weaponStatsData[i].WeaponClass == (int)WeaponClass.OneHandedPolearm) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.LowGripPolearm))
                             {
