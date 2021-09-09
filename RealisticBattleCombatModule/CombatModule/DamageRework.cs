@@ -345,6 +345,7 @@ namespace RealisticBattleCombatModule
                                 break;
                             }
                         case "OneHandedAxe":
+                        case "ThrowingAxe":
                             {
                                 skillBasedDamage = magnitude + 60f + (effectiveSkill * 0.4f);
                                 if (magnitude > 1f)
