@@ -61,6 +61,7 @@ namespace RealisticBattleCombatModule
                             }
                         case "ThrowingAxe":
                         case "ThrowingKnife":
+                        case "Dagger":
                             {
                                 length -= 5f;
                                 if (length < 5.0f)
@@ -158,7 +159,8 @@ namespace RealisticBattleCombatModule
                     baseMagnitude = physicalDamage * momentumRemaining + (missileTotalDamage * 1f);
                 }
 
-                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingKnife"))
+                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingKnife") ||
+                    weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Dagger"))
                 {
                     baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0f)) * XmlConfig.dict["Global.ThrustModifier"];
                 }

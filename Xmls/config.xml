@@ -127,8 +127,8 @@
 		<ExtraBluntFactorCut>0.05</ExtraBluntFactorCut>
 		<ExtraBluntFactorPierce>0.05</ExtraBluntFactorPierce>
 		<ExtraBluntFactorBlunt>1.0</ExtraBluntFactorBlunt>
-		<ExtraArmorThresholdFactorPierce>2.2</ExtraArmorThresholdFactorPierce>
-		<ExtraArmorThresholdFactorCut>2.8</ExtraArmorThresholdFactorCut>
+		<ExtraArmorThresholdFactorPierce>2.0</ExtraArmorThresholdFactorPierce>
+		<ExtraArmorThresholdFactorCut>2.6</ExtraArmorThresholdFactorCut>
 		<ExtraArmorSkillDamageAbsorb>1.0</ExtraArmorSkillDamageAbsorb>
 	</Bolt>
 	

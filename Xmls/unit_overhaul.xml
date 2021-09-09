@@ -2298,13 +2298,13 @@
       <skill id="Riding"
              value="40" />
       <skill id="OneHanded"
-             value="100" />
+             value="80" />
       <skill id="TwoHanded"
              value="40" />
       <skill id="Polearm"
              value="70" />
       <skill id="Bow"
-             value="100" />
+             value="120" />
       <skill id="Crossbow"
              value="15" />
       <skill id="Throwing"
@@ -2316,7 +2316,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.tribal_bow" />
+                 id="Item.nomad_bow" />
       <equipment slot="Item1"
                  id="Item.vlandic_arrows" />
       <equipment slot="Item2"
@@ -2336,7 +2336,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.tribal_bow" />
+                 id="Item.nomad_bow" />
       <equipment slot="Item1"
                  id="Item.vlandic_arrows" />
       <equipment slot="Item2"
@@ -2356,7 +2356,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.tribal_bow" />
+                 id="Item.nomad_bow" />
       <equipment slot="Item1"
                  id="Item.vlandic_arrows" />
       <equipment slot="Item2"
@@ -2411,7 +2411,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.nomad_bow" />
+                 id="Item.noble_long_bow" />
       <equipment slot="Item1"
                  id="Item.arrow_emp_1_a" />
       <equipment slot="Item2"
@@ -2431,7 +2431,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.nomad_bow" />
+                 id="Item.noble_long_bow" />
       <equipment slot="Item1"
                  id="Item.arrow_emp_1_a" />
       <equipment slot="Item2"
@@ -2451,7 +2451,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.nomad_bow" />
+                 id="Item.noble_long_bow" />
       <equipment slot="Item1"
                  id="Item.arrow_emp_1_a" />
       <equipment slot="Item2"
@@ -2934,7 +2934,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_war_bow" />
+                 id="Item.composite_steppe_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item2"
@@ -2958,7 +2958,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_war_bow" />
+                 id="Item.composite_steppe_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item2"
@@ -2982,7 +2982,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_war_bow" />
+                 id="Item.composite_steppe_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item2"
@@ -3021,15 +3021,15 @@
       <skill id="Athletics"
              value="100" />
       <skill id="Riding"
-             value="150" />
+             value="130" />
       <skill id="OneHanded"
-             value="140" />
+             value="130" />
       <skill id="TwoHanded"
              value="60" />
       <skill id="Polearm"
              value="60" />
       <skill id="Bow"
-             value="150" />
+             value="130" />
       <skill id="Crossbow"
              value="20" />
       <skill id="Throwing"
@@ -3039,7 +3039,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_war_bow" />
+                 id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
                  id="Item.piercing_arrows" />
       <equipment slot="Item2"
@@ -3063,7 +3063,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_war_bow" />
+                 id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
                  id="Item.piercing_arrows" />
       <equipment slot="Item2"
@@ -3087,7 +3087,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_war_bow" />
+                 id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
                  id="Item.piercing_arrows" />
       <equipment slot="Item2"
@@ -7282,15 +7282,15 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.nordic_shortbow" />
+                 id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.vlandic_arrows" />
+                 id="Item.arrow_emp_1_a" />
       <equipment slot="Item2"
                  id="Item.empire_noble_sword_1_t5" />
       <equipment slot="Item3"
                  id="Item.battania_targe_b" />
       <equipment slot="Body"
-                 id="Item.imperial_lamellar" />
+                 id="Item.imperial_lamellar_over_leather" />
       <equipment slot="Leg"
                  id="Item.decorated_imperial_boots" />
       <equipment slot="Gloves"
@@ -7302,15 +7302,15 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.nordic_shortbow" />
+                 id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.vlandic_arrows" />
+                 id="Item.arrow_emp_1_a" />
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Item3"
                  id="Item.battania_targe_b" />
       <equipment slot="Body"
-                 id="Item.imperial_lamellar" />
+                 id="Item.imperial_lamellar_over_leather" />
       <equipment slot="Leg"
                  id="Item.decorated_imperial_boots" />
       <equipment slot="Head"
@@ -7322,15 +7322,15 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.nordic_shortbow" />
+                 id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.vlandic_arrows" />
+                 id="Item.arrow_emp_1_a" />
       <equipment slot="Item2"
                  id="Item.imperial_axe_t3" />
       <equipment slot="Item3"
                  id="Item.battania_targe_b" />
       <equipment slot="Body"
-                 id="Item.imperial_lamellar" />
+                 id="Item.imperial_lamellar_over_leather" />
       <equipment slot="Leg"
                  id="Item.decorated_imperial_boots" />
       <equipment slot="Head"
@@ -7630,13 +7630,13 @@
       <equipment slot="Item0"
                  id="Item.crossbow_g" />
       <equipment slot="Item1"
-                 id="Item.bolt_b" />
+                 id="Item.bolt_a" />
       <equipment slot="Item2"
                  id="Item.empire_mace_2_t4" />
       <equipment slot="Item3"
                  id="Item.fortified_kite_shield" />
       <equipment slot="Body"
-                 id="Item.imperial_lamellar" />
+                 id="Item.imperial_lamellar_over_leather" />
       <equipment slot="Gloves"
                  id="Item.plated_strip_gauntlets" />
       <equipment slot="Leg"
@@ -7650,13 +7650,13 @@
       <equipment slot="Item0"
                  id="Item.crossbow_g" />
       <equipment slot="Item1"
-                 id="Item.bolt_b" />
+                 id="Item.bolt_a" />
       <equipment slot="Item2"
                  id="Item.empire_mace_4_t5" />
       <equipment slot="Item3"
                  id="Item.fortified_kite_shield" />
       <equipment slot="Body"
-                 id="Item.imperial_lamellar" />
+                 id="Item.imperial_lamellar_over_leather" />
       <equipment slot="Gloves"
                  id="Item.plated_strip_gauntlets" />
       <equipment slot="Leg"
@@ -7670,13 +7670,13 @@
       <equipment slot="Item0"
                  id="Item.crossbow_g" />
       <equipment slot="Item1"
-                 id="Item.bolt_b" />
+                 id="Item.bolt_a" />
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Item3"
                  id="Item.fortified_kite_shield" />
       <equipment slot="Body"
-                 id="Item.imperial_lamellar" />
+                 id="Item.imperial_lamellar_over_leather" />
       <equipment slot="Gloves"
                  id="Item.plated_strip_gauntlets" />
       <equipment slot="Leg"
@@ -7896,7 +7896,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_bow" />
+                 id="Item.composite_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_c" />
       <equipment slot="Item2"
@@ -7916,7 +7916,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_bow" />
+                 id="Item.composite_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_c" />
       <equipment slot="Item2"
@@ -7936,7 +7936,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_bow" />
+                 id="Item.composite_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_c" />
       <equipment slot="Item2"
@@ -8276,7 +8276,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_heavy_bow" />
+                 id="Item.steppe_bow" />
       <equipment slot="Item1"
                  id="Item.heavy_steppe_arrows" />
       <equipment slot="Item2"
@@ -8296,7 +8296,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_heavy_bow" />
+                 id="Item.steppe_bow" />
       <equipment slot="Item1"
                  id="Item.heavy_steppe_arrows" />
       <equipment slot="Item2"
@@ -8316,7 +8316,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_heavy_bow" />
+                 id="Item.steppe_bow" />
       <equipment slot="Item1"
                  id="Item.heavy_steppe_arrows" />
       <equipment slot="Item2"
@@ -8756,7 +8756,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_war_bow" />
+                 id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
                  id="Item.vlandic_arrows" />
       <equipment slot="Item2"
@@ -8776,7 +8776,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_war_bow" />
+                 id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
                  id="Item.vlandic_arrows" />
       <equipment slot="Item2"
@@ -8796,7 +8796,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_war_bow" />
+                 id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
                  id="Item.vlandic_arrows" />
       <equipment slot="Item2"
@@ -8950,7 +8950,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_war_bow" />
+                 id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item2"
@@ -8970,7 +8970,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_war_bow" />
+                 id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item2"
@@ -8990,7 +8990,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_war_bow" />
+                 id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item2"
