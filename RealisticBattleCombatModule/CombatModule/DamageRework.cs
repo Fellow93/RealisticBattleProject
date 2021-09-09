@@ -162,7 +162,7 @@ namespace RealisticBattleCombatModule
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingKnife") ||
                     weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Dagger"))
                 {
-                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0f)) * XmlConfig.dict["Global.ThrustModifier"];
+                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0f)) * XmlConfig.dict["Global.ThrustModifier"] * 0.6f;
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") ||
@@ -313,6 +313,7 @@ namespace RealisticBattleCombatModule
                     {
                         case "Dagger":
                         case "OneHandedSword":
+                        case "ThrowingKnife":
                             {
                                 if (damageType == DamageTypes.Cut)
                                 {

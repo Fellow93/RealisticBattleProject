@@ -90,7 +90,7 @@ namespace RealisticBattleCombatModule
                             {
                                 weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot], 10, effectiveSkill);
                             }
-                            if ((weaponStatsData[i].WeaponClass == (int)WeaponClass.ThrowingAxe) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.ThrowingKnife))
+                            if ((weaponStatsData[i].WeaponClass == (int)WeaponClass.ThrowingAxe) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.ThrowingKnife) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.Dagger))
                             {
                                 weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot], 5, effectiveSkill);
                             }
