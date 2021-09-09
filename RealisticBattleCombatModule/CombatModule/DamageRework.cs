@@ -299,7 +299,7 @@ namespace RealisticBattleCombatModule
             IAgentOriginBase attackerAgentOrigin = attackInformation.AttackerAgentOrigin;
             Formation attackerFormation = attackInformation.AttackerFormation;
 
-            if (!attackCollisionData.IsAlternativeAttack && !attackInformation.IsAttackerAgentMount && attackerAgentOrigin != null && attackInformation.AttackerAgentCharacter != null)
+            if (!attackCollisionData.IsAlternativeAttack && !attackInformation.IsAttackerAgentMount && attackerAgentOrigin != null && attackInformation.AttackerAgentCharacter != null && !attackCollisionData.IsMissile)
             {
                 SkillObject skill = (attackerWeapon.CurrentUsageItem == null) ? DefaultSkills.Athletics : attackerWeapon.CurrentUsageItem.RelevantSkill;
                 if (skill != null)
