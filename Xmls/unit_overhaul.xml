@@ -5951,6 +5951,8 @@
                  id="Item.western_spear_2_t2" />
       <equipment slot="Item1"
                  id="Item.old_kite_sparring_shield" />
+      <equipment slot="Item2"
+                 id="Item.old_kite_sparring_shield" />
       <equipment slot="Head"
                  id="Item.imperial_padded_coif" />
       <equipment slot="Body"
@@ -5962,6 +5964,8 @@
       <equipment slot="Item0"
                  id="Item.western_spear_2_t2" />
       <equipment slot="Item1"
+                 id="Item.old_kite_sparring_shield" />
+      <equipment slot="Item2"
                  id="Item.old_kite_sparring_shield" />
       <equipment slot="Head"
                  id="Item.imperial_padded_coif" />
@@ -5975,6 +5979,8 @@
                  id="Item.western_spear_2_t2" />
       <equipment slot="Item1"
                  id="Item.old_kite_shield" />
+      <equipment slot="Item2"
+                 id="Item.old_kite_shield" />
       <equipment slot="Body"
                  id="Item.tied_cloth_tunic" />
       <equipment slot="Leg"
@@ -5986,6 +5992,8 @@
       <equipment slot="Item0"
                  id="Item.western_spear_2_t2" />
       <equipment slot="Item1"
+                 id="Item.old_kite_shield" />
+      <equipment slot="Item2"
                  id="Item.old_kite_shield" />
       <equipment slot="Body"
                  id="Item.tied_cloth_tunic" />
@@ -14046,6 +14054,8 @@
       <EquipmentRoster>
       <equipment slot="Item1"
                  id="Item.heavy_round_shield" />
+      <equipment slot="Item2"
+                 id="Item.heavy_round_shield" />
       <equipment slot="Item3"
                  id="Item.sturgia_axe_3_t3" />
       <equipment slot="Body"
@@ -14143,6 +14153,8 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item1"
+                 id="Item.heavy_round_shield" />
+      <equipment slot="Item2"
                  id="Item.heavy_round_shield" />
       <equipment slot="Item3"
                  id="Item.sturgia_axe_5_t5" />
