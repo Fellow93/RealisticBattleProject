@@ -256,7 +256,7 @@
 		</ItemComponent>
 		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandPrimaryItemBone="true"/>
 	</Item>
-	<Item id="heavy_round_shield" name="{=hRKmfw2H}Heavy Round Shield" body_name="bo_cap_sturgia_shield_a" shield_body_name="bo_sturgia_shield_a" recalculate_body="false" mesh="sturgia_shield_a" using_tableau="true" weight="4.7" appearance="0.9" Type="Shield" item_holsters="passive_block_round" has_lower_holster_priority="true" holster_position_shift="0,0,0" value="9000" difficulty="0" culture="Culture.sturgia">
+	<Item id="heavy_round_shield" name="{=hRKmfw2H}Heavy Round Shield" body_name="bo_cap_sturgia_shield_a" shield_body_name="bo_sturgia_shield_a" recalculate_body="false" mesh="sturgia_shield_a" using_tableau="true" weight="4.7" appearance="0.9" Type="Shield" item_holsters="shield_round:shield_4" has_lower_holster_priority="true" holster_position_shift="0,0,0" value="9000" difficulty="0" culture="Culture.sturgia">
 		<ItemComponent>
 			<Weapon weapon_class="LargeShield" body_armor="7" thrust_speed="86" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="86" physics_material="wood_shield" item_usage="hand_shield" position="-0.02, 0.0, 0.0" rotation="-15.0,-90.0,-10.0" weapon_length="70" center_of_mass="0, 0, 0" hit_points="700">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
@@ -552,7 +552,7 @@
 		</ItemComponent>
 		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandSecondaryItemBone="true"/>
 	</Item>
-	<Item id="pavise_shield" name="{=aVGSZhCN}Pavise Shield" body_name="bo_cap_kite_shield_e" shield_body_name="bo_kite_shield_e" recalculate_body="false" mesh="kite_shield_e" using_tableau="true" weight="7" appearance="0.7" Type="Shield" item_holsters="passive_block_kite" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.1,-0.025" value="10500">
+	<Item id="pavise_shield" name="{=aVGSZhCN}Pavise Shield" body_name="bo_cap_kite_shield_e" shield_body_name="bo_kite_shield_e" recalculate_body="false" mesh="kite_shield_e" using_tableau="true" weight="7" appearance="0.7" Type="Shield" item_holsters="shield:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.1,-0.025" value="10500">
 		<ItemComponent>
 			<Weapon weapon_class="LargeShield" body_armor="7" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="118" center_of_mass="0.0,0.1,0.1" hit_points="760">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
@@ -600,7 +600,7 @@
 		</ItemComponent>
 		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandSecondaryItemBone="true"/>
 	</Item>
-	<Item id="old_kite_sparring_shield" name="{=cDetN1Ao}Makeshift Kite Sparring Shield" body_name="bo_cap_kite_shield_a" shield_body_name="bo_kite_shield_a" recalculate_body="false" mesh="kite_shield_a" using_tableau="true" weight="4.2" appearance="0.3" Type="Shield" item_holsters="passive_block_kite" has_lower_holster_priority="true" holster_position_shift="-0.1,0,-0.025" value="800" is_merchandise="false">
+	<Item id="old_kite_sparring_shield" name="{=cDetN1Ao}Makeshift Kite Sparring Shield" body_name="bo_cap_kite_shield_a" shield_body_name="bo_kite_shield_a" recalculate_body="false" mesh="kite_shield_a" using_tableau="true" weight="4.2" appearance="0.3" Type="Shield" item_holsters="shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,0,-0.025" value="800" is_merchandise="false">
 		<ItemComponent>
 			<Weapon weapon_class="LargeShield" body_armor="2" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="170" center_of_mass="0.0,0.05,0.05" hit_points="345">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
@@ -608,7 +608,7 @@
 		</ItemComponent>
 		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandSecondaryItemBone="true"/>
 	</Item>
-	<Item id="old_kite_shield" name="{=vXvuViMT}Makeshift Kite Shield" body_name="bo_cap_kite_shield_a" shield_body_name="bo_kite_shield_a" recalculate_body="false" mesh="kite_shield_a" using_tableau="true" weight="4.2" appearance="0.3" Type="Shield" item_holsters="passive_block_kite" has_lower_holster_priority="true" holster_position_shift="-0.1,0,-0.025" value="1000">
+	<Item id="old_kite_shield" name="{=vXvuViMT}Makeshift Kite Shield" body_name="bo_cap_kite_shield_a" shield_body_name="bo_kite_shield_a" recalculate_body="false" mesh="kite_shield_a" using_tableau="true" weight="4.2" appearance="0.3" Type="Shield" item_holsters="shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,0,-0.025" value="1000">
 		<ItemComponent>
 			<Weapon weapon_class="LargeShield" body_armor="2" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="170" center_of_mass="0.0,0.05,0.05" hit_points="370">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
