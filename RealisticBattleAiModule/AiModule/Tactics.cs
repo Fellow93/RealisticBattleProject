@@ -193,6 +193,7 @@ namespace RealisticBattleAiModule
                                 team.AddTacticOption(new TacticFrontalCavalryCharge(team));
                                 team.AddTacticOption(new TacticCoordinatedRetreat(team));
                                 //team.AddTacticOption(new TacticCharge(team));
+                                //team.AddTacticOption(new TacticFullScaleAttackWithDedicatedSkirmishers(team));
                             }
                             if (team.Side == BattleSideEnum.Defender)
                             {
@@ -237,12 +238,12 @@ namespace RealisticBattleAiModule
                 }
                 if (____rightCavalry != null)
                 {
-                    ____rightCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(3f);
+                    ____rightCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Right;
                     ____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                 }
                 if (____leftCavalry != null)
                 {
-                    ____leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(3f);
+                    ____leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Left;
                     ____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                 }
             }
@@ -604,7 +605,7 @@ namespace RealisticBattleAiModule
 
             [HarmonyPostfix]
             [HarmonyPatch("Defend")]
-            static void PostfixDefend(ref Formation ____archers, ref Formation ____mainInfantry)
+            static void PostfixDefend(ref Formation ____archers, ref Formation ____mainInfantry, ref Formation ____rightCavalry, ref Formation ____leftCavalry)
             {
                 if (____archers != null)
                 {
@@ -616,6 +617,16 @@ namespace RealisticBattleAiModule
                 if (____mainInfantry != null)
                 {
                     ____mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
+                }
+                if (____rightCavalry != null)
+                {
+                    ____rightCavalry.AI.ResetBehaviorWeights();
+                    ____rightCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Right;
+                }
+                if (____leftCavalry != null)
+                {
+                    ____leftCavalry.AI.ResetBehaviorWeights();
+                    ____leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Left;
                 }
             }
 

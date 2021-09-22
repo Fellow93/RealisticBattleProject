@@ -242,11 +242,13 @@
   <ItemGroup>
     <Compile Include="AiModule\AgentAi.cs" />
     <Compile Include="AiModule\Behaviours.cs" />
+    <Compile Include="AiModule\RbmTactics\TacticFullScaleAttackWithDedicatedSkirmishers.cs" />
     <Compile Include="AiModule\Tactics.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
+  <ItemGroup />
   <!-- Post-Build -->
   <PropertyGroup>
     <PostBuildEvent>xcopy /d /y "$(SolutionDir)Xmls\native_parameters_tweaks.xml" "$(SolutionDir)..\RealisticBattleAiModule\ModuleData\"

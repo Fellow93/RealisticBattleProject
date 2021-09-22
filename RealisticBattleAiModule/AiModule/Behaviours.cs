@@ -72,7 +72,7 @@ namespace RealisticBattleAiModule
 
             [HarmonyPostfix]
             [HarmonyPatch("OnBehaviorActivatedAux")]
-            static void PostfixOnBehaviorActivatedAux(ref BehaviorDefend __instance)
+            static void PostfixOnBehaviorActivatedAux(ref BehaviorSkirmishLine __instance)
             {
                 __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
                 __instance.Formation.FormOrder = FormOrder.FormOrderWide;
@@ -656,11 +656,26 @@ namespace RealisticBattleAiModule
             }
             else if (__instance.Formation != null && __instance.Formation.QuerySystem.IsRangedCavalryFormation)
             {
-                __result = 1f;
+                __result = 1.5f;
             }
             else
             {
-                __result = 0f;
+                int countOfSkirmishers = 0;
+                __instance.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+                {
+                    if (agent.HasThrownCached)
+                    {
+                        countOfSkirmishers++;
+                    }
+                });
+                if(countOfSkirmishers/ __instance.Formation.CountOfUnits > 0.6f)
+                {
+                    __result = 1f;
+                }
+                else
+                {
+                    __result = 0f;
+                }
             }
         }
     }
@@ -679,6 +694,18 @@ namespace RealisticBattleAiModule
         [HarmonyPatch("CalculateCurrentOrder")]
         static bool PrefixCalculateCurrentOrder(ref BehaviorProtectFlank __instance, ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviorState ____protectFlankState, ref Formation ____mainFormation, ref FormationAI.BehaviorSide ___behaviorSide)
         {
+
+            float distanceFromMainFormation = 80f;
+            float closerDistanceFromMainFormation = 30f;
+            float distanceOffsetFromMainFormation = 130f;
+
+            if(__instance.Formation != null && __instance.Formation.QuerySystem.IsInfantryFormation)
+            {
+                distanceFromMainFormation = 20f;
+                closerDistanceFromMainFormation = 10f;
+                distanceOffsetFromMainFormation = 110f;
+            }
+
             if (____mainFormation == null || __instance.Formation == null || __instance.Formation.QuerySystem.ClosestEnemyFormation == null)
             {
                 ____currentOrder = MovementOrder.MovementOrderStop;
@@ -691,24 +718,24 @@ namespace RealisticBattleAiModule
                 Vec2 vec;
                 if (___behaviorSide == FormationAI.BehaviorSide.Right || ___FlankSide == FormationAI.BehaviorSide.Right)
                 {
-                    vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + 80f);
+                    vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + distanceFromMainFormation);
                     vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
-                    vec += ____mainFormation.Direction * 130f;
+                    vec += ____mainFormation.Direction * distanceOffsetFromMainFormation;
                     if (!Mission.Current.IsPositionInsideBoundaries(vec))
                     {
-                        vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + 30f);
+                        vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + closerDistanceFromMainFormation);
                         vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
                         vec += ____mainFormation.Direction;
                     }
                 }
                 else if (___behaviorSide == FormationAI.BehaviorSide.Left || ___FlankSide == FormationAI.BehaviorSide.Left)
                 {
-                    vec = ____mainFormation.CurrentPosition + v.LeftVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + 80f);
+                    vec = ____mainFormation.CurrentPosition + v.LeftVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + distanceFromMainFormation);
                     vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
-                    vec += ____mainFormation.Direction * 130f;
+                    vec += ____mainFormation.Direction * distanceOffsetFromMainFormation;
                     if (!Mission.Current.IsPositionInsideBoundaries(vec))
                     {
-                        vec = ____mainFormation.CurrentPosition + v.LeftVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + 30f);
+                        vec = ____mainFormation.CurrentPosition + v.LeftVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + closerDistanceFromMainFormation);
                         vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
                         vec += ____mainFormation.Direction;
                     }
@@ -728,59 +755,125 @@ namespace RealisticBattleAiModule
 
         [HarmonyPrefix]
         [HarmonyPatch("CheckAndChangeState")]
-        static bool PrefixCheckAndChangeState(ref BehaviorMountedSkirmish __instance, ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviorState ____protectFlankState, ref Formation ____mainFormation, ref FormationAI.BehaviorSide ___behaviorSide)
+        static bool PrefixCheckAndChangeState(ref BehaviorProtectFlank __instance, ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviorState ____protectFlankState, ref Formation ____mainFormation, ref FormationAI.BehaviorSide ___behaviorSide)
         {
-            if (__instance.Formation != null && ____movementOrder != null)
+            if (__instance.Formation != null && __instance.Formation.QuerySystem.IsInfantryFormation)
             {
-                Vec2 position = ____movementOrder.GetPosition(__instance.Formation);
-                switch (____protectFlankState)
+                if (__instance.Formation != null && ____movementOrder != null)
                 {
-                    case BehaviorState.HoldingFlank:
-                        {
-                            FormationQuerySystem closestFormation = __instance.Formation.QuerySystem.ClosestEnemyFormation;
-                            if (closestFormation != null && closestFormation.Formation != null && (closestFormation.Formation.QuerySystem.IsCavalryFormation || closestFormation.Formation.QuerySystem.IsRangedCavalryFormation))
+                    Vec2 position = ____movementOrder.GetPosition(__instance.Formation);
+                    switch (____protectFlankState)
+                    {
+                        case BehaviorState.HoldingFlank:
                             {
-                                float changeToChargeDistance = 150f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
-                                if (closestFormation.Formation.QuerySystem.MedianPosition.AsVec2.DistanceSquared(position) < changeToChargeDistance * changeToChargeDistance)
+                                FormationQuerySystem closestFormation = __instance.Formation.QuerySystem.ClosestEnemyFormation;
+                                if (closestFormation != null && closestFormation.Formation != null && (closestFormation.Formation.QuerySystem.IsInfantryFormation || closestFormation.Formation.QuerySystem.IsRangedFormation || closestFormation.Formation.QuerySystem.IsCavalryFormation))
                                 {
-                                    ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(closestFormation.Formation);
-                                    ____currentOrder = ____chargeToTargetOrder;
-                                    ____protectFlankState = BehaviorState.Charging;
+                                    //float changeToChargeDistance = 30f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
+                                    //if (closestFormation.Formation.QuerySystem.MedianPosition.AsVec2.DistanceSquared(position) < changeToChargeDistance * changeToChargeDistance)
+                                    //{
+                                    //    ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(closestFormation.Formation);
+                                    //    ____currentOrder = ____chargeToTargetOrder;
+                                    //    ____protectFlankState = BehaviorState.Charging;
+                                    //}
                                 }
+                                break;
                             }
-                            break;
-                        }
-                    case BehaviorState.Charging:
-                        {
+                        case BehaviorState.Charging:
+                            {
 
-                            FormationQuerySystem closestFormation = __instance.Formation.QuerySystem.ClosestEnemyFormation;
-                            if (closestFormation != null && closestFormation.Formation != null)
+                                FormationQuerySystem closestFormation = __instance.Formation.QuerySystem.ClosestEnemyFormation;
+                                if (closestFormation != null && closestFormation.Formation != null)
+                                {
+                                    if (closestFormation == null)
+                                    {
+                                        ____currentOrder = ____movementOrder;
+                                        ____protectFlankState = BehaviorState.Returning;
+                                        break;
+                                    }
+                                    float returnDistance = 40f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
+                                    if (__instance.Formation.QuerySystem.AveragePosition.DistanceSquared(position) > returnDistance * returnDistance)
+                                    {
+                                        ____currentOrder = ____movementOrder;
+                                        ____protectFlankState = BehaviorState.Returning;
+                                    }
+                                }
+                                break;
+                            }
+                        case BehaviorState.Returning:
+                            if (__instance.Formation.QuerySystem.AveragePosition.DistanceSquared(position) < 400f)
                             {
-                                if (closestFormation == null)
-                                {
-                                    ____currentOrder = ____movementOrder;
-                                    ____protectFlankState = BehaviorState.Returning;
-                                    break;
-                                }
-                                float num2 = 160f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
-                                if (__instance.Formation.QuerySystem.AveragePosition.DistanceSquared(position) > num2 * num2)
-                                {
-                                    ____currentOrder = ____movementOrder;
-                                    ____protectFlankState = BehaviorState.Returning;
-                                }
+                                ____protectFlankState = BehaviorState.HoldingFlank;
                             }
                             break;
-                        }
-                    case BehaviorState.Returning:
-                        if (__instance.Formation.QuerySystem.AveragePosition.DistanceSquared(position) < 400f)
-                        {
-                            ____protectFlankState = BehaviorState.HoldingFlank;
-                        }
-                        break;
+                    }
+                    return false;
                 }
-                return false;
+            }
+            else
+            {
+                if (__instance.Formation != null && ____movementOrder != null)
+                {
+                    Vec2 position = ____movementOrder.GetPosition(__instance.Formation);
+                    switch (____protectFlankState)
+                    {
+                        case BehaviorState.HoldingFlank:
+                            {
+                                FormationQuerySystem closestFormation = __instance.Formation.QuerySystem.ClosestEnemyFormation;
+                                if (closestFormation != null && closestFormation.Formation != null && (closestFormation.Formation.QuerySystem.IsCavalryFormation || closestFormation.Formation.QuerySystem.IsRangedCavalryFormation))
+                                {
+                                    float changeToChargeDistance = 90f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
+                                    if (closestFormation.Formation.QuerySystem.MedianPosition.AsVec2.DistanceSquared(position) < changeToChargeDistance * changeToChargeDistance)
+                                    {
+                                        ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(closestFormation.Formation);
+                                        ____currentOrder = ____chargeToTargetOrder;
+                                        ____protectFlankState = BehaviorState.Charging;
+                                    }
+                                }
+                                break;
+                            }
+                        case BehaviorState.Charging:
+                            {
+
+                                FormationQuerySystem closestFormation = __instance.Formation.QuerySystem.ClosestEnemyFormation;
+                                if (closestFormation != null && closestFormation.Formation != null)
+                                {
+                                    if (closestFormation == null)
+                                    {
+                                        ____currentOrder = ____movementOrder;
+                                        ____protectFlankState = BehaviorState.Returning;
+                                        break;
+                                    }
+                                    float returnDistance = 100f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
+                                    if (__instance.Formation.QuerySystem.AveragePosition.DistanceSquared(position) > returnDistance * returnDistance)
+                                    {
+                                        ____currentOrder = ____movementOrder;
+                                        ____protectFlankState = BehaviorState.Returning;
+                                    }
+                                }
+                                break;
+                            }
+                        case BehaviorState.Returning:
+                            if (__instance.Formation.QuerySystem.AveragePosition.DistanceSquared(position) < 400f)
+                            {
+                                ____protectFlankState = BehaviorState.HoldingFlank;
+                            }
+                            break;
+                    }
+                    return false;
+                }
             }
             return true;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch("GetAiWeight")]
+        static void PostfixGetAiWeight(ref float __result)
+        {
+            if(__result > 0f)
+            {
+                __result = __result + 0.5f;
+            }
         }
     }
 

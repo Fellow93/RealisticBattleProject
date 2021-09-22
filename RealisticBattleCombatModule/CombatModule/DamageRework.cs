@@ -17,6 +17,7 @@ using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.ObjectSystem;
 using static TaleWorlds.CampaignSystem.CombatXpModel;
+using static TaleWorlds.MountAndBlade.Agent;
 
 namespace RealisticBattleCombatModule
 {
@@ -1909,7 +1910,7 @@ namespace RealisticBattleCombatModule
             }
 	        return ArmorComponent.ArmorMaterialTypes.None;
         }
-        static bool Prefix(ref Agent __instance, ref Blow b)
+        static bool Prefix(ref Agent __instance, ref Blow b, AgentLastHitInfo ____lastHitInfo)
         {
             b.BaseMagnitude = Math.Min(b.BaseMagnitude, 1000f)/8f;
             Agent agent = (b.OwnerId != -1) ? __instance.Mission.FindAgentWithIndex(b.OwnerId) : __instance;
@@ -1954,25 +1955,45 @@ namespace RealisticBattleCombatModule
             }
             else
             {
-                float num = __instance.Health - (float)b.InflictedDamage;
-                if (num < 0f)
+                float health = __instance.Health;
+                float damagedHp = (((float)b.InflictedDamage > health) ? health : ((float)b.InflictedDamage));
+                float newHp = health - damagedHp;
+                //float num = __instance.Health - (float)b.InflictedDamage;
+                if (newHp < 0f)
                 {
-                    num = 0f;
+                    newHp = 0f;
                 }
                 if (!__instance.Invulnerable && !Mission.DisableDying)
                 {
-                    __instance.Health = num;
+                    __instance.Health = newHp;
                 }
             }
+
             int affectorWeaponSlotOrMissileIndex = b.WeaponRecord.AffectorWeaponSlotOrMissileIndex;
             float hitDistance = b.IsMissile ? (b.Position - b.WeaponRecord.StartingPosition).Length : 0f;
+            if (agent != null && agent != __instance && __instance.IsHuman)
+            {
+                if (agent.IsMount && agent.RiderAgent != null)
+                {
+                    ____lastHitInfo.RegisterLastBlow(agent.RiderAgent.Index, b.AttackType);
+                }
+                else if (agent.IsHuman)
+                {
+                    ____lastHitInfo.RegisterLastBlow(b.OwnerId, b.AttackType);
+                }
+            }
+
             //__instance.Mission.OnAgentHit(__instance, agent, affectorWeaponSlotOrMissileIndex, b.IsMissile, isBlocked: false, b.InflictedDamage, b.MovementSpeedDamageModifier, hitDistance, b.AttackType, b.VictimBodyPart);
             MethodInfo method3 = typeof(Mission).GetMethod("OnAgentHit", BindingFlags.NonPublic | BindingFlags.Instance);
             method3.DeclaringType.GetMethod("OnAgentHit");
-            method3.Invoke(__instance.Mission, new object[] { __instance, agent, affectorWeaponSlotOrMissileIndex, b.IsMissile, false, b.InflictedDamage, b.MovementSpeedDamageModifier, hitDistance, b.AttackType, b.VictimBodyPart });
+            //OnAgentHit(Agent affectedAgent, Agent affectorAgent, int affectorWeaponSlotOrMissileIndex, bool isMissile, bool isBlocked,
+            //    int damage, float damagedHp, float movementSpeedDamageModifier, float hitDistance, AgentAttackType attackType, BoneBodyPartType victimHitBodyPart)
+            method3.Invoke(__instance.Mission, new object[] { __instance, agent, affectorWeaponSlotOrMissileIndex, b.IsMissile, false,
+                b.InflictedDamage, __instance.Health, b.MovementSpeedDamageModifier, hitDistance, b.AttackType, b.VictimBodyPart });
             if (__instance.Health < 1f)
             {
-                __instance.Die(b);
+                KillInfo overrideKillInfo = (b.IsFallDamage ? KillInfo.Gravity : KillInfo.Invalid);
+                __instance.Die(b, overrideKillInfo);
             }
             //__instance.HandleBlowAux(ref b);
             MethodInfo method2 = typeof(Agent).GetMethod("HandleBlowAux", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -2193,7 +2214,7 @@ namespace RealisticBattleCombatModule
             //    __result = 0.25f;
             //    return false;
             //}
-            ExplainedNumber stat = new ExplainedNumber(character.IsHero ? 50f : 1f);
+            ExplainedNumber stat = new ExplainedNumber(character.IsHero ? 0 : 1f);
             if (party != null && party.MobileParty != null)
             {
                 MobileParty mobileParty = party.MobileParty;
@@ -2206,6 +2227,10 @@ namespace RealisticBattleCombatModule
                 if (!character.IsHero && party.MapEvent != null && character.Tier < 3)
                 {
                     PerkHelper.AddPerkBonusForParty(DefaultPerks.Medicine.PhysicianOfPeople, party.MobileParty, isPrimaryBonus: false, ref stat);
+                }
+                if (character.IsHero)
+                {
+                    stat.Add(stat.ResultNumber * 50f - stat.ResultNumber);
                 }
                 ExplainedNumber stat2 = new ExplainedNumber(1f / stat.ResultNumber);
                 if (character.IsHero)
@@ -2224,6 +2249,11 @@ namespace RealisticBattleCombatModule
                     }
                 }
                 __result = 1f - MBMath.ClampFloat(stat2.ResultNumber, 0f, 1f);
+                return false;
+            }
+            if (stat.ResultNumber.ApproximatelyEqualsTo(0f))
+            {
+                __result = 0f;
                 return false;
             }
             __result = 1f - 1f / stat.ResultNumber;
