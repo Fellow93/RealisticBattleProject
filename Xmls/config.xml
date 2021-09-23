@@ -3,6 +3,7 @@
 		<!-- Set ArmorPenetrationMessage to 0 in order to disable blunt trauma and armor penetration message, set it to 1 to enable these messages -->
 		<!-- 1-Troop Overhaul Active || 0-Troop Overhaul Inactive -->
 		<!-- RealisticRangedReload: 1-Historically accurate reload speed + skill scaling for reload || 2-Less reduced reload speeds + skill scaling for reload|| 0-Vanilla reload speeds -->
+		<!-- Price modifiers: if you set it to 0.5 prices change to 50%, if you set it to 0.1 prices change to 10% etc. Trade = trade goods. -->
 	<Global>
 		<ArmorMultiplier>2.0</ArmorMultiplier>
 		<OneHandedThrustBonus>10</OneHandedThrustBonus>
@@ -11,6 +12,10 @@
 		<ThrustModifier>0.1</ThrustModifier>
 		<TroopOverhaulActive>1</TroopOverhaulActive>
 		<RealisticRangedReload>2</RealisticRangedReload>
+		<ArmorPriceModifier>1</ArmorPriceModifier>
+		<WeaponPriceModifier>1</WeaponPriceModifier>
+		<HorsePriceModifier>1</HorsePriceModifier>
+		<TradePriceModifier>1</TradePriceModifier>
 	</Global>
 		<!-- Armor works like this -->
 		<!-- Damage that penetrates armor = damage caused by the weapon - (armor of body part * ExtraArmorThresholdFactor)-->

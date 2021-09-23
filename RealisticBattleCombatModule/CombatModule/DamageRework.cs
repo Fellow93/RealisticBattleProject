@@ -1138,39 +1138,39 @@ namespace RealisticBattleCombatModule
             
             if (item.ItemType == ItemObject.ItemTypeEnum.LegArmor)
             {
-                price = (int)(75f + (float)item.ArmorComponent.LegArmor * materialPriceModifier);
+                price = (int)((75f + (float)item.ArmorComponent.LegArmor * materialPriceModifier) * XmlConfig.dict["Global.ArmorPriceModifier"]);
             }
             else if (item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
             {
-                price = (int)(50f + (float)item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f);
+                price = (int)((50f + (float)item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f) * XmlConfig.dict["Global.ArmorPriceModifier"]);
             }
             else if (item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
             {
-                price = (int)(100f + (float)item.ArmorComponent.HeadArmor * materialPriceModifier * 1.2f);
+                price = (int)((100f + (float)item.ArmorComponent.HeadArmor * materialPriceModifier * 1.2f) * XmlConfig.dict["Global.ArmorPriceModifier"]);
             }
             else if (item.ItemType == ItemObject.ItemTypeEnum.Cape)
             {
-                price = (int)(50f + (float)item.ArmorComponent.BodyArmor * materialPriceModifier * 0.8f + (float)item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f);
+                price = (int)((50f + (float)item.ArmorComponent.BodyArmor * materialPriceModifier * 0.8f + (float)item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f) * XmlConfig.dict["Global.ArmorPriceModifier"]);
             }
             else if (item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
             {
-                price = (int)(200f + (float)item.ArmorComponent.BodyArmor * materialPriceModifier * 2.5f + (float)item.ArmorComponent.LegArmor * materialPriceModifier + (float)item.ArmorComponent.ArmArmor * materialPriceModifier) * 0.8f;
+                price = (int)((200f + (float)item.ArmorComponent.BodyArmor * materialPriceModifier * 2.5f + (float)item.ArmorComponent.LegArmor * materialPriceModifier + (float)item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f) * XmlConfig.dict["Global.ArmorPriceModifier"]);
             }
             else if (item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
             {
-                price = (int)(100f + ((float)item.ArmorComponent.BodyArmor) * 450f);
+                price = (int)((100f + ((float)item.ArmorComponent.BodyArmor) * 450f) * XmlConfig.dict["Global.ArmorPriceModifier"]);
             }
             else if (item.ItemComponent is WeaponComponent)
             {
-                price = (int)(200f * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
+                price = (int)(200f * XmlConfig.dict["Global.WeaponPriceModifier"] * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
             }
             else if (item.ItemComponent is HorseComponent)
             {
-                price = (int)(200f * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
+                price = (int)(200f * tier * XmlConfig.dict["Global.HorsePriceModifier"] * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
             }
             else if (item.ItemComponent is TradeItemComponent)
             {
-                price = (int)(100f * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
+                price = (int)(100f * tier * XmlConfig.dict["Global.TradePriceModifier"] * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
             }
             else
             {
