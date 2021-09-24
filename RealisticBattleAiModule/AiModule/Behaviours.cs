@@ -3132,7 +3132,10 @@ namespace RealisticBattleAiModule
             [HarmonyPatch("BattleSizeSpawnTick")]
             static bool PrefixBattleSizeSpawnTick(ref MissionAgentSpawnLogic __instance, ref int ____battleSize, ref List<SpawnPhase>[] ____phases)
             {
-
+                if (!Mission.Current.IsFieldBattle)
+                {
+                    return true;
+                }
                 int numberOfTroopsCanBeSpawned = __instance.NumberOfTroopsCanBeSpawned;
                 if (__instance.NumberOfRemainingTroops <= 0 || numberOfTroopsCanBeSpawned <= 0)
                 {
