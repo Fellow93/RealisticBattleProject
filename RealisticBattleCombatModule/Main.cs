@@ -3,8 +3,6 @@ using TaleWorlds.Library;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Xml;
-using TaleWorlds.Localization;
-using TaleWorlds.Engine.Screens;
 using TaleWorlds.Core;
 
 namespace RealisticBattleCombatModule

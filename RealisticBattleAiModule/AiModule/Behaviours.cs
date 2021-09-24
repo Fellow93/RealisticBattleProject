@@ -1402,83 +1402,86 @@ namespace RealisticBattleAiModule
     class OverrideSiegeTower
     {
 
-        [HarmonyPostfix]
-        [HarmonyPatch("OnInit")]
-        static void PostfixOnInit(ref SiegeTower __instance, ref GameEntity ____gameEntity, ref GameEntity ____cleanState, ref List<LadderQueueManager> ____queueManagers, ref int ___DynamicNavmeshIdStart)
-        {
-            __instance.ForcedUse = true;
-            List<GameEntity> list2 = ____cleanState.CollectChildrenEntitiesWithTag("ladder");
-            if (list2.Count == 3)
-            {
-                ____queueManagers.Clear();
-                LadderQueueManager ladderQueueManager0 = list2.ElementAt(0).GetScriptComponents<LadderQueueManager>().FirstOrDefault();
-                LadderQueueManager ladderQueueManager1 = list2.ElementAt(1).GetScriptComponents<LadderQueueManager>().FirstOrDefault();
-                LadderQueueManager ladderQueueManager2 = list2.ElementAt(2).GetScriptComponents<LadderQueueManager>().FirstOrDefault();
-                if (ladderQueueManager0 != null)
-                {
-                    MatrixFrame identity = MatrixFrame.Identity;
-                    identity.rotation.RotateAboutSide((float)Math.PI / 2f);
-                    identity.rotation.RotateAboutForward((float)Math.PI / 8f);
+        //[HarmonyPostfix]
+        //[HarmonyPatch("OnInit")]
+        //static void PostfixOnInit(ref SiegeTower __instance, ref GameEntity ____gameEntity, ref GameEntity ____cleanState, ref List<LadderQueueManager> ____queueManagers, ref int ___DynamicNavmeshIdStart)
+        //{
+        //    __instance.ForcedUse = true;
+        //    List<GameEntity> list2 = ____cleanState.CollectChildrenEntitiesWithTag("ladder");
+        //    if (list2.Count == 3)
+        //    {
+        //        ____queueManagers.Clear();
+        //        LadderQueueManager ladderQueueManager0 = list2.ElementAt(0).GetScriptComponents<LadderQueueManager>().FirstOrDefault();
+        //        LadderQueueManager ladderQueueManager1 = list2.ElementAt(1).GetScriptComponents<LadderQueueManager>().FirstOrDefault();
+        //        LadderQueueManager ladderQueueManager2 = list2.ElementAt(2).GetScriptComponents<LadderQueueManager>().FirstOrDefault();
+        //        if (ladderQueueManager0 != null)
+        //        {
+        //            MatrixFrame identity = MatrixFrame.Identity;
+        //            identity.rotation.RotateAboutSide((float)Math.PI / 2f);
+        //            identity.rotation.RotateAboutForward((float)Math.PI / 8f);
 
-                    ladderQueueManager0.Initialize(list2.ElementAt(0).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, -1f), BattleSideEnum.Attacker, 15, (float)Math.PI / 4f, 7f, 1.1f, 30f, 50f, blockUsage: false, 1.1f, 4f, 5f);
-                    ____queueManagers.Add(ladderQueueManager0);
-                }
-                if (ladderQueueManager1 != null)
-                {
-                    MatrixFrame identity = MatrixFrame.Identity;
-                    identity.rotation.RotateAboutSide((float)Math.PI / 2f);
-                    identity.rotation.RotateAboutForward((float)Math.PI / 8f);
+        //            ladderQueueManager0.Initialize(list2.ElementAt(0).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, -1f), BattleSideEnum.Attacker, 15, (float)Math.PI / 4f, 7f, 1.1f, 30f, 50f, blockUsage: false, 1.1f, 4f, 5f);
+        //            ____queueManagers.Add(ladderQueueManager0);
+        //        }
+        //        if (ladderQueueManager1 != null)
+        //        {
+        //            MatrixFrame identity = MatrixFrame.Identity;
+        //            identity.rotation.RotateAboutSide((float)Math.PI / 2f);
+        //            identity.rotation.RotateAboutForward((float)Math.PI / 8f);
 
-                    ladderQueueManager1.Initialize(list2.ElementAt(1).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, -1f), BattleSideEnum.Attacker, 15, (float)Math.PI / 4f, 7f, 1.1f, 30f, 50f, blockUsage: false, 1.1f, 4f, 5f);
-                    ____queueManagers.Add(ladderQueueManager1);
-                }
-                if (ladderQueueManager2 != null)
-                {
-                    MatrixFrame identity = MatrixFrame.Identity;
-                    identity.rotation.RotateAboutSide((float)Math.PI / 2f);
-                    identity.rotation.RotateAboutForward((float)Math.PI / 8f);
+        //            ladderQueueManager1.Initialize(list2.ElementAt(1).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, -1f), BattleSideEnum.Attacker, 15, (float)Math.PI / 4f, 7f, 1.1f, 30f, 50f, blockUsage: false, 1.1f, 4f, 5f);
+        //            ____queueManagers.Add(ladderQueueManager1);
+        //        }
+        //        if (ladderQueueManager2 != null)
+        //        {
+        //            MatrixFrame identity = MatrixFrame.Identity;
+        //            identity.rotation.RotateAboutSide((float)Math.PI / 2f);
+        //            identity.rotation.RotateAboutForward((float)Math.PI / 8f);
 
-                    ladderQueueManager2.Initialize(list2.ElementAt(2).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, -1f), BattleSideEnum.Attacker, 15, (float)Math.PI / 4f, 7f, 1.1f, 2f, 1f, blockUsage: false, 1.1f, 0f, 5f);
-                    ____queueManagers.Add(ladderQueueManager2);
-                }
-                foreach (LadderQueueManager queueManager in ____queueManagers)
-                {
-                    ____cleanState.Scene.SetAbilityOfFacesWithId(queueManager.ManagedNavigationFaceId, isEnabled: false);
-                    queueManager.IsDeactivated = true;
-                }
-            }
-            else if (list2.Count == 0)
-            {
-                ____queueManagers.Clear();
-                LadderQueueManager ladderQueueManager2 = ____cleanState.GetScriptComponents<LadderQueueManager>().FirstOrDefault();
-                if (ladderQueueManager2 != null)
-                {
-                    MatrixFrame identity2 = MatrixFrame.Identity;
-                    identity2.origin.y += 4f;
-                    identity2.rotation.RotateAboutSide(-(float)Math.PI / 2f);
-                    identity2.rotation.RotateAboutUp((float)Math.PI);
-                    ladderQueueManager2.Initialize(___DynamicNavmeshIdStart + 2, identity2, new Vec3(0f, -1f), BattleSideEnum.Attacker, 16, (float)Math.PI / 4f, 7f, 1.1f, 2f, 1f, blockUsage: false, 1.1f, 0f, 5f);
-                    ____queueManagers.Add(ladderQueueManager2);
-                }
-                foreach (LadderQueueManager queueManager in ____queueManagers)
-                {
-                    ____cleanState.Scene.SetAbilityOfFacesWithId(queueManager.ManagedNavigationFaceId, isEnabled: false);
-                    queueManager.IsDeactivated = true;
-                }
-            }
-        }
+        //            ladderQueueManager2.Initialize(list2.ElementAt(2).GetScriptComponents<LadderQueueManager>().FirstOrDefault().ManagedNavigationFaceId, identity, new Vec3(0f, -1f), BattleSideEnum.Attacker, 15, (float)Math.PI / 4f, 7f, 1.1f, 2f, 1f, blockUsage: false, 1.1f, 0f, 5f);
+        //            ____queueManagers.Add(ladderQueueManager2);
+        //        }
+        //        foreach (LadderQueueManager queueManager in ____queueManagers)
+        //        {
+        //            ____cleanState.Scene.SetAbilityOfFacesWithId(queueManager.ManagedNavigationFaceId, isEnabled: false);
+        //            queueManager.IsDeactivated = true;
+        //        }
+        //    }
+        //    else if (list2.Count == 0)
+        //    {
+        //        ____queueManagers.Clear();
+        //        LadderQueueManager ladderQueueManager2 = ____cleanState.GetScriptComponents<LadderQueueManager>().FirstOrDefault();
+        //        if (ladderQueueManager2 != null)
+        //        {
+        //            MatrixFrame identity2 = MatrixFrame.Identity;
+        //            identity2.origin.y += 4f;
+        //            identity2.rotation.RotateAboutSide(-(float)Math.PI / 2f);
+        //            identity2.rotation.RotateAboutUp((float)Math.PI);
+        //            ladderQueueManager2.Initialize(___DynamicNavmeshIdStart + 2, identity2, new Vec3(0f, -1f), BattleSideEnum.Attacker, 16, (float)Math.PI / 4f, 7f, 1.1f, 2f, 1f, blockUsage: false, 1.1f, 0f, 5f);
+        //            ____queueManagers.Add(ladderQueueManager2);
+        //        }
+        //        foreach (LadderQueueManager queueManager in ____queueManagers)
+        //        {
+        //            ____cleanState.Scene.SetAbilityOfFacesWithId(queueManager.ManagedNavigationFaceId, isEnabled: false);
+        //            queueManager.IsDeactivated = true;
+        //        }
+        //    }
+        //}
 
         [HarmonyPostfix]
         [HarmonyPatch("OnDeploymentStateChanged")]
         static void PostfixDeploymentStateChanged(ref SiegeTower __instance, ref List<SiegeLadder> ____sameSideSiegeLadders, ref GameEntity ____cleanState, ref List<LadderQueueManager> ____queueManagers)
         {
-            __instance.Disable();
-            ____cleanState.SetVisibilityExcludeParents(false);
-            if (____sameSideSiegeLadders != null)
+            if(XmlConfig.dict["Global.SiegeTowersEnabled"] == 0)
             {
-                foreach (SiegeLadder sameSideSiegeLadder in ____sameSideSiegeLadders)
+                __instance.Disable();
+                ____cleanState.SetVisibilityExcludeParents(false);
+                if (____sameSideSiegeLadders != null)
                 {
-                    sameSideSiegeLadder.GameEntity.SetVisibilityExcludeParents(true);
+                    foreach (SiegeLadder sameSideSiegeLadder in ____sameSideSiegeLadders)
+                    {
+                        sameSideSiegeLadder.GameEntity.SetVisibilityExcludeParents(true);
+                    }
                 }
             }
         }
