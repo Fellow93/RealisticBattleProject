@@ -839,7 +839,7 @@
     <combat_parameter id="onehanded_lance_upperthrust"
                       collision_check_starting_percent="0.27"
                       collision_damage_starting_percent="0.0"
-                      collision_check_ending_percent="0.57"
+                      collision_check_ending_percent="0.53"
                       weapon_offset="0,0,0.6"
                       vertical_rot_limit_multiplier_up="thrust_vertical_rot_limit"
                       vertical_rot_limit_multiplier_down="0.7"
