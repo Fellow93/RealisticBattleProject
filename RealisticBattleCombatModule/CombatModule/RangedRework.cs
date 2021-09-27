@@ -308,7 +308,16 @@ namespace RealisticBattleCombatModule
 
                 if (Mission.Current.IsFieldBattle && !shooterAgent.IsMainAgent && (wsd[0].WeaponClass == (int)WeaponClass.Javelin || wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe))
                 {
-                    velocity.z = velocity.z - 1.2f;
+                    //float shooterSpeed = shooterAgent.MovementVelocity.Normalize();
+                    if (!shooterAgent.HasMount)
+                    {
+                        velocity.z = velocity.z - 1.2f;
+                    }
+                    else
+                    {
+                        velocity.z = velocity.z - 2.4f;
+
+                    }
                 }
 
                 if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
