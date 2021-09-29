@@ -27,9 +27,43 @@
 		<HorsePriceModifier>0.2</HorsePriceModifier>
 		<TradePriceModifier>1</TradePriceModifier>
 	</Global>
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		<!-- Armor works like this -->
 		<!-- Damage that penetrates armor = damage caused by the weapon - (armor of body part * ExtraArmorThresholdFactor)-->
-		<!-- Blunt trauma = 100 / 100 + damage absorbed by armor (based on above calculation) * ExtraBluntFactor * ArmorMultiplier -->	
+		<!-- Blunt trauma = 100 / 100 + damage absorbed by armor (based on above calculation) * ExtraBluntFactor * ArmorMultiplier -->			
+		
+		<!-- This is usefull msotly for the modders not for normal users -->			
 	<Dagger>
 		<ExtraBluntFactorCut>0.15</ExtraBluntFactorCut>
 		<ExtraBluntFactorPierce>0.30</ExtraBluntFactorPierce>
