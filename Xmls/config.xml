@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?> 
 <config>
 		<!-- Set ArmorPenetrationMessage to 0 in order to disable blunt trauma and armor penetration message, set it to 1 to enable these messages -->
+		
 		<!-- 1-Troop Overhaul Active || 0-Troop Overhaul Inactive -->
 		<!-- RealisticRangedReload: 1-Historically accurate reload speed + skill scaling for reload || 2-Less reduced reload speeds + skill scaling for reload|| 0-Vanilla reload speeds -->
+		<!-- MaceBluntModifier, multiplier of blunt damage (practically applies only to maces and two hande maces), when set to 0.5 = 50% damage, when set to 1 = 100% damage, when set to 1.5 = 150% damage etc. -->		
+		<!-- ArmorThresholdModifier, multiplier of all ExtraArmorThresholdFactors, can be used to globally nerf or buff ability of armor to fully stop damage, be default set to 1, reduce to 0.75 for bit more arcadish gameplay (vanilla game is 0.5)-->
+		<!-- BluntTraumaBonus, globally increase all the ExtraBluntFactors by the written value, this can be used to increase "guaranteed" damage globally (except for true blunt damage, see above). By default set to 0, set to 0.05-0.1 for bit more guaranteed damage without affecting actual armor penetration, this will result in +100-200% guaranteed damage for arrows and bolts because their default threshold is 0.05. -->
+		
 		<!-- Price modifiers: if you set it to 0.5 prices change to 50%, if you set it to 0.1 prices change to 10% etc. Trade = trade goods. -->
 	<Global>
 		<ArmorMultiplier>2.0</ArmorMultiplier>
@@ -10,11 +15,16 @@
 		<TwoHandedThrustBonus>10</TwoHandedThrustBonus>
 		<ArmorPenetrationMessage>0</ArmorPenetrationMessage>
 		<ThrustModifier>0.1</ThrustModifier>
+		
 		<TroopOverhaulActive>1</TroopOverhaulActive>
-		<RealisticRangedReload>2</RealisticRangedReload>
+		<RealisticRangedReload>1</RealisticRangedReload>
+		<MaceBluntModifier>1</MaceBluntModifier>
+		<ArmorThresholdModifier>1</ArmorThresholdModifier>
+		<BluntTraumaBonus>0.0</BluntTraumaBonus>
+		
 		<ArmorPriceModifier>1</ArmorPriceModifier>
 		<WeaponPriceModifier>1</WeaponPriceModifier>
-		<HorsePriceModifier>1</HorsePriceModifier>
+		<HorsePriceModifier>0.2</HorsePriceModifier>
 		<TradePriceModifier>1</TradePriceModifier>
 	</Global>
 		<!-- Armor works like this -->

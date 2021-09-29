@@ -169,7 +169,7 @@ namespace RealisticBattleCombatModule
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") ||
                     weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("LowGripPolearm"))
                 {
-                    baseMagnitude = (physicalDamage * momentumRemaining + missileTotalDamage) * XmlConfig.dict["Global.ThrustModifier"];
+                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage - 70f) * 0.5f) * XmlConfig.dict["Global.ThrustModifier"];
                 }
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") ||
                     weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt"))
@@ -1006,13 +1006,13 @@ namespace RealisticBattleCombatModule
                 case DamageTypes.Blunt:
                     {
                         float armorReductionBlunt = 100f / (100f + armorEffectiveness * XmlConfig.dict["Global.ArmorMultiplier"] * 1.5f);
-                        damage += magnitude * armorReductionBlunt;
+                        damage += magnitude * armorReductionBlunt * XmlConfig.dict["Global.MaceBluntModifier"];
 
                         break;
                     }
                 case DamageTypes.Cut:
                     {
-                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * cutTreshold);
+                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * cutTreshold * XmlConfig.dict["Global.ArmorThresholdModifier"]);
                         float bluntFraction = 0f;
                         if (magnitude > 0f)
                         {
@@ -1020,7 +1020,7 @@ namespace RealisticBattleCombatModule
                         }
                         damage += penetratedDamage;
 
-                        float bluntTrauma = magnitude * bluntFactorCut * bluntFraction;
+                        float bluntTrauma = magnitude * (bluntFactorCut + XmlConfig.dict["Global.BluntTraumaBonus"]) * bluntFraction;
                         float bluntTraumaAfterArmor = Math.Max(0f, bluntTrauma * armorReduction);
                         damage += bluntTraumaAfterArmor;
 
@@ -1047,7 +1047,7 @@ namespace RealisticBattleCombatModule
                     }
                 case DamageTypes.Pierce:
                     {
-                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * pierceTreshold);
+                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * pierceTreshold * XmlConfig.dict["Global.ArmorThresholdModifier"]);
                         float bluntFraction = 0f;
                         if (magnitude > 0f)
                         {
@@ -1055,7 +1055,7 @@ namespace RealisticBattleCombatModule
                         }
                         damage += penetratedDamage;
 
-                        float bluntTrauma = magnitude * bluntFactorPierce * bluntFraction;
+                        float bluntTrauma = magnitude * (bluntFactorPierce + XmlConfig.dict["Global.BluntTraumaBonus"]) * bluntFraction;
                         float bluntTraumaAfterArmor = Math.Max(0f, bluntTrauma * armorReduction);
                         damage += bluntTraumaAfterArmor;
 
