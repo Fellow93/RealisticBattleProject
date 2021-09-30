@@ -776,7 +776,7 @@ namespace RealisticBattleCombatModule
                                 }
                             case "Javelin":
                                 {
-                                    inflictedDamage *= 2.5f;
+                                    inflictedDamage *= 3f;
                                     break;
                                 }
                             case "ThrowingAxe":
@@ -786,12 +786,12 @@ namespace RealisticBattleCombatModule
                                 }
                             case "OneHandedPolearm":
                                 {
-                                    inflictedDamage *= 2.5f;
+                                    inflictedDamage *= 3f;
                                     break;
                                 }
                             case "LowGripPolearm":
                                 {
-                                    inflictedDamage *= 2.5f;
+                                    inflictedDamage *= 3f;
                                     break;
                                 }
                             default:
@@ -815,7 +815,7 @@ namespace RealisticBattleCombatModule
                                         inflictedDamage *= 0.09f;
                                         break;
                                     }
-                                    inflictedDamage *= 2.0f;
+                                    inflictedDamage *= 2f;
 
                                     break;
                                 }
@@ -823,7 +823,7 @@ namespace RealisticBattleCombatModule
                                 {
                                     if (attackCollisionData.DamageType == 0) //cut
                                     {
-                                        inflictedDamage *= 1.5f;
+                                        inflictedDamage *= 2f;
                                     }
                                     else if(attackCollisionData.DamageType == 1)//pierce
                                     {
@@ -831,7 +831,7 @@ namespace RealisticBattleCombatModule
                                     }
                                     else if (attackCollisionData.DamageType == 2)//blunt
                                     {
-                                        inflictedDamage *= 1f;
+                                        inflictedDamage *= 1.5f;
                                     }
                                     break;
                                 }

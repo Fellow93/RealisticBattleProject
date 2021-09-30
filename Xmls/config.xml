@@ -11,10 +11,10 @@
 		<!-- Price modifiers: if you set it to 0.5 prices change to 50%, if you set it to 0.1 prices change to 10% etc. Trade = trade goods. -->
 	<Global>
 		<ArmorMultiplier>2.0</ArmorMultiplier>
-		<OneHandedThrustBonus>10</OneHandedThrustBonus>
-		<TwoHandedThrustBonus>10</TwoHandedThrustBonus>
+		<OneHandedThrustBonus>30</OneHandedThrustBonus>
+		<TwoHandedThrustBonus>30</TwoHandedThrustBonus>
 		<ArmorPenetrationMessage>0</ArmorPenetrationMessage>
-		<ThrustModifier>0.1</ThrustModifier>
+		<ThrustModifier>0.034</ThrustModifier>
 		
 		<TroopOverhaulActive>1</TroopOverhaulActive>
 		<RealisticRangedReload>1</RealisticRangedReload>
