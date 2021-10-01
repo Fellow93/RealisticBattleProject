@@ -4159,8 +4159,6 @@
                  id="Item.highland_spear_3_t3" />
       <equipment slot="Item1"
                  id="Item.battania_large_shield_c" />
-      <equipment slot="Item2"
-                 id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Item3"
                  id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
@@ -4179,8 +4177,6 @@
                  id="Item.highland_spear_3_t3" />
       <equipment slot="Item1"
                  id="Item.battania_large_shield_c" />
-      <equipment slot="Item2"
-                 id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Item3"
                  id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
@@ -4199,8 +4195,6 @@
                  id="Item.highland_spear_3_t3" />
       <equipment slot="Item1"
                  id="Item.battania_large_shield_c" />
-      <equipment slot="Item2"
-                 id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Item3"
                  id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
@@ -4294,8 +4288,6 @@
                  id="Item.highland_spear_4_t4" />
       <equipment slot="Item1"
                  id="Item.battania_large_shield_a" />
-      <equipment slot="Item2"
-                 id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Item3"
                  id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
@@ -4387,8 +4379,6 @@
                  id="Item.highland_spear_4_t4" />
       <equipment slot="Item1"
                  id="Item.battania_large_shield_b" />
-      <equipment slot="Item2"
-                 id="Item.battania_axe_3_t5" />
       <equipment slot="Item3"
                  id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
@@ -4956,7 +4946,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.woodland_axe_t3" />
+                 id="Item.highland_spear_3_t3" />
       <equipment slot="Item1"
                  id="Item.battania_large_shield_c" />
       <equipment slot="Item2"
@@ -5222,7 +5212,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.highland_spear_4_t4" />
       <equipment slot="Item1"
                  id="Item.battania_large_shield_a" />
       <equipment slot="Item2"
@@ -6698,7 +6688,7 @@
       <equipment slot="Item3"
                  id="Item.imperial_axe_t3" />
       <equipment slot="Body"
-                 id="Item.basic_imperial_leather_armor" />
+                 id="Item.imperial_mail_over_leather" />
       <equipment slot="Cape"
                  id="Item.a_empire_plated_shoulder_b" />
       <equipment slot="Gloves"
@@ -6744,12 +6734,12 @@
     </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
-      <equipment slot="Item0"
-                 id="Item.empire_polearm_1_t4" />
       <equipment slot="Item1"
                  id="Item.reinforced_kite_shield" />
       <equipment slot="Item2"
-                 id="Item.imperial_throwing_spear_1_t4" />			 
+                 id="Item.imperial_throwing_spear_1_t4" />
+      <equipment slot="Item3"
+                 id="Item.empire_polearm_1_t4" />				 
       <equipment slot="Body"
                  id="Item.legionary_mail" />
       <equipment slot="Gloves"
@@ -6768,6 +6758,8 @@
                  id="Item.reinforced_kite_shield" />
       <equipment slot="Item2"
                  id="Item.imperial_throwing_spear_1_t4" />
+      <equipment slot="Item3"
+                 id="Item.empire_polearm_1_t4" />	
       <equipment slot="Body"
                  id="Item.legionary_mail" />
       <equipment slot="Gloves"
@@ -6786,6 +6778,8 @@
                  id="Item.reinforced_kite_shield" />
       <equipment slot="Item2"
                  id="Item.imperial_throwing_spear_1_t4" />
+      <equipment slot="Item3"
+                 id="Item.empire_polearm_1_t4" />	
       <equipment slot="Body"
                  id="Item.legionary_mail" />
       <equipment slot="Cape"
@@ -6837,6 +6831,8 @@
                  id="Item.fortified_kite_shield" />
       <equipment slot="Item2"
                  id="Item.imperial_throwing_spear_1_t4" />
+      <equipment slot="Item3"
+                 id="Item.empire_polearm_1_t4" />	
       <equipment slot="Body"
                  id="Item.imperial_lamellar" />
       <equipment slot="Gloves"
@@ -6855,6 +6851,8 @@
                  id="Item.fortified_kite_shield" />
       <equipment slot="Item2"
                  id="Item.imperial_throwing_spear_1_t4" />
+      <equipment slot="Item3"
+                 id="Item.empire_polearm_1_t4" />	
       <equipment slot="Body"
                  id="Item.imperial_lamellar" />
       <equipment slot="Gloves"
@@ -6873,6 +6871,8 @@
                  id="Item.fortified_kite_shield" />
       <equipment slot="Item2"
                  id="Item.imperial_throwing_spear_1_t4" />
+      <equipment slot="Item3"
+                 id="Item.empire_polearm_1_t4" />	
       <equipment slot="Body"
                  id="Item.imperial_lamellar" />
       <equipment slot="Gloves"
@@ -6885,12 +6885,12 @@
                  id="Item.imperial_lamellar_shoulders" />
       </EquipmentRoster>
       <EquipmentRoster>
-      <equipment slot="Item0"
-                 id="Item.empire_polearm_1_t4" />
       <equipment slot="Item1"
                  id="Item.fortified_kite_shield" />
       <equipment slot="Item2"
                  id="Item.imperial_throwing_spear_1_t4" />
+      <equipment slot="Item3"
+                 id="Item.empire_polearm_1_t4" />	
       <equipment slot="Body"
                  id="Item.imperial_lamellar" />
       <equipment slot="Gloves"
@@ -7383,13 +7383,13 @@
       <skill id="TwoHanded"
              value="60" />
       <skill id="Polearm"
-             value="100" />
+             value="120" />
       <skill id="Bow"
              value="45" />
       <skill id="Crossbow"
              value="45" />
       <skill id="Throwing"
-             value="120" />
+             value="80" />
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.imperial_elite_menavliaton" />

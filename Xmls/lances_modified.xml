@@ -237,33 +237,6 @@
 
   <!-- #endregion -->
 <!-- #region Used Spears -->
-  <CraftedItem id="western_spear_1_t2"
-               name="{=hyq1zBg5}Simple Commoner Spear"
-               crafting_template="TwoHandedPolearm"
-               culture="Culture.vlandia">
-    <Pieces>
-      <Piece id="spear_blade_3"
-             Type="Blade"
-             scale_factor="90" />
-      <Piece id="spear_handle_5"
-             Type="Handle"
-             scale_factor="90" />
-    </Pieces>
-  </CraftedItem>
-  
-  <CraftedItem id="northern_spear_1_t2"
-               name="{=RzLZHrYT}Short Simple Raider Spear"
-               crafting_template="TwoHandedPolearm"
-               culture="Culture.sturgia">
-    <Pieces>
-      <Piece id="spear_blade_26"
-             Type="Blade"
-             scale_factor="100" />
-      <Piece id="spear_handle_6"
-             Type="Handle"
-             scale_factor="100" />
-    </Pieces>
-  </CraftedItem>
 
   <CraftedItem id="highland_spear_3_t3" name="{=HVcwvRMF}Reinforced Highland Spear" crafting_template="TwoHandedPolearm" culture="Culture.battania">
     <Pieces>
