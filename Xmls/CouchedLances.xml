@@ -231,22 +231,20 @@
     </Materials>
   </CraftingPiece>
   
-  <CraftingPiece id="spear_blade_7" name="{=dXRt8jY4}Menavlion Head" tier="4" piece_type="Blade" mesh="spear_blade_7" length="52.924" weight="0.2656">
-    <PieceUsages unavailable_usages="" />
+  <CraftingPiece id="spear_blade_7" name="{=dXRt8jY4}Menavlion Head" tier="6" piece_type="Blade" mesh="spear_blade_7" length="30" weight="0.1656" excluded_item_usage_features="swing">
+    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="1" />
-      <Swing damage_type="Cut" damage_factor="0.9" />
+      <Thrust damage_type="Pierce" damage_factor="3" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="1" />
     </Materials>
   </CraftingPiece>
   
-  <CraftingPiece id="spear_blade_18" name="{=qSV6C2tp}Swordstaff Head" tier="5" piece_type="Blade" mesh="spear_blade_18" length="70" weight="0.3096">
+  <CraftingPiece id="spear_blade_18" name="{=qSV6C2tp}Swordstaff Head" tier="6" piece_type="Blade" mesh="spear_blade_18" length="45" weight="0.2096" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="OneHandedPolearm:TwoHandedPolearm_Thrown" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="1.1" />
-      <Swing damage_type="Cut" damage_factor="1.1" />
+      <Thrust damage_type="Pierce" damage_factor="3.3" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="2" />

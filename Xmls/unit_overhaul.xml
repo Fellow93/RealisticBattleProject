@@ -5944,7 +5944,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_2_t2" />
+                 id="Item.imperial_spear_t2" />
       <equipment slot="Item1"
                  id="Item.old_kite_sparring_shield" />
       <equipment slot="Head"
@@ -5958,7 +5958,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_2_t2" />
+                 id="Item.imperial_spear_t2" />
       <equipment slot="Item1"
                  id="Item.old_kite_sparring_shield" />
       <equipment slot="Head"
@@ -5972,7 +5972,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_2_t2" />
+                 id="Item.imperial_spear_t2" />
       <equipment slot="Item1"
                  id="Item.old_kite_shield" />
       <equipment slot="Body"
@@ -5986,7 +5986,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_2_t2" />
+                 id="Item.imperial_spear_t2" />
       <equipment slot="Item1"
                  id="Item.old_kite_shield" />
       <equipment slot="Body"
@@ -6035,7 +6035,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_2_t2" />
+                 id="Item.imperial_spear_t2" />
       <equipment slot="Item1"
                  id="Item.worn_kite_shield" />
       <equipment slot="Item2"
@@ -6053,7 +6053,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_2_t2" />
+                 id="Item.imperial_spear_t2" />
       <equipment slot="Item1"
                  id="Item.worn_kite_shield" />
       <equipment slot="Item2"
@@ -6071,7 +6071,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_2_t2" />
+                 id="Item.imperial_spear_t2" />
       <equipment slot="Item1"
                  id="Item.worn_kite_shield" />
       <equipment slot="Head"
@@ -6087,7 +6087,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_2_t2" />
+                 id="Item.imperial_spear_t2" />
       <equipment slot="Item1"
                  id="Item.worn_kite_shield" />
       <equipment slot="Head"
@@ -6139,7 +6139,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_2_t2" />
+                 id="Item.imperial_spear_t2" />
       <equipment slot="Item1"
                  id="Item.western_riders_kite_sparring_shield" />
       <equipment slot="Item2"
@@ -6159,7 +6159,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_2_t2" />
+                 id="Item.imperial_spear_t2" />
       <equipment slot="Item1"
                  id="Item.western_riders_kite_sparring_shield" />
       <equipment slot="Item2"
@@ -6179,7 +6179,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_2_t2" />
+                 id="Item.imperial_spear_t2" />
       <equipment slot="Item1"
                  id="Item.western_riders_kite_sparring_shield" />
       <equipment slot="Item2"
@@ -6622,7 +6622,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_polearm_1_t4" />
+                 id="Item.western_spear_3_t3" />
       <equipment slot="Item1"
                  id="Item.leather_bound_kite_shield" />
       <equipment slot="Item2"
@@ -6642,7 +6642,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_polearm_1_t4" />
+                 id="Item.western_spear_3_t3" />
       <equipment slot="Item1"
                  id="Item.leather_bound_kite_shield" />
       <equipment slot="Item2"
@@ -6662,7 +6662,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_polearm_1_t4" />
+                 id="Item.western_spear_3_t3" />
       <equipment slot="Item1"
                  id="Item.leather_bound_kite_shield" />
       <equipment slot="Item2"
@@ -6680,7 +6680,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_polearm_1_t4" />
+                 id="Item.western_spear_3_t3" />
       <equipment slot="Item1"
                  id="Item.leather_bound_kite_shield" />
       <equipment slot="Item2"
@@ -6739,7 +6739,7 @@
       <equipment slot="Item2"
                  id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Item3"
-                 id="Item.empire_polearm_1_t4" />				 
+                 id="Item.wide_leaf_spear_t4" />				 
       <equipment slot="Body"
                  id="Item.legionary_mail" />
       <equipment slot="Gloves"
@@ -6759,7 +6759,7 @@
       <equipment slot="Item2"
                  id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Item3"
-                 id="Item.empire_polearm_1_t4" />	
+                 id="Item.wide_leaf_spear_t4" />	
       <equipment slot="Body"
                  id="Item.legionary_mail" />
       <equipment slot="Gloves"
@@ -6779,7 +6779,7 @@
       <equipment slot="Item2"
                  id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Item3"
-                 id="Item.empire_polearm_1_t4" />	
+                 id="Item.wide_leaf_spear_t4" />	
       <equipment slot="Body"
                  id="Item.legionary_mail" />
       <equipment slot="Cape"
@@ -6832,7 +6832,7 @@
       <equipment slot="Item2"
                  id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Item3"
-                 id="Item.empire_polearm_1_t4" />	
+                 id="Item.wide_leaf_spear_t4" />	
       <equipment slot="Body"
                  id="Item.imperial_lamellar" />
       <equipment slot="Gloves"
@@ -6852,7 +6852,7 @@
       <equipment slot="Item2"
                  id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Item3"
-                 id="Item.empire_polearm_1_t4" />	
+                 id="Item.wide_leaf_spear_t4" />	
       <equipment slot="Body"
                  id="Item.imperial_lamellar" />
       <equipment slot="Gloves"
@@ -6872,7 +6872,7 @@
       <equipment slot="Item2"
                  id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Item3"
-                 id="Item.empire_polearm_1_t4" />	
+                 id="Item.wide_leaf_spear_t4" />	
       <equipment slot="Body"
                  id="Item.imperial_lamellar" />
       <equipment slot="Gloves"
@@ -6890,7 +6890,7 @@
       <equipment slot="Item2"
                  id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Item3"
-                 id="Item.empire_polearm_1_t4" />	
+                 id="Item.wide_leaf_spear_t4" />	
       <equipment slot="Body"
                  id="Item.imperial_lamellar" />
       <equipment slot="Gloves"
@@ -7398,6 +7398,8 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.empire_polearm_1_t4" />
+      <equipment slot="Item1"
+                 id="Item.jousting_shield" />
       <equipment slot="Body"
                  id="Item.legionary_mail" />
       <equipment slot="Gloves"
@@ -7412,6 +7414,8 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.empire_polearm_1_t4" />
+      <equipment slot="Item1"
+                 id="Item.jousting_shield" />
       <equipment slot="Body"
                  id="Item.legionary_mail" />
       <equipment slot="Leg"
@@ -7426,6 +7430,8 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.empire_polearm_1_t4" />
+      <equipment slot="Item1"
+                 id="Item.jousting_shield" />
       <equipment slot="Body"
                  id="Item.legionary_mail" />
       <equipment slot="Leg"
@@ -7473,8 +7479,8 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.empire_polearm_2_t5" />
-      <equipment slot="Item1"
-                 id="Item.imperial_throwing_spear_1_t4" />			 
+      <equipment slot="Item3"
+                 id="Item.battania_shield_targe_a" />			 
       <equipment slot="Body"
                  id="Item.imperial_lamellar" />
       <equipment slot="Gloves"
@@ -7489,8 +7495,8 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.empire_polearm_2_t5" />
-      <equipment slot="Item1"
-                 id="Item.imperial_throwing_spear_1_t4" /> 
+      <equipment slot="Item3"
+                 id="Item.battania_shield_targe_a" />					 
       <equipment slot="Body"
                  id="Item.imperial_lamellar" />
       <equipment slot="Leg"
@@ -7505,8 +7511,8 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.empire_polearm_2_t5" />
-      <equipment slot="Item1"
-                 id="Item.imperial_throwing_spear_1_t4" /> 
+      <equipment slot="Item3"
+                 id="Item.battania_shield_targe_a" />					 
       <equipment slot="Body"
                  id="Item.imperial_lamellar" />
       <equipment slot="Leg"
@@ -12100,6 +12106,8 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.vlandia_pike_1_t5" />
+      <equipment slot="Item1"
+                 id="Item.jousting_shield" />
       <equipment slot="Body"
                  id="Item.sturgian_fortified_armor" />
 	  <equipment slot="Cape"
@@ -12114,6 +12122,8 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.vlandia_pike_1_t5" />
+      <equipment slot="Item1"
+                 id="Item.jousting_shield" />
       <equipment slot="Body"
                  id="Item.sturgian_fortified_armor" />
 	  <equipment slot="Cape"
@@ -12128,6 +12138,8 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.vlandia_pike_1_t5" />
+      <equipment slot="Item1"
+                 id="Item.jousting_shield" />
       <equipment slot="Body"
                  id="Item.sturgian_fortified_armor" />
 	  <equipment slot="Cape"

@@ -154,6 +154,8 @@
       <UsablePiece piece_id="spear_blade_42" />
       <UsablePiece piece_id="spear_handle_7" />
       <UsablePiece piece_id="spear_handle_27" />
+      <UsablePiece piece_id="spear_handle_20" />
+      <UsablePiece piece_id="spear_handle_17" />
 
       <UsablePiece piece_id="default_polearm_guard" />
       <UsablePiece piece_id="mp_spear_guard_11" />

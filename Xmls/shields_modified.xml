@@ -160,7 +160,7 @@
 		</ItemComponent>
 		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandSecondaryItemBone="true"/>
 	</Item>
-	<Item id="battania_shield_targe_a" name="{=JzZJpbTB}Reinforced Targe" body_name="bo_cap_battania_shield_targe_a" shield_body_name="bo_battania_shield_targe_a" recalculate_body="false" mesh="battania_shield_targe_a" using_tableau="true" weight="2.5" appearance="1.6" Type="Shield" item_holsters="shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="0.0,0.0,0" value="5800" culture="Culture.battania">
+	<Item id="battania_shield_targe_a" name="{=JzZJpbTB}Reinforced Targe" body_name="bo_cap_battania_shield_targe_a" shield_body_name="bo_battania_shield_targe_a" recalculate_body="false" mesh="battania_shield_targe_a" using_tableau="true" weight="2.5" appearance="1.6" Type="Shield" item_holsters="left_shoulder_targe" has_lower_holster_priority="true" holster_position_shift="0.0,0.0,0" value="5800" culture="Culture.battania">
 		<ItemComponent>
 			<Weapon weapon_class="LargeShield" body_armor="5" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.12, 0.08, 0.01" rotation="3.40,5.10,25.00" weapon_length="70" center_of_mass="-0.0, 0.12, 0.1" hit_points="580">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
@@ -416,7 +416,7 @@
 		</ItemComponent>
 		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandSecondaryItemBone="true"/>
 	</Item>
-	<Item id="jousting_shield" name="{=nVAhoxcH}Knights Shield" body_name="bo_cap_heater_shield_d" shield_body_name="bo_heater_shield_d" recalculate_body="false" mesh="heater_shield_d" using_tableau="true" weight="4.7" appearance="1" Type="Shield" item_holsters="shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.1,-0.0" value="4500">
+	<Item id="jousting_shield" name="{=nVAhoxcH}Knights Shield" body_name="bo_cap_heater_shield_d" shield_body_name="bo_heater_shield_d" recalculate_body="false" mesh="heater_shield_d" using_tableau="true" weight="4.7" appearance="1" Type="Shield" item_holsters="left_shoulder_shield" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.1,-0.0" value="4500">
 		<ItemComponent>
 			<Weapon weapon_class="LargeShield" body_armor="5" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="90" center_of_mass="0.0,0.1,0.05" hit_points="485">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>

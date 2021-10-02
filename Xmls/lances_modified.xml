@@ -217,15 +217,6 @@
     </Pieces>
   </CraftedItem>
   
-   <CraftedItem id="empire_polearm_1_t4" name="{=7LmUe8fQ}Menavlion" crafting_template="TwoHandedPolearm" culture="Culture.empire">
-    <Pieces>
-      <Piece id="spear_blade_7" Type="Blade" scale_factor="100" />
-      <Piece id="default_polearm_guard" Type="Guard" scale_factor="100" />
-      <Piece id="spear_handle_15" Type="Handle" scale_factor="113" />
-      <Piece id="default_polearm_pommel" Type="Pommel" scale_factor="100" />
-    </Pieces>
-  </CraftedItem>
-  
   <CraftedItem id="khuzait_polearm_1_t4" name="{=6hwZwODh}Glaive" crafting_template="TwoHandedPolearm" culture="Culture.khuzait">
     <Pieces>
       <Piece id="spear_blade_19" Type="Blade" scale_factor="100" />
@@ -615,5 +606,34 @@
              scale_factor="125" />
     </Pieces>
   </CraftedItem>
+  
+  <CraftedItem id="empire_polearm_1_t4" name="{=7LmUe8fQ}Light Menavlion" crafting_template="Pike" culture="Culture.empire">
+    <Pieces>
+      <Piece id="spear_blade_7" Type="Blade" scale_factor="100" />
+      <Piece id="default_polearm_guard" Type="Guard" scale_factor="100" />
+      <Piece id="spear_handle_20" Type="Handle" scale_factor="200" />
+      <Piece id="default_polearm_pommel" Type="Pommel" scale_factor="100" />
+    </Pieces>
+  </CraftedItem> 
+  
+  <CraftedItem id="empire_polearm_2_t5"
+               name="{=UunjXpgb}Heavy Menavlion"
+               crafting_template="Pike"
+               culture="Culture.empire">
+    <Pieces>
+      <Piece id="spear_blade_18"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="default_polearm_guard"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_17"
+             Type="Handle"
+             scale_factor="150" />
+      <Piece id="default_polearm_pommel"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem> 
   <!-- #endregion -->
 </Items>
