@@ -370,10 +370,10 @@
   
   <!-- #region Used Lance Blade Pieces -->
 
-  <CraftingPiece id="spear_blade_23" name="{=OryiZr9d}Kontarion" tier="3" piece_type="Blade" mesh="spear_blade_23" length="42" weight="0.1" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_23" name="{=OryiZr9d}Kontarion" tier="6" piece_type="Blade" mesh="spear_blade_23" length="42" weight="0.1" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="1" />
+      <Thrust damage_type="Pierce" damage_factor="3" />
     </BladeData>
     <Materials>
       <Material id="Iron3" count="2" />
@@ -382,10 +382,10 @@
     </Flags>
   </CraftingPiece>
   
-  <CraftingPiece id="spear_blade_23_blunt" name="{=OryiZr9d}Kontarion" tier="3" piece_type="Blade" mesh="spear_blade_23" length="42" weight="0.1" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_23_blunt" name="{=OryiZr9d}Kontarion" tier="6" piece_type="Blade" mesh="spear_blade_23" length="42" weight="0.1" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="1" />
+      <Thrust damage_type="Pierce" damage_factor="3" />
     </BladeData>
     <Materials>
       <Material id="Iron3" count="2" />
@@ -394,10 +394,10 @@
     </Flags>
   </CraftingPiece>
 
-  <CraftingPiece id="spear_blade_20" name="{=uwG8iwBc}Long Grassland Spear" tier="4" piece_type="Blade" mesh="spear_blade_20" length="46" weight="0.15" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_20" name="{=uwG8iwBc}Long Grassland Spear" tier="6" piece_type="Blade" mesh="spear_blade_20" length="46" weight="0.15" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="1" />
+      <Thrust damage_type="Pierce" damage_factor="3" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="1" />
@@ -406,10 +406,10 @@
     </Flags>
   </CraftingPiece>
   
-  <CraftingPiece id="spear_blade_20_blunt" name="{=uwG8iwBc}Long Grassland Spear" tier="4" piece_type="Blade" mesh="spear_blade_20" length="46" weight="0.15" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_20_blunt" name="{=uwG8iwBc}Long Grassland Spear" tier="6" piece_type="Blade" mesh="spear_blade_20" length="46" weight="0.15" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="1" />
+      <Thrust damage_type="Pierce" damage_factor="3" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="1" />
@@ -418,10 +418,10 @@
     </Flags>
   </CraftingPiece>
 
-  <CraftingPiece id="spear_blade_5" name="{=QwfDN06p}Knightly Lance Head" tier="5" piece_type="Blade" mesh="spear_blade_5" length="52.242" weight="0.20" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_5" name="{=QwfDN06p}Knightly Lance Head" tier="6" piece_type="Blade" mesh="spear_blade_5" length="52.242" weight="0.20" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="1" />
+      <Thrust damage_type="Pierce" damage_factor="3" />
     </BladeData>
     <Materials>
       <Material id="Iron5" count="1" />
@@ -554,17 +554,17 @@
       <Material id="Iron2" count="1" />
     </Materials>
   </CraftingPiece>
-   
-  <CraftingPiece id="spear_blade_41" name="{=TKVxb6QD}Thamaskene Steel Leaf Shaped Spear Head" tier="4" piece_type="Blade" mesh="spear_blade_41" length="53.2" weight="0.2792" excluded_item_usage_features="swing">
+<!-- Pike, damage workaround -->   
+  <CraftingPiece id="spear_blade_41" name="{=TKVxb6QD}Thamaskene Steel Leaf Shaped Pike Head" tier="6" piece_type="Blade" mesh="spear_blade_41" length="53.2" weight="0.2792" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="1" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="1" />
+      <Thrust damage_type="Pierce" damage_factor="3.6" />
     </BladeData>
     <Materials>
       <Material id="Iron5" count="2" />
     </Materials>
   </CraftingPiece>
-
+<!-- Pike -->
   <CraftingPiece id="spear_blade_10" name="{=emUoygLE}Harpoon Head" tier="2" piece_type="Blade" mesh="spear_blade_10" length="39.775" weight="0.44" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="5" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_1" holster_body_name="bo_throwing_spear_quiver_1" holster_mesh_length="68.9">
@@ -645,18 +645,18 @@
       <Material id="Iron4" count="2" />
     </Materials>
   </CraftingPiece>
-  
-  <CraftingPiece id="spear_blade_25" name="{=mrTkURKV}Notched Fork Head" tier="3" piece_type="Blade" mesh="spear_blade_25" length="42.5" weight="0.3504" excluded_item_usage_features="swing">
+<!-- Pike, damage workaround -->  
+  <CraftingPiece id="spear_blade_25" name="{=mrTkURKV}Notched Fork Head" tier="6" piece_type="Blade" mesh="spear_blade_25" length="42.5" weight="0.3504" excluded_item_usage_features="swing">
     <PieceUsages unavailable_usages="" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="0.9" />
+      <Thrust damage_type="Pierce" damage_factor="2.7" />
     </BladeData>
     <Flags></Flags>
     <Materials>
       <Material id="Iron3" count="2" />
     </Materials>
   </CraftingPiece>
-   
+<!-- Pike -->   
 <!-- #endregion cut polearms -->
 <!-- #falx sword --> 
    <CraftingPiece id="battania_blade_6" name="{=IUlApNGp}Long Falx Blade" tier="4" piece_type="Blade" mesh="battania_blade_6" culture="Culture.battania" length="95.6" weight="1.0" excluded_item_usage_features="thrust:TwoHandedPolearm_Bracing">

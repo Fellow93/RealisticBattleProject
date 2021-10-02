@@ -555,7 +555,7 @@
                name="{=GKzw7E8a}Simple Pike"
                crafting_template="Pike">
     <Pieces>
-      <Piece id="spear_blade_9"
+      <Piece id="spear_blade_25"
              Type="Blade"
              scale_factor="90" />
       <Piece id="spear_handle_7"
@@ -583,19 +583,19 @@
     <Pieces>
       <Piece id="spear_blade_41"
              Type="Blade"
-             scale_factor="110" />
+             scale_factor="100" />
       <Piece id="spear_handle_7"
              Type="Handle"
-             scale_factor="130" />
+             scale_factor="115" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="fine_pike_t4"
                name="{=dkuzrKJF}Fine Pike"
                crafting_template="Pike">
     <Pieces>
-      <Piece id="spear_blade_11"
+      <Piece id="spear_blade_41"
              Type="Blade"
-             scale_factor="100" />
+             scale_factor="110" />
       <Piece id="spear_handle_7"
              Type="Handle"
              scale_factor="120" />
@@ -607,9 +607,9 @@
                crafting_template="Pike"
                culture="Culture.vlandia">
     <Pieces>
-      <Piece id="spear_blade_11"
+      <Piece id="spear_blade_41"
              Type="Blade"
-             scale_factor="110" />
+             scale_factor="120" />
       <Piece id="spear_handle_7"
              Type="Handle"
              scale_factor="125" />

@@ -195,19 +195,8 @@ namespace RealisticBattleCombatModule
 
         private static float CalculateStrikeMagnitudeForThrust(float thrustWeaponSpeed, float weaponWeight, float extraLinearSpeed, bool isThrown)
         {
-            const float ashBreakTreshold = 430f;
-
             float num = extraLinearSpeed;
-            if (!isThrown && weaponWeight < 1.5f)
-            {
-                weaponWeight += 0.5f;
-            }
-            float num2 = 0.5f * weaponWeight * num * num * XmlConfig.dict["Global.ThrustModifier"];
-
-            if (num2 > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"]))
-            {
-                num2 = ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"];
-            }
+            float num2 = 0.5f * weaponWeight * num * num * XmlConfig.dict["Global.ThrustModifier"] * 0.34f; // lances need to have 3 times more damage to be preferred over maces
             return num2;
 
         }
@@ -309,6 +298,8 @@ namespace RealisticBattleCombatModule
                     bool isPassiveUsage = attackInformation.IsAttackerAgentDoingPassiveAttack;
                     float skillBasedDamage = 0f;
                     const float ashBreakTreshold = 430f;
+                    float BraceBonus = 0f;
+                    float BraceModifier = 1f; // because I am multiplying passive damage by 0.34f
 
                     switch (weaponType)
                     {
@@ -423,27 +414,34 @@ namespace RealisticBattleCombatModule
 
                                         if (weaponWeight < 1.5f)
                                         {
-                                            weaponWeight += 0.5f;
+                                            BraceBonus += 0.5f;
+                                            BraceModifier *= 3f;
                                         }
-                                        float lanceBalistics = (magnitude * 2f) / weaponWeight;
-                                        magnitude = lanceBalistics * (weaponWeight + couchedSkill);
-                                        if (magnitude > (skillCap * XmlConfig.dict["Global.ThrustModifier"]) && lanceBalistics < (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                        float lanceBalistics = magnitude / weaponWeight;
+                                        float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
+                                        if (CouchedMagnitude > (skillCap * XmlConfig.dict["Global.ThrustModifier"]) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
                                         {
-                                            magnitude = skillCap * XmlConfig.dict["Global.ThrustModifier"];
+                                            magnitude = skillCap * XmlConfig.dict["Global.ThrustModifier"] * BraceModifier;
                                         }
 
-                                        if (lanceBalistics >= (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                        if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
                                         {
-                                            magnitude = lanceBalistics;
+                                            magnitude = (lanceBalistics * (weaponWeight + BraceBonus)) * BraceModifier;
                                         }
 
                                         if (magnitude > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"]))
                                         {
-                                            magnitude = ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"];
+                                            magnitude = ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"] * BraceModifier;
                                         }
                                     }
                                     else
                                     {
+                                        float weaponWeight = attackerWeapon.Item.Weight;
+
+                                        if (weaponWeight < 2f)
+                                        {
+                                            magnitude *= 0.34f;
+                                        }
                                         skillBasedDamage = magnitude * 0.4f + 60f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.26f * XmlConfig.dict["Global.ThrustModifier"]);
                                     }
                                 }
@@ -463,25 +461,25 @@ namespace RealisticBattleCombatModule
                                 {
                                     if (isPassiveUsage)
                                     {
-                                        float CouchedSkill = 0.5f + effectiveSkill * 0.0225f;
-                                        float SkillCap = (100f + effectiveSkill * 1.3f);
+                                        float couchedSkill = 0.5f + effectiveSkill * 0.0225f;
+                                        float skillCap = (100f + effectiveSkill * 1.3f);
 
                                         float weaponWeight = attackerWeapon.Item.Weight;
 
                                         if (weaponWeight < 1.5f)
                                         {
-                                            weaponWeight += 0.5f;
+                                            BraceBonus += 0.5f;
                                         }
-                                        float lanceBalistics = (magnitude * 2f) / weaponWeight;
-                                        magnitude = lanceBalistics * (weaponWeight + CouchedSkill);
-                                        if (magnitude > (SkillCap * XmlConfig.dict["Global.ThrustModifier"]) && lanceBalistics < (SkillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                        float lanceBalistics = magnitude / weaponWeight;
+                                        float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
+                                        if (CouchedMagnitude > (skillCap * XmlConfig.dict["Global.ThrustModifier"]) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
                                         {
-                                            magnitude = SkillCap * XmlConfig.dict["Global.ThrustModifier"];
+                                            magnitude = skillCap * XmlConfig.dict["Global.ThrustModifier"];
                                         }
 
-                                        if (lanceBalistics >= (SkillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                        if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
                                         {
-                                            magnitude = lanceBalistics;
+                                            magnitude = (lanceBalistics * (weaponWeight + BraceBonus));
                                         }
 
                                         if (magnitude > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"]))
@@ -491,6 +489,12 @@ namespace RealisticBattleCombatModule
                                     }
                                     else
                                     {
+                                        float weaponWeight = attackerWeapon.Item.Weight;
+
+                                        if (weaponWeight < 2f)
+                                        {
+                                            magnitude *= 0.34f;
+                                        }
                                         skillBasedDamage = (magnitude * 0.4f + 60f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.26f * XmlConfig.dict["Global.ThrustModifier"])) * 1.3f;
                                     }
                                 }
@@ -1336,7 +1340,7 @@ namespace RealisticBattleCombatModule
                     RangedTier = (DrawWeight - 60f) * 0.049f;
                     break;
                 case ItemObject.ItemTypeEnum.Crossbow:
-                    RangedTier = (DrawWeight - 450f) * 0.008f;
+                    RangedTier = (DrawWeight - 250f) * 0.021f;
                     break;
             }
             //num = RangedTier;

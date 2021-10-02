@@ -30,11 +30,11 @@ namespace RealisticBattleCombatModule
             }
             else if (rangedWeapon.CurrentUsageItem.ItemUsage.Equals("crossbow") || rangedWeapon.CurrentUsageItem.ItemUsage.Equals("crossbow_fast"))
             {
-                float powerstroke = (6f * 0.0254f); //4.5f
+                float powerstroke = (10.6f * 0.0254f); //4.5f
                 double potentialEnergy = 0.5f * (drawWeight * 4.448f) * powerstroke * 0.91f;
                 //calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.45f));
                 //calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight + (drawWeight * 0.0000588f))));
-                ammoWeight += drawWeight * 0.0000588f;
+                ammoWeight += drawWeight * 0.00027f;
                 calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
             }
             return calculatedMissileSpeed;

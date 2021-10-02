@@ -1,48 +1,48 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Items>
-	<Item id="crossbow_f" name="{=TBW9E2ao}Bound Crossbow" body_name="bo_cross_bow_heavy" mesh="crossbow_f" weight="2" difficulty="30" appearance="1" Type="Crossbow" value="20000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
+	<Item id="crossbow_f" name="{=TBW9E2ao}Bound Crossbow" body_name="bo_cross_bow_heavy" mesh="crossbow_f" weight="2" difficulty="90" appearance="1" Type="Crossbow" value="20000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
-			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="2" missile_speed="1250" weapon_length="90" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
+			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="2" missile_speed="500" weapon_length="90" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" CantReloadOnHorseback="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="crossbow_g" name="{=ffwgZit3}Fine Crossbow" body_name="bo_composite_crossbows" mesh="crossbow_g" weight="2.2" difficulty="25" appearance="1" Type="Crossbow" value="10000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
+	<Item id="crossbow_g" name="{=ffwgZit3}Fine Crossbow" body_name="bo_composite_crossbows" mesh="crossbow_g" weight="2.2" difficulty="75" appearance="1" Type="Crossbow" value="10000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
-			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="2" missile_speed="1100" weapon_length="95" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
+			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="2" missile_speed="450" weapon_length="95" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" CantReloadOnHorseback="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="crossbow_d" name="{=CPI0wkaZ}Hickory Crossbow" body_name="bo_composite_crossbows" mesh="crossbow_d" weight="2.2" difficulty="20" appearance="1" Type="Crossbow" value="8000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.empire" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
+	<Item id="crossbow_d" name="{=CPI0wkaZ}Hickory Crossbow" body_name="bo_composite_crossbows" mesh="crossbow_d" weight="2.2" difficulty="60" appearance="1" Type="Crossbow" value="8000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.empire" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
-			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="2" missile_speed="950" weapon_length="95" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
+			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="2" missile_speed="410" weapon_length="95" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" CantReloadOnHorseback="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="crossbow_e" name="{=TTWL7RLe}Crossbow" body_name="bo_composite_crossbows" mesh="crossbow_e" weight="2.2" difficulty="15" appearance="1" Type="Crossbow" value="6000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.empire" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
+	<Item id="crossbow_e" name="{=TTWL7RLe}Crossbow" body_name="bo_composite_crossbows" mesh="crossbow_e" weight="2.2" difficulty="45" appearance="1" Type="Crossbow" value="6000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.empire" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
-			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="2" missile_speed="800" weapon_length="95" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
+			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="2" missile_speed="370" weapon_length="95" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" CantReloadOnHorseback="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="crossbow_c" name="{=0e17RZrZ}Arbalest" body_name="bo_cross_bow_heavy" mesh="crossbow_c" weight="3" difficulty="10" appearance="1" Type="Crossbow" value="5000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.24675" holster_position_shift="0.02,0,-0.4">
+	<Item id="crossbow_c" name="{=0e17RZrZ}Arbalest" body_name="bo_cross_bow_heavy" mesh="crossbow_c" weight="3" difficulty="30" appearance="1" Type="Crossbow" value="5000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.24675" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
-			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="2" missile_speed="700" weapon_length="95" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
+			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="2" missile_speed="330" weapon_length="95" thrust_damage="100" item_usage="crossbow_fast" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" CantReloadOnHorseback="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="crossbow_b" name="{=r07M9xbT}Heavy Crossbow" body_name="bo_cross_bow_heavy" mesh="crossbow_b" weight="2.7" difficulty="5" appearance="1" Type="Crossbow" value="4000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.24975" holster_position_shift="0.02,0,-0.4">
+	<Item id="crossbow_b" name="{=r07M9xbT}Heavy Crossbow" body_name="bo_cross_bow_heavy" mesh="crossbow_b" weight="2.7" difficulty="15" appearance="1" Type="Crossbow" value="4000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.24975" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
-			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="2" missile_speed="600" weapon_length="95" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
+			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="2" missile_speed="290" weapon_length="95" thrust_damage="100" item_usage="crossbow_fast" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" CantReloadOnHorseback="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -50,7 +50,7 @@
 	</Item>
 	<Item id="crossbow_a" name="{=K1UFTirG}Light Crossbow" body_name="bo_cross_bow_heavy" mesh="crossbow_a" weight="1" difficulty="0" appearance="0.3" Type="Crossbow" value="2000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" AmmoOffset="0.0, 0.02131, 0.24650" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
-			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="7" missile_speed="450" weapon_length="95" thrust_damage="100" item_usage="crossbow_fast" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
+			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="7" missile_speed="250" weapon_length="95" thrust_damage="100" item_usage="crossbow_fast" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -216,14 +216,6 @@
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
 	</Item>
-	<Item id="throwing_stone" name="{=1CPdu9K0}Stone" body_name="bo_throwing_stone" mesh="throwing_stone" weight="0.15" appearance="0.1" Type="Thrown" value="2" item_holsters="throwing_stone:throwing_stone_2" is_merchandise="false" holster_body_name="bo_axe_short" holster_mesh="stone_holster" holster_mesh_with_weapon="stone_holster">
-		<ItemComponent>
-			<Weapon weapon_class="Stone" ammo_class="Stone" thrust_speed="102" speed_rating="102" missile_speed="30" weapon_length="10" thrust_damage="30" item_usage="stone" physics_material="missile" accuracy="45" stack_amount="14" rotation_speed="0, -3.0, 0" rotation="100,30,20">
-				<WeaponFlags RangedWeapon="true" AutoReload="true" Consumable="true" UseHandAsThrowBase="true"/>
-			</Weapon>
-		</ItemComponent>
-		<Flags/>
-	</Item>
 	<Item id="hunting_bow" name="{=wltdyF2j}Hunting Bow" body_name="bo_composite_shotbow_h" mesh="shortbow_h" weight="0.3" difficulty="0" appearance="1" Type="Bow" value="600" item_holsters="bow_hip:bow_hip_2:bow_back:bow_back_2">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="240" speed_rating="7" missile_speed="60" weapon_length="110" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
@@ -231,5 +223,13 @@
 			</Weapon>
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="throwing_stone" name="{=1CPdu9K0}Stone" body_name="bo_throwing_stone" mesh="throwing_stone" weight="0.15" appearance="0.1" Type="Thrown" value="2" item_holsters="throwing_stone:throwing_stone_2" is_merchandise="false" holster_body_name="bo_axe_short" holster_mesh="stone_holster" holster_mesh_with_weapon="stone_holster">
+		<ItemComponent>
+			<Weapon weapon_class="Stone" ammo_class="Stone" thrust_speed="102" speed_rating="102" missile_speed="30" weapon_length="10" thrust_damage="30" item_usage="stone" physics_material="missile" accuracy="45" stack_amount="14" rotation_speed="0, -3.0, 0" rotation="100,30,20">
+				<WeaponFlags RangedWeapon="true" AutoReload="true" Consumable="true" UseHandAsThrowBase="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags/>
 	</Item>
 </Items>
