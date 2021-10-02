@@ -155,7 +155,7 @@
   </CraftingPiece>
   <!-- light ones, tier 4 -->  
     <CraftingPiece id="spear_handle_15" name="{=NQb8boHt}Hardened Ash Shaft" tier="4" piece_type="Handle" mesh="spear_handle_15" length="170" weight="0.55">
-    <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing:Javelin:TwoHandedPolearm_Thrown" />
+    <PieceUsages unavailable_usages="Javelin:TwoHandedPolearm_Thrown" />
     <BuildData piece_offset="10.0" />
     <Materials>
       <Material id="Wood" count="1" />
@@ -358,7 +358,7 @@
  
 <!-- #unused ATM --> 
   <CraftingPiece id="spear_blade_45" name="{=LNDbMUK0}Voulge Head" tier="4" piece_type="Blade" mesh="spear_blade_45" length="40" weight="0.33" excluded_item_usage_features="">
-    <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:OneHandedPolearm:TwoHandedPolearm_Bracing" />
+    <PieceUsages unavailable_usages="TwoHandedPolearm_Couchable:OneHandedPolearm" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="0.7" />
       <Swing damage_type="Cut" damage_factor="0.9" />

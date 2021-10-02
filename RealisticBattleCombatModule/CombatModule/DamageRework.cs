@@ -438,7 +438,7 @@ namespace RealisticBattleCombatModule
                                     {
                                         float weaponWeight = attackerWeapon.Item.Weight;
 
-                                        if (weaponWeight < 2f)
+                                        if (weaponWeight > 2.1f)
                                         {
                                             magnitude *= 0.34f;
                                         }
@@ -491,7 +491,7 @@ namespace RealisticBattleCombatModule
                                     {
                                         float weaponWeight = attackerWeapon.Item.Weight;
 
-                                        if (weaponWeight < 2f)
+                                        if (weaponWeight > 2.1f)
                                         {
                                             magnitude *= 0.34f;
                                         }

@@ -12101,41 +12101,41 @@
       <equipment slot="Item0"
                  id="Item.vlandia_pike_1_t5" />
       <equipment slot="Body"
-                 id="Item.coat_of_plates_over_mail" />
-	  <equipment slot="Cape"
-                 id="Item.mail_shoulders" />
-      <equipment slot="Leg"
-                 id="Item.plated_strip_boots" />
-      <equipment slot="Head"
-                 id="Item.peaked_helmet_over_mail_coif" />
-      <equipment slot="Gloves"
-                 id="Item.reinforced_mail_mitten" />
-      </EquipmentRoster>
-      <EquipmentRoster>
-      <equipment slot="Item0"
-                 id="Item.vlandia_pike_1_t5" />
-      <equipment slot="Body"
-                 id="Item.coat_of_plates_over_mail" />
-	  <equipment slot="Cape"
-                 id="Item.mail_shoulders" />
-      <equipment slot="Leg"
-                 id="Item.plated_strip_boots" />
-      <equipment slot="Head"
-                 id="Item.visored_helmet_over_padded_coif" />
-      <equipment slot="Gloves"
-                 id="Item.reinforced_mail_mitten" />
-      </EquipmentRoster>
-      <EquipmentRoster>
-      <equipment slot="Item0"
-                 id="Item.vlandia_pike_1_t5" />
-      <equipment slot="Body"
-                 id="Item.coat_of_plates_over_mail" />
+                 id="Item.sturgian_fortified_armor" />
 	  <equipment slot="Cape"
                  id="Item.mail_shoulders" />
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Head"
                  id="Item.visored_helmet_over_mail_coif" />
+      <equipment slot="Gloves"
+                 id="Item.reinforced_mail_mitten" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.vlandia_pike_1_t5" />
+      <equipment slot="Body"
+                 id="Item.sturgian_fortified_armor" />
+	  <equipment slot="Cape"
+                 id="Item.mail_shoulders" />
+      <equipment slot="Leg"
+                 id="Item.plated_strip_boots" />
+      <equipment slot="Head"
+                 id="Item.full_helm_over_padded_cap" />
+      <equipment slot="Gloves"
+                 id="Item.reinforced_mail_mitten" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.vlandia_pike_1_t5" />
+      <equipment slot="Body"
+                 id="Item.sturgian_fortified_armor" />
+	  <equipment slot="Cape"
+                 id="Item.mail_shoulders" />
+      <equipment slot="Leg"
+                 id="Item.plated_strip_boots" />
+      <equipment slot="Head"
+                 id="Item.full_helm_over_arming_coif" />
       <equipment slot="Gloves"
                  id="Item.reinforced_mail_mitten" />
       </EquipmentRoster>
