@@ -7383,7 +7383,7 @@
       <skill id="TwoHanded"
              value="60" />
       <skill id="Polearm"
-             value="120" />
+             value="110" />
       <skill id="Bow"
              value="45" />
       <skill id="Crossbow"
@@ -7466,13 +7466,13 @@
       <skill id="TwoHanded"
              value="80" />
       <skill id="Polearm"
-             value="130" />
+             value="140" />
       <skill id="Bow"
              value="60" />
       <skill id="Crossbow"
              value="40" />
       <skill id="Throwing"
-             value="150" />
+             value="100" />
     </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
@@ -7936,7 +7936,7 @@
       <equipment slot="Item2"
                  id="Item.khuzait_sword_1_t2" />
       <equipment slot="Item3"
-                 id="Item.eastern_spear_1_t2" />
+                 id="Item.eastern_spear_3_t3" />
       <equipment slot="Body"
                  id="Item.belted_leather_cuirass" />
       <equipment slot="Head"
@@ -7956,7 +7956,7 @@
       <equipment slot="Item2"
                  id="Item.khuzait_sword_1_t2" />
       <equipment slot="Item3"
-                 id="Item.eastern_spear_1_t2" />
+                 id="Item.eastern_spear_3_t3" />
       <equipment slot="Body"
                  id="Item.belted_leather_cuirass" />
       <equipment slot="Head"
@@ -7976,7 +7976,7 @@
       <equipment slot="Item2"
                  id="Item.khuzait_sword_1_t2" />
       <equipment slot="Item3"
-                 id="Item.eastern_spear_1_t2" />
+                 id="Item.eastern_spear_3_t3" />
       <equipment slot="Body"
                  id="Item.khuzait_fortified_armor" />
       <equipment slot="Head"
@@ -11457,7 +11457,7 @@
       <equipment slot="Item1"
                  id="Item.leather_round_shield" />
       <equipment slot="Item3"
-                 id="Item.northern_throwing_axe_1_t1" />
+                 id="Item.western_javelin_2_t3" />
       <equipment slot="Head"
                  id="Item.sturgian_helmet_b_close" />
       <equipment slot="Body"
@@ -11474,10 +11474,8 @@
                  id="Item.northern_spear_3_t4" />
       <equipment slot="Item1"
                  id="Item.leather_round_shield" />
-      <equipment slot="Item2"
-                 id="Item.sturgia_sword_2_t3" />
       <equipment slot="Item3"
-                 id="Item.northern_throwing_axe_1_t1" />
+                 id="Item.western_javelin_2_t3" />
       <equipment slot="Head"
                  id="Item.goggled_helmet_over_mail" />
       <equipment slot="Body"
@@ -11497,7 +11495,7 @@
       <equipment slot="Item2"
                  id="Item.sturgia_axe_4_t4" />
       <equipment slot="Item3"
-                 id="Item.northern_throwing_axe_1_t1" />
+                 id="Item.western_javelin_2_t3" />
       <equipment slot="Head"
                  id="Item.closed_goggled_helmet" />
       <equipment slot="Body"
@@ -11517,7 +11515,7 @@
       <equipment slot="Item2"
                  id="Item.sturgia_axe_4_t4" />
       <equipment slot="Item3"
-                 id="Item.northern_throwing_axe_1_t1" />
+                 id="Item.western_javelin_2_t3" />
       <equipment slot="Head"
                  id="Item.sturgian_helmet_b_open" />
       <equipment slot="Body"
@@ -12355,6 +12353,22 @@
                  id="Item.studded_bound_kite_shield" />
       <equipment slot="Body"
                  id="Item.red_coat_over_mail" />
+      <equipment slot="Leg"
+                 id="Item.strapped_mail_chausses" />
+      <equipment slot="Head"
+                 id="Item.nasal_cervelliere_over_mail_coif" />
+      <equipment slot="Gloves"
+                 id="Item.reinforced_padded_mitten" />
+      <equipment slot="Cape"
+                 id="Item.mail_shoulders" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.western_spear_3_t3" />
+      <equipment slot="Item2"
+                 id="Item.studded_bound_kite_shield" />
+      <equipment slot="Body"
+                 id="Item.hauberk" />
       <equipment slot="Leg"
                  id="Item.strapped_mail_chausses" />
       <equipment slot="Head"

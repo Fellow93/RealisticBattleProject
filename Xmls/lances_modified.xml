@@ -244,6 +244,68 @@
       <Piece id="spear_pommel_11" Type="Pommel" scale_factor="100" />
     </Pieces>
   </CraftedItem>
+  
+  <CraftedItem id="northern_spear_2_t3"
+               name="{=xTyib5ms}Broad Leaf Shaped Spear"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.battania">
+    <Pieces>
+      <Piece id="spear_blade_40"
+             Type="Blade"
+             scale_factor="90" />
+      <Piece id="spear_handle_21"
+             Type="Handle"
+             scale_factor="125" />
+    </Pieces>
+  </CraftedItem>
+  
+  <CraftedItem id="eastern_spear_2_t3"
+               name="{=G7EbBKuA}Narrow Long Headed Spear"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.khuzait">
+    <Pieces>
+      <Piece id="spear_blade_14"
+             Type="Blade"
+             scale_factor="110" />
+      <Piece id="spear_handle_18"
+             Type="Handle"
+             scale_factor="140" />
+    </Pieces>
+  </CraftedItem>
+  
+  <CraftedItem id="eastern_spear_3_t3"
+               name="{=YGndAhTr}Weighted Steppe Spear"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.khuzait">
+    <Pieces>
+      <Piece id="spear_blade_37"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_handle_22"
+             Type="Handle"
+             scale_factor="130" />
+    </Pieces>
+  </CraftedItem>
+  
+  <CraftedItem id="northern_spear_3_t4"
+               name="{=ZLpYFYXo}Jagged Fine Steel Spear"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.sturgia">
+    <Pieces>
+      <Piece id="spear_blade_36"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_guard_2"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_16"
+             Type="Handle"
+             scale_factor="150" />
+      <Piece id="spear_pommel_5"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
    
   <!-- #endregion -->
 <!-- #region Used Javelins -->

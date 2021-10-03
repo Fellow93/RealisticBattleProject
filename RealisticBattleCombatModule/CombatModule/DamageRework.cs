@@ -212,7 +212,7 @@ namespace RealisticBattleCombatModule
             if (combinedSpeed > 0f)
             {
                 float basedamage = 120f * (combinedSpeed / thrustWeaponSpeed) * (combinedSpeed / thrustWeaponSpeed);
-                if (!isThrown && weaponWeight < 1.5f)
+                if (!isThrown && weaponWeight < 2.1f)
                 {
                     weaponWeight += 0.5f;
                 }
@@ -234,10 +234,10 @@ namespace RealisticBattleCombatModule
                     thrust = kineticEnergy;
                 }
 
-                if (thrust > 200f)
-                {
-                    thrust = 200f;
-                }
+                //if (thrust > 200f)
+                //{
+                //    thrust = 200f;
+                //}
                 __result = thrust * XmlConfig.dict["Global.ThrustModifier"];
                 return false;
             }
@@ -443,6 +443,10 @@ namespace RealisticBattleCombatModule
                                             magnitude *= 0.34f;
                                         }
                                         skillBasedDamage = magnitude * 0.4f + 60f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.26f * XmlConfig.dict["Global.ThrustModifier"]);
+                                        if (skillBasedDamage > 260f * XmlConfig.dict["Global.ThrustModifier"])
+                                        {
+                                            skillBasedDamage = 260f * XmlConfig.dict["Global.ThrustModifier"];
+                                        }
                                     }
                                 }
                                 if (magnitude > 1f && !isPassiveUsage)
@@ -496,6 +500,10 @@ namespace RealisticBattleCombatModule
                                             magnitude *= 0.34f;
                                         }
                                         skillBasedDamage = (magnitude * 0.4f + 60f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.26f * XmlConfig.dict["Global.ThrustModifier"])) * 1.3f;
+                                        if (skillBasedDamage > 360f * XmlConfig.dict["Global.ThrustModifier"])
+                                        {
+                                            skillBasedDamage = 360f * XmlConfig.dict["Global.ThrustModifier"];
+                                        }
                                     }
                                 }
                                 if (magnitude > 1f && !isPassiveUsage)
