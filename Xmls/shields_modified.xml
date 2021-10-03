@@ -72,7 +72,7 @@
 		</ItemComponent>
 		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandSecondaryItemBone="true"/>
 	</Item>
-	<Item id="decorated_steppe_shield" name="{=iE9JNuZI}Round Steppe Shield" body_name="bo_cap_shield_khuzait_cavalary_b" shield_body_name="bo_shield_khuzait_cavalary_b" recalculate_body="false" mesh="shield_khuzait_cavalary_b" using_tableau="true" weight="4.7" appearance="0.9" Type="Shield" item_holsters="shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.05,0.01" value="3800">
+	<Item id="decorated_steppe_shield" name="{=iE9JNuZI}Round Steppe Shield" body_name="bo_cap_shield_khuzait_cavalary_b" shield_body_name="bo_shield_khuzait_cavalary_b" recalculate_body="false" mesh="shield_khuzait_cavalary_b" using_tableau="true" weight="4.7" appearance="0.9" Type="Shield" item_holsters="left_shoulder_targe:shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.05,0.01" value="3800">
 		<ItemComponent>
 			<Weapon weapon_class="LargeShield" body_armor="4" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="60" center_of_mass="-0.0,0.075,0.05" hit_points="500">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
@@ -160,7 +160,7 @@
 		</ItemComponent>
 		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandSecondaryItemBone="true"/>
 	</Item>
-	<Item id="battania_shield_targe_a" name="{=JzZJpbTB}Reinforced Targe" body_name="bo_cap_battania_shield_targe_a" shield_body_name="bo_battania_shield_targe_a" recalculate_body="false" mesh="battania_shield_targe_a" using_tableau="true" weight="2.5" appearance="1.6" Type="Shield" item_holsters="left_shoulder_targe" has_lower_holster_priority="true" holster_position_shift="0.0,0.0,0" value="5800" culture="Culture.battania">
+	<Item id="battania_shield_targe_a" name="{=JzZJpbTB}Reinforced Targe" body_name="bo_cap_battania_shield_targe_a" shield_body_name="bo_battania_shield_targe_a" recalculate_body="false" mesh="battania_shield_targe_a" using_tableau="true" weight="2.5" appearance="1.6" Type="Shield" item_holsters="shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="0.0,0.0,0" value="5800" culture="Culture.battania">
 		<ItemComponent>
 			<Weapon weapon_class="LargeShield" body_armor="5" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.12, 0.08, 0.01" rotation="3.40,5.10,25.00" weapon_length="70" center_of_mass="-0.0, 0.12, 0.1" hit_points="580">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
@@ -416,7 +416,7 @@
 		</ItemComponent>
 		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandSecondaryItemBone="true"/>
 	</Item>
-	<Item id="jousting_shield" name="{=nVAhoxcH}Knights Shield" body_name="bo_cap_heater_shield_d" shield_body_name="bo_heater_shield_d" recalculate_body="false" mesh="heater_shield_d" using_tableau="true" weight="4.7" appearance="1" Type="Shield" item_holsters="left_shoulder_shield" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.1,-0.0" value="4500">
+	<Item id="jousting_shield" name="{=nVAhoxcH}Knights Shield" body_name="bo_cap_heater_shield_d" shield_body_name="bo_heater_shield_d" recalculate_body="false" mesh="heater_shield_d" using_tableau="true" weight="4.7" appearance="1" Type="Shield" item_holsters="shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.1,-0.0" value="4500">
 		<ItemComponent>
 			<Weapon weapon_class="LargeShield" body_armor="5" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="90" center_of_mass="0.0,0.1,0.05" hit_points="485">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
@@ -512,7 +512,7 @@
 		</ItemComponent>
 		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandSecondaryItemBone="true"/>
 	</Item>
-	<Item id="fortified_kite_shield" name="{=NFvuDpwG}Fortified Kite Shield" body_name="bo_cap_kite_shield_s" shield_body_name="bo_kite_shield_s" recalculate_body="false" mesh="kite_shield_s" using_tableau="true" weight="5.4" appearance="0.7" Type="Shield" item_holsters="shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.0,-0.025" value="8500">
+	<Item id="fortified_kite_shield" name="{=NFvuDpwG}Fortified Kite Shield" body_name="bo_cap_kite_shield_s" shield_body_name="bo_kite_shield_s" recalculate_body="false" mesh="kite_shield_s" using_tableau="true" weight="5.4" appearance="0.7" Type="Shield" item_holsters="left_shoulder_shield:shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.0,-0.025" value="8500">
 		<ItemComponent>
 			<Weapon weapon_class="LargeShield" body_armor="7" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="110" center_of_mass="0.0,0.0,0.1" hit_points="730">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>

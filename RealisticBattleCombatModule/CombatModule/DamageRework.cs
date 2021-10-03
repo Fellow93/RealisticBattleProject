@@ -196,7 +196,7 @@ namespace RealisticBattleCombatModule
         private static float CalculateStrikeMagnitudeForThrust(float thrustWeaponSpeed, float weaponWeight, float extraLinearSpeed, bool isThrown)
         {
             float num = extraLinearSpeed;
-            float num2 = 0.5f * weaponWeight * num * num * XmlConfig.dict["Global.ThrustModifier"] * 0.34f; // lances need to have 3 times more damage to be preferred over maces
+            float num2 = 0.5f * weaponWeight * num * num * XmlConfig.dict["Global.ThrustModifier"]; // lances need to have 3 times more damage to be preferred over maces
             return num2;
 
         }
@@ -299,7 +299,7 @@ namespace RealisticBattleCombatModule
                     float skillBasedDamage = 0f;
                     const float ashBreakTreshold = 430f;
                     float BraceBonus = 0f;
-                    float BraceModifier = 1f; // because I am multiplying passive damage by 0.34f
+                    float BraceModifier = 0.34f; // because lances have 3 times more damage
 
                     switch (weaponType)
                     {
@@ -407,31 +407,31 @@ namespace RealisticBattleCombatModule
                                 {
                                     if (isPassiveUsage)
                                     {
-                                        float couchedSkill = 0.5f + effectiveSkill * 0.0225f;
+                                        float couchedSkill = 0.5f + effectiveSkill * 0.015f;
                                         float skillCap = (100f + effectiveSkill * 1.3f);
 
                                         float weaponWeight = attackerWeapon.Item.Weight;
 
-                                        if (weaponWeight < 1.5f)
+                                        if (weaponWeight < 2.1f)
                                         {
                                             BraceBonus += 0.5f;
                                             BraceModifier *= 3f;
                                         }
-                                        float lanceBalistics = magnitude / weaponWeight;
+                                        float lanceBalistics = (magnitude * BraceModifier) / weaponWeight;
                                         float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
                                         if (CouchedMagnitude > (skillCap * XmlConfig.dict["Global.ThrustModifier"]) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
                                         {
-                                            magnitude = skillCap * XmlConfig.dict["Global.ThrustModifier"] * BraceModifier;
+                                            magnitude = skillCap * XmlConfig.dict["Global.ThrustModifier"];
                                         }
 
                                         if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
                                         {
-                                            magnitude = (lanceBalistics * (weaponWeight + BraceBonus)) * BraceModifier;
+                                            magnitude = (lanceBalistics * (weaponWeight + BraceBonus));
                                         }
 
                                         if (magnitude > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"]))
                                         {
-                                            magnitude = ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"] * BraceModifier;
+                                            magnitude = ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"];
                                         }
                                     }
                                     else
@@ -465,16 +465,17 @@ namespace RealisticBattleCombatModule
                                 {
                                     if (isPassiveUsage)
                                     {
-                                        float couchedSkill = 0.5f + effectiveSkill * 0.0225f;
+                                        float couchedSkill = 0.5f + effectiveSkill * 0.015f;
                                         float skillCap = (100f + effectiveSkill * 1.3f);
 
                                         float weaponWeight = attackerWeapon.Item.Weight;
 
-                                        if (weaponWeight < 1.5f)
+                                        if (weaponWeight < 2.1f)
                                         {
                                             BraceBonus += 0.5f;
+                                            BraceModifier *= 3f;
                                         }
-                                        float lanceBalistics = magnitude / weaponWeight;
+                                        float lanceBalistics = (magnitude * BraceModifier) / weaponWeight;
                                         float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
                                         if (CouchedMagnitude > (skillCap * XmlConfig.dict["Global.ThrustModifier"]) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
                                         {
@@ -2192,7 +2193,7 @@ namespace RealisticBattleCombatModule
                 if (victimAgent!= null && victimAgent.HasMount && victimAgent.Character != null && victimAgent.Origin != null)
                 {
                     int ridingSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(victimAgent.Character, victimAgent.Origin, victimAgent.Formation, DefaultSkills.Riding);
-                    if (attackerWeapon != null && attackerWeapon.ItemUsage != null && blow.StrikeType == StrikeType.Thrust && blow.BaseMagnitude > (20f + (ridingSkill * 0.05f)) &&
+                    if (attackerWeapon != null && attackerWeapon.ItemUsage != null && blow.StrikeType == StrikeType.Thrust && blow.BaseMagnitude > (6.5f + (ridingSkill * 0.02f)) &&
                     (blow.VictimBodyPart == BoneBodyPartType.Head || blow.VictimBodyPart == BoneBodyPartType.Neck || blow.VictimBodyPart == BoneBodyPartType.Chest || blow.VictimBodyPart == BoneBodyPartType.ShoulderLeft || blow.VictimBodyPart == BoneBodyPartType.ShoulderRight) && 
                     (attackerWeapon.ItemUsage.Equals("polearm_couch") || attackerWeapon.ItemUsage.Equals("polearm_bracing")))
                     {

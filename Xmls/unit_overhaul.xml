@@ -7399,7 +7399,7 @@
       <equipment slot="Item0"
                  id="Item.empire_polearm_1_t4" />
       <equipment slot="Item1"
-                 id="Item.jousting_shield" />
+                 id="Item.fortified_kite_shield" />
       <equipment slot="Body"
                  id="Item.legionary_mail" />
       <equipment slot="Gloves"
@@ -7415,7 +7415,7 @@
       <equipment slot="Item0"
                  id="Item.empire_polearm_1_t4" />
       <equipment slot="Item1"
-                 id="Item.jousting_shield" />
+                 id="Item.fortified_kite_shield" />
       <equipment slot="Body"
                  id="Item.legionary_mail" />
       <equipment slot="Leg"
@@ -7431,7 +7431,7 @@
       <equipment slot="Item0"
                  id="Item.empire_polearm_1_t4" />
       <equipment slot="Item1"
-                 id="Item.jousting_shield" />
+                 id="Item.fortified_kite_shield" />
       <equipment slot="Body"
                  id="Item.legionary_mail" />
       <equipment slot="Leg"
@@ -7480,7 +7480,7 @@
       <equipment slot="Item0"
                  id="Item.empire_polearm_2_t5" />
       <equipment slot="Item3"
-                 id="Item.battania_shield_targe_a" />			 
+                 id="Item.decorated_steppe_shield" />			 
       <equipment slot="Body"
                  id="Item.imperial_lamellar" />
       <equipment slot="Gloves"
@@ -7496,7 +7496,7 @@
       <equipment slot="Item0"
                  id="Item.empire_polearm_2_t5" />
       <equipment slot="Item3"
-                 id="Item.battania_shield_targe_a" />					 
+                 id="Item.decorated_steppe_shield" />					 
       <equipment slot="Body"
                  id="Item.imperial_lamellar" />
       <equipment slot="Leg"
@@ -7512,7 +7512,7 @@
       <equipment slot="Item0"
                  id="Item.empire_polearm_2_t5" />
       <equipment slot="Item3"
-                 id="Item.battania_shield_targe_a" />					 
+                 id="Item.decorated_steppe_shield" />					 
       <equipment slot="Body"
                  id="Item.imperial_lamellar" />
       <equipment slot="Leg"
@@ -12105,9 +12105,9 @@
       <equipment slot="Item0"
                  id="Item.vlandia_pike_1_t5" />
       <equipment slot="Item1"
-                 id="Item.jousting_shield" />
+                 id="Item.fortified_kite_shield" />
       <equipment slot="Body"
-                 id="Item.sturgian_fortified_armor" />
+                 id="Item.coat_of_plates_over_mail" />
 	  <equipment slot="Cape"
                  id="Item.mail_shoulders" />
       <equipment slot="Leg"
@@ -12121,9 +12121,9 @@
       <equipment slot="Item0"
                  id="Item.vlandia_pike_1_t5" />
       <equipment slot="Item1"
-                 id="Item.jousting_shield" />
+                 id="Item.fortified_kite_shield" />
       <equipment slot="Body"
-                 id="Item.sturgian_fortified_armor" />
+                 id="Item.coat_of_plates_over_mail" />
 	  <equipment slot="Cape"
                  id="Item.mail_shoulders" />
       <equipment slot="Leg"
@@ -12137,9 +12137,9 @@
       <equipment slot="Item0"
                  id="Item.vlandia_pike_1_t5" />
       <equipment slot="Item1"
-                 id="Item.jousting_shield" />
+                 id="Item.fortified_kite_shield" />
       <equipment slot="Body"
-                 id="Item.sturgian_fortified_armor" />
+                 id="Item.coat_of_plates_over_mail" />
 	  <equipment slot="Cape"
                  id="Item.mail_shoulders" />
       <equipment slot="Leg"
