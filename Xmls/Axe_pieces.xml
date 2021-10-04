@@ -434,11 +434,11 @@
       <Material id="Iron3" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_17_head" name="{=R62maL2H}Bill Head" tier="4" piece_type="Blade" mesh="axe_craft_17_head" distance_to_next_piece="21" distance_to_previous_piece="3.8" weight="0.35">
+  <CraftingPiece id="axe_craft_17_head" name="{=R62maL2H}Bill Head" tier="4" piece_type="Blade" mesh="axe_craft_17_head" distance_to_next_piece="21" distance_to_previous_piece="3.8" weight="0.75">
     <PieceUsages unavailable_usages="TwoHandedPolearm_Bracing" />
     <BuildData piece_offset="-7.6" />
     <BladeData stack_amount="3" blade_length="33.887" blade_width="22.47" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Swing damage_type="Pierce" damage_factor="1.1" />
+      <Swing damage_type="Pierce" damage_factor="0.9" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />

@@ -11,10 +11,11 @@
     <native_parameter id="bigger_humanoid_physics_capsule_radius_multiplier" value="1.5"/>
 	<native_parameter id="smaller_humanoid_physics_capsule_radius_multiplier_for_static_bodies" value="0.3"/>
     <native_parameter id="smaller_humanoid_physics_capsule_radius_multiplier_for_agents" value="1.10"/>
-
-    <native_parameter id="max_logical_distance_allowed_for_defend" value="0.6"/>
-    <native_parameter id="max_logical_distance_allowed_for_shield_defend" value="0.8"/>
 	
 	<native_parameter id="quadrupedal_acceleration_multiplier" value="20"/>
+	
+	<native_parameter id="missile_launch_perpendicular_speed_effect_ratio" value="1"/>
+	
+    <native_parameter id="guard_reset_time" value="10.0"/>
   </native_parameters>
 </base>
