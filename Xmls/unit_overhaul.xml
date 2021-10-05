@@ -11948,8 +11948,6 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.vlandia_2haxe_1_t4" />
-      <equipment slot="Item1"
-                 id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
                  id="Item.red_coat_over_mail" />
       <equipment slot="Leg"
@@ -11964,8 +11962,6 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.vlandia_2haxe_1_t4" />
-      <equipment slot="Item1"
-                 id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
                  id="Item.white_coat_over_mail" />
       <equipment slot="Leg"
@@ -11980,8 +11976,6 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.vlandia_2haxe_1_t4" />
-      <equipment slot="Item1"
-                 id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
                  id="Item.red_coat_over_mail" />
       <equipment slot="Leg"
@@ -17561,7 +17555,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.bolt_c" />
+                 id="Item.western_kite_shield" />
       <equipment slot="Item3"
                  id="Item.vlandia_mace_1_t2" />
       <equipment slot="Head"
@@ -17581,7 +17575,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.bolt_c" />
+                 id="Item.western_kite_shield" />
       <equipment slot="Item3"
                  id="Item.vlandia_mace_1_t2" />
       <equipment slot="Head"
@@ -17601,7 +17595,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.bolt_c" />
+                 id="Item.western_kite_shield" />
       <equipment slot="Item3"
                  id="Item.vlandia_mace_1_t2" />
       <equipment slot="Head"
@@ -17621,7 +17615,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.bolt_c" />
+                 id="Item.western_kite_shield" />
       <equipment slot="Item3"
                  id="Item.vlandia_mace_1_t2" />
       <equipment slot="Head"
@@ -17656,7 +17650,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.bolt_c" />
+                 id="Item.pavise_shield" />
       <equipment slot="Item3"
                  id="Item.vlandia_mace_1_t2" />
       <equipment slot="Head"
@@ -17676,7 +17670,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.bolt_c" />
+                 id="Item.pavise_shield" />
       <equipment slot="Item3"
                  id="Item.vlandia_mace_1_t2" />
       <equipment slot="Head"
@@ -17696,7 +17690,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.bolt_c" />
+                 id="Item.pavise_shield" />
       <equipment slot="Item3"
                  id="Item.vlandia_mace_1_t2" />
       <equipment slot="Head"
@@ -17716,7 +17710,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.bolt_c" />
+                 id="Item.pavise_shield" />
       <equipment slot="Item3"
                  id="Item.vlandia_mace_1_t2" />
       <equipment slot="Head"

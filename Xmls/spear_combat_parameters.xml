@@ -81,9 +81,9 @@
     <def name="upperthrust_rider_look_down_limit"
          val="-20" />
     <def name="thrust_rider_rot_limit_left"
-         val="120" />
+         val="60" />
     <def name="thrust_rider_rot_limit_right"
-         val="90" />
+         val="45" />
     <def name="couched_lance_rider_look_down_limit"
          val="10" />
     <def name="couched_lance_rider_rot_limit_left"
@@ -96,11 +96,11 @@
     <def name="bow_rider_rot_limit_left"
          val="179" />
     <def name="bow_rider_rot_limit_right"
-         val="45" />
+         val="15" />
     <def name="bow_reload_rider_rot_limit_left"
-         val="90" />
+         val="179" />
     <def name="bow_reload_rider_rot_limit_right"
-         val="45" />
+         val="15" />
     <def name="throw_rider_look_down_limit"
          val="-35" />
 
