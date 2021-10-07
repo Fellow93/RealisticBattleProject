@@ -13,7 +13,7 @@ public class TacticFullScaleAttackWithDedicatedSkirmishers : TacticComponent
 
 	protected void AssignTacticFormations()
 	{
-
+		int skirmIndex = -1;
 		ManageFormationCounts(2, 1, 2, 1);
         _mainInfantry = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsInfantryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
 		if (_mainInfantry != null)
@@ -39,7 +39,7 @@ public class TacticFullScaleAttackWithDedicatedSkirmishers : TacticComponent
                 //	}
                 //}
 
-                if (agent.HasThrownCached)
+                if (Utilities.CheckIfSkirmisherAgent(agent))
                 {
 					isSkirmisher = true;
 				}
@@ -55,46 +55,86 @@ public class TacticFullScaleAttackWithDedicatedSkirmishers : TacticComponent
 				}
 			});
 
-			Formations.ToList()[1].ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
-			{
-				bool isSkirmisher = false;
-				//for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-				//{
-				//	if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
-				//	{
-				//		if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown)
-				//		{
-				//			isSkirmisher = true;
-				//			break;
-				//		}
-				//	}
-				//}
-
-				if (agent.HasThrownCached)
+			int i = 0;
+			foreach(Formation formation in Formations.ToList())
+            {
+				formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
 				{
-					isSkirmisher = true;
-				}
+					if (i != 0 && formation.IsInfantry())
+					{
+						bool isSkirmisher = false;
+						//for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+						//{
+						//	if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
+						//	{
+						//		if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown)
+						//		{
+						//			isSkirmisher = true;
+						//			break;
+						//		}
+						//	}
+						//}
+
+						if (Utilities.CheckIfSkirmisherAgent(agent,2))
+						{
+							isSkirmisher = true;
+						}
 
 
-				if (isSkirmisher)
-				{
-					skirmishersList.Add(agent);
-				}
-				else
-				{
-					meleeList.Add(agent);
-				}
-			});
+						if (isSkirmisher)
+						{
+							skirmishersList.Add(agent);
+						}
+						else
+						{
+							meleeList.Add(agent);
+						}
+						skirmIndex = i;
+					}
+				});
+				i++;
+            }
+
+			//Formations.ToList()[1].ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+			//{
+			//	bool isSkirmisher = false;
+			//	//for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+			//	//{
+			//	//	if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
+			//	//	{
+			//	//		if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown)
+			//	//		{
+			//	//			isSkirmisher = true;
+			//	//			break;
+			//	//		}
+			//	//	}
+			//	//}
+
+			//	if (agent.HasThrownCached)
+			//	{
+			//		isSkirmisher = true;
+			//	}
+
+
+			//	if (isSkirmisher)
+			//	{
+			//		skirmishersList.Add(agent);
+			//	}
+			//	else
+			//	{
+			//		meleeList.Add(agent);
+			//	}
+			//});
 
 			skirmishersList = skirmishersList.OrderBy(o => o.CharacterPowerCached).ToList();
 
 			int j = 0;
-			int infCount = Formations.ToList()[0].CountOfUnits + Formations.ToList()[1].CountOfUnits;
+			int infCount = Formations.ToList()[0].CountOfUnits + Formations.ToList()[skirmIndex].CountOfUnits;
 			foreach (Agent agent in skirmishersList.ToList())
 			{
 				if (j < infCount / 4f)
 				{
-					agent.Formation = Formations.ToList()[1];
+					agent.Formation = Formations.ToList()[skirmIndex];
                 }
                 else
                 {
@@ -107,7 +147,7 @@ public class TacticFullScaleAttackWithDedicatedSkirmishers : TacticComponent
 			{
 				if (j < infCount / 4f)
 				{
-					agent.Formation = Formations.ToList()[1];
+					agent.Formation = Formations.ToList()[skirmIndex];
 				}
 				else
 				{
@@ -139,9 +179,9 @@ public class TacticFullScaleAttackWithDedicatedSkirmishers : TacticComponent
 		}
 		_rangedCavalry = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsRangedCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
 
-		if(Formations.Count() > 1 && Formations.ToList()[1].QuerySystem.IsInfantryFormation)
+		if(Formations.Count() > skirmIndex && Formations.ToList()[skirmIndex].QuerySystem.IsInfantryFormation)
         {
-			_skirmishers = Formations.ToList()[1];
+			_skirmishers = Formations.ToList()[skirmIndex];
             _skirmishers.AI.IsMainFormation = false;
 
         }
@@ -247,7 +287,7 @@ public class TacticFullScaleAttackWithDedicatedSkirmishers : TacticComponent
 		{
 			_skirmishers.AI.ResetBehaviorWeights();
 			_skirmishers.AI.SetBehaviorWeight<BehaviorCharge>(1f);
-            //_skirmishers.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(5f);
+            _skirmishers.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(5f);
         }
 		if (_archers != null)
 		{
@@ -348,7 +388,20 @@ public class TacticFullScaleAttackWithDedicatedSkirmishers : TacticComponent
 
 	protected override float GetTacticWeight()
 	{
+		float skirmisherCount = 0;
+		float infCount = 0;
+		foreach(Agent agent in team.ActiveAgents.ToList())
+        {
+            if (agent.Formation != null && agent.Formation.QuerySystem.IsInfantryFormation) {
+                if (Utilities.CheckIfSkirmisherAgent(agent, 2))
+                {
+					skirmisherCount++;
+				}
+				infCount++;
+			}
+        }
 		float num = team.QuerySystem.RangedCavalryRatio * (float)team.QuerySystem.MemberCount;
-		return team.QuerySystem.InfantryRatio * (float)team.QuerySystem.MemberCount / ((float)team.QuerySystem.MemberCount - num) * (float)Math.Sqrt(team.QuerySystem.OverallPowerRatio);
+		float skirmisherRatio = skirmisherCount / infCount;
+		return team.QuerySystem.InfantryRatio * skirmisherRatio*1.7f * (float)team.QuerySystem.MemberCount / ((float)team.QuerySystem.MemberCount - num) * (float)Math.Sqrt(team.QuerySystem.OverallPowerRatio);
 	}
 }

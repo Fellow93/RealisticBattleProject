@@ -45,8 +45,7 @@
   <!-- Bannerlord Native Assemblies -->
   <ItemGroup>
     <!-- Bannerlord Module Assemblies  -->
-    <Reference Include="0Harmony, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="0Harmony">
       <HintPath>..\packages\Harmony.2.1.1.0\net472\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="SandBox">
