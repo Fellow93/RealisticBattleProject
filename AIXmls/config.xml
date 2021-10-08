@@ -2,6 +2,6 @@
 <config>
 <!-- Set to 1 if you want to experience siege towers in their full "glory". -->
 	<Global>
-		<SiegeTowersEnabled>0</SiegeTowersEnabled>
+		<SiegeTowersEnabled>1</SiegeTowersEnabled>
 	</Global>
 </config>
