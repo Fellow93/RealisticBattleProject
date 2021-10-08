@@ -2492,7 +2492,7 @@
       <skill id="Riding"
              value="45" />
       <skill id="OneHanded"
-             value="80" />
+             value="90" />
       <skill id="TwoHanded"
              value="60" />
       <skill id="Polearm"
@@ -2502,7 +2502,7 @@
       <skill id="Crossbow"
              value="15" />
       <skill id="Throwing"
-             value="100" />
+             value="110" />
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.aserai_veteran_infantry" />
@@ -2607,17 +2607,17 @@
       <skill id="Riding"
              value="80" />
       <skill id="OneHanded"
-             value="140" />
+             value="120" />
       <skill id="TwoHanded"
              value="80" />
       <skill id="Polearm"
-             value="100" />
+             value="120" />
       <skill id="Bow"
              value="60" />
       <skill id="Crossbow"
              value="20" />
       <skill id="Throwing"
-             value="160" />
+             value="140" />
     </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
@@ -3474,7 +3474,7 @@
       <skill id="Riding"
              value="80" />
       <skill id="OneHanded"
-             value="60" />
+             value="70" />
       <skill id="TwoHanded"
              value="10" />
       <skill id="Polearm"
@@ -3574,11 +3574,11 @@
       <skill id="Riding"
              value="100" />
       <skill id="OneHanded"
-             value="90" />
+             value="100" />
       <skill id="TwoHanded"
              value="15" />
       <skill id="Polearm"
-             value="110" />
+             value="100" />
       <skill id="Bow"
              value="25" />
       <skill id="Crossbow"
@@ -3671,7 +3671,7 @@
       <skill id="Athletics"
              value="100" />
       <skill id="Riding"
-             value="160" />
+             value="150" />
       <skill id="OneHanded"
              value="130" />
       <skill id="TwoHanded"
@@ -3683,7 +3683,7 @@
       <skill id="Crossbow"
              value="20" />
       <skill id="Throwing"
-             value="150" />
+             value="160" />
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.aserai_vanguard_faris" />
@@ -4522,7 +4522,7 @@
       <skill id="Crossbow"
              value="15" />
       <skill id="Throwing"
-             value="180" />
+             value="150" />
     </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
@@ -4614,13 +4614,13 @@
       <skill id="TwoHanded"
              value="80" />
       <skill id="Polearm"
-             value="130" />
+             value="150" />
       <skill id="Bow"
              value="60" />
       <skill id="Crossbow"
              value="20" />
       <skill id="Throwing"
-             value="100" />
+             value="110" />
     </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
@@ -4748,7 +4748,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_sword_1_t2" />
+                 id="Item.highland_spear_t2" />
       <equipment slot="Item1"
                  id="Item.western_javelin_1_t2" />
       <equipment slot="Item2"
@@ -4892,7 +4892,7 @@
       <skill id="TwoHanded"
              value="40" />
       <skill id="Polearm"
-             value="50" />
+             value="60" />
       <skill id="Bow"
              value="30" />
       <skill id="Crossbow"
@@ -4979,7 +4979,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="200" />
+             value="150" />
       <skill id="Riding"
              value="60" />
       <skill id="OneHanded"
@@ -4987,13 +4987,13 @@
       <skill id="TwoHanded"
              value="80" />
       <skill id="Polearm"
-             value="130" />
+             value="110" />
       <skill id="Bow"
              value="60" />
       <skill id="Crossbow"
              value="20" />
       <skill id="Throwing"
-             value="200" />
+             value="150" />
     </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
@@ -5039,7 +5039,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_axe_3_t5" />
+                 id="Item.highland_spear_4_t4" />
       <equipment slot="Item1"
                  id="Item.battania_large_shield_b" />
       <equipment slot="Item2"
@@ -5153,17 +5153,17 @@
       <skill id="Riding"
              value="60" />
       <skill id="OneHanded"
-             value="90" />
+             value="80" />
       <skill id="TwoHanded"
              value="45" />
       <skill id="Polearm"
-             value="100" />
+             value="80" />
       <skill id="Bow"
              value="45" />
       <skill id="Crossbow"
              value="15" />
       <skill id="Throwing"
-             value="110" />
+             value="120" />
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.battanian_wildling" />
@@ -5192,7 +5192,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_sword_2_t3" />
+                 id="Item.battania_axe_2_t4" />
       <equipment slot="Item1"
                  id="Item.battania_large_shield_a" />
       <equipment slot="Item2"
@@ -6017,11 +6017,11 @@
       <skill id="Riding"
              value="5" />
       <skill id="OneHanded"
-             value="40" />
+             value="50" />
       <skill id="TwoHanded"
              value="20" />
       <skill id="Polearm"
-             value="40" />
+             value="50" />
       <skill id="Bow"
              value="15" />
       <skill id="Crossbow"
@@ -6125,7 +6125,7 @@
       <skill id="TwoHanded"
              value="5" />
       <skill id="Polearm"
-             value="40" />
+             value="60" />
       <skill id="Bow"
              value="20" />
       <skill id="Crossbow"
@@ -9735,11 +9735,11 @@
       <skill id="Riding"
              value="15" />
       <skill id="OneHanded"
-             value="40" />
+             value="50" />
       <skill id="TwoHanded"
              value="20" />
       <skill id="Polearm"
-             value="40" />
+             value="50" />
       <skill id="Bow"
              value="15" />
       <skill id="Crossbow"
@@ -9826,11 +9826,11 @@
       <skill id="Riding"
              value="30" />
       <skill id="OneHanded"
-             value="70" />
+             value="80" />
       <skill id="TwoHanded"
              value="40" />
       <skill id="Polearm"
-             value="70" />
+             value="80" />
       <skill id="Bow"
              value="30" />
       <skill id="Crossbow"
@@ -10186,7 +10186,7 @@
       <skill id="TwoHanded"
              value="20" />
       <skill id="Polearm"
-             value="20" />
+             value="40" />
       <skill id="Bow"
              value="25" />
       <skill id="Crossbow"
@@ -10265,11 +10265,11 @@
       <skill id="Riding"
              value="70" />
       <skill id="OneHanded"
-             value="80" />
+             value="90" />
       <skill id="TwoHanded"
              value="10" />
       <skill id="Polearm"
-             value="30" />
+             value="70" />
       <skill id="Bow"
              value="10" />
       <skill id="Crossbow"
@@ -10358,7 +10358,7 @@
       <skill id="TwoHanded"
              value="35" />
       <skill id="Polearm"
-             value="70" />
+             value="100" />
       <skill id="Bow"
              value="45" />
       <skill id="Crossbow"
@@ -10659,7 +10659,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="40" />
+             value="50" />
       <skill id="Riding"
              value="15" />
       <skill id="OneHanded"
@@ -11038,7 +11038,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="80" />
+             value="100" />
       <skill id="Riding"
              value="30" />
       <skill id="OneHanded"
@@ -11046,7 +11046,7 @@
       <skill id="TwoHanded"
              value="40" />
       <skill id="Polearm"
-             value="30" />
+             value="60" />
       <skill id="Bow"
              value="40" />
       <skill id="Crossbow"
@@ -11060,7 +11060,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_sword_1_t2" />
+                 id="Item.sturgia_axe_2_t2" />
       <equipment slot="Item1"
                  id="Item.northern_round_shield" />
       <equipment slot="Item2"
@@ -11100,7 +11100,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_axe_2_t2" />
+                 id="Item.northern_spear_2_t3" />
       <equipment slot="Item1"
                  id="Item.northern_round_shield" />
       <equipment slot="Item2"
@@ -11142,7 +11142,7 @@
       <skill id="TwoHanded"
              value="60" />
       <skill id="Polearm"
-             value="45" />
+             value="90" />
       <skill id="Bow"
              value="45" />
       <skill id="Crossbow"
@@ -11246,17 +11246,17 @@
       <skill id="Riding"
              value="130" />
       <skill id="OneHanded"
-             value="130" />
+             value="120" />
       <skill id="TwoHanded"
              value="60" />
       <skill id="Polearm"
-             value="130" />
+             value="120" />
       <skill id="Bow"
              value="60" />
       <skill id="Crossbow"
              value="20" />
       <skill id="Throwing"
-             value="150" />
+             value="140" />
     </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
@@ -11444,7 +11444,7 @@
       <skill id="Crossbow"
              value="15" />
       <skill id="Throwing"
-             value="80" />
+             value="90" />
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.sturgian_shock_troop" />
@@ -15100,9 +15100,9 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.military_fork_t2" />
+                 id="Item.simple_pike_t2" />
       <equipment slot="Item1"
-                 id="Item.sturgia_old_shield_b" />
+                 id="Item.worn_kite_shield" />
       <equipment slot="Item2"
                  id="Item.northern_javelin_1_t2" />
       <equipment slot="Item2"
@@ -15155,9 +15155,9 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_spear_2_t3" />
+                 id="Item.military_fork_pike_t3" />
       <equipment slot="Item1"
-                 id="Item.northern_round_shield" />
+                 id="Item.western_kite_shield" />
       <equipment slot="Item2"
                  id="Item.generic_javelin_1_t3" />
       <equipment slot="Item3"
@@ -15175,9 +15175,9 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_spear_2_t3" />
+                 id="Item.military_fork_pike_t3" />
       <equipment slot="Item1"
-                 id="Item.northern_round_shield" />
+                 id="Item.western_kite_shield" />
       <equipment slot="Item2"
                  id="Item.generic_javelin_1_t3" />
       <equipment slot="Item3"
@@ -15195,9 +15195,9 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_spear_2_t3" />
+                 id="Item.military_fork_pike_t3" />
       <equipment slot="Item1"
-                 id="Item.northern_round_shield" />
+                 id="Item.ironrim_kite_shield" />
       <equipment slot="Item2"
                  id="Item.generic_javelin_1_t3" />
       <equipment slot="Item3"
@@ -15215,9 +15215,9 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_spear_2_t3" />
+                 id="Item.military_fork_pike_t3" />
       <equipment slot="Item1"
-                 id="Item.northern_round_shield" />
+                 id="Item.ironrim_kite_shield" />
       <equipment slot="Item2"
                  id="Item.generic_javelin_1_t3" />
       <equipment slot="Item3"
@@ -15268,9 +15268,9 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_spear_4_t5" />
+                 id="Item.thamaskene_pike_t4" />
       <equipment slot="Item1"
-                 id="Item.heavy_round_shield" />
+                 id="Item.heavy_heater_shield" />
       <equipment slot="Item2"
                  id="Item.western_javelin_3_t4" />
       <equipment slot="Item3"
@@ -15288,9 +15288,9 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_spear_4_t5" />
+                 id="Item.thamaskene_pike_t4" />
       <equipment slot="Item1"
-                 id="Item.heavy_round_shield" />
+                 id="Item.heavy_heater_shield" />
       <equipment slot="Item2"
                  id="Item.western_javelin_3_t4" />
       <equipment slot="Item3"
@@ -15308,9 +15308,9 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_spear_4_t5" />
+                 id="Item.fine_pike_t4" />
       <equipment slot="Item1"
-                 id="Item.heavy_round_shield" />
+                 id="Item.northern_horsemans_shield" />
       <equipment slot="Item2"
                  id="Item.western_javelin_3_t4" />
       <equipment slot="Item3"
@@ -15328,9 +15328,9 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_spear_4_t5" />
+                 id="Item.fine_pike_t4" />
       <equipment slot="Item1"
-                 id="Item.heavy_round_shield" />
+                 id="Item.northern_horsemans_shield" />
       <equipment slot="Item2"
                  id="Item.western_javelin_3_t4" />
       <equipment slot="Item3"

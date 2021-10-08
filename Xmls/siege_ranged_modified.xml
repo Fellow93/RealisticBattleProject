@@ -119,7 +119,8 @@
                      UseHandAsThrowBase="true"
                      LeavesTrail="true"
                      AmmoCanBreakOnBounceBack="true"
-                     AffectsArea="true" />
+                     AffectsArea="false" 
+					 MultiplePenetration="true"/>
       </Weapon>
     </ItemComponent>
     <Flags QuickFadeOut="true"

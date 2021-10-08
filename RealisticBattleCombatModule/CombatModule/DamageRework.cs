@@ -64,11 +64,11 @@ namespace RealisticBattleCombatModule
                         case "ThrowingKnife":
                         case "Dagger":
                             {
-                                length -= 5f;
-                                if (length < 5.0f)
-                                {
-                                    length = 5f;
-                                }
+                                length -= 0f; //5f
+                                //if (length < 5.0f)
+                                //{
+                                //    length = 5f;
+                                //}
                                 //length += -(7.0f);
                                 //if (length < 5.0f)
                                 //{
@@ -152,7 +152,7 @@ namespace RealisticBattleCombatModule
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
                 {
-                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage - 70f) * 0.5f) * XmlConfig.dict["Global.ThrustModifier"];
+                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 1f)) * XmlConfig.dict["Global.ThrustModifier"];
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingAxe"))
@@ -169,7 +169,7 @@ namespace RealisticBattleCombatModule
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") ||
                     weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("LowGripPolearm"))
                 {
-                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage - 70f) * 0.5f) * XmlConfig.dict["Global.ThrustModifier"];
+                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 1f)) * XmlConfig.dict["Global.ThrustModifier"];
                 }
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") ||
                     weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt"))
