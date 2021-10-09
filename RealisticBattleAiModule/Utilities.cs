@@ -17,21 +17,21 @@ namespace RealisticBattleAiModule
         {
             if (mainInfantry != null)
             {
-                if (FormationFightingInMelee(mainInfantry, 0.4f))
-                {
-                    if (mainInfantry.IsAIControlled)
-                    {
-                        mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
-                        return true;
-                    }
-                }
-                else
-                {
-                    if (mainInfantry.IsAIControlled)
-                    {
-                        mainInfantry.FiringOrder = FiringOrder.FiringOrderFireAtWill;
-                    }
-                }
+                //if (FormationFightingInMelee(mainInfantry, 0.4f))
+                //{
+                //    if (mainInfantry.IsAIControlled)
+                //    {
+                //        mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
+                //        return true;
+                //    }
+                //}
+                //else
+                //{
+                //    if (mainInfantry.IsAIControlled)
+                //    {
+                //        mainInfantry.FiringOrder = FiringOrder.FiringOrderFireAtWill;
+                //    }
+                //}
                 if(mainInfantry.QuerySystem.ClosestEnemyFormation != null && mainInfantry.QuerySystem.ClosestEnemyFormation.Formation != null)
                 {
                     Formation enemyForamtion = Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false);

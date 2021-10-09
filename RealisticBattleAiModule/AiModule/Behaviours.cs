@@ -2464,7 +2464,7 @@ namespace RealisticBattleAiModule
                             //    unit.SetLookAgent(targetAgent);
                             //}
 
-                            unit.SetFiringOrder(1);
+                            //unit.SetFiringOrder(1);
                             int unitPower = (int)Math.Floor(unit.Character.GetPower() * 100);
                             int randInt = MBRandom.RandomInt(unitPower + 10);
                             int hasShieldBonus = 0;
