@@ -616,9 +616,16 @@ namespace RealisticBattleAiModule
         [HarmonyPatch("GetAiWeight")]
         static void PostfixGetAiWeight(ref BehaviorMountedSkirmish __instance, ref float __result)
         {
-            if (Utilities.CheckIfMountedSkirmishFormation(__instance.Formation, 0.6f))
+            if (__instance.Formation != null && __instance.Formation.QuerySystem.IsCavalryFormation)
             {
-                __result = 5f;
+                if (Utilities.CheckIfMountedSkirmishFormation(__instance.Formation, 0.6f))
+                {
+                    __result = 5f;
+                }
+                else
+                {
+                    __result = 0f;
+                }
             }
             else if (__instance.Formation != null && __instance.Formation.QuerySystem.IsRangedCavalryFormation)
             {
