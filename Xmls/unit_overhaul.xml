@@ -17634,7 +17634,7 @@
   <NPCCharacter id="vlandian_militia_veteran_archer"
                 default_group="Ranged"
                 level="21"
-                name="{=DNIa6a5p}Vlandian Militia Veteran Archer"
+                name="{=DNIa6a5p}Vlandian Militia Veteran Crossbowman"
                 occupation="Soldier"
                 culture="Culture.vlandia"
                 skill_template="SkillSet.ranged_skirmisher_level21_template_skills">

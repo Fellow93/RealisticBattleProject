@@ -45,8 +45,10 @@ namespace RealisticBattleAiModule
 
                 //agentDrivenProperties.AiRangerLeadErrorMin = 0f;
                 //agentDrivenProperties.AiRangerLeadErrorMax = 0f;
-                //agentDrivenProperties.AiRangerVerticalErrorMultiplier = 0f;
-                //agentDrivenProperties.AiRangerHorizontalErrorMultiplier = 0f;
+                agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.015f - effectiveSkill * 0.0001f, 0.005f, 0.015f);//crossbow
+                agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.025f - effectiveSkill * 0.0001f, 0.01f, 0.025f);//bow
+                agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.015f - effectiveSkill * 0.0001f, 0.005f, 0.015f);//crossbow
+                agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.025f - effectiveSkill * 0.0001f, 0.01f, 0.025f);//bow
 
                 agentDrivenProperties.AIAttackOnParryChance = MBMath.ClampFloat(meleeLevel*0.4f, 0.1f, 0.30f); //0.3f - 0.1f * agent.Defensiveness; //0.2-0.3f // chance to break own parry guard - 0 constant parry in reaction to enemy, 1 constant breaking of parry
                 agentDrivenProperties.AIDecideOnAttackChance = MBMath.ClampFloat(meleeLevel*0.3f, 0.15f, 0.5f); //0.15f * agent.Defensiveness; //0-0.15f - how often is direction changed (or swtich to parry) when preparing for attack
@@ -58,7 +60,7 @@ namespace RealisticBattleAiModule
                 agentDrivenProperties.AiAttackingShieldDefenseChance = MBMath.ClampFloat(meleeLevel * 2f, 0.1f, 1.0f); ; //0.2f + 0.3f * meleeLevel;
                 agentDrivenProperties.AiAttackingShieldDefenseTimer = MBMath.ClampFloat(-0.3f + (meleeLevel * 0.6f), -0.3f, 0f);  //-0.3f + 0.3f * meleeLevel;
 
-                agentDrivenProperties.AiShootFreq = MBMath.ClampFloat(meleeLevel * 1.5f, 0.1f, 0.9f); // when set to 0 AI never shoots
+                agentDrivenProperties.AiShootFreq = MBMath.ClampFloat(effectiveSkill * 1.5f, 0.1f, 0.9f); // when set to 0 AI never shoots
                 //agentDrivenProperties.AiWaitBeforeShootFactor = 0f;
 
                 //agentDrivenProperties.AiMinimumDistanceToContinueFactor = 5f; //2f + 0.3f * (3f - meleeSkill);
