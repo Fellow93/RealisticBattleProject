@@ -17177,13 +17177,31 @@
                 level="16"
                 name="{=CPcJ2gRF}Aserai Militia Archer"
                 occupation="Soldier"
-                culture="Culture.aserai"
-                skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
+                culture="Culture.aserai">
     <face>
       <face_key_template value="BodyProperty.fighter_aserai" />
     </face>
-    <skills></skills>
-    <upgrade_targets></upgrade_targets>
+    <skills>
+      <skill id="Athletics"
+             value="70" />
+      <skill id="Riding"
+             value="10" />
+      <skill id="OneHanded"
+             value="60" />
+      <skill id="TwoHanded"
+             value="40" />
+      <skill id="Polearm"
+             value="40" />
+      <skill id="Bow"
+             value="80" />
+      <skill id="Crossbow"
+             value="30" />
+      <skill id="Throwing"
+             value="40" />
+    </skills>
+    <upgrade_targets>
+      <upgrade_target id="NPCCharacter.aserai_militia_veteran_archer" />
+    </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -17272,12 +17290,28 @@
                 level="21"
                 name="{=tL6aGah4}Aserai Militia Veteran Archer"
                 occupation="Soldier"
-                culture="Culture.aserai"
-                skill_template="SkillSet.ranged_skirmisher_level21_template_skills">
+                culture="Culture.aserai">
     <face>
       <face_key_template value="BodyProperty.fighter_aserai" />
     </face>
-    <skills></skills>
+    <skills>
+      <skill id="Athletics"
+             value="100" />
+      <skill id="Riding"
+             value="15" />
+      <skill id="OneHanded"
+             value="90" />
+      <skill id="TwoHanded"
+             value="100" />
+      <skill id="Polearm"
+             value="60" />
+      <skill id="Bow"
+             value="110" />
+      <skill id="Crossbow"
+             value="45" />
+      <skill id="Throwing"
+             value="45" />
+    </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
       <EquipmentRoster>
@@ -17367,13 +17401,31 @@
                 level="16"
                 name="{=ULaNn3pp}Aserai Militia Spearman"
                 occupation="Soldier"
-                culture="Culture.aserai"
-                skill_template="SkillSet.infantry_heavyinfantry_level16_template_skills">
+                culture="Culture.aserai">
     <face>
       <face_key_template value="BodyProperty.fighter_aserai" />
     </face>
-    <skills></skills>
-    <upgrade_targets></upgrade_targets>
+    <skills>
+      <skill id="Athletics"
+             value="70" />
+      <skill id="Riding"
+             value="10" />
+      <skill id="OneHanded"
+             value="70" />
+      <skill id="TwoHanded"
+             value="40" />
+      <skill id="Polearm"
+             value="70" />
+      <skill id="Bow"
+             value="30" />
+      <skill id="Crossbow"
+             value="30" />
+      <skill id="Throwing"
+             value="70" />
+    </skills>
+    <upgrade_targets>
+      <upgrade_target id="NPCCharacter.aserai_militia_veteran_spearman" />
+    </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -17454,12 +17506,28 @@
                 level="21"
                 name="{=Pd9qAiOu}Aserai Militia Veteran Spearman"
                 occupation="Soldier"
-                culture="Culture.aserai"
-                skill_template="SkillSet.infantry_heavyinfantry_level21_template_skills">
+                culture="Culture.aserai">
     <face>
       <face_key_template value="BodyProperty.fighter_aserai" />
     </face>
-    <skills></skills>
+    <skills>
+      <skill id="Athletics"
+             value="100" />
+      <skill id="Riding"
+             value="15" />
+      <skill id="OneHanded"
+             value="100" />
+      <skill id="TwoHanded"
+             value="60" />
+      <skill id="Polearm"
+             value="100" />
+      <skill id="Bow"
+             value="45" />
+      <skill id="Crossbow"
+             value="45" />
+      <skill id="Throwing"
+             value="100" />
+    </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
       <EquipmentRoster>
@@ -17541,13 +17609,31 @@
                 level="16"
                 name="{=vkuJeNSa}Vlandian Militia Crossbowman"
                 occupation="Soldier"
-                culture="Culture.vlandia"
-                skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
+                culture="Culture.vlandia">
     <face>
       <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
-    <skills></skills>
-    <upgrade_targets></upgrade_targets>
+    <skills>
+      <skill id="Athletics"
+             value="70" />
+      <skill id="Riding"
+             value="10" />
+      <skill id="OneHanded"
+             value="70" />
+      <skill id="TwoHanded"
+             value="40" />
+      <skill id="Polearm"
+             value="40" />
+      <skill id="Bow"
+             value="30" />
+      <skill id="Crossbow"
+             value="70" />
+      <skill id="Throwing"
+             value="40" />
+    </skills>
+    <upgrade_targets>
+      <upgrade_target id="NPCCharacter.vlandian_militia_veteran_archer" />
+    </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -17636,12 +17722,28 @@
                 level="21"
                 name="{=DNIa6a5p}Vlandian Militia Veteran Crossbowman"
                 occupation="Soldier"
-                culture="Culture.vlandia"
-                skill_template="SkillSet.ranged_skirmisher_level21_template_skills">
+                culture="Culture.vlandia">
     <face>
       <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
-    <skills></skills>
+    <skills>
+      <skill id="Athletics"
+             value="100" />
+      <skill id="Riding"
+             value="15" />
+      <skill id="OneHanded"
+             value="100" />
+      <skill id="TwoHanded"
+             value="100" />
+      <skill id="Polearm"
+             value="60" />
+      <skill id="Bow"
+             value="45" />
+      <skill id="Crossbow"
+             value="100" />
+      <skill id="Throwing"
+             value="45" />
+    </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
       <EquipmentRoster>
@@ -17731,13 +17833,31 @@
                 level="16"
                 name="{=aUHtqC9o}Vlandian Militia Spearman"
                 occupation="Soldier"
-                culture="Culture.vlandia"
-                skill_template="SkillSet.infantry_heavyinfantry_level16_template_skills">
+                culture="Culture.vlandia">
     <face>
       <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
-    <skills></skills>
-    <upgrade_targets></upgrade_targets>
+    <skills>
+      <skill id="Athletics"
+             value="70" />
+      <skill id="Riding"
+             value="10" />
+      <skill id="OneHanded"
+             value="70" />
+      <skill id="TwoHanded"
+             value="40" />
+      <skill id="Polearm"
+             value="70" />
+      <skill id="Bow"
+             value="30" />
+      <skill id="Crossbow"
+             value="30" />
+      <skill id="Throwing"
+             value="70" />
+    </skills>
+    <upgrade_targets>
+      <upgrade_target id="NPCCharacter.vlandian_militia_veteran_spearman" />
+    </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -17818,12 +17938,28 @@
                 level="21"
                 name="{=vGFdbjFC}Vlandian Militia Veteran Spearman"
                 occupation="Soldier"
-                culture="Culture.vlandia"
-                skill_template="SkillSet.infantry_heavyinfantry_level21_template_skills">
+                culture="Culture.vlandia">
     <face>
       <face_key_template value="BodyProperty.fighter_vlandia" />
     </face>
-    <skills></skills>
+    <skills>
+      <skill id="Athletics"
+             value="100" />
+      <skill id="Riding"
+             value="15" />
+      <skill id="OneHanded"
+             value="100" />
+      <skill id="TwoHanded"
+             value="60" />
+      <skill id="Polearm"
+             value="100" />
+      <skill id="Bow"
+             value="45" />
+      <skill id="Crossbow"
+             value="45" />
+      <skill id="Throwing"
+             value="100" />
+    </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
       <EquipmentRoster>
@@ -17905,13 +18041,31 @@
                 level="16"
                 name="{=b4QPaEnA}Battanian Militia Archer"
                 occupation="Soldier"
-                culture="Culture.battania"
-                skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
+                culture="Culture.battania">
     <face>
       <face_key_template value="BodyProperty.fighter_battania" />
     </face>
-    <skills></skills>
-    <upgrade_targets></upgrade_targets>
+    <skills>
+      <skill id="Athletics"
+             value="70" />
+      <skill id="Riding"
+             value="10" />
+      <skill id="OneHanded"
+             value="60" />
+      <skill id="TwoHanded"
+             value="40" />
+      <skill id="Polearm"
+             value="40" />
+      <skill id="Bow"
+             value="80" />
+      <skill id="Crossbow"
+             value="30" />
+      <skill id="Throwing"
+             value="40" />
+    </skills>
+    <upgrade_targets>
+      <upgrade_target id="NPCCharacter.battanian_militia_veteran_archer" />
+    </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -18000,12 +18154,28 @@
                 level="21"
                 name="{=i5DfUz6D}Battanian Militia Veteran Archer"
                 occupation="Soldier"
-                culture="Culture.battania"
-                skill_template="SkillSet.ranged_skirmisher_level21_template_skills">
+                culture="Culture.battania">
     <face>
       <face_key_template value="BodyProperty.fighter_battania" />
     </face>
-    <skills></skills>
+    <skills>
+      <skill id="Athletics"
+             value="100" />
+      <skill id="Riding"
+             value="15" />
+      <skill id="OneHanded"
+             value="90" />
+      <skill id="TwoHanded"
+             value="100" />
+      <skill id="Polearm"
+             value="60" />
+      <skill id="Bow"
+             value="110" />
+      <skill id="Crossbow"
+             value="45" />
+      <skill id="Throwing"
+             value="45" />
+    </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
       <EquipmentRoster>
@@ -18095,13 +18265,31 @@
                 level="16"
                 name="{=L0cGAnWw}Battanian Militia Spearman"
                 occupation="Soldier"
-                culture="Culture.battania"
-                skill_template="SkillSet.infantry_heavyinfantry_level16_template_skills">
+                culture="Culture.battania">
     <face>
       <face_key_template value="BodyProperty.fighter_battania" />
     </face>
-    <skills></skills>
-    <upgrade_targets></upgrade_targets>
+    <skills>
+      <skill id="Athletics"
+             value="70" />
+      <skill id="Riding"
+             value="10" />
+      <skill id="OneHanded"
+             value="70" />
+      <skill id="TwoHanded"
+             value="40" />
+      <skill id="Polearm"
+             value="70" />
+      <skill id="Bow"
+             value="30" />
+      <skill id="Crossbow"
+             value="30" />
+      <skill id="Throwing"
+             value="70" />
+    </skills>
+    <upgrade_targets>
+      <upgrade_target id="NPCCharacter.battanian_militia_veteran_spearman" />
+    </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -18188,12 +18376,28 @@
                 level="21"
                 name="{=IxcCmtxz}Battanian Militia Veteran Spearman"
                 occupation="Soldier"
-                culture="Culture.battania"
-                skill_template="SkillSet.infantry_heavyinfantry_level21_template_skills">
+                culture="Culture.battania">
     <face>
       <face_key_template value="BodyProperty.fighter_battania" />
     </face>
-    <skills></skills>
+    <skills>
+      <skill id="Athletics"
+             value="100" />
+      <skill id="Riding"
+             value="15" />
+      <skill id="OneHanded"
+             value="100" />
+      <skill id="TwoHanded"
+             value="60" />
+      <skill id="Polearm"
+             value="100" />
+      <skill id="Bow"
+             value="45" />
+      <skill id="Crossbow"
+             value="45" />
+      <skill id="Throwing"
+             value="100" />
+    </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
       <EquipmentRoster>
@@ -18281,13 +18485,31 @@
                 level="16"
                 name="{=P8EATvn8}Imperial Militia Archer"
                 occupation="Soldier"
-                culture="Culture.empire"
-                skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
+                culture="Culture.empire">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
-    <skills></skills>
-    <upgrade_targets></upgrade_targets>
+    <skills>
+      <skill id="Athletics"
+             value="70" />
+      <skill id="Riding"
+             value="10" />
+      <skill id="OneHanded"
+             value="60" />
+      <skill id="TwoHanded"
+             value="40" />
+      <skill id="Polearm"
+             value="40" />
+      <skill id="Bow"
+             value="80" />
+      <skill id="Crossbow"
+             value="30" />
+      <skill id="Throwing"
+             value="40" />
+    </skills>
+    <upgrade_targets>
+      <upgrade_target id="NPCCharacter.imperial_militia_veteran_archer" />
+    </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -18370,12 +18592,28 @@
                 level="21"
                 name="{=HsboF2mR}Imperial Militia Veteran Archer"
                 occupation="Soldier"
-                culture="Culture.empire"
-                skill_template="SkillSet.ranged_skirmisher_level21_template_skills">
+                culture="Culture.empire">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
-    <skills></skills>
+    <skills>
+      <skill id="Athletics"
+             value="100" />
+      <skill id="Riding"
+             value="15" />
+      <skill id="OneHanded"
+             value="90" />
+      <skill id="TwoHanded"
+             value="100" />
+      <skill id="Polearm"
+             value="60" />
+      <skill id="Bow"
+             value="110" />
+      <skill id="Crossbow"
+             value="45" />
+      <skill id="Throwing"
+             value="45" />
+    </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
       <EquipmentRoster>
@@ -18459,13 +18697,31 @@
                 level="16"
                 name="{=ZhKoCVby}Imperial Militia Spearman"
                 occupation="Soldier"
-                culture="Culture.empire"
-                skill_template="SkillSet.infantry_heavyinfantry_level16_template_skills">
+                culture="Culture.empire">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
-    <skills></skills>
-    <upgrade_targets></upgrade_targets>
+    <skills>
+      <skill id="Athletics"
+             value="70" />
+      <skill id="Riding"
+             value="10" />
+      <skill id="OneHanded"
+             value="70" />
+      <skill id="TwoHanded"
+             value="40" />
+      <skill id="Polearm"
+             value="70" />
+      <skill id="Bow"
+             value="30" />
+      <skill id="Crossbow"
+             value="30" />
+      <skill id="Throwing"
+             value="70" />
+    </skills>
+    <upgrade_targets>
+      <upgrade_target id="NPCCharacter.imperial_militia_veteran_spearman" />
+    </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -18548,12 +18804,28 @@
                 level="21"
                 name="{=c5rVdg75}Imperial Militia Veteran Spearman"
                 occupation="Soldier"
-                culture="Culture.empire"
-                skill_template="SkillSet.infantry_heavyinfantry_level21_template_skills">
+                culture="Culture.empire">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
-    <skills></skills>
+    <skills>
+      <skill id="Athletics"
+             value="100" />
+      <skill id="Riding"
+             value="15" />
+      <skill id="OneHanded"
+             value="100" />
+      <skill id="TwoHanded"
+             value="60" />
+      <skill id="Polearm"
+             value="100" />
+      <skill id="Bow"
+             value="45" />
+      <skill id="Crossbow"
+             value="45" />
+      <skill id="Throwing"
+             value="100" />
+    </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
       <EquipmentRoster>
@@ -18637,13 +18909,31 @@
                 level="16"
                 name="{=jRFfRZv2}Sturgian Militia Archer"
                 occupation="Soldier"
-                culture="Culture.sturgia"
-                skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
+                culture="Culture.sturgia">
     <face>
       <face_key_template value="BodyProperty.fighter_battania" />
     </face>
-    <skills></skills>
-    <upgrade_targets></upgrade_targets>
+    <skills>
+      <skill id="Athletics"
+             value="70" />
+      <skill id="Riding"
+             value="10" />
+      <skill id="OneHanded"
+             value="60" />
+      <skill id="TwoHanded"
+             value="40" />
+      <skill id="Polearm"
+             value="40" />
+      <skill id="Bow"
+             value="80" />
+      <skill id="Crossbow"
+             value="30" />
+      <skill id="Throwing"
+             value="40" />
+    </skills>
+    <upgrade_targets>
+      <upgrade_target id="NPCCharacter.sturgian_militia_veteran_archer" />
+    </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -18728,12 +19018,28 @@
                 level="21"
                 name="{=gZ4JeEw4}Sturgian Militia Veteran Archer"
                 occupation="Soldier"
-                culture="Culture.sturgia"
-                skill_template="SkillSet.ranged_skirmisher_level21_template_skills">
+                culture="Culture.sturgia">
     <face>
       <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
-    <skills></skills>
+    <skills>
+      <skill id="Athletics"
+             value="100" />
+      <skill id="Riding"
+             value="15" />
+      <skill id="OneHanded"
+             value="90" />
+      <skill id="TwoHanded"
+             value="100" />
+      <skill id="Polearm"
+             value="60" />
+      <skill id="Bow"
+             value="110" />
+      <skill id="Crossbow"
+             value="45" />
+      <skill id="Throwing"
+             value="45" />
+    </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
       <EquipmentRoster>
@@ -18819,13 +19125,31 @@
                 level="16"
                 name="{=Zmajp2o1}Sturgian Militia Spearman"
                 occupation="Soldier"
-                culture="Culture.sturgia"
-                skill_template="SkillSet.infantry_heavyinfantry_level16_template_skills">
+                culture="Culture.sturgia">
     <face>
       <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
-    <skills></skills>
-    <upgrade_targets></upgrade_targets>
+    <skills>
+      <skill id="Athletics"
+             value="70" />
+      <skill id="Riding"
+             value="10" />
+      <skill id="OneHanded"
+             value="70" />
+      <skill id="TwoHanded"
+             value="40" />
+      <skill id="Polearm"
+             value="70" />
+      <skill id="Bow"
+             value="30" />
+      <skill id="Crossbow"
+             value="30" />
+      <skill id="Throwing"
+             value="70" />
+    </skills>
+    <upgrade_targets>
+      <upgrade_target id="NPCCharacter.sturgian_militia_veteran_spearman" />
+    </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -18916,12 +19240,28 @@
                 level="21"
                 name="{=LVEU4se3}Sturgian Militia Veteran Spearman"
                 occupation="Soldier"
-                culture="Culture.sturgia"
-                skill_template="SkillSet.infantry_heavyinfantry_level21_template_skills">
+                culture="Culture.sturgia">
     <face>
       <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
-    <skills></skills>
+    <skills>
+      <skill id="Athletics"
+             value="100" />
+      <skill id="Riding"
+             value="15" />
+      <skill id="OneHanded"
+             value="100" />
+      <skill id="TwoHanded"
+             value="60" />
+      <skill id="Polearm"
+             value="100" />
+      <skill id="Bow"
+             value="45" />
+      <skill id="Crossbow"
+             value="45" />
+      <skill id="Throwing"
+             value="100" />
+    </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
       <EquipmentRoster>
@@ -19013,13 +19353,31 @@
                 level="16"
                 name="{=CKoq1wQa}Khuzait Militia Archer"
                 occupation="Soldier"
-                culture="Culture.khuzait"
-                skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
+                culture="Culture.khuzait">
     <face>
       <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
-    <skills></skills>
-    <upgrade_targets></upgrade_targets>
+    <skills>
+      <skill id="Athletics"
+             value="70" />
+      <skill id="Riding"
+             value="10" />
+      <skill id="OneHanded"
+             value="60" />
+      <skill id="TwoHanded"
+             value="40" />
+      <skill id="Polearm"
+             value="40" />
+      <skill id="Bow"
+             value="80" />
+      <skill id="Crossbow"
+             value="30" />
+      <skill id="Throwing"
+             value="40" />
+    </skills>
+    <upgrade_targets>
+      <upgrade_target id="NPCCharacter.khuzait_militia_veteran_archer" />
+    </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -19108,12 +19466,28 @@
                 level="21"
                 name="{=5JFkQn5U}Khuzait Militia Veteran Archer"
                 occupation="Soldier"
-                culture="Culture.khuzait"
-                skill_template="SkillSet.ranged_skirmisher_level21_template_skills">
+                culture="Culture.khuzait">
     <face>
       <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
-    <skills></skills>
+    <skills>
+      <skill id="Athletics"
+             value="100" />
+      <skill id="Riding"
+             value="15" />
+      <skill id="OneHanded"
+             value="90" />
+      <skill id="TwoHanded"
+             value="100" />
+      <skill id="Polearm"
+             value="60" />
+      <skill id="Bow"
+             value="110" />
+      <skill id="Crossbow"
+             value="45" />
+      <skill id="Throwing"
+             value="45" />
+    </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
       <EquipmentRoster>
@@ -19203,13 +19577,31 @@
                 level="16"
                 name="{=MDIuyBHP}Khuzait Militia Spearman"
                 occupation="Soldier"
-                culture="Culture.khuzait"
-                skill_template="SkillSet.infantry_heavyinfantry_level16_template_skills">
+                culture="Culture.khuzait">
     <face>
       <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
-    <skills></skills>
-    <upgrade_targets></upgrade_targets>
+    <skills>
+      <skill id="Athletics"
+             value="70" />
+      <skill id="Riding"
+             value="10" />
+      <skill id="OneHanded"
+             value="70" />
+      <skill id="TwoHanded"
+             value="40" />
+      <skill id="Polearm"
+             value="70" />
+      <skill id="Bow"
+             value="30" />
+      <skill id="Crossbow"
+             value="30" />
+      <skill id="Throwing"
+             value="70" />
+    </skills>
+    <upgrade_targets>
+      <upgrade_target id="NPCCharacter.khuzait_militia_veteran_spearman" />
+    </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -19296,12 +19688,28 @@
                 level="21"
                 name="{=f2a1fPca}Khuzait Militia Veteran Spearman"
                 occupation="Soldier"
-                culture="Culture.khuzait"
-                skill_template="SkillSet.infantry_heavyinfantry_level21_template_skills">
+                culture="Culture.khuzait">
     <face>
       <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
-    <skills></skills>
+    <skills>
+      <skill id="Athletics"
+             value="100" />
+      <skill id="Riding"
+             value="15" />
+      <skill id="OneHanded"
+             value="100" />
+      <skill id="TwoHanded"
+             value="60" />
+      <skill id="Polearm"
+             value="100" />
+      <skill id="Bow"
+             value="45" />
+      <skill id="Crossbow"
+             value="45" />
+      <skill id="Throwing"
+             value="100" />
+    </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
       <EquipmentRoster>
