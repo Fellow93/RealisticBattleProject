@@ -17539,7 +17539,7 @@
   <NPCCharacter id="vlandian_militia_archer"
                 default_group="Ranged"
                 level="16"
-                name="{=vkuJeNSa}Vlandian Militia Archer"
+                name="{=vkuJeNSa}Vlandian Militia Crossbowman"
                 occupation="Soldier"
                 culture="Culture.vlandia"
                 skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
@@ -17648,7 +17648,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_g" />
       <equipment slot="Item1"
-                 id="Item.bolt_c" />
+                 id="Item.bolt_b" />
       <equipment slot="Item2"
                  id="Item.pavise_shield" />
       <equipment slot="Item3"
@@ -17660,7 +17660,7 @@
       <equipment slot="Body"
                  id="Item.mail_shirt" />
       <equipment slot="Leg"
-                 id="Item.leather_shoes" />
+                 id="Item.wrapped_leather_boots" />
       <equipment slot="Cape"
                  id="Item.scarf" />
       </EquipmentRoster>
@@ -17668,7 +17668,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_g" />
       <equipment slot="Item1"
-                 id="Item.bolt_c" />
+                 id="Item.bolt_b" />
       <equipment slot="Item2"
                  id="Item.pavise_shield" />
       <equipment slot="Item3"
@@ -17680,7 +17680,7 @@
       <equipment slot="Body"
                  id="Item.mail_shirt" />
       <equipment slot="Leg"
-                 id="Item.leather_shoes" />
+                 id="Item.wrapped_leather_boots" />
       <equipment slot="Cape"
                  id="Item.scarf" />
       </EquipmentRoster>
@@ -17688,7 +17688,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_g" />
       <equipment slot="Item1"
-                 id="Item.bolt_c" />
+                 id="Item.bolt_b" />
       <equipment slot="Item2"
                  id="Item.pavise_shield" />
       <equipment slot="Item3"
@@ -17700,7 +17700,7 @@
       <equipment slot="Body"
                  id="Item.mail_shirt" />
       <equipment slot="Leg"
-                 id="Item.leather_shoes" />
+                 id="Item.wrapped_leather_boots" />
       <equipment slot="Cape"
                  id="Item.scarf" />
       </EquipmentRoster>
@@ -17708,7 +17708,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_g" />
       <equipment slot="Item1"
-                 id="Item.bolt_c" />
+                 id="Item.bolt_b" />
       <equipment slot="Item2"
                  id="Item.pavise_shield" />
       <equipment slot="Item3"
@@ -17720,7 +17720,7 @@
       <equipment slot="Body"
                  id="Item.mail_shirt" />
       <equipment slot="Leg"
-                 id="Item.leather_shoes" />
+                 id="Item.wrapped_leather_boots" />
       <equipment slot="Cape"
                  id="Item.scarf" />
       </EquipmentRoster>
@@ -17842,7 +17842,7 @@
       <equipment slot="Body"
                  id="Item.mail_shirt" />
       <equipment slot="Leg"
-                 id="Item.leather_shoes" />
+                 id="Item.wrapped_leather_boots" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -17860,7 +17860,7 @@
       <equipment slot="Body"
                  id="Item.mail_shirt" />
       <equipment slot="Leg"
-                 id="Item.leather_shoes" />
+                 id="Item.wrapped_leather_boots" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -17878,7 +17878,7 @@
       <equipment slot="Body"
                  id="Item.hauberk" />
       <equipment slot="Leg"
-                 id="Item.leather_shoes" />
+                 id="Item.wrapped_leather_boots" />
       </EquipmentRoster>
       <EquipmentRoster civilian="true">
       <equipment slot="Item0"
@@ -17896,7 +17896,7 @@
       <equipment slot="Body"
                  id="Item.hauberk" />
       <equipment slot="Leg"
-                 id="Item.leather_shoes" />
+                 id="Item.wrapped_leather_boots" />
       </EquipmentRoster>
     </Equipments>
   </NPCCharacter>
