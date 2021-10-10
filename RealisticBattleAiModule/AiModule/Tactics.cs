@@ -178,6 +178,8 @@ namespace RealisticBattleAiModule
         {
             static void Postfix()
             {
+
+                OnTickAsAIPatch.itemPickupDistanceStorage.Clear();
                 ManagedParameters.SetParameter(ManagedParametersEnum.BipedalRadius, 0.5f);
                 if (Mission.Current.Teams.Any())
                 {

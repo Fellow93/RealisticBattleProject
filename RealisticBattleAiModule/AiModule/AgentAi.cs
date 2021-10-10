@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
+using System.Collections.Generic;
 using System.Reflection;
 using TaleWorlds.Core;
+using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.MountAndBlade.ArrangementOrder;
@@ -108,6 +110,42 @@ namespace RealisticBattleAiModule
                             //}
                             break;
                         }
+                }
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(HumanAIComponent))]
+    [HarmonyPatch("OnTickAsAI")]
+    class OnTickAsAIPatch
+    {
+
+        public static Dictionary<Agent, float> itemPickupDistanceStorage = new Dictionary<Agent, float> { };
+
+        static void Postfix(ref SpawnedItemEntity ____itemToPickUp, ref Agent ___Agent)
+        {
+            if (____itemToPickUp != null && (___Agent.AIStateFlags & Agent.AIStateFlag.UseObjectMoving) != 0)
+            {
+                float num = MissionGameModels.Current.AgentStatCalculateModel.GetInteractionDistance(___Agent) * 3f;
+                WorldFrame userFrameForAgent = ____itemToPickUp.GetUserFrameForAgent(___Agent);
+                ref WorldPosition origin = ref userFrameForAgent.Origin;
+                Vec3 targetPoint = ___Agent.Position;
+                float distanceSq = origin.DistanceSquaredWithLimit(in targetPoint, num * num + 1E-05f);
+                float newDist = -1f;
+                itemPickupDistanceStorage.TryGetValue(___Agent, out newDist);
+                if(newDist == 0f)
+                {
+                    itemPickupDistanceStorage[___Agent] = distanceSq;
+                }
+                else
+                {
+                    if(distanceSq == newDist)
+                    {
+                        ___Agent.StopUsingGameObject(isSuccessful: false);
+                        itemPickupDistanceStorage.Remove(___Agent);
+
+                    }
+                    itemPickupDistanceStorage[___Agent] = distanceSq;
                 }
             }
         }
