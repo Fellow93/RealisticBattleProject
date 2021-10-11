@@ -461,32 +461,32 @@ namespace RealisticBattleAiModule
 
             public Vec2 GetTargetPos(Vec2 position, float distance)
             {
-                Vec2 v = _direction.LeftVec();
-                Vec2 vec = _center + v * _halfLength;
-                Vec2 vec2 = _center - v * _halfLength;
-                Vec2 vec3 = position - _center;
-                bool flag = vec3.Normalized().DotProduct(_direction) > 0f;
-                Vec2 v2 = vec3.DotProduct(v) * v;
-                bool flag2 = v2.Length < _halfLength;
+                Vec2 vec = _direction.LeftVec();
+                Vec2 vec2 = _center + vec * _halfLength;
+                Vec2 vec3 = _center - vec * _halfLength;
+                Vec2 vec4 = position - _center;
+                bool flag = vec4.Normalized().DotProduct(_direction) > 0f;
+                Vec2 vec5 = vec4.DotProduct(vec) * vec;
+                bool flag2 = vec5.Length < _halfLength;
                 bool flag3 = true;
                 if (flag2)
                 {
-                    position = _center + v2 + _direction * (_radius * (float)(flag ? 1 : (-1)));
+                    position = _center + vec5 + _direction * (_radius * (float)(flag ? 1 : (-1)));
                 }
                 else
                 {
-                    flag3 = (v2.DotProduct(v) > 0f);
-                    Vec2 v3 = (position - (flag3 ? vec : vec2)).Normalized();
-                    position = (flag3 ? vec : vec2) + v3 * _radius;
+                    flag3 = vec5.DotProduct(vec) > 0f;
+                    Vec2 vec6 = (position - (flag3 ? vec2 : vec3)).Normalized();
+                    position = (flag3 ? vec2 : vec3) + vec6 * _radius;
                 }
-                Vec2 vec4 = _center + v2;
+                Vec2 vec7 = _center + vec5;
                 double num = Math.PI * 2.0 * (double)_radius;
                 while (distance > 0f)
                 {
                     if (flag2 && flag)
                     {
-                        float num2 = ((vec - vec4).Length < distance) ? (vec - vec4).Length : distance;
-                        position = vec4 + (vec - vec4).Normalized() * num2;
+                        float num2 = (((vec2 - vec7).Length < distance) ? (vec2 - vec7).Length : distance);
+                        position = vec7 + (vec2 - vec7).Normalized() * num2;
                         position += _direction * _radius;
                         distance -= num2;
                         flag2 = false;
@@ -494,22 +494,22 @@ namespace RealisticBattleAiModule
                     }
                     else if (!flag2 && flag3)
                     {
-                        Vec2 v4 = (position - vec).Normalized();
-                        double num3 = Math.Acos(MBMath.ClampFloat(_direction.DotProduct(v4), -1f, 1f));
+                        Vec2 v = (position - vec2).Normalized();
+                        double num3 = Math.Acos(MBMath.ClampFloat(_direction.DotProduct(v), -1f, 1f));
                         double num4 = Math.PI * 2.0 * ((double)distance / num);
-                        double num5 = (num3 + num4 < Math.PI) ? (num3 + num4) : Math.PI;
+                        double num5 = ((num3 + num4 < Math.PI) ? (num3 + num4) : Math.PI);
                         double num6 = (num5 - num3) / Math.PI * (num / 2.0);
                         Vec2 direction = _direction;
                         direction.RotateCCW((float)num5);
-                        position = vec + direction * _radius;
+                        position = vec2 + direction * _radius;
                         distance -= (float)num6;
                         flag2 = true;
                         flag = false;
                     }
                     else if (flag2)
                     {
-                        float num7 = ((vec2 - vec4).Length < distance) ? (vec2 - vec4).Length : distance;
-                        position = vec4 + (vec2 - vec4).Normalized() * num7;
+                        float num7 = (((vec3 - vec7).Length < distance) ? (vec3 - vec7).Length : distance);
+                        position = vec7 + (vec3 - vec7).Normalized() * num7;
                         position -= _direction * _radius;
                         distance -= num7;
                         flag2 = false;
@@ -517,15 +517,15 @@ namespace RealisticBattleAiModule
                     }
                     else
                     {
-                        Vec2 vec5 = (position - vec2).Normalized();
-                        double num8 = Math.Acos(MBMath.ClampFloat(_direction.DotProduct(vec5), -1f, 1f));
+                        Vec2 vec8 = (position - vec3).Normalized();
+                        double num8 = Math.Acos(MBMath.ClampFloat(_direction.DotProduct(vec8), -1f, 1f));
                         double num9 = Math.PI * 2.0 * ((double)distance / num);
-                        double num10 = (num8 - num9 > 0.0) ? (num8 - num9) : 0.0;
+                        double num10 = ((num8 - num9 > 0.0) ? (num8 - num9) : 0.0);
                         double num11 = num8 - num10;
                         double num12 = num11 / Math.PI * (num / 2.0);
-                        Vec2 v5 = vec5;
-                        v5.RotateCCW((float)num11);
-                        position = vec2 + v5 * _radius;
+                        Vec2 vec9 = vec8;
+                        vec9.RotateCCW((float)num11);
+                        position = vec3 + vec9 * _radius;
                         distance -= (float)num12;
                         flag2 = true;
                         flag = true;
@@ -537,10 +537,11 @@ namespace RealisticBattleAiModule
 
         [HarmonyPostfix]
         [HarmonyPatch("CalculateCurrentOrder")]
-        static void PostfixCalculateCurrentOrder(BehaviorMountedSkirmish __instance, ref bool ____engaging, ref MovementOrder ____currentOrder)
+        static void PostfixCalculateCurrentOrder(BehaviorMountedSkirmish __instance, ref bool ____engaging, ref MovementOrder ____currentOrder, ref bool ____isEnemyReachable)
         {
             WorldPosition position = __instance.Formation.QuerySystem.MedianPosition;
-            if (__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation == null)
+            ____isEnemyReachable = __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && (!(__instance.Formation.Team.TeamAI is TeamAISiegeComponent) || !TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation, includeOnlyPositionedUnits: false));
+            if (!____isEnemyReachable)
             {
                 position.SetVec2(__instance.Formation.QuerySystem.AveragePosition);
             }
@@ -560,11 +561,11 @@ namespace RealisticBattleAiModule
                     float num2 = 50f + (__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.Width + __instance.Formation.Depth) * 0.5f;
                     float num3 = 0f;
 
-                    Formation formation = __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation;
+                    Formation enemyFormation = __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation;
 
                     if (__instance.Formation != null && __instance.Formation.QuerySystem.IsInfantryFormation)
                     {
-                        formation = Utilities.FindSignificantEnemyToPosition(__instance.Formation, position, true, true, false, false, false, false);
+                        enemyFormation = Utilities.FindSignificantEnemyToPosition(__instance.Formation, position, true, true, false, false, false, false);
                     }
 
                     foreach (Team team in Mission.Current.Teams.ToList())
@@ -582,30 +583,36 @@ namespace RealisticBattleAiModule
                                 if (vec.DotProduct(v) > 0.8f && num4 < num2 && num4 > num3)
                                 {
                                     num3 = num4;
-                                    formation = formation2;
+                                    enemyFormation = formation2;
                                 }
                             }
                         }
                     }
-
-                    if (__instance.Formation.QuerySystem.RangedCavalryUnitRatio > 0.95f && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation == formation)
+                    if (__instance.Formation.QuerySystem.RangedCavalryUnitRatio > 0.95f && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation == enemyFormation)
                     {
                         ____currentOrder = MovementOrder.MovementOrderCharge;
                         return;
                     }
-                    bool flag = formation.QuerySystem.IsCavalryFormation || formation.QuerySystem.IsRangedCavalryFormation;
-                    float num5 = flag ? 35f : 20f;
-                    num5 += (formation.Depth + __instance.Formation.Width) * 0.25f;
-                    //num5 = Math.Min(num5, __instance.Formation.QuerySystem.MissileRange - __instance.Formation.Width * 0.5f);
-                    if (__instance.Formation.QuerySystem.IsRangedCavalryFormation)
+                    if (enemyFormation != null && enemyFormation.QuerySystem != null)
                     {
-                        Ellipse ellipse = new Ellipse(formation.QuerySystem.MedianPosition.AsVec2, num5, formation.Width * 0.5f * (flag ? 1.5f : 1f), formation.Direction);
-                        position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 20f));
+                        bool flag = enemyFormation.QuerySystem.IsCavalryFormation || enemyFormation.QuerySystem.IsRangedCavalryFormation;
+                        float num5 = flag ? 35f : 20f;
+                        num5 += (enemyFormation.Depth + __instance.Formation.Width) * 0.25f;
+                        //num5 = Math.Min(num5, __instance.Formation.QuerySystem.MissileRange - __instance.Formation.Width * 0.5f);
+                        if (__instance.Formation.QuerySystem.IsRangedCavalryFormation)
+                        {
+                            Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, num5, enemyFormation.Width * 0.5f * (flag ? 1.5f : 1f), enemyFormation.Direction);
+                            position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 20f));
+                        }
+                        else
+                        {
+                            Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, num5, enemyFormation.Width * 0.25f * (flag ? 1.5f : 1f), enemyFormation.Direction);
+                            position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 20f));
+                        }
                     }
                     else
                     {
-                        Ellipse ellipse = new Ellipse(formation.QuerySystem.MedianPosition.AsVec2, num5, formation.Width * 0.25f * (flag ? 1.5f : 1f), formation.Direction);
-                        position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 20f));
+                        position.SetVec2(__instance.Formation.QuerySystem.AveragePosition);
                     }
                 }
             }
