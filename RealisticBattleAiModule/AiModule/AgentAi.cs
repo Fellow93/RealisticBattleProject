@@ -37,7 +37,7 @@ namespace RealisticBattleAiModule
                 agentDrivenProperties.AIDecideOnAttackChance = MBMath.ClampFloat(meleeLevel + 0.1f, 0f, 0.95f);
                 agentDrivenProperties.AIDecideOnRealizeEnemyBlockingAttackAbility = MBMath.ClampFloat(meleeLevel + 0.1f, 0f, 0.95f);
 
-                agentDrivenProperties.AiRangedHorsebackMissileRange = 0.7f;
+                agentDrivenProperties.AiRangedHorsebackMissileRange = 0.5f;
                 agentDrivenProperties.AiUseShieldAgainstEnemyMissileProbability = 0.95f;
                 agentDrivenProperties.AiFlyingMissileCheckRadius = 250f;
 

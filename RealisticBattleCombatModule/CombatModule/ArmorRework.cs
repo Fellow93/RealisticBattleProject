@@ -15,60 +15,110 @@ namespace RealisticBattleCombatModule
 
                 if (!__instance.IsHuman)
                 {
-                    __result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorTorso);
-                    return false;
+                    switch (bodyPart)
+                    {
+                        case BoneBodyPartType.None:
+                            {
+                                __result = 10f;
+                                break;
+                            }
+                        case BoneBodyPartType.Head:
+                            {
+                                __result = getHorseHeadArmor(__instance);
+                                break;
+                            }
+                        case BoneBodyPartType.Neck:
+                            {
+                                __result = getHorseArmArmor(__instance);
+                                break;
+                            }
+                        case BoneBodyPartType.Legs:
+                        case BoneBodyPartType.ArmLeft:
+                        case BoneBodyPartType.ArmRight:
+                            {
+                                __result = (getHorseLegArmor(__instance) * 2f + getHorseBodyArmor(__instance)) / 3f;
+                                break;
+                            }
+                        case BoneBodyPartType.Chest:
+                            {
+                                __result = (getHorseLegArmor(__instance) + getHorseBodyArmor(__instance)) / 2f;
+                                break;
+                            }
+                        case BoneBodyPartType.ShoulderLeft:
+                        case BoneBodyPartType.ShoulderRight:
+                            {
+                                __result = getHorseBodyArmor(__instance);
+                                break;
+                            }
+                        case BoneBodyPartType.Abdomen:
+                            {
+                                __result = getHorseLegArmor(__instance);
+                                break;
+                            }
+                        default:
+                            {
+                                _ = 10;
+                                __result = 10f;
+                                break;
+                            }
+                    }
                 }
-                switch (bodyPart)
+
+                else
                 {
-                    case BoneBodyPartType.None:
-                        {
-                            __result = 0f;
-                            break;
-                        }
-                    case BoneBodyPartType.Head:
-                        {
-                            __result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead);
-                            break;
-                        }
-                    case BoneBodyPartType.Neck:
-                        {
-                            __result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead) * 0.66f;
-                            break;
-                        }
-                    case BoneBodyPartType.Legs:
-                        {
-                            __result = getLegArmor(__instance);
-                            break;
-                        }
-                    case BoneBodyPartType.ArmLeft:
-                    case BoneBodyPartType.ArmRight:
-                        {
-                            __result = getArmArmor(__instance);
-                            break;
-                        }
-                    case BoneBodyPartType.Chest:
-                        {
-                            __result = getMyChestArmor(__instance);
-                            break;
-                        }
-                    case BoneBodyPartType.ShoulderLeft:
-                    case BoneBodyPartType.ShoulderRight:
-                        {
-                            __result = getShoulderArmor(__instance);
-                            break;
-                        }
-                    case BoneBodyPartType.Abdomen:
-                        {
-                            __result = getAbdomenArmor(__instance);
-                            break;
-                        }
-                    default:
-                        {
-                            _ = 3;
-                            __result = 3f;
-                            break;
-                        }
+                    switch (bodyPart)
+                    {
+                        case BoneBodyPartType.None:
+                            {
+                                __result = 0f;
+                                break;
+                            }
+                        case BoneBodyPartType.Head:
+                            {
+                                __result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead);
+                                break;
+                            }
+                        case BoneBodyPartType.Neck:
+                            {
+                                __result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead) * 0.66f;
+                                break;
+                            }
+                        case BoneBodyPartType.Legs:
+                            {
+                                __result = getLegArmor(__instance);
+                                break;
+                            }
+                        case BoneBodyPartType.ArmLeft:
+                        case BoneBodyPartType.ArmRight:
+                            {
+                                __result = getArmArmor(__instance);
+                                break;
+                            }
+                        case BoneBodyPartType.Chest:
+                            {
+                                __result = getMyChestArmor(__instance);
+                                break;
+                            }
+                        case BoneBodyPartType.ShoulderLeft:
+                        case BoneBodyPartType.ShoulderRight:
+                            {
+                                __result = getShoulderArmor(__instance);
+                                break;
+                            }
+                        case BoneBodyPartType.Abdomen:
+                            {
+                                __result = getAbdomenArmor(__instance);
+                                break;
+                            }
+                        default:
+                            {
+                                _ = 3;
+                                __result = 3f;
+                                break;
+                            }
+                    }
                 }
+
                 return false;
             }
 
@@ -85,6 +135,62 @@ namespace RealisticBattleCombatModule
                     if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
                     {
                         num += (float)equipmentElement.Item.ArmorComponent.ArmArmor;
+                    }
+                }
+                return num;
+            }
+
+            static public float getHorseHeadArmor(Agent agent)
+            {
+                float num = 0f;
+                for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+                {
+                    EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+                    if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+                    {
+                        num += (float)equipmentElement.Item.ArmorComponent.HeadArmor;
+                    }
+                }
+                return num;
+            }
+
+            static public float getHorseLegArmor(Agent agent)
+            {
+                float num = 0f;
+                for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+                {
+                    EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+                    if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+                    {
+                        num += (float)equipmentElement.Item.ArmorComponent.LegArmor;
+                    }
+                }
+                return num;
+            }
+
+            static public float getHorseArmArmor(Agent agent)
+            {
+                float num = 0f;
+                for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+                {
+                    EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+                    if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+                    {
+                        num += (float)equipmentElement.Item.ArmorComponent.ArmArmor;
+                    }
+                }
+                return num;
+            }
+
+            static public float getHorseBodyArmor(Agent agent)
+            {
+                float num = 0f;
+                for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+                {
+                    EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+                    if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+                    {
+                        num += (float)equipmentElement.Item.ArmorComponent.BodyArmor;
                     }
                 }
                 return num;

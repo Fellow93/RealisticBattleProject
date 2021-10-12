@@ -12,6 +12,9 @@
         Type="HorseHarness">
     <ItemComponent>
       <Armor body_armor="16"
+	         head_armor="15"
+			 arm_armor="15"
+	         leg_armor="10"
              mane_cover_type="none"
              family_type="1"
              modifier_group="cloth"
@@ -31,6 +34,9 @@
         Type="HorseHarness">
     <ItemComponent>
       <Armor body_armor="15"
+	         head_armor="15"
+			 arm_armor="15"
+	         leg_armor="10"
              mane_cover_type="none"
              family_type="1"
              modifier_group="cloth"
@@ -48,7 +54,10 @@
         appearance="1"
         Type="HorseHarness">
     <ItemComponent>
-      <Armor body_armor="17"
+      <Armor body_armor="15"
+	         head_armor="15"
+			 arm_armor="15"
+	         leg_armor="10"
              mane_cover_type="none"
              family_type="1"
              modifier_group="cloth"
@@ -63,7 +72,10 @@
         appearance="1"
         Type="HorseHarness">
     <ItemComponent>
-      <Armor body_armor="17"
+      <Armor body_armor="15"
+	         head_armor="15"
+			 arm_armor="15"
+	         leg_armor="10"
              mane_cover_type="none"
              maneuver_bonus="0"
              speed_bonus="0"
@@ -81,7 +93,10 @@
         appearance="0.6"
         Type="HorseHarness">
     <ItemComponent>
-      <Armor body_armor="45"
+      <Armor body_armor="50"
+	         head_armor="70"
+			 arm_armor="60"
+	         leg_armor="35"
              mane_cover_type="all"
              maneuver_bonus="0"
              speed_bonus="0"
@@ -100,7 +115,10 @@
         appearance="0.5"
         Type="HorseHarness">
     <ItemComponent>
-      <Armor body_armor="53"
+      <Armor body_armor="50"
+	         head_armor="100"
+			 arm_armor="60"
+	         leg_armor="50"
              mane_cover_type="all"
              maneuver_bonus="0"
              speed_bonus="0"
@@ -123,6 +141,9 @@
         Type="HorseHarness">
     <ItemComponent>
       <Armor body_armor="50"
+	         head_armor="60"
+			 arm_armor="60"
+	         leg_armor="50"
              hair_cover_type="all"
              covers_head="true"
              mane_cover_type="all"
@@ -146,7 +167,10 @@
         appearance="1"
         Type="HorseHarness">
     <ItemComponent>
-      <Armor body_armor="10"
+      <Armor body_armor="15"
+	         head_armor="20"
+			 arm_armor="20"
+	         leg_armor="15"
              mane_cover_type="none"
              family_type="1"
              modifier_group="leather"
@@ -162,7 +186,10 @@
         appearance="1"
         Type="HorseHarness">
     <ItemComponent>
-      <Armor body_armor="16"
+      <Armor body_armor="18"
+	         head_armor="15"
+			 arm_armor="15"
+	         leg_armor="13"
              mane_cover_type="none"
              family_type="1"
              modifier_group="leather"
@@ -181,7 +208,10 @@
         appearance="0.5"
         Type="HorseHarness">
     <ItemComponent>
-      <Armor body_armor="45"
+      <Armor body_armor="60"
+	         head_armor="100"
+			 arm_armor="70"
+	         leg_armor="15"
              mane_cover_type="all"
              family_type="1"
              modifier_group="chain"
@@ -201,6 +231,9 @@
         Type="HorseHarness">
     <ItemComponent>
       <Armor body_armor="60"
+	         head_armor="100"
+			 arm_armor="70"
+	         leg_armor="60"
              mane_cover_type="all"
              family_type="1"
              modifier_group="chain"
@@ -220,6 +253,9 @@
         Type="HorseHarness">
     <ItemComponent>
       <Armor body_armor="45"
+	         head_armor="65"
+			 arm_armor="55"
+	         leg_armor="35"
              mane_cover_type="all"
              family_type="1"
              modifier_group="chain"
@@ -239,6 +275,9 @@
         Type="HorseHarness">
     <ItemComponent>
       <Armor body_armor="18"
+	         head_armor="15"
+			 arm_armor="15"
+	         leg_armor="15"
              mane_cover_type="none"
              reins_mesh="horse_harness_aserai_a_rein"
              family_type="1"
@@ -258,6 +297,9 @@
         Type="HorseHarness">
     <ItemComponent>
       <Armor body_armor="18"
+	         head_armor="15"
+			 arm_armor="15"
+	         leg_armor="15"
              mane_cover_type="none"
              family_type="1"
              modifier_group="cloth"
@@ -276,7 +318,10 @@
         appearance="0.6"
         Type="HorseHarness">
     <ItemComponent>
-      <Armor body_armor="49"
+      <Armor body_armor="57"
+	         head_armor="100"
+			 arm_armor="67"
+	         leg_armor="15"
              mane_cover_type="all"
              family_type="1"
              modifier_group="plate"
@@ -295,7 +340,10 @@
         appearance="0.4"
         Type="HorseHarness">
     <ItemComponent>
-      <Armor body_armor="55"
+      <Armor body_armor="57"
+	         head_armor="100"
+			 arm_armor="67"
+	         leg_armor="57"
              mane_cover_type="all"
              family_type="1"
              modifier_group="plate"
@@ -314,7 +362,10 @@
         appearance="1"
         Type="HorseHarness">
     <ItemComponent>
-      <Armor body_armor="18"
+      <Armor body_armor="10"
+	         head_armor="15"
+			 arm_armor="15"
+	         leg_armor="10"
              mane_cover_type="none"
              family_type="1"
              modifier_group="chain"
@@ -333,7 +384,10 @@
         appearance="1"
         Type="HorseHarness">
     <ItemComponent>
-      <Armor body_armor="21"
+      <Armor body_armor="10"
+	         head_armor="15"
+			 arm_armor="15"
+	         leg_armor="10"
              mane_cover_type="none"
              family_type="1"
              modifier_group="chain"
@@ -352,7 +406,10 @@
         appearance="1"
         Type="HorseHarness">
     <ItemComponent>
-      <Armor body_armor="30"
+      <Armor body_armor="45"
+	         head_armor="65"
+			 arm_armor="55"
+	         leg_armor="20"
              mane_cover_type="all"
              family_type="1"
              modifier_group="chain"
@@ -376,7 +433,10 @@
         appearance="1"
          Type="HorseHarness">
     <ItemComponent>
-      <Armor body_armor="24"
+      <Armor body_armor="20"
+	         head_armor="30"
+			 arm_armor="18"
+	         leg_armor="18"
              mane_cover_type="none"
              family_type="1"
              modifier_group="leather"
@@ -392,7 +452,10 @@
         appearance="1"
        Type="HorseHarness">
     <ItemComponent>
-      <Armor body_armor="20"
+      <Armor body_armor="15"
+	         head_armor="18"
+			 arm_armor="18"
+	         leg_armor="15"
              mane_cover_type="none"
              family_type="1"
              modifier_group="leather"
@@ -408,7 +471,10 @@
         appearance="0.9"
         Type="HorseHarness">
     <ItemComponent>
-      <Armor body_armor="38"
+      <Armor body_armor="45"
+	         head_armor="55"
+			 arm_armor="55"
+	         leg_armor="15"
              mane_cover_type="all"
              family_type="1"
              modifier_group="chain"
@@ -424,7 +490,10 @@
         appearance="1"
         Type="HorseHarness">
     <ItemComponent>
-      <Armor body_armor="20"
+      <Armor body_armor="25"
+	         head_armor="20"
+			 arm_armor="20"
+	         leg_armor="20"
              mane_cover_type="none"
              family_type="1"
              modifier_group="leather"
@@ -439,7 +508,10 @@
         appearance="1"
         Type="HorseHarness">
     <ItemComponent>
-      <Armor body_armor="32"
+      <Armor body_armor="45"
+	         head_armor="60"
+			 arm_armor="55"
+	         leg_armor="20"
              mane_cover_type="all"
              family_type="1"
              modifier_group="chain"
@@ -454,7 +526,10 @@
         appearance="0.65"
         Type="HorseHarness">
     <ItemComponent>
-      <Armor body_armor="43"
+      <Armor body_armor="45"
+	         head_armor="60"
+			 arm_armor="55"
+	         leg_armor="30"
              mane_cover_type="all"
              family_type="1"
              modifier_group="chain"
@@ -466,12 +541,15 @@
     <Item id="fortunas_choice"
         name="{=vRIpgxhi}Fortunas Choice"
         mesh="horse_harness_roman_b_new"
-        weight="26"
+        weight="10"
         appearance="0.5"
         Type="HorseHarness"
         is_merchandise="false">
     <ItemComponent>
-      <Armor body_armor="25"
+      <Armor body_armor="15"
+	         head_armor="30"
+			 arm_armor="15"
+	         leg_armor="15"
              mane_cover_type="all"
              maneuver_bonus="0"
              speed_bonus="0"
@@ -486,12 +564,15 @@
   <Item id="celtic_frost"
         name="{=XkwOTdVQ}Celtic Frost"
         mesh="horse_harness_saxon_new"
-        weight="26"
+        weight="10"
         appearance="0.5"
         Type="HorseHarness"
 		is_merchandise="false">
     <ItemComponent>
-      <Armor body_armor="25"
+      <Armor body_armor="15"
+	         head_armor="25"
+			 arm_armor="15"
+	         leg_armor="20"
              mane_cover_type="all"
              maneuver_bonus="0"
              speed_bonus="0"
@@ -506,12 +587,15 @@
   <Item id="saddle_of_aeneas"
         name="{=k3dvbLDi}Saddle of Aeneas"
         mesh="horse_harness_a_new"
-        weight="26"
+        weight="10"
         appearance="0.5"
         Type="HorseHarness"
 		is_merchandise="false">
     <ItemComponent>
-      <Armor body_armor="25"
+      <Armor body_armor="15"
+	         head_armor="15"
+			 arm_armor="15"
+	         leg_armor="15"
              mane_cover_type="all"
              maneuver_bonus="0"
              speed_bonus="0"
