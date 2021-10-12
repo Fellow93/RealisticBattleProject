@@ -86,7 +86,7 @@
 		<ExtraBluntFactorCut>0.15</ExtraBluntFactorCut>
 		<ExtraBluntFactorPierce>0.25</ExtraBluntFactorPierce>
 		<ExtraBluntFactorBlunt>1.0</ExtraBluntFactorBlunt>
-		<ExtraArmorThresholdFactorPierce>2.5</ExtraArmorThresholdFactorPierce>
+		<ExtraArmorThresholdFactorPierce>3</ExtraArmorThresholdFactorPierce>
 		<ExtraArmorThresholdFactorCut>4</ExtraArmorThresholdFactorCut>
 		<ExtraArmorSkillDamageAbsorb>1.0</ExtraArmorSkillDamageAbsorb>
 	</OneHandedSword>
@@ -95,7 +95,7 @@
 		<ExtraBluntFactorCut>0.25</ExtraBluntFactorCut>
 		<ExtraBluntFactorPierce>0.25</ExtraBluntFactorPierce>
 		<ExtraBluntFactorBlunt>1.0</ExtraBluntFactorBlunt>
-		<ExtraArmorThresholdFactorPierce>2.5</ExtraArmorThresholdFactorPierce>
+		<ExtraArmorThresholdFactorPierce>3</ExtraArmorThresholdFactorPierce>
 		<ExtraArmorThresholdFactorCut>4</ExtraArmorThresholdFactorCut>
 		<ExtraArmorSkillDamageAbsorb>1.0</ExtraArmorSkillDamageAbsorb>
 	</TwoHandedSword>

@@ -2850,7 +2850,7 @@
       <equipment slot="Horse"
                  id="Item.aserai_horse" />
       <equipment slot="HorseHarness"
-                 id="Item.aseran_village_harness" />
+                 id="Item.steppe_half_barding" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -2874,7 +2874,7 @@
       <equipment slot="Horse"
                  id="Item.aserai_horse" />
       <equipment slot="HorseHarness"
-                 id="Item.aseran_village_harness" />
+                 id="Item.steppe_half_barding" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -2898,7 +2898,7 @@
       <equipment slot="Horse"
                  id="Item.aserai_horse" />
       <equipment slot="HorseHarness"
-                 id="Item.aseran_village_harness" />
+                 id="Item.steppe_half_barding" />
       </EquipmentRoster>
       <EquipmentSet id="aserai_troop_civilian_template_t2"
                     civilian="true" />
@@ -3555,7 +3555,7 @@
     <equipment slot="Horse"
                id="Item.aserai_horse" />
     <equipment slot="HorseHarness"
-               id="Item.aseran_village_harness" />
+               id="Item.studded_steppe_barding" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="aserai_faris"
@@ -6298,7 +6298,7 @@
     <equipment slot="Horse"
                id="Item.empire_horse" />
     <equipment slot="HorseHarness"
-               id="Item.stripped_leather_harness" />
+               id="Item.battania_horse_harness" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="imperial_heavy_horseman"
@@ -8373,7 +8373,7 @@
     <equipment slot="Horse"
                id="Item.khuzait_horse" />
     <equipment slot="HorseHarness"
-               id="Item.steppe_harness" />
+               id="Item.battania_horse_harness" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="khuzait_horseman"
@@ -8466,7 +8466,7 @@
     <equipment slot="Horse"
                id="Item.khuzait_horse" />
     <equipment slot="HorseHarness"
-               id="Item.steppe_fur_harness" />
+               id="Item.steppe_half_barding" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="khuzait_qanqli"
@@ -8567,7 +8567,7 @@
     <equipment slot="Horse"
                id="Item.khuzait_horse" />
     <equipment slot="HorseHarness"
-               id="Item.steppe_harness" />
+               id="Item.steppe_half_barding" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="khuzait_archer"
@@ -8947,7 +8947,7 @@
     <equipment slot="Horse"
                id="Item.t2_khuzait_horse" />
     <equipment slot="HorseHarness"
-               id="Item.steppe_half_barding" />
+               id="Item.studded_steppe_barding" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="khuzait_torguud"
@@ -9047,7 +9047,7 @@
     <equipment slot="Horse"
                id="Item.t2_khuzait_horse" />
     <equipment slot="HorseHarness"
-               id="Item.steppe_half_barding" />
+               id="Item.studded_steppe_barding" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="khuzait_marksman"
@@ -9416,7 +9416,7 @@
 	  <equipment slot="Horse"
                  id="Item.t2_khuzait_horse" />
       <equipment slot="HorseHarness"
-                 id="Item.studded_steppe_barding" />
+                 id="Item.half_mail_and_plate_barding" />
       </EquipmentRoster>
       <EquipmentSet id="khuzait_troop_civilian_template_t3"
                     civilian="true" />
@@ -9518,7 +9518,7 @@
     <equipment slot="Horse"
                id="Item.t2_khuzait_horse" />
     <equipment slot="HorseHarness"
-               id="Item.studded_steppe_barding" />
+               id="Item.half_scale_barding" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="khuzait_khans_guard"
@@ -9571,7 +9571,7 @@
 	  <equipment slot="Horse"
                id="Item.t2_khuzait_horse" />
       <equipment slot="HorseHarness"
-               id="Item.mail_and_plate_barding" />
+               id="Item.half_scale_barding" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -9619,7 +9619,7 @@
 	  <equipment slot="Horse"
                id="Item.t2_khuzait_horse" />
       <equipment slot="HorseHarness"
-               id="Item.studded_steppe_barding" />
+               id="Item.half_scale_barding" />
       </EquipmentRoster>
       <EquipmentSet id="khuzait_troop_civilian_template_t3"
                     civilian="true" />
@@ -10488,7 +10488,7 @@
       <equipment slot="Horse"
                  id="Item.t2_sturgia_horse" />
       <equipment slot="HorseHarness"
-                 id="Item.chain_horse_harness" />
+                 id="Item.half_scale_barding" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -10512,7 +10512,7 @@
       <equipment slot="Horse"
                  id="Item.t2_sturgia_horse" />
       <equipment slot="HorseHarness"
-                 id="Item.northern_ring_barding" />
+                 id="Item.halfchain_barding" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -10536,7 +10536,7 @@
       <equipment slot="Horse"
                  id="Item.t2_sturgia_horse" />
       <equipment slot="HorseHarness"
-                 id="Item.chain_horse_harness" />
+                 id="Item.half_scale_barding" />
       </EquipmentRoster>
       <EquipmentSet id="sturgia_troop_civilian_template_t3"
                     civilian="true" />
@@ -10594,7 +10594,7 @@
       <equipment slot="Horse"
                  id="Item.t2_sturgia_horse" />
       <equipment slot="HorseHarness"
-                 id="Item.half_scale_barding" />
+                 id="Item.chain_barding" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -10642,7 +10642,7 @@
       <equipment slot="Horse"
                  id="Item.t2_sturgia_horse" />
       <equipment slot="HorseHarness"
-                 id="Item.chain_horse_harness" />
+                 id="Item.imperial_scale_barding" />
       </EquipmentRoster>
       <EquipmentSet id="sturgia_troop_civilian_template_t3"
                     civilian="true" />
@@ -11162,7 +11162,7 @@
       <equipment slot="Item2"
                  id="Item.northern_javelin_2_t3" />
       <equipment slot="Item3"
-                 id="Item.sturgia_sword_2_t3" />
+                 id="Item.ridged_sabre_sword_t4" />
       <equipment slot="Head"
                  id="Item.sturgian_helmet_open" />
       <equipment slot="Body"
@@ -11176,7 +11176,7 @@
       <equipment slot="Horse"
                  id="Item.sturgia_horse" />
       <equipment slot="HorseHarness"
-                 id="Item.northern_noble_harness" />
+                 id="Item.northern_ring_barding" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -11186,7 +11186,7 @@
       <equipment slot="Item2"
                  id="Item.northern_javelin_2_t3" />
       <equipment slot="Item3"
-                 id="Item.sturgia_axe_3_t3" />
+                 id="Item.pointed_falchion_sword_t4" />
       <equipment slot="Head"
                  id="Item.sturgian_helmet_base" />
       <equipment slot="Body"
@@ -11200,7 +11200,7 @@
       <equipment slot="Horse"
                  id="Item.sturgia_horse" />
       <equipment slot="HorseHarness"
-                 id="Item.northern_noble_harness" />
+                 id="Item.northern_ring_barding" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -11210,7 +11210,7 @@
       <equipment slot="Item2"
                  id="Item.northern_javelin_2_t3" />
       <equipment slot="Item3"
-                 id="Item.northern_spear_2_t3" />
+                 id="Item.northern_spear_3_t4" />
       <equipment slot="Head"
                  id="Item.nasalhelm_over_mail" />
       <equipment slot="Body"
@@ -11224,7 +11224,7 @@
       <equipment slot="Horse"
                  id="Item.sturgia_horse" />
       <equipment slot="HorseHarness"
-                 id="Item.northern_noble_harness" />
+                 id="Item.northern_ring_barding" />
       </EquipmentRoster>
       <EquipmentSet id="sturgia_troop_civilian_template_t2"
                     civilian="true" />
@@ -11262,7 +11262,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_spear_3_t4" />
+                 id="Item.northern_spear_4_t5" />
       <equipment slot="Item1"
                  id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
@@ -11282,11 +11282,11 @@
       <equipment slot="Horse"
                  id="Item.t2_sturgia_horse" />
       <equipment slot="HorseHarness"
-                 id="Item.northern_ring_barding" />
+                 id="Item.chain_horse_harness" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_sword_5_t4" />
+                 id="Item.ridged_2hsword_t4" />
       <equipment slot="Item1"
                  id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
@@ -11306,11 +11306,11 @@
       <equipment slot="Horse"
                  id="Item.t2_sturgia_horse" />
       <equipment slot="HorseHarness"
-                 id="Item.northern_ring_barding" />
+                 id="Item.chain_horse_harness" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_axe_4_t4" />
+                 id="Item.sturgia_axe_5_t5" />
       <equipment slot="Item1"
                  id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
@@ -11330,7 +11330,7 @@
       <equipment slot="Horse"
                  id="Item.t2_sturgia_horse" />
       <equipment slot="HorseHarness"
-                 id="Item.northern_ring_barding" />
+                 id="Item.chain_horse_harness" />
       </EquipmentRoster>
       <EquipmentSet id="sturgia_troop_civilian_template_t3"
                     civilian="true" />
@@ -12513,11 +12513,11 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_4_t4" />
+                 id="Item.vlandia_lance_1_t3" />
       <equipment slot="Item1"
                  id="Item.tall_heater_shield" />
       <equipment slot="Item2"
-                 id="Item.vlandia_sword_4_t4" />
+                 id="Item.vlandia_sword_3_t4" />
       <equipment slot="Body"
                  id="Item.red_coat_over_mail" />
       <equipment slot="Leg"
@@ -12531,7 +12531,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_4_t4" />
+                 id="Item.vlandia_lance_1_t3" />
       <equipment slot="Item1"
                  id="Item.tall_heater_shield" />
       <equipment slot="Item2"
@@ -12549,7 +12549,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_4_t4" />
+                 id="Item.vlandia_lance_1_t3" />
       <equipment slot="Item1"
                  id="Item.tall_heater_shield" />
       <equipment slot="Item2"
@@ -12570,7 +12570,7 @@
     <equipment slot="Horse"
                id="Item.vlandia_horse" />
     <equipment slot="HorseHarness"
-               id="Item.light_harness" />
+               id="Item.northern_ring_barding" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="vlandian_vanguard"
@@ -12644,7 +12644,7 @@
       <equipment slot="Item1"
                  id="Item.heavy_heater_shield" />
       <equipment slot="Item2"
-                 id="Item.vlandia_sword_5_t5" />
+                 id="Item.vlandia_2hsword_2_t5" />
       <equipment slot="Body"
                  id="Item.coat_of_plates_over_mail" />
       <equipment slot="Leg"
@@ -13132,7 +13132,7 @@
     <equipment slot="Horse"
                id="Item.vlandia_horse" />
     <equipment slot="HorseHarness"
-               id="Item.light_harness" />
+               id="Item.stripped_leather_harness" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="vlandian_gallant"
@@ -13207,7 +13207,7 @@
     <equipment slot="Horse"
                id="Item.vlandia_horse" />
     <equipment slot="HorseHarness"
-               id="Item.stripped_leather_harness" />
+               id="Item.northern_ring_barding" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="vlandian_knight"

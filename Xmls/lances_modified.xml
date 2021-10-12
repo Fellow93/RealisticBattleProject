@@ -462,9 +462,9 @@
 			   value ="2200"
                culture="Culture.khuzait">
     <Pieces>
-      <Piece id="spear_blade_1"
+      <Piece id="spear_blade_15"
              Type="Blade"
-             scale_factor="80" />
+             scale_factor="100" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
