@@ -143,13 +143,10 @@ namespace RealisticBattleCombatModule
             static public float getHorseHeadArmor(Agent agent)
             {
                 float num = 0f;
-                for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+                EquipmentElement equipmentElement = agent.SpawnEquipment[11];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
                 {
-                    EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
-                    if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
-                    {
-                        num += (float)equipmentElement.Item.ArmorComponent.HeadArmor;
-                    }
+                    num += (float)equipmentElement.Item.ArmorComponent.HeadArmor;
                 }
                 return num;
             }
@@ -157,13 +154,10 @@ namespace RealisticBattleCombatModule
             static public float getHorseLegArmor(Agent agent)
             {
                 float num = 0f;
-                for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+                EquipmentElement equipmentElement = agent.SpawnEquipment[11];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
                 {
-                    EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
-                    if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
-                    {
-                        num += (float)equipmentElement.Item.ArmorComponent.LegArmor;
-                    }
+                    num += (float)equipmentElement.Item.ArmorComponent.LegArmor;
                 }
                 return num;
             }
@@ -171,13 +165,10 @@ namespace RealisticBattleCombatModule
             static public float getHorseArmArmor(Agent agent)
             {
                 float num = 0f;
-                for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+                EquipmentElement equipmentElement = agent.SpawnEquipment[11];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
                 {
-                    EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
-                    if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
-                    {
-                        num += (float)equipmentElement.Item.ArmorComponent.ArmArmor;
-                    }
+                    num += (float)equipmentElement.Item.ArmorComponent.ArmArmor;
                 }
                 return num;
             }
@@ -185,13 +176,10 @@ namespace RealisticBattleCombatModule
             static public float getHorseBodyArmor(Agent agent)
             {
                 float num = 0f;
-                for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+                 EquipmentElement equipmentElement = agent.SpawnEquipment[11];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
                 {
-                    EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
-                    if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
-                    {
-                        num += (float)equipmentElement.Item.ArmorComponent.BodyArmor;
-                    }
+                    num += (float)equipmentElement.Item.ArmorComponent.BodyArmor;
                 }
                 return num;
             }
