@@ -43,8 +43,8 @@ namespace RealisticBattleAiModule
 
                 agentDrivenProperties.AiShooterError = 0.0001f;
 
-                //agentDrivenProperties.AiRangerLeadErrorMin = 0f;
-                //agentDrivenProperties.AiRangerLeadErrorMax = 0f;
+                agentDrivenProperties.AiRangerLeadErrorMin = 0f;
+                agentDrivenProperties.AiRangerLeadErrorMax = 0f;
 
                 if(equippedItem != null && equippedItem.RelevantSkill == DefaultSkills.Bow)
                 {
@@ -55,6 +55,11 @@ namespace RealisticBattleAiModule
                 {
                     agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.015f - effectiveSkill * 0.0001f, 0.005f, 0.015f);//crossbow
                     agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.015f - effectiveSkill * 0.0001f, 0.005f, 0.015f);//crossbow
+                }
+                else
+                {
+                    agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.030f - effectiveSkill * 0.0001f, 0.01f, 0.030f);// javelins and axes etc
+                    agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.030f - effectiveSkill * 0.0001f, 0.01f, 0.030f);// javelins and axes etc
                 }
                 
                 agentDrivenProperties.AIAttackOnParryChance = MBMath.ClampFloat(meleeLevel*0.4f, 0.1f, 0.30f); //0.3f - 0.1f * agent.Defensiveness; //0.2-0.3f // chance to break own parry guard - 0 constant parry in reaction to enemy, 1 constant breaking of parry

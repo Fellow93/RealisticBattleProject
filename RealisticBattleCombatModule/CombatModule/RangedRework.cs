@@ -311,11 +311,11 @@ namespace RealisticBattleCombatModule
                     //float shooterSpeed = shooterAgent.MovementVelocity.Normalize();
                     if (!shooterAgent.HasMount)
                     {
-                        velocity.z = velocity.z - 1.2f;
+                        velocity.z = velocity.z - 1.4f;
                     }
                     else
                     {
-                        velocity.z = velocity.z - 2.4f;
+                        velocity.z = velocity.z - 2.5f;
 
                     }
                 }

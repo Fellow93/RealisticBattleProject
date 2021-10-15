@@ -40,7 +40,7 @@
     <managed_core_parameter id="FistFightDamageMultiplier" value="4.0" />
 
     <managed_core_parameter id="SwingHitWithArmDamageMultiplier" value="1.0" />
-    <managed_core_parameter id="ThrustHitWithArmDamageMultiplier" value="1.0" />
+    <managed_core_parameter id="ThrustHitWithArmDamageMultiplier" value="0.034" />
     <managed_core_parameter id="NonTipThrustHitDamageMultiplier" value="1.0" />
 
     <!-- damage graph related -->

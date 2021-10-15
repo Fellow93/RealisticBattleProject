@@ -49,7 +49,6 @@ namespace RealisticBattleCombatModule
                 }
                 //float expr_32 = length / acd.MissileStartingBaseSpeed;
                 //float num = expr_32 * expr_32;
-
                 if (weaponItem != null && weaponItem.PrimaryWeapon != null)
                 {
                     switch (weaponItem.PrimaryWeapon.WeaponClass.ToString())
@@ -127,7 +126,6 @@ namespace RealisticBattleCombatModule
                 }
 
                 float physicalDamage = ((length * length) * (weaponItem.Weight)) / 2;
-
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin") && physicalDamage > 300f)
                 {
                     physicalDamage = 300f;
@@ -146,6 +144,12 @@ namespace RealisticBattleCombatModule
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt") && physicalDamage > (weaponItem.Weight) * 2500f)
                 {
                     physicalDamage = (weaponItem.Weight) * 2500f;
+                }
+
+                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Stone") ||
+                    weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Boulder"))
+                {
+                    physicalDamage = (length * (weaponItem.Weight));
                 }
 
                 baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining;
@@ -1171,7 +1175,7 @@ namespace RealisticBattleCombatModule
             }
             else if (item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
             {
-                price = (int)((100f + ((float)item.ArmorComponent.BodyArmor) * 450f) * XmlConfig.dict["Global.ArmorPriceModifier"]);
+                price = (int)((100f + (((float)item.ArmorComponent.BodyArmor) * 0.2f + (float)item.ArmorComponent.ArmArmor * 0.2f + (float)item.ArmorComponent.LegArmor * 0.4f + (float)item.ArmorComponent.HeadArmor * 0.2f) * 450f) * XmlConfig.dict["Global.ArmorPriceModifier"]);
             }
             else if (item.ItemComponent is WeaponComponent)
             {
@@ -1407,7 +1411,7 @@ namespace RealisticBattleCombatModule
             }
             else if (armorComponent.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
             {
-                ArmorTier = ((float)armorComponent.BodyArmor * 0.1f) - 1f;
+                ArmorTier = ((float)armorComponent.BodyArmor * 0.02f + (float)armorComponent.LegArmor * 0.04f + (float)armorComponent.ArmArmor * 0.02f + (float)armorComponent.HeadArmor * 0.02f) - 1f;
             }
             if (ArmorTier < 0f)
             {

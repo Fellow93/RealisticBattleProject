@@ -12703,7 +12703,7 @@
       <equipment slot="Item2"
                  id="Item.vlandia_sword_1_t2" />
       <equipment slot="Item3"
-                 id="Item.western_kite_shield" />
+                 id="Item.old_kite_shield" />
       <equipment slot="Body"
                  id="Item.leather_coat_over_cloth" />
       <equipment slot="Leg"
@@ -12723,7 +12723,7 @@
       <equipment slot="Item2"
                  id="Item.vlandia_sword_1_t2" />
       <equipment slot="Item3"
-                 id="Item.western_kite_shield" />
+                 id="Item.old_kite_shield" />
       <equipment slot="Body"
                  id="Item.padded_leather_shirt" />
       <equipment slot="Leg"
@@ -12743,7 +12743,7 @@
       <equipment slot="Item2"
                  id="Item.vlandia_mace_1_t2" />
       <equipment slot="Item3"
-                 id="Item.western_kite_shield" />
+                 id="Item.old_kite_shield" />
       <equipment slot="Body"
                  id="Item.gambeson_b" />
       <equipment slot="Leg"
@@ -15863,7 +15863,7 @@
       <equipment slot="Cape"
                  id="Item.imperial_lamellar_shoulders" />
       <equipment slot="Body"
-                 id="Item.imperial_lamellar" />
+                 id="Item.lamellar_with_scale_skirt" />
       <equipment slot="Leg"
                  id="Item.lamellar_plate_boots" />
       <equipment slot="Head"
