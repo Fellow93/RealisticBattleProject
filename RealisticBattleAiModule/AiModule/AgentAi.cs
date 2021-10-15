@@ -43,8 +43,8 @@ namespace RealisticBattleAiModule
 
                 agentDrivenProperties.AiShooterError = 0.0001f;
 
-                agentDrivenProperties.AiRangerLeadErrorMin = 0f;
-                agentDrivenProperties.AiRangerLeadErrorMax = 0f;
+                //agentDrivenProperties.AiRangerLeadErrorMin = 0f;
+                //agentDrivenProperties.AiRangerLeadErrorMax = 0f;
 
                 if(equippedItem != null && equippedItem.RelevantSkill == DefaultSkills.Bow)
                 {

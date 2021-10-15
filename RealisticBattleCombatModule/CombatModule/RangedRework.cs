@@ -315,7 +315,7 @@ namespace RealisticBattleCombatModule
                     }
                     else
                     {
-                        velocity.z = velocity.z - 2.5f;
+                        velocity.z = velocity.z - 2f;
 
                     }
                 }
