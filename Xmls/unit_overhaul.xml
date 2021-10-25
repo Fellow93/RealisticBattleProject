@@ -16078,8 +16078,6 @@
       <upgrade_target id="NPCCharacter.karakhuzaits_tier_2" />
     </upgrade_targets>
     <Equipments>
-	   <equipment slot="Cape"
-                 id="Item.reinforced_suede_shoulders" />
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.composite_bow" />
@@ -16097,7 +16095,8 @@
                  id="Item.leather_boots" />
       <equipment slot="Gloves"
                  id="Item.eastern_wrapped_armguards" />
-
+	  <equipment slot="Cape"
+                 id="Item.reinforced_suede_shoulders" />
       <equipment slot="Horse"
                  id="Item.khuzait_horse" />
       <equipment slot="HorseHarness"
@@ -16120,6 +16119,8 @@
                  id="Item.leather_boots" />
       <equipment slot="Gloves"
                  id="Item.eastern_wrapped_armguards" />
+	  <equipment slot="Cape"
+                 id="Item.reinforced_suede_shoulders" />
       <equipment slot="Horse"
                  id="Item.khuzait_horse" />
       <equipment slot="HorseHarness"
@@ -16142,6 +16143,8 @@
                  id="Item.leather_boots" />
       <equipment slot="Gloves"
                  id="Item.eastern_wrapped_armguards" />
+	  <equipment slot="Cape"
+                 id="Item.reinforced_suede_shoulders" />
       <equipment slot="Horse"
                  id="Item.khuzait_horse" />
       <equipment slot="HorseHarness"
@@ -16164,6 +16167,8 @@
                  id="Item.leather_boots" />
       <equipment slot="Gloves"
                  id="Item.eastern_wrapped_armguards" />
+	  <equipment slot="Cape"
+                 id="Item.reinforced_suede_shoulders" />
       <equipment slot="Horse"
                  id="Item.khuzait_horse" />
       <equipment slot="HorseHarness"
@@ -17162,11 +17167,11 @@
                  id="Item.heavy_nasalhelm_over_imperial_mail" />
       <equipment slot="Cape"
                  id="Item.lamellar_shoulders" />
-      </EquipmentRoster>
       <equipment slot="Horse"
                id="Item.t2_sturgia_horse" />
       <equipment slot="HorseHarness"
                id="Item.northern_ring_barding" />
+      </EquipmentRoster>
       <EquipmentSet id="empire_troop_civilian_template_t3"
                     civilian="true" />
     </Equipments>
