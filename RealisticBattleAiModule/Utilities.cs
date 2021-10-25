@@ -228,7 +228,7 @@ namespace RealisticBattleAiModule
                     //}
                     bool isActiveSkrimisher = false;
                     float countedUnits = 0f;
-                    float currentTime = MBCommon.TimeType.Mission.GetTime();
+                    float currentTime = Mission.Current.CurrentTime;
                     if (currentTime - agent.LastRangedAttackTime < 10f && ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
                     {
                         for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
@@ -261,7 +261,7 @@ namespace RealisticBattleAiModule
 
         public static bool FormationFightingInMelee(Formation formation, float desiredRatio)
         {
-            float currentTime = MBCommon.TimeType.Mission.GetTime();
+            float currentTime = Mission.Current.CurrentTime;
             float countedUnits = 0;
             float ratio = 0f;
             float countOfUnitsFightingInMelee = 0;

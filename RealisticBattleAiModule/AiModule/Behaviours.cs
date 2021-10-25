@@ -1672,13 +1672,13 @@ namespace RealisticBattleAiModule
                         }
                         break;
                     case ChargeState.ChargingPast:
-                        if (____chargingPastTimer.Check(MBCommon.TimeType.Mission.GetTime()))
+                        if (____chargingPastTimer.Check(Mission.Current.CurrentTime))
                         {
                             result = ChargeState.Reforming;
                         }
                         break;
                     case ChargeState.Reforming:
-                        if (____reformTimer.Check(MBCommon.TimeType.Mission.GetTime()))
+                        if (____reformTimer.Check(Mission.Current.CurrentTime))
                         {
                             result = ChargeState.Charging;
                         }
@@ -1731,10 +1731,10 @@ namespace RealisticBattleAiModule
                         }
                         break;
                     case ChargeState.ChargingPast:
-                        ____chargingPastTimer = new Timer(MBCommon.TimeType.Mission.GetTime(), 14f);
+                        ____chargingPastTimer = new Timer(Mission.Current.CurrentTime, 14f);
                         break;
                     case ChargeState.Reforming:
-                        ____reformTimer = new Timer(MBCommon.TimeType.Mission.GetTime(), 10f);
+                        ____reformTimer = new Timer(Mission.Current.CurrentTime, 10f);
                         break;
                     case ChargeState.Bracing:
                         {

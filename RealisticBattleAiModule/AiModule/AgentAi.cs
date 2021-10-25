@@ -93,7 +93,7 @@ namespace RealisticBattleAiModule
             if (!formation.QuerySystem.IsCavalryFormation && !formation.QuerySystem.IsRangedCavalryFormation)
             {
 
-                float currentTime = MBCommon.TimeType.Mission.GetTime();
+                float currentTime = Mission.Current.CurrentTime;
                 if (currentTime - unit.LastRangedAttackTime < 7f)
                 {
                     __result = Agent.UsageDirection.None;
