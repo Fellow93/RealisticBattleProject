@@ -64,7 +64,7 @@
               missile_speed="80"
               weapon_length="95"
               thrust_damage="200"
-              thrust_damage_type="Pierce"
+              thrust_damage_type="Cut"
               item_usage=""
               flying_sound_code="event:/mission/combat/missile/foley/passby"
               trail_particle_name="psys_game_missile_flame"
