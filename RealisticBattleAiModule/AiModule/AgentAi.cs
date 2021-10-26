@@ -113,7 +113,7 @@ namespace RealisticBattleAiModule
                                 __result = Agent.UsageDirection.None;
                                 return;
                             }
-                            if (Mission.Current.IsFieldBattle && (((currentTime - lastRangedHit < 2f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.08f)))
+                            if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && (((currentTime - lastRangedHit < 2f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.08f)))
                             {
                                 __result = Agent.UsageDirection.DefendDown;
                                 return;
