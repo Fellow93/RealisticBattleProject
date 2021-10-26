@@ -1494,7 +1494,7 @@ namespace RealisticBattleAiModule
             {
                 Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false);
 
-                if (Mission.Current.IsFieldBattle && __instance.Formation.QuerySystem.IsInfantryFormation && !Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
+                if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && __instance.Formation.QuerySystem.IsInfantryFormation && !Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
                 {
                     Formation enemyCav = Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
 
@@ -2019,7 +2019,7 @@ namespace RealisticBattleAiModule
                     return false;
                 }
             }
-            if (!Mission.Current.IsFieldBattle)
+            if (Mission.Current.MissionTeamAIType != Mission.MissionTeamAITypeEnum.FieldBattle)
             {
                 unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 7f, 5f, 20f, 6f);
                 unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 4f, 3f, 20f, 0.01f);
@@ -3061,7 +3061,7 @@ namespace RealisticBattleAiModule
             [HarmonyPatch("BattleSizeSpawnTick")]
             static bool PrefixBattleSizeSpawnTick(ref MissionAgentSpawnLogic __instance, ref int ____battleSize, ref List<SpawnPhase>[] ____phases)
             {
-                if (!Mission.Current.IsFieldBattle)
+                if (Mission.Current.MissionTeamAIType != Mission.MissionTeamAITypeEnum.FieldBattle)
                 {
                     return true;
                 }

@@ -174,11 +174,11 @@ namespace RealisticBattleAiModule
 
         [HarmonyPatch(typeof(MissionCombatantsLogic))]
         [HarmonyPatch("EarlyStart")]
-        class TeamAiFieldBattle
+        public class TeamAiFieldBattle
         {
-            static void Postfix()
+            public static void Postfix()
             {
-
+                MyPatcher.DoPatching();
                 OnTickAsAIPatch.itemPickupDistanceStorage.Clear();
                 ManagedParameters.SetParameter(ManagedParametersEnum.BipedalRadius, 0.5f);
                 if (Mission.Current.Teams.Any())

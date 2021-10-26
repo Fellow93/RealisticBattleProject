@@ -14,10 +14,27 @@ namespace RealisticBattleAiModule
     }
     public static class MyPatcher
     {
+        public static Harmony harmony = null;
+        public static bool patched = false;
         public static void DoPatching()
         {
-            var harmony = new Harmony("com.pf.rbai");
-            harmony.PatchAll();
+            //var harmony = new Harmony("com.pf.rbai");
+            if (!patched)
+            {
+                harmony.PatchAll();
+                patched = true;
+            }
+        }
+
+        public static void FirstPatch()
+        {
+            harmony = new Harmony("com.pf.rbai");
+            var original = AccessTools.Method(typeof(MissionCombatantsLogic), "EarlyStart");
+            var postfix = AccessTools.Method(typeof(Tactics.TeamAiFieldBattle), nameof(Tactics.TeamAiFieldBattle.Postfix));
+            harmony.Patch(original, null, new HarmonyMethod(postfix));
+
+            //harmony.Patch(original, postfix: new HarmonyMethod(postfix));
+
         }
     }
 
@@ -35,7 +52,7 @@ namespace RealisticBattleAiModule
                 }
             }
 
-            MyPatcher.DoPatching();
+            MyPatcher.FirstPatch();
         }
 
         protected override void OnBeforeInitialModuleScreenSetAsRoot()

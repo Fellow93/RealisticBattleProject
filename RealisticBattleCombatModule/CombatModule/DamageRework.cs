@@ -1783,7 +1783,7 @@ namespace RealisticBattleCombatModule
                     __result.VictimBodyPart = collisionData.VictimHitBodyPart;
                     __result.BlowFlag |= BlowFlags.KnockBack;
                     victimAgent.RegisterBlow(__result);
-                    foreach (MissionBehaviour missionBehaviour in __instance.MissionBehaviours)
+                    foreach (MissionBehavior missionBehaviour in __instance.MissionBehaviors)
                     {
                         missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, null, __result, ref collisionData, in attackerWeapon);
                     }
@@ -1819,7 +1819,7 @@ namespace RealisticBattleCombatModule
                                 __result.VictimBodyPart = collisionData.VictimHitBodyPart;
                                 __result.BlowFlag |= BlowFlags.NonTipThrust;
                                 victimAgent.RegisterBlow(__result);
-                                foreach (MissionBehaviour missionBehaviour in __instance.MissionBehaviours)
+                                foreach (MissionBehavior missionBehaviour in __instance.MissionBehaviors)
                                 {
                                     missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, null, __result, ref collisionData, in attackerWeapon);
                                 }
@@ -1848,7 +1848,7 @@ namespace RealisticBattleCombatModule
             {
                 return true;
             }
-            foreach (MissionBehaviour missionBehaviour in __instance.MissionBehaviours)
+            foreach (MissionBehavior missionBehaviour in __instance.MissionBehaviors)
             {
                 missionBehaviour.OnRegisterBlow(attacker, victim, realHitEntity, b, ref collisionData, in attackerWeapon);
             }
