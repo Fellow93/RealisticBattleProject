@@ -81,6 +81,10 @@ namespace RealisticBattleCombatModule
                                     float DrawSpeedskillModifier = 1 + (effectiveSkill * 0.01f);
                                     weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.1f) * DrawSpeedskillModifier);
                                 }
+                                if (XmlConfig.dict["Global.RealisticRangedReload"] == 0)
+                                {
+                                    weaponStatsData[i].ThrustSpeed = MathF.Ceiling(weaponStatsData[i].ThrustSpeed * 0.5f);
+                                }
                             }
                             if ((weaponStatsData[i].WeaponClass == (int)WeaponClass.OneHandedPolearm) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.LowGripPolearm))
                             {
