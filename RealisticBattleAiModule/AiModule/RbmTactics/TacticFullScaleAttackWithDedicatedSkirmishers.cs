@@ -1,4 +1,5 @@
 ﻿using RealisticBattleAiModule;
+using RealisticBattleAiModule.AiModule.RbmBehaviors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -223,16 +224,16 @@ public class TacticFullScaleAttackWithDedicatedSkirmishers : TacticComponent
 			
 			_skirmishers.AI.ResetBehaviorWeights();
 			TacticComponent.SetDefaultBehaviorWeights(_skirmishers);
-			_skirmishers.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
-			//if (side == 0)
-			//{
-				//_skirmishers.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Left;
-            //}
-            //else
-            //{
-				_skirmishers.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Right;	
-            //}
-        }
+            //_skirmishers.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
+            if (side == 0)
+            {
+                _skirmishers.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Left;
+			}
+			else
+            {
+                _skirmishers.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Right;
+			}
+		}
 		if (_mainInfantry != null)
 		{
 			_mainInfantry.AI.ResetBehaviorWeights();
@@ -287,8 +288,15 @@ public class TacticFullScaleAttackWithDedicatedSkirmishers : TacticComponent
 		{
 			_skirmishers.AI.ResetBehaviorWeights();
 			_skirmishers.AI.SetBehaviorWeight<BehaviorCharge>(1f);
-            _skirmishers.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(5f);
-        }
+			//if (side == 0)
+			//{
+			//	_skirmishers.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Left;
+			//}
+			//else
+			//{
+			//	_skirmishers.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Right;
+			//}
+		}
 		if (_archers != null)
 		{
 			_archers.AI.ResetBehaviorWeights();

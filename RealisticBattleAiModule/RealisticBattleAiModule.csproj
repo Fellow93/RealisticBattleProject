@@ -287,6 +287,7 @@
   <ItemGroup>
     <Compile Include="AiModule\AgentAi.cs" />
     <Compile Include="AiModule\Behaviours.cs" />
+    <Compile Include="AiModule\RbmBehaviors\RBMBehaviorForwardSkirmish.cs" />
     <Compile Include="AiModule\RbmTactics\TacticFullScaleAttackWithDedicatedSkirmishers.cs" />
     <Compile Include="AiModule\Tactics.cs" />
     <Compile Include="Main.cs" />

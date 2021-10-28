@@ -53,7 +53,7 @@ namespace RealisticBattleAiModule
                     WorldPosition medianPositionNew = __instance.Formation.QuerySystem.MedianPosition;
                     medianPositionNew.SetVec2(__instance.Formation.QuerySystem.AveragePosition);
 
-                    Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false);
+                    Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
 
                     if (significantEnemy != null)
                     {
@@ -105,7 +105,7 @@ namespace RealisticBattleAiModule
                     WorldPosition medianPositionNew = __instance.Formation.QuerySystem.MedianPosition;
                     medianPositionNew.SetVec2(__instance.Formation.QuerySystem.AveragePosition);
 
-                    Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false);
+                    Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
 
                     if (significantEnemy != null)
                     {
@@ -206,7 +206,7 @@ namespace RealisticBattleAiModule
         {
             if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
-                Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false);
+                Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
 
                 int waitCountShooting;
                 int waitCountApproaching;
@@ -323,7 +323,7 @@ namespace RealisticBattleAiModule
         {
             if (__instance.Formation != null && ____archerFormation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
-                Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false);
+                Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
 
                 if (significantEnemy != null)
                 {
@@ -677,13 +677,13 @@ namespace RealisticBattleAiModule
 
             float distanceFromMainFormation = 80f;
             float closerDistanceFromMainFormation = 30f;
-            float distanceOffsetFromMainFormation = 130f;
+            float distanceOffsetFromMainFormation = 80f;
 
             if (__instance.Formation != null && __instance.Formation.QuerySystem.IsInfantryFormation)
             {
                 distanceFromMainFormation = 10f;
                 closerDistanceFromMainFormation = 5f;
-                distanceOffsetFromMainFormation = 110f;
+                distanceOffsetFromMainFormation = 60f;
             }
 
             if (____mainFormation == null || __instance.Formation == null || __instance.Formation.QuerySystem.ClosestEnemyFormation == null)
@@ -1492,7 +1492,7 @@ namespace RealisticBattleAiModule
         {
             if (__instance.Formation != null && (__instance.Formation.QuerySystem.IsInfantryFormation || __instance.Formation.QuerySystem.IsRangedFormation) && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
-                Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false);
+                Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
 
                 if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && __instance.Formation.QuerySystem.IsInfantryFormation && !Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
                 {
@@ -1557,7 +1557,7 @@ namespace RealisticBattleAiModule
                         }
                         positionsStorage.Remove(__instance.Formation);
                     }
-                    else if (significantEnemy != null && signDist < 50f && Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.30f))
+                    else if (significantEnemy != null && signDist < 50f && Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.4f))
                     {
                         WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
                         positionNew.SetVec2(positionNew.AsVec2 - __instance.Formation.Direction * 7f);
@@ -2114,7 +2114,7 @@ namespace RealisticBattleAiModule
             {
                 if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                 {
-                    Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false);
+                    Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
 
                     if (__instance.Formation.QuerySystem.IsInfantryFormation && !Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
                     {
@@ -2795,7 +2795,7 @@ namespace RealisticBattleAiModule
         {
             if (__instance.Formation != null && __instance.Formation.QuerySystem.IsInfantryFormation && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
-                Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false);
+                Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
                 if (significantEnemy != null)
                 {
                     __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
@@ -2828,7 +2828,7 @@ namespace RealisticBattleAiModule
                 if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                 {
 
-                    Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false);
+                    Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
 
                     if (__instance.Formation.QuerySystem.IsInfantryFormation && !Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
                     {
@@ -2894,7 +2894,7 @@ namespace RealisticBattleAiModule
                             positionsStorage.Remove(__instance.Formation);
                             //medianPositionOld = WorldPosition.Invalid;
                         }
-                        else if (significantEnemy != null && signDist < 60f && Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.35f))
+                        else if (significantEnemy != null && signDist < 60f && Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.4f))
                         {
                             WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
 

@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using RealisticBattleAiModule.AiModule.RbmBehaviors;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -240,13 +241,15 @@ namespace RealisticBattleAiModule
                 }
                 if (____rightCavalry != null)
                 {
+                    ____rightCavalry.AI.ResetBehaviorWeights();
                     ____rightCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Right;
-                    ____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    ____rightCavalry.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Right;
                 }
                 if (____leftCavalry != null)
                 {
+                    ____leftCavalry.AI.ResetBehaviorWeights();
                     ____leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Left;
-                    ____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    ____leftCavalry.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Left;
                 }
             }
 
@@ -267,7 +270,7 @@ namespace RealisticBattleAiModule
                     ____rightCavalry.AI.ResetBehaviorWeights();
                     ____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                     ____rightCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
-                    //____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    //____rightCavalry.AI.SetBehaviorWeight<RBMBehaviorForwardHorseSkirmish>(1f);
                     //____rightCavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
                     //____rightCavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
                 }
@@ -276,7 +279,7 @@ namespace RealisticBattleAiModule
                     ____leftCavalry.AI.ResetBehaviorWeights();
                     ____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                     ____leftCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
-                    //____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    //____leftCavalry.AI.SetBehaviorWeight<RBMBehaviorForwardHorseSkirmish>(1f);
                     //____leftCavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
                     //____leftCavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
                 }
@@ -403,7 +406,7 @@ namespace RealisticBattleAiModule
                 if (____cavalry != null)
                 {
                     ____cavalry.AI.SetBehaviorWeight<BehaviorVanguard>(1.5f);
-                    ____cavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    ____cavalry.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Middle;
                 }
             }
 
@@ -417,6 +420,7 @@ namespace RealisticBattleAiModule
                     ____cavalry.AI.ResetBehaviorWeights();
                     ____cavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                     ____cavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
+                    ____cavalry.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Middle;
                     //____cavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
                     //____cavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
                 }
@@ -461,11 +465,11 @@ namespace RealisticBattleAiModule
             {
                 if (____rightCavalry != null)
                 {
-                    ____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    ____rightCavalry.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Right;
                 }
                 if (____leftCavalry != null)
                 {
-                    ____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    ____leftCavalry.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Left;
                 }
             }
 
@@ -479,7 +483,7 @@ namespace RealisticBattleAiModule
                     ____rightCavalry.AI.ResetBehaviorWeights();
                     ____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                     ____rightCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
-                    //____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    //____rightCavalry.AI.SetBehaviorWeight<RBMBehaviorForwardHorseSkirmish>(1f);
                     //____rightCavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
                     //____rightCavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
                 }
@@ -488,7 +492,7 @@ namespace RealisticBattleAiModule
                     ____leftCavalry.AI.ResetBehaviorWeights();
                     ____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                     ____leftCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
-                    //____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    //____leftCavalry.AI.SetBehaviorWeight<RBMBehaviorForwardHorseSkirmish>(1f);
                     //____leftCavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
                     //____leftCavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
                 }
@@ -648,7 +652,7 @@ namespace RealisticBattleAiModule
                     ____rightCavalry.AI.ResetBehaviorWeights();
                     ____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                     ____rightCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
-                    //____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    //____rightCavalry.AI.SetBehaviorWeight<RBMBehaviorForwardHorseSkirmish>(1f);
                     //____rightCavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
                     //____rightCavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
                 }
@@ -657,7 +661,7 @@ namespace RealisticBattleAiModule
                     ____leftCavalry.AI.ResetBehaviorWeights();
                     ____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                     ____leftCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
-                    //____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    //____leftCavalry.AI.SetBehaviorWeight<RBMBehaviorForwardHorseSkirmish>(1f);
                     //____leftCavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
                     //____leftCavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
                 }
@@ -710,7 +714,7 @@ namespace RealisticBattleAiModule
                     ____rightCavalry.AI.ResetBehaviorWeights();
                     ____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                     ____rightCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
-                    //____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    //____rightCavalry.AI.SetBehaviorWeight<RBMBehaviorForwardHorseSkirmish>(1f);
                     //____rightCavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
                     //____rightCavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
                 }
@@ -719,7 +723,7 @@ namespace RealisticBattleAiModule
                     ____leftCavalry.AI.ResetBehaviorWeights();
                     ____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                     ____leftCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
-                    //____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+                    //____leftCavalry.AI.SetBehaviorWeight<RBMBehaviorForwardHorseSkirmish>(1f);
                     //____leftCavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
                     //____leftCavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
                 }
