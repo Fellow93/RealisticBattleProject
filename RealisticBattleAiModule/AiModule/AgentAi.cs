@@ -80,6 +80,11 @@ namespace RealisticBattleAiModule
                 //agentDrivenProperties.AIHoldingReadyVariationPercentage = //num;
 
                 //agentDrivenProperties.ReloadSpeed = 0.19f; //0.12 for heavy crossbows, 0.19f for light crossbows, composite bows and longbows.
+
+                if (agent.IsRangedCached)
+                {
+                    agent.SetScriptedCombatFlags(Agent.AISpecialCombatModeFlags.IgnoreAmmoLimitForRangeCalculation);
+                }
             }
         }
     }
