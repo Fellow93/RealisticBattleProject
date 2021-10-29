@@ -83,7 +83,9 @@ namespace RealisticBattleAiModule
 
                 if (agent.IsRangedCached)
                 {
-                    agent.SetScriptedCombatFlags(Agent.AISpecialCombatModeFlags.IgnoreAmmoLimitForRangeCalculation);
+                    //agent.SetScriptedCombatFlags(Agent.AISpecialCombatModeFlags.IgnoreAmmoLimitForRangeCalculation);
+                    agent.SetScriptedCombatFlags(agent.GetScriptedCombatFlags() | Agent.AISpecialCombatModeFlags.IgnoreAmmoLimitForRangeCalculation);
+                    //agent.ResetAiWaitBeforeShootFactor();
                 }
             }
         }
