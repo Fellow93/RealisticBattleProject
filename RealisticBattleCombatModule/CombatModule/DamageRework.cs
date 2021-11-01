@@ -156,7 +156,7 @@ namespace RealisticBattleCombatModule
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
                 {
-                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 1f)) * XmlConfig.dict["Global.ThrustModifier"];
+                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f)) * XmlConfig.dict["Global.ThrustModifier"];
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingAxe"))

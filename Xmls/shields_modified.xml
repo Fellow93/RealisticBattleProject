@@ -64,7 +64,7 @@
 		</ItemComponent>
 		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandSecondaryItemBone="true"/>
 	</Item>
-	<Item id="steel_round_shield" name="{=FktkkUMK}Steel Round Shield" body_name="bo_cap_aserai_shields_g" shield_body_name="bo_aserai_shields_g" recalculate_body="false" mesh="aserai_shields_g" weight="4" appearance="0.9" Type="Shield" item_holsters="left_shoulder_targe:shield:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.07,-0.05" value="12000" culture="Culture.khuzait">
+	<Item id="steel_round_shield" name="{=FktkkUMK}Steel Round Shield" body_name="bo_cap_aserai_shields_g" shield_body_name="bo_aserai_shields_g" recalculate_body="false" mesh="aserai_shields_g" weight="4" appearance="0.9" Type="Shield" item_holsters="shield:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.07,-0.05" value="12000" culture="Culture.khuzait">
 		<ItemComponent>
 			<Weapon weapon_class="LargeShield" body_armor="15" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="metal_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="60" center_of_mass="0.01, 0.07, 0.1" hit_points="2000">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>

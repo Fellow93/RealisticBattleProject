@@ -582,7 +582,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="light tunic" name="{=7yGwvnUA}Light Tunic" mesh="sturgia_light_armor_a" culture="Culture.sturgia" weight="0.4" Type="BodyArmor" appearance="0.6" difficulty="0" subtype="body_armor" value="120">
+	<Item id="light_tunic" name="{=7yGwvnUA}Light Tunic" mesh="sturgia_light_armor_a" culture="Culture.sturgia" weight="0.4" Type="BodyArmor" appearance="0.6" difficulty="0" subtype="body_armor" value="120">
 		<ItemComponent>
 			<Armor body_armor="13" leg_armor="13" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" has_gender_variations="true" arm_armor="6"/>
 		</ItemComponent>
@@ -1374,4 +1374,45 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
+  <Item id="battania_light_armor_c"
+        name="{=aiER6j1y}Battanian Long Tartan"
+        subtype="body_armor"
+        mesh="battania_light_armor_c"
+        culture="Culture.battania"
+        weight="2.4"
+        difficulty="0"
+        appearance="1.7"
+        Type="BodyArmor">
+    <ItemComponent>
+      <Armor body_armor="15"
+             leg_armor="15"
+             arm_armor="7"
+             has_gender_variations="true"
+             covers_body="false"
+             modifier_group="chain"
+             material_type="Chainmail" />
+    </ItemComponent>
+    <Flags UseTeamColor="true" />
+  </Item>
+  <Item id="battania_light_armor_d"
+        name="{=ibtt8Chp}Battanian Kilt over Tartan Trousers"
+        subtype="body_armor"
+        mesh="battania_light_armor_d"
+        culture="Culture.battania"
+        weight="0.8"
+        difficulty="0"
+        appearance="1.7"
+        Type="BodyArmor">
+    <ItemComponent>
+      <Armor body_armor="0"
+             leg_armor="15"
+             arm_armor="0"
+             has_gender_variations="false"
+             covers_body="false"
+             modifier_group="chain"
+             material_type="Chainmail" />
+    </ItemComponent>
+    <Flags DoesNotHideChest="true"
+           UseTeamColor="true" />
+  </Item>
 </Items>

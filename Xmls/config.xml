@@ -17,7 +17,7 @@
 		<ThrustModifier>0.034</ThrustModifier>
 		
 		<TroopOverhaulActive>1</TroopOverhaulActive>
-		<RealisticRangedReload>1</RealisticRangedReload>
+		<RealisticRangedReload>2</RealisticRangedReload>
 		<MaceBluntModifier>1</MaceBluntModifier>
 		<ArmorThresholdModifier>1</ArmorThresholdModifier>
 		<BluntTraumaBonus>0.0</BluntTraumaBonus>

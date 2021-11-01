@@ -4432,7 +4432,7 @@
       <equipment slot="Item0"
                  id="Item.highland_spear_3_t3" />
       <equipment slot="Item1"
-                 id="Item.battania_shield_targe_a" />
+                 id="Item.highland_scouts_shield" />
       <equipment slot="Item2"
                  id="Item.battania_axe_2_t4" />
       <equipment slot="Body"
@@ -4454,7 +4454,7 @@
       <equipment slot="Item0"
                  id="Item.highland_spear_3_t3" />
       <equipment slot="Item1"
-                 id="Item.battania_shield_targe_a" />
+                 id="Item.highland_scouts_shield" />
       <equipment slot="Item2"
                  id="Item.battania_sword_4_t4" />
       <equipment slot="Body"
@@ -4474,7 +4474,7 @@
       <equipment slot="Item0"
                  id="Item.highland_spear_3_t3" />
       <equipment slot="Item1"
-                 id="Item.battania_shield_targe_a" />
+                 id="Item.highland_scouts_shield" />
       <equipment slot="Item2"
                  id="Item.battania_axe_2_t4" />
       <equipment slot="Body"
@@ -4732,7 +4732,7 @@
       <equipment slot="Item1"
                  id="Item.western_javelin_1_t2" />
       <equipment slot="Item2"
-                 id="Item.battania_large_shield_c" />
+                 id="Item.highland_scouts_shield" />
       <equipment slot="Item3"
                  id="Item.western_javelin_1_t2" />
       <equipment slot="Body"
@@ -4752,7 +4752,7 @@
       <equipment slot="Item1"
                  id="Item.western_javelin_1_t2" />
       <equipment slot="Item2"
-                 id="Item.battania_large_shield_c" />
+                 id="Item.highland_scouts_shield" />
       <equipment slot="Item3"
                  id="Item.western_javelin_1_t2" />
       <equipment slot="Body"
@@ -4772,7 +4772,7 @@
       <equipment slot="Item1"
                  id="Item.western_javelin_1_t2" />
       <equipment slot="Item2"
-                 id="Item.battania_large_shield_c" />
+                 id="Item.highland_scouts_shield" />
       <equipment slot="Item3"
                  id="Item.western_javelin_1_t2" />
       <equipment slot="Body"
@@ -4824,6 +4824,8 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.battania_2haxe_1_t2" />
+      <equipment slot="Item1"
+                 id="Item.battania_targe_b" />
       <equipment slot="Item3"
                  id="Item.highland_throwing_axe_1_t2" />
       <equipment slot="Head"
@@ -4835,11 +4837,13 @@
       <equipment slot="Leg"
                  id="Item.battania_leather_boots" />
       <equipment slot="Cape"
-                 id="Item.battania_woodland_cloak" />
+                 id="Item.wolf_shoulder" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.simple_sparth_axe_t2" />
+      <equipment slot="Item1"
+                 id="Item.battania_targe_b" />
       <equipment slot="Item3"
                  id="Item.highland_throwing_axe_1_t2" />
       <equipment slot="Gloves"
@@ -4849,13 +4853,15 @@
       <equipment slot="Leg"
                  id="Item.battania_leather_boots" />
       <equipment slot="Cape"
-                 id="Item.battania_woodland_cloak" />
+                 id="Item.wolf_shoulder" />
       <equipment slot="Head"
                  id="Item.battania_earmuff_helmet_c_brnz" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_2hsword_2_t3" />
+                 id="Item.battania_2haxe_1_t2" />
+      <equipment slot="Item1"
+                 id="Item.battania_targe_b" />
       <equipment slot="Item3"
                  id="Item.highland_throwing_axe_1_t2" />
       <equipment slot="Head"
@@ -4908,11 +4914,11 @@
       <equipment slot="Item0"
                  id="Item.woodland_axe_t3" />
       <equipment slot="Item1"
-                 id="Item.battania_large_shield_c" />
+                 id="Item.highland_scouts_shield" />
       <equipment slot="Item2"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Item3"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Body"
                  id="Item.woven_leather_coat" />
       <equipment slot="Leg"
@@ -4922,17 +4928,17 @@
       <equipment slot="Gloves"
                  id="Item.highland_gloves" />
       <equipment slot="Cape"
-                 id="Item.battania_woodland_cloak" />
+                 id="Item.wolf_shoulder" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.woodland_axe_t3" />
       <equipment slot="Item1"
-                 id="Item.battania_large_shield_c" />
+                 id="Item.highland_scouts_shield" />
       <equipment slot="Item2"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Item3"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Body"
                  id="Item.woven_leather_coat" />
       <equipment slot="Leg"
@@ -4940,7 +4946,7 @@
       <equipment slot="Gloves"
                  id="Item.highland_gloves" />
       <equipment slot="Cape"
-                 id="Item.battania_woodland_cloak" />
+                 id="Item.wolf_shoulder" />
       <equipment slot="Head"
                  id="Item.battania_earmuff_helmet_c_cpr" />
       </EquipmentRoster>
@@ -4948,11 +4954,11 @@
       <equipment slot="Item0"
                  id="Item.highland_spear_3_t3" />
       <equipment slot="Item1"
-                 id="Item.battania_large_shield_c" />
+                 id="Item.highland_scouts_shield" />
       <equipment slot="Item2"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Item3"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Body"
                  id="Item.battanian_chainmail_armor_b" />
       <equipment slot="Leg"
@@ -4962,7 +4968,7 @@
       <equipment slot="Gloves"
                  id="Item.highland_gloves" />
       <equipment slot="Cape"
-                 id="Item.battania_woodland_cloak" />
+                 id="Item.wolf_shoulder" />
       </EquipmentRoster>
       <EquipmentSet id="battania_troop_civilian_template_t2"
                     civilian="true" />
@@ -5001,7 +5007,7 @@
       <equipment slot="Item0"
                  id="Item.battania_axe_3_t5" />
       <equipment slot="Item1"
-                 id="Item.battania_large_shield_b" />
+                 id="Item.highland_riders_shield" />
       <equipment slot="Item2"
                  id="Item.northern_javelin_3_t4" />
       <equipment slot="Item3"
@@ -5021,7 +5027,7 @@
       <equipment slot="Item0"
                  id="Item.battania_axe_3_t5" />
       <equipment slot="Item1"
-                 id="Item.battania_large_shield_b" />
+                 id="Item.highland_riders_shield" />
       <equipment slot="Item2"
                  id="Item.northern_javelin_3_t4" />
       <equipment slot="Item3"
@@ -5041,7 +5047,7 @@
       <equipment slot="Item0"
                  id="Item.highland_spear_4_t4" />
       <equipment slot="Item1"
-                 id="Item.battania_large_shield_b" />
+                 id="Item.highland_riders_shield" />
       <equipment slot="Item2"
                  id="Item.northern_javelin_3_t4" />
       <equipment slot="Item3"
@@ -5174,7 +5180,7 @@
       <equipment slot="Item0"
                  id="Item.battania_axe_2_t4" />
       <equipment slot="Item1"
-                 id="Item.battania_large_shield_a" />
+                 id="Item.highland_scouts_shield" />
       <equipment slot="Item2"
                  id="Item.northern_javelin_2_t3" />
       <equipment slot="Item3"
@@ -5194,7 +5200,7 @@
       <equipment slot="Item0"
                  id="Item.battania_axe_2_t4" />
       <equipment slot="Item1"
-                 id="Item.battania_large_shield_a" />
+                 id="Item.highland_scouts_shield" />
       <equipment slot="Item2"
                  id="Item.northern_javelin_2_t3" />
       <equipment slot="Item3"
@@ -5214,7 +5220,7 @@
       <equipment slot="Item0"
                  id="Item.highland_spear_4_t4" />
       <equipment slot="Item1"
-                 id="Item.battania_large_shield_a" />
+                 id="Item.highland_scouts_shield" />
       <equipment slot="Item2"
                  id="Item.northern_javelin_2_t3" />
       <equipment slot="Item3"
@@ -10684,11 +10690,11 @@
       <equipment slot="Item0"
                  id="Item.simple_sparth_axe_t2" />
       <equipment slot="Item1"
-                 id="Item.northern_javelin_1_t2" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Item2"
                  id="Item.northern_round_shield" />
       <equipment slot="Item3"
-                 id="Item.northern_javelin_1_t2" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.northern_fur_cap" />
       <equipment slot="Body"
@@ -10704,11 +10710,11 @@
       <equipment slot="Item0"
                  id="Item.simple_sparth_axe_t2" />
       <equipment slot="Item1"
-                 id="Item.northern_javelin_1_t2" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Item2"
                  id="Item.northern_round_shield" />
       <equipment slot="Item3"
-                 id="Item.northern_javelin_1_t2" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.nordic_fur_cap" />
       <equipment slot="Body"
@@ -10724,11 +10730,11 @@
       <equipment slot="Item0"
                  id="Item.simple_sparth_axe_t2" />
       <equipment slot="Item1"
-                 id="Item.northern_javelin_1_t2" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Item2"
                  id="Item.northern_round_shield" />
       <equipment slot="Item3"
-                 id="Item.northern_javelin_1_t2" />
+                 id="Item.western_javelin_1_t2" />
       <equipment slot="Body"
                  id="Item.nordic_sloven" />
       <equipment slot="Leg"
@@ -11370,6 +11376,8 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.sturgia_2haxe_1_t4" />
+      <equipment slot="Item1"
+                 id="Item.leather_round_shield" />
       <equipment slot="Item3"
                  id="Item.northern_throwing_axe_1_t1" />
       <equipment slot="Head"
@@ -11386,6 +11394,8 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.sturgia_2haxe_1_t4" />
+      <equipment slot="Item1"
+                 id="Item.leather_round_shield" />
       <equipment slot="Item3"
                  id="Item.northern_throwing_axe_1_t1" />
       <equipment slot="Head"
@@ -11402,6 +11412,8 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.sturgia_2haxe_1_t4" />
+      <equipment slot="Item1"
+                 id="Item.leather_round_shield" />
       <equipment slot="Item3"
                  id="Item.northern_throwing_axe_1_t1" />
       <equipment slot="Head"

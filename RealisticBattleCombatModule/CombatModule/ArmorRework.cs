@@ -147,6 +147,7 @@ namespace RealisticBattleCombatModule
                 if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
                 {
                     num += (float)equipmentElement.Item.ArmorComponent.HeadArmor;
+                    num += 10f;
                 }
                 return num;
             }
@@ -158,6 +159,7 @@ namespace RealisticBattleCombatModule
                 if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
                 {
                     num += (float)equipmentElement.Item.ArmorComponent.LegArmor;
+                    num += 10f;
                 }
                 return num;
             }
@@ -169,6 +171,7 @@ namespace RealisticBattleCombatModule
                 if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
                 {
                     num += (float)equipmentElement.Item.ArmorComponent.ArmArmor;
+                    num += 10f;
                 }
                 return num;
             }
@@ -180,6 +183,7 @@ namespace RealisticBattleCombatModule
                 if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
                 {
                     num += (float)equipmentElement.Item.ArmorComponent.BodyArmor;
+                    num += 10f;
                 }
                 return num;
             }

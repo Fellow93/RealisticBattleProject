@@ -2,6 +2,60 @@
 <CraftingPieces>
   <!-- #region Sword Pieces -->
   <!-- #region Used Sword Blade Pieces -->
+  <CraftingPiece id="wood_blade_1"
+                 name="{=p2xjr5Bp}Wooden Blade"
+                 tier="1"
+                 piece_type="Blade"
+                 mesh="wood_blade_1"
+                 culture="Culture.empire"
+                 length="86.9"
+                 weight="0.4"
+                 CraftingCost="75">
+    <PieceUsages unavailable_usages="" />
+    <BladeData stack_amount="3"
+               physics_material="wood_weapon"
+               body_name="bo_sword_one_handed">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.5" />
+      <Swing damage_type="Cut"
+             damage_factor="0.25" />
+    </BladeData>
+    <Flags>
+      <Flag name="NoBlood" />
+    </Flags>
+    <Materials>
+      <Material id="Wood"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  <!--Copy of first wood blade, but made heavier-->
+  <CraftingPiece id="wood_blade_2"
+                 name="{=fuIxmJ2g}Heavy Wooden Blade"
+                 tier="1"
+                 piece_type="Blade"
+                 mesh="wood_blade_1"
+                 culture="Culture.empire"
+                 length="86.9"
+                 weight="0.7"
+                 CraftingCost="75">
+    <PieceUsages unavailable_usages="" />
+    <BladeData stack_amount="3"
+               physics_material="wood_weapon"
+               body_name="bo_sword_one_handed">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.55" />
+      <Swing damage_type="Cut"
+             damage_factor="0.3" />
+    </BladeData>
+    <Flags>
+      <Flag name="NoBlood" />
+    </Flags>
+    <Materials>
+      <Material id="Wood"
+                count="1" />
+    </Materials>
+  </CraftingPiece>
+  
   <CraftingPiece id="empire_blade_3" name="{=kuROzU1J}Simple Warsword Blade" tier="1" piece_type="Blade" mesh="empire_blade_3" culture="Culture.empire" length="91.3" weight="0.62" is_default="true">
     <PieceUsages unavailable_usages="" />
     <BuildData previous_piece_offset="-0.4" />

@@ -1476,4 +1476,59 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
+  <Item id="aserai_crown"
+        name="{=6Dk7LClc}Luxury Turban Over Helmet"
+        mesh="aserai_crown"
+        culture="Culture.aserai"
+        weight="2.8"
+        appearance="8"
+        Type="HeadArmor">
+    <ItemComponent>
+      <Armor head_armor="60"
+             has_gender_variations="false"
+             hair_cover_type="all"
+             beard_cover_type="type3"
+             modifier_group="plate"
+             material_type="Plate" />
+    </ItemComponent>
+    <Flags />
+  </Item>
+  <Item id="khuzait_crown"
+        name="{=noqT1MMC}Ornate Steel Cap"
+        mesh="khuzait_crown"
+        culture="Culture.khuzait"
+        is_merchandise="false"
+        subtype="head_armor"
+        weight="1.4"
+        difficulty="0"
+        appearance="8"
+        Type="HeadArmor">
+    <ItemComponent>
+      <Armor head_armor="45"
+             has_gender_variations="false"
+             hair_cover_type="type1"
+             beard_cover_type="none"
+             modifier_group="plate"
+             material_type="Plate" />
+    </ItemComponent>
+    <Flags />
+  </Item>
+  <Item id="vlandia_crown"
+        name="{=1b6T0M72}Austere Crown"
+        mesh="vlandia_crown"
+        culture="Culture.empire"
+        is_merchandise="false"
+        weight="0.35"
+        appearance="6"
+        Type="HeadArmor">
+    <ItemComponent>
+      <Armor head_armor="15"
+             has_gender_variations="false"
+             hair_cover_type="none"
+             modifier_group="plate"
+             material_type="Plate" />
+    </ItemComponent>
+    <Flags Civilian="true"
+           UseTeamColor="false" />
+  </Item>
 </Items>

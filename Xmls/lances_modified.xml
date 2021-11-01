@@ -317,7 +317,7 @@
     <Pieces>
       <Piece id="spear_blade_15"
              Type="Blade"
-             scale_factor="70" />
+             scale_factor="130" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -336,9 +336,9 @@
                crafting_template="Javelin"
                culture="Culture.sturgia">
     <Pieces>
-      <Piece id="spear_blade_1"
+      <Piece id="spear_blade_16"
              Type="Blade"
-             scale_factor="70" />
+             scale_factor="130" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -360,7 +360,7 @@
     <Pieces>
       <Piece id="spear_blade_42"
              Type="Blade"
-             scale_factor="170" />
+             scale_factor="230" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -380,7 +380,7 @@
     <Pieces>
       <Piece id="spear_blade_42"
              Type="Blade"
-             scale_factor="180" />
+             scale_factor="220" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -398,9 +398,9 @@
 			   value="5400"
                culture="Culture.battania">
     <Pieces>
-      <Piece id="spear_blade_1"
+      <Piece id="spear_blade_16"
              Type="Blade"
-             scale_factor="80" />
+             scale_factor="120" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -422,7 +422,7 @@
     <Pieces>
       <Piece id="spear_blade_42"
              Type="Blade"
-             scale_factor="200" />
+             scale_factor="210" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -483,9 +483,9 @@
 			   value="4500"
                culture="Culture.khuzait">
     <Pieces>
-      <Piece id="spear_blade_27"
+      <Piece id="spear_blade_16"
              Type="Blade"
-             scale_factor="50" />
+             scale_factor="100" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -506,7 +506,7 @@
     <Pieces>
       <Piece id="spear_blade_42"
              Type="Blade"
-             scale_factor="190" />
+             scale_factor="200" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
