@@ -406,7 +406,7 @@ namespace RealisticBattleAiModule
                 if (____cavalry != null)
                 {
                     ____cavalry.AI.SetBehaviorWeight<BehaviorVanguard>(1.5f);
-                    ____cavalry.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Middle;
+                    ____cavalry.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f);
                 }
             }
 
@@ -420,7 +420,7 @@ namespace RealisticBattleAiModule
                     ____cavalry.AI.ResetBehaviorWeights();
                     ____cavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                     ____cavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
-                    ____cavalry.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Middle;
+                    ____cavalry.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f);
                     //____cavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
                     //____cavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
                 }

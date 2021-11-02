@@ -13,7 +13,7 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 		private Timer _reformTimer = null;
 		private Timer _attackTimer = null;
 
-		public FormationAI.BehaviorSide FlankSide;
+		public FormationAI.BehaviorSide FlankSide = FormationAI.BehaviorSide.Middle;
 
 		private float mobilityModifier = 1f;
 		private enum SkirmishMode
@@ -93,6 +93,7 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 			WorldPosition position = base.Formation.QuerySystem.MedianPosition;
 			_isEnemyReachable = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && (!(base.Formation.Team.TeamAI is TeamAISiegeComponent) || !TeamAISiegeComponent.IsFormationInsideCastle(base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation, includeOnlyPositionedUnits: false));
 			Vec2 averagePosition = base.Formation.QuerySystem.AveragePosition;
+
 			if (!_isEnemyReachable)
 			{
 				position.SetVec2(averagePosition);
@@ -143,7 +144,15 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 							}
                             else
                             {
-								position = allyFormation.QuerySystem.MedianPosition;
+								if (allyFormation != null)
+								{
+									position = allyFormation.QuerySystem.MedianPosition;
+
+								}
+								else
+                                {
+									position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+								}
 							}
 							break;
                         }
@@ -171,7 +180,15 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 							}
 							else
 							{
-								position = allyFormation.QuerySystem.MedianPosition;
+								if (allyFormation != null)
+								{
+									position = allyFormation.QuerySystem.MedianPosition;
+
+								}
+								else
+								{
+									position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+								}
 							}
 
 							break;
