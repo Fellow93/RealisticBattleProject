@@ -1679,55 +1679,57 @@ namespace RealisticBattleCombatModule
                 }
             }
 
-            //if (victimAgent.Character != null && victimAgent.Character.IsPlayerCharacter)
-            //{
-            //    if (!collisionData.AttackBlockedWithShield && (collisionData.CollisionResult == CombatCollisionResult.Blocked || collisionData.CollisionResult == CombatCollisionResult.Parried || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked))
-            //    {
-            //        CharacterObject affectedCharacter = (CharacterObject)victimAgent.Character;
-            //        Hero heroObject = affectedCharacter.HeroObject;
+            if (victimAgent!= null && victimAgent.Character != null && victimAgent.Character.IsPlayerCharacter)
+            {
+                if (!collisionData.AttackBlockedWithShield && (collisionData.CollisionResult == CombatCollisionResult.Blocked || collisionData.CollisionResult == CombatCollisionResult.Parried || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked))
+                {
+                    CharacterObject affectedCharacter = (CharacterObject)victimAgent.Character;
+                    Hero heroObject = affectedCharacter.HeroObject;
 
-            //        float experience = 1f;
-            //        Campaign.Current.Models.CombatXpModel.GetXpFromHit(heroObject.CharacterObject, null, affectedCharacter, heroObject.PartyBelongedTo?.Party, (int)collisionData.BaseMagnitude, false, CombatXpModel.MissionTypeEnum.Battle, out var xpAmount);
-            //        experience = xpAmount;
-            //        WeaponComponentData parryWeapon = victimAgent.WieldedWeapon.CurrentUsageItem;
-            //        if (parryWeapon != null)
-            //        {
-            //            SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(parryWeapon);
-            //            float num2 = ((skillForWeapon == DefaultSkills.Bow) ? 0.5f : 1f);
-            //            affectedCharacter.HeroObject.AddSkillXp(skillForWeapon, experience);
-            //        }
-            //        else
-            //        {
-            //            heroObject.AddSkillXp(DefaultSkills.Athletics, MBRandom.RoundRandomized(experience));
-            //        }
-            //        if (victimAgent.HasMount)
-            //        {
-            //            float num3 = 0.1f;
-            //            float speedBonusFromMovement = collisionData.MovementSpeedDamageModifier;
-            //            if (speedBonusFromMovement > 0f)
-            //            {
-            //                num3 *= 1f + speedBonusFromMovement;
-            //            }
-            //            if (num3 > 0f)
-            //            {
-            //                heroObject.AddSkillXp(DefaultSkills.Riding, MBRandom.RoundRandomized(num3 * experience));
-            //            }
-            //        }
-            //        else
-            //        {
-            //            float num5 = 0.2f;
-            //            float speedBonusFromMovement = collisionData.MovementSpeedDamageModifier;
-            //            if (speedBonusFromMovement > 0f)
-            //            {
-            //                num5 += 1.5f * speedBonusFromMovement;
-            //            }
-            //            if (num5 > 0f)
-            //            {
-            //                heroObject.AddSkillXp(DefaultSkills.Athletics, num5 * experience);
-            //            }
-            //        }
-            //    }
-            //}
+                    CharacterObject affectorCharacter = (CharacterObject)attackerAgent.Character;
+
+                    float experience = 1f;
+                    Campaign.Current.Models.CombatXpModel.GetXpFromHit(heroObject.CharacterObject, null, affectorCharacter, heroObject.PartyBelongedTo?.Party, (int)collisionData.BaseMagnitude, false, CombatXpModel.MissionTypeEnum.Battle, out var xpAmount);
+                    experience = xpAmount * 2f;
+                    WeaponComponentData parryWeapon = victimAgent.WieldedWeapon.CurrentUsageItem;
+                    if (parryWeapon != null)
+                    {
+                        SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(parryWeapon);
+                        float num2 = ((skillForWeapon == DefaultSkills.Bow) ? 0.5f : 1f);
+                        affectedCharacter.HeroObject.AddSkillXp(skillForWeapon, experience);
+                    }
+                    else
+                    {
+                        heroObject.AddSkillXp(DefaultSkills.Athletics, MBRandom.RoundRandomized(experience));
+                    }
+                    if (victimAgent.HasMount)
+                    {
+                        float num3 = 0.1f;
+                        float speedBonusFromMovement = collisionData.MovementSpeedDamageModifier;
+                        if (speedBonusFromMovement > 0f)
+                        {
+                            num3 *= 1f + speedBonusFromMovement;
+                        }
+                        if (num3 > 0f)
+                        {
+                            heroObject.AddSkillXp(DefaultSkills.Riding, MBRandom.RoundRandomized(num3 * experience));
+                        }
+                    }
+                    else
+                    {
+                        float num5 = 0.2f;
+                        float speedBonusFromMovement = collisionData.MovementSpeedDamageModifier;
+                        if (speedBonusFromMovement > 0f)
+                        {
+                            num5 += 1.5f * speedBonusFromMovement;
+                        }
+                        if (num5 > 0f)
+                        {
+                            heroObject.AddSkillXp(DefaultSkills.Athletics, num5 * experience);
+                        }
+                    }
+                }
+            }
 
             if ((collisionData.CollisionResult == CombatCollisionResult.StrikeAgent) && (collisionData.DamageType == (int)DamageTypes.Pierce))
             {
@@ -1949,7 +1951,7 @@ namespace RealisticBattleCombatModule
                 __instance.Mission.AddSoundAlarmFactorToAgents(b.OwnerId, b.Position, 15f);
             }
             b.DamagedPercentage = (float)b.InflictedDamage / __instance.HealthLimit;
-        //__instance.UpdateLastAttackAndHitTimes(agent, b.IsMissile);
+
             MethodInfo method = typeof(Agent).GetMethod("UpdateLastAttackAndHitTimes", BindingFlags.NonPublic | BindingFlags.Instance);
             method.DeclaringType.GetMethod("UpdateLastAttackAndHitTimes");
             method.Invoke(__instance, new object[] { agent, b.IsMissile });
@@ -2000,22 +2002,21 @@ namespace RealisticBattleCombatModule
                 }
             }
 
-            //__instance.Mission.OnAgentHit(__instance, agent, affectorWeaponSlotOrMissileIndex, b.IsMissile, isBlocked: false, b.InflictedDamage, b.MovementSpeedDamageModifier, hitDistance, b.AttackType, b.VictimBodyPart);
             MethodInfo method3 = typeof(Mission).GetMethod("OnAgentHit", BindingFlags.NonPublic | BindingFlags.Instance);
             method3.DeclaringType.GetMethod("OnAgentHit");
-            //OnAgentHit(Agent affectedAgent, Agent affectorAgent, int affectorWeaponSlotOrMissileIndex, bool isMissile, bool isBlocked,
-            //    int damage, float damagedHp, float movementSpeedDamageModifier, float hitDistance, AgentAttackType attackType, BoneBodyPartType victimHitBodyPart)
             method3.Invoke(__instance.Mission, new object[] { __instance, agent, affectorWeaponSlotOrMissileIndex, b.IsMissile, false,
                 b.InflictedDamage, __instance.Health, b.MovementSpeedDamageModifier, hitDistance, b.AttackType, b.VictimBodyPart });
+
             if (__instance.Health < 1f)
             {
                 KillInfo overrideKillInfo = (b.IsFallDamage ? KillInfo.Gravity : KillInfo.Invalid);
                 __instance.Die(b, overrideKillInfo);
             }
-            //__instance.HandleBlowAux(ref b);
+
             MethodInfo method2 = typeof(Agent).GetMethod("HandleBlowAux", BindingFlags.NonPublic | BindingFlags.Instance);
             method2.DeclaringType.GetMethod("HandleBlowAux");
             method2.Invoke(__instance, new object[] { b });
+
             return false;
         }
     }
@@ -2285,110 +2286,114 @@ namespace RealisticBattleCombatModule
         }
     }
 
-    //[HarmonyPatch(typeof(StoryModeGenericXpModel))]
-    //[HarmonyPatch("GetXpMultiplier")]
-    //class AddSkillXpPatch
-    //{
-    //    static bool Prefix(StoryModeGenericXpModel __instance, Hero hero, ref float __result)
-    //    {
-    //        __result = 1f;
-    //        return false;
-    //    }
-    //}
+    [HarmonyPatch(typeof(StoryModeGenericXpModel))]
+    [HarmonyPatch("GetXpMultiplier")]
+    class AddSkillXpPatch
+    {
+        static bool Prefix(StoryModeGenericXpModel __instance, Hero hero, ref float __result)
+        {
+            __result = 1f;
+            return false;
+        }
+    }
 
-    //[HarmonyPatch(typeof(StoryModeCombatXpModel))]
-    //class GetXpFromHitPatch
-    //{
-    //    [HarmonyPrefix]
-    //    [HarmonyPatch("GetXpFromHit")]
-    //    static bool PrefixGetXpFromHit(ref StoryModeCombatXpModel __instance, CharacterObject attackerTroop, CharacterObject captain, CharacterObject attackedTroop, PartyBase party, int damage, bool isFatal, MissionTypeEnum missionType, out int xpAmount)
-    //    {
-    //        if (missionType == MissionTypeEnum.Battle || missionType == MissionTypeEnum.PracticeFight)
-    //        {
-    //            int num = attackedTroop.MaxHitPoints();
-    //            float num2 = 0f;
-    //            num2 = ((party?.MapEvent == null) ? Campaign.Current.Models.MilitaryPowerModel.GetTroopPowerBasedOnContext(attackerTroop) : Campaign.Current.Models.MilitaryPowerModel.GetTroopPowerBasedOnContext(attackerTroop, party.MapEvent.EventType, party.Side, missionType == MissionTypeEnum.SimulationBattle));
-    //            float num3 = 0.4f * ((num2 + 0.5f) * (float)(Math.Min(damage, num) + (isFatal ? num : 0)));
-    //            float num4 = num3;
-    //            float num5;
-    //            switch (missionType)
-    //            {
-    //                default:
-    //                    num5 = 1f;
-    //                    break;
-    //                case MissionTypeEnum.Battle:
-    //                    num5 = 1f;
-    //                    break;
-    //                case MissionTypeEnum.SimulationBattle:
-    //                    num5 = 0.9f;
-    //                    break;
-    //                case MissionTypeEnum.Tournament:
-    //                    num5 = 0.33f;
-    //                    break;
-    //                case MissionTypeEnum.PracticeFight:
-    //                    num5 = 0.0625f;
-    //                    break;
-    //                case MissionTypeEnum.NoXp:
-    //                    num5 = 0f;
-    //                    break;
-    //            }
-    //            num3 = num4 * num5;
-    //            ExplainedNumber xpToGain = new ExplainedNumber(num3);
-    //            if (party != null)
-    //            {
-    //                if (party.IsMobile && party.MobileParty.LeaderHero != null)
-    //                {
-    //                    if (!attackerTroop.IsArcher && party.MobileParty.HasPerk(DefaultPerks.OneHanded.Trainer, checkSecondaryRole: true))
-    //                    {
-    //                        xpToGain.AddFactor(DefaultPerks.OneHanded.Trainer.SecondaryBonus * 0.01f, DefaultPerks.OneHanded.Trainer.Name);
-    //                    }
-    //                    if (attackerTroop.HasThrowingWeapon() && party.MobileParty.HasPerk(DefaultPerks.Throwing.Resourceful, checkSecondaryRole: true))
-    //                    {
-    //                        xpToGain.AddFactor(DefaultPerks.Throwing.Resourceful.SecondaryBonus * 0.01f, DefaultPerks.Throwing.Resourceful.Name);
-    //                    }
-    //                    if (attackerTroop.IsInfantry)
-    //                    {
-    //                        if (party.MobileParty.HasPerk(DefaultPerks.OneHanded.CorpsACorps))
-    //                        {
-    //                            xpToGain.AddFactor(DefaultPerks.OneHanded.CorpsACorps.PrimaryBonus * 0.01f, DefaultPerks.OneHanded.CorpsACorps.Name);
-    //                        }
-    //                        if (party.MobileParty.HasPerk(DefaultPerks.TwoHanded.BaptisedInBlood, checkSecondaryRole: true))
-    //                        {
-    //                            xpToGain.AddFactor(DefaultPerks.TwoHanded.BaptisedInBlood.SecondaryBonus * 0.01f, DefaultPerks.TwoHanded.BaptisedInBlood.Name);
-    //                        }
-    //                    }
-    //                    if (party.MobileParty.HasPerk(DefaultPerks.OneHanded.LeadByExample))
-    //                    {
-    //                        xpToGain.AddFactor(DefaultPerks.OneHanded.LeadByExample.PrimaryBonus * 0.01f, DefaultPerks.OneHanded.LeadByExample.Name);
-    //                    }
-    //                    if (attackerTroop.IsArcher && party.MobileParty.HasPerk(DefaultPerks.Crossbow.MountedCrossbowman, checkSecondaryRole: true))
-    //                    {
-    //                        xpToGain.AddFactor(DefaultPerks.Crossbow.MountedCrossbowman.SecondaryBonus * 0.01f, DefaultPerks.Crossbow.MountedCrossbowman.Name);
-    //                    }
-    //                    if (attackerTroop.Culture.IsBandit && party.MobileParty.HasPerk(DefaultPerks.Roguery.NoRestForTheWicked))
-    //                    {
-    //                        xpToGain.AddFactor(DefaultPerks.Roguery.NoRestForTheWicked.PrimaryBonus * 0.01f, DefaultPerks.Roguery.NoRestForTheWicked.Name);
-    //                    }
-    //                }
-    //                if (party.IsMobile && party.MobileParty.IsGarrison && party.MobileParty.CurrentSettlement?.Town.Governor != null)
-    //                {
-    //                    PerkHelper.AddPerkBonusForTown(DefaultPerks.TwoHanded.ArrowDeflection, party.MobileParty.CurrentSettlement.Town, ref xpToGain);
-    //                    if (attackerTroop.IsMounted)
-    //                    {
-    //                        PerkHelper.AddPerkBonusForTown(DefaultPerks.Polearm.Guards, party.MobileParty.CurrentSettlement.Town, ref xpToGain);
-    //                    }
-    //                }
-    //            }
-    //            if (captain != null && captain.IsHero && captain.GetPerkValue(DefaultPerks.Leadership.InspiringLeader))
-    //            {
-    //                xpToGain.AddFactor(DefaultPerks.Leadership.InspiringLeader.SecondaryBonus, DefaultPerks.Leadership.InspiringLeader.Name);
-    //            }
-    //            xpAmount = TaleWorlds.Library.MathF.Round(xpToGain.ResultNumber);
-    //            return false;
-    //        }
-    //        xpAmount = 0;
-    //        return true;
-    //    }
-    //}
+    [HarmonyPatch(typeof(StoryModeCombatXpModel))]
+    class GetXpFromHitPatch
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch("GetXpFromHit")]
+        static bool PrefixGetXpFromHit(ref StoryModeCombatXpModel __instance, CharacterObject attackerTroop, CharacterObject captain, CharacterObject attackedTroop, PartyBase party, int damage, bool isFatal, MissionTypeEnum missionType, out int xpAmount)
+        {
+            if (missionType == MissionTypeEnum.Battle || missionType == MissionTypeEnum.PracticeFight || missionType == MissionTypeEnum.Tournament)
+            {
+                float attackerLevel = attackerTroop.Level;
+                float attackedLevel = attackedTroop.Level;
+
+                float levelDiffModifier = Math.Max(1f, 1f + ((attackedLevel / attackerLevel) / 10f));
+
+                int attackedTroopMaxHP = attackedTroop.MaxHitPoints();
+                float troopPower = 0f;
+                troopPower = ((party?.MapEvent == null) ? Campaign.Current.Models.MilitaryPowerModel.GetTroopPowerBasedOnContext(attackerTroop) : Campaign.Current.Models.MilitaryPowerModel.GetTroopPowerBasedOnContext(attackerTroop, party.MapEvent.EventType, party.Side, missionType == MissionTypeEnum.SimulationBattle));
+                float rawXpNum = 0.4f * ((troopPower + 0.5f) * (float)(Math.Min(damage, attackedTroopMaxHP) + (isFatal ? attackedTroopMaxHP : 0)));
+                float xpModifier;
+                switch (missionType)
+                {
+                    default:
+                        xpModifier = 1f;
+                        break;
+                    case MissionTypeEnum.Battle:
+                        xpModifier = 1f;
+                        break;
+                    case MissionTypeEnum.SimulationBattle:
+                        xpModifier = 1f;
+                        break;
+                    case MissionTypeEnum.Tournament:
+                        xpModifier = 1f;
+                        break;
+                    case MissionTypeEnum.PracticeFight:
+                        xpModifier = 1f;
+                        break;
+                    case MissionTypeEnum.NoXp:
+                        xpModifier = 0f;
+                        break;
+                }
+                rawXpNum = rawXpNum * xpModifier * levelDiffModifier;
+                ExplainedNumber xpToGain = new ExplainedNumber(rawXpNum);
+                if (party != null)
+                {
+                    if (party.IsMobile && party.MobileParty.LeaderHero != null)
+                    {
+                        if (!attackerTroop.IsRanged && party.MobileParty.HasPerk(DefaultPerks.OneHanded.Trainer, checkSecondaryRole: true))
+                        {
+                            xpToGain.AddFactor(DefaultPerks.OneHanded.Trainer.SecondaryBonus * 0.01f, DefaultPerks.OneHanded.Trainer.Name);
+                        }
+                        if (attackerTroop.HasThrowingWeapon() && party.MobileParty.HasPerk(DefaultPerks.Throwing.Resourceful, checkSecondaryRole: true))
+                        {
+                            xpToGain.AddFactor(DefaultPerks.Throwing.Resourceful.SecondaryBonus * 0.01f, DefaultPerks.Throwing.Resourceful.Name);
+                        }
+                        if (attackerTroop.IsInfantry)
+                        {
+                            if (party.MobileParty.HasPerk(DefaultPerks.OneHanded.CorpsACorps))
+                            {
+                                xpToGain.AddFactor(DefaultPerks.OneHanded.CorpsACorps.PrimaryBonus * 0.01f, DefaultPerks.OneHanded.CorpsACorps.Name);
+                            }
+                            if (party.MobileParty.HasPerk(DefaultPerks.TwoHanded.BaptisedInBlood, checkSecondaryRole: true))
+                            {
+                                xpToGain.AddFactor(DefaultPerks.TwoHanded.BaptisedInBlood.SecondaryBonus * 0.01f, DefaultPerks.TwoHanded.BaptisedInBlood.Name);
+                            }
+                        }
+                        if (party.MobileParty.HasPerk(DefaultPerks.OneHanded.LeadByExample))
+                        {
+                            xpToGain.AddFactor(DefaultPerks.OneHanded.LeadByExample.PrimaryBonus * 0.01f, DefaultPerks.OneHanded.LeadByExample.Name);
+                        }
+                        if (attackerTroop.IsRanged && party.MobileParty.HasPerk(DefaultPerks.Crossbow.MountedCrossbowman, checkSecondaryRole: true))
+                        {
+                            xpToGain.AddFactor(DefaultPerks.Crossbow.MountedCrossbowman.SecondaryBonus * 0.01f, DefaultPerks.Crossbow.MountedCrossbowman.Name);
+                        }
+                        if (attackerTroop.Culture.IsBandit && party.MobileParty.HasPerk(DefaultPerks.Roguery.NoRestForTheWicked))
+                        {
+                            xpToGain.AddFactor(DefaultPerks.Roguery.NoRestForTheWicked.PrimaryBonus * 0.01f, DefaultPerks.Roguery.NoRestForTheWicked.Name);
+                        }
+                    }
+                    if (party.IsMobile && party.MobileParty.IsGarrison && party.MobileParty.CurrentSettlement?.Town.Governor != null)
+                    {
+                        PerkHelper.AddPerkBonusForTown(DefaultPerks.TwoHanded.ArrowDeflection, party.MobileParty.CurrentSettlement.Town, ref xpToGain);
+                        if (attackerTroop.IsMounted)
+                        {
+                            PerkHelper.AddPerkBonusForTown(DefaultPerks.Polearm.Guards, party.MobileParty.CurrentSettlement.Town, ref xpToGain);
+                        }
+                    }
+                }
+                if (captain != null && captain.IsHero && captain.GetPerkValue(DefaultPerks.Leadership.InspiringLeader))
+                {
+                    xpToGain.AddFactor(DefaultPerks.Leadership.InspiringLeader.SecondaryBonus, DefaultPerks.Leadership.InspiringLeader.Name);
+                }
+                xpAmount = MathF.Round(xpToGain.ResultNumber);
+                return false;
+            }
+            xpAmount = 0;
+            return true;
+        }
+    }
 
 }
