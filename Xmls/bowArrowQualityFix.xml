@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ItemModifiers>
+  <!-- Swords -->
+  <ItemModifier id="masterwork_sword" name="{=8Tal0XIj}Masterwork {ITEMNAME}" damage="10" speed="10" price_factor="0.7" />
+  <ItemModifier id="hardened_sword" name="{=CAP1BUjL}Hardened {ITEMNAME}" damage="5" speed="0" price_factor="0.5" />
+  <ItemModifier id="balanced_sword" name="{=fdgcpipH}Balanced {ITEMNAME}" damage="0" speed="10" price_factor="0.5" />
+  <ItemModifier id="crude_sword" name="{=RwBOv1Mz}Crude {ITEMNAME}" damage="-2" speed="-5" price_factor="0.4" />
+  <ItemModifier id="bent_sword" name="{=eb4miTUB}Bent {ITEMNAME}" damage="-5" speed="-5" price_factor="0.3" />
+  <ItemModifier id="rusty_sword" name="{=l7QEpVwU}Rusty {ITEMNAME}" damage="-7" speed="0" price_factor="0.2" />
+  <!-- Bows -->
+  <ItemModifier id="masterwork_bow" name="{=8Tal0XIj}Masterwork {ITEMNAME}" damage="0" speed="10" missile_speed="20" price_factor="0.7" />
+  <ItemModifier id="balanced_bow" name="{=WK5y3PyJ}Fast {ITEMNAME}" damage="0" speed="5" missile_speed="10" price_factor="0.5" />
+  <ItemModifier id="heavy_bow" name="{=H30eaZdf}Heavy {ITEMNAME}" damage="0" speed="-5" missile_speed="20" price_factor="0.5" />
+  <ItemModifier id="splintered_bow" name="{=8Pd6fLoy}Splintered {ITEMNAME}" damage="0" speed="-5" missile_speed="-10" price_factor="0.3" />
+  <ItemModifier id="cracked_bow" name="{=br0N6SSH}Cracked {ITEMNAME}" damage="0" speed="-10" missile_speed="-15" price_factor="0.15" />
+  <!-- Crossbows -->
+  <ItemModifier id="masterwork_crossbow" name="{=8Tal0XIj}Masterwork {ITEMNAME}" damage="0" speed="10" missile_speed="50" price_factor="0.7" />
+  <ItemModifier id="tuned_crossbow" name="{=WbaIorOh}Tuned {ITEMNAME}" damage="0" speed="5" missile_speed="30" price_factor="0.5" />
+  <ItemModifier id="bent_crossbow" name="{=eb4miTUB}Bent {ITEMNAME}" damage="0" speed="-10" missile_speed="-30" price_factor="0.2" />
+  <!-- Arrows -->
+  <ItemModifier id="balanced_arrows" name="{=fdgcpipH}Balanced {ITEMNAME}" damage="10" price_factor="0.7" />
+  <ItemModifier id="large_bag_arrows" name="{=3JaHZA3Y}Large Bag of {ITEMNAME}" damage="0" stack_count="2" price_factor="0.5" />
+  <ItemModifier id="splintered_arrows" name="{=8Pd6fLoy}Splintered {ITEMNAME}" damage="-5" price_factor="0.3" />
+  <ItemModifier id="bent_arrows" name="{=eb4miTUB}Bent {ITEMNAME}" damage="-10" price_factor="0.2" />
+  <!-- Bolts -->
+  <ItemModifier id="balanced_bolts" name="{=fdgcpipH}Balanced {ITEMNAME}" damage="10" price_factor="0.7" />
+  <ItemModifier id="large_bag_bolts" name="{=3JaHZA3Y}Large Bag of {ITEMNAME}" damage="0" stack_count="2" price_factor="0.5" />
+  <ItemModifier id="splintered_bolts" name="{=8Pd6fLoy}Splintered {ITEMNAME}" damage="-5" price_factor="0.2" />
+  <!-- Cheap weapons (clubs and stuff?) -->
+  <ItemModifier id="fine_cheap" name="{=xeb1b5PQ}Fine {ITEMNAME}" damage="5" speed="5" price_factor="0.7" />
+  <ItemModifier id="well_crafted_cheap" name="{=85WO1MKG}Well made {ITEMNAME}" damage="3" speed="5" price_factor="0.6" />
+  <ItemModifier id="splintered_cheap" name="{=8Pd6fLoy}Splintered {ITEMNAME}" damage="-2" speed="0" price_factor="0.5" />
+  <ItemModifier id="bent_cheap" name="{=3FdaOPBi}Charred {ITEMNAME}" damage="-3" speed="-5" price_factor="0.4" />
+  <ItemModifier id="cracked_cheap" name="{=RwBOv1Mz}Crude {ITEMNAME}" damage="-4" speed="-10" price_factor="0.3" />
+  <ItemModifier id="rotten_cheap" name="{=dXjbxaKQ}Decaying {ITEMNAME}" damage="-5" speed="-15" price_factor="0.2" />
+  <!-- Polearms -->
+  <ItemModifier id="balanced_polearm" name="{=fdgcpipH}Balanced {ITEMNAME}" damage="3" speed="10" price_factor="0.7" />
+  <ItemModifier id="hardened_polearm" name="{=CAP1BUjL}Hardened {ITEMNAME}" damage="4" speed="0" price_factor="0.6" />
+  <ItemModifier id="bent_polearm" name="{=eb4miTUB}Bent {ITEMNAME}" damage="-3" speed="-5" price_factor="0.5" />
+  <ItemModifier id="heavy_polearm" name="{=RwBOv1Mz}Crude {ITEMNAME}" damage="3" speed="-10" price_factor="0.4" />
+  <ItemModifier id="splintered_polearm" name="{=8Pd6fLoy}Splintered {ITEMNAME}" damage="-4" speed="-5" price_factor="0.3" />
+  <ItemModifier id="cracked_polearm" name="{=br0N6SSH}Cracked {ITEMNAME}" damage="-5" speed="-10" price_factor="0.2" />
+  <!-- Low Quality Maces -->
+  <ItemModifier id="balanced_maceLQ" name="{=fdgcpipH}Balanced {ITEMNAME}" damage="7" speed="10" price_factor="0.7" />
+  <ItemModifier id="heavy_maceLQ" name="{=CAP1BUjL}Hardened {ITEMNAME}" damage="5" speed="-10" price_factor="0.6" />
+  <ItemModifier id="bent_maceLQ" name="{=eb4miTUB}Bent {ITEMNAME}" damage="-2" speed="-1" price_factor="0.5" />
+  <ItemModifier id="chipped_maceLQ" name="{=CCKZv6GM}Chipped {ITEMNAME}" damage="-3" speed="0" price_factor="0.4" />
+  <ItemModifier id="rusty_maceLQ" name="{=l7QEpVwU}Rusty {ITEMNAME}" damage="-4" speed="0" price_factor="0.3" />
+  <ItemModifier id="splintered_maceLQ" name="{=8Pd6fLoy}Splintered {ITEMNAME}" damage="-5" speed="-10" price_factor="0.2" />
+  <!-- High Quality Maces -->
+  <ItemModifier id="masterwork_maceHQ" name="{=8Tal0XIj}Masterwork {ITEMNAME}" damage="10" speed="15" price_factor="0.7" />
+  <ItemModifier id="balanced_maceHQ" name="{=fdgcpipH}Balanced {ITEMNAME}" damage="7" speed="10" price_factor="0.6" />
+  <ItemModifier id="hardened_maceHQ" name="{=CAP1BUjL}Hardened {ITEMNAME}" damage="5" speed="0" price_factor="0.5" />
+  <ItemModifier id="heavy_maceHQ" name="{=RwBOv1Mz}Crude {ITEMNAME}" damage="5" speed="-10" price_factor="0.3" />
+  <ItemModifier id="rusty_maceHQ" name="{=l7QEpVwU}Rusty {ITEMNAME}" damage="-4" speed="0" price_factor="0.3" />
+  <ItemModifier id="bent_maceHQ" name="{=eb4miTUB}Bent {ITEMNAME}" damage="-5" speed="-1" price_factor="0.2" />
+  <!-- Hammers -->
+  <ItemModifier id="balanced_hammer" name="{=fdgcpipH}Balanced {ITEMNAME}" damage="5" speed="10" price_factor="0.7" />
+  <ItemModifier id="light_hammer" name="{=rpUIBrOu}Agile {ITEMNAME}" damage="-2" speed="10" price_factor="0.5" />
+  <ItemModifier id="heavy_hammer" name="{=RwBOv1Mz}Crude {ITEMNAME}" damage="4" speed="-10" price_factor="0.4" />
+  <ItemModifier id="rusty_hammer" name="{=l7QEpVwU}Rusty {ITEMNAME}" damage="-5" speed="0" price_factor="0.2" />
+  <!-- One handed Axes -->
+  <ItemModifier id="quality_axe1H" name="{=bAdxUq7s}Quality {ITEMNAME}" damage="10" speed="10" price_factor="0.7" />
+  <ItemModifier id="heavy_axe1H" name="{=RwBOv1Mz}Crude {ITEMNAME}" damage="5" speed="-10" price_factor="0.5" />
+  <ItemModifier id="dented_axe1H" name="{=PobRGG9S}Dented {ITEMNAME}" damage="-2" speed="0" price_factor="0.4" />
+  <ItemModifier id="chipped_axe1H" name="{=CCKZv6GM}Chipped {ITEMNAME}" damage="-3" speed="0" price_factor="0.3" />
+  <ItemModifier id="rusty_axe1H" name="{=l7QEpVwU}Rusty {ITEMNAME}" damage="-5" speed="0" price_factor="0.2" />
+  <!-- Two handed Axes -->
+  <ItemModifier id="quality_axe2H" name="{=bAdxUq7s}Quality {ITEMNAME}" damage="15" speed="10" price_factor="0.7" />
+  <ItemModifier id="heavy_axe2H" name="{=H30eaZdf}Heavy {ITEMNAME}" damage="12" speed="-10" price_factor="0.5" />
+  <ItemModifier id="dented_axe2H" name="{=PobRGG9S}Dented {ITEMNAME}" damage="-3" speed="0" price_factor="0.4" />
+  <ItemModifier id="chipped_axe2H" name="{=CCKZv6GM}Chipped {ITEMNAME}" damage="-5" speed="0" price_factor="0.3" />
+  <ItemModifier id="rusty_axe2H" name="{=l7QEpVwU}Rusty {ITEMNAME}" damage="-7" speed="0" price_factor="0.2" />
+  <!-- Throwing Axes -->
+  <ItemModifier id="large_bag_axe_throwing" name="{=3JaHZA3Y}Large Bag of {ITEMNAME}" stack_count="2" missile_speed="0" price_factor="0.7" />
+  <ItemModifier id="balanced_axe_throwing" name="{=fdgcpipH}Balanced {ITEMNAME}" damage="5" missile_speed="0" price_factor="0.6" />
+  <ItemModifier id="bent_axe_throwing" name="{=eb4miTUB}Bent {ITEMNAME}" damage="-5" missile_speed="0" price_factor="0.2" />
+  <!-- Throwing knives -->
+  <ItemModifier id="balanced_knife_throwing" name="{=fdgcpipH}Balanced {ITEMNAME}" damage="5" speed="10" missile_speed="0" price_factor="0.7" />
+  <ItemModifier id="large_bag_knife_throwing" name="{=3JaHZA3Y}Large Bag of {ITEMNAME}" stack_count="2" damage="0" speed="0" missile_speed="0" price_factor="0.7" />
+  <ItemModifier id="heavy_knife_throwing" name="{=H30eaZdf}Heavy {ITEMNAME}" damage="3" speed="-2" missile_speed="0" price_factor="0.5" />
+  <ItemModifier id="light_knife_throwing" name="{=582QaBL6}Light {ITEMNAME}" damage="2" speed="2" missile_speed="0" price_factor="0.4" />
+  <ItemModifier id="bent_knife_throwing" name="{=eb4miTUB}Bent {ITEMNAME}" damage="-5" speed="0" missile_speed="0" price_factor="0.2" />
+  <!-- Throwing spears and darts -->
+  <ItemModifier id="balanced_spear_dart_throwing" name="{=fdgcpipH}Balanced {ITEMNAME}" damage="5" speed="1" missile_speed="0" price_factor="0.7" />
+  <ItemModifier id="large_bag_spear_dart_throwing" name="{=3JaHZA3Y}Large Bag of {ITEMNAME}" stack_count="2" damage="0" speed="0" missile_speed="0" price_factor="0.7" />
+  <ItemModifier id="splintered_spear_dart_throwing" name="{=8Pd6fLoy}Splintered {ITEMNAME}" damage="-2" speed="-1" missile_speed="0" price_factor="0.5" />
+  <ItemModifier id="bent_spear_dart_throwing" name="{=eb4miTUB}Bent {ITEMNAME}" damage="-3" speed="0" missile_speed="0" price_factor="0.3" />
+  <ItemModifier id="cracked_spear_dart_throwing" name="{=br0N6SSH}Cracked {ITEMNAME}" damage="-5" speed="0" missile_speed="0" price_factor="0.2" />
+  <!-- Metal Shields -->
+  <ItemModifier id="lordly_shield_metal" name="{=w3jn7Ahz}Lordly {ITEMNAME}" hit_points="300" speed="1" armor="3" price_factor="0.8" />
+  <ItemModifier id="weighted_shield_metal" name="{=ajLElAyS}Weighted {ITEMNAME}" hit_points="0" speed="0" armor="2" price_factor="0.7" />
+  <ItemModifier id="hardened_shield_metal" name="{=CAP1BUjL}Hardened {ITEMNAME}" hit_points="100" speed="-1" armor="1" price_factor="0.6" />
+  <ItemModifier id="crude_shield_metal" name="{=RwBOv1Mz}Crude {ITEMNAME}" hit_points="-50" speed="0" armor="-1" price_factor="0.5" />
+  <ItemModifier id="dented_shield_metal" name="{=PobRGG9S}Dented {ITEMNAME}" hit_points="-100" speed="0" armor="-1" price_factor="0.4" />
+  <ItemModifier id="rusty_shield_metal" name="{=l7QEpVwU}Rusty {ITEMNAME}" hit_points="-200" speed="1" armor="-2" weight_factor="1.20" price_factor="0.3" />
+  <ItemModifier id="cracked_shield_metal" name="{=br0N6SSH}Cracked {ITEMNAME}" hit_points="-300" speed="0" armor="-1" price_factor="0.2" />
+  <!-- Wooden Shields -->
+  <ItemModifier id="lordly_shield_wood" name="{=w3jn7Ahz}Lordly {ITEMNAME}" hit_points="200" speed="0" armor="2" price_factor="0.7" />
+  <ItemModifier id="reinforced_shield_wood" name="{=zbs4c6sG}Reinforced {ITEMNAME}" hit_points="100" speed="-1" armor="1" price_factor="0.6" />
+  <ItemModifier id="thick_shield_wood" name="{=BA9c7gPb}Thick {ITEMNAME}" hit_points="100" speed="-2" armor="0" price_factor="0.5" />
+  <ItemModifier id="splintered_shield_wood" name="{=8Pd6fLoy}Splintered {ITEMNAME}" hit_points="-50" speed="0" armor="-1" price_factor="0.4" />
+  <ItemModifier id="battered_shield_wood" name="{=TePk4BSJ}Battered {ITEMNAME}" hit_points="-70" speed="0" armor="-1" price_factor="0.3" />
+  <ItemModifier id="cracked_shield_wood" name="{=br0N6SSH}Cracked {ITEMNAME}" hit_points="-100" speed="0" armor="-1" price_factor="0.2" />
+  <!-- Plate Armors -->
+  <ItemModifier id="lordly_plate" name="{=w3jn7Ahz}Lordly {ITEMNAME}" armor="20" price_factor="0.6" />
+  <ItemModifier id="fine_plate" name="{=xeb1b5PQ}Fine {ITEMNAME}" armor="15" price_factor="0.5" />
+  <ItemModifier id="thick_plate" name="{=BA9c7gPb}Thick {ITEMNAME}" armor="10" price_factor="0.4" />
+  <ItemModifier id="dented_plate" name="{=PobRGG9S}Dented {ITEMNAME}" armor="-5" price_factor="0.3" />
+  <ItemModifier id="rusty_plate" name="{=l7QEpVwU}Rusty {ITEMNAME}" armor="-7" price_factor="0.2" />
+  <ItemModifier id="cracked_plate" name="{=br0N6SSH}Cracked {ITEMNAME}" armor="-10" price_factor="0.1" />
+  <!-- Chain Armors -->
+  <ItemModifier id="fine_chain" name="{=xeb1b5PQ}Fine {ITEMNAME}" armor="15" price_factor="0.6" />
+  <ItemModifier id="heavy_chain" name="{=H30eaZdf}Heavy {ITEMNAME}" armor="10" price_factor="0.5" />
+  <ItemModifier id="crude_chain" name="{=RwBOv1Mz}Crude {ITEMNAME}" armor="-2" price_factor="0.4" />
+  <ItemModifier id="battered_chain" name="{=TePk4BSJ}Battered {ITEMNAME}" armor="-4" price_factor="0.3" />
+  <ItemModifier id="loose_chain" name="{=bWhJwHA1}Loose {ITEMNAME}" armor="-6" price_factor="0.2" />
+  <ItemModifier id="rusty_chain" name="{=l7QEpVwU}Rusty {ITEMNAME}" armor="-8" price_factor="0.1" />
+  <!-- Leather Armors -->
+  <ItemModifier id="flexible_leather" name="{=4nprSS1a}Flexible {ITEMNAME}" armor="6" price_factor="0.7" />
+  <ItemModifier id="hardened_leather" name="{=CAP1BUjL}Hardened {ITEMNAME}" armor="4" price_factor="0.6" />
+  <ItemModifier id="thick_leather" name="{=BA9c7gPb}Thick {ITEMNAME}" armor="2" price_factor="0.5" />
+  <ItemModifier id="frayed_leather" name="{=O0EcDd0a}Frayed {ITEMNAME}" armor="-2" price_factor="0.4" />
+  <ItemModifier id="battered_leather" name="{=TePk4BSJ}Battered {ITEMNAME}" armor="-4" price_factor="0.3" />
+  <ItemModifier id="worn_leather" name="{=5yVgXqQr}Worn {ITEMNAME}" armor="-6" price_factor="0.2" />
+  <!-- Cloth Armors -->
+  <ItemModifier id="thick_cloth" name="{=BA9c7gPb}Thick {ITEMNAME}" armor="6" price_factor="0.7" />
+  <ItemModifier id="tough_cloth" name="{=ajjSonIo}Tough {ITEMNAME}" armor="4" price_factor="0.6" />
+  <ItemModifier id="starched_cloth" name="{=6MVH4JVN}Starched {ITEMNAME}" armor="2" price_factor="0.5" />
+  <ItemModifier id="frayed_cloth" name="{=O0EcDd0a}Frayed {ITEMNAME}" armor="-5" price_factor="0.4" />
+  <ItemModifier id="ripped_cloth" name="{=Pbb94NdW}Ripped {ITEMNAME}" armor="-7" price_factor="0.3" />
+  <ItemModifier id="tattered_cloth" name="{=bXYcvUcR}Tattered {ITEMNAME}" armor="-10" price_factor="0.2" />
+  <!-- Clothing -->
+  <ItemModifier id="fine_cloth_unarmoured" name="{=xeb1b5PQ}Fine {ITEMNAME}" armor="2" price_factor="0.7" />
+  <ItemModifier id="tailored_cloth_unarmoured" name="{=Q5HVyNWJ}Tailored {ITEMNAME}" armor="1" price_factor="0.6" />
+  <ItemModifier id="stained_cloth_unarmoured" name="{=B14fVQHG}Stained {ITEMNAME}" armor="0" price_factor="0.5" />
+  <ItemModifier id="frayed_cloth_unarmoured" name="{=O0EcDd0a}Frayed {ITEMNAME}" armor="-2" price_factor="0.4" />
+  <ItemModifier id="torn_cloth_unarmoured" name="{=SbNbqhOX}Torn {ITEMNAME}" armor="-3" price_factor="0.3" />
+  <ItemModifier id="tattered_cloth_unarmoured" name="{=bXYcvUcR}Tattered {ITEMNAME}" armor="-5" price_factor="0.2" />
+  <!-- Horses -->
+  <!--
+	<ItemModifier id="purebred_horse" name="{=*}Purebred {ITEMNAME}" horse_speed="5" maneuver="4" charge_damage="2"  hit_points="5" price_factor="4"/>
+	<ItemModifier id="healthy_horse" name="{=*}Healthy {ITEMNAME}" horse_speed="2" maneuver="3" charge_damage="1"  hit_points="5" price_factor="3"/>
+	<ItemModifier id="strong_horse" name="{=*}Strong {ITEMNAME}" horse_speed="1" maneuver="0" charge_damage="4"  hit_points="15" price_factor="3"/>
+	<ItemModifier id="lean_horse" name="{=*}Lean {ITEMNAME}" horse_speed="3" maneuver="2" charge_damage="-1"  hit_points="-5" price_factor="2"/>
+	<ItemModifier id="good_natured_horse" name="{=*}Good Natured {ITEMNAME}" horse_speed="1" maneuver="2" charge_damage="-1"  hit_points="0" price_factor="1.5"/>
+	<ItemModifier id="badly_tempered_horse" name="{=*}Badly Tempered {ITEMNAME}" horse_speed="-1" maneuver="0" charge_damage="2"  hit_points="0" price_factor="0.8"/>
+	<ItemModifier id="stubborn_horse" name="{=*}Stubborn {ITEMNAME}" horse_speed="-1" maneuver="-3" charge_damage="-2"  hit_points="10" price_factor="0.7"/>
+	<ItemModifier id="anaemic_horse" name="{=*}Anaemic {ITEMNAME}" horse_speed="-2" maneuver="0" charge_damage="-3"  hit_points="-5" price_factor="0.35"/>
+-->
+  <ItemModifier id="lame_horse" name="{=geUpgQI5}Lame {ITEMNAME}" horse_speed="0.7" maneuver="0.9" charge_damage="0.6" horse_hit_points="0.8" price_factor="0.5" />
+  <ItemModifier id="companion_horse" name="{=y3TvYqhG}Old {ITEMNAME}" horse_speed="0.8" maneuver="0.95" charge_damage="0.8" horse_hit_points="0.9" price_factor="0.2" />
+  <ItemModifier id="companion_weapon" name="{=l7QEpVwU}Rusty {ITEMNAME}" damage="-10" price_factor="0.2" />
+  <ItemModifier id="companion_armor" name="{=5yVgXqQr}Worn {ITEMNAME}" armor="-6" price_factor="0.2" />
+</ItemModifiers>

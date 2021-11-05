@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<config>
+<!-- Set to 1 if you want to experience siege towers in their full "glory". -->
+	<Global>
+		<SiegeTowersEnabled>1</SiegeTowersEnabled>
+	</Global>
+</config>

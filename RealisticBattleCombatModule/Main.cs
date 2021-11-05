@@ -1,11 +1,11 @@
 ﻿using TaleWorlds.MountAndBlade;
 using TaleWorlds.Library;
 using HarmonyLib;
-using System.Xml;
 using System.Collections.Generic;
-using SandBox;
+using System.Xml;
+using TaleWorlds.Core;
 
-namespace RealisticBattle
+namespace RealisticBattleCombatModule
 {
     public static class XmlConfig
     {
@@ -15,7 +15,7 @@ namespace RealisticBattle
     {
         public static void DoPatching()
         {
-            var harmony = new Harmony("com.pf.rb");
+            var harmony = new Harmony("com.pf.rbcm");
             harmony.PatchAll();
         }
     }
@@ -25,7 +25,7 @@ namespace RealisticBattle
         protected override void OnSubModuleLoad()
         {
             XmlDocument xmlDocument = new XmlDocument();
-            xmlDocument.Load(BasePath.Name + "Modules/RealisticBattle/config.xml");
+            xmlDocument.Load(BasePath.Name + "Modules/RealisticBattleCombatModule/config.xml");
             foreach (XmlNode childNode in xmlDocument.SelectSingleNode("/config").ChildNodes)
             {
                 foreach (XmlNode subNode in childNode)
@@ -34,6 +34,16 @@ namespace RealisticBattle
                 }
             }
             MyPatcher.DoPatching();
+
+            //Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("RBM Configuration"), 3, delegate
+            //{
+            //    ScreenManager.PushScreen(new RbmConfigScreen());
+            //}, () => (false, new TextObject("Realistic Battle Configuration"))));
+        }
+
+        protected override void OnBeforeInitialModuleScreenSetAsRoot()
+        {
+            InformationManager.DisplayMessage(new InformationMessage("RBM Combat Module Active", Color.FromUint(4282569842u)));
         }
     }
 }

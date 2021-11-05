@@ -1,45 +1,52 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Main Project Properties -->
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <PlatformTarget Condition=" '$(PlatformTarget)' == '' ">x64</PlatformTarget>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{43FE49AF-AA28-426C-BAC3-C7DDF1DEA402}</ProjectGuid>
+    <ProjectGuid>{39335729-4FAE-451E-991B-123D7898B3EB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RealisticBattle</RootNamespace>
-    <AssemblyName>RealisticBattle</AssemblyName>
+    <RootNamespace>RealisticBattleCombatModule</RootNamespace>
+    <AssemblyName>RealisticBattleCombatModule</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
+  <!-- Debug Configuration Properties -->
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\RealisticBattle\bin\Win64_Shipping_Client\</OutputPath>
+    <OutputPath>$(SolutionDir)..\RealisticBattleCombatModule\bin\Win64_Shipping_Client</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
+  <!-- Release Configuration Properties -->
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\Bannerlord_Mod_2\bin\Win64_Shipping_Client</OutputPath>
+    <OutputPath>$(SolutionDir)..\RealisticBattleCombatModule\bin\Win64_Shipping_Client</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
+  <!-- Debugging Properties -->
   <PropertyGroup>
     <StartAction>Program</StartAction>
-    <StartProgram>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\Bannerlord.exe</StartProgram>
-    <StartArguments>/singleplayer _MODULES_*Native*SandBoxCore*SandBox*StoryMode*Bannerlord_Mod_2*_MODULES_</StartArguments>
-    <StartWorkingDirectory>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client</StartWorkingDirectory>
+    <StartProgram>$(SolutionDir)..\..\bin\Win64_Shipping_Client\Bannerlord.exe</StartProgram>
+    <StartArguments>/singleplayer _MODULES_*Native*SandBoxCore*SandBox*StoryMode*CustomBattle*RealisticBattleCombatModule*_MODULES_</StartArguments>
+    <StartWorkingDirectory>$(SolutionDir)..\..\bin\Win64_Shipping_Client</StartWorkingDirectory>
   </PropertyGroup>
+  <!-- Bannerlord Native Assemblies -->
   <ItemGroup>
-    <Reference Include="0Harmony, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lib.Harmony.2.0.2\lib\net472\0Harmony.dll</HintPath>
+    <!-- Bannerlord Module Assemblies  -->
+    <Reference Include="0Harmony">
+      <HintPath>..\packages\Harmony.2.1.1.0\net472\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="SandBox">
       <HintPath>..\..\SandBox\bin\Win64_Shipping_Client\SandBox.dll</HintPath>
@@ -73,14 +80,8 @@
       <HintPath>..\..\StoryMode\bin\Win64_Shipping_Client\StoryMode.ViewModelCollection.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.InteropServices.RuntimeInformation" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="TaleWorlds.CampaignSystem">
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.CampaignSystem.dll</HintPath>
       <Private>False</Private>
@@ -105,6 +106,10 @@
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.AccessProvider.Epic.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="TaleWorlds.Diamond.AccessProvider.GDK">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.AccessProvider.GDK.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="TaleWorlds.Diamond.AccessProvider.GOG">
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.AccessProvider.GOG.dll</HintPath>
       <Private>False</Private>
@@ -115,6 +120,10 @@
     </Reference>
     <Reference Include="TaleWorlds.Diamond.AccessProvider.Test">
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.AccessProvider.Test.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Diamond.ChatSystem.Library">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.ChatSystem.Library.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="TaleWorlds.DotNet">
@@ -249,42 +258,57 @@
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.TwoDimension.Standalone.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <!-- Bannerlord Assemblies -->
-    <!-- Native Assemblies -->
-    <!-- Module Assemblies -->
-    <!-- Native -->
-    <!-- SandBox -->
-    <!-- StoryMode -->
-    <!-- Harmony -->
-    <!-- TODO: Don't think this can be made optional -->
   </ItemGroup>
+  <!-- Files & Classes -->
   <ItemGroup>
-    <Compile Include="AiModule\AgentAi.cs" />
     <Compile Include="CombatModule\ArmorRework.cs" />
-    <Compile Include="AiModule\Behaviours.cs" />
+    <Compile Include="CombatModule\RangedAmmoCombo.cs" />
+    <Compile Include="CombatModule\RbmConfigData.cs" />
+    <Compile Include="CombatModule\RbmConfigScreen.cs" />
     <Compile Include="CombatModule\DamageRework.cs" />
     <Compile Include="CombatModule\RangedRework.cs" />
-    <Compile Include="AiModule\Tactics.cs" />
+    <Compile Include="CombatModule\RbmMenuViewModel.cs" />
+    <Compile Include="CombatModule\TextViewModel.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <!-- Post-Build -->
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>xcopy /d /y "$(SolutionDir)Xmls\native_parameters_tweaks.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\project.mbproj" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\arm_armors_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\Axe_pieces.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\body_armors_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\bowArrowQualityFix.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\CouchedLances.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\head_armors_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\horse_armors_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\lances_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\leg_armors_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\mace_pieces.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\ranged_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\shields_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\shoulder_armors_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\sword_blades.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\sword_pieces.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\unit_overhaul.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\horses_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\Gladius_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\arrow_visuals_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\no_bastard_axes.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\siege_engines_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\spear_managed_core_parameters.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\spear_combat_parameters.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\bow_shields.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\siege_ranged_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)Xmls\SubModule.xml" "$(SolutionDir)..\RealisticBattleCombatModule\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <PropertyGroup>
+    <PreBuildEvent>xcopy /d /y "$(SolutionDir)Xmls\config.xml" "$(SolutionDir)..\RealisticBattleCombatModule\"</PreBuildEvent>
+  </PropertyGroup>
 </Project>

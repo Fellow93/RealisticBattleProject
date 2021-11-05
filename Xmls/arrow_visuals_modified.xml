@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Items>
+	<Item id="tournament_arrows" name="Flight Arrows 30 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_i" weight="0.03" value="900" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts:quiver_bolts_2" holster_position_shift="0.0,0.0,0.15" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_i_quiver" holster_mesh_with_weapon="arrow_bl_i_quiver" flying_mesh="arrow_bl_i">
+		<ItemComponent>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="30" weapon_length="97" thrust_damage="115" thrust_damage_type="Cut" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="range_arrows" name="Barbed Head Arrows 40 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_i" weight="0.04" value="1200" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" holster_position_shift="0.0,0.0,0.15" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_i_quiver" holster_mesh_with_weapon="arrow_bl_i_quiver" flying_mesh="arrow_bl_i">
+		<ItemComponent>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="40" weapon_length="97" thrust_damage="115" thrust_damage_type="Cut" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="steppe_arrows" name="Needle Bodkin Arrows 40 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_e" weight="0.04" value="1200" appearance="1" Type="Arrows" item_holsters="quiver_back_lower:quiver_back_lower_2" holster_position_shift="0.0,0.0,-0.0" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_e_quiver" holster_mesh_with_weapon="arrow_bl_e_quiver" flying_mesh="arrow_bl_e">
+		<ItemComponent>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="40" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="tournament_bolts" name="Barbed Head Bolts 50 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_a" weight="0.05" value="1500" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_a_quiver" holster_mesh_with_weapon="bolt_bl_a_quiver" flying_mesh="bolt_bl_a">
+		<ItemComponent>
+			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="30" weapon_length="47" thrust_damage="115" thrust_damage_type="Cut" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="bodkin_arrows_c" name="Needle Bodkin Arrows 50 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_d" weight="0.05" value="1500" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" holster_position_shift="0.0,0.0,0.15" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_d_quiver" holster_mesh_with_weapon="arrow_bl_d_quiver" flying_mesh="arrow_bl_d">
+		<ItemComponent>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="50" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="default_arrows" name="Barbed Head Arrows 50 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_i" weight="0.05" value="1500" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" holster_position_shift="0.0,0.0,0.15" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_i_quiver" holster_mesh_with_weapon="arrow_bl_i_quiver" flying_mesh="arrow_bl_i">
+		<ItemComponent>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="50" weapon_length="97" thrust_damage="115" thrust_damage_type="Cut" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="bolt_e" name="Needle Bodkin Bolts 60 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_e" weight="0.06" value="1800" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_e_quiver" holster_mesh_with_weapon="bolt_bl_e_quiver" flying_mesh="bolt_bl_e">
+		<ItemComponent>
+			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="40" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="barbed_arrows" name="Barbed Head Arrows 60 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_g" weight="0.06" value="1800" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" holster_position_shift="0.0,0.0,0.15" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_h_quiver" holster_mesh_with_weapon="arrow_bl_h_quiver" flying_mesh="arrow_bl_g">
+		<ItemComponent>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="60" weapon_length="97" thrust_damage="115" thrust_damage_type="Cut" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="heavy_steppe_arrows" name="Needle Bodkin Arrows 60 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_f" weight="0.06" value="1800" appearance="1" Type="Arrows" item_holsters="quiver_back_lower:quiver_back_lower_2" holster_position_shift="0.0,0.0,-0.0" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_f_quiver" holster_mesh_with_weapon="arrow_bl_f_quiver" flying_mesh="arrow_bl_f">
+		<ItemComponent>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="60" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="bodkin_arrows_b" name="Needle Bodkin Arrows 70 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_c" weight="0.07" value="2100" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" holster_position_shift="0.0,0.0,0.15" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_c_quiver" holster_mesh_with_weapon="arrow_bl_c_quiver" flying_mesh="arrow_bl_c">
+		<ItemComponent>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="70" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="bolt_d" name="Needle Bodkin Bolts 75 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_d" weight="0.075" value="2250" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_d_quiver" holster_mesh_with_weapon="bolt_bl_d_quiver" flying_mesh="bolt_bl_d">
+		<ItemComponent>
+			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="50" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="vlandic_arrows" name="Needle Bodkin Arrows 80 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_g" weight="0.08" value="2400" appearance="1" Type="Arrows" item_holsters="quiver_back_top:quiver_back_top_2" holster_position_shift="0,0,0.1" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_g_quiver" holster_mesh_with_weapon="arrow_bl_g_quiver" flying_mesh="arrow_bl_g">
+		<ItemComponent>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="80" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_top" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="bolt_c" name="Needle Bodkin Bolts 90 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_c" weight="0.09" value="2700" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_c_quiver" holster_mesh_with_weapon="bolt_bl_c_quiver" flying_mesh="bolt_bl_c">
+		<ItemComponent>
+			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="65" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="bodkin_arrows_a" name="Needle Bodkin Arrows 90 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_b" weight="0.09" value="2700" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" holster_position_shift="0.0,0.0,0.15" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_b_quiver" holster_mesh_with_weapon="arrow_bl_b_quiver" flying_mesh="arrow_bl_b">
+		<ItemComponent>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="90" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="arrow_emp_1_a" name="Needle Bodkin Arrows 100 grams" body_name="bo_capsule_arrow" mesh="arrow_roman_a" weight="0.1" value="3000" appearance="1" Type="Arrows" item_holsters="quiver_back_top:quiver_back_top_2" holster_position_shift="0.0,0.0,0.1" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="quiver_roman_a" holster_mesh_with_weapon="quiver_roman_a" flying_mesh="arrow_roman_a">
+		<ItemComponent>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="100" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_top" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="piercing_arrows" name="Heavy Needle Bodkin Arrows 110 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_a" weight="0.11" value="3300" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts" holster_position_shift="0.0,0.0,0.15" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_a_quiver" holster_mesh_with_weapon="arrow_bl_a_quiver" flying_mesh="arrow_bl_a">
+		<ItemComponent>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="110" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="bolt_b" name="Heavy Needle Bodkin Bolts 120 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_b" weight="0.12" value="3600" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_b_quiver" holster_mesh_with_weapon="bolt_bl_b_quiver" flying_mesh="bolt_bl_b">
+		<ItemComponent>
+			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="80" weapon_length="47" thrust_damage="100" thrust_damage_type="Pierce" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="blunt_arrows" name="Very Heavy Needle Bodkin Arrows 125 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_i" weight="0.125" value="3750" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_back_top:quiver_bolts:quiver_bolts_2" holster_position_shift="0.0,0.0,0.15" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_i_quiver" holster_mesh_with_weapon="arrow_bl_i_quiver" flying_mesh="arrow_bl_i">
+		<ItemComponent>
+			<Weapon weapon_class="Arrow" thrust_speed="0" speed_rating="0" missile_speed="120" weapon_length="97" thrust_damage="100" thrust_damage_type="Pierce" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.95,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="bolt_a" name="Very Heavy Needle Bodkin Bolts 150 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_a" weight="0.15" value="4500" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_a_quiver" holster_mesh_with_weapon="bolt_bl_a_quiver" flying_mesh="bolt_bl_a">
+		<ItemComponent>
+			<Weapon weapon_class="Bolt" thrust_speed="0" speed_rating="0" missile_speed="95" weapon_length="47" thrust_damage="100" thrust_damage_type="Pierce" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+</Items>

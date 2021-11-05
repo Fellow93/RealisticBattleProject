@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Items>
+	<Item id="crossbow_f" name="{=TBW9E2ao}Bound Crossbow" body_name="bo_cross_bow_heavy" mesh="crossbow_f" weight="2" difficulty="90" appearance="1" Type="Crossbow" value="20000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
+		<ItemComponent>
+			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="2" missile_speed="500" weapon_length="90" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" CantReloadOnHorseback="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="crossbow_g" name="{=ffwgZit3}Fine Crossbow" body_name="bo_composite_crossbows" mesh="crossbow_g" weight="2.2" difficulty="75" appearance="1" Type="Crossbow" value="10000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
+		<ItemComponent>
+			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="2" missile_speed="450" weapon_length="95" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" CantReloadOnHorseback="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="crossbow_d" name="{=CPI0wkaZ}Hickory Crossbow" body_name="bo_composite_crossbows" mesh="crossbow_d" weight="2.2" difficulty="60" appearance="1" Type="Crossbow" value="8000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.empire" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
+		<ItemComponent>
+			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="2" missile_speed="410" weapon_length="95" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" CantReloadOnHorseback="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="crossbow_e" name="{=TTWL7RLe}Crossbow" body_name="bo_composite_crossbows" mesh="crossbow_e" weight="2.2" difficulty="45" appearance="1" Type="Crossbow" value="6000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.empire" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
+		<ItemComponent>
+			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="2" missile_speed="370" weapon_length="95" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" CantReloadOnHorseback="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="crossbow_c" name="{=0e17RZrZ}Arbalest" body_name="bo_cross_bow_heavy" mesh="crossbow_c" weight="3" difficulty="30" appearance="1" Type="Crossbow" value="5000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.24675" holster_position_shift="0.02,0,-0.4">
+		<ItemComponent>
+			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="2" missile_speed="330" weapon_length="95" thrust_damage="100" item_usage="crossbow_fast" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" CantReloadOnHorseback="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="crossbow_b" name="{=r07M9xbT}Heavy Crossbow" body_name="bo_cross_bow_heavy" mesh="crossbow_b" weight="2.7" difficulty="15" appearance="1" Type="Crossbow" value="4000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.24975" holster_position_shift="0.02,0,-0.4">
+		<ItemComponent>
+			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="2" missile_speed="290" weapon_length="95" thrust_damage="100" item_usage="crossbow_fast" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" CantReloadOnHorseback="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="crossbow_a" name="{=K1UFTirG}Light Crossbow" body_name="bo_cross_bow_heavy" mesh="crossbow_a" weight="1" difficulty="0" appearance="0.3" Type="Crossbow" value="2000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" AmmoOffset="0.0, 0.02131, 0.24650" holster_position_shift="0.02,0,-0.4">
+		<ItemComponent>
+			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="7" missile_speed="250" weapon_length="95" thrust_damage="100" item_usage="crossbow_fast" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="noble_long_bow" name="{=WRqYWspc}Noble Long Bow" body_name="bo_composite_longbow_g" mesh="longbow_j" weight="0.8" difficulty="140" appearance="1" Type="Bow" value="8000" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.battania">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="124" speed_rating="7" missile_speed="200" weapon_length="118" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="training_longbow" name="{=cmuMaYGR}Practice Longbow" body_name="bo_composite_longbow_a" mesh="longbow_a" weight="0.5" difficulty="0" appearance="1" Type="Bow" value="600" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.vlandia" subtype="bow" is_merchandise="false">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="180" speed_rating="7" missile_speed="200" weapon_length="120" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="woodland_longbow" name="{=ZFwKlHIJ}Woodland Longbow" body_name="bo_composite_longbow_a" mesh="longbow_c" weight="0.5" difficulty="120" appearance="1" Type="Bow" value="4800" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.battania">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="133" speed_rating="7" missile_speed="180" weapon_length="118" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="nomad_bow" name="{=ifzgMcrK}Nomad Bow" body_name="bo_composite_longbow_g" mesh="longbow_g" weight="0.5" difficulty="110" appearance="1" Type="Bow" value="4950" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.aserai">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="138" speed_rating="7" missile_speed="170" weapon_length="114" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="noble_bow" name="{=EO7pCu1b}Noble Bow" body_name="bo_composite_shotbow_f" mesh="shortbow_f" weight="0.8" difficulty="106" appearance="1" Type="Bow" value="25000" item_holsters="bow_back_2:bow_hip:bow_hip_2:bow_back" culture="Culture.khuzait">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="140" speed_rating="7" missile_speed="166" weapon_length="116" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="training_bow" name="{=SUSbUAEl}Practice Bow" body_name="bo_composite_shotbow_b" mesh="shortbow_b" weight="0.3" difficulty="0" appearance="1" Type="Bow" value="600" item_holsters="bow_back_2:bow_hip:bow_hip_2:bow_back" is_merchandise="false">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="180" speed_rating="7" missile_speed="166" weapon_length="106" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.0,0,-0.1" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="lowland_yew_bow" name="{=lkDQMG0y}Western Yew Bow" body_name="bo_composite_longbow_a" mesh="longbow_b" weight="0.5" difficulty="100" appearance="1" Type="Bow" value="4350" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.vlandia">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="144" speed_rating="7" missile_speed="160" weapon_length="117" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="longbow_recurve_desert_bow" name="{=TgZIAdRk}Southern Strong Longbow" body_name="bo_composite_longbow_g" mesh="longbow_i" weight="0.5" difficulty="90" appearance="1" Type="Bow" value="4500" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.aserai">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="150" speed_rating="7" missile_speed="150" weapon_length="116" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="woodland_yew_bow" name="{=RcCtV0aS}Woodland Yew Bow" body_name="bo_composite_longbow_a" mesh="longbow_d" weight="0.5" difficulty="80" appearance="1" Type="Bow" value="3900" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.battania">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="156" speed_rating="7" missile_speed="140" weapon_length="115" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="steppe_war_bow" name="{=wfhHGTbl}Steppe War Bow" body_name="bo_composite_shotbow_a" mesh="shortbow_a" weight="0.3" difficulty="75" appearance="1" Type="Bow" value="6075" item_holsters="bow_hip:bow_hip_2:bow_back:bow_back_2" culture="Culture.khuzait">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="160" speed_rating="7" missile_speed="135" weapon_length="107" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.0,0,-0.15" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="tribal_bow" name="{=w6sFabVp}Southern Tribesman's Bow" body_name="bo_composite_longbow_g" mesh="longbow_h" weight="0.5" difficulty="70" appearance="1" Type="Bow" value="3000" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.aserai">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="163" speed_rating="7" missile_speed="130" weapon_length="115" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="steppe_heavy_bow" name="{=E7miRMw1}Heavy Recurve Bow" body_name="bo_composite_shotbow_b" mesh="shortbow_b" weight="0.3" difficulty="65" appearance="1" Type="Bow" value="3750" item_holsters="bow_back_2:bow_hip:bow_hip_2:bow_back" culture="Culture.khuzait">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="167" speed_rating="7" missile_speed="125" weapon_length="106" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.0,0,-0.1" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="lowland_longbow" name="{=6fPAlYR5}Western Longbow" body_name="bo_composite_longbow_a" mesh="longbow_a" weight="0.5" difficulty="60" appearance="1" Type="Bow" value="2400" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.vlandia" subtype="bow">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="171" speed_rating="7" missile_speed="120" weapon_length="120" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="nordic_shortbow" name="{=tEimkEsU}Nordic Shortbow" body_name="bo_composite_shotbow_c" mesh="shortbow_e" weight="0.3" difficulty="60" appearance="1" Type="Bow" value="3450" item_holsters="bow_hip:bow_hip_2:bow_back:bow_back_2" culture="Culture.sturgia">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="171" speed_rating="7" missile_speed="120" weapon_length="108" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="composite_steppe_bow" name="{=w6EU77OH}Steppe Recurve Bow" body_name="bo_composite_shotbow_c" mesh="shortbow_d" weight="0.3" difficulty="50" appearance="1" Type="Bow" value="3300" item_holsters="bow_hip:bow_hip_2:bow_back:bow_back_2" culture="Culture.khuzait">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="180" speed_rating="7" missile_speed="110" weapon_length="108" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="composite_bow" name="{=h1jKICdp}Simple Short Bow" body_name="bo_composite_shotbow_c" mesh="shortbow_c" weight="0.3" difficulty="40" appearance="1" Type="Bow" value="3000" item_holsters="bow_hip:bow_hip_2:bow_back:bow_back_2">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="189" speed_rating="7" missile_speed="100" weapon_length="110" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="glen_ranger_bow" name="{=KTegaNPW}Longbow" body_name="bo_composite_longbow_e" mesh="longbow_f" weight="0.4" difficulty="40" appearance="1" Type="Bow" value="2200" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.battania">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="189" speed_rating="7" missile_speed="100" weapon_length="111" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="highland_ranger_bow" name="{=mTWvG1xz}Ranger Bow" body_name="bo_composite_longbow_e" mesh="longbow_e" weight="0.4" difficulty="30" appearance="1" Type="Bow" value="1800" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.battania">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="200" speed_rating="7" missile_speed="90" weapon_length="113" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="steppe_bow" name="{=PoY2Vh7K}Steppe Bow" body_name="bo_composite_shotbow_g" mesh="shortbow_g" weight="0.3" difficulty="30" appearance="1" Type="Bow" value="2700" item_holsters="bow_hip:bow_hip_2:bow_back:bow_back_2" culture="Culture.khuzait">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="200" speed_rating="7" missile_speed="90" weapon_length="110" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="mountain_hunting_bow" name="{=YGQ6UXCo}Mountain Hunting Bow" body_name="bo_composite_shotbow_h" mesh="shortbow_i" weight="0.3" difficulty="10" appearance="1" Type="Bow" value="700" item_holsters="bow_back_2:bow_hip:bow_hip_2:bow_back" culture="Culture.battania">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="225" speed_rating="7" missile_speed="70" weapon_length="108" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="hunting_bow" name="{=wltdyF2j}Hunting Bow" body_name="bo_composite_shotbow_h" mesh="shortbow_h" weight="0.3" difficulty="0" appearance="1" Type="Bow" value="600" item_holsters="bow_hip:bow_hip_2:bow_back:bow_back_2">
+		<ItemComponent>
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="240" speed_rating="7" missile_speed="60" weapon_length="110" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15" ammo_limit="1" accuracy="80" thrust_damage_type="Pierce">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" UnloadWhenSheathed="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+	</Item>
+	<Item id="throwing_stone" name="{=1CPdu9K0}Stone" body_name="bo_throwing_stone" mesh="throwing_stone" weight="0.3" appearance="0.1" Type="Thrown" value="2" item_holsters="throwing_stone:throwing_stone_2" is_merchandise="false" holster_body_name="bo_axe_short" holster_mesh="stone_holster" holster_mesh_with_weapon="stone_holster">
+		<ItemComponent>
+			<Weapon weapon_class="Stone" ammo_class="Stone" thrust_speed="102" speed_rating="102" missile_speed="30" weapon_length="10" thrust_damage="100" item_usage="stone" physics_material="missile" accuracy="45" stack_amount="14" rotation_speed="0, -3.0, 0" rotation="100,30,20" thrust_damage_type="Blunt">
+				<WeaponFlags RangedWeapon="true" AutoReload="true" Consumable="true" UseHandAsThrowBase="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+</Items>

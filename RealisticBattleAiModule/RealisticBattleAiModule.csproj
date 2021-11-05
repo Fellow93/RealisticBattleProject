@@ -1,45 +1,51 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Main Project Properties -->
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <PlatformTarget Condition=" '$(PlatformTarget)' == '' ">x64</PlatformTarget>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{43FE49AF-AA28-426C-BAC3-C7DDF1DEA402}</ProjectGuid>
+    <ProjectGuid>{7254E74D-4968-47C3-BB91-84D3FC207ACB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RealisticBattle</RootNamespace>
-    <AssemblyName>RealisticBattle</AssemblyName>
+    <RootNamespace>RealisticBattleAiModule</RootNamespace>
+    <AssemblyName>RealisticBattleAiModule</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
+  <!-- Debug Configuration Properties -->
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\RealisticBattle\bin\Win64_Shipping_Client\</OutputPath>
+    <OutputPath>$(SolutionDir)..\RealisticBattleAiModule\bin\Win64_Shipping_Client</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
+  <!-- Release Configuration Properties -->
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\Bannerlord_Mod_2\bin\Win64_Shipping_Client</OutputPath>
+    <OutputPath>$(SolutionDir)..\RealisticBattleAiModule\bin\Win64_Shipping_Client</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
+  <!-- Debugging Properties -->
   <PropertyGroup>
     <StartAction>Program</StartAction>
-    <StartProgram>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\Bannerlord.exe</StartProgram>
-    <StartArguments>/singleplayer _MODULES_*Native*SandBoxCore*SandBox*StoryMode*Bannerlord_Mod_2*_MODULES_</StartArguments>
-    <StartWorkingDirectory>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client</StartWorkingDirectory>
+    <StartProgram>$(SolutionDir)..\..\bin\Win64_Shipping_Client\Bannerlord.exe</StartProgram>
+    <StartArguments>/singleplayer _MODULES_*Native*SandBoxCore*SandBox*StoryMode*CustomBattle*RealisticBattleAiModule*_MODULES_</StartArguments>
+    <StartWorkingDirectory>$(SolutionDir)..\..\bin\Win64_Shipping_Client</StartWorkingDirectory>
   </PropertyGroup>
+  <!-- Bannerlord Native Assemblies -->
   <ItemGroup>
-    <Reference Include="0Harmony, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lib.Harmony.2.0.2\lib\net472\0Harmony.dll</HintPath>
+    <Reference Include="0Harmony">
+      <HintPath>..\packages\Harmony.2.1.1.0\net472\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="SandBox">
       <HintPath>..\..\SandBox\bin\Win64_Shipping_Client\SandBox.dll</HintPath>
@@ -57,30 +63,40 @@
       <HintPath>..\..\SandBox\bin\Win64_Shipping_Client\SandBox.ViewModelCollection.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="StoryMode">
-      <HintPath>..\..\StoryMode\bin\Win64_Shipping_Client\StoryMode.dll</HintPath>
+    <Reference Include="System.Configuration.ConfigurationManager">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\System.Configuration.ConfigurationManager.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="StoryMode.GauntletUI">
-      <HintPath>..\..\StoryMode\bin\Win64_Shipping_Client\StoryMode.GauntletUI.dll</HintPath>
+    <Reference Include="System.Numerics.Vectors, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\System.Numerics.Vectors.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="StoryMode.View">
-      <HintPath>..\..\StoryMode\bin\Win64_Shipping_Client\StoryMode.View.dll</HintPath>
+    <Reference Include="System.Security.Cryptography.ProtectedData">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\System.Security.Cryptography.ProtectedData.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="StoryMode.ViewModelCollection">
-      <HintPath>..\..\StoryMode\bin\Win64_Shipping_Client\StoryMode.ViewModelCollection.dll</HintPath>
+    <Reference Include="System.Security.Permissions">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\System.Security.Permissions.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.InteropServices.RuntimeInformation" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
+    <Reference Include="System.Text.Encoding.CodePages">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\System.Text.Encoding.CodePages.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.XPath.XmlDocument">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\System.Xml.XPath.XmlDocument.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.AchievementSystem">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.AchievementSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.BattlEye.Client">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.BattlEye.Client.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="TaleWorlds.CampaignSystem">
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.CampaignSystem.dll</HintPath>
       <Private>False</Private>
@@ -105,6 +121,10 @@
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.AccessProvider.Epic.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="TaleWorlds.Diamond.AccessProvider.GDK">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.AccessProvider.GDK.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="TaleWorlds.Diamond.AccessProvider.GOG">
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.AccessProvider.GOG.dll</HintPath>
       <Private>False</Private>
@@ -115,6 +135,10 @@
     </Reference>
     <Reference Include="TaleWorlds.Diamond.AccessProvider.Test">
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.AccessProvider.Test.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Diamond.ChatSystem.Library">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.ChatSystem.Library.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="TaleWorlds.DotNet">
@@ -165,8 +189,16 @@
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Library.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="TaleWorlds.LinQuick">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.LinQuick.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="TaleWorlds.Localization">
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Localization.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.ModuleManager">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.ModuleManager.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="TaleWorlds.MountAndBlade">
@@ -181,12 +213,28 @@
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.Diamond.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.GauntletUI">
+      <HintPath>..\..\Native\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.GauntletUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="TaleWorlds.MountAndBlade.GauntletUI.Widgets">
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.GauntletUI.Widgets.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="TaleWorlds.MountAndBlade.Helpers">
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.Helpers.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.Launcher.Steam">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.Launcher.Steam.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.Platform.PC">
+      <HintPath>..\..\Native\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.Platform.PC.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.View">
+      <HintPath>..\..\Native\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.View.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="TaleWorlds.MountAndBlade.ViewModelCollection">
@@ -203,22 +251,6 @@
     </Reference>
     <Reference Include="TaleWorlds.ObjectSystem">
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.ObjectSystem.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="TaleWorlds.PlatformService">
-      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.PlatformService.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="TaleWorlds.PlatformService.Epic">
-      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.PlatformService.Epic.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="TaleWorlds.PlatformService.GOG">
-      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.PlatformService.GOG.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="TaleWorlds.PlatformService.Steam">
-      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.PlatformService.Steam.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="TaleWorlds.PlayerServices">
@@ -249,42 +281,28 @@
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.TwoDimension.Standalone.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <!-- Bannerlord Assemblies -->
-    <!-- Native Assemblies -->
-    <!-- Module Assemblies -->
-    <!-- Native -->
-    <!-- SandBox -->
-    <!-- StoryMode -->
-    <!-- Harmony -->
-    <!-- TODO: Don't think this can be made optional -->
+    <!-- Bannerlord Module Assemblies  -->
   </ItemGroup>
+  <!-- Files & Classes -->
   <ItemGroup>
     <Compile Include="AiModule\AgentAi.cs" />
-    <Compile Include="CombatModule\ArmorRework.cs" />
     <Compile Include="AiModule\Behaviours.cs" />
-    <Compile Include="CombatModule\DamageRework.cs" />
-    <Compile Include="CombatModule\RangedRework.cs" />
+    <Compile Include="AiModule\RbmBehaviors\RBMBehaviorForwardSkirmish.cs" />
+    <Compile Include="AiModule\RbmTactics\TacticFullScaleAttackWithDedicatedSkirmishers.cs" />
     <Compile Include="AiModule\Tactics.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
+  <ItemGroup />
+  <!-- Post-Build -->
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>xcopy /d /y "$(SolutionDir)Xmls\native_parameters_tweaks.xml" "$(SolutionDir)..\RealisticBattleAiModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)AIXmls\project.mbproj" "$(SolutionDir)..\RealisticBattleAiModule\ModuleData\"
+xcopy /d /y "$(SolutionDir)AIXmls\SubModule.xml" "$(SolutionDir)..\RealisticBattleAiModule\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <PropertyGroup>
+    <PreBuildEvent>xcopy /d /y "$(SolutionDir)AIXmls\config.xml" "$(SolutionDir)..\RealisticBattleAiModule\"</PreBuildEvent>
+  </PropertyGroup>
 </Project>

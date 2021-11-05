@@ -1,0 +1,218 @@
+﻿<Module>
+  <Name value="Realistic Battle Combat Module and Unit Overhaul"/>
+  <Id value="RealisticBattleCombatModule"/>
+  <Version value="v2.1.7"/>
+  <SingleplayerModule value="true"/>
+  <MultiplayerModule value="false"/>
+  <DependedModules>
+    <DependedModule Id="Native"/>
+    <DependedModule Id="SandBoxCore"/>
+    <DependedModule Id="Sandbox"/>
+    <DependedModule Id="CustomBattle"/>
+    <DependedModule Id="StoryMode" />
+  </DependedModules>
+  <SubModules>
+    <SubModule>
+      <Name value="RealisticBattleCombatModule"/>
+      <DLLName value="RealisticBattleCombatModule.dll"/>
+      <SubModuleClassType value="RealisticBattleCombatModule.Main"/>
+      <Tags>
+        <Tag key="DedicatedServerType" value="none" />
+        <Tag key="IsNoRenderModeElement" value="false" />
+      </Tags>
+    </SubModule>
+  </SubModules>
+  <Xmls>
+	<XmlNode>
+		<XmlName id="Items" path="ranged_modified"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="Items" path="siege_ranged_modified"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="Items" path="arrow_visuals_modified"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="Items" path="body_armors_modified"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="Items" path="shoulder_armors_modified"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="Items" path="arm_armors_modified"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="Items" path="leg_armors_modified"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+	<XmlName id="Items" path="head_armors_modified"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="Items" path="horse_armors_modified"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="Items" path="horses_modified"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="Items" path="shields_modified"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="ItemModifiers" path="bowArrowQualityFix"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="ItemModifierGroups" path="item_modifiers_groups_modified"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="CraftingPieces" path="CouchedLances"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+			<GameType value = "EditorGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="CraftingTemplates" path="no_bastard_axes"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+			<GameType value = "EditorGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>                
+			<XmlName id="NPCCharacters" path="unit_overhaul"/>
+			<IncludedGameTypes>
+				<GameType value = "Campaign"/>
+				<GameType value = "CampaignStoryMode"/>
+				<GameType value = "CustomGame"/>
+				<GameType value = "EditorGame"/>
+			</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="CraftingPieces" path="sword_pieces"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+			<GameType value = "EditorGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="CraftingPieces" path="sword_blades"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+			<GameType value = "EditorGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="CraftingPieces" path="mace_pieces"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+			<GameType value = "EditorGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="CraftingPieces" path="Axe_pieces"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+			<GameType value = "EditorGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>                
+		<XmlName id="SiegeEngines" path="siege_engines_modified"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="Items" path="lances_modified"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="Items" path="Gladius_modified"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+  </Xmls>
+</Module>
