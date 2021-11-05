@@ -109,8 +109,8 @@
   </CraftingPiece>
   <CraftingPiece id="axe_craft_26_head" name="{=Tui9qvOZ}Tzikurion Head" tier="3" piece_type="Blade" mesh="axe_craft_26_head" distance_to_next_piece="9" distance_to_previous_piece="3.5" weight="0.307">
     <PieceUsages unavailable_usages="" />
-    <BuildData piece_offset="-7" />
-    <BladeData stack_amount="3" blade_length="17.6" blade_width="19.393" physics_material="metal_weapon" body_name="bo_axe_longer_b">
+    <BuildData piece_offset="0" />
+    <BladeData stack_amount="2" blade_length="17.6" blade_width="19.393" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
       <Swing damage_type="Cut" damage_factor="0.9" />
     </BladeData>
     <Flags>
@@ -813,20 +813,20 @@
   </CraftingPiece>
   <!-- #endregion -->
   <!-- #region Used Throwing Axe Handle Pieces -->
-  <CraftingPiece id="axe_craft_12_handle" name="{=Wkhv9ESv}Hardened Oaken Throwing Axe Handle" tier="4" piece_type="Handle" mesh="axe_craft_12_handle" length="45" weight="0.134">
-    <BuildData piece_offset="20.0" next_piece_offset="4" />
+  <CraftingPiece id="axe_craft_12_handle" name="{=Wkhv9ESv}Hardened Oaken Throwing Axe Handle" tier="4" piece_type="Handle" mesh="axe_craft_12_handle" length="45" weight="0.154">
+    <BuildData piece_offset="20.0" next_piece_offset="0" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_11_handle" name="{=Rh3h5NIg}Hardened Short Hardwood Throwing Axe Handle" tier="4" piece_type="Handle" mesh="axe_craft_11_handle" length="45" weight="0.126">
-    <BuildData piece_offset="20.0" next_piece_offset="4" />
+  <CraftingPiece id="axe_craft_11_handle" name="{=Rh3h5NIg}Hardened Short Hardwood Throwing Axe Handle" tier="4" piece_type="Handle" mesh="axe_craft_11_handle" length="45" weight="0.146">
+    <BuildData piece_offset="20.0" next_piece_offset="0" />
     <Materials>
       <Material id="Iron3" count="1" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="axe_craft_28_handle" name="{=bQzz8mc3}Simple Pinewood Throwing Axe Handle" tier="1" piece_type="Handle" mesh="axe_craft_28_handle" length="45" weight="0.134">
-    <BuildData piece_offset="20.0" next_piece_offset="4" />
+    <BuildData piece_offset="20.0" next_piece_offset="0" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>

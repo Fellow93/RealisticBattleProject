@@ -27,61 +27,61 @@
     <!-- #region Used Throwing Axes -->
   <!-- #region Tier 2 -->
   <CraftedItem id="highland_throwing_axe_1_t2"
-               name="{=GrfnpDxu}Highland Throwing Axe"
+               name="Throwing Labryes"
                crafting_template="ThrowingAxe"
                culture="Culture.battania">
     <Pieces>
-      <Piece id="axe_craft_4_head"
+      <Piece id="axe_craft_26_head"
              Type="Blade"
-             scale_factor="100" />
+             scale_factor="150" />
       <Piece id="axe_craft_12_handle"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="150" />
     </Pieces>
   </CraftedItem>
   <!-- #endregion -->
   <!-- #region Tier 4 -->
   <CraftedItem id="southern_throwing_axe_1_t4"
-               name="{=0n0JmWv0}Southern Throwing Axe"
+               name="Huge Throwing Axes"
                crafting_template="ThrowingAxe"
                culture="Culture.aserai">
     <Pieces>
       <Piece id="axe_craft_4_head"
              Type="Blade"
-             scale_factor="100" />
+             scale_factor="250" />
       <Piece id="axe_craft_12_handle"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="130" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="northern_throwing_axe_1_t1"
-               name="{=gqbjCBld}Northern Throwing Axe"
+               name="Large Throwing Axes"
                crafting_template="ThrowingAxe"
                culture="Culture.sturgia">
     <Pieces>
       <Piece id="axe_craft_13_head"
              Type="Blade"
-             scale_factor="100" />
+             scale_factor="200" />
       <Piece id="axe_craft_11_handle"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="130" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="woodland_throwing_axe_1_t1"
-               name="{=GrfnpDxu}Highland Throwing Axe"
+               name="Medium Throwing Axes"
                crafting_template="ThrowingAxe"
                culture="Culture.battania">
     <Pieces>
       <Piece id="axe_craft_13_head"
              Type="Blade"
-             scale_factor="100" />
+             scale_factor="150" />
       <Piece id="axe_craft_28_handle"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="115" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="western_throwing_axe_1_t1"
-               name="{=F4xD8gjJ}Franceska"
+               name="Small Throwing Axes"
                crafting_template="ThrowingAxe"
                culture="Culture.vlandia">
     <Pieces>

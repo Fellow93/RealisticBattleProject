@@ -306,6 +306,26 @@
              scale_factor="100" />
     </Pieces>
   </CraftedItem>
+  
+  <CraftedItem id="highland_spear_4_t4"
+               name="{=duIWCjdD}Steel Tipped Hooked Spear"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.battania">
+    <Pieces>
+      <Piece id="spear_blade_36"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_guard_5"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_27"
+             Type="Handle"
+             scale_factor="110" />
+      <Piece id="spear_pommel_1"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
    
   <!-- #endregion -->
 <!-- #region Used Javelins -->

@@ -699,6 +699,85 @@
     </UsablePieces>
   </CraftingTemplate>
   
+  <CraftingTemplate id="ThrowingAxe"
+                    item_modifier_group="axe_throwing"
+                    item_holsters="throwing_axe:throwing_axe_2:axe_right_hip_2:axe_back"
+                    default_item_holster_position_offset="0,0,0.05"
+                    always_show_holster_with_weapon="true">
+    <PieceDatas>
+      <PieceData piece_type="Handle"
+                 build_order="0" />
+      <PieceData piece_type="Blade"
+                 build_order="1" />
+    </PieceDatas>
+    <WeaponUsageDatas>
+      <WeaponUsageData id="ThrowingAxe" />
+      <WeaponUsageData id="OneHandedAxe" />
+    </WeaponUsageDatas>
+    <StatsData usage_data="ThrowingAxe">
+      <StatData stat_type="Weight"
+                max_value="7.0" />
+      <StatData stat_type="WeaponReach"
+                max_value="300" />
+      <StatData stat_type="MissileDamage"
+                max_value="500" />
+      <StatData stat_type="MissileSpeed"
+                max_value="200" />
+      <StatData stat_type="Accuracy"
+                max_value="100" />
+    </StatsData>
+    <StatsData usage_data="OneHandedAxe">
+      <StatData stat_type="Weight"
+                max_value="7.0" />
+      <StatData stat_type="WeaponReach"
+                max_value="300" />
+      <StatData stat_type="ThrustSpeed"
+                max_value="200" />
+      <StatData stat_type="SwingSpeed"
+                max_value="200" />
+      <StatData stat_type="ThrustDamage"
+                max_value="500" />
+      <StatData stat_type="SwingDamage"
+                max_value="500" />
+      <StatData stat_type="Handling"
+                max_value="200" />
+      <!--<StatData stat_type="FollowUp" max_value="200" />-->
+    </StatsData>
+    <UsablePieces>
+      <UsablePiece piece_id="axe_craft_4_head" />
+      <UsablePiece piece_id="axe_craft_13_head" />
+      <UsablePiece piece_id="axe_craft_13_head_blunt" />
+      <UsablePiece piece_id="axe_craft_31_head" />
+      <UsablePiece piece_id="axe_craft_11_handle" />
+      <UsablePiece piece_id="axe_craft_12_handle" />
+      <UsablePiece piece_id="axe_craft_28_handle" />
+      <UsablePiece piece_id="axe_craft_26_head" />	  
+
+      <UsablePiece piece_id="mp_vlandian_throwing_axe_head"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_vlandian_throwing_axe_head_extra"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_vlandian_throwing_axe_handle"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_vlandian_throwing_axe_handle_extra"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_sturgia_throwing_axe_head"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_sturgia_throwing_axe_head_captain"
+                 mp_piece="true" />
+      <UsablePiece piece_id="mp_sturgia_throwing_axe_handle"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_aserai_throwing_axe_head"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_aserai_throwing_axe_handle"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_battanian_throwing_axe_head"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_battanian_throwing_axe_handle"
+                   mp_piece="true" />
+    </UsablePieces>
+  </CraftingTemplate>
+  
 </CraftingTemplates>
 
 <!--
