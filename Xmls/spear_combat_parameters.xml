@@ -81,7 +81,7 @@
     <def name="upperthrust_rider_look_down_limit"
          val="-20" />
     <def name="thrust_rider_rot_limit_left"
-         val="90" />
+         val="120" />
     <def name="thrust_rider_rot_limit_right"
          val="60" />
     <def name="couched_lance_rider_look_down_limit"
