@@ -1,0 +1,134 @@
+﻿<Prefab>
+	<Constants>
+		<Constant Name="AT.MainWindow.MarginTop" Value="200" />
+		<Constant Name="AT.MainWindow.MarginLeft" Value="50" />
+		<Constant Name="AT.MainWindow.MarginBottom" Value="60" />
+		<Constant Name="AT.MainWindow.MarginRight" Value="150" />
+
+		<Constant Name="AT.Slider.Desc.Width" Value="450" />
+		<Constant Name="AT.Slider.Slider.Width" Value="400" />
+		<Constant Name="AT.Slider.Slider.Height" Value="55" />
+		<Constant Name="AT.Slider.Slider.MarginLeft" Value="20" />
+		<Constant Name="AT.Slider.Value.MarginLeft" Value="80" />
+		<Constant Name="AT.Slider.Default.MarginLeft" Value="20" />
+		<Constant Name="AT.Slider.DefaultValue.MarginLeft" Value="10" />
+
+		<Constant Name="AT.Check.Desc.Width" Value="250" />
+		<Constant Name="AT.Check.Height" Value="47" />
+		<Constant Name="AT.Check.Box.Width" Value="100" />
+		<Constant Name="AT.Check.Box.Width.Single" Value="200" />
+		<Constant Name="AT.Check.Box.MarginLeft" Value="40" />
+		<Constant Name="AT.Check.Box.MarginLeft.Header" Value="6" />
+
+
+		<Constant Name="AT.Heading.MarginTop" Value="20" />
+		<Constant Name="AT.Heading.MarginBottom" Value="12" />
+		<Constant Name="AT.Heading.Divider.Width" Value="500" />
+	</Constants>
+	<Window>
+		<Widget Id="Iterface Screen" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+			<Children>
+
+				<Standard.Background />
+
+				<!-- Left and Right container -->
+				<ListPanel Id="MainSectionListPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+					   HorizontalAlignment="Center" MarginTop="!AT.MainWindow.MarginTop" MarginBottom="!AT.MainWindow.MarginBottom"
+					   MarginLeft="!AT.MainWindow.MarginLeft" MarginRight="!AT.MainWindow.MarginRight" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+
+					<Children>
+						<!-- Left -->
+						<ListPanel Id="MainSectionListPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Top">
+							<Children>
+
+								<!-- List top to down -->
+								<ListPanel Id="OuterList" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Top" LayoutImp.LayoutMethod="VerticalBottomToTop">
+									<Children>
+
+										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+										  <Children>
+
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="Troop Overhaul"/>
+
+											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="15">
+											  <Children>
+												<RichTextWidget DataSource="{ActiveTroopOverhaulText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
+												<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{ActiveTroopOverhaul}" />
+											  </Children>
+											</ListPanel>
+
+										  </Children>
+										</ListPanel>
+										
+										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+										  <Children>
+
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="Ranged reload speed"/>
+
+											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="15">
+											  <Children>
+												<RichTextWidget DataSource="{RangedReloadSpeedText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
+												<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{RangedReloadSpeed}" />
+											  </Children>
+											</ListPanel>
+
+										  </Children>
+										</ListPanel>
+										
+									</Children>
+								</ListPanel>
+
+							</Children>
+						</ListPanel>
+
+						<!-- Right -->
+
+						<ListPanel Id="MainSectionListPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"  HorizontalAlignment="Right" VerticalAlignment="Top">
+						  <Children>
+							<!-- Press Button 
+							<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="!AT.Check.Height" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+							  <Children>
+								<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="Start Test Mission" />
+								<Widget Id="BooleanOption" WidthSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Slider.Width" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" IsVisible="true" UpdateChildrenStates="true">
+								  <Children>
+									<ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteMissionStart"  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="51" MarginTop="6" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="Header.Tab.Center">
+									  <Children>
+										<TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" PositionYOffset="1" Brush="Clan.TabControl.Text" Text="Start Mission"/>
+									  </Children>
+									</ButtonWidget>
+								  </Children>
+								</Widget>
+							  </Children>
+							</ListPanel>-->
+							<!--
+							<ListPanel Id="OuterList" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Top" LayoutImp.LayoutMethod="VerticalBottomToTop">
+							  <Children>
+								<RichTextWidget WidthSizePolicy = "StretchToParent" HeightSizePolicy = "CoverChildren" MarginLeft="5" MarginRight="5" MarginTop="20" Text="This panel allows you to activate or deactivate the AI reimplementation my clicking the checkbox above." Brush="SPOptions.OptionName.Text"/>
+							  </Children>
+							</ListPanel>
+							-->
+								
+						  </Children>
+						</ListPanel>
+					</Children>
+				</ListPanel>
+
+				<!-- Header -->
+				<Standard.TopPanel Parameter.Title="RBM Combat Module Settings">
+					<Children>
+						<ListPanel DoNotAcceptEvents="false" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Center" MarginTop="60" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+							<Children>
+								<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="!AT.Check.Height" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+								 
+								</ListPanel>
+							</Children>
+						</ListPanel>
+					</Children>
+				</Standard.TopPanel>
+
+				<!-- Done/ Close Buttons -->
+				<Standard.DialogCloseButtons Parameter.CancelButtonAction="ExecuteCancel" Parameter.CancelButtonText="@CancelText" Parameter.DoneButtonAction="ExecuteDone" Parameter.DoneButtonText="@DoneText" />
+			</Children>
+		</Widget>
+	</Window>
+</Prefab>

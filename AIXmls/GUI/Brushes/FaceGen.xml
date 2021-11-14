@@ -1,0 +1,457 @@
+<Brushes>
+
+  <Brush Name="FaceGen.VoiceSample.Button">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="FaceGen\VoiceSampleButton" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" ColorFactor="0.8" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="1.1" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="0.6" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" AlphaFactor="0.5" />
+      </Style>
+    </Styles>
+  </Brush>
+
+  <Brush Name="FaceGenMaleButtonBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="FaceGen\gender_symbol_male" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" ColorFactor="1" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="1.2" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="0.8" />
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Default" ColorFactor="1.2" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" AlphaFactor="0.5" />
+      </Style>
+    </Styles>
+    <SoundProperties>
+      <EventSounds>
+        <EventSound EventName="Click" Audio="checkbox" />
+      </EventSounds>
+    </SoundProperties>
+  </Brush>
+
+  <Brush Name="FaceGenFemaleButtonBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="FaceGen\gender_symbol_female" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" ColorFactor="1" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="1.2" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="0.8" />
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Default" ColorFactor="1.2" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" AlphaFactor="0.5" />
+      </Style>
+    </Styles>
+    <SoundProperties>
+      <EventSounds>
+        <EventSound EventName="Click" Audio="checkbox" />
+      </EventSounds>
+    </SoundProperties>
+  </Brush>
+
+  <Brush Name="FaceGenBodyButtonBrush" FontColor="#FAF4DEFF">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="FaceGen\BodyBtn1" Color="#FFFFFFFF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" Sprite="FaceGen\BodyBtn1" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" Sprite="FaceGen\BodyBtn2" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" Sprite="FaceGen\BodyBtn3" />
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Default" Sprite="FaceGen\BodyBtn3" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" Sprite="FaceGen\BodyBtn3" SaturationFactor="-70" ValueFactor="-25"/>
+      </Style>      
+    </Styles>
+    <SoundProperties>
+      <EventSounds>
+        <EventSound EventName="Click" Audio="tab" />
+      </EventSounds>
+    </SoundProperties>
+  </Brush>
+
+  <Brush Name="FaceGen.Extension.Button">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="CharacterCreation\character_creation_panel_extension_button" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" ColorFactor="1" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="1.2" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="0.8" />
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Default" ColorFactor="2.0" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" AlphaFactor="0.5" />
+      </Style>
+    </Styles>
+    <SoundProperties>
+      <EventSounds>
+        <EventSound EventName="Click" Audio="transfer" />
+      </EventSounds>
+    </SoundProperties>
+  </Brush>
+
+  <Brush Name="FaceGen.Extension.Clothe.Button">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="CharacterCreation\clothes_on" Color="#DEA664FF"/>
+      <BrushLayer Name="Selected" Sprite="CharacterCreation\clothes_off" Color="#DEA664FF"/>
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" ColorFactor="1" />
+        <BrushLayer Name="Selected" IsHidden="true" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="2" />
+        <BrushLayer Name="Selected" IsHidden="true" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="0.8" />
+        <BrushLayer Name="Selected" IsHidden="true" />
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Default" IsHidden="true" />
+        <BrushLayer Name="Selected" ColorFactor="1.35" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" AlphaFactor="0.5" />
+        <BrushLayer Name="Selected" IsHidden="true" />
+      </Style>
+    </Styles>
+  </Brush>
+
+  <Brush Name="FaceGen.Property.Slider.Handle">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="FaceGen\property_slider_knob" ExtendLeft="4" ExtendRight="4" ExtendTop="4" ExtendBottom="4" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" ColorFactor="1" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="1.2" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="0.8" />
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Default" ColorFactor="1.2" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" AlphaFactor="0.5" />
+      </Style>
+    </Styles>
+  </Brush>
+
+  <Brush Name="FaceGen.Scrollbar.Handle">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="BlankWhiteSquare_9" Color="#3C2A20FF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" ColorFactor="1" AlphaFactor="0.8" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="1.2" AlphaFactor="1" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="0.8" />
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Default" ColorFactor="1.2" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" AlphaFactor="0.5" />
+      </Style>
+    </Styles>
+  </Brush>
+
+  <Brush Name="FaceGen.Card">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="CharacterCreation\facegen_card" ExtendLeft="10" ExtendRight="10" ExtendTop="10" ExtendBottom="10" />
+      <BrushLayer Name="Selected" Sprite="CharacterCreation\facegen_card_selected" ExtendLeft="17" ExtendRight="17" ExtendTop="17" ExtendBottom="17" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" ColorFactor="1" />
+        <BrushLayer Name="Selected" IsHidden="true" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="2" />
+        <BrushLayer Name="Selected" IsHidden="true" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="0.8" />
+        <BrushLayer Name="Selected" IsHidden="true" />
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Default" IsHidden="true" />
+        <BrushLayer Name="Selected" ColorFactor="1.8" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" AlphaFactor="0.5" />
+        <BrushLayer Name="Selected" IsHidden="true" />
+      </Style>
+    </Styles>
+    <SoundProperties>
+      <EventSounds>
+        <EventSound EventName="Click" Audio="checkbox" />
+      </EventSounds>
+    </SoundProperties>
+  </Brush>
+
+  <Brush Name="FaceGen.Card.Only.Default">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="CharacterCreation\facegen_card" ExtendLeft="10" ExtendRight="10" ExtendTop="10" ExtendBottom="10" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" />
+      </Style>
+    </Styles>
+  </Brush>
+
+  <Brush Name="FaceGen.Generic.Button">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="switcher_9" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" ColorFactor="1" AlphaFactor="0.8" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="1.2" AlphaFactor="1" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="0.8" />
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Default" ColorFactor="1.2" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" AlphaFactor="0.5" />
+      </Style>
+    </Styles>
+    <SoundProperties>
+      <EventSounds>
+        <EventSound EventName="Click" Audio="choice" />
+      </EventSounds>
+    </SoundProperties>
+  </Brush>
+
+  <Brush Name="FaceGenFaceButtonBrush" FontColor="#FAF4DEFF">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="FaceGen\FaceBtn1" Color="#FFFFFFFF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" Sprite="FaceGen\FaceBtn1" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" Sprite="FaceGen\FaceBtn2" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" Sprite="FaceGen\FaceBtn3" />
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Default" Sprite="FaceGen\FaceBtn3" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" Sprite="FaceGen\FaceBtn3" SaturationFactor="-70" ValueFactor="-25"/>
+      </Style>
+    </Styles>
+    <SoundProperties>
+      <EventSounds>
+        <EventSound EventName="Click" Audio="tab" />
+      </EventSounds>
+    </SoundProperties>
+  </Brush>
+
+  <Brush Name="FaceGenEyesButtonBrush" FontColor="#FAF4DEFF">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="FaceGen\EyesBtn1" Color="#FFFFFFFF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" Sprite="FaceGen\EyesBtn1" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" Sprite="FaceGen\EyesBtn2" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" Sprite="FaceGen\EyesBtn3" />
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Default" Sprite="FaceGen\EyesBtn3" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" Sprite="FaceGen\EyesBtn3" SaturationFactor="-70" ValueFactor="-25"/>
+      </Style>
+    </Styles>
+    <SoundProperties>
+      <EventSounds>
+        <EventSound EventName="Click" Audio="tab" />
+      </EventSounds>
+    </SoundProperties>
+  </Brush>
+
+  <Brush Name="FaceGenNoseButtonBrush" FontColor="#FAF4DEFF">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="FaceGen\NoseBtn1" Color="#FFFFFFFF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" Sprite="FaceGen\NoseBtn1" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" Sprite="FaceGen\NoseBtn2" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" Sprite="FaceGen\NoseBtn3" />
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Default" Sprite="FaceGen\NoseBtn3" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" Sprite="FaceGen\NoseBtn3" SaturationFactor="-70" ValueFactor="-25"/>
+      </Style>
+    </Styles>
+    <SoundProperties>
+      <EventSounds>
+        <EventSound EventName="Click" Audio="tab" />
+      </EventSounds>
+    </SoundProperties>
+  </Brush>
+
+  <Brush Name="FaceGenMouthButtonBrush" FontColor="#FAF4DEFF">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="FaceGen\MouthBtn1" Color="#FFFFFFFF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" Sprite="FaceGen\MouthBtn1" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" Sprite="FaceGen\MouthBtn2" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" Sprite="FaceGen\MouthBtn3" />
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Default" Sprite="FaceGen\MouthBtn3" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" Sprite="FaceGen\MouthBtn3" SaturationFactor="-70" ValueFactor="-25"/>
+      </Style>
+    </Styles>
+    <SoundProperties>
+      <EventSounds>
+        <EventSound EventName="Click" Audio="tab" />
+      </EventSounds>
+    </SoundProperties>
+  </Brush>
+
+  <Brush Name="FaceGenHairButtonBrush" FontColor="#FAF4DEFF">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="FaceGen\HairBtn1" Color="#FFFFFFFF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" Sprite="FaceGen\HairBtn1" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" Sprite="FaceGen\HairBtn2" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" Sprite="FaceGen\HairBtn3" />
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Default" Sprite="FaceGen\HairBtn3" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" Sprite="FaceGen\HairBtn3" SaturationFactor="-70" ValueFactor="-25"/>
+      </Style>
+    </Styles>
+    <SoundProperties>
+      <EventSounds>
+        <EventSound EventName="Click" Audio="tab" />
+      </EventSounds>
+    </SoundProperties>
+  </Brush>
+
+  <Brush Name="FaceGenTaintButtonBrush" FontColor="#FAF4DEFF">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="FaceGen\TaintBtn1" Color="#FFFFFFFF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" Sprite="FaceGen\TaintBtn1" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" Sprite="FaceGen\TaintBtn2" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" Sprite="FaceGen\TaintBtn3" />
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Default" Sprite="FaceGen\TaintBtn3" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" Sprite="FaceGen\TaintBtn3" SaturationFactor="-70" ValueFactor="-25"/>
+      </Style>      
+    </Styles>
+    <SoundProperties>
+      <EventSounds>
+        <EventSound EventName="Click" Audio="tab" />
+      </EventSounds>
+    </SoundProperties>
+  </Brush>
+
+  <Brush Name="FaceGen.Property.Text" Font="FiraSansExtraCondensed-Regular" TextHorizontalAlignment="Right">
+    <Styles>
+      <Style Name="Default" FontColor="#F4E1C4FF" TextGlowColor="#000000FF" TextOutlineColor="#000000FF" TextOutlineAmount="0.01" TextGlowRadius="0" TextBlur="0" FontSize="20" />
+    </Styles>
+  </Brush>
+
+</Brushes>

@@ -12,7 +12,7 @@ internal class RbmConfigScreen : ScreenBase
 		base.OnInitialize();
 		_viewModel = new RbmMenuViewModel();
 		_gauntletLayer = new GauntletLayer(1);
-		_gauntletLayer.LoadMovie("SimpleInterface", _viewModel);
+		_gauntletLayer.LoadMovie("RBMCMConfig", _viewModel);
 		_gauntletLayer.InputRestrictions.SetInputRestrictions();
 		AddLayer(_gauntletLayer);
 	}

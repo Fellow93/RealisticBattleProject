@@ -1,6 +1,7 @@
 ﻿using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
 namespace RealisticBattleAiModule.AiModule.RbmBehaviors
@@ -82,7 +83,7 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 
 		protected override void CalculateCurrentOrder()
 		{
-            if (base.Formation.QuerySystem.IsInfantryFormation)
+			if (base.Formation.QuerySystem.IsInfantryFormation)
             {
 				mobilityModifier = 1.25f;
             }
@@ -241,6 +242,12 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 		{
 			CalculateCurrentOrder();
 			base.Formation.SetMovementOrder(base.CurrentOrder);
+		}
+
+		public override TextObject GetBehaviorString()
+		{
+			string name = GetType().Name;
+			return GameTexts.FindText("str_formation_ai_sergeant_instruction_behavior_text", name);
 		}
 	}
 }

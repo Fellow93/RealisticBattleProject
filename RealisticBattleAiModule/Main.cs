@@ -4,6 +4,8 @@ using TaleWorlds.Core;
 using TaleWorlds.Library;
 using System.Collections.Generic;
 using System.Xml;
+using TaleWorlds.Localization;
+using TaleWorlds.Engine.Screens;
 
 namespace RealisticBattleAiModule
 {
@@ -51,6 +53,11 @@ namespace RealisticBattleAiModule
                     XmlConfig.dict.Add(childNode.Name + "." + subNode.Name, float.Parse(subNode.InnerText));
                 }
             }
+
+            Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("RBM AI Module Settings"), 4, delegate
+            {
+                ScreenManager.PushScreen(new RbmConfigScreen());
+            }, () => (false, new TextObject("RBM AI Module Settings"))));
 
             MyPatcher.FirstPatch();
         }

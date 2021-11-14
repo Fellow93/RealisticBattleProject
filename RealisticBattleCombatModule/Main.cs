@@ -4,6 +4,8 @@ using HarmonyLib;
 using System.Collections.Generic;
 using System.Xml;
 using TaleWorlds.Core;
+using TaleWorlds.Engine.Screens;
+using TaleWorlds.Localization;
 
 namespace RealisticBattleCombatModule
 {
@@ -35,15 +37,15 @@ namespace RealisticBattleCombatModule
             }
             MyPatcher.DoPatching();
 
-            //Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("RBM Configuration"), 3, delegate
-            //{
-            //    ScreenManager.PushScreen(new RbmConfigScreen());
-            //}, () => (false, new TextObject("Realistic Battle Configuration"))));
+            Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("RBM Combat Module Settings"), 3, delegate
+            {
+                ScreenManager.PushScreen(new RbmConfigScreen());
+            }, () => (false, new TextObject("RBM Combat Module Settings"))));
         }
 
         protected override void OnBeforeInitialModuleScreenSetAsRoot()
         {
-            InformationManager.DisplayMessage(new InformationMessage("RBM Combat Module Active", Color.FromUint(4282569842u)));
+            InformationManager.DisplayMessage(new InformationMessage("RBM Combat Module Active, please check RBM combat module settings, if everything is set up to your liking.", Color.FromUint(4282569842u)));
         }
     }
 }

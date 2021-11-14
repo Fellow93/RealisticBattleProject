@@ -263,12 +263,11 @@
   <ItemGroup>
     <Compile Include="CombatModule\ArmorRework.cs" />
     <Compile Include="CombatModule\RangedAmmoCombo.cs" />
-    <Compile Include="CombatModule\RbmConfigData.cs" />
-    <Compile Include="CombatModule\RbmConfigScreen.cs" />
+    <Compile Include="CombatModule\Config\RbmConfigScreen.cs" />
     <Compile Include="CombatModule\DamageRework.cs" />
     <Compile Include="CombatModule\RangedRework.cs" />
-    <Compile Include="CombatModule\RbmMenuViewModel.cs" />
-    <Compile Include="CombatModule\TextViewModel.cs" />
+    <Compile Include="CombatModule\Config\RbmMenuViewModel.cs" />
+    <Compile Include="CombatModule\Config\TextViewModel.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
@@ -305,7 +304,9 @@ xcopy /d /y "$(SolutionDir)Xmls\spear_managed_core_parameters.xml" "$(SolutionDi
 xcopy /d /y "$(SolutionDir)Xmls\spear_combat_parameters.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
 xcopy /d /y "$(SolutionDir)Xmls\bow_shields.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
 xcopy /d /y "$(SolutionDir)Xmls\siege_ranged_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\SubModule.xml" "$(SolutionDir)..\RealisticBattleCombatModule\"</PostBuildEvent>
+xcopy /d /y "$(SolutionDir)Xmls\SubModule.xml" "$(SolutionDir)..\RealisticBattleCombatModule\"
+xcopy /d /y "$(SolutionDir)Xmls\GUI\Brushes\FaceGen.xml" "$(SolutionDir)..\RealisticBattleCombatModule\GUI\Brushes\"
+xcopy /d /y "$(SolutionDir)Xmls\GUI\Prefabs\RBMCMConfig.xml" "$(SolutionDir)..\RealisticBattleCombatModule\GUI\Prefabs\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
