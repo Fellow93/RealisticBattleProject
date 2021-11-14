@@ -1,7 +1,7 @@
 ﻿<Module>
   <Name value="Realistic Battle Combat Module and Unit Overhaul"/>
   <Id value="RealisticBattleCombatModule"/>
-  <Version value="v2.1.8"/>
+  <Version value="v2.1.9"/>
   <SingleplayerModule value="true"/>
   <MultiplayerModule value="false"/>
   <DependedModules>
