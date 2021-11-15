@@ -16,6 +16,8 @@
 		<ArmorPenetrationMessage>0</ArmorPenetrationMessage>
 		<ThrustModifier>0.034</ThrustModifier>
 		
+		<BetterArrowVisuals>1</BetterArrowVisuals>
+		<PassiveShoulderShields>1</PassiveShoulderShields>
 		<TroopOverhaulActive>1</TroopOverhaulActive>
 		<RealisticRangedReload>2</RealisticRangedReload>
 		<MaceBluntModifier>1</MaceBluntModifier>

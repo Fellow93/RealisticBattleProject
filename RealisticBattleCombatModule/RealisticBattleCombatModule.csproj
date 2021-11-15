@@ -273,6 +273,7 @@
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CombatModule\XmlLoadingPatches.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <!-- Post-Build -->

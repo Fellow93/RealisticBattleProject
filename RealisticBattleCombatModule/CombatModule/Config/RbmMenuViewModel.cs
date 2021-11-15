@@ -27,12 +27,17 @@ internal class RbmMenuViewModel : ViewModel
 	private bool _booleanValue;
 
 	public TextViewModel  ActiveTroopOverhaulText{ get; }
-
 	public SelectorVM<SelectorItemVM> ActiveTroopOverhaul { get; }
 
 	public TextViewModel RangedReloadSpeedText { get; }
-
 	public SelectorVM<SelectorItemVM> RangedReloadSpeed { get; }
+
+	public TextViewModel PassiveShoulderShieldsText { get; }
+	public SelectorVM<SelectorItemVM> PassiveShoulderShields { get; }
+
+	public TextViewModel BetterArrowVisualsText { get; }
+	public SelectorVM<SelectorItemVM> BetterArrowVisuals { get; }
+
 
 	[DataSourceProperty]
 	public string CancelText => _cancelText;
@@ -73,6 +78,14 @@ internal class RbmMenuViewModel : ViewModel
 		RangedReloadSpeedText = new TextViewModel(new TextObject("Ranged reload speed"));
 		RangedReloadSpeed = new SelectorVM<SelectorItemVM>(rangedReloadSpeed, 0, null);
 
+		List<string> passiveShoulderShields = new List<string> { "Disabled", "Enabled (Default)" };
+		PassiveShoulderShieldsText = new TextViewModel(new TextObject("Passive Shoulder Shields"));
+		PassiveShoulderShields = new SelectorVM<SelectorItemVM>(passiveShoulderShields, 0, null);
+
+		List<string> betterArrowVisuals = new List<string> { "Disabled", "Enabled (Default)" };
+		BetterArrowVisualsText = new TextViewModel(new TextObject("Better Arrow Visuals"));
+		BetterArrowVisuals = new SelectorVM<SelectorItemVM>(betterArrowVisuals, 0, null);
+
 		if (XmlConfig.dict["Global.TroopOverhaulActive"] == 0)
 		{
 			ActiveTroopOverhaul.SelectedIndex = 0;
@@ -93,6 +106,24 @@ internal class RbmMenuViewModel : ViewModel
 		else if (XmlConfig.dict["Global.RealisticRangedReload"] == 2)
 		{
 			RangedReloadSpeed.SelectedIndex = 2;
+		}
+
+		if (XmlConfig.dict["Global.PassiveShoulderShields"] == 0)
+		{
+			PassiveShoulderShields.SelectedIndex = 0;
+		}
+		else if (XmlConfig.dict["Global.PassiveShoulderShields"] == 1)
+		{
+			PassiveShoulderShields.SelectedIndex = 1;
+		}
+
+		if (XmlConfig.dict["Global.BetterArrowVisuals"] == 0)
+		{
+			BetterArrowVisuals.SelectedIndex = 0;
+		}
+		else if (XmlConfig.dict["Global.BetterArrowVisuals"] == 1)
+		{
+			BetterArrowVisuals.SelectedIndex = 1;
 		}
 	}
 
@@ -136,6 +167,30 @@ internal class RbmMenuViewModel : ViewModel
 					else if (RangedReloadSpeed.SelectedIndex == 2)
 					{
 						subNode.InnerText = "2";
+					}
+				}
+
+				if (subNode.Name.Equals("PassiveShoulderShields"))
+				{
+					if (PassiveShoulderShields.SelectedIndex == 0)
+					{
+						subNode.InnerText = "0";
+					}
+					if (PassiveShoulderShields.SelectedIndex == 1)
+					{
+						subNode.InnerText = "1";
+					}
+				}
+
+				if (subNode.Name.Equals("BetterArrowVisuals"))
+				{
+					if (BetterArrowVisuals.SelectedIndex == 0)
+					{
+						subNode.InnerText = "0";
+					}
+					if (BetterArrowVisuals.SelectedIndex == 1)
+					{
+						subNode.InnerText = "1";
 					}
 				}
 			}

@@ -8,7 +8,6 @@ using System.Reflection;
 using System.Xml;
 using System.Xml.Linq;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.CampaignSystem.CharacterDevelopment.Managers;
 using TaleWorlds.CampaignSystem.SandBox.GameComponents.Map;
 using TaleWorlds.Core;
 using TaleWorlds.DotNet;
@@ -1559,104 +1558,7 @@ namespace RealisticBattleCombatModule
 
     //}
 
-    [HarmonyPatch(typeof(MBObjectManager))]
-    [HarmonyPatch("MergeTwoXmls")]
-    class MergeTwoXmlsPatch
-    {
-        static bool Prefix(XmlDocument xmlDocument1, XmlDocument xmlDocument2, ref XmlDocument __result)
-        {
-            XDocument originalXml = MBObjectManager.ToXDocument(xmlDocument1);
-            XDocument mergedXml = MBObjectManager.ToXDocument(xmlDocument2);
-
-            List<XElement> nodesToRemoveArray = new List<XElement>();
-
-            if (XmlConfig.dict["Global.TroopOverhaulActive"] == 0 && xmlDocument2.BaseURI.Contains("unit_overhaul"))
-            {
-                __result = MBObjectManager.ToXmlDocument(originalXml);
-                return false;
-            }
-
-            foreach (XElement origNode in originalXml.Root.Elements())
-            {
-                if (origNode.Name == "CraftedItem" && xmlDocument2.BaseURI.Contains("RealisticBattle"))
-                {
-                    foreach (XElement mergedNode in mergedXml.Root.Elements())
-                    {
-                        if (mergedNode.Name == "CraftedItem")
-                        {
-                            if (origNode.Attribute("id").Value.Equals(mergedNode.Attribute("id").Value)) {
-                                nodesToRemoveArray.Add(origNode);
-                            }
-                        }
-                    }
-                }
-
-                if (origNode.Name == "Item" && xmlDocument2.BaseURI.Contains("RealisticBattle"))
-                {
-                    foreach (XElement mergedNode in mergedXml.Root.Elements())
-                    {
-                        if (mergedNode.Name == "Item")
-                        {
-                            if (origNode.Attribute("id").Value.Equals(mergedNode.Attribute("id").Value))
-                            {
-                                nodesToRemoveArray.Add(origNode);
-                            }
-                        }
-                    }
-                }
-
-                if (origNode.Name == "NPCCharacter" && xmlDocument2.BaseURI.Contains("RealisticBattle"))
-                {
-                    foreach (XElement nodeEquip in origNode.Elements())
-                    {
-                        if (nodeEquip.Name == "Equipments")
-                        {
-                            foreach (XElement nodeEquipRoster in nodeEquip.Elements())
-                            {
-                                if (nodeEquipRoster.Name == "EquipmentRoster")
-                                {
-                                    foreach (XElement mergedNode in mergedXml.Root.Elements())
-                                    {
-                                        if (origNode.Attribute("id").Value.Equals(mergedNode.Attribute("id").Value))
-                                        {
-                                            foreach (XElement mergedNodeEquip in mergedNode.Elements())
-                                            {
-                                                if (mergedNodeEquip.Name == "Equipments")
-                                                {
-                                                    foreach (XElement mergedNodeRoster in mergedNodeEquip.Elements())
-                                                    {
-                                                        if (mergedNodeRoster.Name == "EquipmentRoster")
-                                                        {
-                                                            if (!nodesToRemoveArray.Contains(origNode))
-                                                            {
-                                                                nodesToRemoveArray.Add(origNode);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (nodesToRemoveArray.Count > 0)
-            {
-                foreach (XElement node in nodesToRemoveArray)
-                {
-                    node.Remove();
-                }
-            }
-
-            originalXml.Root.Add(mergedXml.Root.Elements());
-            __result = MBObjectManager.ToXmlDocument(originalXml);
-            return false;
-        }
-    }
+    
 
     [HarmonyPatch(typeof(Mission))]
     [HarmonyPatch("CreateMeleeBlow")]

@@ -75,6 +75,36 @@
 										  </Children>
 										</ListPanel>
 										
+										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+										  <Children>
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="Passive Shoulder Shields"/>
+
+
+											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="15">
+											  <Children>
+												<RichTextWidget DataSource="{PassiveShoulderShieldsText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
+												<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{PassiveShoulderShields}" />
+											  </Children>
+											</ListPanel>
+
+										  </Children>
+										</ListPanel>
+										
+										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+										  <Children>
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="Better Arrow Visuals"/>
+
+
+											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="15">
+											  <Children>
+												<RichTextWidget DataSource="{BetterArrowVisualsText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
+												<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{BetterArrowVisuals}" />
+											  </Children>
+											</ListPanel>
+
+										  </Children>
+										</ListPanel>
+										
 									</Children>
 								</ListPanel>
 
@@ -100,13 +130,16 @@
 								</Widget>
 							  </Children>
 							</ListPanel>-->
-							<!--
+							
 							<ListPanel Id="OuterList" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Top" LayoutImp.LayoutMethod="VerticalBottomToTop">
 							  <Children>
-								<RichTextWidget WidthSizePolicy = "StretchToParent" HeightSizePolicy = "CoverChildren" MarginLeft="5" MarginRight="5" MarginTop="20" Text="This panel allows you to activate or deactivate the AI reimplementation my clicking the checkbox above." Brush="SPOptions.OptionName.Text"/>
+								<RichTextWidget WidthSizePolicy = "StretchToParent" HeightSizePolicy = "CoverChildren" MarginLeft="5" MarginRight="5" MarginTop="20" Text=" " Brush="SPOptions.OptionName.Text"/>
+								<RichTextWidget WidthSizePolicy = "StretchToParent" HeightSizePolicy = "CoverChildren" MarginLeft="5" MarginRight="5" MarginTop="20" Text=" " Brush="SPOptions.OptionName.Text"/>
+								<RichTextWidget WidthSizePolicy = "StretchToParent" HeightSizePolicy = "CoverChildren" MarginLeft="5" MarginRight="5" MarginTop="20" Text=" " Brush="SPOptions.OptionName.Text"/>
+								<RichTextWidget WidthSizePolicy = "StretchToParent" HeightSizePolicy = "CoverChildren" MarginLeft="5" MarginRight="5" MarginTop="20" Text=" " Brush="SPOptions.OptionName.Text"/>
 							  </Children>
 							</ListPanel>
-							-->
+							
 								
 						  </Children>
 						</ListPanel>
