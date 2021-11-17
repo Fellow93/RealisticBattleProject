@@ -701,7 +701,7 @@ namespace RealisticBattleAiModule
                     vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + distanceFromMainFormation);
                     vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
                     vec += ____mainFormation.Direction * distanceOffsetFromMainFormation;
-                    if (!Mission.Current.IsPositionInsideBoundaries(vec))
+                    if (!Mission.Current.IsPositionInsideBoundaries(vec) || __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.1f)
                     {
                         vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + closerDistanceFromMainFormation);
                         vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
@@ -713,7 +713,7 @@ namespace RealisticBattleAiModule
                     vec = ____mainFormation.CurrentPosition + v.LeftVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + distanceFromMainFormation);
                     vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
                     vec += ____mainFormation.Direction * distanceOffsetFromMainFormation;
-                    if (!Mission.Current.IsPositionInsideBoundaries(vec))
+                    if (!Mission.Current.IsPositionInsideBoundaries(vec) || __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.1f)
                     {
                         vec = ____mainFormation.CurrentPosition + v.LeftVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + closerDistanceFromMainFormation);
                         vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
