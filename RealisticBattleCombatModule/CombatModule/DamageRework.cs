@@ -406,6 +406,10 @@ namespace RealisticBattleCombatModule
                                 {
                                     skillBasedDamage = magnitude + 50f + (effectiveSkill * 0.46f);
                                 }
+                                else if (damageType == DamageTypes.Blunt)
+                                {
+                                    skillBasedDamage = magnitude + 30f + (effectiveSkill * 0.13f);
+                                }
                                 else
                                 {
                                     if (isPassiveUsage)
@@ -463,6 +467,10 @@ namespace RealisticBattleCombatModule
                                 if (damageType == DamageTypes.Cut)
                                 {
                                     skillBasedDamage = magnitude + (50f + (effectiveSkill * 0.46f)) * 1.3f;
+                                }
+                                else if (damageType == DamageTypes.Blunt)
+                                {
+                                    skillBasedDamage = magnitude + (30f + (effectiveSkill * 0.13f) * 1.3f);
                                 }
                                 else
                                 {

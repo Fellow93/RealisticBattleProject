@@ -373,7 +373,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_polearm_1_t5" />
       </EquipmentRoster>
       <EquipmentSet id="npc_wanderer_equipment_template_battania_civilian"
                     civilian="true" />
@@ -393,11 +393,11 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_polearm_1_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_polearm_1_t5" />
       </EquipmentRoster>
       <EquipmentSet id="npc_wanderer_equipment_template_battania_civilian"
                     civilian="true" />
@@ -417,11 +417,11 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_polearm_1_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_polearm_1_t5" />
       </EquipmentRoster>
       <EquipmentSet id="npc_wanderer_equipment_template_battania_civilian"
                     civilian="true" />
@@ -441,11 +441,11 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_polearm_1_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_polearm_1_t5" />
       </EquipmentRoster>
       <EquipmentSet id="npc_wanderer_equipment_template_battania_civilian"
                     civilian="true" />
@@ -475,7 +475,7 @@
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item2"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_polearm_1_t5" />
       </EquipmentRoster>
       <EquipmentSet id="npc_wanderer_equipment_template_battania_civilian"
                     civilian="true" />
@@ -499,7 +499,7 @@
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item2"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_polearm_1_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -531,11 +531,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_polearm_1_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_polearm_1_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -543,7 +543,7 @@
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item2"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_polearm_1_t5" />
       </EquipmentRoster>
       <EquipmentSet id="npc_wanderer_equipment_template_battania_civilian"
                     civilian="true" />
@@ -563,19 +563,11 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_polearm_1_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_2hsword_4_t4" />
-      </EquipmentRoster>
-      <EquipmentRoster>
-      <equipment slot="Item0"
-                 id="Item.training_bow" />
-      <equipment slot="Item1"
-                 id="Item.bodkin_arrows_a" />
-      <equipment slot="Item2"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_polearm_1_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -583,7 +575,15 @@
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item2"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_polearm_1_t5" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.training_bow" />
+      <equipment slot="Item1"
+                 id="Item.bodkin_arrows_a" />
+      <equipment slot="Item2"
+                 id="Item.battania_polearm_1_t5" />
       </EquipmentRoster>
       <EquipmentSet id="npc_wanderer_equipment_template_battania_civilian"
                     civilian="true" />
@@ -613,7 +613,7 @@
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item2"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_polearm_1_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -627,7 +627,7 @@
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item2"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_polearm_1_t5" />
       </EquipmentRoster>
       <EquipmentSet id="npc_wanderer_equipment_template_battania_civilian"
                     civilian="true" />
@@ -17141,7 +17141,7 @@
       <equipment slot="Item2"
                  id="Item.vlandia_mace_3_t5" />
       <equipment slot="Item3"
-                 id="Item.pavise_shield_shoulder" />
+                 id="Item.pavise_shield" />
       <equipment slot="Item1"
                  id="Item.bolt_a" />
       <equipment slot="Item0"
