@@ -90,7 +90,7 @@ namespace RealisticBattleCombatModule
                                 RangedWeaponStats rws;
                                 if (rangedWeaponStats.TryGetValue(mw.GetModifiedItemName().ToString(), out rws))
                                 {
-                                    if ((effectiveSkill + 11f) < rws.getDrawWeight())
+                                    if ((effectiveSkill) < rws.getDrawWeight() + 10f) // 70 more skill needed to unlock speed shooting
                                     {
                                         __instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags |= WeaponFlags.UnloadWhenSheathed;
                                         weaponStatsData[i].WeaponFlags = (ulong)__instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags;
