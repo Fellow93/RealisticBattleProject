@@ -7346,7 +7346,7 @@
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.fire_arrows" />
       <equipment slot="Item2"
                  id="Item.empire_noble_sword_1_t5" />
       <equipment slot="Item3"
@@ -7366,7 +7366,7 @@
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.fire_arrows" />
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Item3"
@@ -7386,7 +7386,7 @@
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.fire_arrows" />
       <equipment slot="Item2"
                  id="Item.imperial_axe_t3" />
       <equipment slot="Item3"
