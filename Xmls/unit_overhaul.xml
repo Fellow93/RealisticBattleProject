@@ -2322,9 +2322,9 @@
       <equipment slot="Item0"
                  id="Item.nomad_bow" />
       <equipment slot="Item1"
-                 id="Item.vlandic_arrows" />
+                 id="Item.hardened_80_gr_arrows" />
       <equipment slot="Item2"
-                 id="Item.vlandic_arrows" />
+                 id="Item.hardened_80_gr_arrows" />
       <equipment slot="Item3"
                  id="Item.aserai_mace_3_t3" />
       <equipment slot="Head"
@@ -2342,9 +2342,9 @@
       <equipment slot="Item0"
                  id="Item.nomad_bow" />
       <equipment slot="Item1"
-                 id="Item.vlandic_arrows" />
+                 id="Item.hardened_90_gr_arrows" />
       <equipment slot="Item2"
-                 id="Item.vlandic_arrows" />
+                 id="Item.hardened_90_gr_arrows" />
       <equipment slot="Item3"
                  id="Item.aserai_mace_3_t3" />
       <equipment slot="Head"
@@ -2362,9 +2362,9 @@
       <equipment slot="Item0"
                  id="Item.nomad_bow" />
       <equipment slot="Item1"
-                 id="Item.vlandic_arrows" />
+                 id="Item.hardened_100_gr_arrows" />
       <equipment slot="Item2"
-                 id="Item.vlandic_arrows" />
+                 id="Item.hardened_100_gr_arrows" />
       <equipment slot="Item3"
                  id="Item.bamboo_axe_t4" />
       <equipment slot="Head"
@@ -2417,9 +2417,9 @@
       <equipment slot="Item0"
                  id="Item.noble_long_bow" />
       <equipment slot="Item1"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.hardened_110_gr_arrows" />
       <equipment slot="Item2"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.hardened_110_gr_arrows" />
       <equipment slot="Item3"
                  id="Item.aserai_mace_4_t4" />
       <equipment slot="Head"
@@ -2435,11 +2435,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.noble_long_bow" />
+                 id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.hardened_110_gr_arrows" />
       <equipment slot="Item2"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.hardened_110_gr_arrows" />
       <equipment slot="Item3"
                  id="Item.aserai_mace_4_t4" />
       <equipment slot="Head"
@@ -2457,9 +2457,9 @@
       <equipment slot="Item0"
                  id="Item.noble_long_bow" />
       <equipment slot="Item1"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.hardened_125_gr_arrows" />
       <equipment slot="Item2"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.hardened_125_gr_arrows" />
       <equipment slot="Item3"
                  id="Item.easter_polesword_t4" />
       <equipment slot="Head"
@@ -2940,7 +2940,7 @@
       <equipment slot="Item0"
                  id="Item.composite_steppe_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_a" />
+                 id="Item.hardened_100_gr_arrows" />
       <equipment slot="Item2"
                  id="Item.aserai_mace_3_t3" />
       <equipment slot="Item3"
@@ -2964,7 +2964,7 @@
       <equipment slot="Item0"
                  id="Item.composite_steppe_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_a" />
+                 id="Item.hardened_100_gr_arrows" />
       <equipment slot="Item2"
                  id="Item.aserai_mace_3_t3" />
       <equipment slot="Item3"
@@ -2988,7 +2988,7 @@
       <equipment slot="Item0"
                  id="Item.composite_steppe_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_a" />
+                 id="Item.hardened_100_gr_arrows" />
       <equipment slot="Item2"
                  id="Item.aserai_mace_3_t3" />
       <equipment slot="Item3"
@@ -3045,7 +3045,7 @@
       <equipment slot="Item0"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
-                 id="Item.piercing_arrows" />
+                 id="Item.hardened_125_gr_arrows" />
       <equipment slot="Item2"
                  id="Item.aserai_mace_4_t4" />
       <equipment slot="Item3"
@@ -3069,7 +3069,7 @@
       <equipment slot="Item0"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
-                 id="Item.piercing_arrows" />
+                 id="Item.hardened_125_gr_arrows" />
       <equipment slot="Item2"
                  id="Item.aserai_mace_4_t4" />
       <equipment slot="Item3"
@@ -3093,7 +3093,7 @@
       <equipment slot="Item0"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
-                 id="Item.piercing_arrows" />
+                 id="Item.hardened_125_gr_arrows" />
       <equipment slot="Item2"
                  id="Item.aserai_mace_4_t4" />
       <equipment slot="Item3"
@@ -5371,9 +5371,9 @@
       <equipment slot="Item0"
                  id="Item.highland_ranger_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item2"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item3"
                  id="Item.battania_2hsword_1_t2" />
       <equipment slot="Body"
@@ -5391,9 +5391,9 @@
       <equipment slot="Item0"
                  id="Item.highland_ranger_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item2"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item3"
                  id="Item.battania_2haxe_1_t2" />
       <equipment slot="Body"
@@ -5411,9 +5411,9 @@
       <equipment slot="Item0"
                  id="Item.highland_ranger_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_hardened_80_gr_arrows" />
       <equipment slot="Item2"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_hardened_80_gr_arrows" />
       <equipment slot="Item3"
                  id="Item.battania_2hsword_1_t2" />
       <equipment slot="Body"
@@ -5466,9 +5466,9 @@
       <equipment slot="Item0"
                  id="Item.lowland_longbow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_b" />
+                 id="Item.GRE_bodkin_arrows_a" />
       <equipment slot="Item2"
-                 id="Item.bodkin_arrows_b" />
+                 id="Item.GRE_bodkin_arrows_a" />
       <equipment slot="Item3"
                  id="Item.battania_2hsword_2_t3" />
       <equipment slot="Body"
@@ -5486,9 +5486,9 @@
       <equipment slot="Item0"
                  id="Item.lowland_longbow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_b" />
+                 id="Item.GRE_bodkin_arrows_a" />
       <equipment slot="Item2"
-                 id="Item.bodkin_arrows_b" />
+                 id="Item.GRE_bodkin_arrows_a" />
       <equipment slot="Item3"
                  id="Item.battania_2hsword_2_t3" />
       <equipment slot="Body"
@@ -5504,11 +5504,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.lowland_longbow" />
+                 id="Item.highland_ranger_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_b" />
+                 id="Item.GRE_hardened_90_gr_arrows" />
       <equipment slot="Item2"
-                 id="Item.bodkin_arrows_b" />
+                 id="Item.GRE_hardened_90_gr_arrows" />
       <equipment slot="Item3"
                  id="Item.battania_2hsword_2_t3" />
       <equipment slot="Body"
@@ -5561,9 +5561,9 @@
       <equipment slot="Item0"
                  id="Item.woodland_yew_bow" />
       <equipment slot="Item1"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_arrow_emp_1_a" />
       <equipment slot="Item2"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_arrow_emp_1_a" />
       <equipment slot="Item3"
                  id="Item.battania_2hsword_3_t3" />
       <equipment slot="Body"
@@ -5581,9 +5581,9 @@
       <equipment slot="Item0"
                  id="Item.woodland_yew_bow" />
       <equipment slot="Item1"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_arrow_emp_1_a" />
       <equipment slot="Item2"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_arrow_emp_1_a" />
       <equipment slot="Item3"
                  id="Item.battania_2hsword_3_t3" />
       <equipment slot="Body"
@@ -5599,11 +5599,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.woodland_yew_bow" />
+                 id="Item.lowland_longbow" />
       <equipment slot="Item1"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_hardened_100_gr_arrows" />
       <equipment slot="Item2"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_hardened_100_gr_arrows" />
       <equipment slot="Item3"
                  id="Item.battania_2hsword_3_t3" />
       <equipment slot="Body"
@@ -5656,9 +5656,9 @@
       <equipment slot="Item0"
                  id="Item.woodland_longbow" />
       <equipment slot="Item1"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.GRE_hardened_110_gr_arrows" />
       <equipment slot="Item2"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.GRE_hardened_110_gr_arrows" />
       <equipment slot="Item3"
                  id="Item.battania_2hsword_5_t4" />
       <equipment slot="Body"
@@ -5676,9 +5676,9 @@
       <equipment slot="Item0"
                  id="Item.woodland_longbow" />
       <equipment slot="Item1"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.GRE_hardened_110_gr_arrows" />
       <equipment slot="Item2"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.GRE_hardened_110_gr_arrows" />
       <equipment slot="Item3"
                  id="Item.battania_2hsword_5_t4" />
       <equipment slot="Body"
@@ -5694,11 +5694,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.woodland_longbow" />
+                 id="Item.nomad_bow" />
       <equipment slot="Item1"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.GRE_hardened_110_gr_arrows" />
       <equipment slot="Item2"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.GRE_hardened_110_gr_arrows" />
       <equipment slot="Item3"
                  id="Item.battania_2hsword_5_t4" />
       <equipment slot="Body"
@@ -5749,9 +5749,9 @@
       <equipment slot="Item0"
                  id="noble_long_bow" />
       <equipment slot="Item1"
-                 id="Item.blunt_arrows" />
+                 id="Item.GRE_hardened_125_gr_arrows" />
       <equipment slot="Item2"
-                 id="Item.blunt_arrows" />
+                 id="Item.GRE_hardened_125_gr_arrows" />
       <equipment slot="Item3"
                  id="Item.battania_2hsword_5_t5" />
       <equipment slot="Body"
@@ -5767,11 +5767,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="noble_long_bow" />
+                 id="woodland_longbow" />
       <equipment slot="Item1"
-                 id="Item.blunt_arrows" />
+                 id="Item.GRE_hardened_125_gr_arrows" />
       <equipment slot="Item2"
-                 id="Item.blunt_arrows" />
+                 id="Item.GRE_hardened_125_gr_arrows" />
       <equipment slot="Item3"
                  id="Item.battania_2hsword_5_t5" />
       <equipment slot="Body"
@@ -5789,9 +5789,9 @@
       <equipment slot="Item0"
                  id="noble_long_bow" />
       <equipment slot="Item1"
-                 id="Item.blunt_arrows" />
+                 id="Item.GRE_hardened_125_gr_arrows" />
       <equipment slot="Item2"
-                 id="Item.blunt_arrows" />
+                 id="Item.GRE_hardened_125_gr_arrows" />
       <equipment slot="Item3"
                  id="Item.battania_2hsword_5_t5" />
       <equipment slot="Body"
@@ -6548,7 +6548,7 @@
       <equipment slot="Item1"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item3"
-                 id="Item.piercing_arrows" />
+                 id="Item.GRE_hardened_125_gr_arrows" />
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Head"
@@ -6568,7 +6568,7 @@
       <equipment slot="Item1"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item3"
-                 id="Item.piercing_arrows" />
+                 id="Item.GRE_hardened_125_gr_arrows" />
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Head"
@@ -6588,7 +6588,7 @@
       <equipment slot="Item1"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item3"
-                 id="Item.piercing_arrows" />
+                 id="Item.GRE_hardened_125_gr_arrows" />
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Head"
@@ -6608,7 +6608,7 @@
       <equipment slot="Item1"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item3"
-                 id="Item.piercing_arrows" />
+                 id="Item.GRE_hardened_125_gr_arrows" />
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Head"
@@ -7023,7 +7023,7 @@
       <equipment slot="Item0"
                  id="Item.hunting_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_barbed_arrows" />
       <equipment slot="Item2"
                  id="Item.empire_mace_1_t2" />
       <equipment slot="Item3"
@@ -7077,9 +7077,9 @@
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.GRE_arrow_emp_1_a" />
       <equipment slot="Item2"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.GRE_hardened_100_gr_arrows" />
       <equipment slot="Item3"
                  id="Item.empire_sword_5_t4" />
       <equipment slot="Head"
@@ -7097,9 +7097,9 @@
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.GRE_hardened_100_gr_arrows" />
       <equipment slot="Item2"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.GRE_arrow_emp_1_a" />
       <equipment slot="Item3"
                  id="Item.empire_sword_5_t4" />
       <equipment slot="Head"
@@ -7117,9 +7117,9 @@
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.GRE_arrow_emp_1_a" />
       <equipment slot="Item2"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.GRE_hardened_100_gr_arrows" />
       <equipment slot="Item3"
                  id="Item.empire_sword_5_t4" />
       <equipment slot="Head"
@@ -7197,7 +7197,7 @@
       <equipment slot="Item0"
                  id="Item.highland_ranger_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_b" />
+                 id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item2"
                  id="Item.imperial_axe_t3" />
       <equipment slot="Item3"
@@ -7273,7 +7273,7 @@
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item2"
                  id="Item.imperial_axe_t3" />
       <equipment slot="Item3"
@@ -7293,7 +7293,7 @@
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_hardened_80_gr_arrows" />
       <equipment slot="Item2"
                  id="Item.imperial_axe_t3" />
       <equipment slot="Item3"
@@ -7328,13 +7328,13 @@
       <skill id="Riding"
              value="20" />
       <skill id="OneHanded"
-             value="130" />
+             value="140" />
       <skill id="TwoHanded"
              value="30" />
       <skill id="Polearm"
              value="80" />
       <skill id="Bow"
-             value="130" />
+             value="120" />
       <skill id="Crossbow"
              value="80" />
       <skill id="Throwing"
@@ -7346,7 +7346,7 @@
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.fire_arrows" />
+                 id="Item.GRE_hardened_110_gr_arrows" />
       <equipment slot="Item2"
                  id="Item.empire_noble_sword_1_t5" />
       <equipment slot="Item3"
@@ -7366,7 +7366,7 @@
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.fire_arrows" />
+                 id="Item.GRE_hardened_110_gr_arrows" />
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Item3"
@@ -7386,9 +7386,49 @@
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.fire_arrows" />
+                 id="Item.GRE_hardened_110_gr_arrows" />
       <equipment slot="Item2"
                  id="Item.imperial_axe_t3" />
+      <equipment slot="Item3"
+                 id="Item.battania_targe_b" />
+      <equipment slot="Body"
+                 id="Item.imperial_lamellar_over_leather" />
+      <equipment slot="Leg"
+                 id="Item.decorated_imperial_boots" />
+      <equipment slot="Head"
+                 id="Item.empire_lord_helmet" />
+      <equipment slot="Gloves"
+                 id="Item.decorated_imperial_gauntlets" />
+      <equipment slot="Cape"
+                 id="Item.pauldron_cape_a" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.steppe_war_bow" />
+      <equipment slot="Item1"
+                 id="Item.GRE_piercing_arrows" />
+      <equipment slot="Item2"
+                 id="Item.imperial_axe_t3" />
+      <equipment slot="Item3"
+                 id="Item.battania_targe_b" />
+      <equipment slot="Body"
+                 id="Item.imperial_lamellar_over_leather" />
+      <equipment slot="Leg"
+                 id="Item.decorated_imperial_boots" />
+      <equipment slot="Head"
+                 id="Item.empire_lord_helmet" />
+      <equipment slot="Gloves"
+                 id="Item.decorated_imperial_gauntlets" />
+      <equipment slot="Cape"
+                 id="Item.pauldron_cape_a" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.steppe_war_bow" />
+      <equipment slot="Item1"
+                 id="Item.GRE_piercing_arrows" />
+      <equipment slot="Item2"
+                 id="Item.empire_mace_5_t5" />
       <equipment slot="Item3"
                  id="Item.battania_targe_b" />
       <equipment slot="Body"
@@ -7625,7 +7665,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_e" />
       <equipment slot="Item1"
-                 id="Item.bolt_c" />
+                 id="Item.GRE_bolt_c" />
       <equipment slot="Item2"
                  id="Item.empire_mace_2_t4" />
       <equipment slot="Item3"
@@ -7645,7 +7685,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_e" />
       <equipment slot="Item1"
-                 id="Item.bolt_c" />
+                 id="Item.GRE_bolt_c" />
       <equipment slot="Item2"
                  id="Item.empire_mace_3_t4" />
       <equipment slot="Item3"
@@ -7698,7 +7738,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_g" />
       <equipment slot="Item1"
-                 id="Item.bolt_b" />
+                 id="Item.GRE_bolt_b" />
       <equipment slot="Item2"
                  id="Item.empire_mace_2_t4" />
       <equipment slot="Item3"
@@ -7718,7 +7758,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_g" />
       <equipment slot="Item1"
-                 id="Item.bolt_b" />
+                 id="Item.GRE_bolt_b" />
       <equipment slot="Item2"
                  id="Item.empire_mace_4_t5" />
       <equipment slot="Item3"
@@ -7738,7 +7778,47 @@
       <equipment slot="Item0"
                  id="Item.crossbow_g" />
       <equipment slot="Item1"
-                 id="Item.bolt_b" />
+                 id="Item.GRE_bolt_b" />
+      <equipment slot="Item2"
+                 id="Item.empire_mace_5_t5" />
+      <equipment slot="Item3"
+                 id="Item.fortified_kite_shield_shoulder" />
+      <equipment slot="Body"
+                 id="Item.imperial_lamellar_over_leather" />
+      <equipment slot="Gloves"
+                 id="Item.plated_strip_gauntlets" />
+      <equipment slot="Leg"
+                 id="Item.strapped_mail_chausses" />
+      <equipment slot="Head"
+                 id="Item.spiked_kettle_over_imperial_mail" />
+      <equipment slot="Cape"
+                 id="Item.imperial_studded_strip_shoulders" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_g" />
+      <equipment slot="Item1"
+                 id="Item.hardened_120_gr_bolts" />
+      <equipment slot="Item2"
+                 id="Item.empire_mace_4_t5" />
+      <equipment slot="Item3"
+                 id="Item.fortified_kite_shield_shoulder" />
+      <equipment slot="Body"
+                 id="Item.imperial_lamellar_over_leather" />
+      <equipment slot="Gloves"
+                 id="Item.plated_strip_gauntlets" />
+      <equipment slot="Leg"
+                 id="Item.strapped_mail_chausses" />
+      <equipment slot="Head"
+                 id="Item.ironlame_roundkettle_over_imperial_mail" />
+      <equipment slot="Cape"
+                 id="Item.imperial_studded_strip_shoulders" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_g" />
+      <equipment slot="Item1"
+                 id="Item.hardened_120_gr_bolts" />
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Item3"
@@ -7974,7 +8054,7 @@
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_c" />
+                 id="Item.GRE_bodkin_arrows_c" />
       <equipment slot="Item2"
                  id="Item.khuzait_sword_1_t2" />
       <equipment slot="Item3"
@@ -7994,7 +8074,7 @@
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_c" />
+                 id="Item.GRE_bodkin_arrows_c" />
       <equipment slot="Item2"
                  id="Item.khuzait_sword_1_t2" />
       <equipment slot="Item3"
@@ -8014,7 +8094,7 @@
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_c" />
+                 id="Item.GRE_bodkin_arrows_c" />
       <equipment slot="Item2"
                  id="Item.khuzait_sword_1_t2" />
       <equipment slot="Item3"
@@ -8075,11 +8155,11 @@
       <equipment slot="Item0"
                  id="Item.steppe_bow" />
       <equipment slot="Item1"
-                 id="Item.steppe_arrows" />
+                 id="Item.GRE_steppe_arrows" />
       <equipment slot="Item2"
                  id="Item.khuzait_sword_1_t2" />
       <equipment slot="Item3"
-                 id="Item.steppe_arrows" />
+                 id="Item.GRE_steppe_arrows" />
       <equipment slot="Body"
                  id="Item.leather_lamellar_armor" />
       <equipment slot="Head"
@@ -8095,11 +8175,11 @@
       <equipment slot="Item0"
                  id="Item.steppe_bow" />
       <equipment slot="Item1"
-                 id="Item.steppe_arrows" />
+                 id="Item.GRE_steppe_arrows" />
       <equipment slot="Item2"
                  id="Item.khuzait_sword_1_t2" />
       <equipment slot="Item3"
-                 id="Item.steppe_arrows" />
+                 id="Item.GRE_steppe_arrows" />
       <equipment slot="Body"
                  id="Item.leather_lamellar_armor" />
       <equipment slot="Cape"
@@ -8115,11 +8195,11 @@
       <equipment slot="Item0"
                  id="Item.steppe_bow" />
       <equipment slot="Item1"
-                 id="Item.steppe_arrows" />
+                 id="Item.GRE_steppe_arrows" />
       <equipment slot="Item2"
                  id="Item.khuzait_sword_1_t2" />
       <equipment slot="Item3"
-                 id="Item.steppe_arrows" />
+                 id="Item.GRE_steppe_arrows" />
       <equipment slot="Body"
                  id="Item.leather_lamellar_armor" />
       <equipment slot="Head"
@@ -8174,11 +8254,11 @@
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item2"
                  id="Item.khuzait_sword_1_t2" />
       <equipment slot="Item3"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Body"
                  id="Item.leather_lamellar_armor" />
       <equipment slot="Head"
@@ -8194,11 +8274,11 @@
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item2"
                  id="Item.khuzait_sword_1_t2" />
       <equipment slot="Item3"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Body"
                  id="Item.eastern_plated_leather_vest" />
       <equipment slot="Head"
@@ -8214,11 +8294,11 @@
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item2"
                  id="Item.khuzait_sword_1_t2" />
       <equipment slot="Item3"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Body"
                  id="Item.studded_leather_over_aketon" />
       <equipment slot="Head"
@@ -8354,9 +8434,9 @@
       <equipment slot="Item0"
                  id="Item.steppe_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_sword_3_t3" />
       <equipment slot="Body"
@@ -8374,9 +8454,9 @@
       <equipment slot="Item0"
                  id="Item.steppe_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_sword_3_t3" />
       <equipment slot="Body"
@@ -8394,9 +8474,9 @@
       <equipment slot="Item0"
                  id="Item.steppe_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_sword_3_t3" />
       <equipment slot="Body"
@@ -8546,11 +8626,11 @@
       <equipment slot="Item0"
                  id="Item.composite_steppe_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item2"
                  id="Item.eastern_spear_4_t4" />
       <equipment slot="Item3"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Body"
                  id="Item.eastern_stitched_leather_coat" />
       <equipment slot="Head"
@@ -8566,11 +8646,11 @@
       <equipment slot="Item0"
                  id="Item.composite_steppe_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item2"
                  id="Item.eastern_spear_4_t4" />
       <equipment slot="Item3"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Body"
                  id="Item.eastern_stitched_leather_coat" />
       <equipment slot="Head"
@@ -8586,11 +8666,11 @@
       <equipment slot="Item0"
                  id="Item.composite_steppe_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item2"
                  id="Item.eastern_spear_4_t4" />
       <equipment slot="Item3"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Body"
                  id="Item.studded_leather_over_aketon" />
       <equipment slot="Cape"
@@ -8647,9 +8727,29 @@
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_b" />
+                 id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item2"
-				 id="Item.bodkin_arrows_b" />
+				 id="Item.GRE_bodkin_arrows_b" />
+      <equipment slot="Item3"
+                 id="Item.khuzait_sword_3_t3" />
+      <equipment slot="Body"
+                 id="Item.khuzait_lamellar_strapped" />
+      <equipment slot="Head"
+                 id="Item.plumed_lamellar_helmet" />
+      <equipment slot="Leg"
+                 id="Item.reinforced_suede_boots" />
+      <equipment slot="Cape"
+                 id="Item.eastern_studded_shoulders" />
+      <equipment slot="Gloves"
+                 id="Item.reinforced_leather_vambraces" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.composite_bow" />
+      <equipment slot="Item1"
+                 id="Item.GRE_bodkin_arrows_b" />
+      <equipment slot="Item2"
+                 id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item3"
                  id="Item.khuzait_sword_3_t3" />
       <equipment slot="Body"
@@ -8667,29 +8767,9 @@
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_b" />
+                 id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item2"
-                 id="Item.bodkin_arrows_b" />
-      <equipment slot="Item3"
-                 id="Item.khuzait_sword_3_t3" />
-      <equipment slot="Body"
-                 id="Item.khuzait_lamellar_strapped" />
-      <equipment slot="Head"
-                 id="Item.plumed_lamellar_helmet" />
-      <equipment slot="Leg"
-                 id="Item.reinforced_suede_boots" />
-      <equipment slot="Cape"
-                 id="Item.eastern_studded_shoulders" />
-      <equipment slot="Gloves"
-                 id="Item.reinforced_leather_vambraces" />
-      </EquipmentRoster>
-      <EquipmentRoster>
-      <equipment slot="Item0"
-                 id="Item.steppe_war_bow" />
-      <equipment slot="Item1"
-                 id="Item.bodkin_arrows_b" />
-      <equipment slot="Item2"
-                 id="Item.bodkin_arrows_b" />
+                 id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item3"
                  id="Item.khuzait_sword_3_t3" />
       <equipment slot="Body"
@@ -8834,9 +8914,9 @@
       <equipment slot="Item0"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item2"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_sword_4_t4" />
       <equipment slot="Body"
@@ -8854,9 +8934,9 @@
       <equipment slot="Item0"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item2"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_sword_5_t4" />
       <equipment slot="Body"
@@ -8872,11 +8952,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_heavy_bow" />
+                 id="Item.composite_bow" />
       <equipment slot="Item1"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item2"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_sword_5_t4" />
       <equipment slot="Body"
@@ -9028,11 +9108,11 @@
       <equipment slot="Item0"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_a" />
+                 id="Item.GRE_bodkin_arrows_a" />
       <equipment slot="Item2"
                  id="Item.khuzait_polearm_1_t4" />
       <equipment slot="Item3"
-                 id="Item.bodkin_arrows_a" /> 
+                 id="Item.GRE_bodkin_arrows_a" /> 
       <equipment slot="Body"
                  id="Item.eastern_lamellar_armor" />
       <equipment slot="Head"
@@ -9048,11 +9128,11 @@
       <equipment slot="Item0"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_a" />
+                 id="Item.GRE_bodkin_arrows_a" />
       <equipment slot="Item2"
                  id="Item.khuzait_polearm_1_t4" />
       <equipment slot="Item3"
-                 id="Item.bodkin_arrows_a" />
+                 id="Item.GRE_bodkin_arrows_a" />
       <equipment slot="Body"
                  id="Item.eastern_lamellar_armor" />
       <equipment slot="Head"
@@ -9066,13 +9146,13 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_heavy_bow" />
+                 id="Item.composite_steppe_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_a" />
+                 id="Item.GRE_bodkin_arrows_a" />
       <equipment slot="Item2"
                  id="Item.khuzait_polearm_1_t4" />
       <equipment slot="Item3"
-                 id="Item.bodkin_arrows_a" />
+                 id="Item.GRE_bodkin_arrows_a" />
       <equipment slot="Body"
                  id="Item.eastern_lamellar_armor" />
       <equipment slot="Head"
@@ -9124,9 +9204,9 @@
       <equipment slot="Item0"
                  id="Item.noble_bow" />
       <equipment slot="Item1"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.GRE_arrow_emp_1_a" />
       <equipment slot="Item2"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.GRE_arrow_emp_1_a" />
       <equipment slot="Item3"
                  id="Item.eastern_spear_5_t5" />
       <equipment slot="Body"
@@ -9142,11 +9222,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.noble_bow" />
+                 id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.GRE_arrow_emp_1_a" />
       <equipment slot="Item2"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.GRE_arrow_emp_1_a" />
       <equipment slot="Item3"
                  id="Item.eastern_spear_5_t5" />
       <equipment slot="Body"
@@ -9162,11 +9242,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.noble_bow" />
+                 id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.GRE_arrow_emp_1_a" />
       <equipment slot="Item2"
-                 id="Item.arrow_emp_1_a" />
+                 id="Item.GRE_arrow_emp_1_a" />
       <equipment slot="Item3"
                  id="Item.eastern_spear_5_t5" />
       <equipment slot="Body"
@@ -9537,7 +9617,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.composite_steppe_bow" />
+                 id="Item.steppe_war_bow" />
       <equipment slot="Item1"
                  id="Item.arrow_emp_1_a" />
       <equipment slot="Item2"
@@ -10815,9 +10895,9 @@
       <equipment slot="Item0"
                  id="Item.mountain_hunting_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.simple_sparth_axe_t2" />
       <equipment slot="Head"
@@ -10835,7 +10915,7 @@
       <equipment slot="Item0"
                  id="Item.mountain_hunting_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item2"
                  id="Item.heavy_steppe_arrows" />
       <equipment slot="Item3"
@@ -10857,7 +10937,7 @@
       <equipment slot="Item1"
                  id="Item.heavy_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.simple_sparth_axe_t2" />
       <equipment slot="Head"
@@ -10910,9 +10990,9 @@
       <equipment slot="Item0"
                  id="Item.nordic_shortbow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_b" />
+                 id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item2"
-                 id="Item.bodkin_arrows_b" />
+                 id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item3"
                  id="Item.northern_axe_t3" />
       <equipment slot="Head"
@@ -10930,9 +11010,9 @@
       <equipment slot="Item0"
                  id="Item.nordic_shortbow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_b" />
+                 id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item2"
-                 id="Item.bodkin_arrows_b" />
+                 id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item3"
                  id="Item.northern_axe_t3" />
       <equipment slot="Head"
@@ -11003,9 +11083,9 @@
       <equipment slot="Item0"
                  id="Item.lowland_yew_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_a" />
+                 id="Item.GRE_bodkin_arrows_a" />
       <equipment slot="Item2"
-                 id="Item.bodkin_arrows_a" />
+                 id="Item.GRE_bodkin_arrows_a" />
       <equipment slot="Item3"
                  id="Item.sturgia_2haxe_1_t4" />
       <equipment slot="Head"
@@ -11023,9 +11103,9 @@
       <equipment slot="Item0"
                  id="Item.lowland_yew_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_a" />
+                 id="Item.GRE_bodkin_arrows_a" />
       <equipment slot="Item2"
-                 id="Item.bodkin_arrows_a" />
+                 id="Item.GRE_bodkin_arrows_a" />
       <equipment slot="Item3"
                  id="Item.sturgia_2haxe_1_t4" />
       <equipment slot="Head"
@@ -11043,9 +11123,9 @@
       <equipment slot="Item0"
                  id="Item.lowland_yew_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_a" />
+                 id="Item.GRE_bodkin_arrows_a" />
       <equipment slot="Item2"
-                 id="Item.bodkin_arrows_a" />
+                 id="Item.GRE_bodkin_arrows_a" />
       <equipment slot="Item3"
                  id="Item.sturgia_2haxe_1_t4" />
       <equipment slot="Head"
@@ -12781,7 +12861,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_a" />
       <equipment slot="Item1"
-                 id="Item.bolt_e" />
+                 id="Item.GRE_bolt_e" />
       <equipment slot="Item2"
                  id="Item.vlandia_mace_1_t2" />
       <equipment slot="Item3"
@@ -12836,7 +12916,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_b" />
       <equipment slot="Item1"
-                 id="Item.bolt_d" />
+                 id="Item.GRE_hardened_75_gr_bolts" />
       <equipment slot="Item2"
                  id="Item.vlandia_sword_2_t3" />
       <equipment slot="Item3"
@@ -12856,7 +12936,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_b" />
       <equipment slot="Item1"
-                 id="Item.bolt_d" />
+                 id="Item.GRE_bolt_d" />
       <equipment slot="Item2"
                  id="Item.vlandia_mace_1_t2" />
       <equipment slot="Item3"
@@ -12876,7 +12956,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_b" />
       <equipment slot="Item1"
-                 id="Item.bolt_d" />
+                 id="Item.GRE_bolt_d" />
       <equipment slot="Item2"
                  id="Item.vlandia_axe_1_t3" />
       <equipment slot="Item3"
@@ -12931,7 +13011,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_d" />
       <equipment slot="Item1"
-                 id="Item.bolt_b" />
+                 id="Item.GRE_bolt_b" />
       <equipment slot="Item2"
                  id="Item.vlandia_sword_4_t4" />
       <equipment slot="Item3"
@@ -12951,7 +13031,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_d" />
       <equipment slot="Item1"
-                 id="Item.bolt_b" />
+                 id="Item.GRE_hardened_120_gr_bolts" />
       <equipment slot="Item2"
                  id="Item.vlandia_axe_2_t4" />
       <equipment slot="Item3"
@@ -12971,7 +13051,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_d" />
       <equipment slot="Item1"
-                 id="Item.bolt_b" />
+                 id="Item.GRE_hardened_120_gr_bolts" />
       <equipment slot="Item2"
                  id="Item.vlandia_mace_2_t4" />
       <equipment slot="Item3"
@@ -13023,7 +13103,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_f" />
       <equipment slot="Item1"
-                 id="Item.bolt_a" />
+                 id="Item.GRE_hardened_150_gr_bolts" />
       <equipment slot="Item2"
                  id="Item.vlandia_mace_2_t4" />
       <equipment slot="Item3"
@@ -13043,7 +13123,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_f" />
       <equipment slot="Item1"
-                 id="Item.bolt_a" />
+                 id="Item.GRE_hardened_150_gr_bolts" />
       <equipment slot="Item2"
                  id="Item.vlandia_axe_2_t4" />
       <equipment slot="Item3"
@@ -13063,7 +13143,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_f" />
       <equipment slot="Item1"
-                 id="Item.bolt_a" />
+                 id="Item.GRE_hardened_150_gr_bolts" />
       <equipment slot="Item2"
                  id="Item.vlandia_mace_2_t4" />
       <equipment slot="Item3"
@@ -13572,7 +13652,7 @@
       <equipment slot="Item2"
                  id="Item.composite_bow" />
       <equipment slot="Item3"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.hardened_80_gr_arrows" />
       <equipment slot="Body"
                  id="Item.khuzait_sturdy_armor" />
       <equipment slot="Leg"
@@ -13596,7 +13676,7 @@
       <equipment slot="Item2"
                  id="Item.composite_bow" />
       <equipment slot="Item3"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.hardened_80_gr_arrows" />
       <equipment slot="Body"
                  id="Item.long_padded_robe" />
       <equipment slot="Leg"
@@ -13655,7 +13735,7 @@
       <equipment slot="Item2"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item3"
-                 id="Item.bodkin_arrows_b" />
+                 id="Item.hardened_100_gr_arrows" />
       <equipment slot="Body"
                  id="Item.studded_leather_over_aketon" />
       <equipment slot="Leg"
@@ -13712,7 +13792,7 @@
       <equipment slot="Item2"
                  id="Item.noble_bow" />
       <equipment slot="Item3"
-                 id="Item.bodkin_arrows_a" />
+                 id="Item.hardened_125_gr_arrows" />
       <equipment slot="Head"
                  id="Item.southern_lord_helmet" />
       <equipment slot="Body"
@@ -14326,9 +14406,9 @@
       <equipment slot="Item0"
                  id="Item.crossbow_b" />
       <equipment slot="Item1"
-                 id="Item.bolt_c" />
+                 id="Item.GRE_hardened_75_gr_bolts" />
       <equipment slot="Item2"
-                 id="Item.bolt_c" />
+                 id="Item.GRE_hardened_75_gr_bolts" />
       <equipment slot="Item3"
                  id="Item.battania_2haxe_1_t2" />
       <equipment slot="Body"
@@ -14381,9 +14461,9 @@
       <equipment slot="Item0"
                  id="Item.crossbow_d" />
       <equipment slot="Item1"
-                 id="Item.bolt_b" />
+                 id="Item.GRE_hardened_90_gr_bolts" />
       <equipment slot="Item2"
-                 id="Item.bolt_b" />
+                 id="Item.GRE_hardened_90_gr_bolts" />
       <equipment slot="Item3"
                  id="Item.bearded_axe_t3" />
       <equipment slot="Head"
@@ -14434,9 +14514,9 @@
       <equipment slot="Item0"
                  id="Item.crossbow_f" />
       <equipment slot="Item1"
-                 id="Item.bolt_a" />
+                 id="Item.GRE_hardened_150_gr_bolts" />
       <equipment slot="Item2"
-                 id="Item.bolt_a" />
+                 id="Item.GRE_hardened_150_gr_bolts" />
       <equipment slot="Item3"
                  id="Item.vlandia_2haxe_1_t4" />
       <equipment slot="Head"
@@ -14496,7 +14576,7 @@
       <equipment slot="Item0"
                  id="Item.steppe_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_c" />
+                 id="Item.hardened_80_gr_arrows" />
       <equipment slot="Head"
                  id="Item.closed_head_scarf" />
       <equipment slot="Body"
@@ -14520,7 +14600,7 @@
       <equipment slot="Item0"
                  id="Item.steppe_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_c" />
+                 id="Item.hardened_80_gr_arrows" />
       <equipment slot="Head"
                  id="Item.tied_head_wrapping" />
       <equipment slot="Body"
@@ -14579,7 +14659,7 @@
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.hardened_100_gr_arrows" />
       <equipment slot="Head"
                  id="Item.desert_helmet" />
       <equipment slot="Body"
@@ -14603,7 +14683,7 @@
       <equipment slot="Item0"
                  id="Item.composite_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.hardened_100_gr_arrows" />
       <equipment slot="Head"
                  id="Item.loose_wrapped_desert_helmet" />
       <equipment slot="Body"
@@ -14656,7 +14736,7 @@
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.vlandic_arrows" />
+                 id="Item.hardened_125_gr_arrows" />
       <equipment slot="Item2"
                  id="Item.aserai_mace_4_t4" />
       <equipment slot="Item3"
@@ -14717,7 +14797,7 @@
       <equipment slot="Item0"
                  id="Item.highland_ranger_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item2"
                  id="Item.battania_targe_b" />
       <equipment slot="Item3"
@@ -14737,7 +14817,7 @@
       <equipment slot="Item0"
                  id="Item.highland_ranger_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item2"
                  id="Item.battania_targe_b" />
       <equipment slot="Item3"
@@ -14792,7 +14872,7 @@
       <equipment slot="Item0"
                  id="Item.woodland_yew_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_b" />
+                 id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item2"
                  id="Item.battania_targe_b" />
       <equipment slot="Item3"
@@ -14812,7 +14892,7 @@
       <equipment slot="Item0"
                  id="Item.woodland_yew_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_b" />
+                 id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item2"
                  id="Item.battania_targe_b" />
       <equipment slot="Item3"
@@ -14865,7 +14945,7 @@
       <equipment slot="Item0"
                  id="Item.noble_long_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_a" />
+                 id="Item.GRE_bodkin_arrows_a" />
       <equipment slot="Item2"
                  id="Item.battania_targe_b" />
       <equipment slot="Item3"
@@ -15429,9 +15509,9 @@
       <equipment slot="Item0"
                  id="Item.glen_ranger_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_c" />
+                 id="Item.GRE_bodkin_arrows_c" />
       <equipment slot="Item2"
-                 id="Item.bodkin_arrows_c" />
+                 id="Item.GRE_bodkin_arrows_c" />
       <equipment slot="Item3"
                  id="Item.peasant_maul_t1_2" />
       <equipment slot="Head"
@@ -15484,9 +15564,9 @@
       <equipment slot="Item0"
                  id="Item.lowland_longbow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.peasant_maul_t1_2" />
       <equipment slot="Head"
@@ -15537,9 +15617,9 @@
       <equipment slot="Item0"
                  id="Item.lowland_yew_bow" />
       <equipment slot="Item1"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item2"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item3"
                  id="Item.peasant_maul_t1_2" />
       <equipment slot="Body"
@@ -16122,11 +16202,11 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.composite_bow" />
+                 id="Item.mountain_hunting_bow" />
       <equipment slot="Item1"
-                 id="Item.steppe_arrows" />
+                 id="Item.GRE_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.steppe_arrows" />
+                 id="Item.GRE_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.easter_polesword_t4" />
       <equipment slot="Head"
@@ -16146,11 +16226,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.composite_bow" />
+                 id="Item.mountain_hunting_bow" />
       <equipment slot="Item1"
-                 id="Item.steppe_arrows" />
+                 id="Item.GRE_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.steppe_arrows" />
+                 id="Item.GRE_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.easter_polesword_t4" />
       <equipment slot="Head"
@@ -16170,11 +16250,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.composite_bow" />
+                 id="Item.mountain_hunting_bow" />
       <equipment slot="Item1"
-                 id="Item.steppe_arrows" />
+                 id="Item.GRE_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.steppe_arrows" />
+                 id="Item.GRE_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.easter_polesword_t4" />
       <equipment slot="Head"
@@ -16194,11 +16274,11 @@
       </EquipmentRoster>
       <EquipmentRoster civilian="true">
       <equipment slot="Item0"
-                 id="Item.composite_bow" />
+                 id="Item.mountain_hunting_bow" />
       <equipment slot="Item1"
-                 id="Item.steppe_arrows" />
+                 id="Item.GRE_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.steppe_arrows" />
+                 id="Item.GRE_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.easter_polesword_t4" />
       <equipment slot="Head"
@@ -16251,11 +16331,11 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_heavy_bow" />
+                 id="Item.composite_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_polearm_1_t4" />
       <equipment slot="Head"
@@ -16275,11 +16355,11 @@
       </EquipmentRoster>
       <EquipmentRoster civilian="true">
       <equipment slot="Item0"
-                 id="Item.steppe_heavy_bow" />
+                 id="Item.composite_bow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_polearm_1_t4" />
       <equipment slot="Head"
@@ -16332,9 +16412,9 @@
       <equipment slot="Item0"
                  id="Item.noble_bow" />
       <equipment slot="Item1"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item2"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_polearm_2_t5" />
       <equipment slot="Head"
@@ -16356,9 +16436,9 @@
       <equipment slot="Item0"
                  id="Item.noble_bow" />
       <equipment slot="Item1"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item2"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item3"
                  id="Item.khuzait_polearm_2_t5" />
       <equipment slot="Head"
@@ -16415,9 +16495,9 @@
       <equipment slot="Item0"
                  id="Item.mountain_hunting_bow" />
       <equipment slot="Item1"
-                 id="Item.bodkin_arrows_c" />
+                 id="Item.GRE_barbed_arrows" />
       <equipment slot="Item2"
-                 id="Item.bodkin_arrows_c" />
+                 id="Item.GRE_barbed_arrows" />
       <equipment slot="Item3"
                  id="Item.northern_axe_t3" />
       <equipment slot="Head"
@@ -16470,9 +16550,9 @@
       <equipment slot="Item0"
                  id="Item.nordic_shortbow" />
       <equipment slot="Item1"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.heavy_steppe_arrows" />
+                 id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.sturgia_2haxe_1_t4" />
       <equipment slot="Head"
@@ -16523,9 +16603,9 @@
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item2"
-                 id="Item.vlandic_arrows" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item3"
                  id="Item.sturgia_2haxe_2_t5" />
       <equipment slot="Head"
@@ -16975,7 +17055,7 @@
       <equipment slot="Item0"
                  id="Item.crossbow_d" />
       <equipment slot="Item1"
-                 id="Item.bolt_c" />
+                 id="Item.hardened_120_gr_bolts" />
       <equipment slot="Item2"
                  id="Item.pavise_shield" />
       <equipment slot="Item3"
@@ -17143,7 +17223,7 @@
       <equipment slot="Item3"
                  id="Item.pavise_shield" />
       <equipment slot="Item1"
-                 id="Item.bolt_a" />
+                 id="Item.hardened_150_gr_bolts" />
       <equipment slot="Item0"
                  id="Item.crossbow_f" />
       <equipment slot="Body"
