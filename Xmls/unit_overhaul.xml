@@ -17057,7 +17057,7 @@
       <equipment slot="Item1"
                  id="Item.hardened_120_gr_bolts" />
       <equipment slot="Item2"
-                 id="Item.pavise_shield" />
+                 id="Item.pavise_shield_shoulder" />
       <equipment slot="Item3"
                  id="Item.aserai_mace_4_t4" />
       <equipment slot="Body"
@@ -17221,7 +17221,7 @@
       <equipment slot="Item2"
                  id="Item.vlandia_mace_3_t5" />
       <equipment slot="Item3"
-                 id="Item.pavise_shield" />
+                 id="Item.pavise_shield_shoulder" />
       <equipment slot="Item1"
                  id="Item.hardened_150_gr_bolts" />
       <equipment slot="Item0"
