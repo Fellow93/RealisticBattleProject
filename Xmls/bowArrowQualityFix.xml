@@ -149,7 +149,7 @@
 	<ItemModifier id="anaemic_horse" name="{=*}Anaemic {ITEMNAME}" horse_speed="-2" maneuver="0" charge_damage="-3"  hit_points="-5" price_factor="0.35"/>
 -->
   <ItemModifier id="lame_horse" name="{=geUpgQI5}Lame {ITEMNAME}" horse_speed="0.7" maneuver="0.9" charge_damage="0.6" horse_hit_points="0.8" price_factor="0.5" />
-  <ItemModifier id="companion_horse" name="{=y3TvYqhG}Old {ITEMNAME}" horse_speed="0.8" maneuver="0.95" charge_damage="0.8" horse_hit_points="0.9" price_factor="0.2" />
-  <ItemModifier id="companion_weapon" name="{=l7QEpVwU}Rusty {ITEMNAME}" damage="-10" price_factor="0.2" />
-  <ItemModifier id="companion_armor" name="{=5yVgXqQr}Worn {ITEMNAME}" armor="-6" price_factor="0.2" />
+  <ItemModifier id="companion_horse" name="{=y3TvYqhG}Old {ITEMNAME}" horse_speed="1" maneuver="1" charge_damage="1" horse_hit_points="1" price_factor="1" />
+  <ItemModifier id="companion_weapon" name="{=l7QEpVwU}Rusty {ITEMNAME}" damage="0" price_factor="1" />
+  <ItemModifier id="companion_armor" name="{=5yVgXqQr}Worn {ITEMNAME}" armor="0" price_factor="1" />
 </ItemModifiers>

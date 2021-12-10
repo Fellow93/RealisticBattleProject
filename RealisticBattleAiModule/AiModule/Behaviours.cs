@@ -1086,7 +1086,7 @@ namespace RealisticBattleAiModule
 
         [HarmonyPrefix]
         [HarmonyPatch("OnBehaviorActivatedAux")]
-        static bool PrefixOnBehaviorActivatedAux(ref BehaviorDefendCastleKeyPosition __instance, ref FacingOrder ____waitFacingOrder, ref FacingOrder ____readyFacingOrder, ref TeamAISiegeComponent ____teamAISiegeDefender, ref bool ____isDefendingWideGap, ref FacingOrder ___CurrentFacingOrder, FormationAI.BehaviorSide ___behaviorSide, ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate, ref TacticalPosition ____tacticalMiddlePos, ref TacticalPosition ____tacticalWaitPos, ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState)
+        static bool PrefixOnBehaviorActivatedAux(ref BehaviorDefendCastleKeyPosition __instance, ref FacingOrder ____waitFacingOrder, ref FacingOrder ____readyFacingOrder, ref TeamAISiegeComponent ____teamAISiegeDefender, ref FacingOrder ___CurrentFacingOrder, FormationAI.BehaviorSide ___behaviorSide, ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate, ref TacticalPosition ____tacticalMiddlePos, ref TacticalPosition ____tacticalWaitPos, ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState)
         {
             MethodInfo method = typeof(BehaviorDefendCastleKeyPosition).GetMethod("ResetOrderPositions", BindingFlags.NonPublic | BindingFlags.Instance);
             method.DeclaringType.GetMethod("ResetOrderPositions");
@@ -1103,14 +1103,13 @@ namespace RealisticBattleAiModule
 
         [HarmonyPrefix]
         [HarmonyPatch("ResetOrderPositions")]
-        static bool PrefixResetOrderPositions(ref BehaviorDefendCastleKeyPosition __instance, ref FacingOrder ____waitFacingOrder, ref FacingOrder ____readyFacingOrder, ref TeamAISiegeComponent ____teamAISiegeDefender, ref bool ____isDefendingWideGap, ref FacingOrder ___CurrentFacingOrder, FormationAI.BehaviorSide ___behaviorSide, ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate, ref TacticalPosition ____tacticalMiddlePos, ref TacticalPosition ____tacticalWaitPos, ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState)
+        static bool PrefixResetOrderPositions(ref BehaviorDefendCastleKeyPosition __instance, ref FacingOrder ____waitFacingOrder, ref FacingOrder ____readyFacingOrder, ref TeamAISiegeComponent ____teamAISiegeDefender, ref FacingOrder ___CurrentFacingOrder, FormationAI.BehaviorSide ___behaviorSide, ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate, ref TacticalPosition ____tacticalMiddlePos, ref TacticalPosition ____tacticalWaitPos, ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState)
         {
             ___behaviorSide = __instance.Formation.AI.Side;
             ____innerGate = null;
             ____outerGate = null;
             ____laddersOnThisSide.Clear();
             bool num = Mission.Current.ActiveMissionObjects.FindAllWithType<CastleGate>().Any((CastleGate cg) => cg.DefenseSide == ___behaviorSide && cg.GameEntity.HasTag("outer_gate"));
-            ____isDefendingWideGap = false;
             WorldFrame worldFrame;
             WorldFrame worldFrame2;
             if (num)
@@ -1122,7 +1121,6 @@ namespace RealisticBattleAiModule
                 worldFrame2 = outerGate.DefenseWaitFrame;
                 ____tacticalMiddlePos = outerGate.MiddlePosition;
                 ____tacticalWaitPos = outerGate.WaitPosition;
-                ____isDefendingWideGap = false;
             }
             else
             {
@@ -1135,7 +1133,6 @@ namespace RealisticBattleAiModule
                     worldFrame2 = wallSegment.DefenseWaitFrame;
                     ____tacticalMiddlePos = wallSegment.MiddlePosition;
                     ____tacticalWaitPos = wallSegment.WaitPosition;
-                    ____isDefendingWideGap = false;
                 }
                 else
                 {
@@ -1284,7 +1281,7 @@ namespace RealisticBattleAiModule
 
         [HarmonyPrefix]
         [HarmonyPatch("TickOccasionally")]
-        static bool PrefixTickOccasionally(ref FacingOrder ____readyFacingOrder, ref FacingOrder ____waitFacingOrder, ref BehaviorDefendCastleKeyPosition __instance, ref bool ____isInShieldWallDistance, ref TeamAISiegeComponent ____teamAISiegeDefender, ref bool ____isDefendingWideGap, ref FacingOrder ___CurrentFacingOrder, FormationAI.BehaviorSide ___behaviorSide, ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate, ref TacticalPosition ____tacticalMiddlePos, ref TacticalPosition ____tacticalWaitPos, ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState)
+        static bool PrefixTickOccasionally(ref FacingOrder ____readyFacingOrder, ref FacingOrder ____waitFacingOrder, ref BehaviorDefendCastleKeyPosition __instance, ref TeamAISiegeComponent ____teamAISiegeDefender, ref FacingOrder ___CurrentFacingOrder, FormationAI.BehaviorSide ___behaviorSide, ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate, ref TacticalPosition ____tacticalMiddlePos, ref TacticalPosition ____tacticalWaitPos, ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState)
         {
             IEnumerable<SiegeWeapon> source = from sw in Mission.Current.ActiveMissionObjects.FindAllWithType<SiegeWeapon>()
                                               where sw is IPrimarySiegeWeapon && (((sw as IPrimarySiegeWeapon).WeaponSide == FormationAI.BehaviorSide.Middle && !(sw as IPrimarySiegeWeapon).HoldLadders) || (sw as IPrimarySiegeWeapon).WeaponSide != FormationAI.BehaviorSide.Middle && (sw as IPrimarySiegeWeapon).SendLadders)
@@ -1302,12 +1299,12 @@ namespace RealisticBattleAiModule
             {
                 if (____outerGate != null && ____outerGate.State == CastleGate.GateState.Open && !____outerGate.IsDestroyed)
                 {
-                    if (!__instance.Formation.IsUsingMachine(____outerGate))
+                    if (!____outerGate.IsUsedByFormation(__instance.Formation))
                     {
                         __instance.Formation.StartUsingMachine(____outerGate);
                     }
                 }
-                else if (____innerGate != null && ____innerGate.State == CastleGate.GateState.Open && !____innerGate.IsDestroyed && !__instance.Formation.IsUsingMachine(____innerGate))
+                else if (____innerGate != null && ____innerGate.State == CastleGate.GateState.Open && !____innerGate.IsDestroyed && !____innerGate.IsUsedByFormation(__instance.Formation))
                 {
                     __instance.Formation.StartUsingMachine(____innerGate);
                 }
@@ -1327,56 +1324,56 @@ namespace RealisticBattleAiModule
             {
                 __instance.Formation.FormOrder = FormOrder.FormOrderCustom(____tacticalWaitPos.Width * 2f);
             }
-            bool flag = ____isDefendingWideGap && ____behaviorState == BehaviorState.Ready && __instance.Formation.QuerySystem.ClosestEnemyFormation != null && (__instance.Formation.QuerySystem.IsUnderRangedAttack || __instance.Formation.QuerySystem.AveragePosition.DistanceSquared(____currentOrder.GetPosition(__instance.Formation)) < 25f + (____isInShieldWallDistance ? 75f : 0f));
-            if (flag == ____isInShieldWallDistance)
-            {
-                return false;
-            }
-            ____isInShieldWallDistance = flag;
-            if (____isInShieldWallDistance && __instance.Formation.QuerySystem.HasShield)
-            {
-                if (__instance.Formation.ArrangementOrder != ArrangementOrder.ArrangementOrderLine)
-                {
-                    __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
-                }
-            }
-            else if (__instance.Formation.ArrangementOrder == ArrangementOrder.ArrangementOrderLine)
-            {
+            //bool flag = ____isDefendingWideGap && ____behaviorState == BehaviorState.Ready && __instance.Formation.QuerySystem.ClosestEnemyFormation != null && (__instance.Formation.QuerySystem.IsUnderRangedAttack || __instance.Formation.QuerySystem.AveragePosition.DistanceSquared(____currentOrder.GetPosition(__instance.Formation)) < 25f + (____isInShieldWallDistance ? 75f : 0f));
+            //if (flag == ____isInShieldWallDistance)
+            //{
+            //    return false;
+            //}
+            //____isInShieldWallDistance = flag;
+            //if (____isInShieldWallDistance && __instance.Formation.QuerySystem.HasShield)
+            //{
+            //    if (__instance.Formation.ArrangementOrder != ArrangementOrder.ArrangementOrderLine)
+            //    {
+            //        __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+            //    }
+            //}
+            //else if (__instance.Formation.ArrangementOrder == ArrangementOrder.ArrangementOrderLine)
+            //{
                 __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
-            }
+            //}
             return false;
         }
     }
 
-    [HarmonyPatch(typeof(LadderQueueManager))]
-    class OverrideLadderQueueManager
-    {
+    //[HarmonyPatch(typeof(LadderQueueManager))]
+    //class OverrideLadderQueueManager
+    //{
 
-        [HarmonyPostfix]
-        [HarmonyPatch("Initialize")]
-        static void PostfixInitialize(ref BattleSideEnum managedSide, Vec3 managedDirection, ref float queueBeginDistance, ref int ____maxUserCount, ref float ____agentSpacing, ref float ____queueBeginDistance, ref float ____queueRowSize, ref float ____costPerRow, ref float ____baseCost)
-        {
-            if (queueBeginDistance != 3f && ____maxUserCount > 1)
-            {
-                ____agentSpacing = 1.1f;
-                ____queueBeginDistance = 7f;
-                ____queueRowSize = 1.1f;
-                ____maxUserCount = 16;
-            }
-            else
-            {
-                ____maxUserCount = 0;
-            }
-            //else if(queueBeginDistance == 3f)
-            //{
-            //    ____agentSpacing = 5f;
-            //    ____queueBeginDistance = 0.2f;
-            //    ____queueRowSize = 5f;
-            //    ____maxUserCount = 10;
-            //}
+    //    [HarmonyPostfix]
+    //    [HarmonyPatch("Initialize")]
+    //    static void PostfixInitialize(ref BattleSideEnum managedSide, Vec3 managedDirection, ref float queueBeginDistance, ref int ____maxUserCount, ref float ____agentSpacing, ref float ____queueBeginDistance, ref float ____queueRowSize, ref float ____costPerRow, ref float ____baseCost)
+    //    {
+    //        if (queueBeginDistance != 3f && ____maxUserCount > 1)
+    //        {
+    //            ____agentSpacing = 1.1f;
+    //            ____queueBeginDistance = 7f;
+    //            ____queueRowSize = 1.1f;
+    //            ____maxUserCount = 16;
+    //        }
+    //        else
+    //        {
+    //            ____maxUserCount = 0;
+    //        }
+    //        //else if(queueBeginDistance == 3f)
+    //        //{
+    //        //    ____agentSpacing = 5f;
+    //        //    ____queueBeginDistance = 0.2f;
+    //        //    ____queueRowSize = 5f;
+    //        //    ____maxUserCount = 10;
+    //        //}
 
-        }
-    }
+    //    }
+    //}
 
     [HarmonyPatch(typeof(SiegeTower))]
     class OverrideSiegeTower
@@ -3009,8 +3006,8 @@ namespace RealisticBattleAiModule
                 field.DeclaringType.GetField("_battleSize");
                 int battleSize = (int)field.GetValue(____missionAgentSpawnLogic);
 
-                int numberOfInvolvedMen = MBMath.Floor(____mapEvent.GetNumberOfInvolvedMen(BattleSideEnum.Defender));
-                int numberOfInvolvedMen2 = MBMath.Floor(____mapEvent.GetNumberOfInvolvedMen(BattleSideEnum.Attacker));
+                int numberOfInvolvedMen = ____mapEvent.GetNumberOfInvolvedMen(BattleSideEnum.Defender);
+                int numberOfInvolvedMen2 = ____mapEvent.GetNumberOfInvolvedMen(BattleSideEnum.Attacker);
                 int defenderInitialSpawn = numberOfInvolvedMen;
                 int attackerInitialSpawn = numberOfInvolvedMen2;
 

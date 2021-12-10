@@ -493,26 +493,26 @@ namespace RealisticBattleCombatModule
     [HarmonyPatch(typeof(RangedSiegeWeapon))]
     class OverrideRangedSiegeWeapon
     {
-        [HarmonyPrefix]
-        [HarmonyPatch("CalculateShootingRange")]
-        static bool PrefixCalculateShootingRange(ref float __result, ref string[] ___skeletonNames, float heightDifference)
-        {
-            if (___skeletonNames != null && ___skeletonNames.Length > 0 && ___skeletonNames[0].Contains("ballista"))
-            {
-                __result = Mission.GetMissileRange(60f, heightDifference);
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
+        //[HarmonyPrefix]
+        //[HarmonyPatch("CalculateShootingRange")]
+        //static bool PrefixCalculateShootingRange(ref float __result, ref string[] ___skeletonNames, float heightDifference)
+        //{
+        //    if (___skeletonNames != null && ___skeletonNames.Length > 0 && ___skeletonNames[0].Contains("ballista"))
+        //    {
+        //        __result = Mission.GetMissileRange(60f, heightDifference);
+        //        return false;
+        //    }
+        //    else
+        //    {
+        //        return true;
+        //    }
+        //}
 
         [HarmonyPrefix]
         [HarmonyPatch("GetTargetReleaseAngle")]
-        static bool PrefixGetTargetReleaseAngle(RangedSiegeWeapon __instance, ref float __result, Vec3 target, ref string[] ___skeletonNames, ItemObject ___OriginalMissileItem)
+        static bool PrefixGetTargetReleaseAngle(RangedSiegeWeapon __instance, ref float __result, Vec3 target, ref string[] ___SkeletonNames, ItemObject ___OriginalMissileItem)
         {
-            if (___skeletonNames != null && ___skeletonNames.Length > 0 && ___skeletonNames[0].Contains("ballista"))
+            if (___SkeletonNames != null && ___SkeletonNames.Length > 0 && ___SkeletonNames[0].Contains("ballista"))
             {
 
                 PropertyInfo property = typeof(RangedSiegeWeapon).GetProperty("MissleStartingPositionForSimulation", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -531,9 +531,9 @@ namespace RealisticBattleCombatModule
 
         [HarmonyPrefix]
         [HarmonyPatch("ShootProjectileAux")]
-        static bool PrefixShootProjectileAux(RangedSiegeWeapon __instance, ref string[] ___skeletonNames, ItemObject missileItem, Agent ____lastShooterAgent)
+        static bool PrefixShootProjectileAux(RangedSiegeWeapon __instance, ref string[] ___SkeletonNames, ItemObject missileItem, Agent ____lastShooterAgent)
         {
-            if (___skeletonNames != null && ___skeletonNames.Length > 0 && ___skeletonNames[0].Contains("ballista"))
+            if (___SkeletonNames != null && ___SkeletonNames.Length > 0 && ___SkeletonNames[0].Contains("ballista"))
             {
 
                 Mat3 mat = default(Mat3);

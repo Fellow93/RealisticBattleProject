@@ -782,7 +782,7 @@ namespace RealisticBattleAiModule
                     }
                     foreach (WeaponComponentData weapon2 in weapon.Item.Weapons)
                     {
-                        string weaponUsageId = weapon2.WeaponUsageId;
+                        string weaponUsageId = weapon2.WeaponDescriptionId;
                         if (weaponUsageId != null && weaponUsageId.IndexOf("bracing", StringComparison.OrdinalIgnoreCase) >= 0)
                         {
                             return true;

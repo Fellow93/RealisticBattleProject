@@ -2,14 +2,16 @@
   <Name value="Realistic Battle AI Module"/>
   <Id value="RealisticBattleAiModule"/>
   <Version value="v2.2.1"/>
+  <DefaultModule value="false"/>
   <SingleplayerModule value="true"/>
   <MultiplayerModule value="false"/>
+  <Official value ="false" />
   <DependedModules>
-	<DependedModule Id="Native" DependentVersion="e1.6.5" />
-	<DependedModule Id="SandBoxCore" DependentVersion="e1.6.5" />
-	<DependedModule Id="Sandbox" DependentVersion="e1.6.5" />
-	<DependedModule Id="CustomBattle" DependentVersion="e1.6.5"/>
-	<DependedModule Id="StoryMode" DependentVersion="e1.6.5" />
+	<DependedModule Id="Native" DependentVersion="e1.7.0" Optional="false"/>
+	<DependedModule Id="SandBoxCore" DependentVersion="e1.7.0" Optional="false"/>
+	<DependedModule Id="Sandbox" DependentVersion="e1.7.0" Optional="false"/>
+	<DependedModule Id="CustomBattle" DependentVersion="e1.7.0" Optional="false"/>
+	<DependedModule Id="StoryMode" DependentVersion="e1.7.0" Optional="false"/>
   </DependedModules>
   <SubModules>
     <SubModule>
