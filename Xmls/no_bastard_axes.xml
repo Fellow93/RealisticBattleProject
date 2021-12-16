@@ -7,9 +7,9 @@
       <PieceData piece_type="Handle" build_order="0"/>
       <PieceData piece_type="Blade" build_order="1"/>
     </PieceDatas>
-    <WeaponUsageDatas>
-      <WeaponUsageData id="TwoHandedAxe"/>
-    </WeaponUsageDatas>
+    <WeaponDescriptions>
+      <WeaponDescription id="TwoHandedAxe" />
+    </WeaponDescriptions>
     <StatsData>
       <StatData stat_type="Weight" max_value="7.0"/>
       <StatData stat_type="WeaponReach" max_value="300"/>
@@ -94,10 +94,10 @@
       <PieceData piece_type="Pommel"
                  build_order="-1" />
     </PieceDatas>
-    <WeaponUsageDatas>
-      <WeaponUsageData id="TwoHandedPolearm_Pike" />
-      <WeaponUsageData id="TwoHandedPolearm_Bracing" />
-    </WeaponUsageDatas>
+    <WeaponDescriptions>
+      <WeaponDescription id="TwoHandedPolearm_Pike" />
+      <WeaponDescription id="TwoHandedPolearm_Bracing" />
+    </WeaponDescriptions>
     <StatsData>
       <StatData stat_type="Weight"
                 max_value="7.0" />
@@ -204,10 +204,10 @@
       <PieceData piece_type="Pommel"
                  build_order="-1" />
     </PieceDatas>
-    <WeaponUsageDatas>
-      <WeaponUsageData id="Javelin" />
-      <WeaponUsageData id="OneHandedPolearm_JavelinAlternative" />
-    </WeaponUsageDatas>
+    <WeaponDescriptions>
+      <WeaponDescription id="Javelin" />
+      <WeaponDescription id="OneHandedPolearm_JavelinAlternative" />
+    </WeaponDescriptions>
     <StatsData usage_data="Javelin">
       <StatData stat_type="Weight"
                 max_value="7.0" />
@@ -335,13 +335,13 @@
       <PieceData piece_type="Pommel"
                  build_order="-1" />
     </PieceDatas>
-    <WeaponUsageDatas>
-      <WeaponUsageData id="OneHandedPolearm" />
-      <WeaponUsageData id="TwoHandedPolearm" />
-      <WeaponUsageData id="TwoHandedPolearm_Couchable" />
-      <WeaponUsageData id="TwoHandedPolearm_Bracing" />
-      <WeaponUsageData id="TwoHandedPolearm_Thrown" />
-    </WeaponUsageDatas>
+    <WeaponDescriptions>
+      <WeaponDescription id="OneHandedPolearm" />
+      <WeaponDescription id="TwoHandedPolearm" />
+      <WeaponDescription id="TwoHandedPolearm_Couchable" />
+      <WeaponDescription id="TwoHandedPolearm_Bracing" />
+      <WeaponDescription id="TwoHandedPolearm_Thrown" />
+    </WeaponDescriptions>
     <StatsData>
       <StatData stat_type="Weight"
                 max_value="7.0" />
@@ -710,10 +710,10 @@
       <PieceData piece_type="Blade"
                  build_order="1" />
     </PieceDatas>
-    <WeaponUsageDatas>
-      <WeaponUsageData id="ThrowingAxe" />
-      <WeaponUsageData id="OneHandedAxe" />
-    </WeaponUsageDatas>
+    <WeaponDescriptions>
+      <WeaponDescription id="ThrowingAxe" />
+      <WeaponDescription id="OneHandedAxe" />
+    </WeaponDescriptions>
     <StatsData usage_data="ThrowingAxe">
       <StatData stat_type="Weight"
                 max_value="7.0" />

@@ -307,7 +307,11 @@ xcopy /d /y "$(SolutionDir)Xmls\bow_shields.xml" "$(SolutionDir)..\RealisticBatt
 xcopy /d /y "$(SolutionDir)Xmls\siege_ranged_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
 xcopy /d /y "$(SolutionDir)Xmls\SubModule.xml" "$(SolutionDir)..\RealisticBattleCombatModule\"
 xcopy /d /y "$(SolutionDir)Xmls\GUI\Brushes\FaceGen.xml" "$(SolutionDir)..\RealisticBattleCombatModule\GUI\Brushes\"
-xcopy /d /y "$(SolutionDir)Xmls\GUI\Prefabs\RBMCMConfig.xml" "$(SolutionDir)..\RealisticBattleCombatModule\GUI\Prefabs\"</PostBuildEvent>
+xcopy /d /y "$(SolutionDir)Xmls\GUI\Prefabs\RBMCMConfig.xml" "$(SolutionDir)..\RealisticBattleCombatModule\GUI\Prefabs\"
+xcopy /d /y "$(SolutionDir)Xmls\item_modifiers_groups_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
