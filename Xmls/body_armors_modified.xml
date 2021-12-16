@@ -1415,4 +1415,42 @@
     <Flags DoesNotHideChest="true"
            UseTeamColor="true" />
   </Item>
+  <Item id="empire_legion_a"
+        name="{=mBVCyRY5}Decorated Legionary Mail"
+        mesh="empire_legion_a"
+        subtype="body_armor"
+        culture="Culture.empire"
+        weight="22.0"
+        difficulty="0"
+        appearance="5.5"
+        Type="BodyArmor">
+    <ItemComponent>
+      <Armor body_armor="50"
+             leg_armor="40"
+             arm_armor="25"
+             covers_body="true"
+             modifier_group="chain"
+             material_type="Chainmail" />
+    </ItemComponent>
+    <Flags UseTeamColor="true" />
+  </Item>
+  <Item id="empire_legion_b"
+        name="{=7HbspP6x}Ornate Legionary Scale Mail"
+        mesh="empire_legion_b"
+        subtype="body_armor"
+        culture="Culture.empire"
+        weight="28.0"
+        difficulty="0"
+        appearance="6.0"
+        Type="BodyArmor">
+    <ItemComponent>
+      <Armor body_armor="85"
+             leg_armor="30"
+             arm_armor="45"
+             covers_body="true"
+             modifier_group="plate"
+             material_type="Plate" />
+    </ItemComponent>
+    <Flags UseTeamColor="true" />
+  </Item>
 </Items>
