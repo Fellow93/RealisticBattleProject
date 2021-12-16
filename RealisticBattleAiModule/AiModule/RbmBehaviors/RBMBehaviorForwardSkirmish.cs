@@ -135,20 +135,33 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 
 							if (behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
 							{
-								Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.RightVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
-								position.SetVec2(calcPosition);
+								if (allyFormation != null)
+								{
+									Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.RightVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
+									position.SetVec2(calcPosition);
+								}
+								else
+								{
+									position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+								}
 							}
 							else if (behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
 							{
-								Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.LeftVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
-								position.SetVec2(calcPosition);
+								if (allyFormation != null)
+								{
+									Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.LeftVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
+									position.SetVec2(calcPosition);
+								}
+								else
+								{
+									position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+								}
 							}
                             else
                             {
 								if (allyFormation != null)
 								{
 									position = allyFormation.QuerySystem.MedianPosition;
-
 								}
 								else
                                 {
@@ -171,13 +184,27 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 
 							if (behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
 							{
-								Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.RightVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
-								position.SetVec2(calcPosition);
+								if (allyFormation != null)
+								{
+									Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.RightVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
+									position.SetVec2(calcPosition);
+								}
+								else
+                                {
+									position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+								}
 							}
 							else if (behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
 							{
-								Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.LeftVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
-								position.SetVec2(calcPosition);
+								if (allyFormation != null)
+								{
+									Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.LeftVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
+									position.SetVec2(calcPosition);
+								}
+								else
+								{
+									position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+								}
 							}
 							else
 							{
