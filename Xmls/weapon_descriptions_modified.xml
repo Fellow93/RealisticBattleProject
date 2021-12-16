@@ -485,6 +485,7 @@
       <AvailablePiece id="mp_battania_sword_grip"/>
       <AvailablePiece id="mp_battania_sword_pommel"/>
       <AvailablePiece id="mp_battania_long_sword_blade"/>
+      <AvailablePiece id="mp_battania_cleaver_blade"/>
       <AvailablePiece id="mp_battania_noble_sword_blade"/>
       <AvailablePiece id="mp_battania_long_sword_guard"/>
       <AvailablePiece id="mp_battania_long_sword_grip"/>
@@ -2216,6 +2217,7 @@
       <AvailablePiece id="spear_blade_9"/>
       <AvailablePiece id="spear_blade_10"/>
       <AvailablePiece id="spear_blade_41"/>
+      <AvailablePiece id="spear_blade_13"/>
       <AvailablePiece id="spear_blade_14"/>
       <AvailablePiece id="spear_blade_15"/>
       <AvailablePiece id="spear_blade_15_blunt"/>
@@ -2224,6 +2226,7 @@
       <AvailablePiece id="spear_blade_35"/>
       <AvailablePiece id="spear_blade_35_blunt"/>
       <AvailablePiece id="spear_blade_37"/>
+      <AvailablePiece id="spear_blade_37_blunt"/>
       <AvailablePiece id="spear_blade_38"/>
       <AvailablePiece id="spear_blade_42"/>
       <AvailablePiece id="spear_handle_2"/>
@@ -2231,6 +2234,7 @@
       <AvailablePiece id="spear_handle_10"/>
       <AvailablePiece id="spear_handle_11"/>
       <AvailablePiece id="spear_handle_12"/>
+      <AvailablePiece id="spear_handle_14"/>
       <AvailablePiece id="default_polearm_guard"/>
       <AvailablePiece id="spear_guard_15"/>
       <AvailablePiece id="spear_guard_7"/>
@@ -2286,6 +2290,11 @@
       <WeaponFlag value="TwoHandIdleOnMount"/>
     </WeaponFlags>
     <AvailablePieces>
+	
+      <AvailablePiece id="sturgian_guard_6"/>
+      <AvailablePiece id="sturgian_grip_20"/>
+      <AvailablePiece id="battania_pommel_9"/>
+
       <AvailablePiece id="battania_blade_7"/>
       <AvailablePiece id="axe_craft_10_head"/>
       <AvailablePiece id="spear_blade_1"/>
@@ -2578,6 +2587,7 @@
       <AvailablePiece id="spear_handle_19"/>
       <AvailablePiece id="spear_handle_20"/>
       <AvailablePiece id="spear_handle_23"/>
+      <AvailablePiece id="spear_handle_24"/>
       <AvailablePiece id="default_polearm_guard"/>
       <AvailablePiece id="spear_guard_1"/>
       <AvailablePiece id="spear_guard_2"/>
@@ -2698,6 +2708,7 @@
       <AvailablePiece id="spear_blade_6"/>
       <AvailablePiece id="spear_blade_7"/>
       <AvailablePiece id="spear_blade_8"/>
+      <AvailablePiece id="spear_blade_8_blunt"/>
       <AvailablePiece id="spear_blade_9"/>
       <AvailablePiece id="spear_blade_10"/>
       <AvailablePiece id="spear_blade_11"/>
@@ -2719,6 +2730,7 @@
       <AvailablePiece id="spear_blade_35"/>
       <AvailablePiece id="spear_blade_36"/>
       <AvailablePiece id="spear_blade_37"/>
+      <AvailablePiece id="spear_blade_37_blunt"/>
       <AvailablePiece id="spear_blade_38"/>
       <AvailablePiece id="spear_blade_39"/>
       <AvailablePiece id="spear_blade_40"/>
@@ -2726,6 +2738,8 @@
       <AvailablePiece id="spear_blade_42"/>
       <AvailablePiece id="spear_handle_7"/>
       <AvailablePiece id="spear_handle_27"/>
+      <AvailablePiece id="spear_handle_20"/>
+      <AvailablePiece id="spear_handle_17"/>
       <AvailablePiece id="default_polearm_guard"/>
       <AvailablePiece id="mp_spear_guard_11"/>
       <AvailablePiece id="mp_spear_guard_2"/>
@@ -2801,14 +2815,20 @@
       <AvailablePiece id="spear_blade_40"/>
       <AvailablePiece id="spear_blade_41"/>
       <AvailablePiece id="spear_blade_42"/>
-      <AvailablePiece id="spear_blade_43"/>
-      <AvailablePiece id="sickle_blade_1_polearm"/>
+      <AvailablePiece id="sickle_blade_1_polearm"/>  
+      <AvailablePiece id="spear_handle_6"/>
+      <AvailablePiece id="spear_handle_7"/>	  
+      <AvailablePiece id="spear_handle_13"/>
+      <AvailablePiece id="spear_handle_21"/>
       <AvailablePiece id="spear_handle_22"/>
       <AvailablePiece id="spear_handle_23"/>
       <AvailablePiece id="spear_handle_24"/>
       <AvailablePiece id="spear_handle_25"/>
       <AvailablePiece id="spear_handle_26"/>
       <AvailablePiece id="spear_handle_27"/>
+      <AvailablePiece id="spear_handle_20"/>
+      <AvailablePiece id="spear_handle_17"/>
+      <AvailablePiece id="spear_handle_19"/>
       <AvailablePiece id="default_polearm_guard"/>
       <AvailablePiece id="spear_guard_1"/>
       <AvailablePiece id="spear_guard_2"/>
@@ -2955,7 +2975,6 @@
       <AvailablePiece id="mp_western_pitchfork_wood_blade"/>
       <AvailablePiece id="mp_western_pitchfork_metal_blade"/>
       <AvailablePiece id="mp_western_pitchfork_handle"/>
-      <AvailablePiece id="spear_handle_7"/>
       <AvailablePiece id="mp_aserai_pike_blade"/>
       <AvailablePiece id="mp_aserai_pike_handle"/>
       <AvailablePiece id="mp_battania_pike_blade"/>
@@ -2963,6 +2982,7 @@
       <AvailablePiece id="mp_vlandian_pike_handle"/>
       <AvailablePiece id="mp_test_pike_blade"/>
       <AvailablePiece id="mp_test_pike_handle"/>
+
       <!-- AvailablePieces,TwoHandedPolearm_Bracing -->
     </AvailablePieces>
   </WeaponDescription>
@@ -3108,6 +3128,7 @@
       <AvailablePiece id="spear_blade_35"/>
       <AvailablePiece id="spear_blade_35_blunt"/>
       <AvailablePiece id="spear_blade_37"/>
+      <AvailablePiece id="spear_blade_37_blunt"/>
       <AvailablePiece id="spear_blade_38"/>
       <AvailablePiece id="spear_blade_42"/>
       <AvailablePiece id="spear_handle_2"/>
@@ -3115,6 +3136,7 @@
       <AvailablePiece id="spear_handle_10"/>
       <AvailablePiece id="spear_handle_11"/>
       <AvailablePiece id="spear_handle_12"/>
+      <AvailablePiece id="spear_handle_14"/>
       <AvailablePiece id="default_polearm_guard"/>
       <AvailablePiece id="spear_guard_15"/>
       <AvailablePiece id="spear_guard_7"/>
@@ -3263,6 +3285,7 @@
       <AvailablePiece id="hammer_head_11"/>
       <AvailablePiece id="mp_sturgia_2hhammer_head"/>
       <AvailablePiece id="mp_battania_2hhammer_head"/>
+      <AvailablePiece id="mp_aserai_maul_head"/>
       <AvailablePiece id="mp_sturgia_2hammer_handle"/>
       <AvailablePiece id="mp_battania_2hammer_handle"/>
       <AvailablePiece id="mp_test_2hmace_head"/>

@@ -216,5 +216,13 @@
 			<GameType value = "CustomGame"/>
 		</IncludedGameTypes>
 	</XmlNode>
+	<XmlNode>                
+			<XmlName id="WeaponDescriptions" path="weapon_descriptions_modified"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
   </Xmls>
 </Module>
