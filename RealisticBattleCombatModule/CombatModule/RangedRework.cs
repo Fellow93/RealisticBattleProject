@@ -83,7 +83,7 @@ namespace RealisticBattleCombatModule
                                 }
                                 if (XmlConfig.dict["Global.RealisticRangedReload"] == 0)
                                 {
-                                    weaponStatsData[i].ThrustSpeed = MathF.Ceiling(weaponStatsData[i].ThrustSpeed * 0.5f);
+                                    weaponStatsData[i].ThrustSpeed = MathF.Ceiling(weaponStatsData[i].ThrustSpeed * 0.45f);
                                 }
 
                                 MissionWeapon mw = __instance.Equipment[equipmentSlot];
@@ -93,6 +93,11 @@ namespace RealisticBattleCombatModule
                                     if ((effectiveSkill) < rws.getDrawWeight() + 9f) // 70 more skill needed to unlock speed shooting
                                     {
                                         __instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags |= WeaponFlags.UnloadWhenSheathed;
+                                        weaponStatsData[i].WeaponFlags = (ulong)__instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags;
+                                    }
+                                    else
+                                    {
+                                        __instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags &= ~WeaponFlags.UnloadWhenSheathed;
                                         weaponStatsData[i].WeaponFlags = (ulong)__instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags;
                                     }
                                 }
