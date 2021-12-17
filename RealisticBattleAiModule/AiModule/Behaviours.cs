@@ -1054,20 +1054,27 @@ namespace RealisticBattleAiModule
     {
         [HarmonyPrefix]
         [HarmonyPatch("GetAiWeight")]
-        static bool PrefixOnGetAiWeight(ref BehaviorUseSiegeMachines __instance, MovementOrder ____followOrder, ref TacticalPosition ____followTacticalPosition, ref float __result, ref TeamAISiegeComponent ____teamAISiegeComponent)
+        static bool PrefixOnGetAiWeight(ref BehaviorWaitForLadders __instance, MovementOrder ____followOrder, ref TacticalPosition ____followTacticalPosition, ref float __result, ref TeamAISiegeComponent ____teamAISiegeComponent)
         {
             if (____followTacticalPosition != null)
             {
-                float result = 0f;
+                //foreach (SiegeLane sl in TeamAISiegeComponent.SiegeLanes)
+                //{
+                //    if (sl.IsBreach && (sl.LaneSide == __instance.Formation.AI.Side))
+                //    {
+                //        __result = 0f;
+                //        return false;
+                //    }
+                //}
                 if (____followTacticalPosition.Position.AsVec2.Distance(__instance.Formation.QuerySystem.AveragePosition) > 7f)
                 {
                     if (____followOrder.OrderEnum != 0 && !____teamAISiegeComponent.AreLaddersReady)
                     {
-                        result = ((!____teamAISiegeComponent.IsCastleBreached()) ? 2f : 1f);
+                        
+                        __result = ((!____teamAISiegeComponent.IsCastleBreached()) ? 2f : 1f);
+                        return false;
                     }
-                    __result = result;
                 }
-                return false;
             }
             return true;
         }
@@ -1345,35 +1352,40 @@ namespace RealisticBattleAiModule
         }
     }
 
-    //[HarmonyPatch(typeof(LadderQueueManager))]
-    //class OverrideLadderQueueManager
-    //{
+    [HarmonyPatch(typeof(LadderQueueManager))]
+    class OverrideLadderQueueManager
+    {
 
-    //    [HarmonyPostfix]
-    //    [HarmonyPatch("Initialize")]
-    //    static void PostfixInitialize(ref BattleSideEnum managedSide, Vec3 managedDirection, ref float queueBeginDistance, ref int ____maxUserCount, ref float ____agentSpacing, ref float ____queueBeginDistance, ref float ____queueRowSize, ref float ____costPerRow, ref float ____baseCost)
-    //    {
-    //        if (queueBeginDistance != 3f && ____maxUserCount > 1)
-    //        {
-    //            ____agentSpacing = 1.1f;
-    //            ____queueBeginDistance = 7f;
-    //            ____queueRowSize = 1.1f;
-    //            ____maxUserCount = 16;
-    //        }
-    //        else
-    //        {
-    //            ____maxUserCount = 0;
-    //        }
-    //        //else if(queueBeginDistance == 3f)
-    //        //{
-    //        //    ____agentSpacing = 5f;
-    //        //    ____queueBeginDistance = 0.2f;
-    //        //    ____queueRowSize = 5f;
-    //        //    ____maxUserCount = 10;
-    //        //}
+        [HarmonyPostfix]
+        [HarmonyPatch("Initialize")]
+        static void PostfixInitialize(ref BattleSideEnum managedSide, Vec3 managedDirection, ref float ____arcAngle, ref float queueBeginDistance, ref int ____maxUserCount, ref float ____agentSpacing, ref float ____queueBeginDistance, ref float ____queueRowSize, ref float ____costPerRow, ref float ____baseCost)
+        {
+            if (____maxUserCount == 3)
+            {
+                ____arcAngle = (float)Math.PI * 1f / 4f;
+                ____agentSpacing = 1f;
+                ____queueBeginDistance = 2.5f;
+                ____queueRowSize = 1f;
+                ____maxUserCount = 15;
+            }
+            if (____maxUserCount == 1)
+            {
+                ____maxUserCount = 0;
+            }
+            //else
+            //{
+            //    ____maxUserCount = 0;
+            //}
+            //else if(queueBeginDistance == 3f)
+            //{
+            //    ____agentSpacing = 5f;
+            //    ____queueBeginDistance = 0.2f;
+            //    ____queueRowSize = 5f;
+            //    ____maxUserCount = 10;
+            //}
 
-    //    }
-    //}
+        }
+    }
 
     [HarmonyPatch(typeof(SiegeTower))]
     class OverrideSiegeTower
