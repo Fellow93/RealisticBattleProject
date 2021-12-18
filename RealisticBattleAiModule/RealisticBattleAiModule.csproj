@@ -303,7 +303,6 @@
     <PostBuildEvent>xcopy /d /y "$(SolutionDir)Xmls\native_parameters_tweaks.xml" "$(SolutionDir)..\RealisticBattleAiModule\ModuleData\"
 xcopy /d /y "$(SolutionDir)AIXmls\project.mbproj" "$(SolutionDir)..\RealisticBattleAiModule\ModuleData\"
 xcopy /d /y "$(SolutionDir)AIXmls\SubModule.xml" "$(SolutionDir)..\RealisticBattleAiModule\"
-xcopy /d /y "$(SolutionDir)AIXmls\GUI\Brushes\FaceGen.xml" "$(SolutionDir)..\RealisticBattleAiModule\GUI\Brushes\"
 xcopy /d /y "$(SolutionDir)AIXmls\GUI\Prefabs\RBMAIMConfig.xml" "$(SolutionDir)..\RealisticBattleAiModule\GUI\Prefabs\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
