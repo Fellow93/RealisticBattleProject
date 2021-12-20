@@ -84,7 +84,7 @@ internal class RbmMenuViewModel : ViewModel
 	{
 
 		XmlDocument xmlDocument = new XmlDocument();
-		xmlDocument.Load(BasePath.Name + "Modules/RealisticBattleAiModule/config.xml");
+		xmlDocument.Load(Utilities.GetConfigFilePath());
 
 		foreach (XmlNode childNode in xmlDocument.SelectSingleNode("/config").ChildNodes)
 		{
@@ -105,7 +105,7 @@ internal class RbmMenuViewModel : ViewModel
 			}
 		}
 
-		xmlDocument.Save(BasePath.Name + "Modules/RealisticBattleAiModule/config.xml");
+		xmlDocument.Save(Utilities.GetConfigFilePath());
 
 		XmlConfig.dict.Clear();
 

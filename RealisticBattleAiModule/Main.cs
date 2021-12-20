@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Xml;
 using TaleWorlds.Localization;
 using TaleWorlds.Engine.Screens;
+using System.IO;
+using System;
 
 namespace RealisticBattleAiModule
 {
@@ -45,7 +47,26 @@ namespace RealisticBattleAiModule
         protected override void OnSubModuleLoad()
         {
             XmlDocument xmlDocument = new XmlDocument();
-            xmlDocument.Load(BasePath.Name + "Modules/RealisticBattleAiModule/config.xml");
+
+            string defaultConfigFilePath = BasePath.Name + "Modules/RealisticBattleAiModule/config.xml";
+            string configFolderPath = Utilities.GetConfigFolderPath();
+            string configFilePath = Utilities.GetConfigFilePath();
+
+            if (!Directory.Exists(configFolderPath))
+            {
+                Directory.CreateDirectory(configFolderPath);
+            }
+
+            if (File.Exists(configFilePath))
+            {
+                xmlDocument.Load(configFilePath);
+            }
+            else
+            {
+                File.Copy(defaultConfigFilePath, configFilePath);
+                xmlDocument.Load(configFilePath);
+            }
+
             foreach (XmlNode childNode in xmlDocument.SelectSingleNode("/config").ChildNodes)
             {
                 foreach (XmlNode subNode in childNode)
@@ -67,6 +88,5 @@ namespace RealisticBattleAiModule
             InformationManager.DisplayMessage(new InformationMessage("RBM AI Module Active", Color.FromUint(4282569842u)));
         }
     }
-
 
 }

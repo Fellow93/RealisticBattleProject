@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
@@ -32,7 +33,7 @@ namespace RealisticBattleAiModule
                 //        mainInfantry.FiringOrder = FiringOrder.FiringOrderFireAtWill;
                 //    }
                 //}
-                if(mainInfantry.QuerySystem.ClosestEnemyFormation != null && mainInfantry.QuerySystem.ClosestEnemyFormation.Formation != null)
+                if (mainInfantry.QuerySystem.ClosestEnemyFormation != null && mainInfantry.QuerySystem.ClosestEnemyFormation.Formation != null)
                 {
                     Formation enemyForamtion = Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false, true);
                     if (enemyForamtion != null)
@@ -45,7 +46,7 @@ namespace RealisticBattleAiModule
                         return (distanceSpeedValue <= (battleJoinRange + (hasBattleBeenJoined ? 5f : 0f)));
                     }
                 }
-                    
+
             }
             return true;
         }
@@ -69,7 +70,7 @@ namespace RealisticBattleAiModule
                 formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
                     bool ismountedSkrimisher = false;
-                    if(ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
+                    if (ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
                     {
                         for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                         {
@@ -96,7 +97,7 @@ namespace RealisticBattleAiModule
                     return true;
                 }
             }
-                return false;
+            return false;
         }
 
         public static bool CheckIfTwoHandedPolearmInfantry(Agent agent)
@@ -134,7 +135,8 @@ namespace RealisticBattleAiModule
         {
             int tier = 10;
             EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
-            if (agent != null){
+            if (agent != null)
+            {
                 if (agent.MountAgent != null)
                 {
                     if (agent.SpawnEquipment != null)
@@ -143,7 +145,7 @@ namespace RealisticBattleAiModule
                         {
                             if (Game.Current.BasicModels.ItemValueModel != null)
                             {
-                                    tier = (int)equipmentElement.Item.Tier;
+                                tier = (int)equipmentElement.Item.Tier;
                             }
                         }
                     }
@@ -172,7 +174,7 @@ namespace RealisticBattleAiModule
         {
             Agent targetAgent = null;
             float distance = 10000f;
-            foreach(Formation formation in formations.ToList())
+            foreach (Formation formation in formations.ToList())
             {
                 formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
@@ -217,7 +219,7 @@ namespace RealisticBattleAiModule
         {
             float ratio = 0f;
             int countOfSkirmishers = 0;
-            if(formation != null)
+            if (formation != null)
             {
                 formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
@@ -249,7 +251,7 @@ namespace RealisticBattleAiModule
                     }
                     countedUnits++;
                     ratio = (float)countOfSkirmishers / (float)formation.CountOfUnits;
-                    
+
                 });
                 if (ratio > desiredRatio)
                 {
@@ -305,7 +307,7 @@ namespace RealisticBattleAiModule
                             {
                                 if (formation != null && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
                                 {
-                                     formations.Add(enemyFormation);
+                                    formations.Add(enemyFormation);
                                 }
                                 if (formation != null && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
                                 {
@@ -357,7 +359,7 @@ namespace RealisticBattleAiModule
                     {
                         if (withSide)
                         {
-                            if(formation.AI.Side != enemyFormation.AI.Side)
+                            if (formation.AI.Side != enemyFormation.AI.Side)
                             {
                                 continue;
                             }
@@ -567,7 +569,7 @@ namespace RealisticBattleAiModule
                         //        dist = newDist;
                         //    }
                         //}
-                        }
+                    }
 
                     if (unitCountMatters)
                     {
@@ -681,7 +683,7 @@ namespace RealisticBattleAiModule
         public static float GetCombatAIDifficultyMultiplier()
         {
             MissionState missionState = Game.Current.GameStateManager.ActiveState as MissionState;
-            if(missionState != null)
+            if (missionState != null)
             {
                 if (missionState.MissionName.Equals("EnhancedBattleTestFieldBattle") || missionState.MissionName.Equals("EnhancedBattleTestSiegeBattle"))
                 {
@@ -751,7 +753,7 @@ namespace RealisticBattleAiModule
         public static bool CheckIfSkirmisherAgent(Agent agent, float ammoAmout = 0)
         {
             CharacterObject characterObject = agent.Character as CharacterObject;
-            if(characterObject != null && characterObject.Tier > 3)
+            if (characterObject != null && characterObject.Tier > 3)
             {
                 return false;
             }
@@ -792,6 +794,17 @@ namespace RealisticBattleAiModule
                 }
             }
             return false;
+        }
+
+        public static string GetConfigFilePath()
+        {
+            return System.IO.Path.Combine(GetConfigFolderPath(), "config.xml");
+        }
+
+        public static string GetConfigFolderPath()
+        {
+           return System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+            "Mount and Blade II Bannerlord", "Configs", "RealisticBattleAiModule");
         }
     }
 }

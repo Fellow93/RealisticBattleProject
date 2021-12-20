@@ -6,6 +6,8 @@ using System.Xml;
 using TaleWorlds.Core;
 using TaleWorlds.Engine.Screens;
 using TaleWorlds.Localization;
+using System.IO;
+using System;
 
 namespace RealisticBattleCombatModule
 {
@@ -27,7 +29,26 @@ namespace RealisticBattleCombatModule
         protected override void OnSubModuleLoad()
         {
             XmlDocument xmlDocument = new XmlDocument();
-            xmlDocument.Load(BasePath.Name + "Modules/RealisticBattleCombatModule/config.xml");
+
+            string defaultConfigFilePath = BasePath.Name + "Modules/RealisticBattleCombatModule/config.xml";
+            string configFolderPath = Utilities.GetConfigFolderPath();
+            string configFilePath = Utilities.GetConfigFilePath();
+
+            if (!Directory.Exists(configFolderPath))
+            {
+                Directory.CreateDirectory(configFolderPath);
+            }
+
+            if (File.Exists(configFilePath))
+            {
+                xmlDocument.Load(configFilePath);
+            }
+            else
+            {
+                File.Copy(defaultConfigFilePath, configFilePath);
+                xmlDocument.Load(configFilePath);
+            }
+
             foreach (XmlNode childNode in xmlDocument.SelectSingleNode("/config").ChildNodes)
             {
                 foreach (XmlNode subNode in childNode)
