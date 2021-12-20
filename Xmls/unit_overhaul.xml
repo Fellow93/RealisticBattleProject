@@ -6289,7 +6289,7 @@
       <equipment slot="Item3"
                  id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Body"
-                 id="Item.imperial_mail_over_stripped_leather" />
+                 id="Item.empire_legion_a" />
       <equipment slot="Gloves"
                  id="Item.lordly_padded_mitten" />
       <equipment slot="Leg"
@@ -6803,7 +6803,7 @@
       <equipment slot="Item3"
                  id="Item.wide_leaf_spear_t4" />	
       <equipment slot="Body"
-                 id="Item.legionary_mail" />
+                 id="Item.empire_legion_a" />
       <equipment slot="Gloves"
                  id="Item.mail_mitten" />
       <equipment slot="Leg"
@@ -7127,7 +7127,7 @@
       <equipment slot="Gloves"
                  id="Item.plated_strip_gauntlets" />
       <equipment slot="Body"
-                 id="Item.imperial_lamellar_over_leather" />
+                 id="Item.empire_legion_b" />
       <equipment slot="Leg"
                  id="Item.mail_cavalier_boots" />
       <equipment slot="Cape"
@@ -7372,7 +7372,7 @@
       <equipment slot="Item3"
                  id="Item.battania_targe_b" />
       <equipment slot="Body"
-                 id="Item.imperial_lamellar_over_leather" />
+                 id="Item.empire_legion_b" />
       <equipment slot="Leg"
                  id="Item.decorated_imperial_boots" />
       <equipment slot="Head"
@@ -7412,7 +7412,7 @@
       <equipment slot="Item3"
                  id="Item.battania_targe_b" />
       <equipment slot="Body"
-                 id="Item.imperial_lamellar_over_leather" />
+                 id="Item.empire_legion_b" />
       <equipment slot="Leg"
                  id="Item.decorated_imperial_boots" />
       <equipment slot="Head"
@@ -7499,7 +7499,7 @@
       <equipment slot="Item1"
                  id="Item.fortified_kite_shield_shoulder" />
       <equipment slot="Body"
-                 id="Item.legionary_mail" />
+                 id="Item.empire_legion_a" />
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Gloves"
@@ -7744,7 +7744,7 @@
       <equipment slot="Item3"
                  id="Item.fortified_kite_shield_shoulder" />
       <equipment slot="Body"
-                 id="Item.imperial_lamellar_over_leather" />
+                 id="Item.empire_legion_b" />
       <equipment slot="Gloves"
                  id="Item.plated_strip_gauntlets" />
       <equipment slot="Leg"
@@ -7784,7 +7784,7 @@
       <equipment slot="Item3"
                  id="Item.fortified_kite_shield_shoulder" />
       <equipment slot="Body"
-                 id="Item.imperial_lamellar_over_leather" />
+                 id="Item.empire_legion_b" />
       <equipment slot="Gloves"
                  id="Item.plated_strip_gauntlets" />
       <equipment slot="Leg"
@@ -7824,7 +7824,7 @@
       <equipment slot="Item3"
                  id="Item.fortified_kite_shield_shoulder" />
       <equipment slot="Body"
-                 id="Item.imperial_lamellar_over_leather" />
+                 id="Item.empire_legion_b" />
       <equipment slot="Gloves"
                  id="Item.plated_strip_gauntlets" />
       <equipment slot="Leg"
@@ -14152,13 +14152,13 @@
       <equipment slot="Item2"
                  id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Body"
-                 id="Item.legionary_mail" />
+                 id="Item.empire_legion_a" />
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Gloves"
                  id="Item.plated_strip_gauntlets" />
       <equipment slot="Head"
-                 id="Item.tall_helmet" />
+                 id="Item.plumed_helmet" />
       <equipment slot="Cape"
                  id="Item.battanian_chainmail_shoulder_a" />
       </EquipmentRoster>
@@ -14181,17 +14181,17 @@
       <skill id="Riding"
              value="45" />
       <skill id="OneHanded"
-             value="170" />
+             value="200" />
       <skill id="TwoHanded"
              value="50" />
       <skill id="Polearm"
-             value="150" />
+             value="200" />
       <skill id="Bow"
              value="45" />
       <skill id="Crossbow"
              value="15" />
       <skill id="Throwing"
-             value="170" />
+             value="200" />
     </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
@@ -14203,13 +14203,49 @@
       <equipment slot="Item2"
                  id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Body"
-                 id="Item.imperial_lamellar" />
+                 id="Item.empire_legion_b" />
       <equipment slot="Leg"
                  id="Item.decorated_imperial_boots" />
       <equipment slot="Gloves"
                  id="Item.decorated_imperial_gauntlets" />
       <equipment slot="Head"
-                 id="Item.plumed_helmet" />
+                 id="Item.empire_battle_crown_west" />
+      <equipment slot="Cape"
+                 id="Item.imperial_lamellar_shoulders" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.gladius_b" />
+      <equipment slot="Item1"
+                 id="Item.battania_large_shield_b" />
+      <equipment slot="Item2"
+                 id="Item.imperial_throwing_spear_1_t4" />
+      <equipment slot="Body"
+                 id="Item.empire_legion_b" />
+      <equipment slot="Leg"
+                 id="Item.decorated_imperial_boots" />
+      <equipment slot="Gloves"
+                 id="Item.decorated_imperial_gauntlets" />
+      <equipment slot="Head"
+                 id="Item.empire_battle_crown_west" />
+      <equipment slot="Cape"
+                 id="Item.imperial_lamellar_shoulders" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.wide_leaf_spear_t4" />
+      <equipment slot="Item1"
+                 id="Item.battania_large_shield_b" />
+      <equipment slot="Item2"
+                 id="Item.imperial_throwing_spear_1_t4" />
+      <equipment slot="Body"
+                 id="Item.empire_legion_b" />
+      <equipment slot="Leg"
+                 id="Item.decorated_imperial_boots" />
+      <equipment slot="Gloves"
+                 id="Item.decorated_imperial_gauntlets" />
+      <equipment slot="Head"
+                 id="Item.empire_battle_crown_west" />
       <equipment slot="Cape"
                  id="Item.imperial_lamellar_shoulders" />
       </EquipmentRoster>
@@ -17057,7 +17093,7 @@
       <equipment slot="Item1"
                  id="Item.hardened_120_gr_bolts" />
       <equipment slot="Item2"
-                 id="Item.pavise_shield" />
+                 id="Item.pavise_shield_shoulder" />
       <equipment slot="Item3"
                  id="Item.aserai_mace_4_t4" />
       <equipment slot="Body"
@@ -17221,7 +17257,7 @@
       <equipment slot="Item2"
                  id="Item.vlandia_mace_3_t5" />
       <equipment slot="Item3"
-                 id="Item.pavise_shield" />
+                 id="Item.pavise_shield_shoulder" />
       <equipment slot="Item1"
                  id="Item.hardened_150_gr_bolts" />
       <equipment slot="Item0"

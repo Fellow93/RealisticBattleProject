@@ -12,6 +12,12 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
+	<Item id="battania_light_armor_d" name="{=ibtt8Chp}Battanian Kilt over Tartan Trousers" mesh="battania_light_armor_d" culture="Culture.battania" weight="0.8" Type="BodyArmor" appearance="1.7" difficulty="0" subtype="body_armor">
+		<ItemComponent>
+			<Armor body_armor="0" leg_armor="15" covers_body="false" modifier_group="chain" material_type="Chainmail" has_gender_variations="false" arm_armor="0"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true" DoesNotHideChest="true"/>
+	</Item>
 	<Item id="armored_baggy_trunks" name="{=w6j8Oaai}Armored Baggy Trunks" mesh="bandit_1_b" culture="Culture.battania" weight="0.3" Type="BodyArmor" appearance="1" difficulty="0" subtype="body_armor">
 		<ItemComponent>
 			<Armor body_armor="2" leg_armor="24" covers_body="false" modifier_group="leather" material_type="Leather" has_gender_variations="false" arm_armor="1"/>
@@ -648,6 +654,12 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
+	<Item id="battania_light_armor_c" name="{=aiER6j1y}Battanian Long Tartan" mesh="battania_light_armor_c" culture="Culture.battania" weight="2.4" Type="BodyArmor" appearance="1.7" difficulty="0" subtype="body_armor">
+		<ItemComponent>
+			<Armor body_armor="15" leg_armor="15" covers_body="false" modifier_group="chain" material_type="Chainmail" has_gender_variations="true" arm_armor="7"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
 	<Item id="crude_leather_armor" name="{=JslRu3rX}Crude Eastern Leather Armor" mesh="bandit_5" culture="Culture.khuzait" weight="2.4" Type="BodyArmor" appearance="1">
 		<ItemComponent>
 			<Armor body_armor="16" leg_armor="16" covers_body="true" modifier_group="leather" material_type="Leather" has_gender_variations="true" arm_armor="11"/>
@@ -1224,6 +1236,12 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
+	<Item id="empire_legion_a" name="{=mBVCyRY5}Decorated Legionary Mail" mesh="empire_legion_a" culture="Culture.empire" weight="22" Type="BodyArmor" appearance="5.5" difficulty="0" subtype="body_armor">
+		<ItemComponent>
+			<Armor body_armor="50" leg_armor="40" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="25"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
 	<Item id="dummy_armor_max" name="{=wSUN0Dmo}Dummy Max Armor" mesh="vlandia_scale_armor" culture="Culture.looters" weight="40" Type="BodyArmor" is_merchandise="false">
 		<ItemComponent>
 			<Armor body_armor="55" leg_armor="55" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="55" head_armor="55"/>
@@ -1302,6 +1320,12 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
+	<Item id="empire_legion_b" name="{=7HbspP6x}Ornate Legionary Scale Mail" mesh="empire_legion_b" culture="Culture.empire" weight="28" Type="BodyArmor" appearance="6" difficulty="0" subtype="body_armor">
+		<ItemComponent>
+			<Armor body_armor="85" leg_armor="30" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="45"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
 	<Item id="imperial_lamellar_over_leather" name="{=ekTny86c}Imperial Lamellar Over Leather" mesh="empire_plate_armor" culture="Culture.empire" weight="15" Type="BodyArmor" appearance="1.3">
 		<ItemComponent>
 			<Armor body_armor="88" leg_armor="25" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="50"/>
@@ -1374,83 +1398,4 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-  <Item id="battania_light_armor_c"
-        name="{=aiER6j1y}Battanian Long Tartan"
-        subtype="body_armor"
-        mesh="battania_light_armor_c"
-        culture="Culture.battania"
-        weight="2.4"
-        difficulty="0"
-        appearance="1.7"
-        Type="BodyArmor">
-    <ItemComponent>
-      <Armor body_armor="15"
-             leg_armor="15"
-             arm_armor="7"
-             has_gender_variations="true"
-             covers_body="false"
-             modifier_group="chain"
-             material_type="Chainmail" />
-    </ItemComponent>
-    <Flags UseTeamColor="true" />
-  </Item>
-  <Item id="battania_light_armor_d"
-        name="{=ibtt8Chp}Battanian Kilt over Tartan Trousers"
-        subtype="body_armor"
-        mesh="battania_light_armor_d"
-        culture="Culture.battania"
-        weight="0.8"
-        difficulty="0"
-        appearance="1.7"
-        Type="BodyArmor">
-    <ItemComponent>
-      <Armor body_armor="0"
-             leg_armor="15"
-             arm_armor="0"
-             has_gender_variations="false"
-             covers_body="false"
-             modifier_group="chain"
-             material_type="Chainmail" />
-    </ItemComponent>
-    <Flags DoesNotHideChest="true"
-           UseTeamColor="true" />
-  </Item>
-  <Item id="empire_legion_a"
-        name="{=mBVCyRY5}Decorated Legionary Mail"
-        mesh="empire_legion_a"
-        subtype="body_armor"
-        culture="Culture.empire"
-        weight="22.0"
-        difficulty="0"
-        appearance="5.5"
-        Type="BodyArmor">
-    <ItemComponent>
-      <Armor body_armor="50"
-             leg_armor="40"
-             arm_armor="25"
-             covers_body="true"
-             modifier_group="chain"
-             material_type="Chainmail" />
-    </ItemComponent>
-    <Flags UseTeamColor="true" />
-  </Item>
-  <Item id="empire_legion_b"
-        name="{=7HbspP6x}Ornate Legionary Scale Mail"
-        mesh="empire_legion_b"
-        subtype="body_armor"
-        culture="Culture.empire"
-        weight="28.0"
-        difficulty="0"
-        appearance="6.0"
-        Type="BodyArmor">
-    <ItemComponent>
-      <Armor body_armor="85"
-             leg_armor="30"
-             arm_armor="45"
-             covers_body="true"
-             modifier_group="plate"
-             material_type="Plate" />
-    </ItemComponent>
-    <Flags UseTeamColor="true" />
-  </Item>
 </Items>
