@@ -78,7 +78,7 @@ internal class RbmMenuViewModel : ViewModel
 		RangedReloadSpeedText = new TextViewModel(new TextObject("Ranged reload speed"));
 		RangedReloadSpeed = new SelectorVM<SelectorItemVM>(rangedReloadSpeed, 0, null);
 
-		List<string> passiveShoulderShields = new List<string> { "Disabled", "Enabled (Default)" };
+		List<string> passiveShoulderShields = new List<string> { "Disabled (Default)", "Enabled" };
 		PassiveShoulderShieldsText = new TextViewModel(new TextObject("Passive Shoulder Shields"));
 		PassiveShoulderShields = new SelectorVM<SelectorItemVM>(passiveShoulderShields, 0, null);
 
