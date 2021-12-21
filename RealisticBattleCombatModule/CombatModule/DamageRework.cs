@@ -1071,10 +1071,6 @@ namespace RealisticBattleCombatModule
                     }
                 case DamageTypes.Pierce:
                     {
-                        if (pierceTreshold > 2.6f)
-                        {
-                            partialPenetrationThreshold = 2f;
-                        }
                         float partialPenetration = Math.Max(0f, magnitude - armorEffectiveness * partialPenetrationThreshold * XmlConfig.dict["Global.ArmorThresholdModifier"]);
                         if (partialPenetration > 15f)
                         {
