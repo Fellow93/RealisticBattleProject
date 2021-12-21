@@ -2139,17 +2139,12 @@ namespace RealisticBattleCombatModule
         [HarmonyPatch("GetSurvivalChance")]
         static bool PrefixGetAiWeight(ref float __result, PartyBase party, CharacterObject character, DamageTypes damageType, PartyBase enemyParty = null)
         {
-            if (character.IsPlayerCharacter || (character.IsHero && !character.HeroObject.CanDie()))
+            if (character.IsPlayerCharacter)
             {
                 __result = 1f;
                 return false;
             }
-            //if (damageType == DamageTypes.Blunt)
-            //{
-            //    __result = 0.25f;
-            //    return false;
-            //}
-            ExplainedNumber stat = new ExplainedNumber(character.IsHero ? 0 : 1f);
+            ExplainedNumber stat = new ExplainedNumber(1f);
             if (party != null && party.MobileParty != null)
             {
                 MobileParty mobileParty = party.MobileParty;
@@ -2165,7 +2160,8 @@ namespace RealisticBattleCombatModule
                 }
                 if (character.IsHero)
                 {
-                    stat.Add(stat.ResultNumber * 50f - stat.ResultNumber);
+                    stat.AddFactor(49f);
+                    //stat.Add(stat.ResultNumber * 50f - stat.ResultNumber);
                 }
                 ExplainedNumber stat2 = new ExplainedNumber(1f / stat.ResultNumber);
                 if (character.IsHero)
