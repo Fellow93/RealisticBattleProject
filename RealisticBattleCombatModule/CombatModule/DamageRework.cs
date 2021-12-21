@@ -1071,13 +1071,23 @@ namespace RealisticBattleCombatModule
                     }
                 case DamageTypes.Pierce:
                     {
-                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * pierceTreshold * XmlConfig.dict["Global.ArmorThresholdModifier"]);
+                        float partialPenetrationThreshold = 0f;
+                        if (pierceTreshold > 2.6f)
+                        {
+                            partialPenetrationThreshold = 2f;
+                        }
+                        float partialPenetration = Math.Max(0f, magnitude - armorEffectiveness * partialPenetrationThreshold * XmlConfig.dict["Global.ArmorThresholdModifier"]);
+                        if (partialPenetration > 15f)
+                        {
+                            partialPenetration = 15f;
+                        }
+                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * pierceTreshold * XmlConfig.dict["Global.ArmorThresholdModifier"]) - partialPenetration;
                         float bluntFraction = 0f;
                         if (magnitude > 0f)
                         {
-                            bluntFraction = (magnitude - penetratedDamage) / magnitude;
+                            bluntFraction = (magnitude - (penetratedDamage + partialPenetration)) / magnitude;
                         }
-                        damage += penetratedDamage;
+                        damage += penetratedDamage + partialPenetration;
 
                         float bluntTrauma = magnitude * (bluntFactorPierce + XmlConfig.dict["Global.BluntTraumaBonus"]) * bluntFraction;
                         float bluntTraumaAfterArmor = Math.Max(0f, bluntTrauma * armorReduction);
@@ -1091,13 +1101,13 @@ namespace RealisticBattleCombatModule
                                 {
                                     //InformationManager.DisplayMessage(new InformationMessage("You received"));
                                     InformationManager.DisplayMessage(new InformationMessage("You received " + (int)(bluntTraumaAfterArmor) +
-                                        " blunt trauma, " + (int)(penetratedDamage) + " armor penetration damage"));
+                                        " blunt trauma, " + (int)(penetratedDamage + partialPenetration) + " armor penetration damage"));
                                     //InformationManager.DisplayMessage(new InformationMessage("damage penetrated: " + penetratedDamage));
                                 }
                                 else
                                 {
                                     InformationManager.DisplayMessage(new InformationMessage("You dealt " + (int)(bluntTraumaAfterArmor) +
-                                        " blunt trauma, " + (int)(penetratedDamage) + " armor penetration damage"));
+                                        " blunt trauma, " + (int)(penetratedDamage + partialPenetration) + " armor penetration damage"));
                                 }
                             }
                         }

@@ -14168,7 +14168,7 @@
   </NPCCharacter>
   <NPCCharacter id="legion_of_the_betrayed_tier_3"
                 default_group="Infantry"
-                level="31"
+                level="28"
                 occupation="Soldier"
                 culture="Culture.empire"
                 name="{=cOt1onbR}Triarii">
@@ -14197,11 +14197,13 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.gladius_b" />
+                 id="Item.wide_leaf_spear_t4" />
       <equipment slot="Item1"
                  id="Item.battania_large_shield_b" />
       <equipment slot="Item2"
                  id="Item.imperial_throwing_spear_1_t4" />
+      <equipment slot="Item3"
+                 id="Item.gladius_b" />
       <equipment slot="Body"
                  id="Item.empire_legion_b" />
       <equipment slot="Leg"
@@ -14215,11 +14217,13 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.gladius_b" />
+                 id="Item.wide_leaf_spear_t4" />
       <equipment slot="Item1"
                  id="Item.battania_large_shield_b" />
       <equipment slot="Item2"
                  id="Item.imperial_throwing_spear_1_t4" />
+      <equipment slot="Item3"
+                 id="Item.gladius_b" />
       <equipment slot="Body"
                  id="Item.empire_legion_b" />
       <equipment slot="Leg"
