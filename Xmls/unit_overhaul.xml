@@ -14181,17 +14181,17 @@
       <skill id="Riding"
              value="45" />
       <skill id="OneHanded"
-             value="200" />
+             value="170" />
       <skill id="TwoHanded"
              value="50" />
       <skill id="Polearm"
-             value="200" />
+             value="170" />
       <skill id="Bow"
              value="45" />
       <skill id="Crossbow"
              value="15" />
       <skill id="Throwing"
-             value="200" />
+             value="170" />
     </skills>
     <upgrade_targets></upgrade_targets>
     <Equipments>
