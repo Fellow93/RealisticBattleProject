@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Reflection;
 using TaleWorlds.Core;
@@ -100,7 +101,7 @@ namespace RealisticBattleAiModule
             if (!formation.QuerySystem.IsCavalryFormation && !formation.QuerySystem.IsRangedCavalryFormation)
             {
 
-                float currentTime = Mission.Current.CurrentTime;
+                float currentTime = MBCommon.GetTotalMissionTime();
                 if (currentTime - unit.LastRangedAttackTime < 7f)
                 {
                     __result = Agent.UsageDirection.None;
@@ -169,6 +170,46 @@ namespace RealisticBattleAiModule
                     itemPickupDistanceStorage[___Agent] = distanceSq;
                 }
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(Mission))]
+    [HarmonyPatch("OnAgentShootMissile")]
+    [UsedImplicitly]
+    [MBCallback]
+    class OverrideOnAgentShootMissile
+    {
+
+        //private static int _oldMissileSpeed;
+        static bool Prefix(Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, ref Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
+        {
+            MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
+            WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
+
+            bool isRbmCmEnabled = false;
+            foreach (MBSubModuleBase submodule in TaleWorlds.MountAndBlade.Module.CurrentModule.SubModules)
+            {
+                if (submodule.ToString().Equals("RealisticBattleCombatModule.Main"))
+                {
+                    isRbmCmEnabled = true;
+                }
+            }
+
+            if (!isRbmCmEnabled && (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && !shooterAgent.IsMainAgent && (wsd[0].WeaponClass == (int)WeaponClass.Javelin || wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe)))
+            {
+                //float shooterSpeed = shooterAgent.MovementVelocity.Normalize();
+                if (!shooterAgent.HasMount)
+                {
+                    velocity.z = velocity.z - 1.4f;
+                }
+                else
+                {
+                    velocity.z = velocity.z - 2f;
+
+                }
+            }
+
+            return true;
         }
     }
 
