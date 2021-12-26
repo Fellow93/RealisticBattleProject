@@ -952,12 +952,12 @@ namespace RealisticBattleAiModule
                     }
                 case BehaviorState.AttackEntity:
                     {
-                        if (____attackEntityOrderInnerGate.TargetEntity != null)
-                        {
-                            __instance.Formation.FormAttackEntityDetachment(____attackEntityOrderInnerGate.TargetEntity);
-                        }
+                        //if (____attackEntityOrderInnerGate.TargetEntity != null)
+                        //{
+                        //    __instance.Formation.FormAttackEntityDetachment(____attackEntityOrderInnerGate.TargetEntity);
+                        //}
 
-                        ___CurrentArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
+                        //___CurrentArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
                         break;
                     }
                 case BehaviorState.Charging:
@@ -966,12 +966,12 @@ namespace RealisticBattleAiModule
 
                         if (__instance.Formation.AI.Side == BehaviorSide.Middle)
                         {
-                            __instance.Formation.DisbandAttackEntityDetachment();
+                            //__instance.Formation.DisbandAttackEntityDetachment();
 
-                            foreach (IDetachment detach in __instance.Formation.Detachments.ToList())
-                            {
-                                __instance.Formation.LeaveDetachment(detach);
-                            }
+                            //foreach (IDetachment detach in __instance.Formation.Detachments.ToList())
+                            //{
+                            //    __instance.Formation.LeaveDetachment(detach);
+                            //}
                         }
 
                         if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
