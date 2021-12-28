@@ -125,6 +125,7 @@ namespace RealisticBattleCombatModule
                 }
 
                 float physicalDamage = ((length * length) * (weaponItem.Weight)) / 2;
+                float momentumDamage = (length * weaponItem.Weight);
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin") && physicalDamage > 300f)
                 {
                     physicalDamage = 300f;
@@ -183,7 +184,7 @@ namespace RealisticBattleCombatModule
                     }
                     else
                     {
-                        baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining;
+                        baseMagnitude = momentumDamage * missileTotalDamage * momentumRemaining; // momentum makes more sense for blunt attacks, maybe 500 damage is needed for sling projectiles
                     }
                 }
                 specialMagnitude = baseMagnitude;
