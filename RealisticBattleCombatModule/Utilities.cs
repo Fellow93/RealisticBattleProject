@@ -46,7 +46,7 @@ namespace RealisticBattleCombatModule
                 case "osa_sling":
                     {
                         // 40 grams is added to the weight of projectiles, this results in 60 m/s at 80 grams with good sling, 70 m/s at 50 grams and some 80 ms at 30 grams
-                        double potentialEnergy = 0.5f * (drawWeight * drawWeight) * (ammoWeight + 0.04f);
+                        double potentialEnergy = 0.5f * (drawWeight * drawWeight) * 0.12f;
                         calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight + 0.04f)));
                         break;
                     }
