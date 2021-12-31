@@ -400,7 +400,7 @@ namespace RealisticBattleCombatModule
                                 }
                                 else
                                 {
-                                    skillBasedDamage = magnitude + (30f + (effectiveSkill * 0.13f) * 1.3f);
+                                    skillBasedDamage = magnitude + (45f + (effectiveSkill * 0.13f) * 1.3f);
                                 }
                                 if (magnitude > 1f)
                                 {
