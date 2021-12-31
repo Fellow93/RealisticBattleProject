@@ -503,7 +503,7 @@ namespace RealisticBattleCombatModule
                                             magnitude = skillCap * XmlConfig.dict["Global.ThrustModifier"];
                                         }
 
-                                        else if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                        if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
                                         {
                                             magnitude = (lanceBalistics * (weaponWeight + BraceBonus));
                                         }
