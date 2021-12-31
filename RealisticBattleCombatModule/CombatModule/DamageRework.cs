@@ -434,17 +434,18 @@ namespace RealisticBattleCombatModule
                                         }
                                         float lanceBalistics = (magnitude * BraceModifier) / weaponWeight;
                                         float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
-                                        if (CouchedMagnitude > (skillCap * XmlConfig.dict["Global.ThrustModifier"]) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                        magnitude = CouchedMagnitude;
+                                        if (CouchedMagnitude > (skillCap * XmlConfig.dict["Global.ThrustModifier"]) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * XmlConfig.dict["Global.ThrustModifier"])) //skill based damage
                                         {
                                             magnitude = skillCap * XmlConfig.dict["Global.ThrustModifier"];
                                         }
 
-                                        if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                        if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * XmlConfig.dict["Global.ThrustModifier"])) //ballistics
                                         {
                                             magnitude = (lanceBalistics * (weaponWeight + BraceBonus));
                                         }
 
-                                        if (magnitude > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"]))
+                                        if (magnitude > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"])) // damage cap - lance break threshold
                                         {
                                             magnitude = ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"];
                                         }
@@ -496,12 +497,13 @@ namespace RealisticBattleCombatModule
                                         }
                                         float lanceBalistics = (magnitude * BraceModifier) / weaponWeight;
                                         float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
+                                        magnitude = CouchedMagnitude;
                                         if (CouchedMagnitude > (skillCap * XmlConfig.dict["Global.ThrustModifier"]) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
                                         {
                                             magnitude = skillCap * XmlConfig.dict["Global.ThrustModifier"];
                                         }
 
-                                        if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                        else if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
                                         {
                                             magnitude = (lanceBalistics * (weaponWeight + BraceBonus));
                                         }
