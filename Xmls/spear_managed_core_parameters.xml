@@ -9,6 +9,7 @@
     <!-- AirFriction = surfaceArea * FrictionCoefficient / mass-->
     <managed_core_parameter id="AirFrictionJavelin" value="0.002"/>
     <managed_core_parameter id="AirFrictionArrow" value="0.003"/>
+    <managed_core_parameter id="AirFrictionBallistaBolt" value="0.005"/>
     <managed_core_parameter id="AirFrictionBullet" value="0.004"/>
     <managed_core_parameter id="AirFrictionKnife" value="0.007"/>
     <managed_core_parameter id="AirFrictionAxe" value="0.007"/>
