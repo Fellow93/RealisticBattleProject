@@ -1089,7 +1089,7 @@ namespace RealisticBattleCombatModule
             {
                 case DamageTypes.Blunt:
                     {
-                        float armorReductionBlunt = 100f / (100f + armorEffectiveness * XmlConfig.dict["Global.ArmorMultiplier"] * 1.5f);
+                        float armorReductionBlunt = 100f / (100f + armorEffectiveness * XmlConfig.dict["Global.ArmorMultiplier"]);
                         damage += magnitude * armorReductionBlunt * XmlConfig.dict["Global.MaceBluntModifier"];
 
                         break;
