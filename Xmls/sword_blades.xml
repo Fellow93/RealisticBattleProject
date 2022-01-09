@@ -530,6 +530,33 @@
       <Material id="Iron4" count="2" />
     </Materials>
   </CraftingPiece>
+  <CraftingPiece id="battania_blade_3_blunt"
+                 name="{=HbCb0T6W}Blunt Broadsword Blade"
+                 tier="3"
+                 piece_type="Blade"
+                 mesh="battania_blade_3"
+                 culture="Culture.battania"
+                 length="80.8"
+                 weight="1.3"
+                 is_hidden="true">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="battania_blade_3_scabbard_3">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.8" />
+      <Swing damage_type="Cut"
+             damage_factor="0.8" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4"
+                count="2" />
+    </Materials>
+  </CraftingPiece>
   <CraftingPiece id="battania_blade_4" name="{=zAdloN6Y}Broad Ridged Shortsword Blade" tier="3" piece_type="Blade" mesh="battania_blade_4" culture="Culture.battania" length="67.4" weight="0.45">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="battania_blade_4_scabbard_4">
@@ -1248,9 +1275,9 @@
                physics_material="metal_weapon"
                body_name="bo_knife_a"
                holster_mesh="">
-      <Thrust damage_type="Blunt"
+      <Thrust damage_type="Pierce"
               damage_factor="0.8" />
-      <Swing damage_type="Blunt"
+      <Swing damage_type="Cut"
              damage_factor="0.8" />
     </BladeData>
     <Flags>
@@ -1355,9 +1382,9 @@
                physics_material="metal_weapon"
                body_name="bo_knife_a"
                holster_mesh="">
-      <Thrust damage_type="Blunt"
+      <Thrust damage_type="Pierce"
               damage_factor="0.6" />
-      <Swing damage_type="Blunt"
+      <Swing damage_type="Cut"
              damage_factor="0.6" />
     </BladeData>
     <Flags>
@@ -1542,9 +1569,9 @@
                body_name="bo_knife_a"
                holster_mesh="throwing_dagger_quiver_1"
                holster_mesh_length="35.8">
-      <Thrust damage_type="Blunt"
+      <Thrust damage_type="Pierce"
               damage_factor="0.7" />
-      <Swing damage_type="Blunt"
+      <Swing damage_type="Cut"
              damage_factor="0.7" />
     </BladeData>
     <Flags>
