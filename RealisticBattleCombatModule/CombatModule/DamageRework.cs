@@ -194,6 +194,56 @@ namespace RealisticBattleCombatModule
         }
     }
 
+    [HarmonyPatch(typeof(Mission))]
+    [HarmonyPatch("GetEntityDamageMultiplier")]
+    class GetEntityDamageMultiplierPatch
+    {
+        static bool Prefix(bool isAttackerAgentDoingPassiveAttack, WeaponComponentData weapon, DamageTypes damageType, bool isWoodenBody, ref float __result)
+        {
+            float dmgMultiplier = 1f;
+            if (isAttackerAgentDoingPassiveAttack)
+            {
+                dmgMultiplier *= 0.2f;
+            }
+            if (weapon != null)
+            {
+                if (weapon.WeaponFlags.HasAnyFlag(WeaponFlags.BonusAgainstShield))
+                {
+                    dmgMultiplier *= 1.2f;
+                }
+                switch (damageType)
+                {
+                    case DamageTypes.Cut:
+                        if(weapon.WeaponClass == WeaponClass.Arrow || weapon.WeaponClass == WeaponClass.Bolt || weapon.WeaponClass == WeaponClass.Javelin)
+                        {
+                            dmgMultiplier *= 0.1f;
+                        }
+                        else
+                        {
+                            dmgMultiplier *= 0.8f;
+                        }
+                        break;
+                    case DamageTypes.Pierce:
+                        if(weapon.WeaponClass == WeaponClass.Arrow || weapon.WeaponClass == WeaponClass.Bolt || weapon.WeaponClass == WeaponClass.Javelin)
+                        {
+                            dmgMultiplier *= 0.1f;
+                        }
+                        else
+                        {
+                            dmgMultiplier *= 0.2f;
+                        }
+                        break;
+                }
+                if (isWoodenBody && weapon.WeaponFlags.HasAnyFlag(WeaponFlags.Burning))
+                {
+                    dmgMultiplier *= 1.5f;
+                }
+            }
+            __result = dmgMultiplier;
+            return false;
+        }
+    }
+
     [HarmonyPatch(typeof(CombatStatCalculator))]
     [HarmonyPatch("CalculateStrikeMagnitudeForPassiveUsage")]
     class ChangeLanceDamage
