@@ -272,12 +272,12 @@ namespace RealisticBattleCombatModule
             float combinedSpeed = thrustWeaponSpeed + extraLinearSpeed;
             if (combinedSpeed > 0f)
             {
-                float basedamage = 120f * (combinedSpeed / thrustWeaponSpeed) * (combinedSpeed / thrustWeaponSpeed);
                 if (!isThrown && weaponWeight < 2.1f)
                 {
                     weaponWeight += 0.5f;
                 }
                 float kineticEnergy = 0.5f * weaponWeight * combinedSpeed * combinedSpeed;
+                float basedamage = 0.5f * (weaponWeight + 4.5f) * combinedSpeed * combinedSpeed;
                 //float handBonus = 0.5f * (weaponWeight + 1.5f) * combinedSpeed * combinedSpeed;
                 //float handLimit = 120f;
                 //if (handBonus > handLimit)
@@ -289,6 +289,10 @@ namespace RealisticBattleCombatModule
                 //{
                 //    thrust = kineticEnergy;
                 //}
+                if (basedamage > 150f)
+                {
+                    basedamage = 150f;
+                }
                 float thrust = basedamage;
                 if (kineticEnergy > basedamage)
                 {
