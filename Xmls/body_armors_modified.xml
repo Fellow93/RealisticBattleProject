@@ -1334,7 +1334,7 @@
 	</Item>
 	<Item id="battanian_scale_armor_a" name="Highland Scale Over Mail Armor" mesh="battanian_scale_armor_a" culture="Culture.battania" weight="26" Type="BodyArmor" appearance="3" difficulty="0" subtype="body_armor">
 		<ItemComponent>
-			<Armor body_armor="90" leg_armor="35" covers_body="true" modifier_group="plate" material_type="Plate" has_gender_variations="true" arm_armor="63"/>
+			<Armor body_armor="79" leg_armor="35" covers_body="true" modifier_group="plate" material_type="Plate" has_gender_variations="true" arm_armor="50"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
@@ -1358,7 +1358,7 @@
 	</Item>
 	<Item id="battania_warlord_armor" name="{=Auwoehal}Highland Warlord Armor" mesh="battania_warlord_armor" culture="Culture.battania" weight="25" Type="BodyArmor" appearance="3" difficulty="0" subtype="body_armor">
 		<ItemComponent>
-			<Armor body_armor="100" leg_armor="50" covers_body="true" modifier_group="plate" material_type="Plate" has_gender_variations="true" arm_armor="70"/>
+			<Armor body_armor="96" leg_armor="50" covers_body="true" modifier_group="plate" material_type="Plate" has_gender_variations="true" arm_armor="68"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>

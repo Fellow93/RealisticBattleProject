@@ -4434,6 +4434,7 @@
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.battanian_horseman" />
+      <upgrade_target id="NPCCharacter.battanian_mounted_skirmisher" />
     </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
@@ -4719,7 +4720,7 @@
       <skill id="OneHanded"
              value="30" />
       <skill id="TwoHanded"
-             value="15" />
+             value="30" />
       <skill id="Polearm"
              value="30" />
       <skill id="Bow"
@@ -5092,7 +5093,7 @@
       <skill id="OneHanded"
              value="60" />
       <skill id="TwoHanded"
-             value="100" />
+             value="110" />
       <skill id="Polearm"
              value="45" />
       <skill id="Bow"
@@ -5100,7 +5101,7 @@
       <skill id="Crossbow"
              value="15" />
       <skill id="Throwing"
-             value="100" />
+             value="90" />
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.battanian_veteran_falxman" />
@@ -5173,11 +5174,11 @@
       <skill id="Riding"
              value="60" />
       <skill id="OneHanded"
-             value="80" />
+             value="60" />
       <skill id="TwoHanded"
              value="45" />
       <skill id="Polearm"
-             value="80" />
+             value="60" />
       <skill id="Bow"
              value="45" />
       <skill id="Crossbow"
@@ -5187,7 +5188,6 @@
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.battanian_wildling" />
-      <upgrade_target id="NPCCharacter.battanian_mounted_skirmisher" />
     </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
@@ -5273,7 +5273,7 @@
       <skill id="TwoHanded"
              value="100" />
       <skill id="Polearm"
-             value="150" />
+             value="145" />
       <skill id="Bow"
              value="60" />
       <skill id="Crossbow"
@@ -5305,7 +5305,7 @@
       <equipment slot="Item3"
                  id="Item.highland_throwing_axe_1_t2" />
       <equipment slot="Body"
-                 id="Item.battania_warlord_armor" />
+                 id="Item.battanian_scale_armor_a" />
       <equipment slot="Head"
                  id="Item.battanian_noble_helmet_with_feather" />
       <equipment slot="Leg"
@@ -7639,6 +7639,7 @@
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.imperial_sergeant_crossbowman" />
+      <upgrade_target id="NPCCharacter.imperial_legionary" />
     </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
@@ -10889,6 +10890,7 @@
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.sturgian_archer" />
+      <upgrade_target id="NPCCharacter.sturgian_berzerker" />
     </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
@@ -11172,6 +11174,7 @@
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.sturgian_hardened_brigand" />
+      <upgrade_target id="NPCCharacter.sturgian_spearman" />
     </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
@@ -11953,9 +11956,10 @@
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="vlandian_spearman"
-                default_group="Infantry"
+                default_group="Cavalry"
                 level="16"
-                name="{=Gd0y7SxJ}Vlandian Spearman"
+                name="Vlandian Light Cavalry"
+                upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 culture="Culture.vlandia">
     <face>
@@ -11965,13 +11969,13 @@
       <skill id="Athletics"
              value="70" />
       <skill id="Riding"
-             value="40" />
+             value="80" />
       <skill id="OneHanded"
-             value="60" />
+             value="90" />
       <skill id="TwoHanded"
              value="40" />
       <skill id="Polearm"
-             value="80" />
+             value="90" />
       <skill id="Bow"
              value="10" />
       <skill id="Crossbow"
@@ -11980,16 +11984,18 @@
              value="30" />
     </skills>
     <upgrade_targets>
-      <upgrade_target id="NPCCharacter.vlandian_billman" />
+      <upgrade_target id="NPCCharacter.vlandian_light_cavalry" />
     </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_3_t3" />
+                 id="Item.western_spear_4_t4" />
       <equipment slot="Item1"
                  id="Item.leather_bound_kite_shield_shoulder" />
+      <equipment slot="Item2"
+                 id="Item.vlandia_sword_2_t3" />
       <equipment slot="Body"
-                 id="Item.veteran_mercenary_armor" />
+                 id="Item.mail_shirt" />
       <equipment slot="Leg"
                  id="Item.woven_leather_boots" />
       <equipment slot="Head"
@@ -12001,9 +12007,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_3_t3" />
+                 id="Item.western_spear_4_t4" />
       <equipment slot="Item1"
                  id="Item.leather_bound_kite_shield_shoulder" />
+      <equipment slot="Item2"
+                 id="Item.vlandia_sword_2_t3" />
       <equipment slot="Body"
                  id="Item.mail_shirt" />
       <equipment slot="Leg"
@@ -12017,11 +12025,13 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_3_t3" />
+                 id="Item.western_spear_4_t4" />
       <equipment slot="Item1"
                  id="Item.reinforced_kite_shield_shoulder" />
+      <equipment slot="Item2"
+                 id="Item.vlandia_sword_2_t3" />
       <equipment slot="Body"
-                 id="Item.veteran_mercenary_armor" />
+                 id="Item.mail_shirt" />
       <equipment slot="Leg"
                  id="Item.woven_leather_boots" />
       <equipment slot="Head"
@@ -12033,6 +12043,10 @@
       </EquipmentRoster>
       <EquipmentSet id="vlandia_troop_civilian_template_t2"
                     civilian="true" />
+    <equipment slot="Horse"
+               id="Item.vlandia_horse" />
+    <equipment slot="HorseHarness"
+               id="Item.battania_horse_harness" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="vlandian_billman"
@@ -12052,9 +12066,9 @@
       <skill id="OneHanded"
              value="60" />
       <skill id="TwoHanded"
-             value="110" />
+             value="125" />
       <skill id="Polearm"
-             value="110" />
+             value="125" />
       <skill id="Bow"
              value="15" />
       <skill id="Crossbow"
@@ -12124,7 +12138,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="130" />
+             value="140" />
       <skill id="Riding"
              value="60" />
       <skill id="OneHanded"
@@ -12132,7 +12146,7 @@
       <skill id="TwoHanded"
              value="80" />
       <skill id="Polearm"
-             value="150" />
+             value="160" />
       <skill id="Bow"
              value="20" />
       <skill id="Crossbow"
@@ -12199,7 +12213,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="130" />
+             value="140" />
       <skill id="Riding"
              value="60" />
       <skill id="OneHanded"
@@ -12207,7 +12221,7 @@
       <skill id="TwoHanded"
              value="100" />
       <skill id="Polearm"
-             value="150" />
+             value="160" />
       <skill id="Bow"
              value="20" />
       <skill id="Crossbow"
@@ -12280,15 +12294,15 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="70" />
+             value="80" />
       <skill id="Riding"
              value="40" />
       <skill id="OneHanded"
-             value="80" />
+             value="90" />
       <skill id="TwoHanded"
              value="40" />
       <skill id="Polearm"
-             value="65" />
+             value="90" />
       <skill id="Bow"
              value="10" />
       <skill id="Crossbow"
@@ -12297,7 +12311,7 @@
              value="30" />
     </skills>
     <upgrade_targets>
-      <upgrade_target id="NPCCharacter.vlandian_light_cavalry" />
+      <upgrade_target id="NPCCharacter.vlandian_billman" />
       <upgrade_target id="NPCCharacter.vlandian_swordsman" />
     </upgrade_targets>
     <Equipments>
@@ -12320,8 +12334,6 @@
                  id="Item.padded_leather_shoulders" />
       </EquipmentRoster>
       <EquipmentRoster>
-      <equipment slot="Item0"
-                 id="Item.vlandia_sword_2_t3" />
       <equipment slot="Item1"
                  id="Item.reinforced_kite_shield_shoulder" />
       <equipment slot="Item2"
@@ -12338,8 +12350,6 @@
                  id="Item.padded_leather_shoulders" />
       </EquipmentRoster>
       <EquipmentRoster>
-      <equipment slot="Item0"
-                 id="Item.vlandia_axe_1_t3" />
       <equipment slot="Item1"
                  id="Item.reinforced_flat_kite_shield_shoulder" />
       <equipment slot="Item2"
@@ -12388,15 +12398,15 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="100" />
+             value="110" />
       <skill id="Riding"
              value="45" />
       <skill id="OneHanded"
-             value="110" />
+             value="125" />
       <skill id="TwoHanded"
              value="60" />
       <skill id="Polearm"
-             value="110" />
+             value="125" />
       <skill id="Bow"
              value="15" />
       <skill id="Crossbow"
@@ -12513,11 +12523,11 @@
       <skill id="Riding"
              value="80" />
       <skill id="OneHanded"
-             value="150" />
+             value="160" />
       <skill id="TwoHanded"
              value="100" />
       <skill id="Polearm"
-             value="150" />
+             value="160" />
       <skill id="Bow"
              value="20" />
       <skill id="Crossbow"
@@ -12604,7 +12614,7 @@
   <NPCCharacter id="vlandian_light_cavalry"
                 default_group="Cavalry"
                 level="21"
-                name="{=AloMryIU}Vlandian Light Cavalry"
+                name="Vlandian Medium Cavalry"
                 upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 culture="Culture.vlandia">
@@ -12815,6 +12825,7 @@
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.vlandian_crossbowman" />
+      <upgrade_target id="NPCCharacter.vlandian_infantry" />
     </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
