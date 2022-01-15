@@ -56,19 +56,19 @@ namespace RealisticBattleCombatModule
                             {
 
                                 float swingskillModifier = 1f + (effectiveSkill / 1000f);
-                                float thrustskillModifier = 1f + (effectiveSkill / 700f);
+                                float thrustskillModifier = 1f + (effectiveSkill / 1000f);
                                 float handlingskillModifier = 1f + (effectiveSkill / 700f);
 
                                 weaponStatsData[i].SwingSpeed = MathF.Ceiling((weaponStatsData[i].SwingSpeed * 0.83f) * swingskillModifier);
-                                weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.83f) * thrustskillModifier);
+                                weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.9f) * thrustskillModifier);
                                 weaponStatsData[i].DefendSpeed = MathF.Ceiling((weaponStatsData[i].DefendSpeed * 0.83f) * handlingskillModifier);
                             }
                             else if ((weaponStatsData[i].WeaponClass == (int)WeaponClass.OneHandedSword) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.Dagger) || (weaponStatsData[i].WeaponClass == (int)WeaponClass.TwoHandedSword))
                             {
 
-                                float swingskillModifier = 1f + (effectiveSkill / 600f);
-                                float thrustskillModifier = 1f + (effectiveSkill / 600f);
-                                float handlingskillModifier = 1f + (effectiveSkill / 600f);
+                                float swingskillModifier = 1f + (effectiveSkill / 800f);
+                                float thrustskillModifier = 1f + (effectiveSkill / 800f);
+                                float handlingskillModifier = 1f + (effectiveSkill / 800f);
 
                                 weaponStatsData[i].SwingSpeed = MathF.Ceiling((weaponStatsData[i].SwingSpeed * 0.9f) * swingskillModifier);
                                 weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.9f) * thrustskillModifier);

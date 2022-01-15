@@ -903,7 +903,7 @@ namespace RealisticBattleCombatModule
                                         inflictedDamage *= 0.09f;
                                         break;
                                     }
-                                    inflictedDamage *= 2f;
+                                    inflictedDamage *= 1.5f;
 
                                     break;
                                 }
@@ -911,7 +911,7 @@ namespace RealisticBattleCombatModule
                                 {
                                     if (attackCollisionData.DamageType == 0) //cut
                                     {
-                                        inflictedDamage *= 2f;
+                                        inflictedDamage *= 1f;
                                     }
                                     else if(attackCollisionData.DamageType == 1)//pierce
                                     {
@@ -919,7 +919,7 @@ namespace RealisticBattleCombatModule
                                     }
                                     else if (attackCollisionData.DamageType == 2)//blunt
                                     {
-                                        inflictedDamage *= 1.5f;
+                                        inflictedDamage *= 0.75f;
                                     }
                                     break;
                                 }
@@ -928,7 +928,7 @@ namespace RealisticBattleCombatModule
 
                     if (attackerWeapon != null && attackerWeapon.WeaponFlags.HasAnyFlag(WeaponFlags.BonusAgainstShield))
                     {
-                        inflictedDamage *= 5f;
+                        inflictedDamage *= 2f;
                     }
 
                     if (inflictedDamage > 0f)
