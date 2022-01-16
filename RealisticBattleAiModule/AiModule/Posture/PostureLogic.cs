@@ -596,7 +596,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
 
 
         [HarmonyPatch(typeof(Mission))]
-        [HarmonyPatch("Tick")]
+        [HarmonyPatch("OnTick")]
         class OnTickPatch
         {
             private static int tickCooldownReset = 30;
