@@ -277,7 +277,8 @@ namespace RealisticBattleCombatModule
                     weaponWeight += 0.5f;
                 }
                 float kineticEnergy = 0.5f * weaponWeight * combinedSpeed * combinedSpeed;
-                float basedamage = 0.5f * (weaponWeight + 4.5f) * combinedSpeed * combinedSpeed;
+                //float basedamage = 0.5f * (weaponWeight + 4.5f) * combinedSpeed * combinedSpeed;
+                float basedamage = 140f + kineticEnergy / 16f;
                 //float handBonus = 0.5f * (weaponWeight + 1.5f) * combinedSpeed * combinedSpeed;
                 //float handLimit = 120f;
                 //if (handBonus > handLimit)

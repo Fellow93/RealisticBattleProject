@@ -290,6 +290,10 @@
     <Compile Include="AiModule\Config\RbmConfigScreen.cs" />
     <Compile Include="AiModule\Config\RbmMenuViewModel.cs" />
     <Compile Include="AiModule\Config\TextViewModel.cs" />
+    <Compile Include="AiModule\Posture\Posture.cs" />
+    <Compile Include="AiModule\Posture\PostureLogic.cs" />
+    <Compile Include="AiModule\Posture\PostureVisualLogic.cs" />
+    <Compile Include="AiModule\Posture\PostureVisualVM.cs" />
     <Compile Include="AiModule\RbmBehaviors\RBMBehaviorForwardSkirmish.cs" />
     <Compile Include="AiModule\RbmTactics\TacticFullScaleAttackWithDedicatedSkirmishers.cs" />
     <Compile Include="AiModule\Tactics.cs" />
@@ -303,7 +307,9 @@
     <PostBuildEvent>xcopy /d /y "$(SolutionDir)Xmls\native_parameters_tweaks.xml" "$(SolutionDir)..\RealisticBattleAiModule\ModuleData\"
 xcopy /d /y "$(SolutionDir)AIXmls\project.mbproj" "$(SolutionDir)..\RealisticBattleAiModule\ModuleData\"
 xcopy /d /y "$(SolutionDir)AIXmls\SubModule.xml" "$(SolutionDir)..\RealisticBattleAiModule\"
-xcopy /d /y "$(SolutionDir)AIXmls\GUI\Prefabs\RBMAIMConfig.xml" "$(SolutionDir)..\RealisticBattleAiModule\GUI\Prefabs\"</PostBuildEvent>
+xcopy /d /y "$(SolutionDir)AIXmls\GUI\Prefabs\RBMAIMConfig.xml" "$(SolutionDir)..\RealisticBattleAiModule\GUI\Prefabs\"
+xcopy /d /y "$(SolutionDir)AIXmls\GUI\Prefabs\CombatUI.xml" "$(SolutionDir)..\RealisticBattleAiModule\GUI\Prefabs\"
+xcopy /d /y "$(SolutionDir)AIXmls\GUI\Brushes\CombatUI.xml" "$(SolutionDir)..\RealisticBattleAiModule\GUI\Brushes\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

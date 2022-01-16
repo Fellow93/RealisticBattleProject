@@ -806,6 +806,29 @@ namespace RealisticBattleAiModule
            return System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
             "Mount and Blade II Bannerlord", "Configs", "RealisticBattleAiModule");
         }
+
+        public static string GetRBMCMConfigFilePath()
+        {
+            return System.IO.Path.Combine(GetRBMCMConfigFolderPath(), "config.xml");
+        }
+
+        public static string GetRBMCMConfigFolderPath()
+        {
+            return System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+             "Mount and Blade II Bannerlord", "Configs", "RealisticBattleCombatModule");
+        }
+
+        public static bool CheckRBMCMEnabled()
+        {
+            foreach (MBSubModuleBase submodule in Module.CurrentModule.SubModules)
+            {
+                if (submodule.ToString().Equals("RealisticBattleCombatModule.Main"))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }
 

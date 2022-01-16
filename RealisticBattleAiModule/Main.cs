@@ -7,7 +7,7 @@ using System.Xml;
 using TaleWorlds.Localization;
 using TaleWorlds.Engine.Screens;
 using System.IO;
-using System;
+using RealisticBattleAiModule.AiModule.Posture;
 
 namespace RealisticBattleAiModule
 {
@@ -16,6 +16,18 @@ namespace RealisticBattleAiModule
     {
         public static Dictionary<string, float> dict = new Dictionary<string, float> { };
     }
+
+    public static class RBMCMXmlConfig
+    {
+        public static Dictionary<string, float> dict = new Dictionary<string, float> { };
+    }
+
+    public static class AgentPostures
+    {
+        public static Dictionary<Agent, Posture> values = new Dictionary<Agent, Posture> { };
+        public static PostureVisualLogic postureVisual = null;
+    }
+
     public static class MyPatcher
     {
         public static Harmony harmony = null;
@@ -75,6 +87,27 @@ namespace RealisticBattleAiModule
                 }
             }
 
+            string rbmcmConfigFolderPath = Utilities.GetRBMCMConfigFolderPath();
+            string rbmcmConfigFilePath = Utilities.GetRBMCMConfigFilePath();
+
+            if (Directory.Exists(rbmcmConfigFolderPath))
+            {
+                if (File.Exists(rbmcmConfigFilePath))
+                {
+                    xmlDocument.Load(rbmcmConfigFilePath);
+
+                    foreach (XmlNode childNode in xmlDocument.SelectSingleNode("/config").ChildNodes)
+                    {
+                        foreach (XmlNode subNode in childNode)
+                        {
+                            RBMCMXmlConfig.dict.Add(childNode.Name + "." + subNode.Name, float.Parse(subNode.InnerText));
+                        }
+                    }
+                }
+            }
+
+            
+
             Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("RBM AI Module Settings"), 4, delegate
             {
                 ScreenManager.PushScreen(new RbmConfigScreen());
@@ -86,6 +119,12 @@ namespace RealisticBattleAiModule
         protected override void OnBeforeInitialModuleScreenSetAsRoot()
         {
             InformationManager.DisplayMessage(new InformationMessage("RBM AI Module Active", Color.FromUint(4282569842u)));
+        }
+
+        public override void OnMissionBehaviorInitialize(Mission mission)
+        {
+            mission.AddMissionBehavior((MissionBehavior)(object)new PostureVisualLogic());
+            base.OnMissionBehaviorInitialize(mission);
         }
     }
 
