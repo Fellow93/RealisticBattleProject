@@ -11,8 +11,8 @@
 		<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="220" SuggestedHeight="18" HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="60" PositionYOffset="-5" Sprite="HintBG@2x_9" IsVisible="@ShowEnemyStatus" />
 		<FillBar WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="210" SuggestedHeight="8"   HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="60"  Brush="EnemyPostureBarBrush" InitialAmount="@EnemyPosture"  MaxAmount="@EnemyPostureMax" IsVertical="false" IsVisible="@ShowEnemyStatus" />
       
-		<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="64" SuggestedHeight="250" HorizontalAlignment="Center" VerticalAlignment="Top" MarginBottom="60" MarginRight="20" PositionYOffset="-5" Sprite="HintBG@2x_9" IsVisible="@ShowPlayerPostureStatus" />
-		<FillBar WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="32" SuggestedHeight="240" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="300"  MarginRight="20" Brush="EnemyPostureBarBrush" InitialAmount="@PlayerPosture"  MaxAmount="@PlayerPostureMax" IsVertical="true" IsVisible="@ShowPlayerPostureStatus" />
+		<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="250" SuggestedHeight="42" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="40" MarginRight="40" PositionYOffset="-5" Sprite="HintBG@2x_9" IsVisible="@ShowPlayerPostureStatus" />
+		<FillBar WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="240" SuggestedHeight="32" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="40"  MarginRight="40" Brush="EnemyPostureBarBrush" InitialAmount="@PlayerPosture" MaxAmount="@PlayerPostureMax" CurrentAmount="@PlayerPosture" IsVertical="false" IsVisible="@ShowPlayerPostureStatus" />
 	  </Children>
     </Widget>
   </Window>

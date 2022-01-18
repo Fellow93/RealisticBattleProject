@@ -106,7 +106,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                     float postureResetModifier = 0.5f;
 
                     float absoluteDamageModifier = 3f;
-                    float absoluteShieldDamageModifier = 1.75f;
+                    float absoluteShieldDamageModifier = 1.2f;
 
                     if (collisionData.CollisionResult == CombatCollisionResult.Blocked && !collisionData.AttackBlockedWithShield)
                     {
@@ -216,7 +216,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                     {
                         if (defenderPosture != null)
                         {
-                            defenderPosture.posture = defenderPosture.posture - calculateDefenderPostureDamage(absoluteShieldDamageModifier, 0.8f, ref collisionData, victimAgent, attackerWeapon);
+                            defenderPosture.posture = defenderPosture.posture - calculateDefenderPostureDamage(absoluteShieldDamageModifier, 1f, ref collisionData, victimAgent, attackerWeapon);
                             addPosturedamageVisual(attackerAgent, victimAgent);
                             if (defenderPosture.posture <= 0f)
                             {
@@ -228,7 +228,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                         InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, correct side block", Color.FromUint(4282569842u)));
                                     }
 
-                                    makePostureBlow(ref __instance, ref __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                    makePostureBlow(ref __instance, ref __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
 
                                 }
                                 defenderPosture.posture = defenderPosture.maxPosture * postureResetModifier;
@@ -249,7 +249,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                     {
                         if (defenderPosture != null)
                         {
-                            defenderPosture.posture = defenderPosture.posture - calculateDefenderPostureDamage(absoluteShieldDamageModifier, 0.5f, ref collisionData, victimAgent, attackerWeapon);
+                            defenderPosture.posture = defenderPosture.posture - calculateDefenderPostureDamage(absoluteShieldDamageModifier, 0.8f, ref collisionData, victimAgent, attackerWeapon);
                             addPosturedamageVisual(attackerAgent, victimAgent);
                             if (defenderPosture.posture <= 0f)
                             {
@@ -268,7 +268,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                         }
                         if (attackerPosture != null)
                         {
-                            attackerPosture.posture = attackerPosture.posture - calculateAttackerPostureDamage(absoluteShieldDamageModifier, 0.75f, ref collisionData, attackerWeapon);
+                            attackerPosture.posture = attackerPosture.posture - calculateAttackerPostureDamage(absoluteShieldDamageModifier, 0.5f, ref collisionData, attackerWeapon);
                             addPosturedamageVisual(attackerAgent, victimAgent);
                             if (attackerPosture.posture <= 0f)
                             {

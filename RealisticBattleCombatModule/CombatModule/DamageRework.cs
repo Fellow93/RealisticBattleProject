@@ -278,7 +278,7 @@ namespace RealisticBattleCombatModule
                 }
                 float kineticEnergy = 0.5f * weaponWeight * combinedSpeed * combinedSpeed;
                 //float basedamage = 0.5f * (weaponWeight + 4.5f) * combinedSpeed * combinedSpeed;
-                float basedamage = 140f + kineticEnergy / 16f;
+                float basedamage = 138f + kineticEnergy / 16f;
                 //float handBonus = 0.5f * (weaponWeight + 1.5f) * combinedSpeed * combinedSpeed;
                 //float handLimit = 120f;
                 //if (handBonus > handLimit)
@@ -847,7 +847,229 @@ namespace RealisticBattleCombatModule
                         weaponType = attackerWeapon.WeaponClass.ToString();
                     }
 
-                    float inflictedDamage = MyComputeDamage(weaponType, damageType, blowMagnitude, (float)shieldArmorForCurrentUsage, absorbedDamageRatio);
+                    bool isPassiveUsage = isAttackerAgentDoingPassiveAttack;
+
+                    float skillBasedDamage = 0f;
+                    const float ashBreakTreshold = 430f;
+                    float BraceBonus = 0f;
+                    float BraceModifier = 0.34f;
+
+                    switch (weaponType)
+                    {
+                        case "Dagger":
+                        case "OneHandedSword":
+                        case "ThrowingKnife":
+                            {
+                                if(blowMagnitude > 1f)
+                                {
+                                    if (damageType == DamageTypes.Cut)
+                                    {
+                                        blowMagnitude = blowMagnitude + 40f;
+                                    }
+                                    else
+                                    {
+                                        blowMagnitude = blowMagnitude * 0.2f + 50f * XmlConfig.dict["Global.ThrustModifier"];
+                                    }
+                                }
+                                break;
+                            }
+                        case "TwoHandedSword":
+                            {
+                                if (blowMagnitude > 1f)
+                                {
+                                    if (damageType == DamageTypes.Cut)
+                                    {
+                                        blowMagnitude = blowMagnitude + 40f * 1.3f;
+                                    }
+                                    else
+                                    {
+                                        blowMagnitude = (blowMagnitude * 0.2f + 50f * XmlConfig.dict["Global.ThrustModifier"]) * 1.3f;
+                                    }
+                                }
+                                break;
+                            }
+                        case "OneHandedAxe":
+                        case "ThrowingAxe":
+                            {
+                                if (blowMagnitude > 1f)
+                                {
+                                    blowMagnitude = blowMagnitude + 60f;
+                                }
+                                break;
+                            }
+                        case "OneHandedBastardAxe":
+                            {
+                                if (blowMagnitude > 1f)
+                                {
+                                    blowMagnitude = blowMagnitude + 60f * 1.15f;
+                                }
+                                break;
+                            }
+                        case "TwoHandedAxe":
+                            {
+                                if (blowMagnitude > 1f)
+                                {
+                                    blowMagnitude = blowMagnitude + 60f * 1.3f;
+                                }
+                                break;
+                            }
+                        case "Mace":
+                            {
+                                if (blowMagnitude > 1f)
+                                {
+                                    if (damageType == DamageTypes.Pierce)
+                                    {
+                                        blowMagnitude = blowMagnitude * 0.2f + 40f * XmlConfig.dict["Global.ThrustModifier"];
+                                    }
+                                    else
+                                    {
+                                        blowMagnitude = blowMagnitude + 30f;
+                                    }
+                                }
+                                break;
+                            }
+                        case "TwoHandedMace":
+                            {
+                                if (blowMagnitude > 1f)
+                                {
+                                    if (damageType == DamageTypes.Pierce)
+                                    {
+                                        blowMagnitude = (blowMagnitude * 0.2f + 40f * XmlConfig.dict["Global.ThrustModifier"]) * 1.3f;
+                                    }
+                                    else
+                                    {
+                                        blowMagnitude = blowMagnitude + 45f * 1.3f;
+                                    }
+                                }
+                                break;
+                            }
+                        case "OneHandedPolearm":
+                            {
+                                if (blowMagnitude > 1f)
+                                {
+                                    if (damageType == DamageTypes.Cut)
+                                    {
+                                        blowMagnitude = blowMagnitude + 50f;
+                                    }
+                                    else if (damageType == DamageTypes.Blunt)
+                                    {
+                                        blowMagnitude = blowMagnitude + 30f;
+                                    }
+                                    else
+                                    {
+                                        if (isPassiveUsage)
+                                        {
+                                            float couchedSkill = 0.5f;
+                                            float skillCap = 100f;
+
+                                            float weaponWeight = 1.5f;
+
+                                            if (weaponWeight < 2.1f)
+                                            {
+                                                BraceBonus += 0.5f;
+                                                BraceModifier *= 3f;
+                                            }
+                                            float lanceBalistics = (blowMagnitude * BraceModifier) / weaponWeight;
+                                            float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
+                                            blowMagnitude = CouchedMagnitude;
+                                            if (CouchedMagnitude > (skillCap * XmlConfig.dict["Global.ThrustModifier"]) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * XmlConfig.dict["Global.ThrustModifier"])) //skill based damage
+                                            {
+                                                blowMagnitude = skillCap * XmlConfig.dict["Global.ThrustModifier"];
+                                            }
+
+                                            if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * XmlConfig.dict["Global.ThrustModifier"])) //ballistics
+                                            {
+                                                blowMagnitude = (lanceBalistics * (weaponWeight + BraceBonus));
+                                            }
+
+                                            if (blowMagnitude > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"])) // damage cap - lance break threshold
+                                            {
+                                                blowMagnitude = ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"];
+                                            }
+                                        }
+                                        else
+                                        {
+                                            //float weaponWeight = attackerWeapon.Item.Weight;
+
+                                            //if (weaponWeight > 2.1f)
+                                            //{
+                                            //    blowMagnitude *= 0.34f;
+                                            //}
+                                            blowMagnitude = blowMagnitude * 0.4f + 60f * XmlConfig.dict["Global.ThrustModifier"];
+                                            if (blowMagnitude > 260f * XmlConfig.dict["Global.ThrustModifier"])
+                                            {
+                                                blowMagnitude = 260f * XmlConfig.dict["Global.ThrustModifier"];
+                                            }
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+                        case "TwoHandedPolearm":
+                            {
+                                if (blowMagnitude > 1f)
+                                {
+                                    if (damageType == DamageTypes.Cut)
+                                    {
+                                        blowMagnitude = blowMagnitude + 50f * 1.3f;
+                                    }
+                                    else if (damageType == DamageTypes.Blunt)
+                                    {
+                                        blowMagnitude = blowMagnitude + 30f * 1.3f;
+                                    }
+                                    else
+                                    {
+                                        if (isPassiveUsage)
+                                        {
+                                            float couchedSkill = 0.5f;
+                                            float skillCap = 100f;
+
+                                            float weaponWeight = 1.5f;
+
+                                            if (weaponWeight < 2.1f)
+                                            {
+                                                BraceBonus += 0.5f;
+                                                BraceModifier *= 3f;
+                                            }
+                                            float lanceBalistics = (blowMagnitude * BraceModifier) / weaponWeight;
+                                            float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
+                                            blowMagnitude = CouchedMagnitude;
+                                            if (CouchedMagnitude > (skillCap * XmlConfig.dict["Global.ThrustModifier"]) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                            {
+                                                blowMagnitude = skillCap * XmlConfig.dict["Global.ThrustModifier"];
+                                            }
+
+                                            if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                            {
+                                                blowMagnitude = (lanceBalistics * (weaponWeight + BraceBonus));
+                                            }
+
+                                            if (blowMagnitude > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"]))
+                                            {
+                                                blowMagnitude = ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"];
+                                            }
+                                        }
+                                        else
+                                        {
+                                            float weaponWeight = 1.5f;
+
+                                            if (weaponWeight > 2.1f)
+                                            {
+                                                blowMagnitude *= 0.34f;
+                                            }
+                                            skillBasedDamage = (blowMagnitude * 0.4f + 60f * XmlConfig.dict["Global.ThrustModifier"]) * 1.3f;
+                                            if (skillBasedDamage > 360f * XmlConfig.dict["Global.ThrustModifier"])
+                                            {
+                                                skillBasedDamage = 360f * XmlConfig.dict["Global.ThrustModifier"];
+                                            }
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+                    }
+
+                    float inflictedDamage = MyComputeDamage(weaponType, damageType, blowMagnitude, (float)shieldArmorForCurrentUsage * 10f , absorbedDamageRatio);
 
                     if (attackCollisionData.IsMissile)
                     {

@@ -19,9 +19,9 @@
   </Brush>
   <Brush Name="EnemyPostureBarBrush">
     <Layers>
-      <BrushLayer Name="EmptyFill" Sprite="BlankWhiteSquare" ColorFactor="1" Color="#404040FF" />
+      <BrushLayer Name="EmptyFill" Sprite="BlankWhiteSquare" ColorFactor="1" Color="#D40E00FF" />
       <BrushLayer Name="DefaultFill"  Sprite="BlankWhiteSquare_9" Color="#009900FF" />
-      <BrushLayer Name="ChangeFill" Sprite="BlankWhiteSquare" ColorFactor="1" Color="#FFAAAAFF" />
+      <BrushLayer Name="ChangeFill" Sprite="BlankWhiteSquare" ColorFactor="1" Color="#009900FF" />
     </Layers>
     <Styles>
       <Style Name="Default">
