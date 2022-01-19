@@ -1077,32 +1077,32 @@ namespace RealisticBattleCombatModule
                         {
                             case "Arrow":
                                 {
-                                    inflictedDamage *= 1.0f;
+                                    inflictedDamage *= 3.0f;
                                     break;
                                 }
                             case "Bolt":
                                 {
-                                    inflictedDamage *= 1.0f;
+                                    inflictedDamage *= 3.0f;
                                     break;
                                 }
                             case "Javelin":
                                 {
-                                    inflictedDamage *= 3f;
+                                    inflictedDamage *= 15f;
                                     break;
                                 }
                             case "ThrowingAxe":
                                 {
-                                    inflictedDamage *= 2.0f;
+                                    inflictedDamage *= 8f;
                                     break;
                                 }
                             case "OneHandedPolearm":
                                 {
-                                    inflictedDamage *= 3f;
+                                    inflictedDamage *= 5f;
                                     break;
                                 }
                             case "LowGripPolearm":
                                 {
-                                    inflictedDamage *= 3f;
+                                    inflictedDamage *= 5f;
                                     break;
                                 }
                             default:
