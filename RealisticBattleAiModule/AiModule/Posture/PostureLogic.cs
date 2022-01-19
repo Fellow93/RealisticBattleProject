@@ -25,15 +25,13 @@ namespace RealisticBattleAiModule.AiModule.Posture
         {
             static void Postfix(ref Agent __instance, bool isOffHand, bool isWieldedInstantly, bool isWieldedOnSpawn)
             {
-                AgentPostures.values[__instance] = new Posture();
+                //AgentPostures.values[__instance] = new Posture();
                 Posture posture = null;
                 AgentPostures.values.TryGetValue(__instance, out posture);
-
                 if (posture == null) { 
                     AgentPostures.values[__instance] = new Posture();
                 }
                 AgentPostures.values.TryGetValue(__instance, out posture);
-
                 if (posture != null)
                 {
                     float oldPosture = posture.posture;
@@ -94,6 +92,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                 AgentPostures.values.Clear();
             }
         }
+
 
         [HarmonyPatch(typeof(Mission))]
         [HarmonyPatch("CreateMeleeBlow")]
