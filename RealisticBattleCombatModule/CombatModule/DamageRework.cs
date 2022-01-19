@@ -1077,12 +1077,12 @@ namespace RealisticBattleCombatModule
                         {
                             case "Arrow":
                                 {
-                                    inflictedDamage *= 3.0f;
+                                    inflictedDamage *= 1.5f;
                                     break;
                                 }
                             case "Bolt":
                                 {
-                                    inflictedDamage *= 3.0f;
+                                    inflictedDamage *= 1.5f;
                                     break;
                                 }
                             case "Javelin":
