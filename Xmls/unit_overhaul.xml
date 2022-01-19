@@ -10629,7 +10629,7 @@
       <equipment slot="Horse"
                  id="Item.t2_sturgia_horse" />
       <equipment slot="HorseHarness"
-                 id="Item.halfchain_barding" />
+                 id="Item.chain_horse_harness" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -12046,7 +12046,7 @@
     <equipment slot="Horse"
                id="Item.vlandia_horse" />
     <equipment slot="HorseHarness"
-               id="Item.battania_horse_harness" />
+               id="Item.northern_ring_barding" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="vlandian_billman"
@@ -12702,7 +12702,7 @@
     <equipment slot="Horse"
                id="Item.vlandia_horse" />
     <equipment slot="HorseHarness"
-               id="Item.northern_ring_barding" />
+               id="Item.halfchain_barding" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="vlandian_vanguard"
@@ -12793,7 +12793,7 @@
     <equipment slot="Horse"
                  id="Item.t2_vlandia_horse" />
     <equipment slot="HorseHarness"
-               id="Item.halfchain_barding" />
+               id="Item.chain_horse_harness" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="vlandian_levy_crossbowman"
