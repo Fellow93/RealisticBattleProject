@@ -8,6 +8,7 @@ using TaleWorlds.Localization;
 using TaleWorlds.Engine.Screens;
 using System.IO;
 using RealisticBattleAiModule.AiModule.Posture;
+using SandBox;
 
 namespace RealisticBattleAiModule
 {
@@ -48,7 +49,10 @@ namespace RealisticBattleAiModule
             var original = AccessTools.Method(typeof(MissionCombatantsLogic), "EarlyStart");
             var postfix = AccessTools.Method(typeof(Tactics.TeamAiFieldBattle), nameof(Tactics.TeamAiFieldBattle.Postfix));
             harmony.Patch(original, null, new HarmonyMethod(postfix));
-
+            var original2 = AccessTools.Method(typeof(CampaignMissionComponent), "EarlyStart");
+            var postfix2 = AccessTools.Method(typeof(Tactics.CampaignMissionComponentPatch), nameof(Tactics.CampaignMissionComponentPatch.Postfix));
+            harmony.Patch(original2, null, new HarmonyMethod(postfix2));
+            
             //harmony.Patch(original, postfix: new HarmonyMethod(postfix));
 
         }
@@ -105,8 +109,6 @@ namespace RealisticBattleAiModule
                     }
                 }
             }
-
-            
 
             Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("RBM AI Module Settings"), 4, delegate
             {

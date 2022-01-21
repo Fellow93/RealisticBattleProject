@@ -3,10 +3,7 @@ using Helpers;
 using SandBox;
 using StoryMode.GameModels;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Xml;
-using System.Xml.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.SandBox.GameComponents.Map;
 using TaleWorlds.Core;
@@ -14,7 +11,6 @@ using TaleWorlds.DotNet;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
-using TaleWorlds.ObjectSystem;
 using static TaleWorlds.CampaignSystem.CombatXpModel;
 using static TaleWorlds.MountAndBlade.Agent;
 
@@ -22,13 +18,143 @@ namespace RealisticBattleCombatModule
 {
     class DamageRework
     {
+        //public static Dictionary<int, bool> hasMissilePenetrated = new Dictionary<int, bool> { };
+
+        //[UsedImplicitly]
+        //[MBCallback]
+        //[HarmonyPatch(typeof(Mission))]
+        //[HarmonyPatch("MissileHitCallback")]
+        //public class CreateMissileBlowPatch
+        //{
+        //    static bool Prefix(ref bool __result, ref Dictionary<int, Missile> ____missiles, ref Mission __instance, ref AttackCollisionData collisionData, ref Vec3 missileStartingPosition, ref Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
+        //    {
+        //        Missile missile = ____missiles[collisionData.AffectorWeaponSlotOrMissileIndex];
+        //        if (collisionData.AttackBlockedWithShield)
+        //        {
+        //            //TODO: code to decide if arrow penerated
+        //            hasMissilePenetrated[collisionData.AffectorWeaponSlotOrMissileIndex] = false;
+        //        }
+        //        if (collisionData.CollidedWithShieldOnBack)
+        //        {
+        //            hasMissilePenetrated[collisionData.AffectorWeaponSlotOrMissileIndex] = true;
+        //        }
+        //        bool hasPenetrated = false;
+        //        if (collisionData.CollisionResult == CombatCollisionResult.StrikeAgent && hasMissilePenetrated.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out hasPenetrated))
+        //        {
+        //            switch (collisionData.VictimHitBodyPart)
+        //            {
+        //                case BoneBodyPartType.ArmLeft:
+        //                case BoneBodyPartType.ShoulderLeft:
+        //                    {
+        //                        return true;
+        //                    }
+        //            }
+        //            return false;
+        //        }
+        //        return true;
+        //    }
+
+        //    static void Postfix(ref bool __result, ref Dictionary<int, Missile> ____missiles, ref Mission __instance, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
+        //    {
+        //        Missile missile = ____missiles[collisionData.AffectorWeaponSlotOrMissileIndex];
+        //        if (collisionData.AttackBlockedWithShield || collisionData.CollidedWithShieldOnBack)
+        //        {
+        //            if (collisionData.AttackBlockedWithShield)
+        //            {
+        //                EquipmentIndex wieldedItemIndex = victim.GetWieldedItemIndex(Agent.HandIndex.OffHand);
+        //                if ((float)collisionData.InflictedDamage > TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.ShieldPenetrationOffset) - 5 + TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.ShieldPenetrationFactor) * (float)victim.Equipment[wieldedItemIndex].GetGetModifiedArmorForCurrentUsage())
+        //                {
+        //                    bool hasPenetrated = false;
+        //                    if (hasMissilePenetrated.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out hasPenetrated))
+        //                    {
+        //                        __result = false;
+        //                        return;
+        //                    }
+        //                }
+        //            }else if (collisionData.CollidedWithShieldOnBack)
+        //            {
+        //                for (EquipmentIndex shieldIndex = EquipmentIndex.WeaponItemBeginSlot; shieldIndex < EquipmentIndex.Weapon4; shieldIndex++)
+        //                {
+        //                    if (victim.Equipment[shieldIndex].CurrentUsageItem != null && (victim.Equipment[shieldIndex].CurrentUsageItem.WeaponClass == WeaponClass.LargeShield || victim.Equipment[shieldIndex].CurrentUsageItem.WeaponClass == WeaponClass.SmallShield))
+        //                    {
+        //                        if ((float)collisionData.InflictedDamage > TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.ShieldPenetrationOffset) - 5 + TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.ShieldPenetrationFactor) * (float)victim.Equipment[shieldIndex].GetGetModifiedArmorForCurrentUsage())
+        //                        {
+        //                            bool hasPenetrated = false;
+        //                            if (hasMissilePenetrated.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out hasPenetrated))
+        //                            {
+        //                                __result = false;
+        //                                return;
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //            hasMissilePenetrated.Remove(collisionData.AffectorWeaponSlotOrMissileIndex);
+        //        }
+        //    }
+        //}
+
+        //[HarmonyPatch(typeof(Mission))]
+        //[HarmonyPatch("HandleMissileCollisionReaction")]
+        //class HandleMissileCollisionReactionPatch
+        //{
+        //    static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, int missileIndex, MissileCollisionReaction collisionReaction, MatrixFrame attachLocalFrame, Agent attackerAgent, Agent attachedAgent, bool attachedToShield, sbyte attachedBoneIndex, MissionObject attachedMissionObject, Vec3 bounceBackVelocity, Vec3 bounceBackAngularVelocity, int forcedSpawnIndex)
+        //    {
+        //        Missile missile = ____missiles[missileIndex];
+        //        MissionObjectId missionObjectId = new MissionObjectId(-1, createdAtRuntime: true);
+        //        if (collisionReaction == MissileCollisionReaction.Stick)
+        //        {
+        //            bool hasPenetrated = false;
+        //            if (hasMissilePenetrated.TryGetValue(missileIndex, out hasPenetrated))
+        //            {
+        //                if (hasPenetrated)
+        //                {
+        //                    missile.Entity.Remove(81);
+        //                    //hasMissilePenetrated.Remove(missileIndex);
+        //                    return false;
+        //                }
+        //                //missile.Entity.SetVisibilityExcludeParents(visible: true);
+        //                //missionObjectId = __instance.SpawnWeaponAsDropFromMissile(missileIndex, null, ref attachLocalFrame, WeaponSpawnFlags.AsMissile | WeaponSpawnFlags.WithPhysics, ref bounceBackVelocity, ref bounceBackAngularVelocity, forcedSpawnIndex);
+
+        //                if (!attachedToShield)
+        //                {
+        //                    hasMissilePenetrated.Remove(missileIndex);
+        //                    return false;
+        //                }
+
+        //                //foreach (MissionBehavior missionBehavior in __instance.MissionBehaviors)
+        //                //{
+        //                //    missionBehavior.OnMissileCollisionReaction(MissileCollisionReaction.Stick, attackerAgent, attachedAgent, attachedBoneIndex);
+        //                //}
+        //            }
+        //        }
+        //        return true;
+        //    }
+        //}
+
+        [HarmonyPatch(typeof(DefaultDamageParticleModel))]
+        [HarmonyPatch("GetMissileAttackParticle")]
+        public class GetMissileAttackParticlePatch
+        {
+            static bool Prefix(ref int __result, ref Mission __instance, Agent attacker, Agent victim, in Blow blow, in AttackCollisionData collisionData)
+            {
+                //bool hasPenetrated = false;
+                //if (hasMissilePenetrated.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out hasPenetrated))
+                //{
+                //    __result = ParticleSystemManager.GetRuntimeIdByName("psys_game_sweat_sword_enter");
+                //    return false;
+                //}
+                return true;
+            }
+        }
+
         [HarmonyPatch(typeof(Mission))]
         [HarmonyPatch("ComputeBlowMagnitudeMissile")]
         class RealArrowDamage
         {
             static bool Prefix(ref AttackCollisionData acd, ItemObject weaponItem, bool isVictimAgentNull, float momentumRemaining, float missileTotalDamage, out float baseMagnitude, out float specialMagnitude, Vec2 victimVelocity)
             {
-
+                Vec3 missileVelocity = acd.MissileVelocity;
                 //Vec3 gcn = acd.CollisionGlobalNormal;
                 // Vec3 wbd = acd.MissileVelocity;
 
@@ -40,11 +166,11 @@ namespace RealisticBattleCombatModule
                 float length;
                 if (!isVictimAgentNull)
                 {
-                    length = (victimVelocity.ToVec3() - acd.MissileVelocity).Length;
+                    length = (victimVelocity.ToVec3() - missileVelocity).Length;
                 }
                 else
                 {
-                    length = acd.MissileVelocity.Length;
+                    length = missileVelocity.Length;
                 }
                 //float expr_32 = length / acd.MissileStartingBaseSpeed;
                 //float num = expr_32 * expr_32;

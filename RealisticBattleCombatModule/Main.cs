@@ -7,7 +7,6 @@ using TaleWorlds.Core;
 using TaleWorlds.Engine.Screens;
 using TaleWorlds.Localization;
 using System.IO;
-using System;
 
 namespace RealisticBattleCombatModule
 {

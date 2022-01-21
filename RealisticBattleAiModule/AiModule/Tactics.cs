@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using RealisticBattleAiModule.AiModule.RbmBehaviors;
+using SandBox;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -170,6 +171,16 @@ namespace RealisticBattleAiModule
             static void Postfix(TaleWorlds.MountAndBlade.ViewModelCollection.HUD.MissionFormationMarkerTargetVM __instance)
             {
                 __instance.FormationType = chooseIcon(__instance.Formation);
+            }
+        }
+
+        [HarmonyPatch(typeof(CampaignMissionComponent))]
+        [HarmonyPatch("EarlyStart")]
+        public class CampaignMissionComponentPatch
+        {
+            public static void Postfix()
+            {
+                MyPatcher.DoPatching();
             }
         }
 
