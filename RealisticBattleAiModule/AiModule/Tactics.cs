@@ -220,7 +220,7 @@ namespace RealisticBattleAiModule
                                 //team.AddTacticOption(new TacticHoldChokePoint(team));
                                 //team.AddTacticOption(new TacticHoldTheHill(team));
                                 //team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
-                                //team.AddTacticOption(new TacticCoordinatedRetreat(team));
+                                team.AddTacticOption(new TacticCoordinatedRetreat(team));
                                 //team.AddTacticOption(new TacticFrontalCavalryCharge(team));
                                 //team.AddTacticOption(new TacticDefensiveRing(team));
                                 //team.AddTacticOption(new TacticArchersOnTheHill(team));
@@ -229,6 +229,36 @@ namespace RealisticBattleAiModule
                     }
                 }
             }
+        }
+
+        [HarmonyPatch(typeof(TacticCoordinatedRetreat))]
+        class OverrideTacticCoordinatedRetreat
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch("GetTacticWeight")]
+            static bool PrefixGetTacticWeight(ref TacticCoordinatedRetreat __instance, ref Team ___team, ref float __result)
+            {
+                //__result = 100f;
+                if (___team.QuerySystem.InfantryRatio == 0f && ___team.QuerySystem.RangedRatio == 0f)
+                {
+                    float power = ___team.QuerySystem.OverallPowerRatio;
+                    float enemyPower = ___team.QuerySystem.EnemyTeams.Sum((TeamQuerySystem et) => et.OverallPowerRatio);
+                    if (power / enemyPower <= 0.05f)
+                    {
+                        __result = 1000f;
+                    }
+                    else
+                    {
+                        __result = 0f;
+                    }
+                }
+                else
+                {
+                    __result = 0f;
+                }
+                return false;
+            }
+
         }
 
         [HarmonyPatch(typeof(TacticFullScaleAttack))]
