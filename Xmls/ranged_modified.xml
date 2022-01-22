@@ -226,7 +226,7 @@
 	</Item>
 	<Item id="throwing_stone" name="{=1CPdu9K0}Stone" body_name="bo_throwing_stone" mesh="throwing_stone" weight="0.3" appearance="0.1" Type="Thrown" value="2" item_holsters="throwing_stone:throwing_stone_2" is_merchandise="false" holster_body_name="bo_axe_short" holster_mesh="stone_holster" holster_mesh_with_weapon="stone_holster">
 		<ItemComponent>
-			<Weapon weapon_class="Stone" ammo_class="Stone" thrust_speed="102" speed_rating="102" missile_speed="30" weapon_length="10" thrust_damage="100" item_usage="stone" physics_material="missile" accuracy="45" stack_amount="14" rotation_speed="0, -3.0, 0" rotation="100,30,20" thrust_damage_type="Blunt">
+			<Weapon weapon_class="Stone" ammo_class="Stone" thrust_speed="102" speed_rating="102" missile_speed="30" weapon_length="10" thrust_damage="200" item_usage="stone" physics_material="missile" accuracy="45" stack_amount="2" rotation_speed="0, -3.0, 0" rotation="100,30,20" thrust_damage_type="Blunt">
 				<WeaponFlags RangedWeapon="true" AutoReload="true" Consumable="true" UseHandAsThrowBase="true"/>
 			</Weapon>
 		</ItemComponent>

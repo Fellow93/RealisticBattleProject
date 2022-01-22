@@ -2080,7 +2080,7 @@
       <skill id="Crossbow"
              value="10" />
       <skill id="Throwing"
-             value="40" />
+             value="60" />
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.aserai_infantry" />
@@ -2093,6 +2093,8 @@
                  id="Item.oval_shield" />
       <equipment slot="Item2"
                  id="Item.aserai_mace_3_t3" />
+      <equipment slot="Item3"
+                 id="Item.eastern_javelin_2_t3" />
       <equipment slot="Head"
                  id="Item.trailed_desert_helmet" />
       <equipment slot="Body"
@@ -2111,6 +2113,8 @@
                  id="Item.oval_shield" />
       <equipment slot="Item2"
                  id="Item.aserai_mace_3_t3" />
+      <equipment slot="Item3"
+                 id="Item.eastern_javelin_2_t3" />
       <equipment slot="Head"
                  id="Item.trailed_desert_helmet" />
       <equipment slot="Body"
@@ -2129,6 +2133,8 @@
                  id="Item.oval_shield" />
       <equipment slot="Item2"
                  id="Item.aserai_mace_3_t3" />
+      <equipment slot="Item3"
+                 id="Item.eastern_javelin_2_t3" />
       <equipment slot="Body"
                  id="Item.nordic_lamellar_vest" />
       <equipment slot="Leg"
@@ -2145,6 +2151,8 @@
                  id="Item.eastern_spear_3_t3" />
       <equipment slot="Item1"
                  id="Item.oval_shield" />
+      <equipment slot="Item3"
+                 id="Item.eastern_javelin_2_t3" />
       <equipment slot="Head"
                  id="Item.pointed_skullcap_over_laced_coif" />
       <equipment slot="Body"
@@ -2161,6 +2169,8 @@
                  id="Item.eastern_spear_3_t3" />
       <equipment slot="Item1"
                  id="Item.oval_shield" />
+      <equipment slot="Item3"
+                 id="Item.eastern_javelin_2_t3" />
       <equipment slot="Head"
                  id="Item.closed_desert_helmet" />
       <equipment slot="Body"
@@ -2177,6 +2187,8 @@
                  id="Item.eastern_spear_3_t3" />
       <equipment slot="Item1"
                  id="Item.oval_shield" />
+      <equipment slot="Item3"
+                 id="Item.eastern_javelin_2_t3" />
       <equipment slot="Body"
                  id="Item.aserai_archer_armor" />
       <equipment slot="Leg"
@@ -2193,9 +2205,9 @@
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="aserai_skirmisher"
-                default_group="Infantry"
+                default_group="Ranged"
                 level="16"
-                name="{=4BxUa4Sr}Aserai Skirmisher"
+                name="Aserai Archer"
                 occupation="Soldier"
                 culture="Culture.aserai">
     <face>
@@ -2207,17 +2219,17 @@
       <skill id="Riding"
              value="30" />
       <skill id="OneHanded"
-             value="60" />
+             value="55" />
       <skill id="TwoHanded"
              value="30" />
       <skill id="Polearm"
-             value="60" />
+             value="55" />
       <skill id="Bow"
-             value="40" />
+             value="85" />
       <skill id="Crossbow"
              value="10" />
       <skill id="Throwing"
-             value="80" />
+             value="55" />
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.aserai_archer" />
@@ -2225,51 +2237,51 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.eastern_javelin_2_t3" />
+                 id="Item.tribal_bow" />
       <equipment slot="Item1"
-                 id="Item.desert_oval_shield" />
+                 id="Item.heavy_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.eastern_javelin_2_t3" />
+                 id="Item.heavy_steppe_arrows" />
       <equipment slot="Item3"
-                 id="Item.aserai_mace_3_t3" />
+                 id="Item.aserai_mace_2_t2" />
       <equipment slot="Head"
                  id="Item.desert_helmet" />
       <equipment slot="Cape"
                  id="Item.desert_leather_shoulderpad" />
       <equipment slot="Body"
-                 id="Item.ringed_desert_armor" />
+                 id="Item.desert_padded_cloth" />
       <equipment slot="Leg"
                  id="Item.steppe_leather_boots" />
       <equipment slot="Gloves"
-                 id="Item.studded_leather_vambraces" />
+                 id="Item.rough_tied_bracers" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.eastern_javelin_2_t3" />
+                 id="Item.tribal_bow" />
       <equipment slot="Item1"
-                 id="Item.desert_oval_shield" />
+                 id="Item.heavy_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.eastern_javelin_2_t3" />
+                 id="Item.heavy_steppe_arrows" />
       <equipment slot="Item3"
-                 id="Item.bamboo_axe_t4" />
+                 id="Item.aserai_mace_1_t2" />
       <equipment slot="Head"
                  id="Item.open_desert_helmet" />
       <equipment slot="Cape"
                  id="Item.desert_leather_shoulderpad" />
       <equipment slot="Body"
-                 id="Item.nordic_lamellar_vest" />
+                 id="Item.desert_padded_cloth" />
       <equipment slot="Leg"
                  id="Item.steppe_leather_boots" />
       <equipment slot="Gloves"
-                 id="Item.studded_leather_vambraces" />
+                 id="Item.rough_tied_bracers" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.eastern_javelin_2_t3" />
+                 id="Item.tribal_bow" />
       <equipment slot="Item1"
-                 id="Item.desert_oval_shield" />
+                 id="Item.heavy_steppe_arrows" />
       <equipment slot="Item2"
-                 id="Item.eastern_javelin_2_t3" />
+                 id="Item.heavy_steppe_arrows" />
       <equipment slot="Item3"
                  id="Item.bamboo_axe_t4" />
       <equipment slot="Head"
@@ -2277,11 +2289,11 @@
       <equipment slot="Cape"
                  id="Item.desert_leather_shoulderpad" />
       <equipment slot="Body"
-                 id="Item.ringed_desert_armor" />
+                 id="Item.desert_padded_cloth" />
       <equipment slot="Leg"
                  id="Item.steppe_leather_boots" />
       <equipment slot="Gloves"
-                 id="Item.studded_leather_vambraces" />
+                 id="Item.rough_tied_bracers" />
       </EquipmentRoster>
       <EquipmentSet id="aserai_troop_civilian_template_t2"
                     civilian="true" />
@@ -2290,7 +2302,7 @@
   <NPCCharacter id="aserai_archer"
                 default_group="Ranged"
                 level="21"
-                name="{=yhBagy1Y}Aserai Archer"
+                name="Aserai Experienced Archer"
                 occupation="Soldier"
                 culture="Culture.aserai">
     <face>
