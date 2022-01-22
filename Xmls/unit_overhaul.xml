@@ -12627,7 +12627,6 @@
                 default_group="Cavalry"
                 level="21"
                 name="Vlandian Medium Cavalry"
-                upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 culture="Culture.vlandia">
     <face>
