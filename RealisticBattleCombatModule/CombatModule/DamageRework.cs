@@ -382,7 +382,7 @@ namespace RealisticBattleCombatModule
 
         private static float CalculateStrikeMagnitudeForThrust(float thrustWeaponSpeed, float weaponWeight, float extraLinearSpeed, bool isThrown)
         {
-            float num = extraLinearSpeed * 0.66f; // because cav in the game is roughly 50% faster than it should be
+            float num = extraLinearSpeed * 1f; // because cav in the game is roughly 50% faster than it should be
             float num2 = 0.5f * weaponWeight * num * num * XmlConfig.dict["Global.ThrustModifier"]; // lances need to have 3 times more damage to be preferred over maces
             return num2;
 
@@ -1085,8 +1085,8 @@ namespace RealisticBattleCombatModule
                                     {
                                         if (isPassiveUsage)
                                         {
-                                            float couchedSkill = 0.5f;
-                                            float skillCap = 100f;
+                                            float couchedSkill = 2f;
+                                            float skillCap = 230f;
 
                                             float weaponWeight = 1.5f;
 
@@ -1147,8 +1147,8 @@ namespace RealisticBattleCombatModule
                                     {
                                         if (isPassiveUsage)
                                         {
-                                            float couchedSkill = 0.5f;
-                                            float skillCap = 100f;
+                                            float couchedSkill = 2f;
+                                            float skillCap = 230f;
 
                                             float weaponWeight = 1.5f;
 
@@ -1213,7 +1213,7 @@ namespace RealisticBattleCombatModule
                                 }
                             case "Javelin":
                                 {
-                                    inflictedDamage *= 15f;
+                                    inflictedDamage *= 20f;
                                     break;
                                 }
                             case "ThrowingAxe":
