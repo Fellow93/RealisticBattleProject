@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.Core.ItemObject;
 
@@ -229,6 +230,29 @@ namespace RealisticBattleAiModule
                     }
                 }
             }
+        }
+
+        [HarmonyPatch(typeof(Mission))]
+        class SpawnTroopPatch
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch("SpawnTroop")]
+            static bool PrefixSpawnTroop(ref Mission __instance, IAgentOriginBase troopOrigin, bool isPlayerSide, bool hasFormation, bool spawnWithHorse, bool isReinforcement, bool enforceSpawningOnInitialPoint, int formationTroopCount, int formationTroopIndex, bool isAlarmed, bool wieldInitialWeapons, bool forceDismounted,ref Vec3? initialPosition,ref Vec2? initialDirection)
+            {
+                if (isReinforcement)
+                {
+                    if (hasFormation)
+                    {
+                        BasicCharacterObject troop = troopOrigin.Troop;
+                        Team agentTeam = Mission.GetAgentTeam(troopOrigin, isPlayerSide);
+                        Formation formation = agentTeam.GetFormation(troop.GetFormationClass(troopOrigin.BattleCombatant));
+                        initialPosition = Mission.Current.GetClosestDeploymentBoundaryPosition(agentTeam.Side, Mission.Current.GetClosestFleePositionForFormation(formation).AsVec2).ToVec3();
+                        initialDirection = Mission.Current.GetClosestFleePositionForFormation(formation).AsVec2 - formation.CurrentPosition;
+                    }
+                }
+                return true;
+            }
+
         }
 
         [HarmonyPatch(typeof(TacticCoordinatedRetreat))]
