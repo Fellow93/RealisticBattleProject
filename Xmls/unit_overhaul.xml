@@ -15903,13 +15903,13 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="80" />
+             value="90" />
       <skill id="Riding"
              value="20" />
       <skill id="OneHanded"
              value="15" />
       <skill id="TwoHanded"
-             value="80" />
+             value="90" />
       <skill id="Polearm"
              value="15" />
       <skill id="Bow"
@@ -15927,9 +15927,9 @@
       <equipment slot="Item0"
                  id="Item.bastard_sword_t2" />
       <equipment slot="Body"
-                 id="Item.woven_leather_coat" />
+                 id="Item.imperial_mail_over_stripped_leather" />
       <equipment slot="Head"
-                 id="Item.imperial_open_mail_coif" />
+                 id="Item.ironlame_spiked_kettle_over_mail" />
       <equipment slot="Leg"
                  id="Item.leather_shoes" />
       <equipment slot="Gloves"
@@ -15952,13 +15952,13 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="110" />
+             value="120" />
       <skill id="Riding"
              value="50" />
       <skill id="OneHanded"
              value="50" />
       <skill id="TwoHanded"
-             value="110" />
+             value="120" />
       <skill id="Polearm"
              value="65" />
       <skill id="Bow"

@@ -70,11 +70,11 @@ namespace RealisticBattleCombatModule
                                     }
                                 case (int)WeaponClass.TwoHandedAxe:
                                     {
-                                        float swingskillModifier = 1f + (effectiveSkill / 1000f);
+                                        float swingskillModifier = 1f + (effectiveSkill / 800f);
                                         float thrustskillModifier = 1f + (effectiveSkill / 1000f);
                                         float handlingskillModifier = 1f + (effectiveSkill / 700f);
 
-                                        weaponStatsData[i].SwingSpeed = MathF.Ceiling((weaponStatsData[i].SwingSpeed * 0.83f) * swingskillModifier);
+                                        weaponStatsData[i].SwingSpeed = MathF.Ceiling((weaponStatsData[i].SwingSpeed * 0.75f) * swingskillModifier);
                                         weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.9f) * thrustskillModifier);
                                         weaponStatsData[i].DefendSpeed = MathF.Ceiling((weaponStatsData[i].DefendSpeed * 0.83f) * handlingskillModifier);
                                         break;
