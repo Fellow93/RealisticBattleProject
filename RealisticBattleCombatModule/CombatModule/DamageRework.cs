@@ -1218,7 +1218,7 @@ namespace RealisticBattleCombatModule
                                 }
                             case "ThrowingAxe":
                                 {
-                                    inflictedDamage *= 8f;
+                                    inflictedDamage *= 3f;
                                     break;
                                 }
                             case "OneHandedPolearm":
