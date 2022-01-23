@@ -125,7 +125,7 @@ namespace RealisticBattleAiModule
 
         public override void OnMissionBehaviorInitialize(Mission mission)
         {
-            if (XmlConfig.dict["Global.PostureEnabled"] == 1)
+            if (XmlConfig.dict["Global.PostureEnabled"] == 1 && XmlConfig.dict["Global.PostureGUIEnabled"] == 1)
             {
                 mission.AddMissionBehavior((MissionBehavior)(object)new PostureVisualLogic());
                 base.OnMissionBehaviorInitialize(mission);

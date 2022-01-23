@@ -337,56 +337,59 @@ namespace RealisticBattleAiModule.AiModule.Posture
 
             static void addPosturedamageVisual(Agent attackerAgent, Agent victimAgent)
             {
-                if (victimAgent == Agent.Main || attackerAgent == Agent.Main)
+                if(XmlConfig.dict["Global.PostureGUIEnabled"] == 1) 
                 {
-                    Agent enemyAgent = null;
-                    if (victimAgent == Agent.Main)
+                    if (victimAgent == Agent.Main || attackerAgent == Agent.Main)
                     {
-                        enemyAgent = attackerAgent;
-                        Posture posture = null;
-                        if (AgentPostures.values.TryGetValue(victimAgent, out posture))
+                        Agent enemyAgent = null;
+                        if (victimAgent == Agent.Main)
                         {
-                            if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
+                            enemyAgent = attackerAgent;
+                            Posture posture = null;
+                            if (AgentPostures.values.TryGetValue(victimAgent, out posture))
                             {
-                                AgentPostures.postureVisual._dataSource.PlayerPosture = (int)posture.posture;
-                                AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)posture.maxPosture;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        enemyAgent = victimAgent;
-                        Posture posture = null;
-                        if (AgentPostures.values.TryGetValue(attackerAgent, out posture))
-                        {
-                            if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
-                            {
-                                AgentPostures.postureVisual._dataSource.PlayerPosture = (int)posture.posture;
-                                AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)posture.maxPosture;
-                            }
-                        }
-                    }
-                    if (AgentPostures.postureVisual != null)
-                    {
-                        Posture posture = null;
-                        if(AgentPostures.values.TryGetValue(enemyAgent,out posture))
-                        {
-                            AgentPostures.postureVisual._dataSource.ShowEnemyStatus = true;
-                            AgentPostures.postureVisual.affectedAgent = enemyAgent;
-                            if (AgentPostures.postureVisual._dataSource.ShowEnemyStatus && AgentPostures.postureVisual.affectedAgent == enemyAgent)
-                            {
-                                AgentPostures.postureVisual.timer = AgentPostures.postureVisual.DisplayTime;
-                                AgentPostures.postureVisual._dataSource.EnemyPosture = (int)posture.posture;
-                                AgentPostures.postureVisual._dataSource.EnemyPostureMax = (int)posture.maxPosture;
-                                AgentPostures.postureVisual._dataSource.EnemyHealth = (int)enemyAgent.Health;
-                                AgentPostures.postureVisual._dataSource.EnemyHealthMax = (int)enemyAgent.HealthLimit;
-                                if (enemyAgent.IsMount)
+                                if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
                                 {
-                                    AgentPostures.postureVisual._dataSource.EnemyName = enemyAgent.RiderAgent?.Name + " (Mount)";
+                                    AgentPostures.postureVisual._dataSource.PlayerPosture = (int)posture.posture;
+                                    AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)posture.maxPosture;
                                 }
-                                else
+                            }
+                        }
+                        else
+                        {
+                            enemyAgent = victimAgent;
+                            Posture posture = null;
+                            if (AgentPostures.values.TryGetValue(attackerAgent, out posture))
+                            {
+                                if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
                                 {
-                                    AgentPostures.postureVisual._dataSource.EnemyName = enemyAgent.Name;
+                                    AgentPostures.postureVisual._dataSource.PlayerPosture = (int)posture.posture;
+                                    AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)posture.maxPosture;
+                                }
+                            }
+                        }
+                        if (AgentPostures.postureVisual != null)
+                        {
+                            Posture posture = null;
+                            if (AgentPostures.values.TryGetValue(enemyAgent, out posture))
+                            {
+                                AgentPostures.postureVisual._dataSource.ShowEnemyStatus = true;
+                                AgentPostures.postureVisual.affectedAgent = enemyAgent;
+                                if (AgentPostures.postureVisual._dataSource.ShowEnemyStatus && AgentPostures.postureVisual.affectedAgent == enemyAgent)
+                                {
+                                    AgentPostures.postureVisual.timer = AgentPostures.postureVisual.DisplayTime;
+                                    AgentPostures.postureVisual._dataSource.EnemyPosture = (int)posture.posture;
+                                    AgentPostures.postureVisual._dataSource.EnemyPostureMax = (int)posture.maxPosture;
+                                    AgentPostures.postureVisual._dataSource.EnemyHealth = (int)enemyAgent.Health;
+                                    AgentPostures.postureVisual._dataSource.EnemyHealthMax = (int)enemyAgent.HealthLimit;
+                                    if (enemyAgent.IsMount)
+                                    {
+                                        AgentPostures.postureVisual._dataSource.EnemyName = enemyAgent.RiderAgent?.Name + " (Mount)";
+                                    }
+                                    else
+                                    {
+                                        AgentPostures.postureVisual._dataSource.EnemyName = enemyAgent.Name;
+                                    }
                                 }
                             }
                         }
@@ -768,21 +771,26 @@ namespace RealisticBattleAiModule.AiModule.Posture
                             // do something with entry.Value or entry.Key
                             if (entry.Value.posture < entry.Value.maxPosture)
                             {
-                                if (entry.Key == Agent.Main)
+                                if (XmlConfig.dict["Global.PostureGUIEnabled"] == 1)
                                 {
-                                    //InformationManager.DisplayMessage(new InformationMessage(entry.Value.posture.ToString()));
-                                    if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
+                                    if (entry.Key == Agent.Main)
                                     {
-                                        AgentPostures.postureVisual._dataSource.PlayerPosture = (int)entry.Value.posture;
-                                        AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)entry.Value.maxPosture;
+                                        //InformationManager.DisplayMessage(new InformationMessage(entry.Value.posture.ToString()));
+                                        if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
+                                        {
+                                            AgentPostures.postureVisual._dataSource.PlayerPosture = (int)entry.Value.posture;
+                                            AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)entry.Value.maxPosture;
+                                        }
+                                    }
+
+                                    if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowEnemyStatus && AgentPostures.postureVisual.affectedAgent == entry.Key)
+                                    {
+                                        AgentPostures.postureVisual._dataSource.EnemyPosture = (int)entry.Value.posture;
+                                        AgentPostures.postureVisual._dataSource.EnemyPostureMax = (int)entry.Value.maxPosture;
                                     }
                                 }
                                 entry.Value.posture += entry.Value.regenPerTick * tickCooldownReset;
-                                if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowEnemyStatus && AgentPostures.postureVisual.affectedAgent == entry.Key)
-                                {
-                                    AgentPostures.postureVisual._dataSource.EnemyPosture = (int)entry.Value.posture;
-                                    AgentPostures.postureVisual._dataSource.EnemyPostureMax = (int)entry.Value.maxPosture;
-                                }
+                                
                             }
                         }
                         tickCooldown = 0;

@@ -4,5 +4,6 @@
 	<Global>
 		<SiegeTowersEnabled>1</SiegeTowersEnabled>
 		<PostureEnabled>1</PostureEnabled>
+		<PostureGUIEnabled>1</PostureGUIEnabled>
 	</Global>
 </config>

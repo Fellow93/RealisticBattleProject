@@ -798,7 +798,7 @@ namespace RealisticBattleAiModule
 
         public static string GetConfigFilePath()
         {
-            return System.IO.Path.Combine(GetConfigFolderPath(), "config_1.xml");
+            return System.IO.Path.Combine(GetConfigFolderPath(), "config_2.xml");
         }
 
         public static string GetConfigFolderPath()
