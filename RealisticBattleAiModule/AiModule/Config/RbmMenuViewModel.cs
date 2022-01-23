@@ -133,7 +133,7 @@ internal class RbmMenuViewModel : ViewModel
 					}
 				}
 
-				if (subNode.Name.Equals("PostureGUIEnabled"))
+				if (subNode.Name.Equals("PostureEnabled"))
 				{
 					if (PostureSystemEnabled.SelectedIndex == 0)
 					{
