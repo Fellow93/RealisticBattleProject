@@ -27,8 +27,10 @@ internal class RbmMenuViewModel : ViewModel
 	private bool _booleanValue;
 
 	public TextViewModel SiegeTowersEnabledText { get; }
-
 	public SelectorVM<SelectorItemVM> SiegeTowersEnabled { get; }
+
+	public TextViewModel PostureSystemEnabledText { get; }
+	public SelectorVM<SelectorItemVM> PostureSystemEnabled { get; }
 
 	[DataSourceProperty]
 	public string CancelText => _cancelText;
@@ -65,6 +67,10 @@ internal class RbmMenuViewModel : ViewModel
 		SiegeTowersEnabledText = new TextViewModel(new TextObject("Siege Towers"));
 		SiegeTowersEnabled = new SelectorVM<SelectorItemVM>(siegeTowersOptions, 0, null);
 
+		List<string> postureOptions = new List<string> { "Disabled", "Enabled (Default)" };
+		PostureSystemEnabledText = new TextViewModel(new TextObject("Posture System"));
+		PostureSystemEnabled = new SelectorVM<SelectorItemVM>(postureOptions, 0, null);
+
 		if (XmlConfig.dict["Global.SiegeTowersEnabled"] == 0)
 		{
 			SiegeTowersEnabled.SelectedIndex = 0;
@@ -72,6 +78,15 @@ internal class RbmMenuViewModel : ViewModel
 		else if (XmlConfig.dict["Global.SiegeTowersEnabled"] == 1)
 		{
 			SiegeTowersEnabled.SelectedIndex = 1;
+		}
+
+		if (XmlConfig.dict["Global.PostureEnabled"] == 0)
+		{
+			PostureSystemEnabled.SelectedIndex = 0;
+		}
+		else if (XmlConfig.dict["Global.PostureEnabled"] == 1)
+		{
+			PostureSystemEnabled.SelectedIndex = 1;
 		}
 	}
 
@@ -97,6 +112,18 @@ internal class RbmMenuViewModel : ViewModel
 						subNode.InnerText = "0";
 					}
 					if (SiegeTowersEnabled.SelectedIndex == 1)
+					{
+						subNode.InnerText = "1";
+					}
+				}
+
+				if (subNode.Name.Equals("PostureEnabled"))
+				{
+					if (PostureSystemEnabled.SelectedIndex == 0)
+					{
+						subNode.InnerText = "0";
+					}
+					if (PostureSystemEnabled.SelectedIndex == 1)
 					{
 						subNode.InnerText = "1";
 					}

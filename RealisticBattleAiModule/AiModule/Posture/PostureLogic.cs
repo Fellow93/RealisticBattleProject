@@ -1,12 +1,8 @@
 ﻿using HarmonyLib;
-using JetBrains.Annotations;
 using System.Collections.Generic;
-using System.Reflection;
 using TaleWorlds.Core;
-using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
-using static TaleWorlds.MountAndBlade.Mission;
 
 namespace RealisticBattleAiModule.AiModule.Posture
 {
@@ -28,59 +24,63 @@ namespace RealisticBattleAiModule.AiModule.Posture
         {
             static void Postfix(ref Agent __instance, bool isOffHand, bool isWieldedInstantly, bool isWieldedOnSpawn)
             {
-                //AgentPostures.values[__instance] = new Posture();
-                Posture posture = null;
-                AgentPostures.values.TryGetValue(__instance, out posture);
-                if (posture == null) { 
-                    AgentPostures.values[__instance] = new Posture();
-                }
-                AgentPostures.values.TryGetValue(__instance, out posture);
-                if (posture != null)
+                if (XmlConfig.dict["Global.PostureEnabled"] == 1)
                 {
-                    float oldPosture = posture.posture;
-                    float oldMaxPosture = posture.maxPosture;
-                    float oldPosturePercentage = oldPosture / oldMaxPosture;
-
-                    int usageIndex = 0;
-                    EquipmentIndex slotIndex = __instance.GetWieldedItemIndex(0);
-                    if (slotIndex != EquipmentIndex.None)
+                    //AgentPostures.values[__instance] = new Posture();
+                    Posture posture = null;
+                    AgentPostures.values.TryGetValue(__instance, out posture);
+                    if (posture == null)
                     {
-                        usageIndex = __instance.Equipment[slotIndex].CurrentUsageIndex;
+                        AgentPostures.values[__instance] = new Posture();
+                    }
+                    AgentPostures.values.TryGetValue(__instance, out posture);
+                    if (posture != null)
+                    {
+                        float oldPosture = posture.posture;
+                        float oldMaxPosture = posture.maxPosture;
+                        float oldPosturePercentage = oldPosture / oldMaxPosture;
 
-                        WeaponComponentData wcd = __instance.Equipment[slotIndex].GetWeaponComponentDataForUsage(usageIndex);
-                        SkillObject weaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(wcd.WeaponClass);
-                        int effectiveWeaponSkill = 0;
-                        if (weaponSkill != null)
+                        int usageIndex = 0;
+                        EquipmentIndex slotIndex = __instance.GetWieldedItemIndex(0);
+                        if (slotIndex != EquipmentIndex.None)
                         {
-                            effectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance.Character, __instance.Origin, __instance.Formation, weaponSkill);
-                        }
+                            usageIndex = __instance.Equipment[slotIndex].CurrentUsageIndex;
 
-                        float athleticBase = 20f;
-                        float weaponSkillBase = 80f;
-                        float strengthSkillModifier = 500f;
-                        float weaponSkillModifier = 500f;
-                        float athleticRegenBase = 0.008f;
-                        float weaponSkillRegenBase = 0.032f;
-                        float baseModifier = 1f;
+                            WeaponComponentData wcd = __instance.Equipment[slotIndex].GetWeaponComponentDataForUsage(usageIndex);
+                            SkillObject weaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(wcd.WeaponClass);
+                            int effectiveWeaponSkill = 0;
+                            if (weaponSkill != null)
+                            {
+                                effectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance.Character, __instance.Origin, __instance.Formation, weaponSkill);
+                            }
 
-                        if (__instance.HasMount)
-                        {
-                            int effectiveRidingSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance.Character, __instance.Origin, __instance.Formation, DefaultSkills.Riding);
-                            posture.maxPosture = (athleticBase * (baseModifier + (effectiveRidingSkill / strengthSkillModifier))) + (weaponSkillBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
-                            posture.regenPerTick = (athleticRegenBase * (baseModifier + (effectiveRidingSkill / strengthSkillModifier))) + (weaponSkillRegenBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
-                            //posture.maxPosture = 100f;
-                            //posture.regenPerTick = 0.035f;
-                        }
-                        else
-                        {
-                            int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance.Character, __instance.Origin, __instance.Formation, DefaultSkills.Athletics);
-                            posture.maxPosture = (athleticBase * (baseModifier + (effectiveAthleticSkill / strengthSkillModifier))) + (weaponSkillBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
-                            posture.regenPerTick = (athleticRegenBase * (baseModifier + (effectiveAthleticSkill / strengthSkillModifier))) + (weaponSkillRegenBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
-                            //posture.maxPosture = 100f;
-                            //posture.regenPerTick = 0.035f;
-                        }
+                            float athleticBase = 20f;
+                            float weaponSkillBase = 80f;
+                            float strengthSkillModifier = 500f;
+                            float weaponSkillModifier = 500f;
+                            float athleticRegenBase = 0.008f;
+                            float weaponSkillRegenBase = 0.032f;
+                            float baseModifier = 1f;
 
-                        posture.posture = posture.maxPosture * oldPosturePercentage;
+                            if (__instance.HasMount)
+                            {
+                                int effectiveRidingSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance.Character, __instance.Origin, __instance.Formation, DefaultSkills.Riding);
+                                posture.maxPosture = (athleticBase * (baseModifier + (effectiveRidingSkill / strengthSkillModifier))) + (weaponSkillBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
+                                posture.regenPerTick = (athleticRegenBase * (baseModifier + (effectiveRidingSkill / strengthSkillModifier))) + (weaponSkillRegenBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
+                                //posture.maxPosture = 100f;
+                                //posture.regenPerTick = 0.035f;
+                            }
+                            else
+                            {
+                                int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance.Character, __instance.Origin, __instance.Formation, DefaultSkills.Athletics);
+                                posture.maxPosture = (athleticBase * (baseModifier + (effectiveAthleticSkill / strengthSkillModifier))) + (weaponSkillBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
+                                posture.regenPerTick = (athleticRegenBase * (baseModifier + (effectiveAthleticSkill / strengthSkillModifier))) + (weaponSkillRegenBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
+                                //posture.maxPosture = 100f;
+                                //posture.regenPerTick = 0.035f;
+                            }
+
+                            posture.posture = posture.maxPosture * oldPosturePercentage;
+                        }
                     }
                 }
             }
@@ -102,7 +102,8 @@ namespace RealisticBattleAiModule.AiModule.Posture
         {
             static void Postfix(ref Mission __instance, ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
             {
-                if(attackerAgent != null && victimAgent != null && attackerWeapon.CurrentUsageItem != null) { 
+                if(XmlConfig.dict["Global.PostureEnabled"] == 1 && attackerAgent != null && victimAgent != null && attackerWeapon.CurrentUsageItem != null &&
+                    attackerWeapon.CurrentUsageItem != null) { 
                     Posture defenderPosture = null;
                     Posture attackerPosture = null;
                     AgentPostures.values.TryGetValue(victimAgent, out defenderPosture);
@@ -754,35 +755,38 @@ namespace RealisticBattleAiModule.AiModule.Posture
 
             static void Postfix(float dt)
             {
-                if(tickCooldown < tickCooldownReset)
+                if(XmlConfig.dict["Global.PostureEnabled"] == 1)
                 {
-                    tickCooldown++;
-                }
-                else
-                {
-                    foreach (KeyValuePair<Agent, Posture> entry in AgentPostures.values)
+                    if (tickCooldown < tickCooldownReset)
                     {
-                        // do something with entry.Value or entry.Key
-                        if (entry.Value.posture < entry.Value.maxPosture)
+                        tickCooldown++;
+                    }
+                    else
+                    {
+                        foreach (KeyValuePair<Agent, Posture> entry in AgentPostures.values)
                         {
-                            if (entry.Key == Agent.Main)
+                            // do something with entry.Value or entry.Key
+                            if (entry.Value.posture < entry.Value.maxPosture)
                             {
-                                //InformationManager.DisplayMessage(new InformationMessage(entry.Value.posture.ToString()));
-                                if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
+                                if (entry.Key == Agent.Main)
                                 {
-                                    AgentPostures.postureVisual._dataSource.PlayerPosture = (int)entry.Value.posture;
-                                    AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)entry.Value.maxPosture;
+                                    //InformationManager.DisplayMessage(new InformationMessage(entry.Value.posture.ToString()));
+                                    if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
+                                    {
+                                        AgentPostures.postureVisual._dataSource.PlayerPosture = (int)entry.Value.posture;
+                                        AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)entry.Value.maxPosture;
+                                    }
+                                }
+                                entry.Value.posture += entry.Value.regenPerTick * tickCooldownReset;
+                                if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowEnemyStatus && AgentPostures.postureVisual.affectedAgent == entry.Key)
+                                {
+                                    AgentPostures.postureVisual._dataSource.EnemyPosture = (int)entry.Value.posture;
+                                    AgentPostures.postureVisual._dataSource.EnemyPostureMax = (int)entry.Value.maxPosture;
                                 }
                             }
-                            entry.Value.posture += entry.Value.regenPerTick * tickCooldownReset;
-                            if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowEnemyStatus && AgentPostures.postureVisual.affectedAgent == entry.Key)
-                            {
-                                AgentPostures.postureVisual._dataSource.EnemyPosture = (int)entry.Value.posture;
-                                AgentPostures.postureVisual._dataSource.EnemyPostureMax = (int)entry.Value.maxPosture;
-                            }
                         }
+                        tickCooldown = 0;
                     }
-                    tickCooldown = 0;
                 }
             }
         }

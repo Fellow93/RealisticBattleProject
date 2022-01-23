@@ -3,5 +3,6 @@
 <!-- Set to 1 if you want to experience siege towers in their full "glory". -->
 	<Global>
 		<SiegeTowersEnabled>1</SiegeTowersEnabled>
+		<PostureEnabled>1</PostureEnabled>
 	</Global>
 </config>
