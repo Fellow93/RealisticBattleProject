@@ -753,16 +753,18 @@ namespace RealisticBattleAiModule.AiModule.Posture
         [HarmonyPatch("OnTick")]
         class OnTickPatch
         {
-            private static int tickCooldownReset = 30;
-            private static int tickCooldown = 0;
+            //private static int tickCooldownReset = 30;
+            //private static int tickCooldown = 0;
+            private static float timeToCalc = 0.5f;
+            private static float currentDt = 0f;
 
             static void Postfix(float dt)
             {
                 if(XmlConfig.dict["Global.PostureEnabled"] == 1)
                 {
-                    if (tickCooldown < tickCooldownReset)
+                    if (currentDt < timeToCalc)
                     {
-                        tickCooldown++;
+                        currentDt += dt;
                     }
                     else
                     {
@@ -789,11 +791,11 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                         AgentPostures.postureVisual._dataSource.EnemyPostureMax = (int)entry.Value.maxPosture;
                                     }
                                 }
-                                entry.Value.posture += entry.Value.regenPerTick * tickCooldownReset;
+                                entry.Value.posture += entry.Value.regenPerTick * 30f;
                                 
                             }
                         }
-                        tickCooldown = 0;
+                        currentDt = 0f;
                     }
                 }
             }
