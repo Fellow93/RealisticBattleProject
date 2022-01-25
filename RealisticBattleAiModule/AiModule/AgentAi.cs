@@ -1,7 +1,10 @@
 ﻿using HarmonyLib;
+using Helpers;
 using JetBrains.Annotations;
+using SandBox;
 using System.Collections.Generic;
 using System.Reflection;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -94,13 +97,15 @@ namespace RealisticBattleAiModule
                 agentDrivenProperties.AiAttackingShieldDefenseTimer = MBMath.ClampFloat(-0.3f + (meleeLevel * 0.6f), -0.3f, 0f);  //-0.3f + 0.3f * meleeLevel; Delay between deciding to swith from attack to defense
 
                 agentDrivenProperties.AiShootFreq = MBMath.ClampFloat(effectiveSkill * 1.5f, 0.1f, 0.9f); // when set to 0 AI never shoots
-                //agentDrivenProperties.AiWaitBeforeShootFactor = 0f;
+                                                                                                          //agentDrivenProperties.AiWaitBeforeShootFactor = 0f;
 
                 //agentDrivenProperties.AiMinimumDistanceToContinueFactor = 5f; //2f + 0.3f * (3f - meleeSkill);
                 //agentDrivenProperties.AIHoldingReadyMaxDuration = 0.1f; //MBMath.Lerp(0.25f, 0f, MBMath.Min(1f, num * 1.2f));
                 //agentDrivenProperties.AIHoldingReadyVariationPercentage = //num;
 
                 //agentDrivenProperties.ReloadSpeed = 0.19f; //0.12 for heavy crossbows, 0.19f for light crossbows, composite bows and longbows.
+
+                //                GetEffectiveSkill
 
                 if (agent.IsRangedCached)
                 {
@@ -112,6 +117,74 @@ namespace RealisticBattleAiModule
         }
     }
 
+    [HarmonyPatch(typeof(SandboxAgentStatCalculateModel))]
+    [HarmonyPatch("GetSkillEffectsOnAgent")]
+    class GetSkillEffectsOnAgentPatch
+    {
+        static bool Prefix(ref SandboxAgentStatCalculateModel __instance, ref Agent agent,ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData rightHandEquippedItem)
+        {
+            CharacterObject characterObject = agent.Character as CharacterObject;
+            float swingSpeedMultiplier = agentDrivenProperties.SwingSpeedMultiplier;
+            float thrustOrRangedReadySpeedMultiplier = agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier;
+            float reloadSpeed = agentDrivenProperties.ReloadSpeed;
+            if (characterObject != null && rightHandEquippedItem != null)
+            {
+                int effectiveSkill = __instance.GetEffectiveSkill(characterObject, agent.Origin, agent.Formation, rightHandEquippedItem.RelevantSkill);
+                ExplainedNumber stat = new ExplainedNumber(swingSpeedMultiplier);
+                ExplainedNumber stat2 = new ExplainedNumber(thrustOrRangedReadySpeedMultiplier);
+                ExplainedNumber stat3 = new ExplainedNumber(reloadSpeed);
+                if (rightHandEquippedItem.RelevantSkill == DefaultSkills.OneHanded)
+                {
+                    if (effectiveSkill > 150)
+                    {
+                        effectiveSkill = 150;
+                    }
+                    SkillHelper.AddSkillBonusForCharacter(DefaultSkills.OneHanded, DefaultSkillEffects.OneHandedSpeed, characterObject, ref stat, effectiveSkill);
+                    SkillHelper.AddSkillBonusForCharacter(DefaultSkills.OneHanded, DefaultSkillEffects.OneHandedSpeed, characterObject, ref stat2, effectiveSkill);
+                }
+                else if (rightHandEquippedItem.RelevantSkill == DefaultSkills.TwoHanded)
+                {
+                    if (effectiveSkill > 150)
+                    {
+                        effectiveSkill = 150;
+                    }
+                    SkillHelper.AddSkillBonusForCharacter(DefaultSkills.TwoHanded, DefaultSkillEffects.TwoHandedSpeed, characterObject, ref stat, effectiveSkill);
+                    SkillHelper.AddSkillBonusForCharacter(DefaultSkills.TwoHanded, DefaultSkillEffects.TwoHandedSpeed, characterObject, ref stat2, effectiveSkill);
+                }
+                else if (rightHandEquippedItem.RelevantSkill == DefaultSkills.Polearm)
+                {
+                    if (effectiveSkill > 150)
+                    {
+                        effectiveSkill = 150;
+                    }
+                    SkillHelper.AddSkillBonusForCharacter(DefaultSkills.Polearm, DefaultSkillEffects.PolearmSpeed, characterObject, ref stat, effectiveSkill);
+                    SkillHelper.AddSkillBonusForCharacter(DefaultSkills.Polearm, DefaultSkillEffects.PolearmSpeed, characterObject, ref stat2, effectiveSkill);
+                }
+                else if (rightHandEquippedItem.RelevantSkill == DefaultSkills.Crossbow)
+                {
+                    SkillHelper.AddSkillBonusForCharacter(DefaultSkills.Crossbow, DefaultSkillEffects.CrossbowReloadSpeed, characterObject, ref stat3, effectiveSkill);
+                }
+                else if (rightHandEquippedItem.RelevantSkill == DefaultSkills.Throwing)
+                {
+                    SkillHelper.AddSkillBonusForCharacter(DefaultSkills.Throwing, DefaultSkillEffects.ThrowingSpeed, characterObject, ref stat2, effectiveSkill);
+                }
+                if (agent.HasMount)
+                {
+                    int effectiveSkill2 = __instance.GetEffectiveSkill(characterObject, agent.Origin, agent.Formation, DefaultSkills.Riding);
+                    float value = -0.01f * MathF.Max(0f, DefaultSkillEffects.HorseWeaponSpeedPenalty.GetPrimaryValue(effectiveSkill2));
+                    stat.AddFactor(value);
+                    stat2.AddFactor(value);
+                    stat3.AddFactor(value);
+                }
+                agentDrivenProperties.SwingSpeedMultiplier = stat.ResultNumber;
+                agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier = stat2.ResultNumber;
+                agentDrivenProperties.ReloadSpeed = stat3.ResultNumber;
+            }
+
+            return false;
+        }
+    }
+  
     [HarmonyPatch(typeof(ArrangementOrder))]
     [HarmonyPatch("GetShieldDirectionOfUnit")]
     class HoldTheDoor

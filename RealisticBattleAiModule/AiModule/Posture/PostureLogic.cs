@@ -792,7 +792,6 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                     }
                                 }
                                 entry.Value.posture += entry.Value.regenPerTick * 30f;
-                                
                             }
                         }
                         currentDt = 0f;
