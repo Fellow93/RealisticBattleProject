@@ -7,6 +7,8 @@
 	{
 		private string enemyName = "";
 
+		private string postureLabel = "Posture";
+
 		private bool showEnemyStatus = false;
 
 		private bool showPlayerPostureStatus = true;
@@ -34,11 +36,26 @@
 			{
 				enemyName = value;
 				OnPropertyChanged("EnemyName");
-				OnPropertyChanged("DisplayText");
+				//OnPropertyChanged("DisplayText");
 			}
 		}
 
-		public string DisplayText => enemyName + $" ({enemyHealth}/{enemyHealthMax})" + $" ({enemyPosture}/{enemyPostureMax})" + $" ({playerPosture}/{playerPostureMax})";
+		[DataSourceProperty]
+		public string PostureLabel
+		{
+			get
+			{
+				return postureLabel;
+			}
+			set
+			{
+				postureLabel = value;
+				OnPropertyChanged("PostureLabel");
+				//OnPropertyChanged("DisplayText");
+			}
+		}
+
+		//public string DisplayText => enemyName + $" ({enemyHealth}/{enemyHealthMax})" + $" ({enemyPosture}/{enemyPostureMax})" + $" ({playerPosture}/{playerPostureMax})";
 
 		[DataSourceProperty]
 		public bool ShowPlayerPostureStatus
@@ -51,7 +68,7 @@
 			{
 				showPlayerPostureStatus = value;
 				OnPropertyChanged("ShowPlayerPostureStatus");
-				OnPropertyChanged("DisplayText");
+				//OnPropertyChanged("DisplayText");
 			}
 		}
 
@@ -66,7 +83,7 @@
 			{
 				showEnemyStatus = value;
 				OnPropertyChanged("ShowEnemyStatus");
-				OnPropertyChanged("DisplayText");
+				//OnPropertyChanged("DisplayText");
 			}
 		}
 
@@ -80,8 +97,8 @@
 			set
 			{
 				enemyHealth = value;
-				OnPropertyChanged("EnemyHealth");
-				OnPropertyChanged("DisplayText");
+				OnPropertyChangedWithValue(value, "EnemyHealth");
+				//OnPropertyChanged("DisplayText");
 			}
 		}
 
@@ -95,8 +112,8 @@
 			set
 			{
 				enemyHealthMax = value;
-				OnPropertyChanged("EnemyHealthMax");
-				OnPropertyChanged("DisplayText");
+				OnPropertyChangedWithValue(value, "EnemyHealthMax");
+				//OnPropertyChanged("DisplayText");
 			}
 		}
 
@@ -110,8 +127,8 @@
 			set
 			{
 				enemyPosture = value;
-				OnPropertyChanged("EnemyPosture");
-				OnPropertyChanged("DisplayText");
+				OnPropertyChangedWithValue(value, "EnemyPosture");
+				//OnPropertyChanged("DisplayText");
 			}
 		}
 
@@ -125,8 +142,8 @@
 			set
 			{
 				enemyPostureMax = value;
-				OnPropertyChanged("EnemyPostureMax");
-				OnPropertyChanged("DisplayText");
+				OnPropertyChangedWithValue(value, "EnemyPostureMax");
+				//OnPropertyChanged("DisplayText");
 			}
 		}
 
@@ -140,8 +157,8 @@
 			set
 			{
 				playerPosture = value;
-				OnPropertyChanged("PlayerPosture");
-				OnPropertyChanged("DisplayText");
+				OnPropertyChangedWithValue(value, "PlayerPosture");
+				//OnPropertyChanged("DisplayText");
 			}
 		}
 
@@ -155,8 +172,8 @@
 			set
 			{
 				playerPostureMax = value;
-				OnPropertyChanged("PlayerPostureMax");
-				OnPropertyChanged("DisplayText");
+				OnPropertyChangedWithValue(value, "PlayerPostureMax");
+				//OnPropertyChanged("DisplayText");
 			}
 		}
 	}

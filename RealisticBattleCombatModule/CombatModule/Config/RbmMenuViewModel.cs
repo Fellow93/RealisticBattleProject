@@ -74,7 +74,7 @@ internal class RbmMenuViewModel : ViewModel
 		ActiveTroopOverhaulText = new TextViewModel(new TextObject("Troop Overhaul"));
 		ActiveTroopOverhaul = new SelectorVM<SelectorItemVM>(troopOverhaulOnOff, 0, null);
 
-		List<string> rangedReloadSpeed = new List<string> { "Vanilla" , "Realisitc" , "Semi-realistic (Default)" };
+		List<string> rangedReloadSpeed = new List<string> { "Vanilla" , "Realistic" , "Semi-realistic (Default)" };
 		RangedReloadSpeedText = new TextViewModel(new TextObject("Ranged reload speed"));
 		RangedReloadSpeed = new SelectorVM<SelectorItemVM>(rangedReloadSpeed, 0, null);
 
