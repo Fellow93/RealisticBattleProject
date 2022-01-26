@@ -126,7 +126,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                     EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
                                     if (wieldedItemIndex != EquipmentIndex.None)
                                     {
-                                        if (victimAgent == Agent.Main)
+                                        if (victimAgent.IsPlayerControlled)
                                         {
                                             InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, " + collisionData.InflictedDamage + " damage crushed through", Color.FromUint(4282569842u)));
                                         }
@@ -159,7 +159,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                     EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
                                     if (wieldedItemIndex != EquipmentIndex.None)
                                     {
-                                        if (victimAgent == Agent.Main)
+                                        if (victimAgent.IsPlayerControlled)
                                         {
                                             InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, perfect parry, " + collisionData.InflictedDamage + " damage crushed through", Color.FromUint(4282569842u)));
                                         }
@@ -175,7 +175,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                 addPosturedamageVisual(attackerAgent, victimAgent);
                                 if (attackerPosture.posture <= 0f)
                                 {
-                                    if (attackerAgent == Agent.Main)
+                                    if (attackerAgent.IsPlayerControlled)
                                     {
                                         InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, perfect parry", Color.FromUint(4282569842u)));
                                     }
@@ -201,7 +201,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                     EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
                                     if (wieldedItemIndex != EquipmentIndex.None)
                                     {
-                                        if (victimAgent == Agent.Main)
+                                        if (victimAgent.IsPlayerControlled)
                                         {
                                             InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, incorrect side block", Color.FromUint(4282569842u)));
                                         }
@@ -234,7 +234,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                     EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
                                     if (wieldedItemIndex != EquipmentIndex.None)
                                     {
-                                        if (victimAgent == Agent.Main)
+                                        if (victimAgent.IsPlayerControlled)
                                         {
                                             InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, correct side block", Color.FromUint(4282569842u)));
                                         }
@@ -267,7 +267,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                     EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
                                     if (wieldedItemIndex != EquipmentIndex.None)
                                     {
-                                        if (victimAgent == Agent.Main)
+                                        if (victimAgent.IsPlayerControlled)
                                         {
                                             InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, perfect parry, correct side block", Color.FromUint(4282569842u)));
                                         }
@@ -283,7 +283,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                 addPosturedamageVisual(attackerAgent, victimAgent);
                                 if (attackerPosture.posture <= 0f)
                                 {
-                                    if (attackerAgent == Agent.Main)
+                                    if (attackerAgent.IsPlayerControlled)
                                     {
                                         InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, perfect parry, correct side block", Color.FromUint(4282569842u)));
                                     }
@@ -306,7 +306,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                 EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
                                 if (wieldedItemIndex != EquipmentIndex.None)
                                 {
-                                    if (victimAgent == Agent.Main)
+                                    if (victimAgent.IsPlayerControlled)
                                     {
                                         InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, chamber block " + collisionData.InflictedDamage + " damage crushed through", Color.FromUint(4282569842u)));
                                     }
@@ -322,7 +322,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                             addPosturedamageVisual(attackerAgent, victimAgent);
                             if (attackerPosture.posture <= 0f)
                             {
-                                if (attackerAgent == Agent.Main)
+                                if (attackerAgent.IsPlayerControlled)
                                 {
                                     InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, chamber block", Color.FromUint(4282569842u)));
                                 }
@@ -339,10 +339,10 @@ namespace RealisticBattleAiModule.AiModule.Posture
             {
                 if(XmlConfig.dict["Global.PostureGUIEnabled"] == 1) 
                 {
-                    if (victimAgent == Agent.Main || attackerAgent == Agent.Main)
+                    if (victimAgent.IsPlayerControlled || attackerAgent.IsPlayerControlled)
                     {
                         Agent enemyAgent = null;
-                        if (victimAgent == Agent.Main)
+                        if (victimAgent.IsPlayerControlled)
                         {
                             enemyAgent = attackerAgent;
                             Posture posture = null;
@@ -775,7 +775,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                             {
                                 if (XmlConfig.dict["Global.PostureGUIEnabled"] == 1)
                                 {
-                                    if (entry.Key == Agent.Main)
+                                    if (entry.Key.IsPlayerControlled)
                                     {
                                         //InformationManager.DisplayMessage(new InformationMessage(entry.Value.posture.ToString()));
                                         if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)

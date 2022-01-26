@@ -66,7 +66,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
 			{
 				return;
 			}
-			if (affectorAgent == Agent.Main || affectorAgent == Agent.Main.MountAgent)
+			if (affectorAgent.IsPlayerControlled || affectorAgent == Agent.Main.MountAgent)
 			{
 				if (affectedAgent.Health == 0f)
 				{

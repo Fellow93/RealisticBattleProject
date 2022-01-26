@@ -10,6 +10,7 @@ using TaleWorlds.Localization;
 using RealisticBattleCombatModule.CombatModule;
 using System;
 using TaleWorlds.Engine;
+using SandBox;
 
 namespace RealisticBattleCombatModule
 {
@@ -366,7 +367,6 @@ namespace RealisticBattleCombatModule
                     else
                     {
                         velocity.z = velocity.z - 2f;
-
                     }
                 }
 
@@ -419,6 +419,22 @@ namespace RealisticBattleCombatModule
                     property2.DeclaringType.GetProperty("MissileSpeed");
                     property2.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                 }
+            }
+        }
+
+        [HarmonyPatch(typeof(SandboxAgentApplyDamageModel))]
+        class CalculateEffectiveMissileSpeedPatch
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch("CalculateEffectiveMissileSpeed")]
+            static bool PrefixCalculateEffectiveMissileSpeed(Agent attackerAgent, WeaponComponentData missileWeapon, ref Vec3 missileStartDirection, float missileStartSpeed,ref float __result)
+            {
+                if(attackerAgent != null && !attackerAgent.IsPlayerControlled)
+                {
+                    __result = missileStartSpeed;
+                    return false;
+                }
+                return true;
             }
         }
 
