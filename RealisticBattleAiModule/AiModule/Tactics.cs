@@ -359,7 +359,7 @@ namespace RealisticBattleAiModule
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined( ____mainInfantry, ____hasBattleBeenJoined, 27f);
+                __result = Utilities.HasBattleBeenJoined( ____mainInfantry, ____hasBattleBeenJoined);
             }
 
             [HarmonyPostfix]
@@ -506,7 +506,7 @@ namespace RealisticBattleAiModule
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____cavalry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined( ____cavalry, ____hasBattleBeenJoined, 45f);
+                __result = Utilities.HasBattleBeenJoined( ____cavalry, ____hasBattleBeenJoined, 125f);
             }
 
             //[HarmonyPostfix]
@@ -578,7 +578,7 @@ namespace RealisticBattleAiModule
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined( ____mainInfantry, ____hasBattleBeenJoined, 27f);
+                __result = Utilities.HasBattleBeenJoined( ____mainInfantry, ____hasBattleBeenJoined);
             }
 
             [HarmonyPostfix]
@@ -673,7 +673,7 @@ namespace RealisticBattleAiModule
             [HarmonyPatch("HasBattleBeenJoined")]
             static bool PrefixHasBattleBeenJoined(ref Formation ____mainInfantry, ref bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined( ____mainInfantry, ____hasBattleBeenJoined, 27f);
+                __result = Utilities.HasBattleBeenJoined( ____mainInfantry, ____hasBattleBeenJoined);
                 return false;
             }
 
@@ -745,7 +745,7 @@ namespace RealisticBattleAiModule
             [HarmonyPatch("HasBattleBeenJoined")]
             static bool PrefixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined, 27f);
+                __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined);
                 return false;
             }
 

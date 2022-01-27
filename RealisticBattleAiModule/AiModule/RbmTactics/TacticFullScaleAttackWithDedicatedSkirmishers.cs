@@ -327,7 +327,7 @@ public class TacticFullScaleAttackWithDedicatedSkirmishers : TacticComponent
 
 	private bool HasBattleBeenJoined()
 	{
-		return Utilities.HasBattleBeenJoined(_mainInfantry, _hasBattleBeenJoined, 27f);
+		return Utilities.HasBattleBeenJoined(_mainInfantry, _hasBattleBeenJoined);
 	}
 
 	protected override bool CheckAndSetAvailableFormationsChanged()

@@ -14,7 +14,7 @@ namespace RealisticBattleAiModule
     public static class Utilities
     {
 
-        public static bool HasBattleBeenJoined(Formation mainInfantry, bool hasBattleBeenJoined, float battleJoinRange)
+        public static bool HasBattleBeenJoined(Formation mainInfantry, bool hasBattleBeenJoined, float battleJoinRange = 75f)
         {
             if (mainInfantry != null)
             {
@@ -38,12 +38,12 @@ namespace RealisticBattleAiModule
                     Formation enemyForamtion = Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false, true);
                     if (enemyForamtion != null)
                     {
-                        float distanceSpeedValue = mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(enemyForamtion.QuerySystem.MedianPosition.AsVec2) / enemyForamtion.QuerySystem.MovementSpeedMaximum;
-                        //if (distanceSpeedValue <= 6f)
+                        //float distanceSpeedValue = mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(enemyForamtion.QuerySystem.MedianPosition.AsVec2) / enemyForamtion.QuerySystem.MovementSpeedMaximum;
+                        float distance = mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(enemyForamtion.QuerySystem.MedianPosition.AsVec2);
                         //{
                         //    mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
                         //}
-                        return (distanceSpeedValue <= (battleJoinRange + (hasBattleBeenJoined ? 5f : 0f)));
+                        return (distance <= (battleJoinRange + (hasBattleBeenJoined ? 5f : 0f)));
                     }
                 }
 

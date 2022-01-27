@@ -219,10 +219,6 @@ namespace RealisticBattleAiModule
                 {
                     waitCountApproachingStorage[__instance.Formation] = 0;
                 }
-                if (!waitCountApproachingStorage.TryGetValue(__instance.Formation, out waitCountApproaching))
-                {
-                    waitCountApproachingStorage[__instance.Formation] = 0;
-                }
                 if (!approachingRangingStorage.TryGetValue(__instance.Formation, out approachingRangingPos))
                 {
                     approachingRangingStorage[__instance.Formation] = __instance.Formation.QuerySystem.MedianPosition.AsVec2;
@@ -232,12 +228,16 @@ namespace RealisticBattleAiModule
                 {
                     Vec2 enemyDirection = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                     float distance = enemyDirection.Normalize();
+                    if(distance > 110f)
+                    {
+                        ____behaviorState = BehaviorState.Approaching;
+                    }
                     switch (____behaviorState)
                     {
                         case BehaviorState.Shooting:
                             if (waitCountShootingStorage[__instance.Formation] > 45)
                             {
-                                if (distance > 100f)
+                                if (distance > 80f)
                                 {
                                     WorldPosition medianPosition = __instance.Formation.QuerySystem.MedianPosition;
                                     medianPosition.SetVec2(medianPosition.AsVec2 + enemyDirection * 5f);
@@ -265,7 +265,6 @@ namespace RealisticBattleAiModule
                                     waitCountShootingStorage[__instance.Formation] = 0;
                                     break;
                                 }
-
                             }
                             else
                             {
@@ -279,7 +278,7 @@ namespace RealisticBattleAiModule
                             {
                                 //if (distance < 200f)
                                 //{
-                                WorldPosition medianPosition = __instance.Formation.QuerySystem.MedianPosition;
+                                    WorldPosition medianPosition = __instance.Formation.QuerySystem.MedianPosition;
                                 medianPosition.SetVec2(medianPosition.AsVec2 + enemyDirection * 5f);
                                 approachingRangingStorage[__instance.Formation] = medianPosition.AsVec2;
                                 ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
