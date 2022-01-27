@@ -248,8 +248,13 @@ namespace RealisticBattleAiModule
                             BasicCharacterObject troop = troopOrigin.Troop;
                             Team agentTeam = Mission.GetAgentTeam(troopOrigin, isPlayerSide);
                             Formation formation = agentTeam.GetFormation(troop.GetFormationClass(troopOrigin.BattleCombatant));
-                            initialPosition = Mission.Current.GetClosestDeploymentBoundaryPosition(agentTeam.Side, Mission.Current.GetClosestFleePositionForFormation(formation).AsVec2).ToVec3();
-                            initialDirection = Mission.Current.GetClosestFleePositionForFormation(formation).AsVec2 - formation.CurrentPosition;
+
+                            Vec2 tempPos = Mission.Current.GetClosestFleePositionForFormation(formation).AsVec2;
+                            tempPos.x = tempPos.x + MBRandom.RandomInt(40);
+                            tempPos.y = tempPos.y + MBRandom.RandomInt(40);
+
+                            initialPosition = Mission.Current.GetClosestDeploymentBoundaryPosition(agentTeam.Side, tempPos).ToVec3();
+                            initialDirection = tempPos - formation.CurrentPosition;
                         }
                     }
                 }
