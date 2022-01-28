@@ -541,7 +541,17 @@ namespace RealisticBattleAiModule
         static void PostfixCalculateCurrentOrder(BehaviorMountedSkirmish __instance, ref bool ____engaging, ref MovementOrder ____currentOrder, ref bool ____isEnemyReachable)
         {
             WorldPosition position = __instance.Formation.QuerySystem.MedianPosition;
-            ____isEnemyReachable = __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && (!(__instance.Formation.Team.TeamAI is TeamAISiegeComponent) || !TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation, includeOnlyPositionedUnits: false));
+            Formation targetFormation = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
+            FormationQuerySystem targetFormationQS = null;
+            if(targetFormation != null)
+            {
+                targetFormationQS = targetFormation.QuerySystem;
+            }
+            else
+            {
+                targetFormationQS = __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
+            }
+            ____isEnemyReachable = targetFormationQS != null && (!(__instance.Formation.Team.TeamAI is TeamAISiegeComponent) || !TeamAISiegeComponent.IsFormationInsideCastle(targetFormationQS.Formation, includeOnlyPositionedUnits: false));
             if (!____isEnemyReachable)
             {
                 position.SetVec2(__instance.Formation.QuerySystem.AveragePosition);
@@ -557,43 +567,45 @@ namespace RealisticBattleAiModule
                 }
                 else
                 {
-                    Vec2 vec = (__instance.Formation.QuerySystem.AveragePosition - __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.AveragePosition).Normalized().LeftVec();
-                    FormationQuerySystem closestSignificantlyLargeEnemyFormation = __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
-                    float num2 = 50f + (__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.Width + __instance.Formation.Depth) * 0.5f;
+                    Vec2 vec = (__instance.Formation.QuerySystem.AveragePosition - targetFormationQS.AveragePosition).Normalized().LeftVec();
+                    FormationQuerySystem closestSignificantlyLargeEnemyFormation = targetFormationQS;
+                    float num2 = 50f + (targetFormationQS.Formation.Width + __instance.Formation.Depth) * 0.5f;
                     float num3 = 0f;
 
-                    Formation enemyFormation = __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation;
+                    Formation enemyFormation = targetFormationQS.Formation;
 
                     if (__instance.Formation != null && __instance.Formation.QuerySystem.IsInfantryFormation)
                     {
                         enemyFormation = Utilities.FindSignificantEnemyToPosition(__instance.Formation, position, true, true, false, false, false, false);
                     }
 
-                    foreach (Team team in Mission.Current.Teams.ToList())
-                    {
-                        if (!team.IsEnemyOf(__instance.Formation.Team))
-                        {
-                            continue;
-                        }
-                        foreach (Formation formation2 in team.FormationsIncludingSpecialAndEmpty.ToList())
-                        {
-                            if (formation2.CountOfUnits > 0 && formation2.QuerySystem != closestSignificantlyLargeEnemyFormation)
-                            {
-                                Vec2 v = formation2.QuerySystem.AveragePosition - closestSignificantlyLargeEnemyFormation.AveragePosition;
-                                float num4 = v.Normalize();
-                                if (vec.DotProduct(v) > 0.8f && num4 < num2 && num4 > num3)
-                                {
-                                    num3 = num4;
-                                    enemyFormation = formation2;
-                                }
-                            }
-                        }
-                    }
-                    //if (__instance.Formation.QuerySystem.RangedCavalryUnitRatio > 0.95f && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation == enemyFormation)
+                    //foreach (Team team in Mission.Current.Teams.ToList())
+                    //{
+                    //    if (!team.IsEnemyOf(__instance.Formation.Team))
+                    //    {
+                    //        continue;
+                    //    }
+                    //    foreach (Formation formation2 in team.FormationsIncludingSpecialAndEmpty.ToList())
+                    //    {
+                    //        if (formation2.CountOfUnits > 0 && formation2.QuerySystem != closestSignificantlyLargeEnemyFormation)
+                    //        {
+                    //            Vec2 v = formation2.QuerySystem.AveragePosition - closestSignificantlyLargeEnemyFormation.AveragePosition;
+                    //            float num4 = v.Normalize();
+                    //            if (vec.DotProduct(v) > 0.8f && num4 < num2 && num4 > num3)
+                    //            {
+                    //                num3 = num4;
+                    //                enemyFormation = formation2;
+                    //            }
+                    //        }
+                    //    }
+                    //}
+
+                    //if (__instance.Formation.QuerySystem.RangedCavalryUnitRatio > 0.95f && targetFormationQS.Formation == enemyFormation)
                     //{
                     //    ____currentOrder = MovementOrder.MovementOrderCharge;
                     //    return;
                     //}
+
                     if (enemyFormation != null && enemyFormation.QuerySystem != null)
                     {
                         bool flag = enemyFormation.QuerySystem.IsCavalryFormation || enemyFormation.QuerySystem.IsRangedCavalryFormation;
@@ -622,22 +634,30 @@ namespace RealisticBattleAiModule
 
         [HarmonyPostfix]
         [HarmonyPatch("GetAiWeight")]
-        static void PostfixGetAiWeight(ref BehaviorMountedSkirmish __instance, ref float __result)
+        static void PostfixGetAiWeight(ref BehaviorMountedSkirmish __instance, ref float __result, ref bool ____isEnemyReachable)
         {
             if (__instance.Formation != null && __instance.Formation.QuerySystem.IsCavalryFormation)
             {
                 if (Utilities.CheckIfMountedSkirmishFormation(__instance.Formation, 0.6f))
                 {
                     __result = 5f;
+                    return;
                 }
                 else
                 {
                     __result = 0f;
+                    return;
                 }
             }
             else if (__instance.Formation != null && __instance.Formation.QuerySystem.IsRangedCavalryFormation)
             {
-                __result = 1.5f;
+                if (!____isEnemyReachable)
+                {
+                    __result = 0.1f;
+                    return;
+                }
+                __result = 1f;
+                return;
             }
             else
             {
@@ -652,10 +672,12 @@ namespace RealisticBattleAiModule
                 if (countOfSkirmishers / __instance.Formation.CountOfUnits > 0.6f)
                 {
                     __result = 1f;
+                    return;
                 }
                 else
                 {
                     __result = 0f;
+                    return;
                 }
             }
         }
