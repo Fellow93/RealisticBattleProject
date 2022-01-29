@@ -9,6 +9,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
+using static RealisticBattleAiModule.OverrideMovementOrder;
 using static TaleWorlds.MountAndBlade.FormationAI;
 using static TaleWorlds.MountAndBlade.HumanAIComponent;
 
@@ -228,7 +229,7 @@ namespace RealisticBattleAiModule
                 {
                     Vec2 enemyDirection = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                     float distance = enemyDirection.Normalize();
-                    if(distance > 110f)
+                    if(distance > 100f)
                     {
                         ____behaviorState = BehaviorState.Approaching;
                     }
@@ -2105,6 +2106,90 @@ namespace RealisticBattleAiModule
             }
 
             return true;
+        }
+
+        public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
+
+        [HarmonyPostfix]
+        [HarmonyPatch("GetPositionAux")]
+        static void GetPositionAuxPostfix(ref MovementOrder __instance, ref WorldPosition __result, ref Formation f, ref WorldPosition.WorldPositionEnforcedCache worldPositionEnforcedCache)
+        {
+            if(__instance.OrderEnum == MovementOrder.MovementOrderEnum.Advance)
+            {
+                Formation enemyFormation = Utilities.FindSignificantEnemy(f, true, true, false, false, false, true);
+                FormationQuerySystem querySystem = f.QuerySystem;
+                FormationQuerySystem enemyQuerySystem;
+                if (enemyFormation != null)
+                {
+                    enemyQuerySystem = enemyFormation.QuerySystem;
+                }
+                else
+                {
+                    enemyQuerySystem = querySystem.ClosestEnemyFormation;
+                }
+                if (enemyQuerySystem == null)
+                {
+                    __result = f.CreateNewOrderWorldPosition(worldPositionEnforcedCache);
+                    return;
+                }
+                WorldPosition oldPosition = enemyQuerySystem.MedianPosition;
+                WorldPosition newPosition = enemyQuerySystem.MedianPosition;
+                if (querySystem.IsRangedFormation || querySystem.IsRangedCavalryFormation)
+                {
+                    float effectiveMissileRange = querySystem.MissileRange / 2.25f;
+                    if (!(newPosition.AsVec2.DistanceSquared(querySystem.AveragePosition) > effectiveMissileRange * effectiveMissileRange))
+                    {
+                        Vec2 directionAux2 = (enemyQuerySystem.MedianPosition.AsVec2 - querySystem.MedianPosition.AsVec2).Normalized();
+
+                        newPosition.SetVec2(newPosition.AsVec2 - directionAux2 * effectiveMissileRange);
+                    }
+
+                    if (oldPosition.AsVec2.Distance(newPosition.AsVec2) > 7f)
+                    {
+                        positionsStorage[f] = newPosition;
+                        __result = newPosition;
+                    }
+                    else
+                    {
+                        WorldPosition tempPos = WorldPosition.Invalid;
+                        if (positionsStorage.TryGetValue(f, out tempPos))
+                        {
+                            __result = tempPos;
+                            return;
+                        }
+                        __result = oldPosition;
+                    }
+                    return;
+                }
+                else
+                {
+                    Vec2 vec = (enemyQuerySystem.AveragePosition - f.QuerySystem.AveragePosition).Normalized();
+                    float distance = enemyQuerySystem.AveragePosition.Distance(f.QuerySystem.AveragePosition);
+                    float num = 2f;
+                    if (enemyQuerySystem.FormationPower < f.QuerySystem.FormationPower * 0.2f)
+                    {
+                        num = 0.1f;
+                    }
+                    newPosition.SetVec2(newPosition.AsVec2 - vec * num);
+
+                    if (distance > 5f)
+                    {
+                        positionsStorage[f] = newPosition;
+                        __result = newPosition;
+                    }
+                    else
+                    {
+                        WorldPosition tempPos = WorldPosition.Invalid;
+                        if (positionsStorage.TryGetValue(f, out tempPos))
+                        {
+                            __result = tempPos;
+                            return;
+                        }
+                        __result = oldPosition;
+                    }
+                    return;
+                }
+            }
         }
 
         //[HarmonyPrefix]
