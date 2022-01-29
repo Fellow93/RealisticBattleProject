@@ -756,6 +756,7 @@ namespace RealisticBattleAiModule
             return false;
         }
 
+
         [HarmonyPrefix]
         [HarmonyPatch("CheckAndChangeState")]
         static bool PrefixCheckAndChangeState(ref BehaviorProtectFlank __instance, ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviorState ____protectFlankState, ref Formation ____mainFormation, ref FormationAI.BehaviorSide ___behaviorSide)
@@ -877,6 +878,24 @@ namespace RealisticBattleAiModule
             {
                 __result = __result + 0.5f;
             }
+        }
+    }
+
+    [MBCallback]
+    [HarmonyPatch(typeof(HumanAIComponent))]
+    class OnDismountPatch
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch("AdjustSpeedLimit")]
+        static bool OnDismountPrefix(ref HumanAIComponent __instance,ref Agent agent,ref float desiredSpeed,ref bool limitIsMultiplier, ref Agent ___Agent)
+        {
+            if(agent.Formation != null && (agent.Formation.QuerySystem.IsRangedCavalryFormation || agent.Formation.QuerySystem.IsCavalryFormation))
+            {
+                //if(is)
+                //desiredSpeed = desiredSpeed / 3f;
+                return false;
+            }
+            return true;
         }
     }
 

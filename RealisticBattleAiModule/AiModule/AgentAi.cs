@@ -63,6 +63,15 @@ namespace RealisticBattleAiModule
                 }
                 //agentDrivenProperties.AIDecideOnAttackChance = MBMath.ClampFloat(meleeLevel + 0.1f, 0f, 0.95f);
 
+                if(agent.HasMount)
+                {
+
+                }
+                else
+                {
+
+                }
+
                 agentDrivenProperties.AiRangedHorsebackMissileRange = 0.25f; // percentage of maximum range is used, range of HA circle
                 agentDrivenProperties.AiUseShieldAgainstEnemyMissileProbability = 0.95f;
                 agentDrivenProperties.AiFlyingMissileCheckRadius = 250f;
