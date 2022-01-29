@@ -229,7 +229,7 @@ namespace RealisticBattleAiModule
                 {
                     Vec2 enemyDirection = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                     float distance = enemyDirection.Normalize();
-                    if(distance > 110f)
+                    if(distance > 100f)
                     {
                         ____behaviorState = BehaviorState.Approaching;
                     }
