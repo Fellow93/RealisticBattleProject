@@ -78,13 +78,7 @@ namespace RealisticBattleAiModule
                 {
                     if (XmlConfig.dict["Global.PostureEnabled"] == 1)
                     {
-                    }
-
-                }
-                else
-                {
-                    if (XmlConfig.dict["Global.PostureEnabled"] == 1)
-                    {
+                        agentDrivenProperties.AIAttackOnDecideChance = 0.3f;
                     }
 
                 }

@@ -403,8 +403,13 @@ namespace RealisticBattleCombatModule
                     weaponWeight += 0.5f;
                 }
                 float kineticEnergy = 0.5f * weaponWeight * combinedSpeed * combinedSpeed;
+                float mixedEnergy = 0.5f *  (weaponWeight + 1.5f) * combinedSpeed * combinedSpeed;
                 //float basedamage = 0.5f * (weaponWeight + 4.5f) * combinedSpeed * combinedSpeed;
-                float basedamage = 138f + kineticEnergy / 16f;
+                float basedamage = 120f;
+                if (mixedEnergy > 120f)
+                {
+                    basedamage = mixedEnergy;
+                }
                 //float handBonus = 0.5f * (weaponWeight + 1.5f) * combinedSpeed * combinedSpeed;
                 //float handLimit = 120f;
                 //if (handBonus > handLimit)
@@ -416,9 +421,9 @@ namespace RealisticBattleCombatModule
                 //{
                 //    thrust = kineticEnergy;
                 //}
-                if (basedamage > 150f)
+                else if (basedamage > 180f)
                 {
-                    basedamage = 150f;
+                    basedamage = 180f;
                 }
                 float thrust = basedamage;
                 if (kineticEnergy > basedamage)
