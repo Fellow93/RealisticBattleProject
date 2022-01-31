@@ -2725,6 +2725,42 @@ namespace RealisticBattleCombatModule
         }
     }
 
+    [HarmonyPatch(typeof(SandboxAgentStatCalculateModel))]
+    [HarmonyPatch("UpdateHorseStats")]
+    class UpdateHorseStatsPatch
+    {
+        static void Postfix(ref SandboxAgentStatCalculateModel __instance, ref Agent agent,ref AgentDrivenProperties agentDrivenProperties)
+        {
+            Equipment spawnEquipment = agent.SpawnEquipment;
+            EquipmentElement mountElement = spawnEquipment[EquipmentIndex.ArmorItemEndSlot];
+            ItemObject item = mountElement.Item;
+            EquipmentElement harness = spawnEquipment[EquipmentIndex.HorseHarness];
+
+            float num2 = 1f;
+            if (!agent.Mission.Scene.IsAtmosphereIndoor)
+            {
+                if (agent.Mission.Scene.GetRainDensity() > 0f)
+                {
+                    num2 *= 0.9f;
+                }
+                if (CampaignTime.Now.IsNightTime)
+                {
+                    num2 *= 0.9f;
+                }
+            }
+            
+            int num3 = mountElement.GetModifiedMountSpeed(in harness) + 1;
+            ExplainedNumber stat2 = new ExplainedNumber(num3);
+
+            if (harness.Item == null)
+            {
+                stat2.AddFactor(-0.1f);
+            }
+
+            agentDrivenProperties.MountSpeed = num2 * 0.22f * (1f + stat2.ResultNumber);
+        }
+    }
+
     //[HarmonyPatch(typeof(Agent))]
     //[HarmonyPatch("OnWieldedItemIndexChange")]
     //class OnWieldedItemIndexChangePatch

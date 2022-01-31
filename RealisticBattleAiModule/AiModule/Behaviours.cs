@@ -2348,7 +2348,7 @@ namespace RealisticBattleAiModule
 
                     if (agents.Count() > 3 && !unit.IsDoingPassiveAttack)
                     {
-                        unit.LookDirection = direction.ToVec3();
+                        //unit.LookDirection = direction.ToVec3();
                         //if (!unit.IsRetreating() && !unit.IsRunningAway)
                         //{
                         //    unit.SetLookAgent(targetAgent);
@@ -2375,7 +2375,7 @@ namespace RealisticBattleAiModule
                             {
                                 IEnumerable<Agent> agentsLeft = mission.GetNearbyAllyAgents(unitPosition + direction.LeftVec() * 0.8f, 1f, unit.Team);
                                 IEnumerable<Agent> agentsRight = mission.GetNearbyAllyAgents(unitPosition + direction.RightVec() * 0.8f, 1f, unit.Team);
-                                if (agentsLeft.Count() > 3 && agentsRight.Count() > 3)
+                                if (agentsLeft.Count() > 4 && agentsRight.Count() > 4)
                                 {
                                     if (MBRandom.RandomInt(75) == 0)
                                     {
@@ -2395,9 +2395,16 @@ namespace RealisticBattleAiModule
                                         }
                                     }
                                 }
-                                else if (agentsLeft.Count() <= 3 && agentsRight.Count() <= 3)
+                                else if (agentsLeft.Count() <= 4 && agentsRight.Count() <= 4)
                                 {
-                                    if (MBRandom.RandomInt(2) == 0)
+                                    if(agentsLeft.Count() > agentsRight.Count())
+                                    {
+                                        WorldPosition rightPosition = unit.GetWorldPosition();
+                                        rightPosition.SetVec2(unitPosition + direction.RightVec());
+                                        __result = rightPosition;
+                                        return false;
+                                    }
+                                    else if(agentsLeft.Count() < agentsRight.Count())
                                     {
                                         WorldPosition leftPosition = unit.GetWorldPosition();
                                         leftPosition.SetVec2(unitPosition + direction.LeftVec());
@@ -2406,20 +2413,30 @@ namespace RealisticBattleAiModule
                                     }
                                     else
                                     {
-                                        WorldPosition rightPosition = unit.GetWorldPosition();
-                                        rightPosition.SetVec2(unitPosition + direction.RightVec());
-                                        __result = rightPosition;
-                                        return false;
+                                        if (MBRandom.RandomInt(2) == 0)
+                                        {
+                                            WorldPosition leftPosition = unit.GetWorldPosition();
+                                            leftPosition.SetVec2(unitPosition + direction.LeftVec());
+                                            __result = leftPosition;
+                                            return false;
+                                        }
+                                        else
+                                        {
+                                            WorldPosition rightPosition = unit.GetWorldPosition();
+                                            rightPosition.SetVec2(unitPosition + direction.RightVec());
+                                            __result = rightPosition;
+                                            return false;
+                                        }
                                     }
                                 }
-                                else if (agentsLeft.Count() <= 3)
+                                else if (agentsLeft.Count() <= 4)
                                 {
                                     WorldPosition leftPosition = unit.GetWorldPosition();
                                     leftPosition.SetVec2(unitPosition + direction.LeftVec());
                                     __result = leftPosition;
                                     return false;
                                 }
-                                else if (agentsRight.Count() <= 3)
+                                else if (agentsRight.Count() <= 4)
                                 {
                                     WorldPosition rightPosition = unit.GetWorldPosition();
                                     rightPosition.SetVec2(unitPosition + direction.RightVec());
