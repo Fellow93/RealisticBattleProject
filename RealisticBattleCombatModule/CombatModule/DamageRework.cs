@@ -608,8 +608,8 @@ namespace RealisticBattleCombatModule
                                 {
                                     if (isPassiveUsage)
                                     {
-                                        float couchedSkill = 0.5f + effectiveSkill * 0.015f;
-                                        float skillCap = (100f + effectiveSkill * 1.3f);
+                                        float couchedSkill = 0.5f + effectiveSkill * 0.02f;
+                                        float skillCap = (150f + effectiveSkill * 1.5f);
 
                                         float weaponWeight = attackerWeapon.Item.Weight;
 
@@ -671,8 +671,8 @@ namespace RealisticBattleCombatModule
                                 {
                                     if (isPassiveUsage)
                                     {
-                                        float couchedSkill = 0.5f + effectiveSkill * 0.015f;
-                                        float skillCap = (100f + effectiveSkill * 1.3f);
+                                        float couchedSkill = 0.5f + effectiveSkill * 0.02f;
+                                        float skillCap = (150f + effectiveSkill * 1.5f);
 
                                         float weaponWeight = attackerWeapon.Item.Weight;
 

@@ -44,7 +44,7 @@ namespace RealisticBattleAiModule
                 float effectiveSkillLevel = Utilities.CalculateAILevel(agent, effectiveSkill);    //num2
                 float meleeDefensivness = meleeLevel + agent.Defensiveness;             //num3
 
-                agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 3.5f;
+                agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 7f;
 
                 if (XmlConfig.dict["Global.PostureEnabled"] == 1)
                 {
