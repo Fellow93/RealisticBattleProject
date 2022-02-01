@@ -7,6 +7,12 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 {
 	class RBMBehaviorArcherSkirmish : BehaviorComponent
 	{
+
+		private int flankCooldownMax = 40;
+
+		public int side = MBRandom.RandomInt(2);
+		public int cooldown = 0;
+
 		private enum BehaviorState
 		{
 			Approaching,
@@ -71,16 +77,19 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 							{
 								_behaviorState = BehaviorState.Approaching;
 								_cantShootDistance = MathF.Min(_cantShootDistance, effectiveShootingRange);
+								break;
 							}
 							else if (!_cantShoot)
 							{
 								_cantShoot = true;
 								_cantShootTimer.Reset(Mission.Current.CurrentTime, MBMath.Lerp(5f, 10f, (MBMath.ClampFloat(base.Formation.CountOfUnits, 10f, 60f) - 10f) * 0.02f));
+								break;
 							}
 							else if (_cantShootTimer.Check(Mission.Current.CurrentTime))
 							{
 								_behaviorState = BehaviorState.Approaching;
 								_cantShootDistance = MathF.Min(_cantShootDistance, distance);
+								break;
 							}
 
 							_cantShootDistance = MathF.Max(_cantShootDistance, distance);
@@ -91,8 +100,38 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 								if (meleeFormation != null && meleeFormation.QuerySystem.IsInfantryFormation)
 								{
 									_behaviorState = BehaviorState.PullingBack;
+									break;
 								}
 							}
+
+							//if (cooldown < flankCooldownMax)
+							//{
+							//	cooldown++;
+							//}
+							//else
+							//{
+							//	if (side == 0)
+							//	{
+							//		medianPosition.SetVec2(base.Formation.QuerySystem.AveragePosition + base.Formation.QuerySystem.AveragePosition.LeftVec().Normalized() * 20f);
+							//	}
+							//	else if (side == 1)
+							//	{
+							//		medianPosition.SetVec2(base.Formation.QuerySystem.AveragePosition + base.Formation.QuerySystem.AveragePosition.RightVec().Normalized() * 20f);
+							//	}
+
+							//	if (!base.CurrentOrder.GetPosition(base.Formation).IsValid || _behaviorState != BehaviorState.Shooting || flag)
+							//	{
+							//		base.CurrentOrder = MovementOrder.MovementOrderMove(medianPosition);
+							//	}
+							//	if (!CurrentFacingOrder.GetDirection(base.Formation).IsValid || _behaviorState != BehaviorState.Shooting || flag)
+							//	{
+							//		CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
+							//	}
+
+							//	cooldown = 0;
+
+							//	return;
+							//}
 						}
 						else
 						{
@@ -104,8 +143,10 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 								if (meleeFormation != null && meleeFormation.QuerySystem.IsInfantryFormation)
                                 {
 									_behaviorState = BehaviorState.PullingBack;
+									break;
 								}
 							}
+							
 						}
 						break;
 					case BehaviorState.Approaching:

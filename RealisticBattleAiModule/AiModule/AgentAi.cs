@@ -43,8 +43,16 @@ namespace RealisticBattleAiModule
                 float meleeLevel = Utilities.CalculateAILevel(agent, meleeSkill);                 //num
                 float effectiveSkillLevel = Utilities.CalculateAILevel(agent, effectiveSkill);    //num2
                 float meleeDefensivness = meleeLevel + agent.Defensiveness;             //num3
+                
+                if (XmlConfig.isRbmCombatModuleEnabled)
+                {
+                    agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 7f;
+                }
+                else
+                {
+                    agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 3.5f;
+                }
 
-                agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 7f;
 
                 if (XmlConfig.dict["Global.PostureEnabled"] == 1)
                 {
@@ -316,16 +324,7 @@ namespace RealisticBattleAiModule
             MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
             WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
 
-            bool isRbmCmEnabled = false;
-            foreach (MBSubModuleBase submodule in TaleWorlds.MountAndBlade.Module.CurrentModule.SubModules)
-            {
-                if (submodule.ToString().Equals("RealisticBattleCombatModule.Main"))
-                {
-                    isRbmCmEnabled = true;
-                }
-            }
-
-            if (!isRbmCmEnabled && (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && !shooterAgent.IsMainAgent && (wsd[0].WeaponClass == (int)WeaponClass.Javelin || wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe)))
+            if (!XmlConfig.isRbmCombatModuleEnabled && (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && !shooterAgent.IsMainAgent && (wsd[0].WeaponClass == (int)WeaponClass.Javelin || wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe)))
             {
                 //float shooterSpeed = shooterAgent.MovementVelocity.Normalize();
                 if (!shooterAgent.HasMount)

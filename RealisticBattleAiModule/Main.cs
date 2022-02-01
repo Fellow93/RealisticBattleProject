@@ -15,6 +15,7 @@ namespace RealisticBattleAiModule
 {
     public static class XmlConfig
     {
+        public static bool isRbmCombatModuleEnabled = false;
         public static Dictionary<string, float> dict = new Dictionary<string, float> { };
     }
 
@@ -28,6 +29,7 @@ namespace RealisticBattleAiModule
         public static Dictionary<Agent, Posture> values = new Dictionary<Agent, Posture> { };
         public static PostureVisualLogic postureVisual = null;
     }
+
 
     public static class MyPatcher
     {
@@ -127,6 +129,13 @@ namespace RealisticBattleAiModule
 
         public override void OnMissionBehaviorInitialize(Mission mission)
         {
+            foreach (MBSubModuleBase submodule in Module.CurrentModule.SubModules)
+            {
+                if (submodule.ToString().Equals("RealisticBattleCombatModule.Main"))
+                {
+                    XmlConfig.isRbmCombatModuleEnabled = true;
+                }
+            }
             Game.Current.GameTextManager.LoadGameTexts(ModuleHelper.GetXmlPath(ModuleId, "module_strings"));
             if (XmlConfig.dict["Global.PostureEnabled"] == 1 && XmlConfig.dict["Global.PostureGUIEnabled"] == 1)
             {
