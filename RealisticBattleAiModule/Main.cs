@@ -9,10 +9,10 @@ using TaleWorlds.Engine.Screens;
 using System.IO;
 using RealisticBattleAiModule.AiModule.Posture;
 using SandBox;
+using TaleWorlds.ModuleManager;
 
 namespace RealisticBattleAiModule
 {
-
     public static class XmlConfig
     {
         public static Dictionary<string, float> dict = new Dictionary<string, float> { };
@@ -60,6 +60,8 @@ namespace RealisticBattleAiModule
 
     class Main : MBSubModuleBase
     {
+        public static string ModuleId = "RealisticBattleAiModule";
+        
         protected override void OnSubModuleLoad()
         {
             XmlDocument xmlDocument = new XmlDocument();
@@ -125,6 +127,7 @@ namespace RealisticBattleAiModule
 
         public override void OnMissionBehaviorInitialize(Mission mission)
         {
+            Game.Current.GameTextManager.LoadGameTexts(ModuleHelper.GetXmlPath(ModuleId, "module_strings"));
             if (XmlConfig.dict["Global.PostureEnabled"] == 1 && XmlConfig.dict["Global.PostureGUIEnabled"] == 1)
             {
                 mission.AddMissionBehavior((MissionBehavior)(object)new PostureVisualLogic());

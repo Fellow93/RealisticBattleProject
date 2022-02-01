@@ -348,7 +348,7 @@ namespace RealisticBattleAiModule
                 if (____archers != null)
                 {
                     ____archers.AI.ResetBehaviorWeights();
-                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(1f);
+                    ____archers.AI.SetBehaviorWeight<RBMBehaviorArcherSkirmish>(1f);
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
                     ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(0f);
                 }
@@ -514,7 +514,7 @@ namespace RealisticBattleAiModule
                 if (____archers != null)
                 {
                     ____archers.AI.ResetBehaviorWeights();
-                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(1f);
+                    ____archers.AI.SetBehaviorWeight<RBMBehaviorArcherSkirmish>(1f);
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
                     ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(0f);
                 }
@@ -586,7 +586,7 @@ namespace RealisticBattleAiModule
                 if (____archers != null)
                 {
                     ____archers.AI.ResetBehaviorWeights();
-                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(1f);
+                    ____archers.AI.SetBehaviorWeight<RBMBehaviorArcherSkirmish>(1f);
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
                     ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(0f);
                 }
@@ -730,7 +730,7 @@ namespace RealisticBattleAiModule
                 if (____archers != null)
                 {
                     ____archers.AI.ResetBehaviorWeights();
-                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(1f);
+                    ____archers.AI.SetBehaviorWeight<RBMBehaviorArcherSkirmish>(1f);
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
                     ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(0f);
                 }
@@ -792,7 +792,7 @@ namespace RealisticBattleAiModule
                 if (____archers != null)
                 {
                     ____archers.AI.ResetBehaviorWeights();
-                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmish>(1f);
+                    ____archers.AI.SetBehaviorWeight<RBMBehaviorArcherSkirmish>(1f);
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
                     ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(0f);
                 }

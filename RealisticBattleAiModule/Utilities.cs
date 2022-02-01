@@ -481,7 +481,6 @@ namespace RealisticBattleAiModule
                     {
                         if (team.IsEnemyOf(formation.Team))
                         {
-
                             foreach (Formation enemyFormation in team.Formations.ToList())
                             {
                                 allEnemyFormations.Add(enemyFormation);
