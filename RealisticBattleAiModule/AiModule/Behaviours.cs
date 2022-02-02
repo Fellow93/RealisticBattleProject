@@ -911,9 +911,13 @@ namespace RealisticBattleAiModule
         {
             if(agent.Formation != null && (agent.Formation.QuerySystem.IsRangedCavalryFormation || agent.Formation.QuerySystem.IsCavalryFormation))
             {
-                //if(is)
-                //desiredSpeed = desiredSpeed / 3f;
-                return false;
+                if(agent.MountAgent != null)
+                {
+                    float speed = agent.MountAgent.AgentDrivenProperties.MountSpeed;
+                    ___Agent.SetMaximumSpeedLimit(speed, false);
+                    agent.MountAgent.SetMaximumSpeedLimit(speed, false);
+                    return false;
+                }
             }
             return true;
         }
