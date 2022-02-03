@@ -3700,6 +3700,8 @@
                  id="Item.brass_lamellar_shoulder" />
       <equipment slot="Gloves"
                  id="Item.reinforced_mail_mitten" />
+    <equipment slot="Horse"
+               id="Item.t2_aserai_horse" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -3720,6 +3722,8 @@
                  id="Item.brass_lamellar_shoulder" />
       <equipment slot="Gloves"
                  id="Item.reinforced_mail_mitten" />
+    <equipment slot="Horse"
+               id="Item.t2_aserai_horse" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -3740,11 +3744,11 @@
                  id="Item.brass_lamellar_shoulder" />
       <equipment slot="Gloves"
                  id="Item.reinforced_mail_mitten" />
+    <equipment slot="Horse"
+               id="Item.noble_horse_southern" />
       </EquipmentRoster>
       <EquipmentSet id="aserai_troop_civilian_template_t2"
                     civilian="true" />
-    <equipment slot="Horse"
-               id="Item.t2_aserai_horse" />
     <equipment slot="HorseHarness"
                id="Item.mail_and_plate_barding" />
     </Equipments>
@@ -3841,7 +3845,7 @@
       <EquipmentSet id="aserai_troop_civilian_template_t3"
                     civilian="true" />
     <equipment slot="Horse"
-               id="Item.t2_aserai_horse" />
+               id="Item.noble_horse_southern" />
     <equipment slot="HorseHarness"
                id="Item.mail_and_plate_barding" />
     </Equipments>
@@ -4644,6 +4648,8 @@
                  id="Item.battania_warlord_boots" />
       <equipment slot="Cape"
                  id="Item.armored_bearskin" />
+    <equipment slot="Horse"
+               id="Item.t2_battania_horse" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -4664,6 +4670,8 @@
                  id="Item.battania_earmuff_helmet_d" />
       <equipment slot="Cape"
                  id="Item.armored_bearskin" />
+    <equipment slot="Horse"
+               id="Item.t2_battania_horse" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -4686,11 +4694,11 @@
                  id="Item.battanian_plated_noble_helmet" />
       <equipment slot="Cape"
                  id="Item.armored_bearskin" />
+    <equipment slot="Horse"
+               id="Item.noble_horse_battania" />
       </EquipmentRoster>
       <EquipmentSet id="battania_troop_civilian_template_t2"
                     civilian="true" />
-    <equipment slot="Horse"
-               id="Item.t2_battania_horse" />
     <equipment slot="HorseHarness"
                id="Item.battania_horse_harness_scaled" />
     </Equipments>
@@ -6461,6 +6469,8 @@
                  id="Item.decorated_imperial_boots" />
       <equipment slot="Cape"
                  id="Item.pauldron_cape_a" />
+      <equipment slot="Horse"
+                id="Item.t2_empire_horse" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -6479,6 +6489,8 @@
                  id="Item.decorated_imperial_boots" />
       <equipment slot="Cape"
                  id="Item.pauldron_cape_a" />
+      <equipment slot="Horse"
+                id="Item.noble_horse_imperial" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -6497,11 +6509,11 @@
                  id="Item.decorated_imperial_boots" />
       <equipment slot="Cape"
                  id="Item.pauldron_cape_a" />
+      <equipment slot="Horse"
+                id="Item.t2_empire_horse" />
       </EquipmentRoster>
       <EquipmentSet id="empire_troop_civilian_template_t3"
                     civilian="true" />
-    <equipment slot="Horse"
-               id="Item.t2_empire_horse" />
     <equipment slot="HorseHarness"
                id="Item.imperial_scale_barding" />
     </Equipments>
@@ -6550,6 +6562,8 @@
                  id="Item.lamellar_plate_gauntlets" />
       <equipment slot="Leg"
                  id="Item.lamellar_plate_boots" />
+      <equipment slot="Horse"
+                id="Item.noble_horse_imperial" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -6567,6 +6581,8 @@
                  id="Item.lamellar_plate_gauntlets" />
       <equipment slot="Leg"
                  id="Item.lamellar_plate_boots" />
+      <equipment slot="Horse"
+                id="Item.t2_empire_horse" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -6584,28 +6600,11 @@
                  id="Item.lamellar_plate_gauntlets" />
       <equipment slot="Leg"
                  id="Item.lamellar_plate_boots" />
-      </EquipmentRoster>
-      <EquipmentRoster>
-      <equipment slot="Item0"
-                 id="Item.empire_lance_3_t5" />
-
-      <equipment slot="Item2"
-                 id="Item.empire_mace_5_t5" />
-      <equipment slot="Head"
-                 id="Item.imperial_goggled_helmet" />
-      <equipment slot="Cape"
-                 id="Item.imperial_lamellar_shoulders" />
-      <equipment slot="Body"
-                 id="Item.imperial_scale_armor" />
-      <equipment slot="Gloves"
-                 id="Item.lamellar_plate_gauntlets" />
-      <equipment slot="Leg"
-                 id="Item.lamellar_plate_boots" />
+      <equipment slot="Horse"
+                id="Item.noble_horse_imperial" />
       </EquipmentRoster>
       <EquipmentSet id="empire_troop_civilian_template_t3"
                     civilian="true" />
-    <equipment slot="Horse"
-               id="Item.t2_empire_horse" />
     <equipment slot="HorseHarness"
                id="Item.imperial_scale_barding" />
     </Equipments>
@@ -9625,7 +9624,7 @@
       <EquipmentSet id="khuzait_troop_civilian_template_t3"
                     civilian="true" />
     <equipment slot="Horse"
-               id="Item.t2_khuzait_horse" />
+               id="Item.noble_horse_eastern" />
     <equipment slot="HorseHarness"
                id="Item.half_scale_barding" />
     </Equipments>
@@ -9678,7 +9677,7 @@
       <equipment slot="Cape"
                  id="Item.lamellar_shoulders" />
 	  <equipment slot="Horse"
-               id="Item.t2_khuzait_horse" />
+               id="Item.noble_horse_eastern" />
       <equipment slot="HorseHarness"
                id="Item.half_scale_barding" />
       </EquipmentRoster>
@@ -9702,7 +9701,7 @@
       <equipment slot="Cape"
                  id="Item.lamellar_shoulders" />
 	  <equipment slot="Horse"
-               id="Item.t2_khuzait_horse" />
+               id="Item.noble_horse_eastern" />
       <equipment slot="HorseHarness"
                id="Item.half_scale_barding" />
       </EquipmentRoster>
@@ -9726,7 +9725,7 @@
       <equipment slot="Cape"
                  id="Item.lamellar_shoulders" />
 	  <equipment slot="Horse"
-               id="Item.t2_khuzait_horse" />
+               id="Item.noble_horse_eastern" />
       <equipment slot="HorseHarness"
                id="Item.half_scale_barding" />
       </EquipmentRoster>
@@ -10637,7 +10636,7 @@
       <equipment slot="Head"
                  id="Item.sturgia_heavy_cavalary_helmet" />
       <equipment slot="Horse"
-                 id="Item.t2_sturgia_horse" />
+                 id="Item.noble_horse_northern" />
       <equipment slot="HorseHarness"
                  id="Item.half_scale_barding" />
       </EquipmentRoster>
@@ -10695,7 +10694,7 @@
       <equipment slot="Head"
                  id="Item.sturgian_lord_helmet_c" />
       <equipment slot="Horse"
-                 id="Item.t2_sturgia_horse" />
+                 id="Item.noble_horse_northern" />
       <equipment slot="HorseHarness"
                  id="Item.chain_barding" />
       </EquipmentRoster>
@@ -10743,7 +10742,7 @@
       <equipment slot="Head"
                  id="Item.sturgian_lord_helmet_c" />
       <equipment slot="Horse"
-                 id="Item.t2_sturgia_horse" />
+                 id="Item.noble_horse_northern" />
       <equipment slot="HorseHarness"
                  id="Item.imperial_scale_barding" />
       </EquipmentRoster>
@@ -13470,6 +13469,8 @@
                  id="Item.lordly_mail_mitten" />
       <equipment slot="Cape"
                  id="Item.studded_imperial_neckguard" />
+    <equipment slot="Horse"
+               id="Item.noble_horse_western" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -13488,6 +13489,8 @@
                  id="Item.reinforced_mail_mitten" />
       <equipment slot="Cape"
                  id="Item.studded_imperial_neckguard" />
+    <equipment slot="Horse"
+               id="Item.t2_vlandia_horse" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -13506,11 +13509,11 @@
                  id="Item.reinforced_mail_mitten" />
       <equipment slot="Cape"
                  id="Item.studded_imperial_neckguard" />
+    <equipment slot="Horse"
+               id="Item.noble_horse_western" />
       </EquipmentRoster>
       <EquipmentSet id="vlandia_troop_civilian_template_t3"
                     civilian="true" />
-    <equipment slot="Horse"
-               id="Item.t2_vlandia_horse" />
     <equipment slot="HorseHarness"
                id="Item.chain_barding" />
     </Equipments>
@@ -13600,7 +13603,7 @@
       <EquipmentSet id="vlandia_troop_civilian_template_t3"
                     civilian="true" />
     <equipment slot="Horse"
-               id="Item.t2_vlandia_horse" />
+               id="Item.noble_horse_western" />
     <equipment slot="HorseHarness"
                id="Item.chain_barding" />
     </Equipments>
