@@ -287,8 +287,8 @@ namespace RealisticBattleAiModule
                 //__result = 100f;
                 if (___team.QuerySystem.InfantryRatio == 0f && ___team.QuerySystem.RangedRatio == 0f)
                 {
-                    float power = ___team.QuerySystem.OverallPowerRatio;
-                    float enemyPower = ___team.QuerySystem.EnemyTeams.Sum((TeamQuerySystem et) => et.OverallPowerRatio);
+                    float power = ___team.QuerySystem.TeamPower;
+                    float enemyPower = ___team.QuerySystem.EnemyTeams.Sum((TeamQuerySystem et) => et.TeamPower);
                     if (power / enemyPower <= 0.05f)
                     {
                         __result = 1000f;
