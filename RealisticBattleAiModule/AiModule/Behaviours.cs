@@ -13,6 +13,7 @@ using static RealisticBattleAiModule.OverrideMovementOrder;
 using static TaleWorlds.MountAndBlade.ArrangementOrder;
 using static TaleWorlds.MountAndBlade.FormationAI;
 using static TaleWorlds.MountAndBlade.HumanAIComponent;
+using static TaleWorlds.MountAndBlade.SiegeLane;
 
 namespace RealisticBattleAiModule
 {
@@ -2871,7 +2872,7 @@ namespace RealisticBattleAiModule
             {
                 if (__instance.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                 {
-                    if(__instance.QuerySystem.ClosestSignificantlyLargeEnemyFormation.AveragePosition.Distance(__instance.QuerySystem.AveragePosition) < 35f)
+                    if(__instance.QuerySystem.ClosestSignificantlyLargeEnemyFormation.AveragePosition.Distance(__instance.QuerySystem.AveragePosition) < 27f)
                     {
                         //InformationManager.DisplayMessage(new InformationMessage(__instance.AI.ActiveBehavior.GetType().Name + " " + __instance.MovementOrder.OrderType.ToString()));
                         bool exludedWhenAiControl = !(__instance.IsAIControlled && (__instance.AI.ActiveBehavior.GetType().Name.Contains("Regroup") || __instance.AI.ActiveBehavior.GetType().Name.Contains("Advance")));
@@ -3144,12 +3145,16 @@ namespace RealisticBattleAiModule
         [HarmonyPatch(typeof(SiegeLane))]
         class OverrideSiegeTower
         {
-
             [HarmonyPrefix]
             [HarmonyPatch("GetLaneCapacity")]
             static bool PrefixGetLaneCapacity(ref SiegeLane __instance, ref float __result)
             {
-                if (__instance.DefensePoints.Any((ICastleKeyPosition dp) => dp is WallSegment && (dp as WallSegment).IsBreachedWall) || (__instance.HasGate && __instance.DefensePoints.Where((ICastleKeyPosition dp) => dp is CastleGate).All((ICastleKeyPosition cg) => (cg as CastleGate).IsGateOpen)))
+                if (__instance.DefensePoints.Any((ICastleKeyPosition dp) => dp is WallSegment && (dp as WallSegment).IsBreachedWall))
+                {
+                    __result = 60f;
+                    return false;
+                }
+                if ((__instance.HasGate && __instance.DefensePoints.Where((ICastleKeyPosition dp) => dp is CastleGate).All((ICastleKeyPosition cg) => (cg as CastleGate).IsGateOpen)))
                 {
                     __result = 60f;
                     return false;
@@ -3159,7 +3164,28 @@ namespace RealisticBattleAiModule
                 {
                     __result = 15f;
                 }
+                if (__result == 15f)
+                {
+                    __result = 15f;
+                }
+                if (__result == 25f)
+                {
+                    __result = 60f;
+                }
                 return false;
+            }
+
+            [HarmonyPostfix]
+            [HarmonyPatch("DetermineLaneState")]
+            static void postfixDetermineLaneState(ref SiegeLane __instance)
+            {
+                if (__instance.LaneState == LaneStateEnum.Used)
+                {
+                    PropertyInfo property2 = typeof(SiegeLane).GetProperty("LaneState");
+                    property2.DeclaringType.GetProperty("LaneState");
+                    property2.SetValue(__instance, LaneStateEnum.Active, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                    //___LaneState = LaneStateEnum.Active;
+                }
             }
         }
 

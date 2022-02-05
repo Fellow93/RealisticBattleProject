@@ -277,6 +277,18 @@ namespace RealisticBattleAiModule
 
         }
 
+        [HarmonyPatch(typeof(TacticDefendCastle))]
+        class TacticDefendCastlePatch
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch("CarryOutDefense")]
+            static bool PrefixCarryOutDefense(ref TacticDefendCastle __instance, ref bool doRangedJoinMelee)
+            {
+                doRangedJoinMelee = false;
+                return true;
+            }
+        }
+
         [HarmonyPatch(typeof(TacticCoordinatedRetreat))]
         class OverrideTacticCoordinatedRetreat
         {
@@ -289,7 +301,7 @@ namespace RealisticBattleAiModule
                 {
                     float power = ___team.QuerySystem.TeamPower;
                     float enemyPower = ___team.QuerySystem.EnemyTeams.Sum((TeamQuerySystem et) => et.TeamPower);
-                    if (power / enemyPower <= 0.05f)
+                    if (power / enemyPower <= 0.10f)
                     {
                         __result = 1000f;
                     }
@@ -304,7 +316,6 @@ namespace RealisticBattleAiModule
                 }
                 return false;
             }
-
         }
 
         [HarmonyPatch(typeof(TacticFullScaleAttack))]
