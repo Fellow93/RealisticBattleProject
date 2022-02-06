@@ -19,28 +19,28 @@ namespace RealisticBattleCombatModule.CombatModule
 
                 List<XElement> nodesToRemoveArray = new List<XElement>();
 
-                if (XmlConfig.dict["Global.TroopOverhaulActive"] == 0 && xmlDocument2.BaseURI.Contains("unit_overhaul"))
+                if (RBMCMConfig.dict["Global.TroopOverhaulActive"] == 0 && xmlDocument2.BaseURI.Contains("unit_overhaul"))
                 {
                     __result = MBObjectManager.ToXmlDocument(originalXml);
                     return false;
                 }
 
                 bool isShoulderShiledsEnabled = false;
-                if (XmlConfig.dict["Global.PassiveShoulderShields"] == 0)
+                if (RBMCMConfig.dict["Global.PassiveShoulderShields"] == 0)
                 {
                     isShoulderShiledsEnabled = false;
                 }
-                else if (XmlConfig.dict["Global.PassiveShoulderShields"] == 1)
+                else if (RBMCMConfig.dict["Global.PassiveShoulderShields"] == 1)
                 {
                     isShoulderShiledsEnabled = true;
                 }
 
                 bool isBetterArrowVisualsEnabled = false;
-                if (XmlConfig.dict["Global.BetterArrowVisuals"] == 0)
+                if (RBMCMConfig.dict["Global.BetterArrowVisuals"] == 0)
                 {
                     isBetterArrowVisualsEnabled = false;
                 }
-                else if (XmlConfig.dict["Global.BetterArrowVisuals"] == 1)
+                else if (RBMCMConfig.dict["Global.BetterArrowVisuals"] == 1)
                 {
                     isBetterArrowVisualsEnabled = true;
                 }

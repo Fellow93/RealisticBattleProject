@@ -95,12 +95,12 @@ namespace RealisticBattleCombatModule
                                     }
                                 case (int)WeaponClass.Bow:
                                     {
-                                        if (XmlConfig.dict["Global.RealisticRangedReload"] == 1 || XmlConfig.dict["Global.RealisticRangedReload"] == 2)
+                                        if (RBMCMConfig.dict["Global.RealisticRangedReload"] == 1 || RBMCMConfig.dict["Global.RealisticRangedReload"] == 2)
                                         {
                                             float DrawSpeedskillModifier = 1 + (effectiveSkill * 0.01f);
                                             weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.1f) * DrawSpeedskillModifier);
                                         }
-                                        if (XmlConfig.dict["Global.RealisticRangedReload"] == 0)
+                                        if (RBMCMConfig.dict["Global.RealisticRangedReload"] == 0)
                                         {
                                             weaponStatsData[i].ThrustSpeed = MathF.Ceiling(weaponStatsData[i].ThrustSpeed * 0.45f);
                                         }
@@ -582,11 +582,51 @@ namespace RealisticBattleCombatModule
 
         [HarmonyPrefix]
         [HarmonyPatch("ShootProjectileAux")]
-        static bool PrefixShootProjectileAux(RangedSiegeWeapon __instance, ref string[] ___SkeletonNames, ItemObject missileItem, Agent ____lastShooterAgent)
+        static bool PrefixShootProjectileAux(ref RangedSiegeWeapon __instance, ref string[] ___SkeletonNames,ref ItemObject missileItem,ref Agent ____lastShooterAgent, ref ItemObject ___LoadedMissileItem)
         {
+            if (___SkeletonNames != null && ___SkeletonNames.Length > 0 && ___SkeletonNames[0].Contains("trebuchet"))
+            {
+                for (int i = 0; i < 7; i++)
+                {
+                    Mat3 mat = default(Mat3);
+
+                PropertyInfo property = typeof(RangedSiegeWeapon).GetProperty("ShootingDirection", BindingFlags.NonPublic | BindingFlags.Instance);
+                property.DeclaringType.GetProperty("ShootingDirection");
+                mat.f = (Vec3)property.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+
+                mat.u = Vec3.Up;
+                Mat3 mat2 = mat;
+                mat2.Orthonormalize();
+                float a = MBRandom.RandomFloat * ((float)Math.PI * 2f);
+                mat2.RotateAboutForward(a);
+                float f = 1.5f * MBRandom.RandomFloat;
+                mat2.RotateAboutSide(f.ToRadians());
+
+                Mat3 identity = Mat3.Identity;
+                //identity.f = GetBallisticErrorAppliedDirection(1f);
+                //identity.f = mat2.f;
+                //identity.Orthonormalize();
+
+                ItemObject @object = Game.Current.ObjectManager.GetObject<ItemObject>("grapeshot_projectile");
+
+                PropertyInfo property3 = typeof(RangedSiegeWeapon).GetProperty("ShootingSpeed", BindingFlags.NonPublic | BindingFlags.Instance);
+                property3.DeclaringType.GetProperty("ShootingSpeed");
+                float num = (float)property3.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+
+                num *= MBRandom.RandomFloatRanged(0.95f, 1.05f);
+                identity.f = mat2.f;
+                identity.Orthonormalize();
+
+                PropertyInfo property2 = typeof(RangedSiegeWeapon).GetProperty("Projectile", BindingFlags.NonPublic | BindingFlags.Instance);
+                property2.DeclaringType.GetProperty("Projectile");
+                Vec3 ProjectileEntityCurrentGlobalPosition = ((SynchedMissionObject)property2.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null)).GameEntity.GetGlobalFrame().origin;
+
+                Mission.Current.AddCustomMissile(____lastShooterAgent, new MissionWeapon(@object, null, ____lastShooterAgent.Origin?.Banner, 1), ProjectileEntityCurrentGlobalPosition, identity.f, identity, ___LoadedMissileItem.PrimaryWeapon.MissileSpeed, num, addRigidBody: false, __instance);
+                }
+                return false;
+            }
             if (___SkeletonNames != null && ___SkeletonNames.Length > 0 && ___SkeletonNames[0].Contains("ballista"))
             {
-
                 Mat3 mat = default(Mat3);
 
                 PropertyInfo property = typeof(RangedSiegeWeapon).GetProperty("ShootingDirection", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -625,7 +665,7 @@ namespace RealisticBattleCombatModule
         {
             static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem, AgentStatCalculateModel __instance)
             {
-                if (XmlConfig.dict["Global.RealisticRangedReload"] == 1)
+                if (RBMCMConfig.dict["Global.RealisticRangedReload"] == 1)
                 {
                     SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
                     if(skill != null)
@@ -639,17 +679,17 @@ namespace RealisticBattleCombatModule
                                 case "bow":
                                 case "long_bow":
                                     {
-                                        agentDrivenProperties.ReloadSpeed = 0.19f * (1 + (0.01f * effectiveSkill));
+                                        agentDrivenProperties.ReloadSpeed = 0.19f * (1.5f + (0.0075f * effectiveSkill));
                                         break;
                                     }
                                 case "crossbow_fast":
                                     {
-                                        agentDrivenProperties.ReloadSpeed = 0.36f * (1 + (0.0025f * effectiveSkill));
+                                        agentDrivenProperties.ReloadSpeed = 0.36f * (1f + (0.0035f * effectiveSkill));
                                         break;
                                     }
                                 case "crossbow":
                                     {
-                                        agentDrivenProperties.ReloadSpeed = 0.18f * (1 + (0.0025f * effectiveSkill));
+                                        agentDrivenProperties.ReloadSpeed = 0.18f * (1f + (0.0035f * effectiveSkill));
                                         break;
                                     }
                             }
@@ -657,7 +697,7 @@ namespace RealisticBattleCombatModule
                     }
                     
                 }
-                else if (XmlConfig.dict["Global.RealisticRangedReload"] == 2)
+                else if (RBMCMConfig.dict["Global.RealisticRangedReload"] == 2)
                 {
                     SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
                     if (skill != null)
@@ -670,17 +710,17 @@ namespace RealisticBattleCombatModule
                                 case "bow":
                                 case "long_bow":
                                     {
-                                        agentDrivenProperties.ReloadSpeed = 0.38f * (1 + (0.01f * effectiveSkill));
+                                        agentDrivenProperties.ReloadSpeed = 0.38f * (1.5f + (0.0075f * effectiveSkill));
                                         break;
                                     }
                                 case "crossbow_fast":
                                     {
-                                        agentDrivenProperties.ReloadSpeed = 0.72f * (1 + (0.0025f * effectiveSkill));
+                                        agentDrivenProperties.ReloadSpeed = 0.72f * (1 + (0.0035f * effectiveSkill));
                                         break;
                                     }
                                 case "crossbow":
                                     {
-                                        agentDrivenProperties.ReloadSpeed = 0.36f * (1 + (0.0025f * effectiveSkill));
+                                        agentDrivenProperties.ReloadSpeed = 0.36f * (1 + (0.0035f * effectiveSkill));
                                         break;
                                     }
                             }

@@ -10,10 +10,14 @@ using System.IO;
 
 namespace RealisticBattleCombatModule
 {
-    public static class XmlConfig
+    public static class RBMCMConfig
     {
         public static Dictionary<string, float> dict = new Dictionary<string, float> { };
+        public static float ThrustMagnitudeModifier = 0.014f;
+        public static float OneHandedThrustDamageBonus = 71.42f;
+        public static float TwoHandedThrustDamageBonus = 71.42f;
     }
+    
     public static class MyPatcher
     {
         public static void DoPatching()
@@ -52,7 +56,7 @@ namespace RealisticBattleCombatModule
             {
                 foreach (XmlNode subNode in childNode)
                 {
-                    XmlConfig.dict.Add(childNode.Name + "." + subNode.Name, float.Parse(subNode.InnerText));
+                    RBMCMConfig.dict.Add(childNode.Name + "." + subNode.Name, float.Parse(subNode.InnerText));
                 }
             }
             MyPatcher.DoPatching();

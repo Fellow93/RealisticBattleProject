@@ -283,7 +283,7 @@ namespace RealisticBattleCombatModule
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
                 {
-                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f)) * XmlConfig.dict["Global.ThrustModifier"];
+                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f)) * RBMCMConfig.ThrustMagnitudeModifier;
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingAxe"))
@@ -294,13 +294,13 @@ namespace RealisticBattleCombatModule
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingKnife") ||
                     weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Dagger"))
                 {
-                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0f)) * XmlConfig.dict["Global.ThrustModifier"] * 0.6f;
+                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0f)) * RBMCMConfig.ThrustMagnitudeModifier * 0.6f;
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") ||
                     weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("LowGripPolearm"))
                 {
-                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 1f)) * XmlConfig.dict["Global.ThrustModifier"];
+                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 1f)) * RBMCMConfig.ThrustMagnitudeModifier;
                 }
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") ||
                     weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt"))
@@ -384,7 +384,7 @@ namespace RealisticBattleCombatModule
         private static float CalculateStrikeMagnitudeForThrust(float thrustWeaponSpeed, float weaponWeight, float extraLinearSpeed, bool isThrown)
         {
             float num = extraLinearSpeed * 1f; // because cav in the game is roughly 50% faster than it should be
-            float num2 = 0.5f * weaponWeight * num * num * XmlConfig.dict["Global.ThrustModifier"]; // lances need to have 3 times more damage to be preferred over maces
+            float num2 = 0.5f * weaponWeight * num * num * RBMCMConfig.ThrustMagnitudeModifier; // lances need to have 3 times more damage to be preferred over maces
             return num2;
 
         }
@@ -436,7 +436,7 @@ namespace RealisticBattleCombatModule
                 //{
                 //    thrust = 200f;
                 //}
-                __result = thrust * XmlConfig.dict["Global.ThrustModifier"];
+                __result = thrust * RBMCMConfig.ThrustMagnitudeModifier;
                 return false;
             }
             __result = 0f;
@@ -511,7 +511,7 @@ namespace RealisticBattleCombatModule
                                 }
                                 else
                                 {
-                                    skillBasedDamage = magnitude * 0.2f + 50f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.46f * XmlConfig.dict["Global.ThrustModifier"]);
+                                    skillBasedDamage = magnitude * 0.2f + 50f * RBMCMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.46f * RBMCMConfig.ThrustMagnitudeModifier);
                                 }
                                 if (magnitude > 1f)
                                 {
@@ -527,7 +527,7 @@ namespace RealisticBattleCombatModule
                                 }
                                 else
                                 {
-                                    skillBasedDamage = (magnitude * 0.2f + 50f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.46f * XmlConfig.dict["Global.ThrustModifier"])) * 1.3f;
+                                    skillBasedDamage = (magnitude * 0.2f + 50f * RBMCMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.46f * RBMCMConfig.ThrustMagnitudeModifier)) * 1.3f;
                                 }
                                 if (magnitude > 1f)
                                 {
@@ -567,7 +567,7 @@ namespace RealisticBattleCombatModule
                             {
                                 if (damageType == DamageTypes.Pierce)
                                 {
-                                    skillBasedDamage = magnitude * 0.2f + 40f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.4f * XmlConfig.dict["Global.ThrustModifier"]);
+                                    skillBasedDamage = magnitude * 0.2f + 40f * RBMCMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.4f * RBMCMConfig.ThrustMagnitudeModifier);
                                 }
                                 else
                                 {
@@ -583,7 +583,7 @@ namespace RealisticBattleCombatModule
                             {
                                 if (damageType == DamageTypes.Pierce)
                                 {
-                                    skillBasedDamage = (magnitude * 0.2f + 40f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.4f * XmlConfig.dict["Global.ThrustModifier"])) * 1.3f;
+                                    skillBasedDamage = (magnitude * 0.2f + 40f * RBMCMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.4f * RBMCMConfig.ThrustMagnitudeModifier)) * 1.3f;
                                 }
                                 else
                                 {
@@ -622,19 +622,19 @@ namespace RealisticBattleCombatModule
                                         float lanceBalistics = (magnitude * BraceModifier) / weaponWeight;
                                         float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
                                         magnitude = CouchedMagnitude;
-                                        if (CouchedMagnitude > (skillCap * XmlConfig.dict["Global.ThrustModifier"]) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * XmlConfig.dict["Global.ThrustModifier"])) //skill based damage
+                                        if (CouchedMagnitude > (skillCap * RBMCMConfig.ThrustMagnitudeModifier) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * RBMCMConfig.ThrustMagnitudeModifier)) //skill based damage
                                         {
-                                            magnitude = skillCap * XmlConfig.dict["Global.ThrustModifier"];
+                                            magnitude = skillCap * RBMCMConfig.ThrustMagnitudeModifier;
                                         }
 
-                                        if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * XmlConfig.dict["Global.ThrustModifier"])) //ballistics
+                                        if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * RBMCMConfig.ThrustMagnitudeModifier)) //ballistics
                                         {
                                             magnitude = (lanceBalistics * (weaponWeight + BraceBonus));
                                         }
 
-                                        if (magnitude > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"])) // damage cap - lance break threshold
+                                        if (magnitude > (ashBreakTreshold * RBMCMConfig.ThrustMagnitudeModifier)) // damage cap - lance break threshold
                                         {
-                                            magnitude = ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"];
+                                            magnitude = ashBreakTreshold * RBMCMConfig.ThrustMagnitudeModifier;
                                         }
                                     }
                                     else
@@ -645,10 +645,10 @@ namespace RealisticBattleCombatModule
                                         {
                                             magnitude *= 0.34f;
                                         }
-                                        skillBasedDamage = magnitude * 0.4f + 60f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.26f * XmlConfig.dict["Global.ThrustModifier"]);
-                                        if (skillBasedDamage > 260f * XmlConfig.dict["Global.ThrustModifier"])
+                                        skillBasedDamage = magnitude * 0.4f + 60f * RBMCMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.26f * RBMCMConfig.ThrustMagnitudeModifier);
+                                        if (skillBasedDamage > 260f * RBMCMConfig.ThrustMagnitudeModifier)
                                         {
-                                            skillBasedDamage = 260f * XmlConfig.dict["Global.ThrustModifier"];
+                                            skillBasedDamage = 260f * RBMCMConfig.ThrustMagnitudeModifier;
                                         }
                                     }
                                 }
@@ -689,19 +689,19 @@ namespace RealisticBattleCombatModule
                                         float lanceBalistics = (magnitude * BraceModifier) / weaponWeight;
                                         float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
                                         magnitude = CouchedMagnitude;
-                                        if (CouchedMagnitude > (skillCap * XmlConfig.dict["Global.ThrustModifier"]) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                        if (CouchedMagnitude > (skillCap * RBMCMConfig.ThrustMagnitudeModifier) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * RBMCMConfig.ThrustMagnitudeModifier))
                                         {
-                                            magnitude = skillCap * XmlConfig.dict["Global.ThrustModifier"];
+                                            magnitude = skillCap * RBMCMConfig.ThrustMagnitudeModifier;
                                         }
 
-                                        if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                        if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * RBMCMConfig.ThrustMagnitudeModifier))
                                         {
                                             magnitude = (lanceBalistics * (weaponWeight + BraceBonus));
                                         }
 
-                                        if (magnitude > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"]))
+                                        if (magnitude > (ashBreakTreshold * RBMCMConfig.ThrustMagnitudeModifier))
                                         {
-                                            magnitude = ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"];
+                                            magnitude = ashBreakTreshold * RBMCMConfig.ThrustMagnitudeModifier;
                                         }
                                     }
                                     else
@@ -712,10 +712,10 @@ namespace RealisticBattleCombatModule
                                         {
                                             magnitude *= 0.34f;
                                         }
-                                        skillBasedDamage = (magnitude * 0.4f + 60f * XmlConfig.dict["Global.ThrustModifier"] + (effectiveSkill * 0.26f * XmlConfig.dict["Global.ThrustModifier"])) * 1.3f;
-                                        if (skillBasedDamage > 360f * XmlConfig.dict["Global.ThrustModifier"])
+                                        skillBasedDamage = (magnitude * 0.4f + 60f * RBMCMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.26f * RBMCMConfig.ThrustMagnitudeModifier)) * 1.3f;
+                                        if (skillBasedDamage > 360f * RBMCMConfig.ThrustMagnitudeModifier)
                                         {
-                                            skillBasedDamage = 360f * XmlConfig.dict["Global.ThrustModifier"];
+                                            skillBasedDamage = 360f * RBMCMConfig.ThrustMagnitudeModifier;
                                         }
                                     }
                                 }
@@ -1008,7 +1008,7 @@ namespace RealisticBattleCombatModule
                                     }
                                     else
                                     {
-                                        blowMagnitude = blowMagnitude * 0.2f + 50f * XmlConfig.dict["Global.ThrustModifier"];
+                                        blowMagnitude = blowMagnitude * 0.2f + 50f * RBMCMConfig.ThrustMagnitudeModifier;
                                     }
                                 }
                                 break;
@@ -1023,7 +1023,7 @@ namespace RealisticBattleCombatModule
                                     }
                                     else
                                     {
-                                        blowMagnitude = (blowMagnitude * 0.2f + 50f * XmlConfig.dict["Global.ThrustModifier"]) * 1.3f;
+                                        blowMagnitude = (blowMagnitude * 0.2f + 50f * RBMCMConfig.ThrustMagnitudeModifier) * 1.3f;
                                     }
                                 }
                                 break;
@@ -1059,7 +1059,7 @@ namespace RealisticBattleCombatModule
                                 {
                                     if (damageType == DamageTypes.Pierce)
                                     {
-                                        blowMagnitude = blowMagnitude * 0.2f + 40f * XmlConfig.dict["Global.ThrustModifier"];
+                                        blowMagnitude = blowMagnitude * 0.2f + 40f * RBMCMConfig.ThrustMagnitudeModifier;
                                     }
                                     else
                                     {
@@ -1074,7 +1074,7 @@ namespace RealisticBattleCombatModule
                                 {
                                     if (damageType == DamageTypes.Pierce)
                                     {
-                                        blowMagnitude = (blowMagnitude * 0.2f + 40f * XmlConfig.dict["Global.ThrustModifier"]) * 1.3f;
+                                        blowMagnitude = (blowMagnitude * 0.2f + 40f * RBMCMConfig.ThrustMagnitudeModifier) * 1.3f;
                                     }
                                     else
                                     {
@@ -1112,19 +1112,19 @@ namespace RealisticBattleCombatModule
                                             float lanceBalistics = (blowMagnitude * BraceModifier) / weaponWeight;
                                             float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
                                             blowMagnitude = CouchedMagnitude;
-                                            if (CouchedMagnitude > (skillCap * XmlConfig.dict["Global.ThrustModifier"]) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * XmlConfig.dict["Global.ThrustModifier"])) //skill based damage
+                                            if (CouchedMagnitude > (skillCap * RBMCMConfig.ThrustMagnitudeModifier) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * RBMCMConfig.ThrustMagnitudeModifier)) //skill based damage
                                             {
-                                                blowMagnitude = skillCap * XmlConfig.dict["Global.ThrustModifier"];
+                                                blowMagnitude = skillCap * RBMCMConfig.ThrustMagnitudeModifier;
                                             }
 
-                                            if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * XmlConfig.dict["Global.ThrustModifier"])) //ballistics
+                                            if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * RBMCMConfig.ThrustMagnitudeModifier)) //ballistics
                                             {
                                                 blowMagnitude = (lanceBalistics * (weaponWeight + BraceBonus));
                                             }
 
-                                            if (blowMagnitude > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"])) // damage cap - lance break threshold
+                                            if (blowMagnitude > (ashBreakTreshold * RBMCMConfig.ThrustMagnitudeModifier)) // damage cap - lance break threshold
                                             {
-                                                blowMagnitude = ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"];
+                                                blowMagnitude = ashBreakTreshold * RBMCMConfig.ThrustMagnitudeModifier;
                                             }
                                         }
                                         else
@@ -1135,10 +1135,10 @@ namespace RealisticBattleCombatModule
                                             //{
                                             //    blowMagnitude *= 0.34f;
                                             //}
-                                            blowMagnitude = blowMagnitude * 0.4f + 60f * XmlConfig.dict["Global.ThrustModifier"];
-                                            if (blowMagnitude > 260f * XmlConfig.dict["Global.ThrustModifier"])
+                                            blowMagnitude = blowMagnitude * 0.4f + 60f * RBMCMConfig.ThrustMagnitudeModifier;
+                                            if (blowMagnitude > 260f * RBMCMConfig.ThrustMagnitudeModifier)
                                             {
-                                                blowMagnitude = 260f * XmlConfig.dict["Global.ThrustModifier"];
+                                                blowMagnitude = 260f * RBMCMConfig.ThrustMagnitudeModifier;
                                             }
                                         }
                                     }
@@ -1174,19 +1174,19 @@ namespace RealisticBattleCombatModule
                                             float lanceBalistics = (blowMagnitude * BraceModifier) / weaponWeight;
                                             float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
                                             blowMagnitude = CouchedMagnitude;
-                                            if (CouchedMagnitude > (skillCap * XmlConfig.dict["Global.ThrustModifier"]) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                            if (CouchedMagnitude > (skillCap * RBMCMConfig.ThrustMagnitudeModifier) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * RBMCMConfig.ThrustMagnitudeModifier))
                                             {
-                                                blowMagnitude = skillCap * XmlConfig.dict["Global.ThrustModifier"];
+                                                blowMagnitude = skillCap * RBMCMConfig.ThrustMagnitudeModifier;
                                             }
 
-                                            if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * XmlConfig.dict["Global.ThrustModifier"]))
+                                            if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * RBMCMConfig.ThrustMagnitudeModifier))
                                             {
                                                 blowMagnitude = (lanceBalistics * (weaponWeight + BraceBonus));
                                             }
 
-                                            if (blowMagnitude > (ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"]))
+                                            if (blowMagnitude > (ashBreakTreshold * RBMCMConfig.ThrustMagnitudeModifier))
                                             {
-                                                blowMagnitude = ashBreakTreshold * XmlConfig.dict["Global.ThrustModifier"];
+                                                blowMagnitude = ashBreakTreshold * RBMCMConfig.ThrustMagnitudeModifier;
                                             }
                                         }
                                         else
@@ -1197,10 +1197,10 @@ namespace RealisticBattleCombatModule
                                             {
                                                 blowMagnitude *= 0.34f;
                                             }
-                                            skillBasedDamage = (blowMagnitude * 0.4f + 60f * XmlConfig.dict["Global.ThrustModifier"]) * 1.3f;
-                                            if (skillBasedDamage > 360f * XmlConfig.dict["Global.ThrustModifier"])
+                                            skillBasedDamage = (blowMagnitude * 0.4f + 60f * RBMCMConfig.ThrustMagnitudeModifier) * 1.3f;
+                                            if (skillBasedDamage > 360f * RBMCMConfig.ThrustMagnitudeModifier)
                                             {
-                                                skillBasedDamage = 360f * XmlConfig.dict["Global.ThrustModifier"];
+                                                skillBasedDamage = 360f * RBMCMConfig.ThrustMagnitudeModifier;
                                             }
                                         }
                                     }
@@ -1318,7 +1318,7 @@ namespace RealisticBattleCombatModule
         {
 
             float damage = 0f;
-            float armorReduction = 100f / (100f + armorEffectiveness * XmlConfig.dict["Global.ArmorMultiplier"]);
+            float armorReduction = 100f / (100f + armorEffectiveness * RBMCMConfig.dict["Global.ArmorMultiplier"]);
             float mag_1h_thrust;
             float mag_2h_thrust;
             float mag_1h_sword_thrust;
@@ -1326,10 +1326,10 @@ namespace RealisticBattleCombatModule
 
             if (damageType == DamageTypes.Pierce)
             {
-                mag_1h_thrust = magnitude * XmlConfig.dict["Global.OneHandedThrustBonus"];
-                mag_2h_thrust = magnitude * 1f * XmlConfig.dict["Global.TwoHandedThrustBonus"];
-                mag_1h_sword_thrust = magnitude * 1.0f * XmlConfig.dict["Global.OneHandedThrustBonus"];
-                mag_2h_sword_thrust = magnitude * 1f * XmlConfig.dict["Global.TwoHandedThrustBonus"];
+                mag_1h_thrust = magnitude * RBMCMConfig.OneHandedThrustDamageBonus;
+                mag_2h_thrust = magnitude * 1f * RBMCMConfig.TwoHandedThrustDamageBonus;
+                mag_1h_sword_thrust = magnitude * 1.0f * RBMCMConfig.OneHandedThrustDamageBonus;
+                mag_2h_sword_thrust = magnitude * 1f * RBMCMConfig.TwoHandedThrustDamageBonus;
             }
             else if (damageType == DamageTypes.Cut)
             {
@@ -1350,92 +1350,92 @@ namespace RealisticBattleCombatModule
             {
                 case "Dagger":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_sword_thrust, armorReduction, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
+                        damage = weaponTypeDamage(RBMCMConfig.dict[weaponType + ".ExtraBluntFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_sword_thrust, armorReduction, damageType, armorEffectiveness,
+                                RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }
                 case "ThrowingKnife":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_sword_thrust, armorReduction, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
+                        damage = weaponTypeDamage(RBMCMConfig.dict[weaponType + ".ExtraBluntFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_sword_thrust, armorReduction, damageType, armorEffectiveness,
+                                RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }
                 case "OneHandedSword":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_sword_thrust, armorReduction, damageType, armorEffectiveness,
-                                XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
+                        damage = weaponTypeDamage(RBMCMConfig.dict[weaponType + ".ExtraBluntFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_sword_thrust, armorReduction, damageType, armorEffectiveness,
+                                RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }
                 case "TwoHandedSword":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_2h_sword_thrust, armorReduction, damageType, armorEffectiveness,
-                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
+                        damage = weaponTypeDamage(RBMCMConfig.dict[weaponType + ".ExtraBluntFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_2h_sword_thrust, armorReduction, damageType, armorEffectiveness,
+                            RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }
                 case "OneHandedAxe":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, armorReduction, damageType, armorEffectiveness,
-                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
+                        damage = weaponTypeDamage(RBMCMConfig.dict[weaponType + ".ExtraBluntFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, armorReduction, damageType, armorEffectiveness,
+                            RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }
                 case "OneHandedBastardAxe":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, armorReduction, damageType, armorEffectiveness,
-                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
+                        damage = weaponTypeDamage(RBMCMConfig.dict[weaponType + ".ExtraBluntFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, armorReduction, damageType, armorEffectiveness,
+                            RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }
                 case "TwoHandedAxe":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, armorReduction, damageType, armorEffectiveness,
-                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
+                        damage = weaponTypeDamage(RBMCMConfig.dict[weaponType + ".ExtraBluntFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, armorReduction, damageType, armorEffectiveness,
+                            RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }
                 case "OneHandedPolearm":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_thrust, armorReduction, damageType, armorEffectiveness,
-                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
+                        damage = weaponTypeDamage(RBMCMConfig.dict[weaponType + ".ExtraBluntFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_thrust, armorReduction, damageType, armorEffectiveness,
+                            RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }
                 case "TwoHandedPolearm":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_2h_thrust, armorReduction, damageType, armorEffectiveness,
-                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
+                        damage = weaponTypeDamage(RBMCMConfig.dict[weaponType + ".ExtraBluntFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_2h_thrust, armorReduction, damageType, armorEffectiveness,
+                            RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }
                 case "Mace":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_thrust, armorReduction, damageType, armorEffectiveness,
-                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim, 0f);
+                        damage = weaponTypeDamage(RBMCMConfig.dict[weaponType + ".ExtraBluntFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_thrust, armorReduction, damageType, armorEffectiveness,
+                            RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim, 0f);
                         break;
                     }
                 case "TwoHandedMace":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_2h_thrust, armorReduction, damageType, armorEffectiveness,
-                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
+                        damage = weaponTypeDamage(RBMCMConfig.dict[weaponType + ".ExtraBluntFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_2h_thrust, armorReduction, damageType, armorEffectiveness,
+                            RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }
                 case "Arrow":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, armorReduction, damageType, armorEffectiveness,
-                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim, 0f);
+                        damage = weaponTypeDamage(RBMCMConfig.dict[weaponType + ".ExtraBluntFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, armorReduction, damageType, armorEffectiveness,
+                            RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim, 0f);
                         break;
                     }
                 case "Bolt":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, armorReduction, damageType, armorEffectiveness,
-                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim, 0f);
+                        damage = weaponTypeDamage(RBMCMConfig.dict[weaponType + ".ExtraBluntFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraBluntFactorPierce"], magnitude, armorReduction, damageType, armorEffectiveness,
+                            RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim, 0f);
                         break;
                     }
                 case "Javelin":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_thrust, armorReduction, damageType, armorEffectiveness,
-                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
+                        damage = weaponTypeDamage(RBMCMConfig.dict[weaponType + ".ExtraBluntFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_thrust, armorReduction, damageType, armorEffectiveness,
+                            RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }
                 case "ThrowingAxe":
                     {
-                        damage = weaponTypeDamage(XmlConfig.dict[weaponType + ".ExtraBluntFactorCut"], XmlConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_thrust, armorReduction, damageType, armorEffectiveness,
-                            XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], XmlConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
+                        damage = weaponTypeDamage(RBMCMConfig.dict[weaponType + ".ExtraBluntFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraBluntFactorPierce"], mag_1h_thrust, armorReduction, damageType, armorEffectiveness,
+                            RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorCut"], RBMCMConfig.dict[weaponType + ".ExtraArmorThresholdFactorPierce"], player, isPlayerVictim);
                         break;
                     }
                 default:
@@ -1456,14 +1456,14 @@ namespace RealisticBattleCombatModule
             {
                 case DamageTypes.Blunt:
                     {
-                        float armorReductionBlunt = 100f / (100f + armorEffectiveness * XmlConfig.dict["Global.ArmorMultiplier"]);
-                        damage += magnitude * armorReductionBlunt * XmlConfig.dict["Global.MaceBluntModifier"];
+                        float armorReductionBlunt = 100f / (100f + armorEffectiveness * RBMCMConfig.dict["Global.ArmorMultiplier"]);
+                        damage += magnitude * armorReductionBlunt * RBMCMConfig.dict["Global.MaceBluntModifier"];
 
                         break;
                     }
                 case DamageTypes.Cut:
                     {
-                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * cutTreshold * XmlConfig.dict["Global.ArmorThresholdModifier"]);
+                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * cutTreshold * RBMCMConfig.dict["Global.ArmorThresholdModifier"]);
                         float bluntFraction = 0f;
                         if (magnitude > 0f)
                         {
@@ -1471,11 +1471,11 @@ namespace RealisticBattleCombatModule
                         }
                         damage += penetratedDamage;
 
-                        float bluntTrauma = magnitude * (bluntFactorCut + XmlConfig.dict["Global.BluntTraumaBonus"]) * bluntFraction;
+                        float bluntTrauma = magnitude * (bluntFactorCut + RBMCMConfig.dict["Global.BluntTraumaBonus"]) * bluntFraction;
                         float bluntTraumaAfterArmor = Math.Max(0f, bluntTrauma * armorReduction);
                         damage += bluntTraumaAfterArmor;
 
-                        if (XmlConfig.dict["Global.ArmorPenetrationMessage"] >= 1f)
+                        if (RBMCMConfig.dict["Global.ArmorPenetrationMessage"] >= 1f)
                         {
                             if (player != null)
                             {
@@ -1498,12 +1498,12 @@ namespace RealisticBattleCombatModule
                     }
                 case DamageTypes.Pierce:
                     {
-                        float partialPenetration = Math.Max(0f, magnitude - armorEffectiveness * partialPenetrationThreshold * XmlConfig.dict["Global.ArmorThresholdModifier"]);
+                        float partialPenetration = Math.Max(0f, magnitude - armorEffectiveness * partialPenetrationThreshold * RBMCMConfig.dict["Global.ArmorThresholdModifier"]);
                         if (partialPenetration > 15f)
                         {
                             partialPenetration = 15f;
                         }
-                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * pierceTreshold * XmlConfig.dict["Global.ArmorThresholdModifier"]) - partialPenetration;
+                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * pierceTreshold * RBMCMConfig.dict["Global.ArmorThresholdModifier"]) - partialPenetration;
                         float bluntFraction = 0f;
                         if (magnitude > 0f)
                         {
@@ -1511,11 +1511,11 @@ namespace RealisticBattleCombatModule
                         }
                         damage += penetratedDamage + partialPenetration;
 
-                        float bluntTrauma = magnitude * (bluntFactorPierce + XmlConfig.dict["Global.BluntTraumaBonus"]) * bluntFraction;
+                        float bluntTrauma = magnitude * (bluntFactorPierce + RBMCMConfig.dict["Global.BluntTraumaBonus"]) * bluntFraction;
                         float bluntTraumaAfterArmor = Math.Max(0f, bluntTrauma * armorReduction);
                         damage += bluntTraumaAfterArmor;
 
-                        if (XmlConfig.dict["Global.ArmorPenetrationMessage"] >= 1f)
+                        if (RBMCMConfig.dict["Global.ArmorPenetrationMessage"] >= 1f)
                         {
                             if (player != null)
                             {
@@ -1594,39 +1594,39 @@ namespace RealisticBattleCombatModule
             
             if (item.ItemType == ItemObject.ItemTypeEnum.LegArmor)
             {
-                price = (int)((75f + (float)item.ArmorComponent.LegArmor * materialPriceModifier) * XmlConfig.dict["Global.ArmorPriceModifier"]);
+                price = (int)((75f + (float)item.ArmorComponent.LegArmor * materialPriceModifier) * RBMCMConfig.dict["Global.ArmorPriceModifier"]);
             }
             else if (item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
             {
-                price = (int)((50f + (float)item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f) * XmlConfig.dict["Global.ArmorPriceModifier"]);
+                price = (int)((50f + (float)item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f) * RBMCMConfig.dict["Global.ArmorPriceModifier"]);
             }
             else if (item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
             {
-                price = (int)((100f + (float)item.ArmorComponent.HeadArmor * materialPriceModifier * 1.2f) * XmlConfig.dict["Global.ArmorPriceModifier"]);
+                price = (int)((100f + (float)item.ArmorComponent.HeadArmor * materialPriceModifier * 1.2f) * RBMCMConfig.dict["Global.ArmorPriceModifier"]);
             }
             else if (item.ItemType == ItemObject.ItemTypeEnum.Cape)
             {
-                price = (int)((50f + (float)item.ArmorComponent.BodyArmor * materialPriceModifier * 0.8f + (float)item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f) * XmlConfig.dict["Global.ArmorPriceModifier"]);
+                price = (int)((50f + (float)item.ArmorComponent.BodyArmor * materialPriceModifier * 0.8f + (float)item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f) * RBMCMConfig.dict["Global.ArmorPriceModifier"]);
             }
             else if (item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
             {
-                price = (int)((200f + (float)item.ArmorComponent.BodyArmor * materialPriceModifier * 2.5f + (float)item.ArmorComponent.LegArmor * materialPriceModifier + (float)item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f) * XmlConfig.dict["Global.ArmorPriceModifier"]);
+                price = (int)((200f + (float)item.ArmorComponent.BodyArmor * materialPriceModifier * 2.5f + (float)item.ArmorComponent.LegArmor * materialPriceModifier + (float)item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f) * RBMCMConfig.dict["Global.ArmorPriceModifier"]);
             }
             else if (item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
             {
-                price = (int)((100f + (((float)item.ArmorComponent.BodyArmor) * 0.2f + (float)item.ArmorComponent.ArmArmor * 0.2f + (float)item.ArmorComponent.LegArmor * 0.4f + (float)item.ArmorComponent.HeadArmor * 0.2f) * 450f) * XmlConfig.dict["Global.ArmorPriceModifier"]);
+                price = (int)((100f + (((float)item.ArmorComponent.BodyArmor) * 0.2f + (float)item.ArmorComponent.ArmArmor * 0.2f + (float)item.ArmorComponent.LegArmor * 0.4f + (float)item.ArmorComponent.HeadArmor * 0.2f) * 450f) * RBMCMConfig.dict["Global.ArmorPriceModifier"]);
             }
             else if (item.ItemComponent is WeaponComponent)
             {
-                price = (int)(200f * XmlConfig.dict["Global.WeaponPriceModifier"] * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
+                price = (int)(200f * RBMCMConfig.dict["Global.WeaponPriceModifier"] * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
             }
             else if (item.ItemComponent is HorseComponent)
             {
-                price = (int)(200f * tier * XmlConfig.dict["Global.HorsePriceModifier"] * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
+                price = (int)(200f * tier * RBMCMConfig.dict["Global.HorsePriceModifier"] * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
             }
             else if (item.ItemComponent is TradeItemComponent)
             {
-                price = (int)(100f * tier * XmlConfig.dict["Global.TradePriceModifier"] * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
+                price = (int)(100f * tier * RBMCMConfig.dict["Global.TradePriceModifier"] * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
             }
             else
             {
@@ -1682,7 +1682,7 @@ namespace RealisticBattleCombatModule
         static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
         {
             WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
-            float val = ((float)weaponComponentData.ThrustDamage * XmlConfig.dict["Global.OneHandedThrustBonus"] - 75f) * 0.1f * GetFactor(weaponComponentData.ThrustDamageType) * ((float)weaponComponentData.ThrustSpeed * 0.01f);
+            float val = ((float)weaponComponentData.ThrustDamage * RBMCMConfig.OneHandedThrustDamageBonus - 75f) * 0.1f * GetFactor(weaponComponentData.ThrustDamageType) * ((float)weaponComponentData.ThrustSpeed * 0.01f);
             float num = ((float)weaponComponentData.SwingDamage) * 0.2f * GetFactor(weaponComponentData.SwingDamageType) * ((float)weaponComponentData.SwingSpeed * 0.01f);
             float maceTier = ((float)weaponComponentData.SwingDamage - 3f) * 0.23f * ((float)weaponComponentData.SwingSpeed * 0.01f);
             if (val < 0f)
@@ -1747,7 +1747,7 @@ namespace RealisticBattleCombatModule
                     }
                 case WeaponClass.Javelin:
                     {
-                        num2 = ((float)weaponComponentData.ThrustDamage * XmlConfig.dict["Global.OneHandedThrustBonus"] - 60f) * 0.1f; //XmlConfig.dict["Global.ThrustModifier"];
+                        num2 = ((float)weaponComponentData.ThrustDamage * RBMCMConfig.OneHandedThrustDamageBonus - 60f) * 0.1f; //XmlConfig.ThrustModifier;
                         break;
                     }
                 case WeaponClass.OneHandedPolearm:

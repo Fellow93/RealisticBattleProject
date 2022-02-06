@@ -349,7 +349,7 @@ namespace RealisticBattleAiModule
             [HarmonyPatch("OnObjectDisabled")]
             static void PostfixOnObjectDisabled(DestructableComponent destructionComponent)
             {
-                if(destructionComponent.GameEntity.GetFirstScriptOfType<UsableMachine>() != null && destructionComponent.GameEntity.GetFirstScriptOfType<UsableMachine>().IsDestroyed)
+                if(destructionComponent.GameEntity.GetFirstScriptOfType<UsableMachine>() != null && destructionComponent.GameEntity.GetFirstScriptOfType<UsableMachine>().GetType().Equals(typeof(BatteringRam)) && destructionComponent.GameEntity.GetFirstScriptOfType<UsableMachine>().IsDestroyed)
                 {
                     balanceLaneDefendersEnabled = true;
                     carryOutDefenceEnabled = true;

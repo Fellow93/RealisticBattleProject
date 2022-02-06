@@ -86,42 +86,42 @@ internal class RbmMenuViewModel : ViewModel
 		BetterArrowVisualsText = new TextViewModel(new TextObject("Better Arrow Visuals"));
 		BetterArrowVisuals = new SelectorVM<SelectorItemVM>(betterArrowVisuals, 0, null);
 
-		if (XmlConfig.dict["Global.TroopOverhaulActive"] == 0)
+		if (RBMCMConfig.dict["Global.TroopOverhaulActive"] == 0)
 		{
 			ActiveTroopOverhaul.SelectedIndex = 0;
 		}
-		else if (XmlConfig.dict["Global.TroopOverhaulActive"] == 1)
+		else if (RBMCMConfig.dict["Global.TroopOverhaulActive"] == 1)
 		{
 			ActiveTroopOverhaul.SelectedIndex = 1;
 		}
 
-		if (XmlConfig.dict["Global.RealisticRangedReload"] == 0)
+		if (RBMCMConfig.dict["Global.RealisticRangedReload"] == 0)
 		{
 			RangedReloadSpeed.SelectedIndex = 0;
 		}
-		else if (XmlConfig.dict["Global.RealisticRangedReload"] == 1)
+		else if (RBMCMConfig.dict["Global.RealisticRangedReload"] == 1)
 		{
 			RangedReloadSpeed.SelectedIndex = 1;
 		}
-		else if (XmlConfig.dict["Global.RealisticRangedReload"] == 2)
+		else if (RBMCMConfig.dict["Global.RealisticRangedReload"] == 2)
 		{
 			RangedReloadSpeed.SelectedIndex = 2;
 		}
 
-		if (XmlConfig.dict["Global.PassiveShoulderShields"] == 0)
+		if (RBMCMConfig.dict["Global.PassiveShoulderShields"] == 0)
 		{
 			PassiveShoulderShields.SelectedIndex = 0;
 		}
-		else if (XmlConfig.dict["Global.PassiveShoulderShields"] == 1)
+		else if (RBMCMConfig.dict["Global.PassiveShoulderShields"] == 1)
 		{
 			PassiveShoulderShields.SelectedIndex = 1;
 		}
 
-		if (XmlConfig.dict["Global.BetterArrowVisuals"] == 0)
+		if (RBMCMConfig.dict["Global.BetterArrowVisuals"] == 0)
 		{
 			BetterArrowVisuals.SelectedIndex = 0;
 		}
-		else if (XmlConfig.dict["Global.BetterArrowVisuals"] == 1)
+		else if (RBMCMConfig.dict["Global.BetterArrowVisuals"] == 1)
 		{
 			BetterArrowVisuals.SelectedIndex = 1;
 		}
@@ -198,13 +198,13 @@ internal class RbmMenuViewModel : ViewModel
 
 		xmlDocument.Save(Utilities.GetConfigFilePath());
 
-		XmlConfig.dict.Clear();
+		RBMCMConfig.dict.Clear();
 
 		foreach (XmlNode childNode in xmlDocument.SelectSingleNode("/config").ChildNodes)
 		{
 			foreach (XmlNode subNode in childNode)
 			{
-				XmlConfig.dict.Add(childNode.Name + "." + subNode.Name, float.Parse(subNode.InnerText));
+				RBMCMConfig.dict.Add(childNode.Name + "." + subNode.Name, float.Parse(subNode.InnerText));
 			}
 		}
 
