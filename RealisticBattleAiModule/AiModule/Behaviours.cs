@@ -1678,6 +1678,10 @@ namespace RealisticBattleAiModule
                     {
                         __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderShieldWall;
                     }
+                    else if(__instance.Formation.TargetFormation != null && __instance.Formation.TargetFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderLine)
+                    {
+                        __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+                    }
                     return false;
                 }
             }
@@ -1690,7 +1694,6 @@ namespace RealisticBattleAiModule
             ____currentOrder = MovementOrder.MovementOrderCharge;
             return false;
         }
-
     }
 
     [HarmonyPatch(typeof(BehaviorTacticalCharge))]
