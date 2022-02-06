@@ -9,6 +9,7 @@
 		<!-- BluntTraumaBonus, globally increase all the ExtraBluntFactors by the written value, this can be used to increase "guaranteed" damage globally (except for true blunt damage, see above). By default set to 0, set to 0.05-0.1 for bit more guaranteed damage without affecting actual armor penetration, this will result in +100-200% guaranteed damage for arrows and bolts because their default threshold is 0.05. -->
 		
 		<!-- Price modifiers: if you set it to 0.5 prices change to 50%, if you set it to 0.1 prices change to 10% etc. Trade = trade goods. -->
+		<!-- OneHandedThrustBonus, TwoHandedThrustBonus and ThrustModifier does NOTHING, it was moved to code -->
 	<Global>
 		<ArmorMultiplier>2.0</ArmorMultiplier>
 		<OneHandedThrustBonus>30</OneHandedThrustBonus>
