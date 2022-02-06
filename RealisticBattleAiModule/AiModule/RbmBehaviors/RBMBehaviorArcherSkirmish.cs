@@ -178,8 +178,8 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 						medianPosition.SetVec2(base.Formation.QuerySystem.AveragePosition);
 						break;
 					case BehaviorState.Approaching:
-						medianPosition = significantEnemy.QuerySystem.MedianPosition;
-						medianPosition.SetVec2(base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.AveragePosition);
+						//medianPosition = significantEnemy.QuerySystem.MedianPosition;
+						medianPosition.SetVec2(significantEnemy.QuerySystem.AveragePosition);
 						break;
 					case BehaviorState.PullingBack:
 						medianPosition = significantEnemy.QuerySystem.MedianPosition;
