@@ -38,8 +38,8 @@
   <ItemModifier id="hardened_polearm" name="{=CAP1BUjL}Hardened {ITEMNAME}" damage="4" speed="0" price_factor="0.6" />
   <ItemModifier id="bent_polearm" name="{=eb4miTUB}Bent {ITEMNAME}" damage="-3" speed="-5" price_factor="0.5" />
   <ItemModifier id="heavy_polearm" name="{=RwBOv1Mz}Crude {ITEMNAME}" damage="3" speed="-10" price_factor="0.4" />
-  <ItemModifier id="splintered_polearm" name="{=8Pd6fLoy}Splintered {ITEMNAME}" damage="-4" speed="-5" price_factor="0.3" />
-  <ItemModifier id="cracked_polearm" name="{=br0N6SSH}Cracked {ITEMNAME}" damage="-5" speed="-10" price_factor="0.2" />
+  <ItemModifier id="splintered_polearm" name="{=8Pd6fLoy}Splintered {ITEMNAME}" damage="-1" speed="-5" price_factor="0.3" />
+  <ItemModifier id="cracked_polearm" name="{=br0N6SSH}Cracked {ITEMNAME}" damage="-2" speed="-10" price_factor="0.2" />
   <!-- Low Quality Maces -->
   <ItemModifier id="balanced_maceLQ" name="{=fdgcpipH}Balanced {ITEMNAME}" damage="7" speed="10" price_factor="0.7" />
   <ItemModifier id="heavy_maceLQ" name="{=CAP1BUjL}Hardened {ITEMNAME}" damage="5" speed="-10" price_factor="0.6" />
@@ -80,7 +80,7 @@
   <ItemModifier id="large_bag_knife_throwing" name="{=3JaHZA3Y}Large Bag of {ITEMNAME}" stack_count="2" damage="0" speed="0" missile_speed="0" price_factor="0.7" />
   <ItemModifier id="heavy_knife_throwing" name="{=H30eaZdf}Heavy {ITEMNAME}" damage="3" speed="-2" missile_speed="0" price_factor="0.5" />
   <ItemModifier id="light_knife_throwing" name="{=582QaBL6}Light {ITEMNAME}" damage="2" speed="2" missile_speed="0" price_factor="0.4" />
-  <ItemModifier id="bent_knife_throwing" name="{=eb4miTUB}Bent {ITEMNAME}" damage="-5" speed="0" missile_speed="0" price_factor="0.2" />
+  <ItemModifier id="bent_knife_throwing" name="{=eb4miTUB}Bent {ITEMNAME}" damage="-3" speed="0" missile_speed="0" price_factor="0.2" />
   <!-- Throwing spears and darts -->
   <ItemModifier id="balanced_spear_dart_throwing" name="{=fdgcpipH}Balanced {ITEMNAME}" damage="5" speed="1" missile_speed="0" price_factor="0.7" />
   <ItemModifier id="large_bag_spear_dart_throwing" name="{=3JaHZA3Y}Large Bag of {ITEMNAME}" stack_count="2" damage="0" speed="0" missile_speed="0" price_factor="0.7" />
