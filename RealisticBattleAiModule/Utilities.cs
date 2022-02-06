@@ -154,6 +154,28 @@ namespace RealisticBattleAiModule
             return tier;
         }
 
+        public static Agent GetCorrectTarget(Agent agent)
+        {
+            List<Formation> formations;
+            if (agent != null)
+            {
+                Formation formation = agent.Formation;
+                if (formation != null)
+                {
+                    if ((formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && (formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget))
+                    {
+                        formations = Utilities.FindSignificantFormations(formation);
+                        if (formations.Count > 0)
+                        {
+                            return Utilities.NearestAgentFromMultipleFormations(agent.Position.AsVec2, formations);
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+
         public static Agent NearestAgentFromFormation(Vec2 unitPosition, Formation targetFormation)
         {
             Agent targetAgent = null;

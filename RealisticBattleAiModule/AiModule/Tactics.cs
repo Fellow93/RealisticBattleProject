@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TaleWorlds.Core;
+using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.Core.ItemObject;
@@ -13,6 +14,17 @@ namespace RealisticBattleAiModule
 {
     class Tactics
     {
+        private static bool carryOutDefenceEnabled = true;
+        private static bool archersShiftAroundEnabled = true;
+        private static bool balanceLaneDefendersEnabled = true;
+
+        public class AIDecision
+        {
+            public int cooldown = 0;
+            public WorldPosition position = WorldPosition.Invalid;
+        }
+
+        public static Dictionary<Agent, AIDecision> aiDecisionCooldownDict = new Dictionary<Agent, AIDecision>();
 
         //[HarmonyPatch(typeof(Team))]
         //[HarmonyPatch("Tick")]
@@ -191,6 +203,9 @@ namespace RealisticBattleAiModule
         {
             public static void Postfix()
             {
+                carryOutDefenceEnabled = true;
+                archersShiftAroundEnabled = true;
+                aiDecisionCooldownDict.Clear();
                 MyPatcher.DoPatching();
                 OnTickAsAIPatch.itemPickupDistanceStorage.Clear();
                 ManagedParameters.SetParameter(ManagedParametersEnum.BipedalRadius, 0.5f);
@@ -284,8 +299,61 @@ namespace RealisticBattleAiModule
             [HarmonyPatch("CarryOutDefense")]
             static bool PrefixCarryOutDefense(ref TacticDefendCastle __instance, ref bool doRangedJoinMelee)
             {
-                doRangedJoinMelee = false;
-                return true;
+                if (carryOutDefenceEnabled)
+                {
+                    carryOutDefenceEnabled = false;
+                    doRangedJoinMelee = false;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            [HarmonyPrefix]
+            [HarmonyPatch("ArcherShiftAround")]
+            static bool PrefixArcherShiftAround(ref TacticDefendCastle __instance)
+            {
+                if (archersShiftAroundEnabled)
+                {
+                    archersShiftAroundEnabled = false;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            [HarmonyPrefix]
+            [HarmonyPatch("BalanceLaneDefenders")]
+            static bool PrefixBalanceLaneDefenders(ref TacticDefendCastle __instance)
+            {
+                if (balanceLaneDefendersEnabled)
+                {
+                    balanceLaneDefendersEnabled = false;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(Mission))]
+        class MissionPatch
+        {
+            [HarmonyPostfix]
+            [HarmonyPatch("OnObjectDisabled")]
+            static void PostfixOnObjectDisabled(DestructableComponent destructionComponent)
+            {
+                if(destructionComponent.GameEntity.GetFirstScriptOfType<UsableMachine>() != null && destructionComponent.GameEntity.GetFirstScriptOfType<UsableMachine>().IsDestroyed)
+                {
+                    balanceLaneDefendersEnabled = true;
+                    carryOutDefenceEnabled = true;
+                }
             }
         }
 
