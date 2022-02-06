@@ -2357,8 +2357,6 @@ namespace RealisticBattleAiModule
     class OverrideFormation
     {
 
-        
-
         private static int aiDecisionCooldownTime = 2;
         private static int aiDecisionCooldownTimeSiege = 0;
 
@@ -2371,6 +2369,7 @@ namespace RealisticBattleAiModule
             {
                 bool isFieldBattle = Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle;
                 AIDecision aiDecision;
+
                 if (aiDecisionCooldownDict.TryGetValue(unit, out aiDecision))
                 {
                     if (isFieldBattle)
@@ -2764,16 +2763,16 @@ namespace RealisticBattleAiModule
                                         }
                                         else
                                         {
-                                            //__result = unit.GetWorldPosition();
-                                            __result = WorldPosition.Invalid;
+                                            __result = unit.GetWorldPosition();
+                                            //__result = WorldPosition.Invalid;
                                             aiDecisionCooldownDict[unit].position = __result; return false;
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    //__result = unit.GetWorldPosition();
-                                    __result = WorldPosition.Invalid;
+                                    __result = unit.GetWorldPosition();
+                                    //__result = WorldPosition.Invalid;
                                     aiDecisionCooldownDict[unit].position = __result; return false;
                                 }
                             }
@@ -2808,8 +2807,8 @@ namespace RealisticBattleAiModule
                             }
                             if (randInt < 0)
                             {
-                                //__result = unit.GetWorldPosition();
-                                __result = WorldPosition.Invalid;
+                                __result = unit.GetWorldPosition();
+                                //__result = WorldPosition.Invalid;
                                 aiDecisionCooldownDict[unit].position = __result; return false;
                             }
                             if (enemyAgentsImmidiate.Count() > 7)
@@ -2865,8 +2864,8 @@ namespace RealisticBattleAiModule
                                 {
                                     if (MBRandom.RandomInt(unitPower / 4) == 0)
                                     {
-                                        //__result = unit.GetWorldPosition();
-                                        __result = WorldPosition.Invalid;
+                                        __result = unit.GetWorldPosition();
+                                        //__result = WorldPosition.Invalid;
                                         aiDecisionCooldownDict[unit].position = __result; return false;
                                     }
                                     else

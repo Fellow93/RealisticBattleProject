@@ -57,7 +57,7 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 				{
 					significantEnemy = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation;
 				}
-				vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition;
+				vec = significantEnemy.QuerySystem.AveragePosition - base.Formation.QuerySystem.AveragePosition;
 				float distance = vec.Normalize();
 				//float ratioOfShooting = MBMath.Lerp(0.1f, 0.33f, 1f - MBMath.ClampFloat(base.Formation.CountOfUnits, 1f, 50f) * 0.02f) * base.Formation.QuerySystem.RangedUnitRatio;
 				float ratioOfShooting = 0.33f;
@@ -178,11 +178,11 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 						medianPosition.SetVec2(base.Formation.QuerySystem.AveragePosition);
 						break;
 					case BehaviorState.Approaching:
-						medianPosition = significantEnemy.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MedianPosition;
+						medianPosition = significantEnemy.QuerySystem.MedianPosition;
 						medianPosition.SetVec2(base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.AveragePosition);
 						break;
 					case BehaviorState.PullingBack:
-						medianPosition = significantEnemy.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MedianPosition;
+						medianPosition = significantEnemy.QuerySystem.MedianPosition;
 						medianPosition.SetVec2(medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f - 10f));
 						break;
 				}
