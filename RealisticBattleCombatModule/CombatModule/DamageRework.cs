@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Helpers;
+using JetBrains.Annotations;
 using SandBox;
 using StoryMode.GameModels;
 using System;
@@ -132,21 +133,21 @@ namespace RealisticBattleCombatModule
         //    }
         //}
 
-        [HarmonyPatch(typeof(DefaultDamageParticleModel))]
-        [HarmonyPatch("GetMissileAttackParticle")]
-        public class GetMissileAttackParticlePatch
-        {
-            static bool Prefix(ref int __result, ref Mission __instance, Agent attacker, Agent victim, in Blow blow, in AttackCollisionData collisionData)
-            {
-                //bool hasPenetrated = false;
-                //if (hasMissilePenetrated.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out hasPenetrated))
-                //{
-                //    __result = ParticleSystemManager.GetRuntimeIdByName("psys_game_sweat_sword_enter");
-                //    return false;
-                //}
-                return true;
-            }
-        }
+        //[HarmonyPatch(typeof(DefaultDamageParticleModel))]
+        //[HarmonyPatch("GetMissileAttackParticle")]
+        //public class GetMissileAttackParticlePatch
+        //{
+        //    static bool Prefix(ref int __result, ref Mission __instance, Agent attacker, Agent victim, in Blow blow, in AttackCollisionData collisionData)
+        //    {
+        //        //bool hasPenetrated = false;
+        //        //if (hasMissilePenetrated.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out hasPenetrated))
+        //        //{
+        //        //    __result = ParticleSystemManager.GetRuntimeIdByName("psys_game_sweat_sword_enter");
+        //        //    return false;
+        //        //}
+        //        return true;
+        //    }
+        //}
 
         [HarmonyPatch(typeof(Mission))]
         [HarmonyPatch("ComputeBlowMagnitudeMissile")]
@@ -655,6 +656,10 @@ namespace RealisticBattleCombatModule
                                 {
                                     magnitude = skillBasedDamage;
                                 }
+                                //else if(magnitude > 0f && magnitude <= 0.15f)
+                                //{
+                                //    InformationManager.DisplayMessage(new InformationMessage("DEBUG WARNING: strike bagnitude below treshlod"));
+                                //}
                                 break;
                             }
                         case "TwoHandedPolearm":
@@ -718,6 +723,10 @@ namespace RealisticBattleCombatModule
                                 {
                                     magnitude = skillBasedDamage;
                                 }
+                                //else if (magnitude > 0f && magnitude <= 0.15f)
+                                //{
+                                //    InformationManager.DisplayMessage(new InformationMessage("DEBUG WARNING: strike bagnitude below treshlod"));
+                                //}
                                 break;
                             }
                     }
@@ -2014,7 +2023,7 @@ namespace RealisticBattleCombatModule
 
             if (victimAgent!= null && victimAgent.Character != null && victimAgent.Character.IsPlayerCharacter)
             {
-                if (!collisionData.AttackBlockedWithShield && (collisionData.CollisionResult == CombatCollisionResult.Blocked || collisionData.CollisionResult == CombatCollisionResult.Parried || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked))
+                if (collisionData.CollisionResult == CombatCollisionResult.Blocked || collisionData.CollisionResult == CombatCollisionResult.Parried || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked)
                 {
                     CharacterObject affectedCharacter = (CharacterObject)victimAgent.Character;
                     Hero heroObject = affectedCharacter.HeroObject;
@@ -2022,8 +2031,15 @@ namespace RealisticBattleCombatModule
                     CharacterObject affectorCharacter = (CharacterObject)attackerAgent.Character;
 
                     float experience = 1f;
-                    Campaign.Current.Models.CombatXpModel.GetXpFromHit(heroObject.CharacterObject, null, affectorCharacter, heroObject.PartyBelongedTo?.Party, (int)collisionData.BaseMagnitude, false, CombatXpModel.MissionTypeEnum.Battle, out var xpAmount);
-                    experience = xpAmount * 2f;
+                    Campaign.Current.Models.CombatXpModel.GetXpFromHit(heroObject.CharacterObject, null, affectorCharacter, heroObject.PartyBelongedTo?.Party, (int)collisionData.InflictedDamage, false, CombatXpModel.MissionTypeEnum.Battle, out var xpAmount);
+                    if(collisionData.CollisionResult == CombatCollisionResult.Blocked && collisionData.AttackBlockedWithShield)
+                    {
+                        experience = xpAmount * 0.8f;
+                    }
+                    if (collisionData.CollisionResult == CombatCollisionResult.Parried || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked)
+                    {
+                        experience = xpAmount * 1.2f;
+                    }
                     WeaponComponentData parryWeapon = victimAgent.WieldedWeapon.CurrentUsageItem;
                     if (parryWeapon != null)
                     {
@@ -2518,7 +2534,15 @@ namespace RealisticBattleCombatModule
                 int attackedTroopMaxHP = attackedTroop.MaxHitPoints();
                 float troopPower = 0f;
                 troopPower = ((party?.MapEvent == null) ? Campaign.Current.Models.MilitaryPowerModel.GetTroopPowerBasedOnContext(attackerTroop) : Campaign.Current.Models.MilitaryPowerModel.GetTroopPowerBasedOnContext(attackerTroop, party.MapEvent.EventType, party.Side, missionType == MissionTypeEnum.SimulationBattle));
-                float rawXpNum = 0.4f * ((troopPower + 0.5f) * (float)(Math.Min(damage, attackedTroopMaxHP) + (isFatal ? attackedTroopMaxHP : 0)));
+                float rawXpNum = 0;
+                if (damage < 20)
+                {
+                    rawXpNum = 0.4f * ((troopPower + 0.5f) * (float)(Math.Min(20, attackedTroopMaxHP) + (isFatal ? attackedTroopMaxHP : 0)));
+                }
+                else
+                {
+                    rawXpNum = 0.4f * ((troopPower + 0.5f) * (float)(Math.Min(damage, attackedTroopMaxHP) + (isFatal ? attackedTroopMaxHP : 0)));
+                }
                 float xpModifier;
                 switch (missionType)
                 {
