@@ -164,6 +164,13 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 						}
 						break;
 					case BehaviorState.PullingBack:
+						Formation meleeFormationPull = Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
+						if (meleeFormationPull == null || !meleeFormationPull.QuerySystem.IsInfantryFormation)
+						{
+							_behaviorState = BehaviorState.Shooting;
+							_cantShoot = false;
+							flag = true;
+						}
 						if (distance > MathF.Min(_cantShootDistance, effectiveShootingRange) * 0.9f)
 						{
 							_behaviorState = BehaviorState.Shooting;

@@ -152,6 +152,11 @@ namespace RealisticBattleAiModule
 
                 //                GetEffectiveSkill
 
+                if(agent.Formation != null && agent.Formation.QuerySystem.IsInfantryFormation)
+                {
+                    agentDrivenProperties.ReloadMovementPenaltyFactor = 0.33f;
+                }
+
                 if (agent.IsRangedCached)
                 {
                     //agent.SetScriptedCombatFlags(Agent.AISpecialCombatModeFlags.IgnoreAmmoLimitForRangeCalculation);
