@@ -74,7 +74,7 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 		{
 			CalculateCurrentOrder();
 			base.Formation.SetMovementOrder(base.CurrentOrder);
-			base.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+			base.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
 			base.Formation.FacingOrder = FacingOrder.FacingOrderLookAtEnemy;
 			base.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
 			base.Formation.FormOrder = FormOrder.FormOrderDeep;
