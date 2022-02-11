@@ -22,6 +22,7 @@ namespace RealisticBattleAiModule
         {
             public int cooldown = 0;
             public WorldPosition position = WorldPosition.Invalid;
+            public int customMaxCoolDown = -1;
         }
 
         public static Dictionary<Agent, AIDecision> aiDecisionCooldownDict = new Dictionary<Agent, AIDecision>();
@@ -223,7 +224,8 @@ namespace RealisticBattleAiModule
                                 team.AddTacticOption(new TacticFrontalCavalryCharge(team));
                                 team.AddTacticOption(new TacticCoordinatedRetreat(team));
                                 //team.AddTacticOption(new TacticCharge(team));
-                                //team.AddTacticOption(new TacticFullScaleAttackWithDedicatedSkirmishers(team));
+                                //team.AddTacticOption(new RBMTacticAttackSplitSkirmishers(team));
+                                //team.AddTacticOption(new RBMTacticAttackSplitInfantry(team));
                             }
                             if (team.Side == BattleSideEnum.Defender)
                             {

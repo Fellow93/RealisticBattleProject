@@ -295,8 +295,10 @@
     <Compile Include="AiModule\Posture\PostureVisualLogic.cs" />
     <Compile Include="AiModule\Posture\PostureVisualVM.cs" />
     <Compile Include="AiModule\RbmBehaviors\RBMBehaviorArcherSkirmish.cs" />
+    <Compile Include="AiModule\RbmBehaviors\RBMBehaviorInfantryFlank.cs" />
     <Compile Include="AiModule\RbmBehaviors\RBMBehaviorForwardSkirmish.cs" />
-    <Compile Include="AiModule\RbmTactics\TacticFullScaleAttackWithDedicatedSkirmishers.cs" />
+    <Compile Include="AiModule\RbmTactics\RBMTacticAttackSplitInfantry.cs" />
+    <Compile Include="AiModule\RbmTactics\RBMTacticAttackSplitSkirmishers.cs" />
     <Compile Include="AiModule\Tactics.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

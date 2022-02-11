@@ -6,11 +6,13 @@ using System.Linq;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 
-public class TacticFullScaleAttackWithDedicatedSkirmishers : TacticComponent
+public class RBMTacticAttackSplitSkirmishers : TacticComponent
 {
 
 	protected Formation _skirmishers;
 	int side = MBRandom.RandomInt(2);
+	int waitCountMainFormation = 0;
+	int waitCountMainFormationMax = 40;
 
 	protected void AssignTacticFormations()
 	{
@@ -202,7 +204,7 @@ public class TacticFullScaleAttackWithDedicatedSkirmishers : TacticComponent
 
 	private bool _hasBattleBeenJoined;
 
-	public TacticFullScaleAttackWithDedicatedSkirmishers(Team team)
+	public RBMTacticAttackSplitSkirmishers(Team team)
 		: base(team)
 	{
 		_hasBattleBeenJoined = false;
@@ -221,9 +223,8 @@ public class TacticFullScaleAttackWithDedicatedSkirmishers : TacticComponent
 		}
 		if(_skirmishers != null)
         {
-			
 			_skirmishers.AI.ResetBehaviorWeights();
-			TacticComponent.SetDefaultBehaviorWeights(_skirmishers);
+			//TacticComponent.SetDefaultBehaviorWeights(_skirmishers);
             //_skirmishers.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
             if (side == 0)
             {
@@ -236,10 +237,20 @@ public class TacticFullScaleAttackWithDedicatedSkirmishers : TacticComponent
 		}
 		if (_mainInfantry != null)
 		{
-			_mainInfantry.AI.ResetBehaviorWeights();
-			TacticComponent.SetDefaultBehaviorWeights(_mainInfantry);
-			_mainInfantry.AI.SetBehaviorWeight<BehaviorAdvance>(1f);
-			_mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
+			if(waitCountMainFormation < waitCountMainFormationMax)
+            {
+				_mainInfantry.AI.ResetBehaviorWeights();
+				TacticComponent.SetDefaultBehaviorWeights(_mainInfantry);
+				_mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
+				waitCountMainFormation++;
+				IsTacticReapplyNeeded = true;
+			}
+			else
+            {
+				_mainInfantry.AI.SetBehaviorWeight<BehaviorAdvance>(1f);
+				IsTacticReapplyNeeded = false;
+			}
+
 		}
 		if (_archers != null)
 		{
@@ -323,6 +334,7 @@ public class TacticFullScaleAttackWithDedicatedSkirmishers : TacticComponent
 			_rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
 			_rangedCavalry.AI.SetBehaviorWeight<BehaviorHorseArcherSkirmish>(1f);
 		}
+		IsTacticReapplyNeeded = false;
 	}
 
 	private bool HasBattleBeenJoined()
@@ -375,7 +387,7 @@ public class TacticFullScaleAttackWithDedicatedSkirmishers : TacticComponent
 			{
 				Advance();
 			}
-			IsTacticReapplyNeeded = false;
+			//IsTacticReapplyNeeded = false;
 		}
 		bool flag = HasBattleBeenJoined();
 		if (flag != _hasBattleBeenJoined || IsTacticReapplyNeeded)
@@ -389,7 +401,7 @@ public class TacticFullScaleAttackWithDedicatedSkirmishers : TacticComponent
 			{
 				Advance();
 			}
-			IsTacticReapplyNeeded = false;
+			//IsTacticReapplyNeeded = false;
 		}
 		base.TickOccasionally();
 	}
@@ -410,6 +422,6 @@ public class TacticFullScaleAttackWithDedicatedSkirmishers : TacticComponent
         }
 		float num = team.QuerySystem.RangedCavalryRatio * (float)team.QuerySystem.MemberCount;
 		float skirmisherRatio = skirmisherCount / infCount;
-		return team.QuerySystem.InfantryRatio * skirmisherRatio*1.7f * (float)team.QuerySystem.MemberCount / ((float)team.QuerySystem.MemberCount - num) * (float)Math.Sqrt(team.QuerySystem.OverallPowerRatio);
+		return team.QuerySystem.InfantryRatio * skirmisherRatio * 1.7f * (float)team.QuerySystem.MemberCount / ((float)team.QuerySystem.MemberCount - num) * (float)Math.Sqrt(team.QuerySystem.OverallPowerRatio);
 	}
 }

@@ -114,7 +114,8 @@ namespace RealisticBattleAiModule.AiModule.Posture
                     float absoluteDamageModifier = 3f;
                     float absoluteShieldDamageModifier = 1.2f;
 
-                    if (!collisionData.AttackBlockedWithShield) { 
+                    if (!collisionData.AttackBlockedWithShield)
+                    { 
                         if (collisionData.CollisionResult == CombatCollisionResult.Blocked)
                         {
                             if(defenderPosture != null)
@@ -146,9 +147,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                 {
                                 }
                             }
-                        }
-
-                        if (collisionData.CollisionResult == CombatCollisionResult.Parried)
+                        }else if(collisionData.CollisionResult == CombatCollisionResult.Parried)
                         {
                             if (defenderPosture != null)
                             {
@@ -187,8 +186,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                         }
 
                     }
-
-                    if (collisionData.AttackBlockedWithShield)
+                    else if (collisionData.AttackBlockedWithShield)
                     {
                         if (collisionData.CollisionResult == CombatCollisionResult.Blocked && !collisionData.CorrectSideShieldBlock)
                         {
@@ -221,8 +219,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                 }
                             }
                         }
-
-                        if ((collisionData.CollisionResult == CombatCollisionResult.Blocked && collisionData.CorrectSideShieldBlock) ||
+                        else if ((collisionData.CollisionResult == CombatCollisionResult.Blocked && collisionData.CorrectSideShieldBlock) ||
                         (collisionData.CollisionResult == CombatCollisionResult.Parried && !collisionData.CorrectSideShieldBlock))
                         {
                             if (defenderPosture != null)
@@ -254,9 +251,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                 {
                                 }
                             }
-                        }
-
-                        if (collisionData.CollisionResult == CombatCollisionResult.Parried && collisionData.CorrectSideShieldBlock)
+                        }else if (collisionData.CollisionResult == CombatCollisionResult.Parried && collisionData.CorrectSideShieldBlock)
                         {
                             if (defenderPosture != null)
                             {
@@ -294,8 +289,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                             }
                         }
                     }
-                    
-                    if (collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked)
+                    else if (collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked)
                     {
                         if (defenderPosture != null)
                         {

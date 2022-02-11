@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
@@ -817,6 +818,87 @@ namespace RealisticBattleAiModule
             return false;
         }
 
+        public static bool ShouldFormationCopyShieldWall(Formation formation, float haveShieldThreshold = 0.6f)
+        {
+            int countAll = 0;
+            int countHasShield = 0;
+
+            if(formation.Team.HasTeamAi)
+            {
+                FieldInfo field = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
+                field.DeclaringType.GetField("_currentTactic");
+                TacticComponent currentTactic = (TacticComponent)field.GetValue(formation.Team.TeamAI);
+
+                if(currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry) || currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry))
+                {
+                    return false;
+                }
+            }
+            formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+            {
+                if (agent != null)
+                {
+                    if (agent.HasShieldCached)
+                    {
+                        countHasShield++;
+                    }
+                    countAll++;
+                }
+            });
+
+            if(countHasShield/countAll >= haveShieldThreshold)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static int CountSoldiersInPolygon(Formation formation, Vec2[] polygon)
+        {
+            int result = 0;
+
+            formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+            {
+                if (IsPointInPolygon(polygon, agent.Position.AsVec2))
+                {
+                    result++;
+                }
+            });
+
+            return result;
+        }
+
+        public static bool IsPointInPolygon(Vec2[] polygon, Vec2 testPoint)
+        {
+            bool result = false;
+            int j = polygon.Count() - 1;
+            for (int i = 0; i < polygon.Count(); i++)
+            {
+                if (polygon[i].Y < testPoint.Y && polygon[j].Y >= testPoint.Y || polygon[j].Y < testPoint.Y && polygon[i].Y >= testPoint.Y)
+                {
+                    if (polygon[i].X + (testPoint.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) * (polygon[j].X - polygon[i].X) < testPoint.X)
+                    {
+                        result = !result;
+                    }
+                }
+                j = i;
+            }
+            return result;
+        }
+
+        public static float GetPowerOfAgentsSum(IEnumerable<Agent> agents)
+        {
+            float result = 0f;
+            foreach(Agent agent in agents)
+            {
+                result += agent.CharacterPowerCached;
+            }
+            return result;
+        }
+
         public static string GetConfigFilePath()
         {
             return System.IO.Path.Combine(GetConfigFolderPath(), "config_2.xml");
@@ -841,7 +923,7 @@ namespace RealisticBattleAiModule
 
         public static bool CheckRBMCMEnabled()
         {
-            foreach (MBSubModuleBase submodule in Module.CurrentModule.SubModules)
+            foreach (MBSubModuleBase submodule in TaleWorlds.MountAndBlade.Module.CurrentModule.SubModules)
             {
                 if (submodule.ToString().Equals("RealisticBattleCombatModule.Main"))
                 {
