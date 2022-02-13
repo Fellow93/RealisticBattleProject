@@ -91,7 +91,8 @@ namespace RealisticBattleAiModule
 
                 }
 
-                agentDrivenProperties.AiRangedHorsebackMissileRange = 0.25f; // percentage of maximum range is used, range of HA circle
+                //agentDrivenProperties.AiRangedHorsebackMissileRange = 0.25f; // percentage of maximum range is used, range of HA circle
+                agentDrivenProperties.AiRangedHorsebackMissileRange = 0.45f; // percentage of maximum range is used, range of HA circle
                 agentDrivenProperties.AiUseShieldAgainstEnemyMissileProbability = 0.95f;
                 agentDrivenProperties.AiFlyingMissileCheckRadius = 250f;
 

@@ -632,7 +632,7 @@ namespace RealisticBattleAiModule
 
         public static Formation FindSignificantAlly(Formation formation, bool includeInfantry, bool includeRanged, bool includeCavalry, bool includeMountedSkirmishers, bool includeHorseArchers)
         {
-            Formation significantEnemy = null;
+            Formation significantAlly = null;
             float dist = 10000f;
             if (formation != null)
             {
@@ -644,53 +644,53 @@ namespace RealisticBattleAiModule
                         {
                             if (team.Formations.ToList().Count == 1)
                             {
-                                significantEnemy = team.Formations.ToList()[0];
-                                return significantEnemy;
+                                significantAlly = team.Formations.ToList()[0];
+                                return significantAlly;
                             }
-                            foreach (Formation enemyFormation in team.Formations.ToList())
+                            foreach (Formation allyFormation in team.Formations.ToList())
                             {
-                                if (formation != null && includeInfantry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
+                                if (formation != null && includeInfantry && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsInfantryFormation)
                                 {
-                                    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                                    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(allyFormation.QuerySystem.MedianPosition.AsVec2);
                                     if (newDist < dist)
                                     {
-                                        significantEnemy = enemyFormation;
+                                        significantAlly = allyFormation;
                                         dist = newDist;
                                     }
                                 }
-                                if (formation != null && includeRanged && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
+                                if (formation != null && includeRanged && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsRangedFormation)
                                 {
-                                    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                                    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(allyFormation.QuerySystem.MedianPosition.AsVec2);
                                     if (newDist < dist)
                                     {
-                                        significantEnemy = enemyFormation;
+                                        significantAlly = allyFormation;
                                         dist = newDist;
                                     }
                                 }
-                                if (formation != null && includeCavalry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsCavalryFormation && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
+                                if (formation != null && includeCavalry && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsCavalryFormation && !allyFormation.QuerySystem.IsRangedCavalryFormation)
                                 {
-                                    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                                    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(allyFormation.QuerySystem.MedianPosition.AsVec2);
                                     if (newDist < dist)
                                     {
-                                        significantEnemy = enemyFormation;
+                                        significantAlly = allyFormation;
                                         dist = newDist;
                                     }
                                 }
-                                //if (formation != null && includeMountedSkirmishers && enemyFormation.CountOfUnits > 0 && CheckIfMountedSkirmishFormation(enemyFormation))
+                                //if (formation != null && includeMountedSkirmishers && allyFormation.CountOfUnits > 0 && CheckIfMountedSkirmishFormation(allyFormation))
                                 //{
-                                //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                                //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(allyFormation.QuerySystem.MedianPosition.AsVec2);
                                 //    if (newDist < dist)
                                 //    {
-                                //        significantEnemy = enemyFormation;
+                                //        significantEnemy = allyFormation;
                                 //        dist = newDist;
                                 //    }
                                 //}
-                                //if (formation != null && includeHorseArchers && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedCavalryFormation)
+                                //if (formation != null && includeHorseArchers && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsRangedCavalryFormation)
                                 //{
-                                //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                                //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(allyFormation.QuerySystem.MedianPosition.AsVec2);
                                 //    if (newDist < dist)
                                 //    {
-                                //        significantEnemy = enemyFormation;
+                                //        significantEnemy = allyFormation;
                                 //        dist = newDist;
                                 //    }
                                 //}
@@ -699,7 +699,7 @@ namespace RealisticBattleAiModule
                     }
                 }
             }
-            return significantEnemy;
+            return significantAlly;
         }
 
         public static float GetCombatAIDifficultyMultiplier()

@@ -13,6 +13,7 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 		public int side = MBRandom.RandomInt(2);
 		public int cooldown = 0;
 
+		public bool wasShootingBefore = false;
 		private enum BehaviorState
 		{
 			Approaching,
@@ -57,11 +58,22 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 				{
 					significantEnemy = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation;
 				}
+				Formation significantAlly = null;
+				significantAlly = Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
+				
 				vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition;
 				float distance = vec.Normalize();
 				//float ratioOfShooting = MBMath.Lerp(0.1f, 0.33f, 1f - MBMath.ClampFloat(base.Formation.CountOfUnits, 1f, 50f) * 0.02f) * base.Formation.QuerySystem.RangedUnitRatio;
 				float ratioOfShooting = 0.33f;
-				float effectiveShootingRange = base.Formation.QuerySystem.MissileRange / 1.9f;
+				//base.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+				//{
+				//	agent.SetScriptedCombatFlags(agent.GetScriptedCombatFlags() | Agent.AISpecialCombatModeFlags.IgnoreAmmoLimitForRangeCalculation);
+				//});
+				float effectiveShootingRange = base.Formation.QuerySystem.MissileRange / 1.8f;
+				if (significantAlly != null && (significantAlly == base.Formation || !significantAlly.QuerySystem.IsInfantryFormation))
+				{
+					effectiveShootingRange *= 1.9f;
+				}
 				switch (_behaviorState)
 				{
 					case BehaviorState.Shooting:
@@ -93,7 +105,7 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 							}
 
 							_cantShootDistance = MathF.Max(_cantShootDistance, distance);
-							_cantShoot = false;
+							//_cantShoot = false;
 							if (base.Formation.QuerySystem.IsRangedFormation && distance < MathF.Min(effectiveShootingRange * 0.4f, _cantShootDistance * 0.666f))
 							{
 								Formation meleeFormation = Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
@@ -104,49 +116,21 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 								}
 							}
 
-							//if (cooldown < flankCooldownMax)
-							//{
-							//	cooldown++;
-							//}
-							//else
-							//{
-							//	if (side == 0)
-							//	{
-							//		medianPosition.SetVec2(base.Formation.QuerySystem.AveragePosition + base.Formation.QuerySystem.AveragePosition.LeftVec().Normalized() * 20f);
-							//	}
-							//	else if (side == 1)
-							//	{
-							//		medianPosition.SetVec2(base.Formation.QuerySystem.AveragePosition + base.Formation.QuerySystem.AveragePosition.RightVec().Normalized() * 20f);
-							//	}
-
-							//	if (!base.CurrentOrder.GetPosition(base.Formation).IsValid || _behaviorState != BehaviorState.Shooting || flag)
-							//	{
-							//		base.CurrentOrder = MovementOrder.MovementOrderMove(medianPosition);
-							//	}
-							//	if (!CurrentFacingOrder.GetDirection(base.Formation).IsValid || _behaviorState != BehaviorState.Shooting || flag)
-							//	{
-							//		CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
-							//	}
-
-							//	cooldown = 0;
-
-							//	return;
-							//}
 						}
 						else
 						{
 							_cantShootDistance = MathF.Max(_cantShootDistance, distance);
-							_cantShoot = false;
+							
 							if (base.Formation.QuerySystem.IsRangedFormation && distance < MathF.Min(effectiveShootingRange * 0.4f, _cantShootDistance * 0.666f))
 							{
 								Formation meleeFormation = Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
 								if (meleeFormation != null && meleeFormation.QuerySystem.IsInfantryFormation)
                                 {
+									_cantShoot = true;
 									_behaviorState = BehaviorState.PullingBack;
 									break;
 								}
 							}
-							
 						}
 						break;
 					case BehaviorState.Approaching:
@@ -161,6 +145,17 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 							_behaviorState = BehaviorState.Shooting;
 							_cantShoot = false;
 							flag = true;
+						}else if(distance < effectiveShootingRange * 0.4f)
+                        {
+							_behaviorState = BehaviorState.PullingBack;
+							_cantShoot = false;
+							flag = true;
+						}else if(distance < effectiveShootingRange * 0.9f && !wasShootingBefore)
+                        {
+							_behaviorState = BehaviorState.Shooting;
+							_cantShoot = false;
+							flag = true;
+							wasShootingBefore = true;
 						}
 						break;
 					case BehaviorState.PullingBack:
@@ -190,8 +185,16 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 						break;
 					case BehaviorState.PullingBack:
 						medianPosition = significantEnemy.QuerySystem.MedianPosition;
-						medianPosition.SetVec2(medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f - 10f));
-						break;
+						//medianPosition.SetVec2(medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f - 10f));
+						if (side == 0)
+                        {
+                            medianPosition.SetVec2((medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f - 10f)) + base.Formation.QuerySystem.AveragePosition.LeftVec().Normalized() * 20f);
+                        }
+                        else if (side == 1)
+                        {
+                            medianPosition.SetVec2((medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f - 10f)) + base.Formation.QuerySystem.AveragePosition.RightVec().Normalized() * 20f);
+                        }
+                        break;
 				}
 			}
 			if (!base.CurrentOrder.GetPosition(base.Formation).IsValid || _behaviorState != BehaviorState.Shooting || flag)
