@@ -1,7 +1,7 @@
 ﻿<Module>
   <Name value="Realistic Battle AI Module"/>
   <Id value="RealisticBattleAiModule"/>
-  <Version value="v2.3.6"/>
+  <Version value="v2.3.7"/>
   <DefaultModule value="false"/>
   <SingleplayerModule value="true"/>
   <MultiplayerModule value="false"/>
