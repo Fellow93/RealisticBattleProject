@@ -14,9 +14,14 @@ namespace RealisticBattleAiModule
 {
     class Tactics
     {
-        private static bool carryOutDefenceEnabled = true;
-        private static bool archersShiftAroundEnabled = true;
-        private static bool balanceLaneDefendersEnabled = true;
+        //private static bool carryOutDefenceEnabled = true;
+        //private static bool archersShiftAroundEnabled = true;
+        //private static bool balanceLaneDefendersEnabled = true;
+
+        public static Dictionary<Team, bool> carryOutDefenceEnabled = new Dictionary<Team, bool>();
+        public static Dictionary<Team, bool> archersShiftAroundEnabled = new Dictionary<Team, bool>();
+        public static Dictionary<Team, bool> balanceLaneDefendersEnabled = new Dictionary<Team, bool>();
+
 
         public class AIDecision
         {
@@ -204,8 +209,10 @@ namespace RealisticBattleAiModule
         {
             public static void Postfix()
             {
-                carryOutDefenceEnabled = true;
-                archersShiftAroundEnabled = true;
+                balanceLaneDefendersEnabled.Clear();
+                archersShiftAroundEnabled.Clear();
+                carryOutDefenceEnabled.Clear();
+
                 aiDecisionCooldownDict.Clear();
                 MyPatcher.DoPatching();
                 OnTickAsAIPatch.itemPickupDistanceStorage.Clear();
@@ -299,48 +306,63 @@ namespace RealisticBattleAiModule
         {
             [HarmonyPrefix]
             [HarmonyPatch("CarryOutDefense")]
-            static bool PrefixCarryOutDefense(ref TacticDefendCastle __instance, ref bool doRangedJoinMelee)
+            static bool PrefixCarryOutDefense(ref TacticDefendCastle __instance, ref bool doRangedJoinMelee, ref Team ___team)
             {
-                if (carryOutDefenceEnabled)
+                if (Mission.Current.Mode != MissionMode.Deployment)
                 {
-                    carryOutDefenceEnabled = false;
-                    doRangedJoinMelee = false;
-                    return true;
+                    bool carryOutDefenceEnabledOut;
+                    if (!carryOutDefenceEnabled.TryGetValue(___team, out carryOutDefenceEnabledOut))
+                    {
+                        carryOutDefenceEnabled[___team] = false;
+                        doRangedJoinMelee = false;
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
-                else
-                {
-                    return false;
-                }
+                return true;
             }
 
             [HarmonyPrefix]
             [HarmonyPatch("ArcherShiftAround")]
-            static bool PrefixArcherShiftAround(ref TacticDefendCastle __instance)
+            static bool PrefixArcherShiftAround(ref TacticDefendCastle __instance, ref Team ___team)
             {
-                if (archersShiftAroundEnabled)
+                if (Mission.Current.Mode != MissionMode.Deployment)
                 {
-                    archersShiftAroundEnabled = false;
-                    return true;
+                    bool archersShiftAroundEnabledOut;
+                    if (!archersShiftAroundEnabled.TryGetValue(___team, out archersShiftAroundEnabledOut))
+                    {
+                        archersShiftAroundEnabled[___team] = false;
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
-                else
-                {
-                    return false;
-                }
+                return true;
             }
 
             [HarmonyPrefix]
             [HarmonyPatch("BalanceLaneDefenders")]
-            static bool PrefixBalanceLaneDefenders(ref TacticDefendCastle __instance)
+            static bool PrefixBalanceLaneDefenders(ref TacticDefendCastle __instance, ref Team ___team)
             {
-                if (balanceLaneDefendersEnabled)
+                if(Mission.Current.Mode != MissionMode.Deployment)
                 {
-                    balanceLaneDefendersEnabled = false;
-                    return true;
+                    bool balanceLaneDefendersEnabledOut;
+                    if (!balanceLaneDefendersEnabled.TryGetValue(___team, out balanceLaneDefendersEnabledOut))
+                    {
+                        balanceLaneDefendersEnabled[___team] = false;
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
-                else
-                {
-                    return false;
-                }
+                return true;
             }
         }
 
@@ -353,8 +375,8 @@ namespace RealisticBattleAiModule
             {
                 if(destructionComponent.GameEntity.GetFirstScriptOfType<UsableMachine>() != null && destructionComponent.GameEntity.GetFirstScriptOfType<UsableMachine>().GetType().Equals(typeof(BatteringRam)) && destructionComponent.GameEntity.GetFirstScriptOfType<UsableMachine>().IsDestroyed)
                 {
-                    balanceLaneDefendersEnabled = true;
-                    carryOutDefenceEnabled = true;
+                    balanceLaneDefendersEnabled.Clear();
+                    carryOutDefenceEnabled.Clear();
                 }
             }
         }
