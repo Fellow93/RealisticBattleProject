@@ -911,7 +911,7 @@ namespace RealisticBattleAiModule
     {
         [HarmonyPrefix]
         [HarmonyPatch("AdjustSpeedLimit")]
-        static bool OnDismountPrefix(ref HumanAIComponent __instance,ref Agent agent,ref float desiredSpeed,ref bool limitIsMultiplier, ref Agent ___Agent)
+        static bool AdjustSpeedLimitPrefix(ref HumanAIComponent __instance,ref Agent agent,ref float desiredSpeed,ref bool limitIsMultiplier, ref Agent ___Agent)
         {
             if(agent.Formation != null && (agent.Formation.QuerySystem.IsRangedCavalryFormation || agent.Formation.QuerySystem.IsCavalryFormation))
             {
@@ -940,7 +940,7 @@ namespace RealisticBattleAiModule
 
                 if(agent.Formation.GetReadonlyMovementOrderReference().OrderEnum == MovementOrder.MovementOrderEnum.ChargeToTarget)
                 {
-                    if (currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry) || currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry))
+                    if (currentTactic != null && currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry) || currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry))
                     {
                         if (limitIsMultiplier && desiredSpeed < 0.8f)
                         {
