@@ -11,6 +11,7 @@ using RealisticBattleCombatModule.CombatModule;
 using System;
 using TaleWorlds.Engine;
 using SandBox;
+using static TaleWorlds.MountAndBlade.Agent;
 
 namespace RealisticBattleCombatModule
 {
@@ -119,7 +120,7 @@ namespace RealisticBattleCombatModule
                                                 __instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags &= ~WeaponFlags.UnloadWhenSheathed;
                                                 weaponStatsData[i].WeaponFlags = (ulong)__instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags;
                                             }
-                                        }
+                                    }
                                         break;
                                     }
                             }
@@ -538,6 +539,102 @@ namespace RealisticBattleCombatModule
         //        return true;
         //    }
         //}
+
+        //[HarmonyPatch(typeof(MissionWeapon))]
+        //[HarmonyPatch("ReloadAmmo")]
+        //class OnWieldedItemIndexChangePatch
+        //{
+
+        //}
+
+        [HarmonyPatch(typeof(Agent))]
+        [HarmonyPatch("OnWieldedItemIndexChange")]
+        class OnWieldedItemIndexChangePatch
+        {
+            static void Postfix(ref Agent __instance, bool isOffHand, bool isWieldedInstantly, bool isWieldedOnSpawn)
+            {
+                EquipmentIndex wieldedItemIndex = __instance.GetWieldedItemIndex(HandIndex.MainHand);
+                if (wieldedItemIndex != EquipmentIndex.None)
+                {
+                    bool isBowWielded = false;
+                    WeaponStatsData weaponStatsData = __instance.Equipment[wieldedItemIndex].GetWeaponStatsData()[0];
+                    WeaponData weaponData = __instance.Equipment[wieldedItemIndex].GetWeaponData(true);
+                    if (weaponStatsData.WeaponClass == (int)WeaponClass.Bow)
+                    {
+                        isBowWielded = true;
+                    }
+                    //EquipmentIndex firstAmmo = EquipmentIndex.None;
+                    //for (EquipmentIndex ammoIndex = EquipmentIndex.WeaponItemBeginSlot; ammoIndex < EquipmentIndex.NumAllWeaponSlots; ammoIndex++)
+                    //{
+                    //    if (__instance.Equipment[ammoIndex].GetWeaponStatsData() != null && __instance.Equipment[ammoIndex].GetWeaponStatsData().Length > 0)
+                    //    {
+                    //        WeaponStatsData wsd = __instance.Equipment[ammoIndex].GetWeaponStatsData()[0];
+                    //        if (wsd.WeaponClass == (int)WeaponClass.Arrow)
+                    //        {
+                    //            firstAmmo = ammoIndex;
+                    //            continue;
+                    //        }
+                    //    }
+                    //}
+                    for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                    {
+                        if (__instance.Equipment[equipmentIndex].GetWeaponStatsData() != null && __instance.Equipment[equipmentIndex].GetWeaponStatsData().Length > 0)
+                        {
+                            WeaponData wd = __instance.Equipment[equipmentIndex].GetWeaponData(true);
+                            WeaponStatsData wsd = __instance.Equipment[equipmentIndex].GetWeaponStatsData()[0];
+                            if (wsd.WeaponClass == (int)WeaponClass.Bow)
+                            {
+                                MissionWeapon mw = __instance.Equipment[equipmentIndex];
+                                if (isBowWielded)
+                                {
+                                    SkillObject skill = (wd.GetItemObject() == null) ? DefaultSkills.Athletics : weaponData.GetItemObject().RelevantSkill;
+                                    if (skill != null)
+                                    {
+                                        int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance.Character, __instance.Origin, __instance.Formation, skill);
+
+                                        RangedWeaponStats rws;
+                                        if (rangedWeaponStats.TryGetValue(mw.GetModifiedItemName().ToString(), out rws))
+                                        {
+                                            if ((effectiveSkill) < rws.getDrawWeight() + 9f) // 70 more skill needed to unlock speed shooting
+                                            {
+                                                __instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags |= WeaponFlags.UnloadWhenSheathed;
+                                                wsd.WeaponFlags = (ulong)__instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags;
+                                            }
+                                            else
+                                            {
+                                                __instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags &= ~WeaponFlags.UnloadWhenSheathed;
+                                                wsd.WeaponFlags = (ulong)__instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags;
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    __instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags |= WeaponFlags.UnloadWhenSheathed;
+                                    __instance.Equipment[equipmentIndex].GetWeaponStatsData()[0].WeaponFlags = (ulong)__instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags;
+                                    
+                                    MissionWeapon mwa = mw.AmmoWeapon;
+                                    int ammoInHandCount = mwa.Amount;
+                                    if(mwa.Amount > 0)
+                                    {
+                                        __instance.Equipment.GetAmmoCountAndIndexOfType(mw.Item.Type, out var _, out var eIndex);
+                                        if(eIndex != EquipmentIndex.None)
+                                        {
+                                            __instance.SetReloadAmmoInSlot(equipmentIndex, eIndex, (short)-ammoInHandCount);
+                                            __instance.SetWeaponReloadPhaseAsClient(equipmentIndex, 0);
+                                            MissionWeapon mwdsa = __instance.Equipment[eIndex];
+                                            __instance.Equipment.SetAmountOfSlot(eIndex, (short)(mwdsa.Amount + ammoInHandCount), true);
+                                        }
+                                        //__instance.Equipment[equipmentIndex].AmmoWeapon.Ammo;
+                                    }
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
     }
 
