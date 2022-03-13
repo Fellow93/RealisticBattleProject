@@ -7540,8 +7540,6 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.empire_polearm_2_t5" />
-      <equipment slot="Item2"
-                 id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Item3"
                  id="Item.decorated_steppe_shield_shoulder" />			 
       <equipment slot="Body"
@@ -7558,8 +7556,6 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.empire_polearm_2_t5" />
-      <equipment slot="Item2"
-                 id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Item3"
                  id="Item.decorated_steppe_shield_shoulder" />					 
       <equipment slot="Body"
@@ -7576,8 +7572,6 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.empire_polearm_2_t5" />
-      <equipment slot="Item2"
-                 id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Item3"
                  id="Item.decorated_steppe_shield_shoulder" />					 
       <equipment slot="Body"
