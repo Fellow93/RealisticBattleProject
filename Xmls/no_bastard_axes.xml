@@ -208,7 +208,7 @@
       <WeaponDescription id="Javelin" />
       <WeaponDescription id="OneHandedPolearm_JavelinAlternative" />
     </WeaponDescriptions>
-    <StatsData usage_data="Javelin">
+    <StatsData weapon_description="Javelin">
       <StatData stat_type="Weight"
                 max_value="7.0" />
       <StatData stat_type="WeaponReach"
@@ -220,7 +220,7 @@
       <StatData stat_type="Accuracy"
                 max_value="100" />
     </StatsData>
-    <StatsData usage_data="OneHandedPolearm_JavelinAlternative">
+    <StatsData weapon_description="OneHandedPolearm_JavelinAlternative">
       <StatData stat_type="Weight"
                 max_value="7.0" />
       <StatData stat_type="WeaponReach"
@@ -714,7 +714,7 @@
       <WeaponDescription id="ThrowingAxe" />
       <WeaponDescription id="OneHandedAxe" />
     </WeaponDescriptions>
-    <StatsData usage_data="ThrowingAxe">
+    <StatsData weapon_description="ThrowingAxe">
       <StatData stat_type="Weight"
                 max_value="7.0" />
       <StatData stat_type="WeaponReach"
@@ -726,7 +726,7 @@
       <StatData stat_type="Accuracy"
                 max_value="100" />
     </StatsData>
-    <StatsData usage_data="OneHandedAxe">
+    <StatsData weapon_description="OneHandedAxe">
       <StatData stat_type="Weight"
                 max_value="7.0" />
       <StatData stat_type="WeaponReach"
