@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using RealisticBattleAiModule.AiModule.RbmBehaviors;
 using SandBox;
+using SandBox.Missions.MissionLogics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -271,7 +272,7 @@ namespace RealisticBattleAiModule
                         {
                             BasicCharacterObject troop = troopOrigin.Troop;
                             Team agentTeam = Mission.GetAgentTeam(troopOrigin, isPlayerSide);
-                            Formation formation = agentTeam.GetFormation(troop.GetFormationClass(troopOrigin.BattleCombatant));
+                            Formation formation = agentTeam.GetFormation(troop.GetFormationClass());
                             if(formation.CountOfUnits == 0)
                             {
                                 foreach(Formation allyFormation in agentTeam.Formations)

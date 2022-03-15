@@ -1,11 +1,11 @@
 ﻿using HarmonyLib;
 using RealisticBattleAiModule.AiModule.RbmBehaviors;
-using SandBox;
+using SandBox.Missions.MissionLogics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -3402,28 +3402,35 @@ namespace RealisticBattleAiModule
             }
 
             [HarmonyPrefix]
-            [HarmonyPatch("BattleSizeSpawnTick")]
-            static bool PrefixBattleSizeSpawnTick(ref MissionAgentSpawnLogic __instance, ref int ____battleSize, ref List<SpawnPhase>[] ____phases)
+            [HarmonyPatch("CheckReinforcement")]
+            static bool PrefixBattleSizeSpawnTick(ref int numberOfTroops, ref MissionAgentSpawnLogic __instance, ref int ____battleSize, ref List<SpawnPhase>[] ____phases,ref int[] ____numberOfTroopsInQueueForReinforcement)
             {
                 if (Mission.Current.MissionTeamAIType != Mission.MissionTeamAITypeEnum.FieldBattle)
                 {
                     return true;
                 }
-                int numberOfTroopsCanBeSpawned = __instance.NumberOfTroopsCanBeSpawned;
-                if (__instance.NumberOfRemainingTroops <= 0 || numberOfTroopsCanBeSpawned <= 0)
+                for (int i = 0; i < 2; i++)
                 {
-                    return true;
+                    if (numberOfTroops > 0 && ____numberOfTroopsInQueueForReinforcement[i] > 0)
+                    {
+                        int numberOfTroopsCanBeSpawned = ____numberOfTroopsInQueueForReinforcement[i];
+                        if (__instance.NumberOfRemainingTroops <= 0 || numberOfTroopsCanBeSpawned <= 0)
+                        {
+                            return true;
+                        }
+                        float num4 = (float)(____phases[0][0].InitialSpawnedNumber - __instance.NumberOfActiveDefenderTroops) / (float)____phases[0][0].InitialSpawnedNumber;
+                        float num5 = (float)(____phases[1][0].InitialSpawnedNumber - __instance.NumberOfActiveAttackerTroops) / (float)____phases[1][0].InitialSpawnedNumber;
+                        if ((float)numberOfTroopsCanBeSpawned >= (float)____battleSize * 0.5f || num4 >= 0.5f || num5 >= 0.5f)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
                 }
-                float num4 = (float)(____phases[0][0].InitialSpawnedNumber - __instance.NumberOfActiveDefenderTroops) / (float)____phases[0][0].InitialSpawnedNumber;
-                float num5 = (float)(____phases[1][0].InitialSpawnedNumber - __instance.NumberOfActiveAttackerTroops) / (float)____phases[1][0].InitialSpawnedNumber;
-                if ((float)numberOfTroopsCanBeSpawned >= (float)____battleSize * 0.5f || num4 >= 0.5f || num5 >= 0.5f)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return true;
             }
         }
     }

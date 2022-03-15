@@ -3,7 +3,6 @@ using RealisticBattleCombatModule;
 using System.Collections.Generic;
 using System.Xml;
 using TaleWorlds.Core.ViewModelCollection;
-using TaleWorlds.Engine.Screens;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
@@ -208,12 +207,12 @@ internal class RbmMenuViewModel : ViewModel
 			}
 		}
 
-		ScreenManager.PopScreen();
+		TaleWorlds.ScreenSystem.ScreenManager.PopScreen();
 	}
 
 	private void ExecuteCancel()
 	{
-		ScreenManager.PopScreen();
+		TaleWorlds.ScreenSystem.ScreenManager.PopScreen();
 	}
 
 }

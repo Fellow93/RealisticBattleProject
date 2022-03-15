@@ -1,7 +1,6 @@
 ﻿using TaleWorlds.Engine.GauntletUI;
-using TaleWorlds.Engine.Screens;
 
-internal class RbmConfigScreen : ScreenBase
+internal class RbmConfigScreen : TaleWorlds.ScreenSystem.ScreenBase
 {
 	private GauntletLayer _gauntletLayer;
 

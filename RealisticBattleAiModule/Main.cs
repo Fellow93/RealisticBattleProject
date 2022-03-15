@@ -4,12 +4,11 @@ using TaleWorlds.Core;
 using TaleWorlds.Library;
 using System.Collections.Generic;
 using System.Xml;
-using TaleWorlds.Localization;
-using TaleWorlds.Engine.Screens;
 using System.IO;
 using RealisticBattleAiModule.AiModule.Posture;
-using SandBox;
 using TaleWorlds.ModuleManager;
+using SandBox.Missions.MissionLogics;
+using TaleWorlds.Localization;
 
 namespace RealisticBattleAiModule
 {
@@ -116,7 +115,7 @@ namespace RealisticBattleAiModule
 
             Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("RBM AI Module Settings"), 4, delegate
             {
-                ScreenManager.PushScreen(new RbmConfigScreen());
+                TaleWorlds.ScreenSystem.ScreenManager.PushScreen(new RbmConfigScreen());
             }, () => (false, new TextObject("RBM AI Module Settings"))));
 
             MyPatcher.FirstPatch();

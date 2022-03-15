@@ -2,6 +2,7 @@
 using Helpers;
 using JetBrains.Annotations;
 using SandBox;
+using SandBox.GameComponents;
 using System.Collections.Generic;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;

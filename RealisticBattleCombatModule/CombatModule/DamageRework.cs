@@ -2,17 +2,22 @@
 using Helpers;
 using JetBrains.Annotations;
 using SandBox;
-using StoryMode.GameModels;
+using SandBox.GameComponents;
+using SandBox.Missions.MissionLogics;
+using StoryMode.GameComponents;
 using System;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.CampaignSystem.SandBox.GameComponents.Map;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
+using TaleWorlds.CampaignSystem.ComponentInterfaces;
+using TaleWorlds.CampaignSystem.GameComponents;
+using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 using TaleWorlds.DotNet;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
-using static TaleWorlds.CampaignSystem.CombatXpModel;
+using static TaleWorlds.CampaignSystem.ComponentInterfaces.CombatXpModel;
 using static TaleWorlds.MountAndBlade.Agent;
 
 namespace RealisticBattleCombatModule
@@ -153,7 +158,7 @@ namespace RealisticBattleCombatModule
         [HarmonyPatch("ComputeBlowMagnitudeMissile")]
         class RealArrowDamage
         {
-            static bool Prefix(ref AttackCollisionData acd, ItemObject weaponItem, bool isVictimAgentNull, float momentumRemaining, float missileTotalDamage, out float baseMagnitude, out float specialMagnitude, Vec2 victimVelocity)
+            static bool Prefix(ref AttackCollisionData acd, in MissionWeapon weapon, bool isVictimAgentNull, float momentumRemaining, float missileTotalDamage, out float baseMagnitude, out float specialMagnitude, Vec2 victimVelocity)
             {
                 Vec3 missileVelocity = acd.MissileVelocity;
                 //Vec3 gcn = acd.CollisionGlobalNormal;
@@ -163,6 +168,16 @@ namespace RealisticBattleCombatModule
 
                 //Vec3 resultVec = gcn + wbd;
                 //float angleModifier = 1f - Math.Abs((resultVec.x + resultVec.y + resultVec.z) / 3);
+                WeaponComponentData currentUsageItem = weapon.CurrentUsageItem;
+                ItemObject weaponItem;
+                if (weapon.AmmoWeapon.Item != null)
+                {
+                    weaponItem = weapon.AmmoWeapon.Item;
+                }
+                else
+                {
+                    weaponItem = weapon.Item;
+                }
 
                 float length;
                 if (!isVictimAgentNull)
@@ -2063,7 +2078,7 @@ namespace RealisticBattleCombatModule
                     WeaponComponentData parryWeapon = victimAgent.WieldedWeapon.CurrentUsageItem;
                     if (parryWeapon != null)
                     {
-                        SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(parryWeapon);
+                        SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(parryWeapon, false);
                         float num2 = ((skillForWeapon == DefaultSkills.Bow) ? 0.5f : 1f);
                         affectedCharacter.HeroObject.AddSkillXp(skillForWeapon, experience);
                     }
@@ -2351,7 +2366,7 @@ namespace RealisticBattleCombatModule
                 {
                     newHp = 0f;
                 }
-                if (!__instance.Invulnerable && !Mission.DisableDying)
+                if (!__instance.Invulnerable && !Mission.Current.DisableDying)
                 {
                     __instance.Health = newHp;
                 }

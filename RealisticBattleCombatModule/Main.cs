@@ -4,7 +4,6 @@ using HarmonyLib;
 using System.Collections.Generic;
 using System.Xml;
 using TaleWorlds.Core;
-using TaleWorlds.Engine.Screens;
 using TaleWorlds.Localization;
 using System.IO;
 
@@ -63,7 +62,7 @@ namespace RealisticBattleCombatModule
 
             Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("RBM Combat Module Settings"), 3, delegate
             {
-                ScreenManager.PushScreen(new RbmConfigScreen());
+                TaleWorlds.ScreenSystem.ScreenManager.PushScreen(new RbmConfigScreen());
             }, () => (false, new TextObject("RBM Combat Module Settings"))));
         }
 

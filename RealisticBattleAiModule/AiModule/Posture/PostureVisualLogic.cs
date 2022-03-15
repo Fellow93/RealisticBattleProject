@@ -1,6 +1,4 @@
-﻿using System;
-using TaleWorlds.Engine.GauntletUI;
-using TaleWorlds.Engine.Screens;
+﻿using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.View.Screen;
@@ -50,7 +48,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
 
 		public override void AfterStart()
 		{
-			MissionScreen missionScreen = ScreenManager.TopScreen as MissionScreen;
+			MissionScreen missionScreen = TaleWorlds.ScreenSystem.ScreenManager.TopScreen as MissionScreen;
 			_dataSource = new PostureVisualVM();
 			_gauntletLayer = new GauntletLayer(-1, "GauntletLayer");
 			missionScreen.AddLayer(_gauntletLayer);
