@@ -9,6 +9,10 @@ using RealisticBattleAiModule.AiModule.Posture;
 using TaleWorlds.ModuleManager;
 using SandBox.Missions.MissionLogics;
 using TaleWorlds.Localization;
+using TaleWorlds.ScreenSystem;
+using TaleWorlds.MountAndBlade.View.Screen;
+using System;
+using TaleWorlds.InputSystem;
 
 namespace RealisticBattleAiModule
 {
@@ -142,6 +146,28 @@ namespace RealisticBattleAiModule
                 base.OnMissionBehaviorInitialize(mission);
             }
         }
+
+        protected override void OnApplicationTick(float dt)
+        {
+            if (Mission.Current == null)
+            {
+                return;
+            }
+            try
+            {
+                MissionScreen missionScreen = ScreenManager.TopScreen as MissionScreen;
+                bool flag = missionScreen != null && missionScreen.InputManager.IsControlDown() && missionScreen.InputManager.IsKeyPressed(InputKey.V);
+                if (flag)
+                {
+                    Mission.Current.SetFastForwardingFromUI(!Mission.Current.IsFastForward);
+                    InformationManager.DisplayMessage(new InformationMessage("Vroom = " + Mission.Current.IsFastForward, Color.FromUint(4282569842u)));
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
     }
 
 }

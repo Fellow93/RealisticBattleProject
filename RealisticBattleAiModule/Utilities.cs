@@ -829,7 +829,7 @@ namespace RealisticBattleAiModule
                 field.DeclaringType.GetField("_currentTactic");
                 TacticComponent currentTactic = (TacticComponent)field.GetValue(formation.Team.TeamAI);
 
-                if(currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry) || currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry))
+                if(currentTactic != null && currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry) || currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry))
                 {
                     return false;
                 }
