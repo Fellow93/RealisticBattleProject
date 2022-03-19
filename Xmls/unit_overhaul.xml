@@ -3594,7 +3594,7 @@
       <equipment slot="Head"
                  id="Item.pointed_skullcap_with_mail" />
       <equipment slot="Body"
-                 id="Item.aserai_robe_c_chain" />
+                 id="Item.aserai_scale_armor_on_cloth" />
       <equipment slot="Leg"
                  id="Item.reinforced_suede_boots" />
       <equipment slot="Gloves"
@@ -3614,7 +3614,7 @@
       <equipment slot="Head"
                  id="Item.pointed_skullcap_over_mail" />
       <equipment slot="Body"
-                 id="Item.stitched_leather_over_mail" />
+                 id="Item.aserai_scale_armor_on_cloth" />
       <equipment slot="Leg"
                  id="Item.reinforced_suede_boots" />
       <equipment slot="Gloves"
@@ -3634,7 +3634,7 @@
       <equipment slot="Head"
                  id="Item.pointed_skullcap_over_mail_coif" />
       <equipment slot="Body"
-                 id="Item.desert_robe_over_mail" />
+                 id="Item.aserai_scale_armor_on_cloth" />
       <equipment slot="Leg"
                  id="Item.reinforced_suede_boots" />
       <equipment slot="Gloves"
@@ -3693,7 +3693,7 @@
       <equipment slot="Head"
                  id="Item.aserai_lord_helmet_a" />
       <equipment slot="Body"
-                 id="Item.brass_lamellar_over_mail" />
+                 id="Item.aserai_scale_armor_on_chain" />
       <equipment slot="Leg"
                  id="Item.lamellar_plate_boots" />
       <equipment slot="Cape"
@@ -3715,7 +3715,7 @@
       <equipment slot="Head"
                  id="Item.aserai_lord_helmet_a" />
       <equipment slot="Body"
-                 id="Item.brass_lamellar_over_mail" />
+                 id="Item.aserai_scale_armor_on_chain" />
       <equipment slot="Leg"
                  id="Item.lamellar_plate_boots" />
       <equipment slot="Cape"
@@ -3737,7 +3737,7 @@
       <equipment slot="Head"
                  id="Item.desert_mail_coif" />
       <equipment slot="Body"
-                 id="Item.brass_lamellar_over_mail" />
+                 id="Item.aserai_scale_armor_on_chain" />
       <equipment slot="Leg"
                  id="Item.lamellar_plate_boots" />
       <equipment slot="Cape"
@@ -3796,7 +3796,7 @@
       <equipment slot="Cape"
                  id="Item.desert_scale_shoulders" />
       <equipment slot="Body"
-                 id="Item.desert_scale_armor" />
+                 id="Item.aserai_full_scale_armor_on_chain" />
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Gloves"
@@ -3816,7 +3816,7 @@
       <equipment slot="Cape"
                  id="Item.desert_scale_shoulders" />
       <equipment slot="Body"
-                 id="Item.desert_scale_armor" />
+                 id="Item.aserai_full_scale_armor_on_chain" />
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Gloves"
@@ -3836,7 +3836,7 @@
       <equipment slot="Cape"
                  id="Item.desert_scale_shoulders" />
       <equipment slot="Body"
-                 id="Item.desert_scale_armor" />
+                 id="Item.aserai_full_scale_armor_on_chain" />
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Gloves"
@@ -6179,7 +6179,7 @@
       <equipment slot="Head"
                  id="Item.leatherlame_nasalhelm_over_imperial_leather" />
       <equipment slot="Cape"
-                 id="Item.a_pauldron_cape_c" />
+                 id="Item.varangian_bra_basic" />
       <equipment slot="Gloves"
                  id="Item.padded_mitten" />
       </EquipmentRoster>
@@ -6221,7 +6221,7 @@
       <equipment slot="Gloves"
                  id="Item.padded_mitten" />
       <equipment slot="Cape"
-                 id="Item.a_pauldron_cape_c" />
+                 id="Item.varangian_bra_basic" />
       </EquipmentRoster>
       <EquipmentSet id="empire_troop_civilian_template_t2"
                     civilian="true" />
@@ -6297,7 +6297,7 @@
       <equipment slot="Head"
                  id="Item.leatherlame_feathered_spangenhelm_over_leather" />
       <equipment slot="Cape"
-                 id="Item.empire_warrior_padded_armor_shoulder" />
+                 id="Item.varangian_bra_padded" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -6387,7 +6387,7 @@
       <equipment slot="Head"
                  id="Item.ironlame_feathered_spangenhelm_over_mail" />
       <equipment slot="Cape"
-                 id="Item.studded_imperial_neckguard" />
+                 id="Item.varangian_bra_mail" />
       <equipment slot="Body"
                  id="Item.imperial_lamellar" />
       <equipment slot="Gloves"
@@ -6405,7 +6405,7 @@
       <equipment slot="Head"
                  id="Item.helmet_with_faceguard" />
       <equipment slot="Cape"
-                 id="Item.studded_imperial_neckguard" />
+                 id="Item.varangian_bra_padded" />
       <equipment slot="Body"
                  id="Item.imperial_lamellar" />
       <equipment slot="Gloves"
@@ -6488,7 +6488,7 @@
       <equipment slot="Leg"
                  id="Item.decorated_imperial_boots" />
       <equipment slot="Cape"
-                 id="Item.pauldron_cape_a" />
+                 id="Item.varangian_bra_mail" />
       <equipment slot="Horse"
                 id="Item.noble_horse_imperial" />
       </EquipmentRoster>
@@ -6508,7 +6508,7 @@
       <equipment slot="Leg"
                  id="Item.decorated_imperial_boots" />
       <equipment slot="Cape"
-                 id="Item.pauldron_cape_a" />
+                 id="Item.varangian_bra_mail" />
       <equipment slot="Horse"
                 id="Item.t2_empire_horse" />
       </EquipmentRoster>
@@ -6574,7 +6574,7 @@
       <equipment slot="Head"
                  id="Item.imperial_goggled_helmet" />
       <equipment slot="Cape"
-                 id="Item.imperial_lamellar_shoulders" />
+                 id="Item.varangian_bra_scale" />
       <equipment slot="Body"
                  id="Item.imperial_scale_armor" />
       <equipment slot="Gloves"

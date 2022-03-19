@@ -253,7 +253,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_10"
              Type="Handle"
-             scale_factor="120" />
+             scale_factor="160" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="empire_mace_2_t4"
@@ -279,7 +279,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_10"
              Type="Handle"
-             scale_factor="120" />
+             scale_factor="160" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="aserai_mace_4_t4"
@@ -331,7 +331,7 @@
              scale_factor="110" />
       <Piece id="mace_handle_10"
              Type="Handle"
-             scale_factor="120" />
+             scale_factor="160" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="eastern_steel_mace_t4"
