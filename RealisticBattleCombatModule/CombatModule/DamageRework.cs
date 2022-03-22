@@ -298,7 +298,15 @@ namespace RealisticBattleCombatModule
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
                 {
-                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f)) * RBMCMConfig.ThrustMagnitudeModifier;
+                    //baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f)) * RBMCMConfig.ThrustMagnitudeModifier;
+                    if ((DamageTypes)acd.DamageType == DamageTypes.Cut || (DamageTypes)acd.DamageType == DamageTypes.Pierce)
+                    {
+                        baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f)) * RBMCMConfig.ThrustMagnitudeModifier;
+                    }
+                    else
+                    {
+                        baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f)) * 0.25f;
+                    }
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingAxe"))
@@ -511,6 +519,7 @@ namespace RealisticBattleCombatModule
                     bool isPassiveUsage = attackInformation.IsAttackerAgentDoingPassiveAttack;
                     float skillBasedDamage = 0f;
                     const float ashBreakTreshold = 430f;
+                    const float poplarBreakTreshold = 260f;
                     float BraceBonus = 0f;
                     float BraceModifier = 0.34f; // because lances have 3 times more damage
 
@@ -656,20 +665,46 @@ namespace RealisticBattleCombatModule
                                         }
                                         float lanceBalistics = (magnitude * BraceModifier) / weaponWeight;
                                         float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
+                                        float BluntLanceBalistics = (magnitude * BraceModifier) / weaponWeight * RBMCMConfig.OneHandedThrustDamageBonus;
+                                        float BluntCouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus * RBMCMConfig.OneHandedThrustDamageBonus);
                                         magnitude = CouchedMagnitude;
-                                        if (CouchedMagnitude > (skillCap * RBMCMConfig.ThrustMagnitudeModifier) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * RBMCMConfig.ThrustMagnitudeModifier)) //skill based damage
+
+                                        if (damageType == DamageTypes.Blunt)
                                         {
-                                            magnitude = skillCap * RBMCMConfig.ThrustMagnitudeModifier;
+                                            magnitude = BluntCouchedMagnitude;
+                                            if (BluntCouchedMagnitude > skillCap && (BluntLanceBalistics * (weaponWeight + BraceBonus)) < skillCap) //skill based damage
+                                            {
+                                                magnitude = skillCap;
+                                            }
+
+                                            if ((BluntLanceBalistics * (weaponWeight + BraceBonus)) >= skillCap ) //ballistics
+                                            {
+                                                magnitude = (BluntLanceBalistics * (weaponWeight + BraceBonus));
+                                            }
+
+                                            if (magnitude > poplarBreakTreshold) // damage cap - lance break threshold
+                                            {
+                                                magnitude = poplarBreakTreshold;
+                                            }
+                                            magnitude *= 0.25f;
                                         }
 
-                                        if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * RBMCMConfig.ThrustMagnitudeModifier)) //ballistics
+                                        else
                                         {
-                                            magnitude = (lanceBalistics * (weaponWeight + BraceBonus));
-                                        }
+                                            if (CouchedMagnitude > (skillCap * RBMCMConfig.ThrustMagnitudeModifier) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * RBMCMConfig.ThrustMagnitudeModifier)) //skill based damage
+                                            {
+                                                magnitude = skillCap * RBMCMConfig.ThrustMagnitudeModifier;
+                                            }
 
-                                        if (magnitude > (ashBreakTreshold * RBMCMConfig.ThrustMagnitudeModifier)) // damage cap - lance break threshold
-                                        {
-                                            magnitude = ashBreakTreshold * RBMCMConfig.ThrustMagnitudeModifier;
+                                            if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * RBMCMConfig.ThrustMagnitudeModifier)) //ballistics
+                                            {
+                                                magnitude = (lanceBalistics * (weaponWeight + BraceBonus));
+                                            }
+
+                                            if (magnitude > (ashBreakTreshold * RBMCMConfig.ThrustMagnitudeModifier)) // damage cap - lance break threshold
+                                            {
+                                                magnitude = ashBreakTreshold * RBMCMConfig.ThrustMagnitudeModifier;
+                                            }
                                         }
                                     }
                                     else
@@ -723,20 +758,46 @@ namespace RealisticBattleCombatModule
                                         }
                                         float lanceBalistics = (magnitude * BraceModifier) / weaponWeight;
                                         float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
+                                        float BluntLanceBalistics = (magnitude * BraceModifier) / weaponWeight * RBMCMConfig.OneHandedThrustDamageBonus;
+                                        float BluntCouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus * RBMCMConfig.OneHandedThrustDamageBonus);
                                         magnitude = CouchedMagnitude;
-                                        if (CouchedMagnitude > (skillCap * RBMCMConfig.ThrustMagnitudeModifier) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * RBMCMConfig.ThrustMagnitudeModifier))
+
+                                        if (damageType == DamageTypes.Blunt)
                                         {
-                                            magnitude = skillCap * RBMCMConfig.ThrustMagnitudeModifier;
+                                            magnitude = BluntCouchedMagnitude;
+                                            if (BluntCouchedMagnitude > skillCap && (BluntLanceBalistics * (weaponWeight + BraceBonus)) < skillCap) //skill based damage
+                                            {
+                                                magnitude = skillCap;
+                                            }
+
+                                            if ((BluntLanceBalistics * (weaponWeight + BraceBonus)) >= skillCap) //ballistics
+                                            {
+                                                magnitude = (BluntLanceBalistics * (weaponWeight + BraceBonus));
+                                            }
+
+                                            if (magnitude > poplarBreakTreshold) // damage cap - lance break threshold
+                                            {
+                                                magnitude = poplarBreakTreshold;
+                                            }
+                                            magnitude *= 0.25f;
                                         }
 
-                                        if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * RBMCMConfig.ThrustMagnitudeModifier))
+                                        else
                                         {
-                                            magnitude = (lanceBalistics * (weaponWeight + BraceBonus));
-                                        }
+                                            if (CouchedMagnitude > (skillCap * RBMCMConfig.ThrustMagnitudeModifier) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * RBMCMConfig.ThrustMagnitudeModifier)) //skill based damage
+                                            {
+                                                magnitude = skillCap * RBMCMConfig.ThrustMagnitudeModifier;
+                                            }
 
-                                        if (magnitude > (ashBreakTreshold * RBMCMConfig.ThrustMagnitudeModifier))
-                                        {
-                                            magnitude = ashBreakTreshold * RBMCMConfig.ThrustMagnitudeModifier;
+                                            if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * RBMCMConfig.ThrustMagnitudeModifier)) //ballistics
+                                            {
+                                                magnitude = (lanceBalistics * (weaponWeight + BraceBonus));
+                                            }
+
+                                            if (magnitude > (ashBreakTreshold * RBMCMConfig.ThrustMagnitudeModifier)) // damage cap - lance break threshold
+                                            {
+                                                magnitude = ashBreakTreshold * RBMCMConfig.ThrustMagnitudeModifier;
+                                            }
                                         }
                                     }
                                     else

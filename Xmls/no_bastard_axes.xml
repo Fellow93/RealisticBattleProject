@@ -191,7 +191,7 @@
                     item_holsters="javelins:javelins_2:bow_hip:bow_hip_2"
                     default_item_holster_position_offset="0,0,-0.10"
                     piece_type_to_scale_holster_with="Pommel"
-                    hidden_piece_types_on_holster="Guard,Handle,Pommel"
+                    hidden_piece_types_on_holster="Guard:Handle:Pommel"
                     rotate_weapon_in_holster="true"
                     always_show_holster_with_weapon="true">
     <PieceDatas>
@@ -219,6 +219,8 @@
                 max_value="200" />
       <StatData stat_type="Accuracy"
                 max_value="100" />
+      <StatData stat_type="StackAmount"
+                max_value="5" />
     </StatsData>
     <StatsData weapon_description="OneHandedPolearm_JavelinAlternative">
       <StatData stat_type="Weight"
