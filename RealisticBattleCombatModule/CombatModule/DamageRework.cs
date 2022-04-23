@@ -2335,7 +2335,6 @@ namespace RealisticBattleCombatModule
     [HarmonyPatch("HandleBlow")]
     class HandleBlowPatch
     {
-
         private static ArmorComponent.ArmorMaterialTypes GetProtectorArmorMaterialOfBone(Agent agent,sbyte boneIndex)
         {
             if(agent != null && agent.SpawnEquipment != null)

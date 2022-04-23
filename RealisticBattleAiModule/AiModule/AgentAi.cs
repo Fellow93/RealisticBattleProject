@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using Helpers;
 using JetBrains.Annotations;
-using SandBox;
 using SandBox.GameComponents;
 using System.Collections.Generic;
 using System.Reflection;
@@ -104,8 +103,16 @@ namespace RealisticBattleAiModule
 
                 if(equippedItem != null && equippedItem.RelevantSkill == DefaultSkills.Bow)
                 {
-                    agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.025f - effectiveSkill * 0.0001f, 0.01f, 0.025f);//bow
-                    agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.025f - effectiveSkill * 0.0001f, 0.01f, 0.025f);//bow
+                    if(agent.MountAgent != null)
+                    {
+                        agentDrivenProperties.AiRangerVerticalErrorMultiplier = 0f;
+                        agentDrivenProperties.AiRangerHorizontalErrorMultiplier = 0f;
+                    }
+                    else
+                    {
+                        agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.025f - effectiveSkill * 0.0001f, 0.01f, 0.025f);//bow
+                        agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.025f - effectiveSkill * 0.0001f, 0.01f, 0.025f);//bow
+                    }
                 }
                 else if(equippedItem != null && equippedItem.RelevantSkill == DefaultSkills.Crossbow)
                 {

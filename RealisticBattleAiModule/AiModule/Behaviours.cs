@@ -675,6 +675,12 @@ namespace RealisticBattleAiModule
             }
             else if (__instance.Formation != null && __instance.Formation.QuerySystem.IsRangedCavalryFormation)
             {
+                Formation enemyCav = Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
+                if(enemyCav != null && __instance.Formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyCav.QuerySystem.MedianPosition.AsVec2) < 55f)
+                {
+                    __result = 0.1f;
+                    return;
+                }
                 if (!____isEnemyReachable)
                 {
                     __result = 0.1f;
@@ -850,8 +856,8 @@ namespace RealisticBattleAiModule
                                 FormationQuerySystem closestFormation = __instance.Formation.QuerySystem.ClosestEnemyFormation;
                                 if (closestFormation != null && closestFormation.Formation != null && (closestFormation.Formation.QuerySystem.IsCavalryFormation || closestFormation.Formation.QuerySystem.IsRangedCavalryFormation))
                                 {
-                                    float changeToChargeDistance = 90f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
-                                    if (closestFormation.Formation.QuerySystem.MedianPosition.AsVec2.DistanceSquared(position) < changeToChargeDistance * changeToChargeDistance)
+                                    float changeToChargeDistance = 110f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
+                                    if (closestFormation.Formation.QuerySystem.MedianPosition.AsVec2.Distance(position) < changeToChargeDistance)
                                     {
                                         ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(closestFormation.Formation);
                                         ____currentOrder = ____chargeToTargetOrder;
@@ -932,24 +938,24 @@ namespace RealisticBattleAiModule
                 }
                 //___Agent.SetMaximumSpeedLimit(100f, false);
             }
-            else if(agent.Formation != null && agent.Formation.Team.HasTeamAi)
-            {
-                FieldInfo field = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
-                field.DeclaringType.GetField("_currentTactic");
-                TacticComponent currentTactic = (TacticComponent)field.GetValue(agent.Formation.Team.TeamAI);
+            //else if(agent.Formation != null && agent.Formation.Team.HasTeamAi)
+            //{
+            //    FieldInfo field = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
+            //    field.DeclaringType.GetField("_currentTactic");
+            //    TacticComponent currentTactic = (TacticComponent)field.GetValue(agent.Formation.Team.TeamAI);
 
-                if(agent.Formation.GetReadonlyMovementOrderReference().OrderEnum == MovementOrder.MovementOrderEnum.ChargeToTarget)
-                {
-                    if (currentTactic != null && currentTactic.GetType() != null && (currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry) || currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry)))
-                    {
-                        if (limitIsMultiplier && desiredSpeed < 0.8f)
-                        {
-                            desiredSpeed = 0.8f;
-                        }
-                    }
-                }
+            //    if(agent.Formation.GetReadonlyMovementOrderReference().OrderEnum == MovementOrder.MovementOrderEnum.ChargeToTarget)
+            //    {
+            //        if (currentTactic != null && currentTactic.GetType() != null && (currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry) || currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry)))
+            //        {
+            //            if (limitIsMultiplier && desiredSpeed < 0.8f)
+            //            {
+            //                desiredSpeed = 0.8f;
+            //            }
+            //        }
+            //    }
                 
-            }
+            //}
             return true;
         }
     }
