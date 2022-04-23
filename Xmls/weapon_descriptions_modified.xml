@@ -1996,7 +1996,6 @@
       <WeaponFlag value="WideGrip"/>
     </WeaponFlags>
     <AvailablePieces>
-      <AvailablePiece id="axe_craft_10_head"/>
       <AvailablePiece id="spear_blade_1"/>
       <AvailablePiece id="spear_blade_2"/>
       <AvailablePiece id="spear_blade_3"/>
@@ -2013,14 +2012,10 @@
       <AvailablePiece id="spear_blade_15"/>
       <AvailablePiece id="spear_blade_15_blunt"/>
       <AvailablePiece id="spear_blade_18"/>
-      <AvailablePiece id="spear_blade_19"/>
-      <AvailablePiece id="spear_blade_19_blunt"/>
       <AvailablePiece id="spear_blade_20"/>
       <AvailablePiece id="spear_blade_20_blunt"/>
-      <AvailablePiece id="spear_blade_22"/>
       <AvailablePiece id="spear_blade_23"/>
       <AvailablePiece id="spear_blade_23_blunt"/>
-      <AvailablePiece id="spear_blade_24"/>
       <AvailablePiece id="spear_blade_25"/>
       <AvailablePiece id="spear_blade_26"/>
       <AvailablePiece id="spear_blade_27"/>

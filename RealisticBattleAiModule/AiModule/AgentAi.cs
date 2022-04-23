@@ -105,8 +105,8 @@ namespace RealisticBattleAiModule
                 {
                     if(agent.MountAgent != null)
                     {
-                        agentDrivenProperties.AiRangerVerticalErrorMultiplier = 0f;
-                        agentDrivenProperties.AiRangerHorizontalErrorMultiplier = 0f;
+                        agentDrivenProperties.AiRangerVerticalErrorMultiplier = 0f;//horse archers
+                        agentDrivenProperties.AiRangerHorizontalErrorMultiplier = 0f;//horse archers
                     }
                     else
                     {

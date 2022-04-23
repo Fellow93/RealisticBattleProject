@@ -645,7 +645,7 @@ namespace RealisticBattleCombatModule
                                 {
                                     skillBasedDamage = magnitude + 50f + (effectiveSkill * 0.46f);
                                 }
-                                else if (damageType == DamageTypes.Blunt)
+                                else if (damageType == DamageTypes.Blunt && !isPassiveUsage)
                                 {
                                     skillBasedDamage = magnitude + 30f + (effectiveSkill * 0.13f);
                                 }
@@ -665,8 +665,8 @@ namespace RealisticBattleCombatModule
                                         }
                                         float lanceBalistics = (magnitude * BraceModifier) / weaponWeight;
                                         float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
-                                        float BluntLanceBalistics = (magnitude * BraceModifier) / weaponWeight * RBMCMConfig.OneHandedThrustDamageBonus;
-                                        float BluntCouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus * RBMCMConfig.OneHandedThrustDamageBonus);
+                                        float BluntLanceBalistics = ((magnitude * BraceModifier) / weaponWeight) * RBMCMConfig.OneHandedThrustDamageBonus;
+                                        float BluntCouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus) * RBMCMConfig.OneHandedThrustDamageBonus;
                                         magnitude = CouchedMagnitude;
 
                                         if (damageType == DamageTypes.Blunt)
@@ -686,7 +686,7 @@ namespace RealisticBattleCombatModule
                                             {
                                                 magnitude = poplarBreakTreshold;
                                             }
-                                            magnitude *= 0.25f;
+                                            magnitude *= 0.5f;
                                         }
 
                                         else
@@ -738,7 +738,7 @@ namespace RealisticBattleCombatModule
                                 {
                                     skillBasedDamage = magnitude + (50f + (effectiveSkill * 0.46f)) * 1.3f;
                                 }
-                                else if (damageType == DamageTypes.Blunt)
+                                else if (damageType == DamageTypes.Blunt && !isPassiveUsage)
                                 {
                                     skillBasedDamage = magnitude + (30f + (effectiveSkill * 0.13f) * 1.3f);
                                 }
@@ -758,8 +758,8 @@ namespace RealisticBattleCombatModule
                                         }
                                         float lanceBalistics = (magnitude * BraceModifier) / weaponWeight;
                                         float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
-                                        float BluntLanceBalistics = (magnitude * BraceModifier) / weaponWeight * RBMCMConfig.OneHandedThrustDamageBonus;
-                                        float BluntCouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus * RBMCMConfig.OneHandedThrustDamageBonus);
+                                        float BluntLanceBalistics = ((magnitude * BraceModifier) / weaponWeight) * RBMCMConfig.OneHandedThrustDamageBonus;
+                                        float BluntCouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus) * RBMCMConfig.OneHandedThrustDamageBonus;
                                         magnitude = CouchedMagnitude;
 
                                         if (damageType == DamageTypes.Blunt)
@@ -779,7 +779,7 @@ namespace RealisticBattleCombatModule
                                             {
                                                 magnitude = poplarBreakTreshold;
                                             }
-                                            magnitude *= 0.25f;
+                                            magnitude *= 0.5f;
                                         }
 
                                         else
