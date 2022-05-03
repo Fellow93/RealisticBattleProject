@@ -3008,6 +3008,7 @@
                 default_group="HorseArcher"
                 level="26"
                 name="{=JVG0zC4e}Aserai Mameluke Heavy Cavalry"
+                upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.aserai">
     <face>
@@ -3360,7 +3361,6 @@
                 default_group="Cavalry"
                 level="11"
                 name="{=Gvy2b4fa}Aserai Youth"
-                upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.aserai">
@@ -3455,6 +3455,7 @@
                 default_group="Cavalry"
                 level="16"
                 name="{=dfv7E49q}Aserai Tribal Horseman"
+                upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 culture="Culture.aserai">
     <face>
@@ -3654,6 +3655,7 @@
                 default_group="Cavalry"
                 level="26"
                 name="{=6oc7CXbI}Aserai Veteran Faris"
+                upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.aserai">
     <face>
@@ -3757,6 +3759,7 @@
                 default_group="Cavalry"
                 level="31"
                 name="{=AoFZUbun}Aserai Vanguard Faris"
+                upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.aserai">
     <face>
@@ -6132,9 +6135,9 @@
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="imperial_vigla_recruit"
-                default_group="Infantry"
+                default_group="Cavalry"
                 level="11"
-                name="{=n41jlEa3}Imperial Vigla Recruit"
+                name="{=n41jlEa3}Imperial Mounted Acritae"
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.empire">
@@ -6151,13 +6154,13 @@
       <skill id="TwoHanded"
              value="5" />
       <skill id="Polearm"
-             value="60" />
+             value="50" />
       <skill id="Bow"
              value="20" />
       <skill id="Crossbow"
              value="5" />
       <skill id="Throwing"
-             value="40" />
+             value="50" />
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.imperial_equite" />
@@ -6165,11 +6168,11 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.imperial_spear_t2" />
+                 id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Item1"
                  id="Item.western_riders_kite_sparring_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.imperial_axe_t3" />
+                 id="Item.empire_sword_3_t3" />
       <equipment slot="Item3"
                  id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Body"
@@ -6185,11 +6188,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.imperial_spear_t2" />
+                 id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Item1"
                  id="Item.western_riders_kite_sparring_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.imperial_axe_t3" />
+                 id="Item.empire_sword_2_t3" />
       <equipment slot="Item3"
                  id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Body"
@@ -6205,7 +6208,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.imperial_spear_t2" />
+                 id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Item1"
                  id="Item.western_riders_kite_sparring_shield_shoulder" />
       <equipment slot="Item2"
@@ -6225,6 +6228,10 @@
       </EquipmentRoster>
       <EquipmentSet id="empire_troop_civilian_template_t2"
                     civilian="true" />
+    <equipment slot="Horse"
+               id="Item.empire_horse" />
+    <equipment slot="HorseHarness"
+               id="Item.stripped_leather_harness" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="imperial_equite"
@@ -6265,7 +6272,7 @@
       <equipment slot="Item1"
                  id="Item.tall_heater_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.imperial_axe_t3" />
+                 id="Item.empire_sword_4_t4" />
       <equipment slot="Item3"
                  id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Body"
@@ -6285,7 +6292,7 @@
       <equipment slot="Item1"
                  id="Item.tall_heater_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.empire_sword_3_t3" />
+                 id="Item.empire_sword_5_t4" />
       <equipment slot="Item3"
                  id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Body"
@@ -6305,7 +6312,7 @@
       <equipment slot="Item1"
                  id="Item.tall_heater_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.imperial_axe_t3" />
+                 id="Item.empire_mace_2_t4" />
       <equipment slot="Item3"
                  id="Item.imperial_throwing_spear_1_t4" />
       <equipment slot="Body"
@@ -6401,7 +6408,7 @@
       <equipment slot="Item1"
                  id="Item.tall_heater_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.empire_mace_2_t4" />
+                 id="Item.empire_sword_6_t5" />
       <equipment slot="Head"
                  id="Item.helmet_with_faceguard" />
       <equipment slot="Cape"
@@ -6425,6 +6432,7 @@
                 default_group="Cavalry"
                 level="26"
                 name="{=u0UNwnw2}Imperial Cataphract"
+                upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.empire">
     <face>
@@ -6522,6 +6530,7 @@
                 default_group="Cavalry"
                 level="31"
                 name="{=MYwUFMsz}Imperial Elite Cataphract"
+                upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.empire">
     <face>
@@ -8385,6 +8394,7 @@
                 default_group="HorseArcher"
                 level="16"
                 name="{=o1jvmi9P}Khuzait Raider"
+                upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 culture="Culture.khuzait">
     <face>
@@ -8484,6 +8494,7 @@
                 default_group="Cavalry"
                 level="16"
                 name="{=iXjMfCyp}Khuzait Horseman"
+                upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 culture="Culture.khuzait">
     <face>
@@ -8577,6 +8588,7 @@
                 default_group="HorseArcher"
                 level="16"
                 name="{=UYPaQP2j}Khuzait Qanqli"
+                upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 culture="Culture.khuzait">
     <face>
@@ -9336,6 +9348,7 @@
                 default_group="HorseArcher"
                 level="26"
                 name="{=KAJKOooN}Khuzait Heavy Horse Archer"
+                upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.khuzait">
     <face>
@@ -9530,6 +9543,7 @@
                 default_group="HorseArcher"
                 level="26"
                 name="{=VqrQ096u}Khuzait Kheshig"
+                upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.khuzait">
     <face>
@@ -9629,6 +9643,7 @@
                 default_group="HorseArcher"
                 level="31"
                 name="{=B7oI7AZG}Khuzait Khan's Guard"
+                upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.khuzait">
     <face>
@@ -10265,9 +10280,9 @@
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="sturgian_warrior_son"
-                default_group="Infantry"
+                default_group="Cavalry"
                 level="11"
-                name="{=1i0Ttr8H}Sturgian Otroki"
+                name="{=1i0Ttr8H}Son of Boyar"
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.sturgia">
@@ -10298,9 +10313,11 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_sword_1_t2" />
+                 id="Item.broad_ild_sword_t3" />
       <equipment slot="Item1"
                  id="Item.northern_round_shield" />
+      <equipment slot="Item2"
+                 id="Item.northern_spear_2_t3" />
       <equipment slot="Cape"
                  id="Item.a_brass_lamellar_shoulder_white_a" />
       <equipment slot="Body"
@@ -10314,9 +10331,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_sword_1_t2" />
+                 id="Item.broad_ild_sword_t3" />
       <equipment slot="Item1"
                  id="Item.northern_round_shield" />
+      <equipment slot="Item2"
+                 id="Item.northern_spear_2_t3" />
       <equipment slot="Cape"
                  id="Item.a_brass_lamellar_shoulder_white_a" />
       <equipment slot="Body"
@@ -10330,9 +10349,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_sword_1_t2" />
+                 id="Item.broad_ild_sword_t3" />
       <equipment slot="Item1"
                  id="Item.northern_round_shield" />
+      <equipment slot="Item2"
+                 id="Item.northern_spear_2_t3" />
       <equipment slot="Cape"
                  id="Item.a_brass_lamellar_shoulder_white_a" />
       <equipment slot="Body"
@@ -10346,12 +10367,17 @@
       </EquipmentRoster>
       <EquipmentSet id="sturgia_troop_civilian_template_t1"
                     civilian="true" />
+      <equipment slot="Horse"
+                 id="Item.sturgia_horse" />
+      <equipment slot="HorseHarness"
+                 id="Item.northern_ring_barding" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="varyag"
-                default_group="Infantry"
+                default_group="Cavalry"
                 level="16"
-                name="{=4C4WiTb2}Varyag"
+                name="{=4C4WiTb2}Mounted Varyag"
+                upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 culture="Culture.sturgia">
     <face>
@@ -10381,11 +10407,11 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_axe_3_t3" />
+                 id="Item.sturgia_sword_4_t4" />
       <equipment slot="Item1"
                  id="Item.northern_round_shield" />
       <equipment slot="Item2"
-                 id="Item.highland_throwing_axe_1_t2" />
+                 id="Item.northern_spear_3_t4" />
       <equipment slot="Head"
                  id="Item.northern_goggled_helmet" />
       <equipment slot="Body"
@@ -10399,11 +10425,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_axe_3_t3" />
+                 id="Item.sturgia_axe_4_t4" />
       <equipment slot="Item1"
                  id="Item.northern_round_shield" />
       <equipment slot="Item2"
-                 id="Item.highland_throwing_axe_1_t2" />
+                 id="Item.northern_spear_3_t4" />
       <equipment slot="Head"
                  id="Item.goggled_helmet_over_leather" />
       <equipment slot="Body"
@@ -10417,11 +10443,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_axe_3_t3" />
+                 id="Item.sturgia_sword_4_t4" />
       <equipment slot="Item1"
                  id="Item.northern_round_shield" />
       <equipment slot="Item2"
-                 id="Item.highland_throwing_axe_1_t2" />
+                 id="Item.northern_spear_3_t4" />
       <equipment slot="Head"
                  id="Item.nordic_helmet" />
       <equipment slot="Body"
@@ -10435,12 +10461,17 @@
       </EquipmentRoster>
       <EquipmentSet id="sturgia_troop_civilian_template_t2"
                     civilian="true" />
+      <equipment slot="Horse"
+                 id="Item.sturgia_horse" />
+      <equipment slot="HorseHarness"
+                 id="Item.northern_ring_barding" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="varyag_veteran"
-                default_group="Infantry"
+                default_group="Cavalry"
                 level="21"
-                name="{=QGPAEtj7}Varyag Veteran"
+                name="{=QGPAEtj7}Mounted Varyag Veteran"
+                upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.sturgia">
     <face>
@@ -10450,11 +10481,11 @@
       <skill id="Athletics"
              value="120" />
       <skill id="Riding"
-             value="45" />
+             value="100" />
       <skill id="OneHanded"
-             value="120" />
+             value="100" />
       <skill id="TwoHanded"
-             value="35" />
+             value="120" />
       <skill id="Polearm"
              value="100" />
       <skill id="Bow"
@@ -10470,13 +10501,11 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_sword_4_t4" />
+                 id="Item.sturgia_2haxe_1_t4" />
       <equipment slot="Item1"
                  id="Item.viking_round_shield" />
-      <equipment slot="Item2"
-                 id="Item.highland_throwing_axe_1_t2" />
       <equipment slot="Item3"
-                 id="Item.northern_spear_3_t4" />
+                 id="Item.northern_spear_4_t5" />
       <equipment slot="Body"
                  id="Item.sturgia_cavalry_armor" />
       <equipment slot="Leg"
@@ -10490,13 +10519,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_sword_4_t4" />
+                 id="Item.sturgia_2haxe_1_t4" />
       <equipment slot="Item1"
                  id="Item.viking_round_shield" />
-      <equipment slot="Item2"
-                 id="Item.highland_throwing_axe_1_t2" />
       <equipment slot="Item3"
-                 id="Item.northern_spear_3_t4" />
+                 id="Item.northern_spear_4_t5" />
       <equipment slot="Body"
                  id="Item.sturgia_cavalry_armor" />
       <equipment slot="Leg"
@@ -10510,13 +10537,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_sword_4_t4" />
+                 id="Item.sturgia_2haxe_1_t4" />
       <equipment slot="Item1"
                  id="Item.leather_round_shield" />
-      <equipment slot="Item2"
-                 id="Item.highland_throwing_axe_1_t2" />
       <equipment slot="Item3"
-                 id="Item.northern_spear_3_t4" />
+                 id="Item.northern_spear_4_t5" />
       <equipment slot="Body"
                  id="Item.sturgia_cavalry_armor" />
       <equipment slot="Leg"
@@ -10530,13 +10555,17 @@
       </EquipmentRoster>
       <EquipmentSet id="sturgia_troop_civilian_template_t3"
                     civilian="true" />
+      <equipment slot="Horse"
+                 id="Item.t2_sturgia_horse" />
+      <equipment slot="HorseHarness"
+                 id="Item.chain_horse_harness" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="druzhinnik"
-                default_group="Cavalry"
+                default_group="HorseArcher"
                 level="26"
                 name="{=CRzrHomf}Sturgian Druzhinnik"
-                upgrade_requires="ItemCategory.horse"
+                upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.sturgia">
     <face>
@@ -10568,7 +10597,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_lance_1_t4" />
       <equipment slot="Item1"
-                 id="Item.sturgia_2haxe_1_t4" />
+                 id="Item.sturgia_2haxe_2_t5" />
       <equipment slot="Item2"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item3"
@@ -10592,7 +10621,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_lance_1_t4" />
       <equipment slot="Item1"
-                 id="Item.sturgia_2haxe_1_t4" />
+                 id="Item.sturgia_2haxe_2_t5" />
       <equipment slot="Item2"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item3"
@@ -10616,7 +10645,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_lance_1_t4" />
       <equipment slot="Item1"
-                 id="Item.sturgia_2haxe_1_t4" />
+                 id="Item.sturgia_2haxe_2_t5" />
       <equipment slot="Item2"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item3"
@@ -10641,7 +10670,7 @@
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="druzhinnik_champion"
-                default_group="Cavalry"
+                default_group="HorseArcher"
                 level="31"
                 name="{=FrTTT0G1}Sturgian Druzhinnik Champion"
                 upgrade_requires="ItemCategory.war_horse"
@@ -12596,6 +12625,7 @@
                 default_group="Cavalry"
                 level="21"
                 name="Vlandian Medium Cavalry"
+                upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 culture="Culture.vlandia">
     <face>
@@ -13252,6 +13282,7 @@
                 default_group="Cavalry"
                 level="16"
                 name="{=OQPDvtpk}Vlandian Gallant"
+                upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 culture="Culture.vlandia">
     <face>
@@ -13327,6 +13358,7 @@
                 default_group="Cavalry"
                 level="21"
                 name="{=oseSwa56}Vlandian Knight"
+                upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.vlandia">
     <face>
@@ -13411,7 +13443,7 @@
       <EquipmentSet id="vlandia_troop_civilian_template_t2"
                     civilian="true" />
     <equipment slot="Horse"
-               id="Item.vlandia_horse" />
+               id="Item.t2_vlandia_horse" />
     <equipment slot="HorseHarness"
                id="Item.halfchain_barding" />
     </Equipments>
@@ -13518,6 +13550,7 @@
                 default_group="Cavalry"
                 level="31"
                 name="{=bTApMxWr}Vlandian Banner Knight"
+                upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.vlandia">
     <face>
@@ -13695,6 +13728,7 @@
                 default_group="Cavalry"
                 level="21"
                 occupation="Soldier"
+                upgrade_requires="ItemCategory.horse"
                 culture="Culture.darshi"
                 name="{=H5iWxbbl}Ghilman">
     <face>
@@ -13754,6 +13788,7 @@
                 default_group="Cavalry"
                 level="31"
                 occupation="Soldier"
+                upgrade_requires="ItemCategory.war_horse"
                 culture="Culture.darshi"
                 name="{=7EUhAv8b}Ghulam">
     <face>
@@ -14659,6 +14694,7 @@
                 default_group="Cavalry"
                 level="19"
                 occupation="Soldier"
+                upgrade_requires="ItemCategory.horse"
                 culture="Culture.aserai"
                 name="{=9zXXes9i}Beni Zilal Soldier">
     <face>
@@ -14742,6 +14778,7 @@
                 default_group="Cavalry"
                 level="26"
                 occupation="Soldier"
+                upgrade_requires="ItemCategory.war_horse"
                 culture="Culture.aserai"
                 name="{=8Gh8q1PX}Beni Zilal Royal Guard">
     <face>
@@ -16092,6 +16129,7 @@
                 default_group="Cavalry"
                 level="19"
                 occupation="Soldier"
+                upgrade_requires="ItemCategory.horse"
                 culture="Culture.aserai"
                 name="{=Mcbjdntz}Jawwal Camel Rider">
     <face>
@@ -16149,6 +16187,7 @@
                 default_group="Cavalry"
                 level="31"
                 occupation="Soldier"
+                upgrade_requires="ItemCategory.war_horse"
                 culture="Culture.aserai"
                 name="{=qAvxmnav}Jawwal Bedouin">
     <face>
@@ -16721,6 +16760,7 @@
                 default_group="Cavalry"
                 level="19"
                 occupation="Soldier"
+                upgrade_requires="ItemCategory.horse"
                 culture="Culture.empire"
                 name="{=qBVNIhme}Expert Eleftheroi">
     <face>
@@ -16778,6 +16818,7 @@
                 default_group="Cavalry"
                 level="29"
                 occupation="Soldier"
+                upgrade_requires="ItemCategory.war_horse"
                 culture="Culture.empire"
                 name="{=cEKbOxRA}Veteran Eleftheroi">
     <face>
@@ -17115,6 +17156,7 @@
                 is_hero="false"
                 level="21"
                 name="{=AssCCFew}Mercenary Horseman"
+                upgrade_requires="ItemCategory.horse"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
@@ -17281,6 +17323,7 @@
                 is_hero="false"
                 level="26"
                 name="{=SaqVvzyV}Mercenary Cavalry"
+                upgrade_requires="ItemCategory.war_horse"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
