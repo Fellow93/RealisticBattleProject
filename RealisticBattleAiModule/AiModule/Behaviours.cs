@@ -505,7 +505,7 @@ namespace RealisticBattleAiModule
                     position = (flag3 ? vec2 : vec3) + vec6 * _radius;
                 }
                 Vec2 vec7 = _center + vec5;
-                float num = (float)Math.PI * 2f * _radius;
+                float num = MathF.PI * 2f * _radius;
                 while (distance > 0f)
                 {
                     if (flag2 && flag)
@@ -521,9 +521,9 @@ namespace RealisticBattleAiModule
                     {
                         Vec2 v = (position - vec2).Normalized();
                         float num3 = TaleWorlds.Library.MathF.Acos(MBMath.ClampFloat(_direction.DotProduct(v), -1f, 1f));
-                        float num4 = (float)Math.PI * 2f * (distance / num);
-                        float num5 = ((num3 + num4 < (float)Math.PI) ? (num3 + num4) : ((float)Math.PI));
-                        float num6 = (num5 - num3) / (float)Math.PI * (num / 2f);
+                        float num4 = MathF.PI * 2f * (distance / num);
+                        float num5 = ((num3 + num4 < MathF.PI) ? (num3 + num4) : MathF.PI);
+                        float num6 = (num5 - num3) / MathF.PI * (num / 2f);
                         Vec2 direction = _direction;
                         direction.RotateCCW(num5);
                         position = vec2 + direction * _radius;
@@ -543,11 +543,11 @@ namespace RealisticBattleAiModule
                     else
                     {
                         Vec2 vec8 = (position - vec3).Normalized();
-                        float num8 = TaleWorlds.Library.MathF.Acos(MBMath.ClampFloat(_direction.DotProduct(vec8), -1f, 1f));
-                        float num9 = (float)Math.PI * 2f * (distance / num);
+                        float num8 = MathF.Acos(MBMath.ClampFloat(_direction.DotProduct(vec8), -1f, 1f));
+                        float num9 = MathF.PI * 2f * (distance / num);
                         float num10 = ((num8 - num9 > 0f) ? (num8 - num9) : 0f);
                         float num11 = num8 - num10;
-                        float num12 = num11 / (float)Math.PI * (num / 2f);
+                        float num12 = num11 / MathF.PI * (num / 2f);
                         Vec2 vec9 = vec8;
                         vec9.RotateCCW(num11);
                         position = vec3 + vec9 * _radius;

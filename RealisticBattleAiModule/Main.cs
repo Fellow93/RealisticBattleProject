@@ -156,8 +156,7 @@ namespace RealisticBattleAiModule
             try
             {
                 MissionScreen missionScreen = ScreenManager.TopScreen as MissionScreen;
-                bool flag = missionScreen != null && missionScreen.InputManager.IsControlDown() && missionScreen.InputManager.IsKeyPressed(InputKey.V);
-                if (flag)
+                if (missionScreen != null && missionScreen.InputManager != null && missionScreen.InputManager.IsControlDown() && missionScreen.InputManager.IsKeyPressed(InputKey.V))
                 {
                     Mission.Current.SetFastForwardingFromUI(!Mission.Current.IsFastForward);
                     InformationManager.DisplayMessage(new InformationMessage("Vroom = " + Mission.Current.IsFastForward, Color.FromUint(4282569842u)));
