@@ -121,52 +121,59 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 					case SkirmishMode.Reform:
                         {
 							_returnTimer = null;
-							if (averagePosition.Distance(enemyFormation.QuerySystem.AveragePosition) > skirmishRange)
-                            {
-								if (_reformTimer == null)
-								{
-									_reformTimer = new Timer(Mission.Current.CurrentTime, 4f/ mobilityModifier);
-								}
-							}
-							if (_reformTimer != null && _reformTimer.Check(Mission.Current.CurrentTime))
+							if (enemyFormation != null)
 							{
-								_skirmishMode = SkirmishMode.Attack;
-							}
+								if (averagePosition.Distance(enemyFormation.QuerySystem.AveragePosition) > skirmishRange)
+								{
+									if (_reformTimer == null)
+									{
+										_reformTimer = new Timer(Mission.Current.CurrentTime, 4f / mobilityModifier);
+									}
+								}
+								if (_reformTimer != null && _reformTimer.Check(Mission.Current.CurrentTime))
+								{
+									_skirmishMode = SkirmishMode.Attack;
+								}
 
-							if (behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
-							{
-								if (allyFormation != null)
+								if (behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
 								{
-									Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.RightVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
-									position.SetVec2(calcPosition);
+									if (allyFormation != null)
+									{
+										Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.RightVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
+										position.SetVec2(calcPosition);
+									}
+									else
+									{
+										position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+									}
+								}
+								else if (behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
+								{
+									if (allyFormation != null)
+									{
+										Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.LeftVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
+										position.SetVec2(calcPosition);
+									}
+									else
+									{
+										position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+									}
 								}
 								else
 								{
-									position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+									if (allyFormation != null)
+									{
+										position = allyFormation.QuerySystem.MedianPosition;
+									}
+									else
+									{
+										position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+									}
 								}
 							}
-							else if (behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
+							else
 							{
-								if (allyFormation != null)
-								{
-									Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.LeftVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
-									position.SetVec2(calcPosition);
-								}
-								else
-								{
-									position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
-								}
-							}
-                            else
-                            {
-								if (allyFormation != null)
-								{
-									position = allyFormation.QuerySystem.MedianPosition;
-								}
-								else
-                                {
-									position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
-								}
+								position = WorldPosition.Invalid;
 							}
 							break;
                         }
@@ -263,7 +270,6 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
                             {
 								position = WorldPosition.Invalid;
 							}
-							//position = enemyFormation.QuerySystem.MedianPosition;
 							break;
 						}
 				}
