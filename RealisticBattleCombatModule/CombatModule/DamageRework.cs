@@ -161,8 +161,8 @@ namespace RealisticBattleCombatModule
             static bool Prefix(ref AttackCollisionData acd, in MissionWeapon weapon, bool isVictimAgentNull, float momentumRemaining, float missileTotalDamage, out float baseMagnitude, out float specialMagnitude, Vec2 victimVelocity)
             {
                 Vec3 missileVelocity = acd.MissileVelocity;
-                //Vec3 gcn = acd.CollisionGlobalNormal;
-                // Vec3 wbd = acd.MissileVelocity;
+                //Vec3 cgn = acd.CollisionGlobalNormal;
+                //Vec3 wbd = acd.MissileVelocity;
 
                 //float angleModifier = Vec3.DotProduct(gcn, wbd);
 
@@ -364,7 +364,7 @@ namespace RealisticBattleCombatModule
                 switch (damageType)
                 {
                     case DamageTypes.Cut:
-                        if(weapon.WeaponClass == WeaponClass.Arrow || weapon.WeaponClass == WeaponClass.Bolt || weapon.WeaponClass == WeaponClass.Javelin)
+                        if (weapon.WeaponClass == WeaponClass.Arrow || weapon.WeaponClass == WeaponClass.Bolt || weapon.WeaponClass == WeaponClass.Javelin)
                         {
                             dmgMultiplier *= 0.1f;
                         }
@@ -374,7 +374,7 @@ namespace RealisticBattleCombatModule
                         }
                         break;
                     case DamageTypes.Pierce:
-                        if(weapon.WeaponClass == WeaponClass.Arrow || weapon.WeaponClass == WeaponClass.Bolt || weapon.WeaponClass == WeaponClass.Javelin)
+                        if (weapon.WeaponClass == WeaponClass.Arrow || weapon.WeaponClass == WeaponClass.Bolt || weapon.WeaponClass == WeaponClass.Javelin)
                         {
                             dmgMultiplier *= 0.1f;
                         }
@@ -393,6 +393,229 @@ namespace RealisticBattleCombatModule
             return false;
         }
     }
+
+    //[HarmonyPatch(typeof(Mission))]
+    //[HarmonyPatch("ComputeBlowMagnitudeImp")]
+    //class ComputeBlowMagnitudeImpPatch
+    //{
+    //    static bool Prefix(ref Mission __instance, ref AttackCollisionData acd, ref AttackInformation attackInformation, Vec2 attackerAgentVelocity, Vec2 victimAgentVelocity, float momentumRemaining, bool cancelDamage, bool hitWithAnotherBone, out float specialMagnitude, out int speedBonusInt, StrikeType strikeType, Agent.UsageDirection attackDirection, in MissionWeapon weapon, bool attackerIsDoingPassiveAttack)
+    //    {
+    //        //Agent attacker = null;
+    //        //Agent victim = null;
+    //        //foreach (Agent agent in Mission.Current.Agents){
+    //        //    if(attackInformation.VictimAgentOrigin == agent.Origin)
+    //        //    {
+    //        //        victim = agent;
+    //        //    }
+    //        //    if (attackInformation.AttackerAgentOrigin == agent.Origin)
+    //        //    {
+    //        //        attacker = agent;
+    //        //    }
+    //        //}
+
+    //        //if(attacker != null && victim != null)
+    //        //{
+    //        //    if(acd.VictimHitBodyPart == BoneBodyPartType.Head)
+    //        //    {
+    //        //        Vec3 ald = attacker.LookDirection;
+    //        //        Vec3 vld = victim.LookDirection;
+    //        //        vld *= -1f; //invert look vector
+    //        //        if (Math.Abs(ald.x - vld.x) < 0.1f && Math.Abs(ald.y - vld.y) < 0.1f)
+    //        //        {
+    //        //            InformationManager.DisplayMessage(new InformationMessage("CRIT"));
+    //        //        }
+    //        //    }
+    //        //}
+
+    //        acd.MovementSpeedDamageModifier = 0f;
+    //        speedBonusInt = 0;
+    //        if (acd.IsMissile)
+    //        {
+    //            float missileTotalDamage = acd.MissileTotalDamage;
+    //            Vec3 missileVelocity = acd.MissileVelocity;
+    //            //Vec3 cgn = acd.CollisionGlobalNormal;
+    //            //Vec3 wbd = acd.MissileVelocity;
+
+    //            //float angleModifier = Vec3.DotProduct(gcn, wbd);
+
+    //            //Vec3 resultVec = gcn + wbd;
+    //            //float angleModifier = 1f - Math.Abs((resultVec.x + resultVec.y + resultVec.z) / 3);
+    //            WeaponComponentData currentUsageItem = weapon.CurrentUsageItem;
+    //            ItemObject weaponItem;
+    //            if (weapon.AmmoWeapon.Item != null)
+    //            {
+    //                weaponItem = weapon.AmmoWeapon.Item;
+    //            }
+    //            else
+    //            {
+    //                weaponItem = weapon.Item;
+    //            }
+
+    //            float length;
+    //            if (!attackInformation.IsVictimAgentNull)
+    //            {
+    //                length = (victimAgentVelocity.ToVec3() - missileVelocity).Length;
+    //            }
+    //            else
+    //            {
+    //                length = missileVelocity.Length;
+    //            }
+    //            //float expr_32 = length / acd.MissileStartingBaseSpeed;
+    //            //float num = expr_32 * expr_32;
+    //            if (weaponItem != null && weaponItem.PrimaryWeapon != null)
+    //            {
+    //                switch (weaponItem.PrimaryWeapon.WeaponClass.ToString())
+    //                {
+    //                    case "Boulder":
+    //                    case "Stone":
+    //                        {
+    //                            missileTotalDamage *= 0.01f;
+    //                            break;
+    //                        }
+    //                    case "ThrowingAxe":
+    //                    case "ThrowingKnife":
+    //                    case "Dagger":
+    //                        {
+    //                            length -= 0f; //5f
+    //                            //if (length < 5.0f)
+    //                            //{
+    //                            //    length = 5f;
+    //                            //}
+    //                            //length += -(7.0f);
+    //                            //if (length < 5.0f)
+    //                            //{
+    //                            //    length = 5.0f;
+    //                            //} 
+    //                            break;
+    //                        }
+    //                    case "Javelin":
+    //                        {
+    //                            length -= 10f;
+    //                            if (length < 5.0f)
+    //                            {
+    //                                length = 5f;
+    //                            }
+    //                            //missileTotalDamage += 168.0f;
+    //                            //missileTotalDamage *= 0.01f;
+    //                            //missileTotalDamage = 1f;
+    //                            break;
+    //                        }
+    //                    case "OneHandedPolearm":
+    //                        {
+    //                            length -= 10f;
+    //                            if (length < 5.0f)
+    //                            {
+    //                                length = 5f;
+    //                            }
+    //                            //missileTotalDamage -= 25f;
+    //                            //missileTotalDamage = 1f;
+    //                            break;
+    //                        }
+    //                    case "LowGripPolearm":
+    //                        {
+    //                            length -= 10f;
+    //                            if (length < 5.0f)
+    //                            {
+    //                                length = 5f;
+    //                            }
+    //                            //missileTotalDamage -= 25f;
+    //                            //missileTotalDamage *= 0.01f;
+    //                            //missileTotalDamage = 1f;
+    //                            break;
+    //                        }
+    //                    case "Arrow":
+    //                        {
+    //                            missileTotalDamage -= 100f;
+    //                            missileTotalDamage *= 0.01f;
+    //                            break;
+    //                        }
+    //                    case "Bolt":
+    //                        {
+    //                            missileTotalDamage -= 100f;
+    //                            missileTotalDamage *= 0.01f;
+    //                            break;
+    //                        }
+    //                }
+    //            }
+
+    //            float physicalDamage = ((length * length) * (weaponItem.Weight)) / 2;
+    //            float momentumDamage = (length * weaponItem.Weight);
+    //            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin") && physicalDamage > 300f)
+    //            {
+    //                physicalDamage = 300f;
+    //            }
+
+    //            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") && physicalDamage > (weaponItem.Weight) * 300f)
+    //            {
+    //                physicalDamage = (weaponItem.Weight) * 300f;
+    //            }
+
+    //            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") && physicalDamage > (weaponItem.Weight) * 2250f)
+    //            {
+    //                physicalDamage = (weaponItem.Weight) * 2250f;
+    //            }
+
+    //            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt") && physicalDamage > (weaponItem.Weight) * 2500f)
+    //            {
+    //                physicalDamage = (weaponItem.Weight) * 2500f;
+    //            }
+
+    //            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Stone") ||
+    //                weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Boulder"))
+    //            {
+    //                physicalDamage = (length * (weaponItem.Weight));
+    //            }
+
+    //            acd.BaseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining;
+
+    //            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
+    //            {
+    //                //baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f)) * RBMCMConfig.ThrustMagnitudeModifier;
+    //                if ((DamageTypes)acd.DamageType == DamageTypes.Cut || (DamageTypes)acd.DamageType == DamageTypes.Pierce)
+    //                {
+    //                    acd.BaseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f)) * RBMCMConfig.ThrustMagnitudeModifier;
+    //                }
+    //                else
+    //                {
+    //                    acd.BaseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f)) * 0.25f;
+    //                }
+    //            }
+
+    //            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingAxe"))
+    //            {
+    //                acd.BaseMagnitude = physicalDamage * momentumRemaining + (missileTotalDamage * 1f);
+    //            }
+
+    //            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingKnife") ||
+    //                weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Dagger"))
+    //            {
+    //                acd.BaseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0f)) * RBMCMConfig.ThrustMagnitudeModifier * 0.6f;
+    //            }
+
+    //            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") ||
+    //                weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("LowGripPolearm"))
+    //            {
+    //                acd.BaseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 1f)) * RBMCMConfig.ThrustMagnitudeModifier;
+    //            }
+    //            if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") ||
+    //                weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt"))
+    //            {
+    //                if ((DamageTypes)acd.DamageType == DamageTypes.Cut || (DamageTypes)acd.DamageType == DamageTypes.Pierce)
+    //                {
+    //                    acd.BaseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining;
+    //                }
+    //                else
+    //                {
+    //                    acd.BaseMagnitude = momentumDamage * missileTotalDamage * momentumRemaining; // momentum makes more sense for blunt attacks, maybe 500 damage is needed for sling projectiles
+    //                }
+    //            }
+    //            specialMagnitude = acd.BaseMagnitude;
+    //            return false;
+    //        }
+    //        specialMagnitude = 0f;
+    //        return true;
+    //    }
+    //}
 
     [HarmonyPatch(typeof(CombatStatCalculator))]
     [HarmonyPatch("CalculateStrikeMagnitudeForPassiveUsage")]
@@ -499,6 +722,28 @@ namespace RealisticBattleCombatModule
             if (collidedWithShieldOnBack && shieldOnBack != null)
             {
                 armorAmount += 20f;
+            }
+
+            Agent attacker = null;
+            Agent victim = null;
+            foreach (Agent agent in Mission.Current.Agents)
+            {
+                if (attackInformation.VictimAgentOrigin == agent.Origin)
+                {
+                    victim = agent;
+                }
+                if (attackInformation.AttackerAgentOrigin == agent.Origin)
+                {
+                    attacker = agent;
+                }
+            }
+
+            if (attacker != null && victim != null)
+            {
+                if (victim.GetCurrentActionType(0) == ActionCodeType.Fall || victim.GetCurrentActionType(0) == ActionCodeType.StrikeKnockBack)
+                {
+                    armorAmount *= 0.75f;
+                }
             }
 
             string weaponType = "otherDamage";

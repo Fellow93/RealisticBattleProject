@@ -407,6 +407,21 @@ namespace RealisticBattleCombatModule
                     property2.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
 
                 }
+
+                if (shooterAgent != null && !shooterAgent.IsAIControlled && wsd[0].WeaponClass == (int)WeaponClass.Bow)
+                {
+
+                    //radians = degrees * (pi / 180)
+
+                    //degrees = radians * (180 / pi)
+
+                    double rotRad = 0.083141f;
+                    float vecLength = velocity.Length;
+                    double currentRad = (double)Math.Acos(velocity.z / vecLength);
+                    float newZ = velocity.Length * ((float)Math.Cos(currentRad - rotRad));
+                    velocity.z = newZ;
+                }
+
                 return true;
             }
 
