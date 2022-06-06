@@ -234,6 +234,9 @@ namespace RealisticBattleAiModule
                     stat.AddFactor(value);
                     stat2.AddFactor(value);
                     stat3.AddFactor(value);
+
+                    agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.7f;
+                    agentDrivenProperties.WeaponMaxUnsteadyAccuracyPenalty *= 0.7f;
                 }
                 agentDrivenProperties.SwingSpeedMultiplier = stat.ResultNumber;
                 agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier = stat2.ResultNumber;
