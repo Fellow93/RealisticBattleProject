@@ -860,7 +860,7 @@ namespace RealisticBattleCombatModule
                                 }
                                 else
                                 {
-                                    skillBasedDamage = magnitude + 30f + (effectiveSkill * 0.13f);
+                                    skillBasedDamage = magnitude + 20f + (effectiveSkill * 0.15f);
                                 }
                                 if (magnitude > 1f)
                                 {
@@ -876,7 +876,7 @@ namespace RealisticBattleCombatModule
                                 }
                                 else
                                 {
-                                    skillBasedDamage = magnitude + (45f + (effectiveSkill * 0.13f) * 1.3f);
+                                    skillBasedDamage = magnitude + (25f + (effectiveSkill * 0.20f) * 1.3f);
                                 }
                                 if (magnitude > 1f)
                                 {
@@ -1797,7 +1797,7 @@ namespace RealisticBattleCombatModule
             {
                 case DamageTypes.Blunt:
                     {
-                        float armorReductionBlunt = 100f / (100f + armorEffectiveness * RBMCMConfig.dict["Global.ArmorMultiplier"]);
+                        float armorReductionBlunt = 100f / ((100f + armorEffectiveness) * RBMCMConfig.dict["Global.ArmorMultiplier"]);
                         damage += magnitude * armorReductionBlunt * RBMCMConfig.dict["Global.MaceBluntModifier"];
 
                         break;
