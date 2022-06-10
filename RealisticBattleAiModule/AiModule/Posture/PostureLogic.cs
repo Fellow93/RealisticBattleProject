@@ -120,7 +120,8 @@ namespace RealisticBattleAiModule.AiModule.Posture
                         {
                             if(defenderPosture != null)
                             {
-                                defenderPosture.posture = defenderPosture.posture - calculateDefenderPostureDamage(victimAgent, attackerAgent, absoluteDamageModifier, 0.85f, ref collisionData, attackerWeapon);
+                                float postureDmg = calculateDefenderPostureDamage(victimAgent, attackerAgent, absoluteDamageModifier, 0.85f, ref collisionData, attackerWeapon);
+                                defenderPosture.posture = postureDmg;
                                 addPosturedamageVisual(attackerAgent, victimAgent);
                                 if (defenderPosture.posture <= 0f)
                                 {
@@ -129,10 +130,10 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                     {
                                         if (victimAgent.IsPlayerControlled)
                                         {
-                                            InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, " + collisionData.InflictedDamage + " damage crushed through", Color.FromUint(4282569842u)));
+                                            InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, " + MathF.Floor(postureDmg) + " damage crushed through", Color.FromUint(4282569842u)));
                                         }
 
-                                        makePostureCrashThroughBlow(ref __instance, ref __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
+                                        makePostureCrashThroughBlow(ref __instance, ref __result, attackerAgent, victimAgent, MathF.Floor(postureDmg), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
 
                                     }
                                     defenderPosture.posture = defenderPosture.maxPosture * postureResetModifier;
@@ -151,7 +152,8 @@ namespace RealisticBattleAiModule.AiModule.Posture
                         {
                             if (defenderPosture != null)
                             {
-                                defenderPosture.posture = defenderPosture.posture - calculateDefenderPostureDamage(victimAgent, attackerAgent, absoluteDamageModifier, 0.5f, ref collisionData, attackerWeapon);
+                                float postureDmg = calculateDefenderPostureDamage(victimAgent, attackerAgent, absoluteDamageModifier, 0.5f, ref collisionData, attackerWeapon);
+                                defenderPosture.posture = defenderPosture.posture - postureDmg;
                                 addPosturedamageVisual(attackerAgent, victimAgent);
                                 if (defenderPosture.posture <= 0f)
                                 {
@@ -160,9 +162,9 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                     {
                                         if (victimAgent.IsPlayerControlled)
                                         {
-                                            InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, perfect parry, " + collisionData.InflictedDamage + " damage crushed through", Color.FromUint(4282569842u)));
+                                            InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, perfect parry, " + MathF.Floor(postureDmg) + " damage crushed through", Color.FromUint(4282569842u)));
                                         }
-                                        makePostureCrashThroughBlow(ref __instance, ref __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                        makePostureCrashThroughBlow(ref __instance, ref __result, attackerAgent, victimAgent, MathF.Floor(postureDmg), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
                                     }
                                     defenderPosture.posture = defenderPosture.maxPosture * postureResetModifier;
                                     addPosturedamageVisual(attackerAgent, victimAgent);
@@ -302,7 +304,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                 {
                                     if (victimAgent.IsPlayerControlled)
                                     {
-                                        InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, chamber block " + collisionData.InflictedDamage + " damage crushed through", Color.FromUint(4282569842u)));
+                                        InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, chamber block", Color.FromUint(4282569842u)));
                                     }
                                     makePostureBlow(ref __instance, ref __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.NonTipThrust);
                                 }
@@ -312,15 +314,16 @@ namespace RealisticBattleAiModule.AiModule.Posture
                         }
                         if (attackerPosture != null)
                         {
-                            attackerPosture.posture = attackerPosture.posture - calculateAttackerPostureDamage(victimAgent, attackerAgent, absoluteDamageModifier, 1.25f, ref collisionData, attackerWeapon);
+                            float postureDmg = calculateAttackerPostureDamage(victimAgent, attackerAgent, absoluteDamageModifier, 1.25f, ref collisionData, attackerWeapon);
+                            attackerPosture.posture = attackerPosture.posture - postureDmg;
                             addPosturedamageVisual(attackerAgent, victimAgent);
                             if (attackerPosture.posture <= 0f)
                             {
                                 if (attackerAgent.IsPlayerControlled)
                                 {
-                                    InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, chamber block", Color.FromUint(4282569842u)));
+                                    InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, chamber block " + MathF.Floor(postureDmg) + " damage crushed through", Color.FromUint(4282569842u)));
                                 }
-                                makePostureCrashThroughBlow(ref __instance, ref __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack | BlowFlags.CrushThrough);
+                                makePostureCrashThroughBlow(ref __instance, ref __result, attackerAgent, victimAgent, MathF.Floor(postureDmg), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack | BlowFlags.CrushThrough);
                                 attackerPosture.posture = attackerPosture.maxPosture * postureResetModifier;
                                 addPosturedamageVisual(attackerAgent, victimAgent);
                             }
@@ -710,11 +713,11 @@ namespace RealisticBattleAiModule.AiModule.Posture
                 }
             }
 
-            static void makePostureCrashThroughBlow(ref Mission mission, ref Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
+            static void makePostureCrashThroughBlow(ref Mission mission, ref Blow blow, Agent attackerAgent, Agent victimAgent, int inflictedHpDmg, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
             {
                 blow.BaseMagnitude = collisionData.BaseMagnitude;
                 blow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
-                blow.InflictedDamage = collisionData.InflictedDamage;
+                blow.InflictedDamage = inflictedHpDmg;
                 blow.SelfInflictedDamage = collisionData.SelfInflictedDamage;
                 blow.AbsorbedByArmor = collisionData.AbsorbedByArmor;
 
