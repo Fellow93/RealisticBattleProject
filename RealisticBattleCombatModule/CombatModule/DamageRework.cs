@@ -697,7 +697,7 @@ namespace RealisticBattleCombatModule
     [HarmonyPatch("ComputeBlowDamage")]
     class OverrideDamageCalc
     {
-        static bool Prefix(ref AttackInformation attackInformation, ref AttackCollisionData attackCollisionData, in MissionWeapon attackerWeapon, DamageTypes damageType, float magnitude, int speedBonus, bool cancelDamage, out int inflictedDamage, out int absorbedByArmor)
+        static bool Prefix(ref AttackInformation attackInformation, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, DamageTypes damageType, float magnitude, int speedBonus, bool cancelDamage, out int inflictedDamage, out int absorbedByArmor)
         {
             float armorAmountFloat = attackInformation.ArmorAmountFloat;
             WeaponComponentData shieldOnBack = attackInformation.ShieldOnBack;
@@ -718,7 +718,7 @@ namespace RealisticBattleCombatModule
 
             if (!isFallDamage)
             {
-                float adjustedArmor = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateAdjustedArmorForBlow(armorAmountFloat, attackerAgentCharacter, attackerCaptainCharacter, victimAgentCharacter, victimCaptainCharacter, attackerWeapon.CurrentUsageItem);
+                float adjustedArmor = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateAdjustedArmorForBlow(armorAmountFloat, attackerAgentCharacter, attackerCaptainCharacter, victimAgentCharacter, victimCaptainCharacter, attackerWeapon);
                 armorAmount = adjustedArmor;
             }
             //float num2 = (float)armorAmount;
@@ -750,9 +750,9 @@ namespace RealisticBattleCombatModule
             }
 
             string weaponType = "otherDamage";
-            if (attackerWeapon.Item != null && attackerWeapon.CurrentUsageItem != null)
+            if (attackerWeapon != null)
             {
-                weaponType = attackerWeapon.CurrentUsageItem.WeaponClass.ToString();
+                weaponType = attackerWeapon.WeaponClass.ToString();
             }
 
             IAgentOriginBase attackerAgentOrigin = attackInformation.AttackerAgentOrigin;
@@ -760,7 +760,7 @@ namespace RealisticBattleCombatModule
 
             if (!attackCollisionData.IsAlternativeAttack && !attackInformation.IsAttackerAgentMount && attackerAgentOrigin != null && attackInformation.AttackerAgentCharacter != null && !attackCollisionData.IsMissile)
             {
-                SkillObject skill = (attackerWeapon.CurrentUsageItem == null) ? DefaultSkills.Athletics : attackerWeapon.CurrentUsageItem.RelevantSkill;
+                SkillObject skill = (attackerWeapon == null) ? DefaultSkills.Athletics : attackerWeapon.RelevantSkill;
                 if (skill != null)
                 {
                     int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgentCharacter, attackerAgentOrigin, attackerFormation, skill);
@@ -899,12 +899,13 @@ namespace RealisticBattleCombatModule
                                 }
                                 else
                                 {
+
                                     if (isPassiveUsage)
                                     {
                                         float couchedSkill = 0.5f + effectiveSkill * 0.02f;
                                         float skillCap = (150f + effectiveSkill * 1.5f);
 
-                                        float weaponWeight = attackerWeapon.Item.Weight;
+                                        float weaponWeight = attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight();
 
                                         if (weaponWeight < 2.1f)
                                         {
@@ -957,7 +958,7 @@ namespace RealisticBattleCombatModule
                                     }
                                     else
                                     {
-                                        float weaponWeight = attackerWeapon.Item.Weight;
+                                        float weaponWeight = attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight();
 
                                         if (weaponWeight > 2.1f)
                                         {
@@ -997,7 +998,7 @@ namespace RealisticBattleCombatModule
                                         float couchedSkill = 0.5f + effectiveSkill * 0.02f;
                                         float skillCap = (150f + effectiveSkill * 1.5f);
 
-                                        float weaponWeight = attackerWeapon.Item.Weight;
+                                        float weaponWeight = attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight();
 
                                         if (weaponWeight < 2.1f)
                                         {
@@ -1050,7 +1051,7 @@ namespace RealisticBattleCombatModule
                                     }
                                     else
                                     {
-                                        float weaponWeight = attackerWeapon.Item.Weight;
+                                        float weaponWeight = attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight();
 
                                         if (weaponWeight > 2.1f)
                                         {
@@ -2699,7 +2700,12 @@ namespace RealisticBattleCombatModule
 
             MethodInfo method3 = typeof(Mission).GetMethod("OnAgentHit", BindingFlags.NonPublic | BindingFlags.Instance);
             method3.DeclaringType.GetMethod("OnAgentHit");
-            method3.Invoke(__instance.Mission, new object[] { __instance, agent, b, collisionData, damagedHp });
+            bool isBlocked = false;
+            if(collisionData.CollisionResult == CombatCollisionResult.Blocked || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked || collisionData.CollisionResult == CombatCollisionResult.Parried)
+            {
+                isBlocked = true;
+            }
+            method3.Invoke(__instance.Mission, new object[] { __instance, agent, b, collisionData, isBlocked, damagedHp });
             if (__instance.Health < 1f)
             {
                 KillInfo overrideKillInfo = (b.IsFallDamage ? KillInfo.Gravity : KillInfo.Invalid);
