@@ -5669,7 +5669,7 @@
       <equipment slot="Head"
                  id="Item.battanian_noble_helmet_with_feather" />
       <equipment slot="Gloves"
-                 id="Item.mail_mitten" />
+                 id="Item.plated_strip_gauntlets" />
       <equipment slot="Cape"
                  id="Item.battanian_chainmail_shoulder_a" />
       <equipment slot="Leg"
@@ -5689,7 +5689,7 @@
       <equipment slot="Head"
                  id="Item.battanian_noble_helmet_with_feather" />
       <equipment slot="Gloves"
-                 id="Item.mail_mitten" />
+                 id="Item.plated_strip_gauntlets" />
       <equipment slot="Cape"
                  id="Item.battanian_chainmail_shoulder_a" />
       <equipment slot="Leg"
@@ -5709,7 +5709,7 @@
       <equipment slot="Head"
                  id="Item.battanian_noble_helmet_with_feather" />
       <equipment slot="Gloves"
-                 id="Item.mail_mitten" />
+                 id="Item.plated_strip_gauntlets" />
       <equipment slot="Cape"
                  id="Item.battanian_chainmail_shoulder_a" />
       <equipment slot="Leg"
@@ -7253,7 +7253,7 @@
       <equipment slot="Head"
                  id="Item.spiked_kettle_over_imperial_padding" />
       <equipment slot="Gloves"
-                 id="Item.reinforced_padded_mitten" />
+                 id="Item.plated_strip_gauntlets" />
       <equipment slot="Cape"
                  id="Item.empire_plate_armor_shoulder_b" />
       </EquipmentRoster>
@@ -7273,7 +7273,7 @@
       <equipment slot="Head"
                  id="Item.roundkettle_over_imperial_cloth" />
       <equipment slot="Gloves"
-                 id="Item.reinforced_padded_mitten" />
+                 id="Item.plated_strip_gauntlets" />
       <equipment slot="Cape"
                  id="Item.empire_plate_armor_shoulder_b" />
       </EquipmentRoster>
@@ -7293,7 +7293,7 @@
       <equipment slot="Head"
                  id="Item.roundkettle_over_laced_cloth" />
       <equipment slot="Gloves"
-                 id="Item.reinforced_padded_mitten" />
+                 id="Item.plated_strip_gauntlets" />
       <equipment slot="Cape"
                  id="Item.empire_plate_armor_shoulder_b" />
       </EquipmentRoster>
@@ -9210,7 +9210,7 @@
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Gloves"
-                 id="Item.reinforced_mail_mitten" />
+                 id="Item.eastern_plated_leather_vambraces" />
       <equipment slot="Cape"
                  id="Item.lamellar_shoulders" />
       </EquipmentRoster>
@@ -9230,7 +9230,7 @@
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Gloves"
-                 id="Item.reinforced_mail_mitten" />
+                 id="Item.eastern_plated_leather_vambraces" />
       <equipment slot="Cape"
                  id="Item.lamellar_shoulders" />
       </EquipmentRoster>
@@ -9250,7 +9250,7 @@
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Gloves"
-                 id="Item.reinforced_mail_mitten" />
+                 id="Item.eastern_plated_leather_vambraces" />
       <equipment slot="Cape"
                  id="Item.lamellar_shoulders" />
       </EquipmentRoster>
