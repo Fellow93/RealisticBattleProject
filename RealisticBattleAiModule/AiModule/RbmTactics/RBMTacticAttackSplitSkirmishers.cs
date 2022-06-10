@@ -422,6 +422,6 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
         }
 		float num = team.QuerySystem.RangedCavalryRatio * (float)team.QuerySystem.MemberCount;
 		float skirmisherRatio = skirmisherCount / infCount;
-		return team.QuerySystem.InfantryRatio * skirmisherRatio * 1.7f * (float)team.QuerySystem.MemberCount / ((float)team.QuerySystem.MemberCount - num) * (float)Math.Sqrt(team.QuerySystem.OverallPowerRatio);
+		return team.QuerySystem.InfantryRatio * skirmisherRatio * 1.7f * (float)team.QuerySystem.MemberCount / ((float)team.QuerySystem.MemberCount - num) * (float)Math.Sqrt(team.QuerySystem.TotalPowerRatio);
 	}
 }

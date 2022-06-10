@@ -3,6 +3,7 @@ using RealisticBattleAiModule;
 using System.Collections.Generic;
 using System.Xml;
 using TaleWorlds.Core.ViewModelCollection;
+using TaleWorlds.Core.ViewModelCollection.Selector;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 

@@ -1,11 +1,11 @@
 ﻿using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade.View.Screens;
 using TaleWorlds.MountAndBlade;
-using TaleWorlds.MountAndBlade.View.Screen;
 
 namespace RealisticBattleAiModule.AiModule.Posture
 {
-	public class PostureVisualLogic : MissionLogic
+    public class PostureVisualLogic : MissionLogic
 	{
 		public int timer = 0;
 
@@ -57,7 +57,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
 			AgentPostures.postureVisual = this;
 		}
 
-		public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, int damage, in MissionWeapon affectorWeapon)
+		public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
 		{
 			//this.OnAgentHit(affectedAgent, affectorAgent, damage, affectorWeapon);
 			if (!IsEnabled || affectorAgent == null || affectedAgent == null || Agent.Main == null)

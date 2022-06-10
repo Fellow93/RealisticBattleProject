@@ -9,6 +9,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.MountAndBlade.ViewModelCollection.HUD.FormationMarker;
 using static TaleWorlds.Core.ItemObject;
 
 namespace RealisticBattleAiModule
@@ -156,7 +157,21 @@ namespace RealisticBattleAiModule
         //    }
         //}
 
-        [HarmonyPatch(typeof(TaleWorlds.MountAndBlade.ViewModelCollection.HUD.MissionFormationMarkerTargetVM))]
+        [HarmonyPatch(typeof(TeamAIGeneral))]
+        class OverrideTeamAIGeneral
+        {
+
+            [HarmonyPostfix]
+            [HarmonyPatch("OnUnitAddedToFormationForTheFirstTime")]
+            static void PostfixOnUnitAddedToFormationForTheFirstTime(Formation formation)
+            {
+                formation.AI.AddAiBehavior(new RBMBehaviorArcherSkirmish(formation));
+                formation.AI.AddAiBehavior(new RBMBehaviorForwardSkirmish(formation));
+                formation.AI.AddAiBehavior(new RBMBehaviorInfantryFlank(formation));
+            }
+        }
+
+        [HarmonyPatch(typeof(MissionFormationMarkerTargetVM))]
         [HarmonyPatch("Refresh")]
         class OverrideRefresh
         {
@@ -188,7 +203,7 @@ namespace RealisticBattleAiModule
                 return TargetIconType.None.ToString();
             }
 
-            static void Postfix(TaleWorlds.MountAndBlade.ViewModelCollection.HUD.MissionFormationMarkerTargetVM __instance)
+            static void Postfix(MissionFormationMarkerTargetVM __instance)
             {
                 __instance.FormationType = chooseIcon(__instance.Formation);
             }
@@ -257,50 +272,50 @@ namespace RealisticBattleAiModule
             }
         }
 
-        [HarmonyPatch(typeof(Mission))]
-        class SpawnTroopPatch
-        {
-            [HarmonyPrefix]
-            [HarmonyPatch("SpawnTroop")]
-            static bool PrefixSpawnTroop(ref Mission __instance, IAgentOriginBase troopOrigin, bool isPlayerSide, bool hasFormation, bool spawnWithHorse, bool isReinforcement, bool enforceSpawningOnInitialPoint, int formationTroopCount, int formationTroopIndex, bool isAlarmed, bool wieldInitialWeapons, bool forceDismounted,ref Vec3? initialPosition,ref Vec2? initialDirection)
-            {
-                if(Mission.Current != null && Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
-                {
-                    if (isReinforcement)
-                    {
-                        if (hasFormation)
-                        {
-                            BasicCharacterObject troop = troopOrigin.Troop;
-                            Team agentTeam = Mission.GetAgentTeam(troopOrigin, isPlayerSide);
-                            Formation formation = agentTeam.GetFormation(troop.GetFormationClass());
-                            if(formation.CountOfUnits == 0)
-                            {
-                                foreach(Formation allyFormation in agentTeam.Formations)
-                                {
-                                    if(allyFormation.CountOfUnits > 0)
-                                    {
-                                        formation = allyFormation;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (formation.CountOfUnits == 0)
-                            {
-                                return true;
-                            }
-                            Vec2 tempPos = Mission.Current.GetClosestFleePositionForFormation(formation).AsVec2;
-                            tempPos.x = tempPos.x + MBRandom.RandomInt(40);
-                            tempPos.y = tempPos.y + MBRandom.RandomInt(40);
+        //[HarmonyPatch(typeof(Mission))]
+        //class SpawnTroopPatch
+        //{
+        //    [HarmonyPrefix]
+        //    [HarmonyPatch("SpawnTroop")]
+        //    static bool PrefixSpawnTroop(ref Mission __instance, IAgentOriginBase troopOrigin, bool isPlayerSide, bool hasFormation, bool spawnWithHorse, bool isReinforcement, bool enforceSpawningOnInitialPoint, int formationTroopCount, int formationTroopIndex, bool isAlarmed, bool wieldInitialWeapons, bool forceDismounted,ref Vec3? initialPosition,ref Vec2? initialDirection)
+        //    {
+        //        if(Mission.Current != null && Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
+        //        {
+        //            if (isReinforcement)
+        //            {
+        //                if (hasFormation)
+        //                {
+        //                    BasicCharacterObject troop = troopOrigin.Troop;
+        //                    Team agentTeam = Mission.GetAgentTeam(troopOrigin, isPlayerSide);
+        //                    Formation formation = agentTeam.GetFormation(troop.GetFormationClass());
+        //                    if(formation.CountOfUnits == 0)
+        //                    {
+        //                        foreach(Formation allyFormation in agentTeam.Formations)
+        //                        {
+        //                            if(allyFormation.CountOfUnits > 0)
+        //                            {
+        //                                formation = allyFormation;
+        //                                break;
+        //                            }
+        //                        }
+        //                    }
+        //                    if (formation.CountOfUnits == 0)
+        //                    {
+        //                        return true;
+        //                    }
+        //                    Vec2 tempPos = Mission.Current.GetClosestFleePositionForFormation(formation).AsVec2;
+        //                    tempPos.x = tempPos.x + MBRandom.RandomInt(40);
+        //                    tempPos.y = tempPos.y + MBRandom.RandomInt(40);
 
-                            initialPosition = Mission.Current.GetClosestDeploymentBoundaryPosition(agentTeam.Side, tempPos).ToVec3();
-                            initialDirection = tempPos - formation.CurrentPosition;
-                        }
-                    }
-                }
-                return true;
-            }
+        //                    initialPosition = Mission.Current.GetClosestDeploymentBoundaryPosition(agentTeam.Side, tempPos).ToVec3();
+        //                    initialDirection = tempPos - formation.CurrentPosition;
+        //                }
+        //            }
+        //        }
+        //        return true;
+        //    }
 
-        }
+        //}
 
         [HarmonyPatch(typeof(TacticDefendCastle))]
         class TacticDefendCastlePatch
@@ -452,6 +467,7 @@ namespace RealisticBattleAiModule
                 if (____archers != null)
                 {
                     ____archers.AI.ResetBehaviorWeights();
+                    ____archers.AI.AddAiBehavior(new RBMBehaviorArcherSkirmish(____archers));
                     ____archers.AI.SetBehaviorWeight<RBMBehaviorArcherSkirmish>(1f);
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
                     ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(0f);

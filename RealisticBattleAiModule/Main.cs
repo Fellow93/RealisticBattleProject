@@ -10,9 +10,9 @@ using TaleWorlds.ModuleManager;
 using SandBox.Missions.MissionLogics;
 using TaleWorlds.Localization;
 using TaleWorlds.ScreenSystem;
-using TaleWorlds.MountAndBlade.View.Screen;
 using System;
 using TaleWorlds.InputSystem;
+using TaleWorlds.MountAndBlade.View.Screens;
 
 namespace RealisticBattleAiModule
 {
@@ -139,7 +139,7 @@ namespace RealisticBattleAiModule
                     XmlConfig.isRbmCombatModuleEnabled = true;
                 }
             }
-            Game.Current.GameTextManager.LoadGameTexts(ModuleHelper.GetXmlPath(ModuleId, "module_strings"));
+            Game.Current.GameTextManager.LoadGameTexts();
             if (XmlConfig.dict["Global.PostureEnabled"] == 1 && XmlConfig.dict["Global.PostureGUIEnabled"] == 1)
             {
                 mission.AddMissionBehavior((MissionBehavior)(object)new PostureVisualLogic());
@@ -153,13 +153,15 @@ namespace RealisticBattleAiModule
             {
                 return;
             }
-            try
-            {
-                MissionScreen missionScreen = ScreenManager.TopScreen as MissionScreen;
-                if (missionScreen != null && missionScreen.InputManager != null && missionScreen.InputManager.IsControlDown() && missionScreen.InputManager.IsKeyPressed(InputKey.V))
+            try{ 
+                if (ScreenManager.TopScreen != null)
                 {
-                    Mission.Current.SetFastForwardingFromUI(!Mission.Current.IsFastForward);
-                    InformationManager.DisplayMessage(new InformationMessage("Vroom = " + Mission.Current.IsFastForward, Color.FromUint(4282569842u)));
+                    MissionScreen missionScreen = ScreenManager.TopScreen as MissionScreen;
+                    if (missionScreen != null && missionScreen.InputManager != null && missionScreen.InputManager.IsControlDown() && missionScreen.InputManager.IsKeyPressed(InputKey.V))
+                    {
+                        Mission.Current.SetFastForwardingFromUI(!Mission.Current.IsFastForward);
+                        InformationManager.DisplayMessage(new InformationMessage("Vroom = " + Mission.Current.IsFastForward, Color.FromUint(4282569842u)));
+                    }
                 }
             }
             catch (Exception)

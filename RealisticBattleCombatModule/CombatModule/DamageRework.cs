@@ -154,11 +154,11 @@ namespace RealisticBattleCombatModule
         //    }
         //}
 
-        [HarmonyPatch(typeof(Mission))]
+        [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
         [HarmonyPatch("ComputeBlowMagnitudeMissile")]
         class RealArrowDamage
         {
-            static bool Prefix(ref AttackCollisionData acd, in MissionWeapon weapon, bool isVictimAgentNull, float momentumRemaining, float missileTotalDamage, out float baseMagnitude, out float specialMagnitude, Vec2 victimVelocity)
+            static bool Prefix(in AttackInformation attackInformation, in AttackCollisionData acd, in MissionWeapon weapon, float momentumRemaining, in Vec2 victimVelocity, out float baseMagnitude, out float specialMagnitude)
             {
                 Vec3 missileVelocity = acd.MissileVelocity;
                 //Vec3 cgn = acd.CollisionGlobalNormal;
@@ -168,6 +168,9 @@ namespace RealisticBattleCombatModule
 
                 //Vec3 resultVec = gcn + wbd;
                 //float angleModifier = 1f - Math.Abs((resultVec.x + resultVec.y + resultVec.z) / 3);
+
+                float missileTotalDamage = acd.MissileTotalDamage;
+
                 WeaponComponentData currentUsageItem = weapon.CurrentUsageItem;
                 ItemObject weaponItem;
                 if (weapon.AmmoWeapon.Item != null)
@@ -180,7 +183,7 @@ namespace RealisticBattleCombatModule
                 }
 
                 float length;
-                if (!isVictimAgentNull)
+                if (!attackInformation.IsVictimAgentNull)
                 {
                     length = (victimVelocity.ToVec3() - missileVelocity).Length;
                 }
@@ -344,7 +347,7 @@ namespace RealisticBattleCombatModule
         }
     }
 
-    [HarmonyPatch(typeof(Mission))]
+    [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
     [HarmonyPatch("GetEntityDamageMultiplier")]
     class GetEntityDamageMultiplierPatch
     {
@@ -690,7 +693,7 @@ namespace RealisticBattleCombatModule
         }
     }
 
-    [HarmonyPatch(typeof(Mission))]
+    [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
     [HarmonyPatch("ComputeBlowDamage")]
     class OverrideDamageCalc
     {
@@ -1309,14 +1312,16 @@ namespace RealisticBattleCombatModule
             return false;
         }
 
-        [HarmonyPatch(typeof(Mission))]
+        [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
         [HarmonyPatch("ComputeBlowDamageOnShield")]
         class OverrideDamageCalcShield
         {
-            static bool Prefix(bool isAttackerAgentNull, bool isAttackerAgentActive, bool isAttackerAgentDoingPassiveAttack, bool canGiveDamageToAgentShield, bool isVictimAgentLeftStance, MissionWeapon victimShield, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, float blowMagnitude)
+            static bool Prefix(ref AttackInformation attackInformation, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, float blowMagnitude, out int inflictedDamage)
             {
+                float localInflictedDamage = 0;
                 attackCollisionData.InflictedDamage = 0;
-                if (victimShield.CurrentUsageItem.WeaponFlags.HasAnyFlag(WeaponFlags.CanBlockRanged) & canGiveDamageToAgentShield)
+                MissionWeapon victimShield = attackInformation.VictimShield;
+                if (victimShield.CurrentUsageItem.WeaponFlags.HasAnyFlag(WeaponFlags.CanBlockRanged) & attackInformation.CanGiveDamageToAgentShield)
                 {
                     DamageTypes damageType = (DamageTypes)attackCollisionData.DamageType;
                     int shieldArmorForCurrentUsage = victimShield.GetGetModifiedArmorForCurrentUsage();
@@ -1327,8 +1332,8 @@ namespace RealisticBattleCombatModule
                     {
                         weaponType = attackerWeapon.WeaponClass.ToString();
                     }
-
-                    bool isPassiveUsage = isAttackerAgentDoingPassiveAttack;
+                    
+                    bool isPassiveUsage = attackInformation.IsAttackerAgentDoingPassiveAttack;
 
                     float skillBasedDamage = 0f;
                     const float ashBreakTreshold = 430f;
@@ -1550,7 +1555,7 @@ namespace RealisticBattleCombatModule
                             }
                     }
 
-                    float inflictedDamage = MyComputeDamage(weaponType, damageType, blowMagnitude, (float)shieldArmorForCurrentUsage * 10f , absorbedDamageRatio);
+                    localInflictedDamage = MyComputeDamage(weaponType, damageType, blowMagnitude, (float)shieldArmorForCurrentUsage * 10f, absorbedDamageRatio);
 
                     if (attackCollisionData.IsMissile)
                     {
@@ -1558,37 +1563,37 @@ namespace RealisticBattleCombatModule
                         {
                             case "Arrow":
                                 {
-                                    inflictedDamage *= 1.5f;
+                                    localInflictedDamage *= 1.5f;
                                     break;
                                 }
                             case "Bolt":
                                 {
-                                    inflictedDamage *= 1.5f;
+                                    localInflictedDamage *= 1.5f;
                                     break;
                                 }
                             case "Javelin":
                                 {
-                                    inflictedDamage *= 20f;
+                                    localInflictedDamage *= 20f;
                                     break;
                                 }
                             case "ThrowingAxe":
                                 {
-                                    inflictedDamage *= 3f;
+                                    localInflictedDamage *= 3f;
                                     break;
                                 }
                             case "OneHandedPolearm":
                                 {
-                                    inflictedDamage *= 5f;
+                                    localInflictedDamage *= 5f;
                                     break;
                                 }
                             case "LowGripPolearm":
                                 {
-                                    inflictedDamage *= 5f;
+                                    localInflictedDamage *= 5f;
                                     break;
                                 }
                             default:
                                 {
-                                    inflictedDamage *= 0.1f;
+                                    localInflictedDamage *= 0.1f;
                                     break;
                                 }
                         }
@@ -1604,10 +1609,10 @@ namespace RealisticBattleCombatModule
                                 {
                                     if (attackCollisionData.DamageType == 1)//pierce
                                     {
-                                        inflictedDamage *= 0.09f;
+                                        localInflictedDamage *= 0.09f;
                                         break;
                                     }
-                                    inflictedDamage *= 1.5f;
+                                    localInflictedDamage *= 1.5f;
 
                                     break;
                                 }
@@ -1615,15 +1620,15 @@ namespace RealisticBattleCombatModule
                                 {
                                     if (attackCollisionData.DamageType == 0) //cut
                                     {
-                                        inflictedDamage *= 1f;
+                                        localInflictedDamage *= 1f;
                                     }
                                     else if(attackCollisionData.DamageType == 1)//pierce
                                     {
-                                        inflictedDamage *= 0.09f;
+                                        localInflictedDamage *= 0.09f;
                                     }
                                     else if (attackCollisionData.DamageType == 2)//blunt
                                     {
-                                        inflictedDamage *= 0.75f;
+                                        localInflictedDamage *= 0.75f;
                                     }
                                     break;
                                 }
@@ -1632,25 +1637,25 @@ namespace RealisticBattleCombatModule
 
                     if (attackerWeapon != null && attackerWeapon.WeaponFlags.HasAnyFlag(WeaponFlags.BonusAgainstShield))
                     {
-                        inflictedDamage *= 2f;
+                        localInflictedDamage *= 2f;
                     }
 
-                    if (inflictedDamage > 0f)
+                    if (localInflictedDamage > 0f)
                     {
-                        if (!isVictimAgentLeftStance)
+                        if (!attackInformation.IsVictimAgentLeftStance)
                         {
-                            inflictedDamage *= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.ShieldRightStanceBlockDamageMultiplier);
+                            localInflictedDamage *= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.ShieldRightStanceBlockDamageMultiplier);
                         }
                         if (attackCollisionData.CorrectSideShieldBlock)
                         {
-                            inflictedDamage *= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.ShieldCorrectSideBlockDamageMultiplier);
+                            localInflictedDamage *= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.ShieldCorrectSideBlockDamageMultiplier);
                         }
 
-                        inflictedDamage = MissionGameModels.Current.AgentApplyDamageModel.CalculateShieldDamage(inflictedDamage);
-                        attackCollisionData.InflictedDamage = (int)inflictedDamage;
+                        localInflictedDamage = MissionGameModels.Current.AgentApplyDamageModel.CalculateShieldDamage(localInflictedDamage);
                     }
                 }
-
+                attackCollisionData.InflictedDamage = (int)localInflictedDamage;
+                inflictedDamage = MathF.Floor(localInflictedDamage);
                 return false;
             }
         }
@@ -2239,17 +2244,19 @@ namespace RealisticBattleCombatModule
         }
     }
 
-    [HarmonyPatch(typeof(Mission))]
+    [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
     [HarmonyPatch("ComputeBlowMagnitudeFromHorseCharge")]
     class ChangeHorseDamageCalculation
     {
-        static bool Prefix(ref AttackCollisionData acd, Vec2 attackerAgentMovementDirection, Vec2 attackerAgentVelocity, float agentMountChargeDamageProperty, Vec2 victimAgentVelocity, Vec3 victimAgentPosition, out float baseMagnitude, out float specialMagnitude)
+        static bool Prefix(in AttackInformation attackInformation, in AttackCollisionData acd, Vec2 attackerAgentVelocity, Vec2 victimAgentVelocity, out float baseMagnitude, out float specialMagnitude)
         {
-            Vec2 vec = attackerAgentMovementDirection * Vec2.DotProduct(victimAgentVelocity, attackerAgentMovementDirection);
+            Vec2 chargerMovementDirection = attackInformation.AttackerAgentMovementDirection;
+            Vec2 vec = chargerMovementDirection * Vec2.DotProduct(victimAgentVelocity, chargerMovementDirection);
             Vec2 vec2 = attackerAgentVelocity - vec;
-            float num = ChargeDamageDotProduct(victimAgentPosition, attackerAgentMovementDirection, acd.CollisionGlobalPosition);
+            ref readonly Vec3 victimAgentPosition = ref attackInformation.VictimAgentPosition;
+            float num = ChargeDamageDotProduct(victimAgentPosition, chargerMovementDirection, acd.CollisionGlobalPosition);
             float num2 = vec2.Length * num;
-            baseMagnitude = (num2 * num2 * num * agentMountChargeDamageProperty) / 2500f;
+            baseMagnitude = (num2 * num2 * num * attackInformation.AttackerAgentMountChargeDamageProperty) / 2500f;
             specialMagnitude = baseMagnitude;
 
             return false;
@@ -2474,7 +2481,7 @@ namespace RealisticBattleCombatModule
                     //__result.InflictedDamage = 1;
                     __result.VictimBodyPart = collisionData.VictimHitBodyPart;
                     __result.BlowFlag |= BlowFlags.KnockBack;
-                    victimAgent.RegisterBlow(__result);
+                    victimAgent.RegisterBlow(__result,collisionData);
                     foreach (MissionBehavior missionBehaviour in __instance.MissionBehaviors)
                     {
                         missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, null, __result, ref collisionData, in attackerWeapon);
@@ -2510,7 +2517,7 @@ namespace RealisticBattleCombatModule
                                 //__result.InflictedDamage = 1;
                                 __result.VictimBodyPart = collisionData.VictimHitBodyPart;
                                 __result.BlowFlag |= BlowFlags.NonTipThrust;
-                                victimAgent.RegisterBlow(__result);
+                                victimAgent.RegisterBlow(__result, collisionData);
                                 foreach (MissionBehavior missionBehaviour in __instance.MissionBehaviors)
                                 {
                                     missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, null, __result, ref collisionData, in attackerWeapon);
@@ -2552,11 +2559,11 @@ namespace RealisticBattleCombatModule
     [HarmonyPatch("OnAgentHit")]
     class OnAgentHitPatch
     {
-        static bool Prefix(Agent affectedAgent, Agent affectorAgent, int damage, in MissionWeapon attackerWeapon)
+        static bool Prefix(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
         {
             if (affectedAgent.Character != null && affectorAgent != null && affectorAgent.Character != null && affectedAgent.State == AgentState.Active)
             {
-                bool isFatal = affectedAgent.Health - (float)damage < 1f;
+                bool isFatal = affectedAgent.Health - (float)blow.InflictedDamage < 1f;
                 bool isTeamKill;
                 if (affectedAgent.Team != null )
                 {
@@ -2566,7 +2573,7 @@ namespace RealisticBattleCombatModule
                 {
                     isTeamKill = true;
                 }
-                affectorAgent.Origin.OnScoreHit(affectedAgent.Character, affectorAgent.Formation?.Captain?.Character, damage, isFatal, isTeamKill, attackerWeapon.CurrentUsageItem);
+                affectorAgent.Origin.OnScoreHit(affectedAgent.Character, affectorAgent.Formation?.Captain?.Character, blow.InflictedDamage, isFatal, isTeamKill, attackerWeapon.CurrentUsageItem);
                 if (Mission.Current.Mode == MissionMode.Battle)
                 {
                     _ = affectedAgent.Team;
@@ -2618,7 +2625,7 @@ namespace RealisticBattleCombatModule
             }
 	        return ArmorComponent.ArmorMaterialTypes.None;
         }
-        static bool Prefix(ref Agent __instance, ref Blow b, AgentLastHitInfo ____lastHitInfo)
+        static bool Prefix(ref Agent __instance, ref Blow b, AgentLastHitInfo ____lastHitInfo, in AttackCollisionData collisionData)
         {
             b.BaseMagnitude = Math.Min(b.BaseMagnitude, 1000f)/8f;
             Agent agent = (b.OwnerId != -1) ? __instance.Mission.FindAgentWithIndex(b.OwnerId) : __instance;
@@ -2646,7 +2653,12 @@ namespace RealisticBattleCombatModule
             method.Invoke(__instance, new object[] { agent, b.IsMissile });
 
             bool isKnockBack = ((b.BlowFlag & BlowFlags.NonTipThrust) != 0) || ((b.BlowFlag & BlowFlags.KnockDown) != 0) || ((b.BlowFlag & BlowFlags.KnockBack) != 0);
-            if(b.AttackType == AgentAttackType.Bash || b.AttackType == AgentAttackType.Kick)
+
+            float health = __instance.Health;
+            float damagedHp = (((float)b.InflictedDamage > health) ? health : ((float)b.InflictedDamage));
+            float newHp = health - damagedHp;
+
+            if (b.AttackType == AgentAttackType.Bash || b.AttackType == AgentAttackType.Kick)
             {
                 if(b.InflictedDamage <= 0)
                 {
@@ -2663,22 +2675,16 @@ namespace RealisticBattleCombatModule
             }
             else
             {
-                float health = __instance.Health;
-                float damagedHp = (((float)b.InflictedDamage > health) ? health : ((float)b.InflictedDamage));
-                float newHp = health - damagedHp;
-                //float num = __instance.Health - (float)b.InflictedDamage;
                 if (newHp < 0f)
                 {
                     newHp = 0f;
                 }
-                if (!__instance.Invulnerable && !Mission.Current.DisableDying)
+                if (__instance.CurrentMortalityState != MortalityState.Immortal && !Mission.Current.DisableDying)
                 {
                     __instance.Health = newHp;
                 }
             }
 
-            int affectorWeaponSlotOrMissileIndex = b.WeaponRecord.AffectorWeaponSlotOrMissileIndex;
-            float hitDistance = b.IsMissile ? (b.Position - b.WeaponRecord.StartingPosition).Length : 0f;
             if (agent != null && agent != __instance && __instance.IsHuman)
             {
                 if (agent.IsMount && agent.RiderAgent != null)
@@ -2693,9 +2699,7 @@ namespace RealisticBattleCombatModule
 
             MethodInfo method3 = typeof(Mission).GetMethod("OnAgentHit", BindingFlags.NonPublic | BindingFlags.Instance);
             method3.DeclaringType.GetMethod("OnAgentHit");
-            method3.Invoke(__instance.Mission, new object[] { __instance, agent, affectorWeaponSlotOrMissileIndex, b.IsMissile, false,
-                b.InflictedDamage, __instance.Health, b.MovementSpeedDamageModifier, hitDistance, b.AttackType, b.VictimBodyPart });
-
+            method3.Invoke(__instance.Mission, new object[] { __instance, agent, b, collisionData, damagedHp });
             if (__instance.Health < 1f)
             {
                 KillInfo overrideKillInfo = (b.IsFallDamage ? KillInfo.Gravity : KillInfo.Invalid);
@@ -2750,12 +2754,12 @@ namespace RealisticBattleCombatModule
         }
     }
 
-    [HarmonyPatch(typeof(Mission))]
+    [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
     class DecideAgentDismountedByBlowPatch
     {
         [HarmonyPrefix]
         [HarmonyPatch("DecideAgentDismountedByBlow")]
-        static bool PrefixDecideAgentDismountedByBlow(Agent attackerAgent, Agent victimAgent, in AttackCollisionData collisionData, WeaponComponentData attackerWeapon, bool isInitialBlowShrugOff, ref Blow blow)
+        static bool PrefixDecideAgentDismountedByBlow(Agent attackerAgent, Agent victimAgent, in AttackCollisionData collisionData, WeaponComponentData attackerWeapon, ref Blow blow)
         {
             if (!blow.IsMissile)
             {
