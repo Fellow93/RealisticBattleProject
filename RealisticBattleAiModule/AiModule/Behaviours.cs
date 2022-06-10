@@ -3430,7 +3430,7 @@ namespace RealisticBattleAiModule
                 int numberOfTroops = __instance.NumberOfAgents;
                 for (int i = 0; i < 2; i++)
                 {
-                    int numberOfTroopsCanBeSpawned = ____phases[0][i].RemainingSpawnNumber;
+                    int numberOfTroopsCanBeSpawned = ____phases[i][0].RemainingSpawnNumber;
                     if (numberOfTroops > 0 && numberOfTroopsCanBeSpawned > 0)
                     {
                         if (__instance.NumberOfRemainingTroops <= 0 || numberOfTroopsCanBeSpawned <= 0)
