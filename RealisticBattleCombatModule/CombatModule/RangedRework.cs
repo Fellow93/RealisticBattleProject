@@ -408,7 +408,7 @@ namespace RealisticBattleCombatModule
 
                 }
 
-                if (shooterAgent != null && !shooterAgent.IsAIControlled && wsd[0].WeaponClass == (int)WeaponClass.Bow)
+                if (shooterAgent != null && !shooterAgent.IsAIControlled && (wsd[0].WeaponClass == (int)WeaponClass.Bow || wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
                 {
 
                     //radians = degrees * (pi / 180)
