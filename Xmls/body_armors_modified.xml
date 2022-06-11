@@ -1398,58 +1398,46 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-  <Item id="aserai_full_scale_armor_on_chain"
-        name="{=*}Mastercrafted Southern Scale over Chain Hauberk"
-        lod_atlas_index="3"
-        mesh="aserai_full_scale_armor_on_chain"
-        culture="Culture.aserai"
-        weight="28.0"
-        appearance="7"
-        Type="BodyArmor">
-    <ItemComponent>
-      <Armor body_armor="90"
-             leg_armor="65"
-             arm_armor="65"
-             covers_body="true"
-             modifier_group="plate"
-             material_type="Plate" />
-    </ItemComponent>
-    <Flags UseTeamColor="true" />
-  </Item>
-  <Item id="aserai_scale_armor_on_cloth"
-        name="{=*}Mastercrafted Southern Scale Mail"
-        lod_atlas_index="3"
-        mesh="aserai_scale_armor_on_cloth"
-        culture="Culture.aserai"
-        weight="18.0"
-        appearance="6"
-        Type="BodyArmor">
-    <ItemComponent>
-      <Armor body_armor="70"
-             leg_armor="20"
-             arm_armor="45"
-             covers_body="true"
-             modifier_group="plate"
-             material_type="Plate" />
-    </ItemComponent>
-    <Flags UseTeamColor="true" />
-  </Item>
-  <Item id="aserai_scale_armor_on_chain"
-        name="{=*}Mastercrafted Southern Scale over Chain Mail"
-        lod_atlas_index="3"
-        mesh="aserai_scale_armor_on_chain"
-        culture="Culture.aserai"
-        weight="22.0"
-        appearance="6"
-        Type="BodyArmor">
-    <ItemComponent>
-      <Armor body_armor="85"
-             leg_armor="30"
-             arm_armor="62"
-             covers_body="true"
-             modifier_group="chain"
-             material_type="Chainmail" />
-    </ItemComponent>
-    <Flags UseTeamColor="true" />
-  </Item>
+	<Item id="aserai_full_scale_armor_on_chain" name="{=*}Mastercrafted Southern Scale over Chain Hauberk" mesh="aserai_full_scale_armor_on_chain" culture="Culture.aserai" weight="28" Type="BodyArmor" appearance="7" lod_atlas_index="3">
+		<ItemComponent>
+			<Armor body_armor="90" leg_armor="65" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="65"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="aserai_scale_armor_on_cloth" name="{=*}Mastercrafted Southern Scale Mail" mesh="aserai_scale_armor_on_cloth" culture="Culture.aserai" weight="18" Type="BodyArmor" appearance="6" lod_atlas_index="3">
+		<ItemComponent>
+			<Armor body_armor="70" leg_armor="20" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="45"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="aserai_scale_armor_on_chain" name="{=*}Mastercrafted Southern Scale over Chain Mail" mesh="aserai_scale_armor_on_chain" culture="Culture.aserai" weight="22" Type="BodyArmor" appearance="6" lod_atlas_index="3">
+		<ItemComponent>
+			<Armor body_armor="85" leg_armor="30" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="62"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="aserai_chain_plate_armor_a" name="{=*}Southern Reinforced Mail Armor" mesh="aserai_chain_plate_armor_a" culture="Culture.aserai" weight="22" Type="BodyArmor" appearance="4" lod_atlas_index="3">
+		<ItemComponent>
+			<Armor body_armor="60" leg_armor="35" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="40"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="aserai_chain_plate_armor_b" name="{=*}Southern Reinforced Sleeveless Mail Armor" mesh="aserai_chain_plate_armor_b" culture="Culture.aserai" weight="19" Type="BodyArmor" appearance="6" lod_atlas_index="3">
+		<ItemComponent>
+			<Armor body_armor="60" leg_armor="35" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="25"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="aserai_chain_plate_armor_c" name="{=*}Southern Reinforced Mail Vest" mesh="aserai_chain_plate_armor_c" culture="Culture.aserai" weight="15" Type="BodyArmor" appearance="4" lod_atlas_index="3">
+		<ItemComponent>
+			<Armor body_armor="60" leg_armor="10" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="25"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="aserai_chain_plate_armor_d" name="{=*}Southern Reinforced Short Mail Armor" mesh="aserai_chain_plate_armor_d" culture="Culture.aserai" weight="18" Type="BodyArmor" appearance="4" lod_atlas_index="3">
+		<ItemComponent>
+			<Armor body_armor="60" leg_armor="10" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="40"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
 </Items>

@@ -290,7 +290,7 @@
 	</Item>
 	<Item id="imperial_lamellar_shoulders" name="{=Kj68cfhA}Imperial Laminar Shoulders" mesh="imperial_shoulders" culture="Culture.empire" weight="3.5" appearance="3" Type="Cape">
 		<ItemComponent>
-			<Armor body_armor="40" modifier_group="plate" material_type="Plate" arm_armor="0"/>
+			<Armor body_armor="55" modifier_group="plate" material_type="Plate" arm_armor="0"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -402,89 +402,118 @@
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-  <Item id="battania_scarf_a"
-        name="{=Ur3Q4U5x}Heavy Tartan Cape"
-        mesh="battania_scarf_a"
-        culture="Culture.battania"
-        subtype="body_armor"
-        weight="0.55"
-        difficulty="0"
-        appearance="1.5"
-        Type="Cape">
-    <ItemComponent>
-      <Armor body_armor="13"
-             modifier_group="cloth_unarmoured"
-             material_type="Cloth" />
-    </ItemComponent>
-  </Item>
-  <Item id="varangian_bra_basic"
-        name="{=*}Decorated Leather Harness"
-        mesh="varangian_bra_basic"
-        culture="Culture.empire"
-        weight="2.5"
-        appearance="4"
-        Type="Cape">
-    <ItemComponent>
-      <Armor body_armor="18"
-             modifier_group="leather"
-             material_type="Leather" />
-    </ItemComponent>
-    <Flags />
-  </Item>
-  <Item id="varangian_bra_royal"
-        name="{=*}Caped Leather Harness"
-        mesh="varangian_bra_royal"
-        culture="Culture.empire"
-        weight="2.7"
-        appearance="7"
-        Type="Cape">
-    <ItemComponent>
-      <Armor body_armor="22"
-             modifier_group="leather"
-             material_type="Leather" />
-    </ItemComponent>
-    <Flags />
-  </Item>
-  <Item id="varangian_bra_padded"
-        name="{=*}Decorated Leather Harness with Padding"
-        mesh="varangian_bra_padded"
-        culture="Culture.empire"
-        weight="3.2"
-        appearance="3"
-        Type="Cape">
-    <ItemComponent>
-      <Armor body_armor="27"
-             modifier_group="leather"
-             material_type="Leather" />
-    </ItemComponent>
-    <Flags />
-  </Item>
-  <Item id="varangian_bra_mail"
-        name="{=*}Decorated Leather Harness over Mail"
-        mesh="varangian_bra_mail"
-        culture="Culture.empire"
-        weight="13.2"
-        appearance="4"
-        Type="Cape">
-    <ItemComponent>
-      <Armor body_armor="35"
-             modifier_group="chain"
-             material_type="Chainmail" />
-    </ItemComponent>
-    <Flags />
-  </Item>
-  <Item id="varangian_bra_scale"
-        name="{=*}Decorated Leather Harness over Scale"
-        mesh="varangian_bra_scale"
-        culture="Culture.empire"
-        weight="14"
-        appearance="6"
-        Type="Cape">
-    <ItemComponent>
-      <Armor body_armor="40"
-             modifier_group="plate"
-             material_type="Plate" />
-    </ItemComponent>
-    <Flags />
-  </Item>
+	<Item id="battania_scarf_a" name="{=Ur3Q4U5x}Heavy Tartan Cape" mesh="battania_scarf_a" culture="Culture.battania" weight="0.55" appearance="1.5" Type="Cape" subtype="body_armor" difficulty="0">
+		<ItemComponent>
+			<Armor body_armor="13" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="varangian_bra_basic" name="{=*}Decorated Leather Harness" mesh="varangian_bra_basic" culture="Culture.empire" weight="2.5" appearance="4" Type="Cape">
+		<ItemComponent>
+			<Armor body_armor="18" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="varangian_bra_royal" name="{=*}Caped Leather Harness" mesh="varangian_bra_royal" culture="Culture.empire" weight="2.7" appearance="7" Type="Cape">
+		<ItemComponent>
+			<Armor body_armor="22" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="varangian_bra_padded" name="{=*}Decorated Leather Harness with Padding" mesh="varangian_bra_padded" culture="Culture.empire" weight="3.2" appearance="3" Type="Cape">
+		<ItemComponent>
+			<Armor body_armor="27" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="varangian_bra_mail" name="{=*}Decorated Leather Harness over Mail" mesh="varangian_bra_mail" culture="Culture.empire" weight="13.2" appearance="4" Type="Cape">
+		<ItemComponent>
+			<Armor body_armor="35" modifier_group="chain" material_type="Chainmail"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="varangian_bra_scale" name="{=*}Decorated Leather Harness over Scale" mesh="varangian_bra_scale" culture="Culture.empire" weight="14" appearance="6" Type="Cape">
+		<ItemComponent>
+			<Armor body_armor="40" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="aserai_scale_shoulder_a" name="{=*}Bronze Scale Shoulder Guards" mesh="aserai_scale_shoulder_a" culture="Culture.aserai" weight="1.8" appearance="5" Type="Cape">
+		<ItemComponent>
+			<Armor body_armor="37" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="aserai_scale_shoulder_b" name="{=*}Long Sleeved Bronze Scale Shoulder Guards" mesh="aserai_scale_shoulder_b" culture="Culture.aserai" weight="2.2" appearance="5" Type="Cape">
+		<ItemComponent>
+			<Armor body_armor="43" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="aserai_scale_shoulder_c" name="{=*}Bronze Scale Pauldrons" mesh="aserai_scale_shoulder_c" culture="Culture.aserai" weight="1.9" appearance="6" Type="Cape">
+		<ItemComponent>
+			<Armor body_armor="27" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="aserai_scale_shoulder_d" name="{=*}Decorated Bronze Scale Pauldrons" mesh="aserai_scale_shoulder_d" culture="Culture.aserai" weight="2.4" appearance="7" Type="Cape">
+		<ItemComponent>
+			<Armor body_armor="16" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="aserai_scale_shoulder_e" name="{=*}Decorated Long Sleeve Bronze Scale Pauldrons" mesh="aserai_scale_shoulder_e" culture="Culture.aserai" weight="2.8" appearance="7" Type="Cape">
+		<ItemComponent>
+			<Armor body_armor="39" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="empire_cape_a" name="{=*}Heavy Cloak" mesh="empire_cape_a" culture="Culture.neutral_culture" weight="0.5" appearance="3" Type="Cape" subtype="body_armor" difficulty="0">
+		<ItemComponent>
+			<Armor body_armor="12" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="chainmail_shoulder_armor" name="{=*}Reinforced Mail Shoulders" mesh="chainmail_shoulder_armor" culture="Culture.vlandia" weight="1.4" appearance="1" Type="Cape">
+		<ItemComponent>
+			<Armor body_armor="20" modifier_group="chain" material_type="Chainmail"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="noble_pauldron" name="{=*}Ornate Pauldrons" mesh="noble_pauldron" culture="Culture.vlandia" weight="1.2" appearance="7" Type="Cape">
+		<ItemComponent>
+			<Armor body_armor="60" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="noble_pauldron_with_cape" name="{=*}Ornate Pauldrons with Cape" mesh="noble_pauldron_with_cape" culture="Culture.vlandia" weight="1.8" appearance="7" Type="Cape">
+		<ItemComponent>
+			<Armor body_armor="68" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="noble_pauldron_with_scarf" name="{=*}Reinforced Ornate Pauldrons" mesh="noble_pauldron_with_scarf" culture="Culture.vlandia" weight="3.2" appearance="7" Type="Cape">
+		<ItemComponent>
+			<Armor body_armor="88" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="pauldron_over_scale_armor" name="{=*}Reinforced Ornate Pauldrons over Scale" mesh="pauldron_over_scale_armor" culture="Culture.vlandia" weight="3.4" appearance="7" Type="Cape">
+		<ItemComponent>
+			<Armor body_armor="50" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="pauldron_with_cape" name="{=*}Pauldrons with Cape" mesh="pauldron_with_cape" culture="Culture.vlandia" weight="1.3" appearance="6" Type="Cape">
+		<ItemComponent>
+			<Armor body_armor="33" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="scale_shoulder_armor" name="{=*}Scale Shoulderguards" mesh="scale_shoulder_armor" culture="Culture.vlandia" weight="1.7" appearance="1" Type="Cape">
+		<ItemComponent>
+			<Armor body_armor="25" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
 </Items>
