@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
+using TaleWorlds.CampaignSystem.TournamentGames;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -102,8 +103,8 @@ namespace RealisticBattleAiModule.AiModule.Posture
         {
             static void Postfix(ref Mission __instance, ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
             {
-                if(XmlConfig.dict["Global.PostureEnabled"] == 1 && attackerAgent != null && victimAgent != null && attackerWeapon.CurrentUsageItem != null &&
-                    attackerWeapon.CurrentUsageItem != null) { 
+                if (XmlConfig.dict["Global.PostureEnabled"] == 1 && attackerAgent != null && victimAgent != null && attackerWeapon.CurrentUsageItem != null &&
+                    attackerWeapon.CurrentUsageItem != null) {
                     Posture defenderPosture = null;
                     Posture attackerPosture = null;
                     AgentPostures.values.TryGetValue(victimAgent, out defenderPosture);
@@ -115,10 +116,10 @@ namespace RealisticBattleAiModule.AiModule.Posture
                     float absoluteShieldDamageModifier = 1.2f;
 
                     if (!collisionData.AttackBlockedWithShield)
-                    { 
+                    {
                         if (collisionData.CollisionResult == CombatCollisionResult.Blocked)
                         {
-                            if(defenderPosture != null)
+                            if (defenderPosture != null)
                             {
                                 float postureDmg = calculateDefenderPostureDamage(victimAgent, attackerAgent, absoluteDamageModifier, 0.85f, ref collisionData, attackerWeapon);
                                 defenderPosture.posture = postureDmg;
@@ -148,7 +149,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                 {
                                 }
                             }
-                        }else if(collisionData.CollisionResult == CombatCollisionResult.Parried)
+                        } else if (collisionData.CollisionResult == CombatCollisionResult.Parried)
                         {
                             if (defenderPosture != null)
                             {
@@ -253,7 +254,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                 {
                                 }
                             }
-                        }else if (collisionData.CollisionResult == CombatCollisionResult.Parried && collisionData.CorrectSideShieldBlock)
+                        } else if (collisionData.CollisionResult == CombatCollisionResult.Parried && collisionData.CorrectSideShieldBlock)
                         {
                             if (defenderPosture != null)
                             {
@@ -334,7 +335,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
 
             static void addPosturedamageVisual(Agent attackerAgent, Agent victimAgent)
             {
-                if(XmlConfig.dict["Global.PostureGUIEnabled"] == 1) 
+                if (XmlConfig.dict["Global.PostureGUIEnabled"] == 1)
                 {
                     if (victimAgent.IsPlayerControlled || attackerAgent.IsPlayerControlled)
                     {
@@ -417,7 +418,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                 {
                     attackerEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent.Character, attackerAgent.Origin, attackerAgent.Formation, DefaultSkills.Athletics);
                 }
-                
+
                 float defenderEffectiveWeaponSkill = 0;
                 float defenderEffectiveStrengthSkill = 0;
 
@@ -452,7 +453,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                 attackerEffectiveWeaponSkill = attackerEffectiveWeaponSkill / weaponSkillModifier;
                 attackerEffectiveStrengthSkill = attackerEffectiveStrengthSkill / strengthSkillModifier;
 
-                basePostureDamage = basePostureDamage *((1f + attackerEffectiveStrengthSkill + attackerEffectiveWeaponSkill) / (1f + defenderEffectiveStrengthSkill + defenderEffectiveWeaponSkill));
+                basePostureDamage = basePostureDamage * ((1f + attackerEffectiveStrengthSkill + attackerEffectiveWeaponSkill) / (1f + defenderEffectiveStrengthSkill + defenderEffectiveWeaponSkill));
 
                 float attackerPostureModifier = 1f;
                 //WeaponClass attackerWeaponClass = WeaponClass.Undefined;
@@ -745,6 +746,36 @@ namespace RealisticBattleAiModule.AiModule.Posture
             }
         }
 
+        [HarmonyPatch(typeof(TournamentRound))]
+        [HarmonyPatch("EndMatch")]
+        class EndMatchPatch
+        {
+            static void Postfix(ref TournamentRound __instance)
+            {
+                foreach (KeyValuePair<Agent, Posture> entry in AgentPostures.values)
+                {
+                    entry.Value.posture = entry.Value.maxPosture;
+                    if (XmlConfig.dict["Global.PostureGUIEnabled"] == 1)
+                    {
+                        if (entry.Key.IsPlayerControlled)
+                        {
+                            //InformationManager.DisplayMessage(new InformationMessage(entry.Value.posture.ToString()));
+                            if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
+                            {
+                                AgentPostures.postureVisual._dataSource.PlayerPosture = (int)entry.Value.posture;
+                                AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)entry.Value.maxPosture;
+                            }
+                        }
+
+                        if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowEnemyStatus && AgentPostures.postureVisual.affectedAgent == entry.Key)
+                        {
+                            AgentPostures.postureVisual._dataSource.EnemyPosture = (int)entry.Value.posture;
+                            AgentPostures.postureVisual._dataSource.EnemyPostureMax = (int)entry.Value.maxPosture;
+                        }
+                    }
+                }
+            }
+        }
 
         [HarmonyPatch(typeof(Mission))]
         [HarmonyPatch("OnTick")]
