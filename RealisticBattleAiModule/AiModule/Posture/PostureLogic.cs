@@ -755,10 +755,10 @@ namespace RealisticBattleAiModule.AiModule.Posture
             private static float timeToCalc = 0.5f;
             private static float currentDt = 0f;
 
-            private static float maxAcc = 1.5f;
-            private static float minAcc = 0.1f;
-            private static float curAcc = 1f;
-            private static bool isCountingUp = false;
+            //private static float maxAcc = 1.5f;
+            //private static float minAcc = 0.1f;
+            //private static float curAcc = 1f;
+            //private static bool isCountingUp = false;
 
             static void Postfix(float dt)
             {
@@ -773,22 +773,22 @@ namespace RealisticBattleAiModule.AiModule.Posture
                         foreach (KeyValuePair<Agent, Posture> entry in AgentPostures.values)
                         {
 
-                            if (XmlConfig.dict["Global.PostureGUIEnabled"] == 1)
-                            {
-                                if (entry.Key.IsPlayerControlled) {
-                                    if (isCountingUp)
-                                    {
-                                        curAcc = 1.5f;
-                                    }
-                                    else
-                                    {
-                                        curAcc = 0f;
-                                    }
-                                    isCountingUp = !isCountingUp;
-                                    entry.Key.AgentDrivenProperties.WeaponMaxMovementAccuracyPenalty = curAcc;
-                                    entry.Key.AgentDrivenProperties.WeaponMaxUnsteadyAccuracyPenalty = curAcc;
-                                }
-                            }
+                            //if (XmlConfig.dict["Global.PostureGUIEnabled"] == 1)
+                            //{
+                            //    if (entry.Key.IsPlayerControlled) {
+                            //        if (isCountingUp)
+                            //        {
+                            //            curAcc = 1.5f;
+                            //        }
+                            //        else
+                            //        {
+                            //            curAcc = 0f;
+                            //        }
+                            //        isCountingUp = !isCountingUp;
+                            //        entry.Key.AgentDrivenProperties.WeaponMaxMovementAccuracyPenalty = curAcc;
+                            //        entry.Key.AgentDrivenProperties.WeaponMaxUnsteadyAccuracyPenalty = curAcc;
+                            //    }
+                            //}
 
                             // do something with entry.Value or entry.Key
                             if (entry.Value.posture < entry.Value.maxPosture)
