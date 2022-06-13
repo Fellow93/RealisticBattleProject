@@ -3356,10 +3356,10 @@ namespace RealisticBattleAiModule
             {
                 if(____mapEvent != null)
                 {
-                    FieldInfo field = typeof(MissionAgentSpawnLogic).GetField("_battleSize", BindingFlags.NonPublic | BindingFlags.Instance);
-                    field.DeclaringType.GetField("_battleSize");
-                    int battleSize = (int)field.GetValue(____missionAgentSpawnLogic);
-
+                    //FieldInfo field = typeof(MissionAgentSpawnLogic).GetField("_battleSize", BindingFlags.NonPublic | BindingFlags.Instance);
+                    //field.DeclaringType.GetField("_battleSize");
+                    //int battleSize = (int)field.GetValue(____missionAgentSpawnLogic);
+                    int battleSize = ____missionAgentSpawnLogic.BattleSize;
                     int numberOfInvolvedMen = ____mapEvent.GetNumberOfInvolvedMen(BattleSideEnum.Defender);
                     int numberOfInvolvedMen2 = ____mapEvent.GetNumberOfInvolvedMen(BattleSideEnum.Attacker);
                     int defenderInitialSpawn = numberOfInvolvedMen;
@@ -3380,8 +3380,8 @@ namespace RealisticBattleAiModule
 
                         MissionSpawnSettings spawnSettings = MissionSpawnSettings.CreateDefaultSettings();
                         spawnSettings.DefenderAdvantageFactor = defenderAdvantage;
-                        //spawnSettings.ReinforcementBatchPercentage = 0.5f;
-                        spawnSettings.DesiredReinforcementPercentage = 1f;
+                        spawnSettings.ReinforcementBatchPercentage = 0.25f;
+                        spawnSettings.DesiredReinforcementPercentage = 0.5f;
                         //public MissionSpawnSettings(float reinforcementInterval, float reinforcementIntervalChange, int reinforcementIntervalCount, InitialSpawnMethod initialTroopsSpawnMethod,
                         //ReinforcementSpawnMethod reinforcementTroopsSpawnMethod, float reinforcementBatchPercentage, float desiredReinforcementPercentage, float defenderReinforcementBatchPercentage = 0, float attackerReinforcementBatchPercentage = 0, float defenderAdvantageFactor = 1, float defenderRatioLimit = 0.6F);
                         //MissionSpawnSettings(10f, 0f, 0, InitialSpawnMethod.BattleSizeAllocating, ReinforcementSpawnMethod.Balanced, 0.05f, 0.166f); normal
@@ -3396,9 +3396,47 @@ namespace RealisticBattleAiModule
             }
         }
 
+        //[HarmonyPatch(typeof(MissionAgentSpawnLogic))]
+        //class CheckReinforcementSpawnPatch
+        //{
+        //    [HarmonyPrefix]
+        //    [HarmonyPatch("CheckReinforcementSpawn")]
+        //    static bool Postfix(ref MissionAgentSpawnLogic __instance, ref MissionSpawnSettings ____spawnSettings, float dt)
+        //    {
+        //        //int battleSize = __instance.BattleSize;
+
+        //        ////int numberOfInvolvedMen = ____mapEvent.GetNumberOfInvolvedMen(BattleSideEnum.Defender);
+        //        ////int numberOfInvolvedMen2 = ____mapEvent.GetNumberOfInvolvedMen(BattleSideEnum.Attacker);
+        //        ////int defenderInitialSpawn = numberOfInvolvedMen;
+        //        ////int attackerInitialSpawn = numberOfInvolvedMen2;
+        //        //int attackersCount = __instance.NumberOfActiveAttackerTroops;
+        //        //int defendersCount = __instance.NumberOfActiveDefenderTroops;
+
+        //        //int totalBattleSize = battleSize;
+
+        //        //if (totalBattleSize > attackersCount + defendersCount)
+        //        //{
+
+        //        //    float defenderAdvantage = (float)battleSize / ((float)defendersCount * ((battleSize * 2f) / (totalBattleSize)));
+        //        //    //if (defendersCount < (battleSize / 2f))
+        //        //    //{
+        //        //    //    defenderAdvantage = (float)totalBattleSize / (float)battleSize;
+        //        //    //}
+
+        //        //    ____spawnSettings.DefenderAdvantageFactor = defenderAdvantage;
+
+        //        //    return true;
+        //        //}
+        //        return true;
+        //    }
+        //}
+
         [HarmonyPatch(typeof(MissionAgentSpawnLogic))]
         class OverrideBattleSizeSpawnTick
         {
+
+            private static bool hasOneSideSpawnedReinforcements = false;
+            private static bool hasOneSideSpawnedReinforcementsAttackers = false;
 
             private class SpawnPhase
             {
@@ -3421,7 +3459,7 @@ namespace RealisticBattleAiModule
 
             [HarmonyPrefix]
             [HarmonyPatch("CheckReinforcementBatch")]
-            static bool PrefixBattleSizeSpawnTick(ref MissionAgentSpawnLogic __instance, ref int ____battleSize, ref List<SpawnPhase>[] ____phases)
+            static bool PrefixBattleSizeSpawnTick(ref MissionAgentSpawnLogic __instance, ref int ____battleSize, ref List<SpawnPhase>[] ____phases, ref MissionSpawnSettings ____spawnSettings)
             {
                 if (Mission.Current.MissionTeamAIType != Mission.MissionTeamAITypeEnum.FieldBattle)
                 {
@@ -3437,10 +3475,16 @@ namespace RealisticBattleAiModule
                         {
                             return true;
                         }
+                        if (hasOneSideSpawnedReinforcements)
+                        {
+                            int defendersRemaining = ____phases[0][0].RemainingSpawnNumber;
+                            int attackersRemaining = ____phases[1][0].RemainingSpawnNumber;
+                        }
                         float num4 = (float)(____phases[0][0].InitialSpawnedNumber - __instance.NumberOfActiveDefenderTroops) / (float)____phases[0][0].InitialSpawnedNumber;
                         float num5 = (float)(____phases[1][0].InitialSpawnedNumber - __instance.NumberOfActiveAttackerTroops) / (float)____phases[1][0].InitialSpawnedNumber;
-                        if ((____battleSize *0.5f > __instance.NumberOfActiveDefenderTroops+ __instance.NumberOfActiveAttackerTroops) || num4 >= 0.5f || num5 >= 0.5f)
+                        if ((____battleSize * 0.5f > __instance.NumberOfActiveDefenderTroops + __instance.NumberOfActiveAttackerTroops) || num4 >= 0.5f || num5 >= 0.5f)
                         {
+                            hasOneSideSpawnedReinforcements = true;
                             return true;
                         }
                         else
