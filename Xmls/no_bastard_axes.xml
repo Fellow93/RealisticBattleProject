@@ -48,6 +48,76 @@
       <UsablePiece piece_id="axe_craft_30_handle"/>
       <UsablePiece piece_id="axe_craft_31_handle"/>
       <UsablePiece piece_id="axe_craft_32_handle"/>
+	  
+      <UsablePiece piece_id="default_polearm_pommel" />
+      <UsablePiece piece_id="empire_pommel_1"/>
+      <UsablePiece piece_id="empire_pommel_2"/>
+      <UsablePiece piece_id="empire_pommel_3"/>
+      <UsablePiece piece_id="empire_pommel_4"/>
+      <UsablePiece piece_id="empire_pommel_5"/>
+      <UsablePiece piece_id="empire_pommel_6"/>
+      <UsablePiece piece_id="empire_noble_pommel_1"/>
+      <UsablePiece piece_id="empire_noble_pommel_2"/>
+      <UsablePiece piece_id="empire_noble_pommel_3"/>
+      <UsablePiece piece_id="empire_noble_pommel_4"/>
+      <UsablePiece piece_id="sturgian_pommel_2"/>
+      <UsablePiece piece_id="khuzait_pommel_1"/>
+      <UsablePiece piece_id="khuzait_pommel_2"/>
+      <UsablePiece piece_id="khuzait_pommel_5"/>
+      <UsablePiece piece_id="khuzait_pommel_6"/>
+      <UsablePiece piece_id="khuzait_pommel_7"/>
+      <UsablePiece piece_id="khuzait_noble_pommel_1"/>
+      <UsablePiece piece_id="khuzait_noble_pommel_2"/>
+      <UsablePiece piece_id="khuzait_noble_pommel_3"/>
+      <UsablePiece piece_id="vlandian_pommel_1"/>
+      <UsablePiece piece_id="vlandian_pommel_2"/>
+      <UsablePiece piece_id="vlandian_pommel_3"/>
+      <UsablePiece piece_id="vlandian_pommel_4"/>
+      <UsablePiece piece_id="vlandian_pommel_5"/>
+      <UsablePiece piece_id="vlandian_pommel_6"/>
+      <UsablePiece piece_id="vlandian_pommel_7"/>
+      <UsablePiece piece_id="vlandian_pommel_8"/>
+      <UsablePiece piece_id="vlandian_pommel_9"/>
+      <UsablePiece piece_id="vlandian_pommel_10"/>
+      <UsablePiece piece_id="vlandian_noble_pommel_1"/>
+      <UsablePiece piece_id="cleaver_pommel_1"/>
+      <UsablePiece piece_id="cleaver_pommel_2"/>
+      <UsablePiece piece_id="cleaver_pommel_3"/>
+      <UsablePiece piece_id="cleaver_pommel_4"/>
+      <UsablePiece piece_id="aserai_pommel_1"/>
+      <UsablePiece piece_id="aserai_pommel_2"/>
+      <UsablePiece piece_id="aserai_pommel_3"/>
+      <UsablePiece piece_id="aserai_pommel_4"/>
+      <UsablePiece piece_id="aserai_pommel_5"/>
+      <UsablePiece piece_id="aserai_pommel_8"/>
+      <UsablePiece piece_id="aserai_pommel_9"/>
+      <UsablePiece piece_id="aserai_noble_pommel_1"/>
+      <UsablePiece piece_id="aserai_noble_pommel_2"/>
+      <UsablePiece piece_id="aserai_noble_pommel_3"/>
+      <UsablePiece piece_id="aserai_noble_pommel_4"/>
+      <UsablePiece piece_id="battania_pommel_1"/>
+      <UsablePiece piece_id="battania_pommel_2"/>
+      <UsablePiece piece_id="battania_pommel_3"/>
+      <UsablePiece piece_id="battania_pommel_4"/>
+      <UsablePiece piece_id="battania_pommel_5"/>
+      <UsablePiece piece_id="battania_pommel_6"/>
+      <UsablePiece piece_id="battania_pommel_7"/>
+      <UsablePiece piece_id="battania_pommel_8"/>
+      <UsablePiece piece_id="battania_pommel_9"/>
+      <UsablePiece piece_id="battania_noble_pommel_1"/>
+      <UsablePiece piece_id="wood_pommel_1"/>
+      <UsablePiece piece_id="spear_pommel_1" />
+      <UsablePiece piece_id="spear_pommel_2" />
+      <UsablePiece piece_id="spear_pommel_3" />
+      <UsablePiece piece_id="spear_pommel_4" />
+      <UsablePiece piece_id="spear_pommel_5" />
+      <UsablePiece piece_id="spear_pommel_6" />
+      <UsablePiece piece_id="spear_pommel_7" />
+      <UsablePiece piece_id="spear_pommel_8" />
+      <UsablePiece piece_id="spear_pommel_9" />
+      <UsablePiece piece_id="spear_pommel_10" />
+      <UsablePiece piece_id="spear_pommel_11" />
+      <UsablePiece piece_id="spear_pommel_12" />
 
       <UsablePiece piece_id="mp_vlandia_polearm_head" mp_piece="true"/>
       <UsablePiece piece_id="mp_vlandia_polearm_handle" mp_piece="true"/>
@@ -178,8 +248,10 @@
                    mp_piece="true" />
       <UsablePiece piece_id="mp_vlandian_pike_handle"
                    mp_piece="true" />
-      <UsablePiece piece_id="mp_western_pitchfork_blade"
+      <UsablePiece piece_id="mp_western_pitchfork_metal_blade"
                    mp_piece="true" />
+      <UsablePiece piece_id="mp_western_pitchfork_wood_blade"
+             mp_piece="true" />
 
       <UsablePiece piece_id="mp_test_pike_blade"
                    mp_piece="true" />
@@ -282,10 +354,14 @@
       <UsablePiece piece_id="mp_spear_pommel_8" />
 
       <UsablePiece piece_id="mp_javelin_blade"
+                   mp_piece="true" /> 
+      <UsablePiece piece_id="mp_javelin_blade_captain"
                    mp_piece="true" />
       <UsablePiece piece_id="mp_javelin_handle"
                    mp_piece="true" />
       <UsablePiece piece_id="mp_javelin_blade_extraammo"
+                   mp_piece="true" /> 
+      <UsablePiece piece_id="mp_javelin_blade_extraammo_captain"
                    mp_piece="true" />
       <UsablePiece piece_id="mp_javelin_handle_extraammo"
                    mp_piece="true" />
@@ -297,6 +373,10 @@
                    mp_piece="true" />
       <UsablePiece piece_id="mp_pilum_blade_extraammo"
                    mp_piece="true" />
+      <UsablePiece piece_id="mp_jereed_blade_captain"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_jereed_blade_extra_captain"
+                   mp_piece="true" />  
       <UsablePiece piece_id="mp_jereed_blade"
                    mp_piece="true" />
       <UsablePiece piece_id="mp_jereed_blade_extra"
@@ -309,11 +389,21 @@
                    mp_piece="true" />
       <UsablePiece piece_id="mp_sturgia_harpoon_blade_strong"
                    mp_piece="true" />
+      <UsablePiece piece_id="mp_sturgia_harpoon_blade_captain"
+                  mp_piece="true" />
+      <UsablePiece piece_id="mp_sturgia_harpoon_blade_extra_captain"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_sturgia_harpoon_blade_strong_captain"
+                   mp_piece="true" />
       <UsablePiece piece_id="mp_sturgia_harpoon_handle"
                    mp_piece="true" />
       <UsablePiece piece_id="mp_battania_javelin_blade"
                    mp_piece="true" />
       <UsablePiece piece_id="mp_battania_javelin_blade_extra"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_battania_javelin_blade_captain"
+                  mp_piece="true" />
+      <UsablePiece piece_id="mp_battania_javelin_blade_extra_captain"
                    mp_piece="true" />
       <UsablePiece piece_id="mp_battania_javelin_handle"
                    mp_piece="true" />
@@ -424,7 +514,6 @@
       <UsablePiece piece_id="spear_blade_43" />
       <UsablePiece piece_id="spear_blade_44" />
       <UsablePiece piece_id="spear_blade_45" />
-      <UsablePiece piece_id="hammer_head_11" />
       <UsablePiece piece_id="sickle_blade_1_polearm" />
       <UsablePiece piece_id="spear_handle_1" />
       <UsablePiece piece_id="spear_handle_3" />
@@ -526,6 +615,8 @@
                    mp_piece="true" />
       <UsablePiece piece_id="mp_western_long_spear_blade"
                    mp_piece="true" />
+      <UsablePiece piece_id="mp_western_cavalry_spear_blade"
+                   mp_piece="true" />
       <UsablePiece piece_id="mp_western_long_spear_handle"
                    mp_piece="true" />
       <UsablePiece piece_id="mp_vlandia_polearm_head"
@@ -566,6 +657,8 @@
                    mp_piece="true" />
       <UsablePiece piece_id="mp_khuzait_long_spear_blade"
                    mp_piece="true" />
+      <UsablePiece piece_id="mp_khuzait_cavalry_spear_blade"
+                   mp_piece="true" />
       <UsablePiece piece_id="mp_khuzait_long_spear_handle"
                    mp_piece="true" />
       <UsablePiece piece_id="mp_khuzait_pike_blade"
@@ -573,6 +666,12 @@
       <UsablePiece piece_id="mp_khuzait_pike_handle"
                    mp_piece="true" />
       <UsablePiece piece_id="mp_khuzait_glaive_blade"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_western_scythe_blade"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_western_2h_sickle_blade"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_western_shovel_blade"
                    mp_piece="true" />
       <UsablePiece piece_id="mp_khuzait_glaive_handle"
                    mp_piece="true" />
@@ -598,6 +697,8 @@
                    mp_piece="true" />
       <UsablePiece piece_id="mp_battania_long_spear_blade"
                    mp_piece="true" />
+      <UsablePiece piece_id="mp_battania_cavalry_spear_blade"
+                   mp_piece="true" />
       <UsablePiece piece_id="mp_battania_long_spear_handle"
                    mp_piece="true" />
       <UsablePiece piece_id="mp_sturgia_spear_blade"
@@ -617,7 +718,9 @@
       <UsablePiece piece_id="mp_sturgia_great_spear_handle"
                    mp_piece="true" />
 
-      <UsablePiece piece_id="mp_sturgia_lance_blade"
+     <UsablePiece piece_id="mp_sturgia_lance_blade"
+                   mp_piece="true" />
+      <UsablePiece piece_id="mp_sturgia_long_lance_blade"
                    mp_piece="true" />
       <UsablePiece piece_id="mp_sturgia_heavy_lance_blade"
                    mp_piece="true" />
@@ -698,8 +801,10 @@
       <UsablePiece piece_id="mp_pilum_handle_extraammo"
                    mp_piece="true" />
 
-      <UsablePiece piece_id="mp_western_pitchfork_blade"
+      <UsablePiece piece_id="mp_western_pitchfork_metal_blade"
                    mp_piece="true" />
+      <UsablePiece piece_id="mp_western_pitchfork_wood_blade"
+             mp_piece="true" />
       <UsablePiece piece_id="mp_western_pitchfork_handle"
                    mp_piece="true" />
     </UsablePieces>
@@ -844,6 +949,13 @@
       <UsablePiece piece_id="sturgian_blade_7" />
       <UsablePiece piece_id="sturgian_blade_8" />
       <UsablePiece piece_id="sturgian_blade_9" />
+	  <UsablePiece piece_id="sturgian_blade_10" />
+	  <UsablePiece piece_id="sturgian_blade_11" />
+	  <UsablePiece piece_id="sturgian_blade_12" />
+	  <UsablePiece piece_id="sturgian_blade_13" />
+	  <UsablePiece piece_id="sturgian_blade_14" />
+	  <UsablePiece piece_id="sturgian_blade_15" />
+	  <UsablePiece piece_id="sturgian_blade_16" />
       <UsablePiece piece_id="khuzait_blade_1" />
       <UsablePiece piece_id="khuzait_blade_2" />
       <UsablePiece piece_id="khuzait_blade_3" />
@@ -851,6 +963,7 @@
       <UsablePiece piece_id="khuzait_blade_6" />
       <UsablePiece piece_id="khuzait_blade_7" />
       <UsablePiece piece_id="khuzait_blade_8" />
+      <UsablePiece piece_id="khuzait_blade_9" />
       <UsablePiece piece_id="vlandian_blade_1" />
       <UsablePiece piece_id="vlandian_blade_2" />
       <UsablePiece piece_id="vlandian_blade_3" />
@@ -862,11 +975,16 @@
       <UsablePiece piece_id="vlandian_blade_8" />
       <UsablePiece piece_id="vlandian_blade_9" />
       <UsablePiece piece_id="vlandian_blade_10" />
+	  <UsablePiece piece_id="vlandian_blade_11" />
+	  <UsablePiece piece_id="vlandian_blade_12" />
+	  <UsablePiece piece_id="vlandian_blade_13" />
+	  <UsablePiece piece_id="vlandian_blade_14" />
       <UsablePiece piece_id="cleaver_blade_1" />
       <UsablePiece piece_id="cleaver_blade_2" />
       <UsablePiece piece_id="cleaver_blade_3" />
       <UsablePiece piece_id="cleaver_blade_4" />
       <UsablePiece piece_id="cleaver_blade_5" />
+	  
       <UsablePiece piece_id="aserai_blade_1" />
       <UsablePiece piece_id="aserai_blade_2" />
       <UsablePiece piece_id="aserai_blade_3" />

@@ -226,6 +226,90 @@
       <Material id="Iron6" count="4" />
     </Materials>
   </CraftingPiece>
+  
+    <CraftingPiece id="empire_blade_8"
+                 name="{=c1YI2Nxt}Iron Spatha Blade"
+                 tier="2"
+                 piece_type="Blade"
+                 mesh="empire_blade_8"
+                 culture="Culture.empire"
+                 length="82.17"
+                 weight="0.77">
+    <BuildData previous_piece_offset="-0.4" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="empire_blade_8_scabbard_8">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.7" />
+      <Swing damage_type="Cut"
+             damage_factor="0.6" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="empire_blade_9"
+                 name="{=wsVbMK6L}Tournament Flat Blade"
+                 tier="1"
+                 piece_type="Blade"
+                 mesh="empire_blade_9"
+                 culture="Culture.empire"
+                 length="82.17"
+                 weight="0.63"
+                 is_default="true">
+    <BuildData previous_piece_offset="-0.4" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="empire_blade_9_scabbard_9">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.6" />
+      <Swing damage_type="Cut"
+             damage_factor="0.4" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="empire_blade_10"
+                 name="{=TUbTwW9U}Flat Ridged Spatha Blade"
+                 tier="2"
+                 piece_type="Blade"
+                 mesh="empire_blade_10"
+                 culture="Culture.empire"
+                 length="86.735"
+                 weight="0.69">
+    <BuildData previous_piece_offset="-0.4" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="empire_blade_10_scabbard_10">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.7" />
+      <Swing damage_type="Cut"
+             damage_factor="0.6" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron3"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  
   <CraftingPiece id="aserai_blade_1" name="{=k66YIIWR}Narrow Fine Steel Kaskara Blade" tier="4" piece_type="Blade" mesh="aserai_blade_1" culture="Culture.aserai" length="102.3" weight="0.67">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="aserai_blade_1_scabbard_1">
@@ -328,6 +412,228 @@
       <Material id="Iron6" count="4" />
     </Materials>
   </CraftingPiece>
+  
+  <CraftingPiece id="aserai_blade_18"
+                 name="{=feVbf7sb}Ridged Short Kaskara Blade"
+                 tier="1"
+                 piece_type="Blade"
+                 mesh="aserai_blade_18"
+                 culture="Culture.aserai"
+                 length="62.31"
+                 weight="0.423">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="aserai_blade_18_scabbard_18">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.5" />
+      <Swing damage_type="Cut"
+             damage_factor="0.6" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron2"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_blade_19"
+                 name="{=WNch6azL}Iron Scimitar Blade"
+                 tier="2"
+                 piece_type="Blade"
+                 mesh="aserai_blade_19"
+                 culture="Culture.aserai"
+                 length="65.24"
+                 weight="0.465">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="aserai_blade_19_scabbard_19">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.6" />
+      <Swing damage_type="Cut"
+             damage_factor="0.8" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron3"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_blade_20"
+                 name="{=Qw9HWSY7}Iron Flyssa Blade"
+                 tier="2"
+                 piece_type="Blade"
+                 mesh="aserai_blade_20"
+                 culture="Culture.aserai"
+                 length="83.2"
+                 weight="0.68">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="aserai_blade_20_scabbard_20">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.55" />
+      <Swing damage_type="Cut"
+             damage_factor="0.9" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron3"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_blade_21"
+                 name="{=v22onVb2}Slightly Ridged Flyssa Blade"
+                 tier="3"
+                 piece_type="Blade"
+                 mesh="aserai_blade_21"
+                 culture="Culture.aserai"
+                 length="89.76"
+                 weight="0.69">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="aserai_blade_21_scabbard_21">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.7" />
+      <Swing damage_type="Cut"
+             damage_factor="1" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron4"
+                count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_blade_22"
+                 name="{=N1qLYlxF}Fine Steel Kaskara Blade"
+                 tier="4"
+                 piece_type="Blade"
+                 mesh="aserai_blade_22"
+                 culture="Culture.aserai"
+                 length="87.87"
+                 weight="0.67">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="aserai_blade_22_scabbard_22">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.8" />
+      <Swing damage_type="Cut"
+             damage_factor="1.2" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron5"
+                count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_blade_23"
+                 name="{=N1qLYlxF}Fine Steel Kaskara Blade"
+                 tier="4"
+                 piece_type="Blade"
+                 mesh="aserai_blade_23"
+                 culture="Culture.aserai"
+                 length="90.09"
+                 weight="0.7">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="aserai_blade_23_scabbard_23">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.85" />
+      <Swing damage_type="Cut"
+             damage_factor="1.1" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron5"
+                count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_blade_24"
+                 name="{=N1qLYlxF}Fine Steel Kaskara Blade"
+                 tier="4"
+                 piece_type="Blade"
+                 mesh="aserai_blade_24"
+                 culture="Culture.aserai"
+                 length="92.07"
+                 weight="0.71">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="aserai_blade_24_scabbard_24">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.75" />
+      <Swing damage_type="Cut"
+             damage_factor="1.3" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron5"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_blade_25"
+                 name="{=PQ8rR13R}Long Fine Steel Scimitar Blade"
+                 tier="4"
+                 piece_type="Blade"
+                 mesh="aserai_blade_25"
+                 culture="Culture.aserai"
+                 length="94.05"
+                 weight="0.73">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="aserai_blade_25_scabbard_25">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.7" />
+      <Swing damage_type="Cut"
+             damage_factor="1.3" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron5"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_blade_26"
+                 name="{=pX4nTZOI}Fine Steel Broad Kaskara"
+                 tier="4"
+                 piece_type="Blade"
+                 mesh="aserai_blade_26"
+                 culture="Culture.aserai"
+                 length="98.01"
+                 weight="0.89">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="aserai_blade_26_scabbard_26">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.8" />
+      <Swing damage_type="Cut"
+             damage_factor="1.2" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron5"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_blade_27"
+                 name="{=aTnuOUCC}Thamaskene Steel Kaskara Blade"
+                 tier="5"
+                 piece_type="Blade"
+                 mesh="aserai_blade_27"
+                 culture="Culture.aserai"
+                 length="92.07"
+                 weight="0.79">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="aserai_blade_27_scabbard_27">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.9" />
+      <Swing damage_type="Cut"
+             damage_factor="1.5" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron6"
+                count="4" />
+    </Materials>
+  </CraftingPiece>  
+  
   <CraftingPiece id="khuzait_blade_1" name="{=Ld1nfdj4}Fine Steel Sabre Blade" tier="4" piece_type="Blade" mesh="khuzait_blade_1" culture="Culture.khuzait" length="92.4" weight="0.62">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="khuzait_blade_1_scabbard_1">
@@ -583,6 +889,82 @@
       <Material id="Iron6" count="2" />
     </Materials>
   </CraftingPiece>
+  
+  <CraftingPiece id="battania_blade_8"
+                 name="{=rKnBJPfp}Fine Steel Cavalry Broadsword Blade"
+                 tier="4"
+                 piece_type="Blade"
+                 mesh="battania_blade_8"
+                 culture="Culture.battania"
+                 length="89.01"
+                 weight="0.8">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="battania_blade_8_scabbard_8">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.7" />
+      <Swing damage_type="Cut"
+             damage_factor="1" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron5"
+                count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="battania_blade_9"
+                 name="{=swb45HVS}Mountain Blade"
+                 tier="5"
+                 piece_type="Blade"
+                 mesh="battania_blade_9"
+                 culture="Culture.battania"
+                 length="84.84"
+                 weight="0.71">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="battania_blade_9_scabbard_9">
+      <Thrust damage_type="Pierce"
+              damage_factor="1" />
+      <Swing damage_type="Cut"
+             damage_factor="1.2" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron6"
+                count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="battania_blade_10"
+                 name="{=gdVNxGZU}Ridged Short Blade"
+                 tier="1"
+                 piece_type="Blade"
+                 mesh="battania_blade_10"
+                 culture="Culture.empire"
+                 length="68.52"
+                 weight="0.49">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="battania_blade_10_scabbard_10">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.6" />
+      <Swing damage_type="Cut"
+             damage_factor="0.4" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2"
+                count="2" />
+    </Materials>
+  </CraftingPiece> 
+ 
   <CraftingPiece id="battania_blade_3_iron" name="{=3Y7plSBX}Iron Broadsword Blade" tier="2" piece_type="Blade" mesh="battania_blade_3_iron" culture="Culture.battania" length="80.8" weight="1.0">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="battania_blade_3_scabbard_3">
@@ -635,6 +1017,104 @@
       <Material id="Iron2" count="3" />
     </Materials>
   </CraftingPiece>
+  
+  <CraftingPiece id="vlandian_blade_11"
+                 name="{=qyaS75Gr}Wide Fullered Broad Blade"
+                 tier="5"
+                 piece_type="Blade"
+                 mesh="vlandian_blade_11"
+                 culture="Culture.vlandia"
+                 length="89.46"
+                 weight="1.05">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="vlandian_blade_11_scabbard_11">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.95" />
+      <Swing damage_type="Cut"
+             damage_factor="1.3" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron6"
+                count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_blade_12"
+                 name="{=OTtMvvJK}Ridged Arming Sword Blade"
+                 tier="4"
+                 piece_type="Blade"
+                 mesh="vlandian_blade_12"
+                 culture="Culture.vlandia"
+                 length="89.1"
+                 weight="0.8">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="vlandian_blade_12_scabbard_12">
+      <Thrust damage_type="Pierce"
+              damage_factor="1" />
+      <Swing damage_type="Cut"
+             damage_factor="0.9" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron5"
+                count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_blade_13"
+                 name="{=zCYuj3yr}Ridged Tipped Arming Sword Blade"
+                 tier="3"
+                 piece_type="Blade"
+                 mesh="vlandian_blade_13"
+                 culture="Culture.vlandia"
+                 length="84.15"
+                 weight="0.75">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="vlandian_blade_13_scabbard_13">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.9" />
+      <Swing damage_type="Cut"
+             damage_factor="0.7" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_blade_14"
+                 name="{=q7jHkLam}Fullered Narrow Arming Sword Blade"
+                 tier="2"
+                 piece_type="Blade"
+                 mesh="vlandian_blade_14"
+                 culture="Culture.vlandia"
+                 length="75.68"
+                 weight="0.88">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="vlandian_blade_14_scabbard_14">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.8" />
+      <Swing damage_type="Cut"
+             damage_factor="0.5" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron3"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  
   <CraftingPiece id="khuzait_blade_6" name="{=czhTpYo8}Iron Sabre Blade" tier="2" piece_type="Blade" mesh="khuzait_blade_6" culture="Culture.khuzait" length="82.5" weight="0.66">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed">
@@ -682,6 +1162,77 @@
       <Material id="Iron2" count="3" />
     </Materials>
   </CraftingPiece>
+  
+  <CraftingPiece id="khuzait_noble_blade_5"
+                 name="{=AKJzOQkF}Eastern Backsword Blade"
+                 tier="2"
+                 piece_type="Blade"
+                 mesh="khuzait_noble_blade_5"
+                 culture="Culture.khuzait"
+                 length="87.6"
+                 weight="1">
+    <BuildData previous_piece_offset="-0.25" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="khuzait_noble_blade_5_scabbard_5">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.7" />
+      <Swing damage_type="Cut"
+             damage_factor="0.8" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron3"
+                count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_noble_blade_6"
+                 name="{=SJssgxmf}Decorated Ild Blade"
+                 tier="5"
+                 piece_type="Blade"
+                 mesh="khuzait_noble_blade_6"
+                 culture="Culture.khuzait"
+                 length="87"
+                 weight="0.9">
+    <BuildData previous_piece_offset="-0.25" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="khuzait_noble_blade_6_scabbard_6">
+      <Thrust damage_type="Pierce"
+              damage_factor="1" />
+      <Swing damage_type="Cut"
+             damage_factor="1.5" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron6"
+                count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="khuzait_noble_blade_7"
+                 name="{=R7OBSozV}Short Thick Ild Blade"
+                 tier="1"
+                 piece_type="Blade"
+                 mesh="khuzait_noble_blade_7"
+                 culture="Culture.khuzait"
+                 length="76.5"
+                 weight="0.95">
+    <BuildData previous_piece_offset="-0.25" />
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="khuzait_noble_blade_7_scabbard_7">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.5" />
+      <Swing damage_type="Cut"
+             damage_factor="0.6" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron2"
+                count="3" />
+    </Materials>
+  </CraftingPiece>  
+  
   <CraftingPiece id="sturgian_blade_9" name="{=BXW4LeQT}Wide Fullered Short Blade" tier="3" piece_type="Blade" mesh="sturgian_blade_9" culture="Culture.sturgia" length="56.1" weight="0.6">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="sturgian_blade_9_scabbard_9">
@@ -695,6 +1246,190 @@
       <Material id="Iron2" count="2" />
     </Materials>
   </CraftingPiece>
+
+  <CraftingPiece id="sturgian_blade_10"
+                 name="{=QIo60ZKh}Fullered Long Warsword Blade"
+                 tier="5"
+                 piece_type="Blade"
+                 mesh="sturgian_blade_10"
+                 culture="Culture.sturgia"
+                 length="104.76"
+                 weight="0.84">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="sturgian_blade_10_scabbard_10">
+      <Thrust damage_type="Pierce"
+              damage_factor="1" />
+      <Swing damage_type="Cut"
+             damage_factor="1.2" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron6"
+                count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_blade_11"
+                 name="{=7ZWtiHKj}Long Warsword Blade"
+                 tier="4"
+                 piece_type="Blade"
+                 mesh="sturgian_blade_11"
+                 culture="Culture.sturgia"
+                 length="87.769"
+                 weight="0.68">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="sturgian_blade_11_scabbard_11">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.9" />
+      <Swing damage_type="Cut"
+             damage_factor="1" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron5"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_blade_12"
+                 name="{=alti0PsZ}Pointy Warsword Blade"
+                 tier="3"
+                 piece_type="Blade"
+                 mesh="sturgian_blade_12"
+                 culture="Culture.sturgia"
+                 length="81.95"
+                 weight="0.56">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="sturgian_blade_12_scabbard_12">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.9" />
+      <Swing damage_type="Cut"
+             damage_factor="0.75" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_blade_13"
+                 name="{=weIT4gUP}Fullered Narrow Warsword Blade"
+                 tier="4"
+                 piece_type="Blade"
+                 mesh="sturgian_blade_13"
+                 culture="Culture.sturgia"
+                 length="75.174"
+                 weight="0.54">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="sturgian_blade_13_scabbard_13">
+      <Thrust damage_type="Pierce"
+              damage_factor="1" />
+      <Swing damage_type="Cut"
+             damage_factor="0.95" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron5"
+                count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_blade_14"
+                 name="{=bGfs8gNv}Northern Backsword Blade"
+                 tier="3"
+                 piece_type="Blade"
+                 mesh="sturgian_blade_14"
+                 culture="Culture.sturgia"
+                 length="75.02"
+                 weight="0.5">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="sturgian_blade_14_scabbard_14">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.8" />
+      <Swing damage_type="Cut"
+             damage_factor="0.8" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron4"
+                count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_blade_15"
+                 name="{=XtneitaD}Fine Steel Warsword Blade"
+                 tier="4"
+                 piece_type="Blade"
+                 mesh="sturgian_blade_15"
+                 culture="Culture.sturgia"
+                 length="74.437"
+                 weight="0.8">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="sturgian_blade_15_scabbard_15">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.9" />
+      <Swing damage_type="Cut"
+             damage_factor="1" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron5"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_blade_16"
+                 name="{=BXW4LeQT}Wide Fullered Short Blade"
+                 tier="3"
+                 piece_type="Blade"
+                 mesh="sturgian_blade_16"
+                 culture="Culture.sturgia"
+                 length="72.93"
+                 weight="0.7">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="sturgian_blade_16_scabbard_16">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.75" />
+      <Swing damage_type="Cut"
+             damage_factor="0.9" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron2"
+                count="2" />
+    </Materials>
+  </CraftingPiece>
+
   <CraftingPiece id="vlandian_blade_6" name="{=tSaAzzYe}Ridged Narrow Blade" tier="1" piece_type="Blade" mesh="vlandian_blade_6" culture="Culture.vlandia" length="92.4" weight="0.85">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="vlandian_blade_6_scabbard_6">
@@ -721,6 +1456,7 @@
   <CraftingPiece id="cleaver_blade_3" name="{=G8Fb2RPa}Pointed Falchion Blade" tier="4" piece_type="Blade" mesh="cleaver_blade_3" culture="Culture.aserai" length="101" weight="0.92" excluded_item_usage_features="thrust">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="cleaver_blade_3">
+      <Thrust damage_type="Pierce" damage_factor="0.8" />
       <Swing damage_type="Cut" damage_factor="1.3" />
     </BladeData>
     <Materials>
@@ -738,6 +1474,33 @@
       <Material id="Iron5" count="4" />
     </Materials>
   </CraftingPiece>
+  
+  <CraftingPiece id="khuzait_blade_9"
+                 name="{=czhTpYo8}Iron Saber Blade"
+                 tier="2"
+                 piece_type="Blade"
+                 mesh="khuzait_blade_9"
+                 culture="Culture.khuzait"
+                 length="78.375"
+                 weight="0.62">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.7" />
+      <Swing damage_type="Cut"
+             damage_factor="0.8" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron3"
+                count="3" />
+    </Materials>
+  </CraftingPiece> 
+
   <CraftingPiece id="vlandian_blade_2" name="{=KFqa2uF1}Broad Two Hander Blade" tier="4" piece_type="Blade" mesh="vlandian_blade_2" culture="Culture.vlandia" length="99" weight="0.76">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="vlandian_blade_2_scabbard_2">
@@ -771,6 +1534,112 @@
       <Material id="Iron6" count="3" />
     </Materials>
   </CraftingPiece>
+  
+  <CraftingPiece id="vlandian_noble_blade_5"
+                 name="{=O2kPKeuK}Arming Sword Blade With Gold Engraving"
+                 tier="5"
+                 piece_type="Blade"
+                 mesh="vlandian_noble_blade_5"
+                 culture="Culture.vlandia"
+                 length="104.3"
+                 weight="0.8">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="vlandian_noble_blade_5_scabbard_5">
+      <Thrust damage_type="Pierce"
+              damage_factor="1.2" />
+      <Swing damage_type="Cut"
+             damage_factor="1.3" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron6"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_noble_blade_6"
+                 name="{=uuover9F}Short Arming Sword Blade"
+                 tier="5"
+                 piece_type="Blade"
+                 mesh="vlandian_noble_blade_6"
+                 culture="Culture.vlandia"
+                 length="96.59"
+                 weight="0.7">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="vlandian_noble_blade_6_scabbard_6">
+      <Thrust damage_type="Pierce"
+              damage_factor="1.3" />
+      <Swing damage_type="Cut"
+             damage_factor="1.2" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron6"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_noble_blade_7"
+                 name="{=UKWwPPkx}Arming Sword Blade With Golden Petals Imprint"
+                 tier="5"
+                 piece_type="Blade"
+                 mesh="vlandian_noble_blade_7"
+                 culture="Culture.vlandia"
+                 length="74.8"
+                 weight="0.6">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="vlandian_noble_blade_7_scabbard_7">
+      <Thrust damage_type="Pierce"
+              damage_factor="1.2" />
+      <Swing damage_type="Cut"
+             damage_factor="1.3" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron6"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="vlandian_noble_blade_8"
+                 name="{=uuover9F}Short Arming Sword Blade"
+                 tier="5"
+                 piece_type="Blade"
+                 mesh="vlandian_noble_blade_8"
+                 culture="Culture.vlandia"
+                 length="81"
+                 weight="0.6">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="vlandian_noble_blade_8_scabbard_8">
+      <Thrust damage_type="Pierce"
+              damage_factor="1.3" />
+      <Swing damage_type="Cut"
+             damage_factor="1.2" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron6"
+                count="3" />
+    </Materials>
+  </CraftingPiece>  
+  
   <CraftingPiece id="vlandian_noble_blade_1" name="{=bki9u9FW}Arming Sword Blade With Golden Circle Imprint" tier="5" piece_type="Blade" mesh="vlandian_noble_blade_1" culture="Culture.vlandia" length="74.3" weight="0.6">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="vlandian_noble_blade_1_scabbard_1">
@@ -944,6 +1813,71 @@
       <Material id="Iron5" count="4" />
     </Materials>
   </CraftingPiece>
+  
+  <CraftingPiece id="cleaver_blade_6"
+                 name="{=2mo4gsuh}War Razor Blade"
+                 tier="4"
+                 piece_type="Blade"
+                 mesh="cleaver_blade_6"
+                 culture="Culture.vlandia"
+                 length="93.06"
+                 weight="0.9">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.9" />
+      <Swing damage_type="Cut"
+             damage_factor="1.2" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron5"
+                count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="cleaver_blade_7"
+                 name="{=YkWqmDEK}Broad Falchion Blade Head"
+                 tier="3"
+                 piece_type="Blade"
+                 mesh="cleaver_blade_7"
+                 culture="Culture.aserai"
+                 length="80.08"
+                 weight="1.05">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.8" />
+      <Swing damage_type="Cut"
+             damage_factor="1" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron4"
+                count="4" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="cleaver_blade_8"
+                 name="{=hRfqLq4V}Falchion Blade"
+                 tier="3"
+                 piece_type="Blade"
+                 mesh="cleaver_blade_8"
+                 culture="Culture.aserai"
+                 length="78.32"
+                 weight="1.0">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.8" />
+      <Swing damage_type="Cut"
+             damage_factor="1" />
+    </BladeData>
+    <Materials>
+      <Material id="Iron4"
+                count="3" />
+    </Materials>
+  </CraftingPiece>  
+  
   <CraftingPiece id="cleaver_blade_2" name="{=YkWqmDEK}Broad Falchion Blade Head" tier="3" piece_type="Blade" mesh="cleaver_blade_2" culture="Culture.aserai" length="100.1" weight="1.0">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="cleaver_blade_2">
@@ -1033,6 +1967,112 @@
       <Material id="Iron6" count="2" />
     </Materials>
   </CraftingPiece>
+
+  <CraftingPiece id="sturgian_noble_blade_5"
+                 name="{=blaVlvm2}Decorated Short Warsword Blade"
+                 tier="5"
+                 piece_type="Blade"
+                 mesh="sturgian_noble_blade_5"
+                 culture="Culture.sturgia"
+                 length="88.8"
+                 weight="0.5">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="sturgian_noble_blade_5_scabbard_5">
+      <Thrust damage_type="Pierce"
+              damage_factor="1.05" />
+      <Swing damage_type="Cut"
+             damage_factor="1.5" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron6"
+                count="2" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_noble_blade_6"
+                 name="{=P5dUGIl7}Decorated Warsword Blade"
+                 tier="5"
+                 piece_type="Blade"
+                 mesh="sturgian_noble_blade_6"
+                 culture="Culture.sturgia"
+                 length="87.6"
+                 weight="0.7">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="sturgian_noble_blade_6_scabbard_6">
+      <Thrust damage_type="Pierce"
+              damage_factor="1.15" />
+      <Swing damage_type="Cut"
+             damage_factor="1.3" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron6"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_noble_blade_7"
+                 name="{=mSNaSLiC}Thamaskene Steel Warsword Blade"
+                 tier="5"
+                 piece_type="Blade"
+                 mesh="sturgian_noble_blade_7"
+                 culture="Culture.sturgia"
+                 length="73.68"
+                 weight="0.65">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="sturgian_noble_blade_7_scabbard_7">
+      <Thrust damage_type="Pierce"
+              damage_factor="1.15" />
+      <Swing damage_type="Cut"
+             damage_factor="1.5" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron6"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="sturgian_noble_blade_8"
+                 name="{=VbpiYB68}Decorated Wide Fullered Short Blade"
+                 tier="5"
+                 piece_type="Blade"
+                 mesh="sturgian_noble_blade_8"
+                 culture="Culture.sturgia"
+                 length="67.54"
+                 weight="0.7">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="sturgian_noble_blade_8_scabbard_8">
+      <Thrust damage_type="Pierce"
+              damage_factor="1.1" />
+      <Swing damage_type="Cut"
+             damage_factor="1.4" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron6"
+                count="2" />
+    </Materials>
+  </CraftingPiece>
+
   <CraftingPiece id="khuzait_noble_blade_3" name="{=AKJzOQkF}Eastern Backsword Blade" tier="2" piece_type="Blade" mesh="khuzait_noble_blade_3" culture="Culture.khuzait" length="73" weight="0.85">
 
     <BuildData previous_piece_offset="-0.25" />
@@ -1096,6 +2136,60 @@
       <Material id="Iron6" count="3" />
     </Materials>
   </CraftingPiece>
+  
+  <CraftingPiece id="aserai_noble_blade_5"
+                 name="{=RdVX1jC0}Engraved Kaskara Blade"
+                 tier="5"
+                 piece_type="Blade"
+                 mesh="aserai_noble_blade_5"
+                 culture="Culture.aserai"
+                 length="85.2"
+                 weight="0.684">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="aserai_noble_blade_5_scabbard_5">
+      <Thrust damage_type="Pierce"
+              damage_factor="1" />
+      <Swing damage_type="Cut"
+             damage_factor="1.4" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron6"
+                count="3" />
+    </Materials>
+  </CraftingPiece>
+  <CraftingPiece id="aserai_noble_blade_6"
+                 name="{=xYgJN0Ja}Decorated Scimitar Blade"
+                 tier="5"
+                 piece_type="Blade"
+                 mesh="aserai_noble_blade_6"
+                 culture="Culture.aserai"
+                 length="91.77"
+                 weight="0.79">
+    <BladeData stack_amount="3"
+               physics_material="metal_weapon"
+               body_name="bo_sword_one_handed"
+               holster_mesh="aserai_noble_blade_6_scabbard_6">
+      <Thrust damage_type="Pierce"
+              damage_factor="0.95" />
+      <Swing damage_type="Cut"
+             damage_factor="1.5" />
+    </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
+    <Materials>
+      <Material id="Iron6"
+                count="3" />
+    </Materials>
+  </CraftingPiece>  
+  
   <CraftingPiece id="battania_blade_3_crude_iron" name="{=EBlx3VId}Highland Crude Iron Blade" tier="1" piece_type="Blade" mesh="battania_blade_3_crude_iron" culture="Culture.battania" length="80.8" weight="0.92">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="battania_blade_3_scabbard_3">
