@@ -3383,6 +3383,8 @@ namespace RealisticBattleAiModule
                     spawnSettings.DefenderAdvantageFactor = defenderAdvantage;
                     spawnSettings.ReinforcementBatchPercentage = 0.25f;
                     spawnSettings.DesiredReinforcementPercentage = 0.5f;
+                    spawnSettings.ReinforcementTroopsSpawnMethod = MissionSpawnSettings.ReinforcementSpawnMethod.Fixed;
+                    
                     //public MissionSpawnSettings(float reinforcementInterval, float reinforcementIntervalChange, int reinforcementIntervalCount, InitialSpawnMethod initialTroopsSpawnMethod,
                     //ReinforcementSpawnMethod reinforcementTroopsSpawnMethod, float reinforcementBatchPercentage, float desiredReinforcementPercentage, float defenderReinforcementBatchPercentage = 0, float attackerReinforcementBatchPercentage = 0, float defenderAdvantageFactor = 1, float defenderRatioLimit = 0.6F);
                     //MissionSpawnSettings(10f, 0f, 0, InitialSpawnMethod.BattleSizeAllocating, ReinforcementSpawnMethod.Balanced, 0.05f, 0.166f); normal
@@ -3428,8 +3430,10 @@ namespace RealisticBattleAiModule
 
                         MissionSpawnSettings spawnSettings = MissionSpawnSettings.CreateDefaultSettings();
                         spawnSettings.DefenderAdvantageFactor = defenderAdvantage;
+                        spawnSettings.DefenderAdvantageFactor = defenderAdvantage;
                         spawnSettings.ReinforcementBatchPercentage = 0.25f;
-                    spawnSettings.DesiredReinforcementPercentage = 0.5f;
+                        spawnSettings.DesiredReinforcementPercentage = 0.5f;
+                        spawnSettings.ReinforcementTroopsSpawnMethod = MissionSpawnSettings.ReinforcementSpawnMethod.Fixed;
                     //public MissionSpawnSettings(float reinforcementInterval, float reinforcementIntervalChange, int reinforcementIntervalCount, InitialSpawnMethod initialTroopsSpawnMethod,
                     //ReinforcementSpawnMethod reinforcementTroopsSpawnMethod, float reinforcementBatchPercentage, float desiredReinforcementPercentage, float defenderReinforcementBatchPercentage = 0, float attackerReinforcementBatchPercentage = 0, float defenderAdvantageFactor = 1, float defenderRatioLimit = 0.6F);
                     //MissionSpawnSettings(10f, 0f, 0, InitialSpawnMethod.BattleSizeAllocating, ReinforcementSpawnMethod.Balanced, 0.05f, 0.166f); normal
@@ -3526,19 +3530,19 @@ namespace RealisticBattleAiModule
                         int activeAtt = __instance.NumberOfActiveAttackerTroops;
                         int activeDef = __instance.NumberOfActiveDefenderTroops;
 
-                        if (hasOneSideSpawnedReinforcements )
-                        {
-                            int defendersRemaining = ____phases[0][0].RemainingSpawnNumber;
-                            int attackersRemaining = ____phases[1][0].RemainingSpawnNumber;
-                            if((activeAtt > numOfAttWhenSpawning && activeDef > numOfDefWhenSpawning))
-                            {
-                                ____reinforcementSpawnEnabled = false;
-                                hasOneSideSpawnedReinforcements = false;
-                                numOfDefWhenSpawning = -1;
-                                numOfAttWhenSpawning = -1;
-                            }
-                            return true;
-                        }
+                        //if (hasOneSideSpawnedReinforcements )
+                        //{
+                        //    int defendersRemaining = ____phases[0][0].RemainingSpawnNumber;
+                        //    int attackersRemaining = ____phases[1][0].RemainingSpawnNumber;
+                        //    if((activeAtt > numOfAttWhenSpawning && activeDef > numOfDefWhenSpawning))
+                        //    {
+                        //        ____reinforcementSpawnEnabled = false;
+                        //        hasOneSideSpawnedReinforcements = false;
+                        //        numOfDefWhenSpawning = -1;
+                        //        numOfAttWhenSpawning = -1;
+                        //    }
+                        //    return true;
+                        //}
                         float num4 = (float)(____phases[0][0].InitialSpawnedNumber - __instance.NumberOfActiveDefenderTroops) / (float)____phases[0][0].InitialSpawnedNumber;
                         float num5 = (float)(____phases[1][0].InitialSpawnedNumber - __instance.NumberOfActiveAttackerTroops) / (float)____phases[1][0].InitialSpawnedNumber;
                         if ((____battleSize * 0.5f > __instance.NumberOfActiveDefenderTroops + __instance.NumberOfActiveAttackerTroops) || num4 >= 0.5f || num5 >= 0.5f)
@@ -3547,6 +3551,12 @@ namespace RealisticBattleAiModule
                             ____reinforcementSpawnEnabled = true;
                             numOfDefWhenSpawning = __instance.NumberOfActiveDefenderTroops;
                             numOfAttWhenSpawning = __instance.NumberOfActiveAttackerTroops;
+
+                            int numberOfInvolvedMen = __instance.GetTotalNumberOfTroopsForSide(BattleSideEnum.Defender);
+                            int numberOfInvolvedMen2 = __instance.GetTotalNumberOfTroopsForSide(BattleSideEnum.Attacker);
+
+                            ____spawnSettings.DefenderReinforcementBatchPercentage = (____battleSize * 0.5f - numOfDefWhenSpawning) / (numberOfInvolvedMen+ numberOfInvolvedMen2);
+                            ____spawnSettings.AttackerReinforcementBatchPercentage = (____battleSize * 0.5f - numOfAttWhenSpawning) / (numberOfInvolvedMen + numberOfInvolvedMen2);
                             return true;
                         }
                         else
