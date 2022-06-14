@@ -122,7 +122,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                             if (defenderPosture != null)
                             {
                                 float postureDmg = calculateDefenderPostureDamage(victimAgent, attackerAgent, absoluteDamageModifier, 0.85f, ref collisionData, attackerWeapon);
-                                defenderPosture.posture = postureDmg;
+                                defenderPosture.posture = defenderPosture.posture - postureDmg;
                                 addPosturedamageVisual(attackerAgent, victimAgent);
                                 if (defenderPosture.posture <= 0f)
                                 {
