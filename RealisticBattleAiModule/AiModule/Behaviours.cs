@@ -3430,7 +3430,6 @@ namespace RealisticBattleAiModule
 
                         MissionSpawnSettings spawnSettings = MissionSpawnSettings.CreateDefaultSettings();
                         spawnSettings.DefenderAdvantageFactor = defenderAdvantage;
-                        spawnSettings.DefenderAdvantageFactor = defenderAdvantage;
                         spawnSettings.ReinforcementBatchPercentage = 0.25f;
                         spawnSettings.DesiredReinforcementPercentage = 0.5f;
                         spawnSettings.ReinforcementTroopsSpawnMethod = MissionSpawnSettings.ReinforcementSpawnMethod.Fixed;
