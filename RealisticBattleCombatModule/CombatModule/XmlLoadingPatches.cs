@@ -15,38 +15,38 @@ namespace RealisticBattleCombatModule.CombatModule
         class MergeTwoXmlsPatch
         {
 
-            [HarmonyPatch(typeof(FightTournamentGame))]
-            [HarmonyPatch("CachePossibleEliteRewardItems")]
-            class CachePossibleEliteRewardItemsPatch
-            {
-                static bool Prefix(ref FightTournamentGame __instance, ref int ____lastRecordedLordCountForTournamentPrize, ref List<ItemObject> ____possibleEliteRewardItemObjectsCache, ref List<ItemObject> ____possibleRegularRewardItemObjectsCache)
-                {
-                    if (____possibleEliteRewardItemObjectsCache == null)
-                    {
-                        ____possibleEliteRewardItemObjectsCache = new List<ItemObject>();
-                    }
+        //    [HarmonyPatch(typeof(FightTournamentGame))]
+        //    [HarmonyPatch("CachePossibleEliteRewardItems")]
+        //    class CachePossibleEliteRewardItemsPatch
+        //    {
+        //        static bool Prefix(ref FightTournamentGame __instance, ref int ____lastRecordedLordCountForTournamentPrize, ref List<ItemObject> ____possibleEliteRewardItemObjectsCache, ref List<ItemObject> ____possibleRegularRewardItemObjectsCache)
+        //        {
+        //            if (____possibleEliteRewardItemObjectsCache == null)
+        //            {
+        //                ____possibleEliteRewardItemObjectsCache = new List<ItemObject>();
+        //            }
 
-                    string[] array = new string[31]
-                    {
-        "winds_fury_sword_t3", "bone_crusher_mace_t3", "tyrhung_sword_t3", "pernach_mace_t3", "early_retirement_2hsword_t3", "black_heart_2haxe_t3", "knights_fall_mace_t3", "the_scalpel_sword_t3", "judgement_mace_t3", "dawnbreaker_sword_t3",
-        "ambassador_sword_t3", "heavy_nasalhelm_over_imperial_mail", "sturgian_helmet_closed", "full_helm_over_laced_coif", "desert_mail_coif", "heavy_nasalhelm_over_imperial_mail", "plumed_nomad_helmet", "ridged_northernhelm", "noble_horse_southern", "noble_horse_imperial",
-        "noble_horse_western", "noble_horse_eastern", "noble_horse_battania", "noble_horse_northern", "special_camel", "western_crowned_helmet", "northern_warlord_helmet", "battania_warlord_pauldrons", "aserai_armor_02_b", "white_coat_over_mail",
-        "spiked_helmet_with_facemask"
-                    };
+        //            string[] array = new string[31]
+        //            {
+        //"winds_fury_sword_t3", "bone_crusher_mace_t3", "tyrhung_sword_t3", "pernach_mace_t3", "early_retirement_2hsword_t3", "black_heart_2haxe_t3", "knights_fall_mace_t3", "the_scalpel_sword_t3", "judgement_mace_t3", "dawnbreaker_sword_t3",
+        //"ambassador_sword_t3", "heavy_nasalhelm_over_imperial_mail", "sturgian_helmet_closed", "full_helm_over_laced_coif", "desert_mail_coif", "heavy_nasalhelm_over_imperial_mail", "plumed_nomad_helmet", "ridged_northernhelm", "noble_horse_southern", "noble_horse_imperial",
+        //"noble_horse_western", "noble_horse_eastern", "noble_horse_battania", "noble_horse_northern", "special_camel", "western_crowned_helmet", "northern_warlord_helmet", "battania_warlord_pauldrons", "aserai_armor_02_b", "white_coat_over_mail",
+        //"spiked_helmet_with_facemask"
+        //            };
 
-                    foreach (string objectName in array)
-                    {
-                        ItemObject io = Game.Current.ObjectManager.GetObject<ItemObject>(objectName);
-                        if (io != null)
-                        {
-                            ____possibleEliteRewardItemObjectsCache.Add(io);
-                        }
-                    }
-                    ____possibleEliteRewardItemObjectsCache.Sort((ItemObject x, ItemObject y) => x.Value.CompareTo(y.Value));
+        //            foreach (string objectName in array)
+        //            {
+        //                ItemObject io = Game.Current.ObjectManager.GetObject<ItemObject>(objectName);
+        //                if (io != null)
+        //                {
+        //                    ____possibleEliteRewardItemObjectsCache.Add(io);
+        //                }
+        //            }
+        //            ____possibleEliteRewardItemObjectsCache.Sort((ItemObject x, ItemObject y) => x.Value.CompareTo(y.Value));
 
-                    return false;
-                }
-            }
+        //            return false;
+        //        }
+        //    }
 
             static bool Prefix(XmlDocument xmlDocument1, XmlDocument xmlDocument2, ref XmlDocument __result)
             {

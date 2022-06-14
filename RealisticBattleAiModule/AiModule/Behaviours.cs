@@ -10,6 +10,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.MountAndBlade.MissionSpawnHandlers;
 using TaleWorlds.MountAndBlade.Source.Missions.Handlers.Logic;
 using static RealisticBattleAiModule.Tactics;
 using static TaleWorlds.MountAndBlade.ArrangementOrder;
@@ -3347,21 +3348,68 @@ namespace RealisticBattleAiModule
         //    }
         //}
 
+        [HarmonyPatch(typeof(CustomBattleMissionSpawnHandler))]
+        class OverrideAfterStartCustomBattleMissionSpawnHandler
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch("AfterStart")]
+            static bool PrefixAfterStart(ref MissionAgentSpawnLogic ____missionAgentSpawnLogic,ref CustomBattleCombatant ____defenderParty, ref CustomBattleCombatant ____attackerParty)
+            {
+
+                //FieldInfo field = typeof(MissionAgentSpawnLogic).GetField("_battleSize", BindingFlags.NonPublic | BindingFlags.Instance);
+                //field.DeclaringType.GetField("_battleSize");
+                //int battleSize = (int)field.GetValue(____missionAgentSpawnLogic);
+                int battleSize = ____missionAgentSpawnLogic.BattleSize;
+
+                int numberOfHealthyMembers = ____defenderParty.NumberOfHealthyMembers;
+                int numberOfHealthyMembers2 = ____attackerParty.NumberOfHealthyMembers;
+                int defenderInitialSpawn = numberOfHealthyMembers;
+                int attackerInitialSpawn = numberOfHealthyMembers2;
+
+                int totalBattleSize = defenderInitialSpawn + attackerInitialSpawn;
+
+                if (totalBattleSize > battleSize)
+                {
+
+                    float defenderAdvantage = (float)battleSize / ((float)defenderInitialSpawn * ((battleSize * 2f) / (totalBattleSize)));
+                    if (defenderInitialSpawn < (battleSize / 2f))
+                    {
+                        defenderAdvantage = (float)totalBattleSize / (float)battleSize;
+                    }
+                    ____missionAgentSpawnLogic.SetSpawnHorses(BattleSideEnum.Defender, !Mission.Current.IsSiegeBattle);
+                    ____missionAgentSpawnLogic.SetSpawnHorses(BattleSideEnum.Attacker, !Mission.Current.IsSiegeBattle);
+
+                    MissionSpawnSettings spawnSettings = MissionSpawnSettings.CreateDefaultSettings();
+                    spawnSettings.DefenderAdvantageFactor = defenderAdvantage;
+                    spawnSettings.ReinforcementBatchPercentage = 0.25f;
+                    spawnSettings.DesiredReinforcementPercentage = 0.5f;
+                    //public MissionSpawnSettings(float reinforcementInterval, float reinforcementIntervalChange, int reinforcementIntervalCount, InitialSpawnMethod initialTroopsSpawnMethod,
+                    //ReinforcementSpawnMethod reinforcementTroopsSpawnMethod, float reinforcementBatchPercentage, float desiredReinforcementPercentage, float defenderReinforcementBatchPercentage = 0, float attackerReinforcementBatchPercentage = 0, float defenderAdvantageFactor = 1, float defenderRatioLimit = 0.6F);
+                    //MissionSpawnSettings(10f, 0f, 0, InitialSpawnMethod.BattleSizeAllocating, ReinforcementSpawnMethod.Balanced, 0.05f, 0.166f); normal
+                    //MissionSpawnSettings(90f, -15f, 5, InitialSpawnMethod.FreeAllocation, ReinforcementSpawnMethod.Fixed, 0f, 0f, 0f, 0.1f); sallyout
+
+                    ____missionAgentSpawnLogic.InitWithSinglePhase(numberOfHealthyMembers, numberOfHealthyMembers2, defenderInitialSpawn, attackerInitialSpawn, spawnDefenders: true, spawnAttackers: true, in spawnSettings);
+                    return false;
+                }
+                return true;
+            }
+        }
+
         [HarmonyPatch(typeof(BaseMissionTroopSpawnHandler))]
         class OverrideAfterStartBaseMissionTroopSpawnHandler
         {
             [HarmonyPrefix]
             [HarmonyPatch("AfterStart")]
-            static bool PrefixAfterStart(ref MapEvent ____mapEvent, ref MissionAgentSpawnLogic ____missionAgentSpawnLogic)
+            static bool PrefixAfterStart(ref MissionAgentSpawnLogic ____missionAgentSpawnLogic)
             {
-                if(____mapEvent != null)
-                {
+                
                     //FieldInfo field = typeof(MissionAgentSpawnLogic).GetField("_battleSize", BindingFlags.NonPublic | BindingFlags.Instance);
                     //field.DeclaringType.GetField("_battleSize");
                     //int battleSize = (int)field.GetValue(____missionAgentSpawnLogic);
                     int battleSize = ____missionAgentSpawnLogic.BattleSize;
-                    int numberOfInvolvedMen = ____mapEvent.GetNumberOfInvolvedMen(BattleSideEnum.Defender);
-                    int numberOfInvolvedMen2 = ____mapEvent.GetNumberOfInvolvedMen(BattleSideEnum.Attacker);
+
+                    int numberOfInvolvedMen = ____missionAgentSpawnLogic.GetTotalNumberOfTroopsForSide(BattleSideEnum.Defender);
+                    int numberOfInvolvedMen2 = ____missionAgentSpawnLogic.GetTotalNumberOfTroopsForSide(BattleSideEnum.Attacker);
                     int defenderInitialSpawn = numberOfInvolvedMen;
                     int attackerInitialSpawn = numberOfInvolvedMen2;
 
@@ -3375,24 +3423,22 @@ namespace RealisticBattleAiModule
                         {
                             defenderAdvantage = (float)totalBattleSize / (float)battleSize;
                         }
-                        ____missionAgentSpawnLogic.SetSpawnHorses(BattleSideEnum.Defender, !____mapEvent.IsSiegeAssault);
-                        ____missionAgentSpawnLogic.SetSpawnHorses(BattleSideEnum.Attacker, !____mapEvent.IsSiegeAssault);
+                        ____missionAgentSpawnLogic.SetSpawnHorses(BattleSideEnum.Defender, !Mission.Current.IsSiegeBattle);
+                        ____missionAgentSpawnLogic.SetSpawnHorses(BattleSideEnum.Attacker, !Mission.Current.IsSiegeBattle);
 
                         MissionSpawnSettings spawnSettings = MissionSpawnSettings.CreateDefaultSettings();
                         spawnSettings.DefenderAdvantageFactor = defenderAdvantage;
                         spawnSettings.ReinforcementBatchPercentage = 0.25f;
-                        spawnSettings.DesiredReinforcementPercentage = 0.5f;
-                        //public MissionSpawnSettings(float reinforcementInterval, float reinforcementIntervalChange, int reinforcementIntervalCount, InitialSpawnMethod initialTroopsSpawnMethod,
-                        //ReinforcementSpawnMethod reinforcementTroopsSpawnMethod, float reinforcementBatchPercentage, float desiredReinforcementPercentage, float defenderReinforcementBatchPercentage = 0, float attackerReinforcementBatchPercentage = 0, float defenderAdvantageFactor = 1, float defenderRatioLimit = 0.6F);
-                        //MissionSpawnSettings(10f, 0f, 0, InitialSpawnMethod.BattleSizeAllocating, ReinforcementSpawnMethod.Balanced, 0.05f, 0.166f); normal
-                        //MissionSpawnSettings(90f, -15f, 5, InitialSpawnMethod.FreeAllocation, ReinforcementSpawnMethod.Fixed, 0f, 0f, 0f, 0.1f); sallyout
+                    spawnSettings.DesiredReinforcementPercentage = 0.5f;
+                    //public MissionSpawnSettings(float reinforcementInterval, float reinforcementIntervalChange, int reinforcementIntervalCount, InitialSpawnMethod initialTroopsSpawnMethod,
+                    //ReinforcementSpawnMethod reinforcementTroopsSpawnMethod, float reinforcementBatchPercentage, float desiredReinforcementPercentage, float defenderReinforcementBatchPercentage = 0, float attackerReinforcementBatchPercentage = 0, float defenderAdvantageFactor = 1, float defenderRatioLimit = 0.6F);
+                    //MissionSpawnSettings(10f, 0f, 0, InitialSpawnMethod.BattleSizeAllocating, ReinforcementSpawnMethod.Balanced, 0.05f, 0.166f); normal
+                    //MissionSpawnSettings(90f, -15f, 5, InitialSpawnMethod.FreeAllocation, ReinforcementSpawnMethod.Fixed, 0f, 0f, 0f, 0.1f); sallyout
 
-                        ____missionAgentSpawnLogic.InitWithSinglePhase(numberOfInvolvedMen, numberOfInvolvedMen2, defenderInitialSpawn, attackerInitialSpawn, spawnDefenders: true, spawnAttackers: true, in spawnSettings);
+                    ____missionAgentSpawnLogic.InitWithSinglePhase(numberOfInvolvedMen, numberOfInvolvedMen2, defenderInitialSpawn, attackerInitialSpawn, spawnDefenders: true, spawnAttackers: true, in spawnSettings);
                         return false;
                     }
                     return true;
-                }
-                return true;
             }
         }
 
@@ -3437,6 +3483,8 @@ namespace RealisticBattleAiModule
 
             private static bool hasOneSideSpawnedReinforcements = false;
             private static bool hasOneSideSpawnedReinforcementsAttackers = false;
+            private static int numOfDefWhenSpawning = -1;
+            private static int numOfAttWhenSpawning = -1;
 
             private class SpawnPhase
             {
@@ -3459,7 +3507,7 @@ namespace RealisticBattleAiModule
 
             [HarmonyPrefix]
             [HarmonyPatch("CheckReinforcementBatch")]
-            static bool PrefixBattleSizeSpawnTick(ref MissionAgentSpawnLogic __instance, ref int ____battleSize, ref List<SpawnPhase>[] ____phases, ref MissionSpawnSettings ____spawnSettings)
+            static bool PrefixBattleSizeSpawnTick(ref MissionAgentSpawnLogic __instance, ref bool ____reinforcementSpawnEnabled, ref int ____battleSize, ref List<SpawnPhase>[] ____phases, ref MissionSpawnSettings ____spawnSettings)
             {
                 if (Mission.Current.MissionTeamAIType != Mission.MissionTeamAITypeEnum.FieldBattle)
                 {
@@ -3475,16 +3523,30 @@ namespace RealisticBattleAiModule
                         {
                             return true;
                         }
-                        if (hasOneSideSpawnedReinforcements)
+                        int activeAtt = __instance.NumberOfActiveAttackerTroops;
+                        int activeDef = __instance.NumberOfActiveDefenderTroops;
+
+                        if (hasOneSideSpawnedReinforcements )
                         {
                             int defendersRemaining = ____phases[0][0].RemainingSpawnNumber;
                             int attackersRemaining = ____phases[1][0].RemainingSpawnNumber;
+                            if((activeAtt > numOfAttWhenSpawning && activeDef > numOfDefWhenSpawning))
+                            {
+                                ____reinforcementSpawnEnabled = false;
+                                hasOneSideSpawnedReinforcements = false;
+                                numOfDefWhenSpawning = -1;
+                                numOfAttWhenSpawning = -1;
+                            }
+                            return true;
                         }
                         float num4 = (float)(____phases[0][0].InitialSpawnedNumber - __instance.NumberOfActiveDefenderTroops) / (float)____phases[0][0].InitialSpawnedNumber;
                         float num5 = (float)(____phases[1][0].InitialSpawnedNumber - __instance.NumberOfActiveAttackerTroops) / (float)____phases[1][0].InitialSpawnedNumber;
                         if ((____battleSize * 0.5f > __instance.NumberOfActiveDefenderTroops + __instance.NumberOfActiveAttackerTroops) || num4 >= 0.5f || num5 >= 0.5f)
                         {
                             hasOneSideSpawnedReinforcements = true;
+                            ____reinforcementSpawnEnabled = true;
+                            numOfDefWhenSpawning = __instance.NumberOfActiveDefenderTroops;
+                            numOfAttWhenSpawning = __instance.NumberOfActiveAttackerTroops;
                             return true;
                         }
                         else
