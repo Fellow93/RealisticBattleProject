@@ -408,13 +408,11 @@ namespace RealisticBattleCombatModule
 
                 }
 
-                if (shooterAgent != null && !shooterAgent.IsAIControlled && (wsd[0].WeaponClass == (int)WeaponClass.Bow || wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
+                if (shooterAgent != null && !shooterAgent.IsAIControlled && !BannerlordConfig.DisplayTargetingReticule && (wsd[0].WeaponClass == (int)WeaponClass.Bow || wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
                 {
-
                     //radians = degrees * (pi / 180)
-
                     //degrees = radians * (180 / pi)
-
+                    
                     double rotRad = 0.083141f;
                     float vecLength = velocity.Length;
                     double currentRad = (double)Math.Acos(velocity.z / vecLength);
