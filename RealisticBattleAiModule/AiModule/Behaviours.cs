@@ -3402,16 +3402,16 @@ namespace RealisticBattleAiModule
         {
             [HarmonyPrefix]
             [HarmonyPatch("AfterStart")]
-            static bool PrefixAfterStart(ref MissionAgentSpawnLogic ____missionAgentSpawnLogic)
+            static bool PrefixAfterStart(ref MissionAgentSpawnLogic ____missionAgentSpawnLogic, ref MapEvent ____mapEvent)
             {
-                
+                if(____mapEvent != null) { 
                     //FieldInfo field = typeof(MissionAgentSpawnLogic).GetField("_battleSize", BindingFlags.NonPublic | BindingFlags.Instance);
                     //field.DeclaringType.GetField("_battleSize");
                     //int battleSize = (int)field.GetValue(____missionAgentSpawnLogic);
                     int battleSize = ____missionAgentSpawnLogic.BattleSize;
-
-                    int numberOfInvolvedMen = ____missionAgentSpawnLogic.GetTotalNumberOfTroopsForSide(BattleSideEnum.Defender);
-                    int numberOfInvolvedMen2 = ____missionAgentSpawnLogic.GetTotalNumberOfTroopsForSide(BattleSideEnum.Attacker);
+                    
+                    int numberOfInvolvedMen = ____mapEvent.GetNumberOfInvolvedMen(BattleSideEnum.Defender);
+                    int numberOfInvolvedMen2 = ____mapEvent.GetNumberOfInvolvedMen(BattleSideEnum.Attacker);
                     int defenderInitialSpawn = numberOfInvolvedMen;
                     int attackerInitialSpawn = numberOfInvolvedMen2;
 
@@ -3442,6 +3442,8 @@ namespace RealisticBattleAiModule
                         return false;
                     }
                     return true;
+                }
+                return true;
             }
         }
 
