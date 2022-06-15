@@ -630,6 +630,39 @@ namespace RealisticBattleAiModule
             return significantEnemy;
         }
 
+        public static bool CheckIfOnlyCavRemaining(Formation formation)
+        {
+            List<Formation> allEnemyFormations = new List<Formation>();
+            bool result = true;
+            if (formation != null)
+            {
+                if (formation.QuerySystem.ClosestEnemyFormation != null)
+                {
+                    foreach (Team team in Mission.Current.Teams.ToList())
+                    {
+                        if (team.IsEnemyOf(formation.Team))
+                        {
+                            foreach (Formation enemyFormation in team.Formations.ToList())
+                            {
+                                allEnemyFormations.Add(enemyFormation);
+                            }
+                        }
+                    }
+
+                    foreach (Formation enemyFormation in allEnemyFormations.ToList())
+                    {
+                        if(!enemyFormation.QuerySystem.IsCavalryFormation && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
+                        {
+                            result = false;
+                        }
+                    }
+
+                }
+            }
+
+            return result;
+        }
+
         public static Formation FindSignificantAlly(Formation formation, bool includeInfantry, bool includeRanged, bool includeCavalry, bool includeMountedSkirmishers, bool includeHorseArchers)
         {
             Formation significantAlly = null;

@@ -1042,10 +1042,10 @@ namespace RealisticBattleAiModule
                         Vec2 cavDirection = enemyCav.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                         cavDist = cavDirection.Normalize();
                     }
-
-                    if ((enemyCav != null) && (cavDist <= signDist) && (enemyCav.CountOfUnits > __instance.Formation.CountOfUnits / 10) && (signDist > 35f || significantEnemy == enemyCav))
+                    bool isOnlyCavReamining = Utilities.CheckIfOnlyCavRemaining(__instance.Formation);
+                    if ((enemyCav != null) && (cavDist <= signDist) && (enemyCav.CountOfUnits > __instance.Formation.CountOfUnits / 10) && ((signDist > 35f || significantEnemy == enemyCav) || isOnlyCavReamining))
                     {
-                        if (enemyCav.TargetFormation == __instance.Formation && (enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge))
+                        if (isOnlyCavReamining)
                         {
                             Vec2 vec = enemyCav.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                             WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
@@ -1063,7 +1063,7 @@ namespace RealisticBattleAiModule
                                 ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
 
                             }
-                            if (cavDist > 70f)
+                            if (cavDist > 85f)
                             {
                                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
                             }
@@ -1077,8 +1077,50 @@ namespace RealisticBattleAiModule
                             //        agent.SetFiringOrder(0);
                             //    }
                             //});
-                            __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+                            if (cavDist > 150f)
+                            {
+                                positionsStorage.Remove(__instance.Formation);
+                            }
+                            __instance.Formation.ArrangementOrder = ArrangementOrderLine;
                             return false;
+                        }
+                        else
+                        {
+                            if (enemyCav.TargetFormation == __instance.Formation && (enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge))
+                            {
+                                Vec2 vec = enemyCav.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
+                                WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
+
+                                WorldPosition storedPosition = WorldPosition.Invalid;
+                                positionsStorage.TryGetValue(__instance.Formation, out storedPosition);
+
+                                if (!storedPosition.IsValid)
+                                {
+                                    positionsStorage.Add(__instance.Formation, positionNew);
+                                    ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
+                                }
+                                else
+                                {
+                                    ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
+
+                                }
+                                if (cavDist > 85f)
+                                {
+                                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
+                                }
+                                //__instance.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent) {
+                                //    if (Utilities.CheckIfCanBrace(agent))
+                                //    {
+                                //        agent.SetFiringOrder(1);
+                                //    }
+                                //    else
+                                //    {
+                                //        agent.SetFiringOrder(0);
+                                //    }
+                                //});
+                                __instance.Formation.ArrangementOrder = ArrangementOrderLine;
+                                return false;
+                            }
                         }
                         positionsStorage.Remove(__instance.Formation);
                     }

@@ -174,6 +174,12 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 						}
 						break;
 				}
+				bool isOnlyCavReamining = Utilities.CheckIfOnlyCavRemaining(base.Formation);
+                if (isOnlyCavReamining)
+                {
+					_behaviorState = BehaviorState.Shooting;
+					_cantShoot = false;
+				}
 				switch (_behaviorState)
 				{
 					case BehaviorState.Shooting:
