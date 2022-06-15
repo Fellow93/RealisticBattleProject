@@ -187,6 +187,8 @@
     <Compile Include="AiModule\RbmBehaviors\RBMBehaviorForwardSkirmish.cs" />
     <Compile Include="AiModule\RbmTactics\RBMTacticAttackSplitInfantry.cs" />
     <Compile Include="AiModule\RbmTactics\RBMTacticAttackSplitSkirmishers.cs" />
+    <Compile Include="AiModule\SiegePatches.cs" />
+    <Compile Include="AiModule\SpawningPatches.cs" />
     <Compile Include="AiModule\Tactics.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

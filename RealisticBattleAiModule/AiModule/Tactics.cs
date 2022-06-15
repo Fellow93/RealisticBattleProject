@@ -1,29 +1,22 @@
 ﻿using HarmonyLib;
 using RealisticBattleAiModule.AiModule.RbmBehaviors;
-using SandBox;
 using SandBox.Missions.MissionLogics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
-using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.ViewModelCollection.HUD.FormationMarker;
 using static TaleWorlds.Core.ItemObject;
 
 namespace RealisticBattleAiModule
 {
-    class Tactics
+    public class Tactics
     {
         //private static bool carryOutDefenceEnabled = true;
         //private static bool archersShiftAroundEnabled = true;
         //private static bool balanceLaneDefendersEnabled = true;
-
-        public static Dictionary<Team, bool> carryOutDefenceEnabled = new Dictionary<Team, bool>();
-        public static Dictionary<Team, bool> archersShiftAroundEnabled = new Dictionary<Team, bool>();
-        public static Dictionary<Team, bool> balanceLaneDefendersEnabled = new Dictionary<Team, bool>();
-
 
         public class AIDecision
         {
@@ -225,10 +218,6 @@ namespace RealisticBattleAiModule
         {
             public static void Postfix()
             {
-                balanceLaneDefendersEnabled.Clear();
-                archersShiftAroundEnabled.Clear();
-                carryOutDefenceEnabled.Clear();
-
                 aiDecisionCooldownDict.Clear();
                 MyPatcher.DoPatching();
                 OnTickAsAIPatch.itemPickupDistanceStorage.Clear();
@@ -317,85 +306,7 @@ namespace RealisticBattleAiModule
 
         //}
 
-        [HarmonyPatch(typeof(TacticDefendCastle))]
-        class TacticDefendCastlePatch
-        {
-            [HarmonyPrefix]
-            [HarmonyPatch("CarryOutDefense")]
-            static bool PrefixCarryOutDefense(ref TacticDefendCastle __instance, ref bool doRangedJoinMelee, ref Team ___team)
-            {
-                if (Mission.Current.Mode != MissionMode.Deployment)
-                {
-                    bool carryOutDefenceEnabledOut;
-                    if (!carryOutDefenceEnabled.TryGetValue(___team, out carryOutDefenceEnabledOut))
-                    {
-                        carryOutDefenceEnabled[___team] = false;
-                        doRangedJoinMelee = false;
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            [HarmonyPrefix]
-            [HarmonyPatch("ArcherShiftAround")]
-            static bool PrefixArcherShiftAround(ref TacticDefendCastle __instance, ref Team ___team)
-            {
-                if (Mission.Current.Mode != MissionMode.Deployment)
-                {
-                    bool archersShiftAroundEnabledOut;
-                    if (!archersShiftAroundEnabled.TryGetValue(___team, out archersShiftAroundEnabledOut))
-                    {
-                        archersShiftAroundEnabled[___team] = false;
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            [HarmonyPrefix]
-            [HarmonyPatch("BalanceLaneDefenders")]
-            static bool PrefixBalanceLaneDefenders(ref TacticDefendCastle __instance, ref Team ___team)
-            {
-                if(Mission.Current.Mode != MissionMode.Deployment)
-                {
-                    bool balanceLaneDefendersEnabledOut;
-                    if (!balanceLaneDefendersEnabled.TryGetValue(___team, out balanceLaneDefendersEnabledOut))
-                    {
-                        balanceLaneDefendersEnabled[___team] = false;
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        }
-
-        [HarmonyPatch(typeof(Mission))]
-        class MissionPatch
-        {
-            [HarmonyPostfix]
-            [HarmonyPatch("OnObjectDisabled")]
-            static void PostfixOnObjectDisabled(DestructableComponent destructionComponent)
-            {
-                if(destructionComponent.GameEntity.GetFirstScriptOfType<UsableMachine>() != null && destructionComponent.GameEntity.GetFirstScriptOfType<UsableMachine>().GetType().Equals(typeof(BatteringRam)) && destructionComponent.GameEntity.GetFirstScriptOfType<UsableMachine>().IsDestroyed)
-                {
-                    balanceLaneDefendersEnabled.Clear();
-                    carryOutDefenceEnabled.Clear();
-                }
-            }
-        }
+        
 
         [HarmonyPatch(typeof(TacticCoordinatedRetreat))]
         class OverrideTacticCoordinatedRetreat
