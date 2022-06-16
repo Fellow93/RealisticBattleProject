@@ -29,6 +29,8 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
 	private Timer _reformTimer;
 
+	private Timer _chargeTimer;
+
 	private Vec2 _bracePosition = Vec2.Invalid;
 
 	public bool ChargeArchers = false;
@@ -87,7 +89,16 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 						}
 						else if (_initialChargeDirection.DotProduct(_lastTarget.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition) <= 0f)
 						{
+							if(_chargeTimer == null)
+                            {
+								_chargeTimer = new Timer(Mission.Current.CurrentTime, 3f);
+							}
+							//result = ChargeState.ChargingPast;
+						}
+						if (_chargeTimer != null && _chargeTimer.Check(Mission.Current.CurrentTime))
+						{
 							result = ChargeState.ChargingPast;
+							_chargeTimer = null;
 						}
 						break;
 					}
