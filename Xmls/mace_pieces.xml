@@ -6,7 +6,7 @@
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Thrust damage_type="Pierce" damage_factor="0.8" />
-      <Swing damage_type="Pierce" damage_factor="0.5" />
+      <Swing damage_type="Blunt" damage_factor="0.5" />
     </BladeData>
     <Materials>
       <Material id="Iron2" count="2" />
@@ -34,7 +34,7 @@
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Thrust damage_type="Pierce" damage_factor="0.9" />
-      <Swing damage_type="Pierce" damage_factor="0.6" />
+      <Swing damage_type="Blunt" damage_factor="0.5" />
     </BladeData>
     <Materials>
       <Material id="Iron2" count="2" />
@@ -116,7 +116,7 @@
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Thrust damage_type="Pierce" damage_factor="0.9" />
-      <Swing damage_type="Pierce" damage_factor="0.6" />
+      <Swing damage_type="Blunt" damage_factor="0.5" />
     </BladeData>
     <Materials>
       <Material id="Iron2" count="2" />
@@ -152,8 +152,8 @@
   <CraftingPiece id="mace_head_5" name="{=0SpLcthg}Highland Spiked Club" tier="2" piece_type="Blade" mesh="mace_head_5" length="25.5" weight="0.6" full_scale="true">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
-      <Thrust damage_type="Pierce" damage_factor="0.9" />
-      <Swing damage_type="Pierce" damage_factor="0.6" />
+      <Thrust damage_type="Pierce" damage_factor="0.85" />
+      <Swing damage_type="Blunt" damage_factor="0.55" />
     </BladeData>
     <Materials>
       <Material id="Iron2" count="2" />
@@ -259,13 +259,13 @@
                  length="22.2"
                  weight="0.65"
                  full_scale="true"
-                 excluded_item_usage_features="thrust"
                  is_default="true">
     <BladeData stack_amount="3"
                physics_material="wood_weapon"
                body_name="bo_mace_a">
-      <Swing damage_type="Pierce"
-             damage_factor="0.7" />
+      <Thrust damage_type="Pierce" damage_factor="0.9" />
+      <Swing damage_type="Blunt"
+             damage_factor="0.5" />
     </BladeData>
     <Materials>
       <Material id="Iron3"
@@ -279,13 +279,13 @@
                  mesh="mace_head_36"
                  length="34.7"
                  weight="0.88"
-                 full_scale="true"
-                 excluded_item_usage_features="thrust">
+                 full_scale="true">
     <BladeData stack_amount="3"
                physics_material="wood_weapon"
                body_name="bo_mace_a">
-      <Swing damage_type="Pierce"
-             damage_factor="0.75" />
+      <Thrust damage_type="Pierce" damage_factor="0.8" />
+      <Swing damage_type="Blunt"
+             damage_factor="0.6" />
     </BladeData>
     <Materials>
       <Material id="Iron3"
@@ -299,13 +299,13 @@
                  mesh="mace_head_37"
                  length="17.3"
                  weight="0.85"
-                 full_scale="true"
-                 excluded_item_usage_features="thrust">
+                 full_scale="true">
     <BladeData stack_amount="3"
                physics_material="wood_weapon"
                body_name="bo_mace_a">
+      <Thrust damage_type="Pierce" damage_factor="0.9" />
       <Swing damage_type="Blunt"
-             damage_factor="0.7" />
+             damage_factor="0.8" />
     </BladeData>
     <Materials>
       <Material id="Iron4"
@@ -441,7 +441,7 @@
   <CraftingPiece id="mace_head_25" name="{=45k6EEUu}Iron Bill Head" tier="2" piece_type="Blade" mesh="mace_head_25" length="35.5" weight="0.463" full_scale="true" excluded_item_usage_features="thrust">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
-      <Swing damage_type="Pierce" damage_factor="0.5" />
+      <Swing damage_type="Blunt" damage_factor="0.5" />
     </BladeData>
     <Materials>
       <Material id="Iron2" count="2" />
