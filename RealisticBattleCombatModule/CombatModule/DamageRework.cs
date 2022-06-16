@@ -863,7 +863,7 @@ namespace RealisticBattleCombatModule
                                 }
                                 else
                                 {
-                                    skillBasedDamage = magnitude + 20f + (effectiveSkill * 0.15f);
+                                    skillBasedDamage = magnitude + 50f + (effectiveSkill * 0.3f);
                                 }
                                 if (magnitude > 1f)
                                 {
@@ -879,7 +879,7 @@ namespace RealisticBattleCombatModule
                                 }
                                 else
                                 {
-                                    skillBasedDamage = magnitude + (25f + (effectiveSkill * 0.20f) * 1.3f);
+                                    skillBasedDamage = magnitude + ((50f + (effectiveSkill * 0.3f)) * 1.3f);
                                 }
                                 if (magnitude > 1f)
                                 {
@@ -1803,8 +1803,20 @@ namespace RealisticBattleCombatModule
             {
                 case DamageTypes.Blunt:
                     {
-                        float armorReductionBlunt = 100f / ((100f + armorEffectiveness) * RBMCMConfig.dict["Global.ArmorMultiplier"]);
-                        damage += magnitude * armorReductionBlunt * RBMCMConfig.dict["Global.MaceBluntModifier"];
+                        //float armorReductionBlunt = 100f / ((100f + armorEffectiveness) * RBMCMConfig.dict["Global.ArmorMultiplier"]);
+                        //damage += magnitude * armorReductionBlunt * RBMCMConfig.dict["Global.MaceBluntModifier"];
+
+                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * 5f * RBMCMConfig.dict["Global.ArmorThresholdModifier"]);
+                        float bluntFraction = 0f;
+                        if (magnitude > 0f)
+                        {
+                            bluntFraction = (magnitude - penetratedDamage) / magnitude;
+                        }
+                        damage += penetratedDamage;
+
+                        float bluntTrauma = magnitude * (0.5f * RBMCMConfig.dict["Global.MaceBluntModifier"]) * bluntFraction;
+                        float bluntTraumaAfterArmor = Math.Max(0f, bluntTrauma * armorReduction);
+                        damage += bluntTraumaAfterArmor;
 
                         break;
                     }
