@@ -881,7 +881,7 @@ namespace RealisticBattleAiModule
                                         ____protectFlankState = BehaviorState.Returning;
                                         break;
                                     }
-                                    float returnDistance = 100f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
+                                    float returnDistance = 80f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
                                     if (__instance.Formation.QuerySystem.AveragePosition.DistanceSquared(position) > returnDistance * returnDistance)
                                     {
                                         ____currentOrder = ____movementOrder;

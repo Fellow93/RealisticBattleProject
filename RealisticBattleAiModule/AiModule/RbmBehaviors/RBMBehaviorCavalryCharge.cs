@@ -33,6 +33,8 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
 	public bool ChargeArchers = false;
 	public bool ChargeInfantry = false;
+	public bool ChargeCavalry = false;
+	public bool ChargeHorseArchers = false;
 
 	public override float NavmeshlessTargetPositionPenalty => 1f;
 
@@ -145,6 +147,10 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 						{
 							correctEnemy = RealisticBattleAiModule.Utilities.FindSignificantEnemy(base.Formation, false, true, false, false, false);
 						}
+						else if (ChargeCavalry)
+						{
+							correctEnemy = RealisticBattleAiModule.Utilities.FindSignificantEnemy(base.Formation, false, false, true, true, true);
+						}
 						else
 						{
 							correctEnemy = RealisticBattleAiModule.Utilities.FindSignificantEnemy(base.Formation, true, true, false, false, false);
@@ -163,10 +169,10 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 						break;
 					}
 				case ChargeState.ChargingPast:
-					_chargingPastTimer = new Timer(Mission.Current.CurrentTime, 20f);
+					_chargingPastTimer = new Timer(Mission.Current.CurrentTime, 22f);
 					break;
 				case ChargeState.Reforming:
-					_reformTimer = new Timer(Mission.Current.CurrentTime, 10f);
+					_reformTimer = new Timer(Mission.Current.CurrentTime, 12f);
 					break;
 				case ChargeState.Bracing:
 					{

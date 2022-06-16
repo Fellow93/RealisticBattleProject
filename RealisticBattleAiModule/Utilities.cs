@@ -587,15 +587,24 @@ namespace RealisticBattleAiModule
                         //        dist = newDist;
                         //    }
                         //}
-                        //if (formation != null && includeHorseArchers && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedCavalryFormation)
-                        //{
-                        //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
-                        //    if (newDist < dist)
-                        //    {
-                        //        significantEnemy = enemyFormation;
-                        //        dist = newDist;
-                        //    }
-                        //}
+                        if (formation != null && includeHorseArchers && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedCavalryFormation)
+                        {
+                            float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                            if (newDist < dist)
+                            {
+                                significantEnemy = enemyFormation;
+                                dist = newDist;
+                            }
+
+                            float newUnitCountRatio = (enemyFormation.CountOfUnits * unitCountModifier) / formation.CountOfUnits;
+                            if (unitCountMatters)
+                            {
+                                if (newUnitCountRatio > significantTreshold)
+                                {
+                                    significantFormations.Add(enemyFormation);
+                                }
+                            }
+                        }
                     }
 
                     if (unitCountMatters)
