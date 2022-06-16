@@ -172,7 +172,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 					_chargingPastTimer = new Timer(Mission.Current.CurrentTime, 22f);
 					break;
 				case ChargeState.Reforming:
-					_reformTimer = new Timer(Mission.Current.CurrentTime, 12f);
+					_reformTimer = new Timer(Mission.Current.CurrentTime, 11f);
 					break;
 				case ChargeState.Bracing:
 					{

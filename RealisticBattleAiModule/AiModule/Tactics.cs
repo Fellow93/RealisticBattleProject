@@ -316,7 +316,7 @@ namespace RealisticBattleAiModule
                 {
                     float power = ___team.QuerySystem.TeamPower;
                     float enemyPower = ___team.QuerySystem.EnemyTeams.Sum((TeamQuerySystem et) => et.TeamPower);
-                    if (power / enemyPower <= 0.1f)
+                    if (power / enemyPower <= 0.125f)
                     {
                         foreach (Formation formation in ___team.Formations.ToList())
                         {
