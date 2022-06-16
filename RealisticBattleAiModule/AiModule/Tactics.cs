@@ -157,6 +157,7 @@ namespace RealisticBattleAiModule
                 formation.AI.AddAiBehavior(new RBMBehaviorArcherSkirmish(formation));
                 formation.AI.AddAiBehavior(new RBMBehaviorForwardSkirmish(formation));
                 formation.AI.AddAiBehavior(new RBMBehaviorInfantryFlank(formation));
+                formation.AI.AddAiBehavior(new RBMBehaviorCavalryCharge(formation));
             }
         }
 
@@ -537,6 +538,13 @@ namespace RealisticBattleAiModule
                         j++;
                     }
                 }
+            }
+
+            [HarmonyPostfix]
+            [HarmonyPatch("GetTacticWeight")]
+            static void PostfixGetTacticWeight(ref float __result)
+            {
+                __result *= 0.7f;
             }
         }
 

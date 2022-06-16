@@ -17,6 +17,11 @@ namespace RealisticBattleAiModule
 
         public static bool HasBattleBeenJoined(Formation mainInfantry, bool hasBattleBeenJoined, float battleJoinRange = 75f)
         {
+            bool isOnlyCavReamining = Utilities.CheckIfOnlyCavRemaining(mainInfantry);
+            if (isOnlyCavReamining)
+            {
+                return true;
+            }
             if (mainInfantry != null)
             {
                 //if (FormationFightingInMelee(mainInfantry, 0.4f))

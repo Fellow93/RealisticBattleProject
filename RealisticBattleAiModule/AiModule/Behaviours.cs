@@ -425,7 +425,6 @@ namespace RealisticBattleAiModule
                                             medianPosition.SetVec2(____shootPosition);
                                             ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
                                         }
-                                        ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
                                         waitCountApproachingStorage[__instance.Formation] = waitCountApproachingStorage[__instance.Formation] + 1;
                                     }
                                 }
@@ -442,6 +441,7 @@ namespace RealisticBattleAiModule
                                         ____shootPosition = medianPosition.AsVec2 + vec * 5f;
                                         ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
                                     }
+                                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
                                     waitCountApproachingStorage[__instance.Formation] = 0;
 
                                 }
@@ -453,6 +453,7 @@ namespace RealisticBattleAiModule
                                         medianPosition.SetVec2(____shootPosition);
                                         ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
                                     }
+                                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
                                     waitCountApproachingStorage[__instance.Formation] = waitCountApproachingStorage[__instance.Formation] + 1;
 
                                 }
@@ -1067,8 +1068,17 @@ namespace RealisticBattleAiModule
                             }
                             else
                             {
-                                ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
-
+                                float storedPositonDistance = (storedPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2).Normalize();
+                                if(storedPositonDistance > 10f)
+                                {
+                                    positionsStorage.Remove(__instance.Formation);
+                                    positionsStorage.Add(__instance.Formation, positionNew);
+                                    ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
+                                }
+                                else
+                                {
+                                    ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
+                                }
                             }
                             if (cavDist > 85f)
                             {
@@ -1084,10 +1094,10 @@ namespace RealisticBattleAiModule
                             //        agent.SetFiringOrder(0);
                             //    }
                             //});
-                            if (cavDist > 150f)
-                            {
-                                positionsStorage.Remove(__instance.Formation);
-                            }
+                            //if (cavDist > 150f)
+                            //{
+                            //    positionsStorage.Remove(__instance.Formation);
+                            //}
                             __instance.Formation.ArrangementOrder = ArrangementOrderLine;
                             return false;
                         }
@@ -1108,7 +1118,17 @@ namespace RealisticBattleAiModule
                                 }
                                 else
                                 {
-                                    ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
+                                    float storedPositonDistance = (storedPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2).Normalize();
+                                    if (storedPositonDistance > 10f)
+                                    {
+                                        positionsStorage.Remove(__instance.Formation);
+                                        positionsStorage.Add(__instance.Formation, positionNew);
+                                        ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
+                                    }
+                                    else
+                                    {
+                                        ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
+                                    }
 
                                 }
                                 if (cavDist > 85f)
@@ -1187,205 +1207,6 @@ namespace RealisticBattleAiModule
             ____currentOrder = MovementOrder.MovementOrderCharge;
             return false;
         }
-    }
-
-    [HarmonyPatch(typeof(BehaviorTacticalCharge))]
-    class OverrideBehaviorTacticalCharge
-    {
-        private enum ChargeState
-        {
-            Undetermined,
-            Charging,
-            ChargingPast,
-            Reforming,
-            Bracing
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch("CalculateCurrentOrder")]
-        static bool CalculateCurrentOrderPrefix(ref BehaviorTacticalCharge __instance, ref Vec2 ____initialChargeDirection, ref FormationQuerySystem ____lastTarget,
-            ref ChargeState ____chargeState, ref Timer ____chargingPastTimer, ref Timer ____reformTimer, ref MovementOrder ____currentOrder, ref Vec2 ____bracePosition,
-            ref float ____desiredChargeStopDistance, ref FacingOrder ___CurrentFacingOrder, ref WorldPosition ____lastReformDestination)
-        {
-
-            if (__instance.Formation.QuerySystem.ClosestEnemyFormation == null)
-            {
-                ____currentOrder = MovementOrder.MovementOrderCharge;
-                return false;
-            }
-
-            //
-            ____desiredChargeStopDistance = 120f;
-            ChargeState result = ____chargeState;
-            if (__instance.Formation.QuerySystem.ClosestEnemyFormation == null)
-            {
-                result = ChargeState.Undetermined;
-            }
-            else
-            {
-                switch (____chargeState)
-                {
-                    case ChargeState.Undetermined:
-                        if (__instance.Formation.QuerySystem.ClosestEnemyFormation != null && ((!__instance.Formation.QuerySystem.IsCavalryFormation && !__instance.Formation.QuerySystem.IsRangedCavalryFormation) || __instance.Formation.QuerySystem.AveragePosition.Distance(__instance.Formation.QuerySystem.ClosestEnemyFormation.MedianPosition.AsVec2) / __instance.Formation.QuerySystem.MovementSpeedMaximum <= 5f))
-                        {
-                            result = ChargeState.Charging;
-                        }
-                        break;
-                    case ChargeState.Charging:
-                        if (!__instance.Formation.QuerySystem.IsCavalryFormation && !__instance.Formation.QuerySystem.IsRangedCavalryFormation)
-                        {
-                            if (!__instance.Formation.QuerySystem.IsInfantryFormation || !__instance.Formation.QuerySystem.ClosestEnemyFormation.IsCavalryFormation)
-                            {
-                                result = ChargeState.Charging;
-                                break;
-                            }
-                            Vec2 vec2 = __instance.Formation.QuerySystem.AveragePosition - __instance.Formation.QuerySystem.ClosestEnemyFormation.AveragePosition;
-                            float num3 = vec2.Normalize();
-                            Vec2 currentVelocity2 = __instance.Formation.QuerySystem.ClosestEnemyFormation.CurrentVelocity;
-                            float num4 = currentVelocity2.Normalize();
-                            if (num3 / num4 <= 6f && vec2.DotProduct(currentVelocity2) > 0.5f)
-                            {
-                                ____chargeState = ChargeState.Bracing;
-                            }
-                        }
-                        else if (____initialChargeDirection.DotProduct(__instance.Formation.QuerySystem.ClosestEnemyFormation.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.AveragePosition) <= 1f)
-                        {
-                            result = ChargeState.ChargingPast;
-                        }
-                        break;
-                    case ChargeState.ChargingPast:
-                        if (____chargingPastTimer.Check(Mission.Current.CurrentTime))
-                        {
-                            result = ChargeState.Reforming;
-                        }
-                        break;
-                    case ChargeState.Reforming:
-                        if (____reformTimer.Check(Mission.Current.CurrentTime))
-                        {
-                            result = ChargeState.Charging;
-                        }
-                        break;
-                    case ChargeState.Bracing:
-                        {
-                            bool flag = false;
-                            if (__instance.Formation.QuerySystem.IsInfantryFormation && __instance.Formation.QuerySystem.ClosestEnemyFormation.IsCavalryFormation)
-                            {
-                                Vec2 vec = __instance.Formation.QuerySystem.AveragePosition - __instance.Formation.QuerySystem.ClosestEnemyFormation.AveragePosition;
-                                float num = vec.Normalize();
-                                Vec2 currentVelocity = __instance.Formation.QuerySystem.ClosestEnemyFormation.CurrentVelocity;
-                                float num2 = currentVelocity.Normalize();
-                                if (num / num2 <= 8f && vec.DotProduct(currentVelocity) > 0.33f)
-                                {
-                                    flag = true;
-                                }
-                            }
-                            if (!flag)
-                            {
-                                ____bracePosition = Vec2.Invalid;
-                                ____chargeState = ChargeState.Charging;
-                            }
-                            break;
-                        }
-                }
-            }
-            ChargeState chargeState = result;
-
-            //
-            //MethodInfo method = typeof(BehaviorTacticalCharge).GetMethod("CheckAndChangeState", BindingFlags.NonPublic | BindingFlags.Instance);
-            //method.DeclaringType.GetMethod("CheckAndChangeState");
-            //ChargeState chargeState = (ChargeState)method.Invoke(__instance, new object[] { });
-
-            if (chargeState != ____chargeState)
-            {
-                ____chargeState = chargeState;
-                switch (____chargeState)
-                {
-                    case ChargeState.Undetermined:
-                        ____currentOrder = MovementOrder.MovementOrderCharge;
-                        break;
-                    case ChargeState.Charging:
-                        ____lastTarget = __instance.Formation.QuerySystem.ClosestEnemyFormation;
-                        if (__instance.Formation.QuerySystem.IsCavalryFormation || __instance.Formation.QuerySystem.IsRangedCavalryFormation)
-                        {
-                            ____initialChargeDirection = ____lastTarget.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.AveragePosition;
-                            float value = ____initialChargeDirection.Normalize();
-                            ____desiredChargeStopDistance = 120f;
-                        }
-                        break;
-                    case ChargeState.ChargingPast:
-                        ____chargingPastTimer = new Timer(Mission.Current.CurrentTime, 14f);
-                        break;
-                    case ChargeState.Reforming:
-                        ____reformTimer = new Timer(Mission.Current.CurrentTime, 10f);
-                        break;
-                    case ChargeState.Bracing:
-                        {
-                            Vec2 vec = (__instance.Formation.QuerySystem.Team.MedianTargetFormationPosition.AsVec2 - __instance.Formation.QuerySystem.AveragePosition).Normalized();
-                            ____bracePosition = __instance.Formation.QuerySystem.AveragePosition + vec * 5f;
-                            break;
-                        }
-                }
-            }
-
-            switch (____chargeState)
-            {
-                case ChargeState.Undetermined:
-                    if (__instance.Formation.QuerySystem.ClosestEnemyFormation != null && (__instance.Formation.QuerySystem.IsCavalryFormation || __instance.Formation.QuerySystem.IsRangedCavalryFormation))
-                    {
-                        ____currentOrder = MovementOrder.MovementOrderMove(__instance.Formation.QuerySystem.ClosestEnemyFormation.MedianPosition);
-                    }
-                    else
-                    {
-                        ____currentOrder = MovementOrder.MovementOrderCharge;
-                    }
-                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
-                    break;
-                case ChargeState.Charging:
-                    {
-                        if (!__instance.Formation.QuerySystem.IsCavalryFormation && !__instance.Formation.QuerySystem.IsRangedCavalryFormation)
-                        {
-                            WorldPosition medianPosition2 = __instance.Formation.QuerySystem.ClosestEnemyFormation.MedianPosition;
-                            ____currentOrder = MovementOrder.MovementOrderMove(medianPosition2);
-                            ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
-                            break;
-                        }
-                        Vec2 vec4 = (____lastTarget.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.AveragePosition).Normalized();
-                        WorldPosition medianPosition3 = ____lastTarget.MedianPosition;
-                        Vec2 vec5 = medianPosition3.AsVec2 + vec4 * ____desiredChargeStopDistance;
-                        medianPosition3.SetVec2(vec5);
-                        ____currentOrder = MovementOrder.MovementOrderMove(medianPosition3);
-                        ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec4);
-                        break;
-                    }
-                case ChargeState.ChargingPast:
-                    {
-                        Vec2 vec2 = __instance.Formation.QuerySystem.AveragePosition - ____lastTarget.MedianPosition.AsVec2;
-                        if (!(vec2.Normalize() > 20f))
-                        {
-                            _ = ____initialChargeDirection;
-                        }
-                        ____lastReformDestination = ____lastTarget.MedianPosition;
-                        Vec2 vec3 = ____lastTarget.MedianPosition.AsVec2 + vec2 * ____desiredChargeStopDistance;
-                        ____lastReformDestination.SetVec2(vec3);
-                        ____currentOrder = MovementOrder.MovementOrderMove(____lastReformDestination);
-                        ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec2);
-                        break;
-                    }
-                case ChargeState.Reforming:
-                    ____currentOrder = MovementOrder.MovementOrderMove(____lastReformDestination);
-                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
-                    break;
-                case ChargeState.Bracing:
-                    {
-                        WorldPosition medianPosition = __instance.Formation.QuerySystem.MedianPosition;
-                        medianPosition.SetVec2(____bracePosition);
-                        ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
-                        break;
-                    }
-            }
-            return false;
-        }
-
     }
 
     [HarmonyPatch(typeof(HumanAIComponent))]
