@@ -343,7 +343,7 @@ namespace RealisticBattleAiModule
         {
             if (__instance.Formation != null && ____archerFormation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
-                Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
+                Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, false);
 
                 if (significantEnemy != null)
                 {
@@ -381,14 +381,21 @@ namespace RealisticBattleAiModule
                                 }
                                 else
                                 {
+                                    if(distance > 100f)
+                                    {
+                                        waitCountShootingStorage[__instance.Formation] = waitCountShootingStorage[__instance.Formation] + 2;
+                                    }
+                                    else
+                                    {
+                                        waitCountShootingStorage[__instance.Formation] = waitCountShootingStorage[__instance.Formation] + 1;
+                                    }
                                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
-                                    waitCountShootingStorage[__instance.Formation] = waitCountShootingStorage[__instance.Formation] + 1;
                                 }
                                 break;
                             }
                         case BehaviorState.Approaching:
                             {
-                                if (distance > 210f)
+                                if (distance > 160f)
                                 {
                                     WorldPosition medianPosition = __instance.Formation.QuerySystem.MedianPosition;
                                     medianPosition.SetVec2(medianPosition.AsVec2 + vec * 10f);
@@ -400,7 +407,7 @@ namespace RealisticBattleAiModule
                                 {
                                     if (waitCountApproachingStorage[__instance.Formation] > 30)
                                     {
-                                        if (distance < 200f)
+                                        if (distance < 150f)
                                         {
                                             WorldPosition medianPosition = __instance.Formation.QuerySystem.MedianPosition;
                                             medianPosition.SetVec2(medianPosition.AsVec2 + vec * 5f);
@@ -412,7 +419,7 @@ namespace RealisticBattleAiModule
                                     }
                                     else
                                     {
-                                        if (distance < 200f)
+                                        if (distance < 150f)
                                         {
                                             WorldPosition medianPosition = __instance.Formation.QuerySystem.MedianPosition;
                                             medianPosition.SetVec2(____shootPosition);
@@ -428,7 +435,7 @@ namespace RealisticBattleAiModule
                             {
                                 if (waitCountApproachingStorage[__instance.Formation] > 30)
                                 {
-                                    if (distance < 200f)
+                                    if (distance < 150f)
                                     {
                                         WorldPosition medianPosition = __instance.Formation.QuerySystem.MedianPosition;
                                         medianPosition.SetVec2(medianPosition.AsVec2 - vec * 10f);
@@ -440,7 +447,7 @@ namespace RealisticBattleAiModule
                                 }
                                 else
                                 {
-                                    if (distance < 200f)
+                                    if (distance < 150f)
                                     {
                                         WorldPosition medianPosition = __instance.Formation.QuerySystem.MedianPosition;
                                         medianPosition.SetVec2(____shootPosition);
