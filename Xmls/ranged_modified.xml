@@ -6,7 +6,7 @@
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" CantReloadOnHorseback="true"/>
 			</Weapon>
 		</ItemComponent>
-		<Flags/>
+		<Flags Civilian="true"/>
 	</Item>
 	<Item id="crossbow_g" name="450 Pound Doubler Belt Crossbow" body_name="bo_composite_crossbows" mesh="crossbow_g" weight="2.2" difficulty="60" appearance="1" Type="Crossbow" value="10000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
@@ -54,7 +54,7 @@
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true"/>
 			</Weapon>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
 	<Item id="noble_long_bow" name="200 Pound War Longbow" body_name="bo_composite_longbow_g" mesh="longbow_j" weight="0.8" difficulty="140" appearance="1" Type="Bow" value="8000" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.battania">
 		<ItemComponent>
@@ -62,7 +62,7 @@
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true"/>
 			</Weapon>
 		</ItemComponent>
-		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+		<Flags ForceAttachOffHandPrimaryItemBone="true" Civilian="true"/>
 	</Item>
 	<Item id="training_longbow" name="200 Pound Tournament Longbow" body_name="bo_composite_longbow_a" mesh="longbow_a" weight="0.5" difficulty="0" appearance="1" Type="Bow" value="600" item_holsters="bow_back:bow_back_2:bow_hip:bow_hip_2" culture="Culture.vlandia" subtype="bow" is_merchandise="false">
 		<ItemComponent>
@@ -94,7 +94,7 @@
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true"/>
 			</Weapon>
 		</ItemComponent>
-		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+		<Flags ForceAttachOffHandPrimaryItemBone="true" Civilian="true"/>
 	</Item>
 	<Item id="training_bow" name="166 Pound Tournament Composite Bow" body_name="bo_composite_shotbow_b" mesh="shortbow_b" weight="0.3" difficulty="0" appearance="1" Type="Bow" value="600" item_holsters="bow_back_2:bow_hip:bow_hip_2:bow_back" is_merchandise="false">
 		<ItemComponent>
@@ -214,7 +214,7 @@
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true"/>
 			</Weapon>
 		</ItemComponent>
-		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+		<Flags ForceAttachOffHandPrimaryItemBone="true" Civilian="true"/>
 	</Item>
 	<Item id="hunting_bow" name="60 Pound Composite Bow" body_name="bo_composite_shotbow_h" mesh="shortbow_h" weight="0.3" difficulty="0" appearance="1" Type="Bow" value="600" item_holsters="bow_hip:bow_hip_2:bow_back:bow_back_2">
 		<ItemComponent>
@@ -222,7 +222,7 @@
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true"/>
 			</Weapon>
 		</ItemComponent>
-		<Flags ForceAttachOffHandPrimaryItemBone="true"/>
+		<Flags ForceAttachOffHandPrimaryItemBone="true" Civilian="true"/>
 	</Item>
 	<Item id="throwing_stone" name="{=1CPdu9K0}Stone" body_name="bo_throwing_stone" mesh="throwing_stone" weight="0.3" appearance="0.1" Type="Thrown" value="2" item_holsters="throwing_stone:throwing_stone_2" is_merchandise="false" holster_body_name="bo_axe_short" holster_mesh="stone_holster" holster_mesh_with_weapon="stone_holster">
 		<ItemComponent>
@@ -230,6 +230,6 @@
 				<WeaponFlags RangedWeapon="true" AutoReload="true" Consumable="true" UseHandAsThrowBase="true"/>
 			</Weapon>
 		</ItemComponent>
-		<Flags/>
+		<Flags Civilian="true"/>
 	</Item>
 </Items>

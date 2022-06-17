@@ -145,6 +145,8 @@
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
 	  <Flag name="BonusAgainstShield" />
+      <Flag name="Civilian"
+            type="ItemFlags" />
     </Flags>
     <Materials>
       <Material id="Iron4" count="3" />
@@ -275,6 +277,8 @@
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
 	  <Flag name="BonusAgainstShield" />
+      <Flag name="Civilian"
+            type="ItemFlags" />
     </Flags>
     <Materials>
       <Material id="Iron4" count="3" />
@@ -290,6 +294,8 @@
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
 	  <Flag name="BonusAgainstShield" />
+      <Flag name="Civilian"
+            type="ItemFlags" />
     </Flags>
     <Materials>
       <Material id="Iron4" count="3" />
@@ -485,6 +491,8 @@
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
 	  <Flag name="BonusAgainstShield" />
+      <Flag name="Civilian"
+            type="ItemFlags" />
     </Flags>
     <Materials>
       <Material id="Iron5" count="3" />
@@ -500,6 +508,8 @@
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
 	  <Flag name="BonusAgainstShield" />
+      <Flag name="Civilian"
+            type="ItemFlags" />
     </Flags>
     <Materials>
       <Material id="Iron4" count="2" />
@@ -515,6 +525,8 @@
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
 	  <Flag name="BonusAgainstShield" />
+      <Flag name="Civilian"
+            type="ItemFlags" />
     </Flags>
     <Materials>
       <Material id="Iron5" count="2" />
@@ -725,6 +737,10 @@
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
   </CraftingPiece>
   <CraftingPiece id="axe_craft_21_handle" name="{=HHVH0IoH}Hardened Redwood Handle With Fur Handle" tier="4" piece_type="Handle" mesh="axe_craft_21_handle" length="94" weight="0.296">
 
@@ -732,6 +748,10 @@
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
   </CraftingPiece>
   <CraftingPiece id="axe_craft_16_handle" name="{=47UEgMpD}Oaken Handle With Pointy End" tier="5" piece_type="Handle" mesh="axe_craft_16_handle" length="106" weight="0.387" item_holster_pos_shift="0,0,-0.05">
 
@@ -740,6 +760,10 @@
       <Material id="Wood" count="1" />
       <Material id="Iron4" count="1" />
     </Materials>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
   </CraftingPiece>
   <!-- #endregion -->
   <!-- #region Used 2h Axe Handle Pieces -->
@@ -762,6 +786,10 @@
       <Material id="Wood" count="1" />
       <Material id="Iron5" count="1" />
     </Materials>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
   </CraftingPiece>
   <CraftingPiece id="axe_craft_6_handle" name="{=OJ7iPw5M}Reinforced Hardened Ash Great Axe Handle" tier="4" piece_type="Handle" mesh="axe_craft_6_handle" length="157.3" weight="0.644" item_holster_pos_shift="0,0,-0.1">
     <BuildData piece_offset="36.87" next_piece_offset="1.122" />
@@ -776,6 +804,10 @@
       <Material id="Wood" count="1" />
       <Material id="Iron5" count="1" />
     </Materials>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
   </CraftingPiece>
   <CraftingPiece id="axe_craft_30_handle" name="{=KeTioaJE}Leather Wrapped Mahogany Great Axe Handle" tier="2" piece_type="Handle" mesh="axe_craft_30_handle" length="130" weight="0.516">
     <BuildData piece_offset="20" next_piece_offset="1.835" />

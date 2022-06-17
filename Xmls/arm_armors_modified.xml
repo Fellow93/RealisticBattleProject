@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Items>
-	<Item id="eastern_wrapped_armguards" name="{=OEyuUWji}Eastern Wrapped Armguards" mesh="plated_leather_armor_glove_a" culture="Culture.khuzait" weight="0.3" appearance="1" Type="HandArmor">
-		<ItemComponent>
-			<Armor arm_armor="25" modifier_group="cloth" material_type="Cloth" covers_hands="false"/>
-		</ItemComponent>
-		<Flags Civilian="true"/>
-	</Item>
 	<Item id="rough_tied_bracers" name="{=uEPRE33m}Rough Tied Bracers" mesh="bandit_3_wrist" culture="Culture.battania" weight="0.6" appearance="0.3" Type="HandArmor" difficulty="0">
 		<ItemComponent>
 			<Armor arm_armor="21" modifier_group="cloth" material_type="Cloth" covers_hands="false"/>
@@ -36,6 +30,18 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
+	<Item id="roughtied_leather_bracers" name="{=e4lKZhgv}Roughtied Leather Bracers" mesh="sea_raider_leather_wristband" culture="Culture.battania" weight="0.5" appearance="1" Type="HandArmor" difficulty="0">
+		<ItemComponent>
+			<Armor arm_armor="24" modifier_group="leather" material_type="Leather" covers_hands="false"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="eastern_wrapped_armguards" name="{=OEyuUWji}Eastern Wrapped Armguards" mesh="plated_leather_armor_glove_a" culture="Culture.khuzait" weight="0.3" appearance="1" Type="HandArmor">
+		<ItemComponent>
+			<Armor arm_armor="25" modifier_group="cloth" material_type="Cloth" covers_hands="false"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
 	<Item id="guarded_armwraps" name="{=a1BGHdaU}Guarded Armwraps" mesh="battania_armwraps_b" culture="Culture.battania" weight="0.4" appearance="0.4" Type="HandArmor">
 		<ItemComponent>
 			<Armor arm_armor="25" modifier_group="cloth" material_type="Cloth"/>
@@ -47,6 +53,12 @@
 			<Armor arm_armor="25" modifier_group="leather" material_type="Leather" covers_hands="false"/>
 		</ItemComponent>
 		<Flags/>
+	</Item>
+	<Item id="strapped_leather_bracers" name="{=DOYS7dmq}Strapped Leather Bracers" mesh="bandit_10_wristband" culture="Culture.battania" weight="0.5" appearance="0.4" Type="HandArmor">
+		<ItemComponent>
+			<Armor arm_armor="25" modifier_group="leather" material_type="Leather" covers_hands="false"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
 	</Item>
 	<Item id="padded_vambrace" name="{=MamotK0a}Padded Vambrace" mesh="padded_vambrace_a" culture="Culture.vlandia" weight="0.1" appearance="1" Type="HandArmor" difficulty="0">
 		<ItemComponent>
@@ -60,21 +72,15 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="studded_leather_vambraces" name="{=bxa4JHlU}Studded Leather Vambraces" mesh="crossbow_armor_leather_hand_a" culture="Culture.khuzait" weight="0.9" appearance="1" Type="HandArmor">
-		<ItemComponent>
-			<Armor arm_armor="32" modifier_group="leather" material_type="Leather" covers_hands="false"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
-	<Item id="steppe_leather_vambraces" name="{=GcFAmAaR}Eastern Leather Vambraces" mesh="khuzait_leather_armor_hand" culture="Culture.khuzait" weight="0.5" appearance="1" Type="HandArmor">
-		<ItemComponent>
-			<Armor arm_armor="32" modifier_group="leather" material_type="Leather" covers_hands="false"/>
-		</ItemComponent>
-		<Flags Civilian="true"/>
-	</Item>
 	<Item id="guarded_padded_vambrace" name="{=whvMZZba}Guarded Padded Vambrace" mesh="padded_vambrace_a_handguard" culture="Culture.aserai" weight="0.6" appearance="1" Type="HandArmor" difficulty="0">
 		<ItemComponent>
 			<Armor arm_armor="29" modifier_group="cloth" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="highland_gloves" name="{=i8S2PJB4}Highland Gloves" mesh="pict_armor_glove" culture="Culture.battania" weight="0.8" appearance="1" Type="HandArmor" difficulty="0">
+		<ItemComponent>
+			<Armor arm_armor="30" modifier_group="leather" material_type="Leather" covers_hands="true"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
@@ -84,9 +90,15 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="strapped_leather_bracers" name="{=DOYS7dmq}Strapped Leather Bracers" mesh="bandit_10_wristband" culture="Culture.battania" weight="0.5" appearance="0.4" Type="HandArmor">
+	<Item id="studded_leather_vambraces" name="{=bxa4JHlU}Studded Leather Vambraces" mesh="crossbow_armor_leather_hand_a" culture="Culture.khuzait" weight="0.9" appearance="1" Type="HandArmor">
 		<ItemComponent>
-			<Armor arm_armor="25" modifier_group="leather" material_type="Leather" covers_hands="false"/>
+			<Armor arm_armor="32" modifier_group="leather" material_type="Leather" covers_hands="false"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="steppe_leather_vambraces" name="{=GcFAmAaR}Eastern Leather Vambraces" mesh="khuzait_leather_armor_hand" culture="Culture.khuzait" weight="0.5" appearance="1" Type="HandArmor">
+		<ItemComponent>
+			<Armor arm_armor="32" modifier_group="leather" material_type="Leather" covers_hands="false"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
@@ -101,18 +113,6 @@
 			<Armor arm_armor="37" modifier_group="cloth" material_type="Cloth" covers_hands="true"/>
 		</ItemComponent>
 		<Flags/>
-	</Item>
-	<Item id="roughtied_leather_bracers" name="{=e4lKZhgv}Roughtied Leather Bracers" mesh="sea_raider_leather_wristband" culture="Culture.battania" weight="0.5" appearance="1" Type="HandArmor" difficulty="0">
-		<ItemComponent>
-			<Armor arm_armor="24" modifier_group="leather" material_type="Leather" covers_hands="false"/>
-		</ItemComponent>
-		<Flags Civilian="true"/>
-	</Item>
-	<Item id="highland_gloves" name="{=i8S2PJB4}Highland Gloves" mesh="pict_armor_glove" culture="Culture.battania" weight="0.8" appearance="1" Type="HandArmor" difficulty="0">
-		<ItemComponent>
-			<Armor arm_armor="30" modifier_group="leather" material_type="Leather" covers_hands="true"/>
-		</ItemComponent>
-		<Flags Civilian="true"/>
 	</Item>
 	<Item id="battania_noble_bracers" name="{=gSaKwztg}Highland Noble Bracers" mesh="battania_noble_bracers" culture="Culture.battania" weight="0.6" appearance="3" Type="HandArmor" difficulty="0">
 		<ItemComponent>
@@ -130,7 +130,7 @@
 		<ItemComponent>
 			<Armor arm_armor="41" modifier_group="plate" material_type="Plate" covers_hands="false"/>
 		</ItemComponent>
-		<Flags/>
+		<Flags Civilian="true"/>
 	</Item>
 	<Item id="plated_strip_gauntlets" name="{=Gs2f3aeh}Plated Striped Gauntlets" mesh="empire_plated_gauntlets" culture="Culture.empire" weight="1.4" appearance="1.3" Type="HandArmor">
 		<ItemComponent>
@@ -166,7 +166,7 @@
 		<ItemComponent>
 			<Armor arm_armor="50" modifier_group="plate" material_type="Plate" covers_hands="true"/>
 		</ItemComponent>
-		<Flags/>
+		<Flags Civilian="true"/>
 	</Item>
 	<Item id="northern_plated_gloves" name="{=vNNMGllv}Northern Plated Gloves" mesh="sturgia_plate_gauntlet" culture="Culture.sturgia" weight="1.5" appearance="2" Type="HandArmor">
 		<ItemComponent>

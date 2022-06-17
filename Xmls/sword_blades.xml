@@ -1158,6 +1158,10 @@
       <Thrust damage_type="Pierce" damage_factor="0.55" />
       <Swing damage_type="Cut" damage_factor="0.6" />
     </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
     <Materials>
       <Material id="Iron2" count="3" />
     </Materials>
@@ -1181,6 +1185,10 @@
       <Swing damage_type="Cut"
              damage_factor="0.8" />
     </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
     <Materials>
       <Material id="Iron3"
                 count="2" />
@@ -1204,6 +1212,10 @@
       <Swing damage_type="Cut"
              damage_factor="1.5" />
     </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
     <Materials>
       <Material id="Iron6"
                 count="2" />
@@ -1227,6 +1239,10 @@
       <Swing damage_type="Cut"
              damage_factor="0.6" />
     </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
     <Materials>
       <Material id="Iron2"
                 count="3" />
@@ -1659,6 +1675,10 @@
       <Thrust damage_type="Pierce" damage_factor="1.1" />
       <Swing damage_type="Cut" damage_factor="1.4" />
     </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
     <Materials>
       <Material id="Iron5" count="3" />
     </Materials>
@@ -1696,6 +1716,10 @@
       <Thrust damage_type="Pierce" damage_factor="1.1" />
       <Swing damage_type="Cut" damage_factor="1.5" />
     </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
     <Materials>
       <Material id="Iron6" count="2" />
     </Materials>
@@ -1707,6 +1731,10 @@
       <Thrust damage_type="Pierce" damage_factor="1" />
       <Swing damage_type="Cut" damage_factor="1.6" />
     </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
     <Materials>
       <Material id="Iron6" count="3" />
     </Materials>
@@ -1907,6 +1935,10 @@
       <Thrust damage_type="Pierce" damage_factor="0.65" />
       <Swing damage_type="Cut" damage_factor="0.4" />
     </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
     <Materials>
       <Material id="Iron2" count="3" />
     </Materials>
@@ -1917,6 +1949,10 @@
       <Thrust damage_type="Pierce" damage_factor="0.65" />
       <Swing damage_type="Cut" damage_factor="0.4" />
     </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
     <Materials>
       <Material id="Iron2" count="3" />
     </Materials>
@@ -1927,6 +1963,10 @@
       <Thrust damage_type="Pierce" damage_factor="0.7" />
       <Swing damage_type="Cut" damage_factor="1" />
     </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
     <Materials>
       <Material id="Iron4" count="3" />
     </Materials>
@@ -1937,6 +1977,10 @@
       <Thrust damage_type="Pierce" damage_factor="1" />
       <Swing damage_type="Cut" damage_factor="1" />
     </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
     <Materials>
       <Material id="Iron5" count="3" />
     </Materials>
@@ -2080,6 +2124,10 @@
       <Thrust damage_type="Pierce" damage_factor="0.7" />
       <Swing damage_type="Cut" damage_factor="0.6" />
     </BladeData>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags" />
+    </Flags>
     <Materials>
       <Material id="Iron3" count="2" />
     </Materials>

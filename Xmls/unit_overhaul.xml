@@ -19998,4 +19998,1309 @@
     </Equipments>
   </NPCCharacter>
   <!-- its over mr Frodo -->
+  <!-- Practice fight -->
+  <NPCCharacter id="weapon_practice_stage_1_empire"
+                default_group="Infantry"
+                is_hero="false"
+                occupation="Special"
+                culture="Culture.empire"
+                name="{=!}Empire Weapon Dummy">
+    <face>
+      <face_key_template value="BodyProperty.guard" />
+    </face>
+    <skills></skills>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.empire_sword_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.empire_sword_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.tournament_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.empire_mace_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.tournament_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.empire_sword_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.western_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.imperial_spear_t2" />
+        <equipment slot="Item2"
+                   id="Item.western_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.imperial_spear_t2" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+        <equipment slot="Item2"
+                   id="Item.western_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.empire_sword_1_t2" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.imperial_spear_t2" />
+        <equipment slot="Item1"
+                   id="Item.western_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.empire_mace_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.empire_mace_1_t2" />
+        <equipment slot="Item1"
+                   id="Item.western_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.empire_mace_1_t2" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+        <equipment slot="Item2"
+                   id="Item.western_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentSet id="npc_wanderer_equipment_template_empire"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+  <NPCCharacter id="weapon_practice_stage_2_empire"
+                default_group="Infantry"
+                is_hero="false"
+                occupation="Special"
+                culture="Culture.empire"
+                name="{=!}Empire Weapon Dummy">
+    <face>
+      <face_key_template value="BodyProperty.guard" />
+    </face>
+    <skills></skills>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.empire_sword_3_t3" />
+        <equipment slot="Item2"
+                   id="Item.hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.tournament_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.light_mace_t3" />
+        <equipment slot="Item2"
+                   id="Item.hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.tournament_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.empire_sword_3_t3" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.empire_sword_3_t3" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.western_spear_3_t3" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.western_spear_3_t3" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.light_mace_t3" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.light_mace_t3" />
+        <equipment slot="Item1"
+                   id="Item.western_javelin_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.western_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.light_mace_t3" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.empire_sword_3_t3" />
+        <equipment slot="Item1"
+                   id="Item.western_javelin_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.western_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.empire_mace_1_t2" />
+        <equipment slot="Item1"
+                   id="Item.western_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentSet id="npc_wanderer_equipment_template_empire"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+  <NPCCharacter id="weapon_practice_stage_3_empire"
+                default_group="Infantry"
+                is_hero="false"
+                occupation="Special"
+                culture="Culture.empire"
+                name="{=!}Empire Weapon Dummy"
+                skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
+    <face>
+      <face_key_template value="BodyProperty.guard" />
+    </face>
+    <skills></skills>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.empire_sword_5_t4" />
+        <equipment slot="Item2"
+                   id="Item.hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.tournament_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.empire_mace_2_t4" />
+        <equipment slot="Item2"
+                   id="Item.hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.tournament_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.empire_sword_5_t4" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.western_spear_4_t4" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.western_spear_4_t4" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.empire_mace_2_t4" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.empire_sword_5_t4" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.empire_mace_2_t4" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.hooked_axe_t4" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.hooked_axe_t4" />
+        <equipment slot="Item1"
+                   id="Item.western_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.hooked_axe_t4" />
+        <equipment slot="Item1"
+                   id="Item.western_javelin_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.western_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentSet id="npc_wanderer_equipment_template_empire"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+  <NPCCharacter id="weapon_practice_stage_1_vlandia"
+                default_group="Infantry"
+                is_hero="false"
+                occupation="Special"
+                culture="Culture.vlandia"
+                name="{=!}Vlandia Weapon Dummy"
+                skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
+    <face>
+      <face_key_template value="BodyProperty.guard" />
+    </face>
+    <skills></skills>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.vlandia_sword_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.billhook_polearm_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.billhook_polearm_t2" />
+        <equipment slot="Item2"
+                   id="Item.crossbow_a" />
+        <equipment slot="Item3"
+                   id="Item.tournament_bolts" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.western_spear_2_t2" />
+        <equipment slot="Item1"
+                   id="Item.wide_heater_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.vlandia_sword_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.crossbow_a" />
+        <equipment slot="Item3"
+                   id="Item.tournament_bolts" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.vlandia_sword_1_t2" />
+        <equipment slot="Item1"
+                   id="Item.bound_horsemans_kite_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.vlandia_sword_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.crossbow_a" />
+        <equipment slot="Item3"
+                   id="Item.tournament_bolts" />
+      </EquipmentRoster>
+      <EquipmentSet id="npc_wanderer_equipment_template_vlandia"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+  <NPCCharacter id="weapon_practice_stage_2_vlandia"
+                default_group="Infantry"
+                is_hero="false"
+                occupation="Special"
+                culture="Culture.vlandia"
+                name="{=!}Vlandia Weapon Dummy"
+                skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
+    <face>
+      <face_key_template value="BodyProperty.guard" />
+    </face>
+    <skills></skills>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.vlandia_sword_2_t3" />
+        <equipment slot="Item1"
+                   id="Item.wide_heater_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.vlandia_sword_2_t3" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.billhook_polearm_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.western_spear_3_t3" />
+        <equipment slot="Item1"
+                   id="Item.bound_horsemans_kite_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.vlandia_sword_2_t3" />
+        <equipment slot="Item2"
+                   id="Item.crossbow_a" />
+        <equipment slot="Item3"
+                   id="Item.tournament_bolts" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.vlandia_sword_2_t3" />
+        <equipment slot="Item1"
+                   id="Item.wide_heater_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.vlandia_sword_2_t3" />
+        <equipment slot="Item2"
+                   id="Item.crossbow_a" />
+        <equipment slot="Item3"
+                   id="Item.tournament_bolts" />
+      </EquipmentRoster>
+      <EquipmentSet id="npc_wanderer_equipment_template_vlandia"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+  <NPCCharacter id="weapon_practice_stage_3_vlandia"
+                default_group="Infantry"
+                is_hero="false"
+                occupation="Special"
+                culture="Culture.vlandia"
+                name="{=!}Vlandia Weapon Dummy"
+                skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
+    <face>
+      <face_key_template value="BodyProperty.guard" />
+    </face>
+    <skills></skills>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.vlandia_sword_3_t4" />
+        <equipment slot="Item1"
+                   id="Item.wide_heater_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.vlandia_sword_3_t4" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.vlandia_2haxe_1_t4" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.western_spear_3_t3" />
+        <equipment slot="Item1"
+                   id="Item.wide_heater_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.vlandia_sword_3_t4" />
+        <equipment slot="Item2"
+                   id="Item.crossbow_a" />
+        <equipment slot="Item3"
+                   id="Item.tournament_bolts" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.vlandia_2haxe_1_t4" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.vlandia_2haxe_1_t4" />
+        <equipment slot="Item2"
+                   id="Item.crossbow_a" />
+        <equipment slot="Item3"
+                   id="Item.tournament_bolts" />
+      </EquipmentRoster>
+      <EquipmentSet id="npc_wanderer_equipment_template_vlandia"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+
+  <NPCCharacter id="weapon_practice_stage_1_aserai"
+                default_group="Infantry"
+                is_hero="false"
+                occupation="Special"
+                culture="Culture.aserai"
+                name="{=!}Aserai Weapon Dummy"
+                skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
+    <face>
+      <face_key_template value="BodyProperty.guard" />
+    </face>
+    <skills></skills>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_sword_2_t2" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_sword_2_t2" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+        <equipment slot="Item2"
+                   id="Item.desert_throwing_knife" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_sword_2_t2" />
+        <equipment slot="Item1"
+                   id="Item.bound_horsemans_kite_shield" />
+        <equipment slot="Item2"
+                   id="Item.desert_throwing_knife" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_sword_2_t2" />
+        <equipment slot="Item2"
+                   id="Item.hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.tournament_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_mace_1_t2" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_sword_2_t2" />
+        <equipment slot="Item2"
+                   id="Item.hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.tournament_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_mace_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.tournament_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_sword_2_t2" />
+        <equipment slot="Item1"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.eastern_spear_1_t2" />
+        <equipment slot="Item1"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_mace_1_t2" />
+        <equipment slot="Item1"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentSet id="npc_wanderer_equipment_template_aserai"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+  <NPCCharacter id="weapon_practice_stage_2_aserai"
+                default_group="Infantry"
+                is_hero="false"
+                occupation="Special"
+                culture="Culture.aserai"
+                name="{=!}Aserai Weapon Dummy"
+                skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
+    <face>
+      <face_key_template value="BodyProperty.guard" />
+    </face>
+    <skills></skills>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_sword_3_t3" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.eastern_spear_3_t3" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+        <equipment slot="Item2"
+                   id="Item.desert_throwing_knife" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_sword_3_t3" />
+        <equipment slot="Item1"
+                   id="Item.bound_horsemans_kite_shield" />
+        <equipment slot="Item2"
+                   id="Item.desert_throwing_knife" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_sword_3_t3" />
+        <equipment slot="Item2"
+                   id="Item.hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.tournament_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_mace_3_t3" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_sword_3_t3" />
+        <equipment slot="Item2"
+                   id="Item.hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.tournament_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_mace_3_t3" />
+        <equipment slot="Item2"
+                   id="Item.hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.tournament_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_sword_3_t3" />
+        <equipment slot="Item1"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.eastern_spear_3_t3" />
+        <equipment slot="Item1"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_mace_3_t3" />
+        <equipment slot="Item1"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentSet id="npc_wanderer_equipment_template_aserai"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+  <NPCCharacter id="weapon_practice_stage_3_aserai"
+                default_group="Infantry"
+                is_hero="false"
+                occupation="Special"
+                culture="Culture.aserai"
+                name="{=!}Aserai Weapon Dummy"
+                skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
+    <face>
+      <face_key_template value="BodyProperty.guard" />
+    </face>
+    <skills></skills>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_sword_5_t4" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.eastern_spear_4_t4" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+        <equipment slot="Item2"
+                   id="Item.desert_throwing_knife" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_sword_5_t4" />
+        <equipment slot="Item1"
+                   id="Item.bound_horsemans_kite_shield" />
+        <equipment slot="Item2"
+                   id="Item.desert_throwing_knife" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_sword_5_t4" />
+        <equipment slot="Item2"
+                   id="Item.hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.tournament_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_mace_4_t4" />
+        <equipment slot="Item1"
+                   id="Item.leather_bound_kite_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_sword_5_t4" />
+        <equipment slot="Item2"
+                   id="Item.hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.tournament_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_mace_4_t4" />
+        <equipment slot="Item2"
+                   id="Item.hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.tournament_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_sword_5_t4" />
+        <equipment slot="Item1"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.eastern_spear_2_t3" />
+        <equipment slot="Item1"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_mace_4_t4" />
+        <equipment slot="Item1"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_2haxe_2_t4" />
+        <equipment slot="Item1"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.aserai_2haxe_2_t4" />
+        <equipment slot="Item1"
+                   id="Item.desert_throwing_knife" />
+      </EquipmentRoster>
+      <EquipmentSet id="npc_wanderer_equipment_template_aserai"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+
+  <NPCCharacter id="weapon_practice_stage_1_sturgia"
+                default_group="Infantry"
+                is_hero="false"
+                occupation="Special"
+                culture="Culture.sturgia"
+                name="{=!}Sturgia Weapon Dummy"
+                skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
+    <face>
+      <face_key_template value="BodyProperty.guard" />
+    </face>
+    <skills></skills>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_axe_2_t2" />
+        <equipment slot="Item1"
+                   id="Item.leather_round_shield" />
+        <equipment slot="Item2"
+                   id="Item.northern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.northern_spear_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.highland_throwing_axe_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_axe_2_t2" />
+        <equipment slot="Item1"
+                   id="Item.leather_round_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.northern_spear_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_axe_2_t2" />
+        <equipment slot="Item2"
+                   id="Item.hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.tournament_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_axe_2_t2" />
+        <equipment slot="Item1"
+                   id="Item.leather_round_shield" />
+        <equipment slot="Item2"
+                   id="Item.highland_throwing_axe_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_axe_2_t2" />
+        <equipment slot="Item1"
+                   id="Item.leather_round_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_axe_2_t2" />
+        <equipment slot="Item1"
+                   id="Item.highland_throwing_axe_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.highland_throwing_axe_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.northern_spear_1_t2" />
+        <equipment slot="Item1"
+                   id="Item.northern_javelin_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.northern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentSet id="npc_wanderer_equipment_template_sturgia"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+  <NPCCharacter id="weapon_practice_stage_2_sturgia"
+                default_group="Infantry"
+                is_hero="false"
+                occupation="Special"
+                culture="Culture.sturgia"
+                name="{=!}Sturgia Weapon Dummy"
+                skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
+    <face>
+      <face_key_template value="BodyProperty.guard" />
+    </face>
+    <skills></skills>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_axe_3_t3" />
+        <equipment slot="Item1"
+                   id="Item.leather_round_shield" />
+        <equipment slot="Item2"
+                   id="Item.northern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.bearded_axe_t3" />
+        <equipment slot="Item2"
+                   id="Item.highland_throwing_axe_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_axe_3_t3" />
+        <equipment slot="Item1"
+                   id="Item.leather_round_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.bearded_axe_t3" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.bearded_axe_t3" />
+        <equipment slot="Item2"
+                   id="Item.hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.default_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_axe_3_t3" />
+        <equipment slot="Item1"
+                   id="Item.leather_round_shield" />
+        <equipment slot="Item2"
+                   id="Item.highland_throwing_axe_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_axe_3_t3" />
+        <equipment slot="Item1"
+                   id="Item.leather_round_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.bearded_axe_t3" />
+        <equipment slot="Item1"
+                   id="Item.highland_throwing_axe_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.highland_throwing_axe_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.bearded_axe_t3" />
+        <equipment slot="Item1"
+                   id="Item.northern_javelin_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.northern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentSet id="npc_wanderer_equipment_template_sturgia"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+  <NPCCharacter id="weapon_practice_stage_3_sturgia"
+                default_group="Infantry"
+                is_hero="false"
+                occupation="Special"
+                culture="Culture.sturgia"
+                name="{=!}Sturgia Weapon Dummy"
+                skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
+    <face>
+      <face_key_template value="BodyProperty.guard" />
+    </face>
+    <skills></skills>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_axe_4_t4" />
+        <equipment slot="Item1"
+                   id="Item.leather_round_shield" />
+        <equipment slot="Item2"
+                   id="Item.northern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_2haxe_1_t4" />
+        <equipment slot="Item2"
+                   id="Item.highland_throwing_axe_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_axe_4_t4" />
+        <equipment slot="Item1"
+                   id="Item.leather_round_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_2haxe_1_t4" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_axe_4_t4" />
+        <equipment slot="Item2"
+                   id="Item.hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.tournament_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_axe_4_t4" />
+        <equipment slot="Item1"
+                   id="Item.leather_round_shield" />
+        <equipment slot="Item2"
+                   id="Item.highland_throwing_axe_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_axe_4_t4" />
+        <equipment slot="Item1"
+                   id="Item.leather_round_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_2haxe_1_t4" />
+        <equipment slot="Item1"
+                   id="Item.highland_throwing_axe_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.highland_throwing_axe_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.bearded_axe_t3" />
+        <equipment slot="Item1"
+                   id="Item.northern_javelin_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.northern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentSet id="npc_wanderer_equipment_template_sturgia"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+
+  <NPCCharacter id="weapon_practice_stage_1_battania"
+                default_group="Infantry"
+                is_hero="false"
+                occupation="Special"
+                culture="Culture.battania"
+                name="{=!}Battania Weapon Dummy"
+                skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
+    <face>
+      <face_key_template value="BodyProperty.guard" />
+    </face>
+    <skills></skills>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.battania_mace_1_t2" />
+        <equipment slot="Item1"
+                   id="Item.highland_throwing_axe_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.northern_spear_1_t2" />
+        <equipment slot="Item1"
+                   id="Item.southern_oval_shield" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.battania_sword_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.mountain_hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.default_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.battania_2haxe_1_t2" />
+        <equipment slot="Item1"
+                   id="Item.highland_throwing_axe_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.battania_sword_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.mountain_hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.default_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.battania_2haxe_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.mountain_hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.default_arrows" />
+      </EquipmentRoster>
+      <EquipmentSet id="npc_wanderer_equipment_template_battania"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+  <NPCCharacter id="weapon_practice_stage_2_battania"
+                default_group="Infantry"
+                is_hero="false"
+                occupation="Special"
+                culture="Culture.battania"
+                name="{=!}Battania Weapon Dummy"
+                skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
+    <face>
+      <face_key_template value="BodyProperty.guard" />
+    </face>
+    <skills></skills>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.battania_sword_2_t3" />
+        <equipment slot="Item1"
+                   id="Item.highland_throwing_axe_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.western_javelin_1_t2" />
+        <equipment slot="Item1"
+                   id="Item.southern_oval_shield" />
+        <equipment slot="Item2"
+                   id="Item.mountain_hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.default_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.battania_sword_2_t3" />
+        <equipment slot="Item2"
+                   id="Item.mountain_hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.default_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.bearded_axe_t3" />
+        <equipment slot="Item1"
+                   id="Item.highland_throwing_axe_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.battania_sword_2_t3" />
+        <equipment slot="Item2"
+                   id="Item.mountain_hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.default_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.bearded_axe_t3" />
+        <equipment slot="Item2"
+                   id="Item.mountain_hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.default_arrows" />
+      </EquipmentRoster>
+      <EquipmentSet id="npc_wanderer_equipment_template_battania"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+  <NPCCharacter id="weapon_practice_stage_3_battania"
+                default_group="Infantry"
+                is_hero="false"
+                occupation="Special"
+                culture="Culture.battania"
+                name="{=!}Battania Weapon Dummy"
+                skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
+    <face>
+      <face_key_template value="BodyProperty.guard" />
+    </face>
+    <skills></skills>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.battania_sword_4_t4" />
+        <equipment slot="Item1"
+                   id="Item.highland_throwing_axe_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.northern_spear_3_t4" />
+        <equipment slot="Item1"
+                   id="Item.southern_oval_shield" />
+        <equipment slot="Item2"
+                   id="Item.mountain_hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.default_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.battania_sword_4_t4" />
+        <equipment slot="Item2"
+                   id="Item.mountain_hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.default_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_2haxe_1_t4" />
+        <equipment slot="Item1"
+                   id="Item.highland_throwing_axe_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.battania_sword_4_t4" />
+        <equipment slot="Item2"
+                   id="Item.mountain_hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.default_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.sturgia_2haxe_1_t4" />
+        <equipment slot="Item2"
+                   id="Item.mountain_hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.default_arrows" />
+      </EquipmentRoster>
+      <EquipmentSet id="npc_wanderer_equipment_template_battania"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+  
+  <NPCCharacter id="weapon_practice_stage_1_khuzait"
+                default_group="Infantry"
+                is_hero="false"
+                occupation="Special"
+                culture="Culture.khuzait"
+                name="{=!}Khuzait Gear Dummy"
+                skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
+    <face>
+      <face_key_template value="BodyProperty.guard" />
+    </face>
+    <skills></skills>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.khuzait_sword_1_t2" />
+        <equipment slot="Item1"
+                   id="Item.curved_round_shield" />
+        <equipment slot="Item2"
+                   id="Item.eastern_javelin_2_t3" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.khuzait_sword_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.eastern_javelin_2_t3" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.khuzait_sword_1_t2" />
+        <equipment slot="Item2"
+                   id="Item.mountain_hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.default_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.eastern_spear_1_t2" />
+        <equipment slot="Item1"
+                   id="Item.curved_round_shield" />
+        <equipment slot="Item2"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentSet id="npc_wanderer_equipment_template_khuzait"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+  <NPCCharacter id="weapon_practice_stage_2_khuzait"
+                default_group="Infantry"
+                is_hero="false"
+                occupation="Special"
+                culture="Culture.khuzait"
+                name="{=!}Khuzait Weapon Dummy"
+                skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
+    <face>
+      <face_key_template value="BodyProperty.guard" />
+    </face>
+    <skills></skills>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.eastern_spear_2_t3" />
+        <equipment slot="Item2"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.eastern_spear_2_t3" />
+        <equipment slot="Item2"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.eastern_spear_2_t3" />
+        <equipment slot="Item2"
+                   id="Item.mountain_hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.default_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.khuzait_sword_2_t3" />
+        <equipment slot="Item1"
+                   id="Item.curved_round_shield" />
+        <equipment slot="Item2"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.khuzait_sword_2_t3" />
+        <equipment slot="Item2"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.khuzait_sword_2_t3" />
+        <equipment slot="Item2"
+                   id="Item.mountain_hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.default_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.eastern_spear_2_t3" />
+        <equipment slot="Item1"
+                   id="Item.curved_round_shield" />
+        <equipment slot="Item2"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentSet id="npc_wanderer_equipment_template_khuzait"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+  <NPCCharacter id="weapon_practice_stage_3_khuzait"
+                default_group="Infantry"
+                is_hero="false"
+                occupation="Special"
+                culture="Culture.khuzait"
+                name="{=!}Khuzait Weapon Dummy"
+                skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
+    <face>
+      <face_key_template value="BodyProperty.guard" />
+    </face>
+    <skills></skills>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.khuzait_polearm_1_t4" />
+        <equipment slot="Item2"
+                   id="Item.mountain_hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.default_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.khuzait_polearm_1_t4" />
+        <equipment slot="Item2"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.khuzait_polearm_1_t4" />
+        <equipment slot="Item2"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.khuzait_polearm_1_t4" />
+        <equipment slot="Item2"
+                   id="Item.mountain_hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.default_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.khuzait_sword_5_t4" />
+        <equipment slot="Item1"
+                   id="Item.curved_round_shield" />
+        <equipment slot="Item2"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.khuzait_sword_5_t4" />
+        <equipment slot="Item2"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.khuzait_sword_5_t4" />
+        <equipment slot="Item2"
+                   id="Item.mountain_hunting_bow" />
+        <equipment slot="Item3"
+                   id="Item.default_arrows" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+        <equipment slot="Item0"
+                   id="Item.eastern_spear_4_t4" />
+        <equipment slot="Item1"
+                   id="Item.curved_round_shield" />
+        <equipment slot="Item2"
+                   id="Item.eastern_javelin_1_t2" />
+      </EquipmentRoster>
+      <EquipmentSet id="npc_wanderer_equipment_template_khuzait"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
 </NPCCharacters>

@@ -208,7 +208,7 @@
 		<ItemComponent>
 			<Armor leg_armor="44" covers_legs="true" modifier_group="plate" material_type="Plate"/>
 		</ItemComponent>
-		<Flags/>
+		<Flags Civilian="true"/>
 	</Item>
 	<Item id="battania_warlord_boots" name="{=eTKxlDl1}Highland Warlord Boots" mesh="battania_warlord_boots" culture="Culture.battania" weight="2.6" appearance="3" Type="LegArmor" difficulty="0">
 		<ItemComponent>

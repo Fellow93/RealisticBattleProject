@@ -904,7 +904,7 @@
 		<ItemComponent>
 			<Armor body_armor="25" leg_armor="17" covers_body="false" modifier_group="cloth" material_type="Cloth" has_gender_variations="true" arm_armor="15" body_mesh_type="shoulders"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
 	<Item id="empire_warrior_padded_armor_f" name="{=av4ncLDl}Imperial Auxiliary Armor" mesh="empire_warrior_padded_armor_f" culture="Culture.empire" weight="1.9" Type="BodyArmor" appearance="1">
 		<ItemComponent>
@@ -1060,7 +1060,7 @@
 		<ItemComponent>
 			<Armor body_armor="40" leg_armor="20" covers_body="true" modifier_group="chain" material_type="Chainmail" has_gender_variations="true" arm_armor="35"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
 	<Item id="khuzait_lamellar_strapped" name="{=VMqzvfDO}Eastern Strapped Lamellar Armor" mesh="khuzait_lamellar_strap" culture="Culture.khuzait" weight="15" Type="BodyArmor" appearance="1.4">
 		<ItemComponent>
@@ -1078,13 +1078,13 @@
 		<ItemComponent>
 			<Armor body_armor="40" leg_armor="12" covers_body="true" modifier_group="plate" material_type="Plate" has_gender_variations="true" arm_armor="25"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
 	<Item id="aserai_robe_c_chain" name="{=gSWtpl8a}Robe over Mail Shirt" mesh="aserai_robe_c_chain" culture="Culture.aserai" weight="8.2" Type="BodyArmor" appearance="1" lod_atlas_index="5">
 		<ItemComponent>
 			<Armor body_armor="41" leg_armor="35" covers_body="true" modifier_group="cloth" material_type="Cloth" has_gender_variations="true" arm_armor="40"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
 	<Item id="battania_woodland_chainmail" name="{=qw2oyv1j}Woodland Chainmail" mesh="battania_woodland_chainmail" culture="Culture.battania" weight="10.3" Type="BodyArmor" appearance="1.2" difficulty="0" subtype="body_armor">
 		<ItemComponent>
@@ -1108,13 +1108,13 @@
 		<ItemComponent>
 			<Armor body_armor="41" leg_armor="35" covers_body="true" modifier_group="chain" material_type="Chainmail" has_gender_variations="true" arm_armor="39"/>
 		</ItemComponent>
-		<Flags/>
+		<Flags Civilian="true"/>
 	</Item>
 	<Item id="white_coat_over_mail" name="{=YfB0SJqY}White Tabard Over Mail" mesh="templar_a_white" culture="Culture.vlandia" weight="9.6" Type="BodyArmor" appearance="1.2" difficulty="0" subtype="body_armor">
 		<ItemComponent>
 			<Armor body_armor="41" leg_armor="35" covers_body="true" modifier_group="chain" material_type="Chainmail" has_gender_variations="false" arm_armor="39"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
 	<Item id="ranger_mail" name="{=HKRGEXqy}Ranger Mail" mesh="armor_pict_a" culture="Culture.battania" weight="12" Type="BodyArmor" appearance="2" difficulty="0" subtype="body_armor">
 		<ItemComponent>
@@ -1168,13 +1168,13 @@
 		<ItemComponent>
 			<Armor body_armor="45" leg_armor="12" covers_body="true" modifier_group="chain" material_type="Chainmail" has_gender_variations="false" arm_armor="25"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
 	<Item id="desert_robe_over_mail" name="{=k71X3WNK}Robe over Mail Hauberk" mesh="aserai_chain_tunic_a" culture="Culture.aserai" weight="8.9" Type="BodyArmor" appearance="1" lod_atlas_index="8">
 		<ItemComponent>
 			<Armor body_armor="45" leg_armor="45" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="45"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
 	<Item id="legionary_mail" name="{=PTKyNh2O}Legionary Mail" mesh="empire_armor_b" culture="Culture.empire" weight="10.5" Type="BodyArmor" appearance="1.3" difficulty="0" subtype="body_armor">
 		<ItemComponent>
@@ -1240,7 +1240,7 @@
 		<ItemComponent>
 			<Armor body_armor="50" leg_armor="40" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="25"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
 	<Item id="dummy_armor_max" name="{=wSUN0Dmo}Dummy Max Armor" mesh="vlandia_scale_armor" culture="Culture.looters" weight="40" Type="BodyArmor" is_merchandise="false">
 		<ItemComponent>
@@ -1272,6 +1272,30 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
+	<Item id="aserai_chain_plate_armor_a" name="{=*}Southern Reinforced Mail Armor" mesh="aserai_chain_plate_armor_a" culture="Culture.aserai" weight="22" Type="BodyArmor" appearance="4" lod_atlas_index="3">
+		<ItemComponent>
+			<Armor body_armor="60" leg_armor="35" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="40"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="aserai_chain_plate_armor_b" name="{=*}Southern Reinforced Sleeveless Mail Armor" mesh="aserai_chain_plate_armor_b" culture="Culture.aserai" weight="19" Type="BodyArmor" appearance="6" lod_atlas_index="3">
+		<ItemComponent>
+			<Armor body_armor="60" leg_armor="35" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="25"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="aserai_chain_plate_armor_c" name="{=*}Southern Reinforced Mail Vest" mesh="aserai_chain_plate_armor_c" culture="Culture.aserai" weight="15" Type="BodyArmor" appearance="4" lod_atlas_index="3">
+		<ItemComponent>
+			<Armor body_armor="60" leg_armor="10" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="25"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="aserai_chain_plate_armor_d" name="{=*}Southern Reinforced Short Mail Armor" mesh="aserai_chain_plate_armor_d" culture="Culture.aserai" weight="18" Type="BodyArmor" appearance="4" lod_atlas_index="3">
+		<ItemComponent>
+			<Armor body_armor="60" leg_armor="10" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="40"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
 	<Item id="plated_leather_coat" name="{=8ulJswRY}Plated Leather Coat" mesh="cop_a" culture="Culture.vlandia" weight="12.7" Type="BodyArmor" appearance="1.6" difficulty="0" subtype="body_armor">
 		<ItemComponent>
 			<Armor body_armor="65" leg_armor="46" covers_body="true" modifier_group="plate" material_type="Plate" has_gender_variations="true" arm_armor="50"/>
@@ -1290,6 +1314,12 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
+	<Item id="aserai_scale_armor_on_cloth" name="{=*}Mastercrafted Southern Scale Mail" mesh="aserai_scale_armor_on_cloth" culture="Culture.aserai" weight="18" Type="BodyArmor" appearance="6" lod_atlas_index="3">
+		<ItemComponent>
+			<Armor body_armor="70" leg_armor="20" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="45"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
 	<Item id="coat_of_plates_over_mail" name="{=p949oNWk}Coat of Plates Over Mail" mesh="tunic_ironplate_armor" culture="Culture.vlandia" weight="20.11" Type="BodyArmor" appearance="3" difficulty="0" subtype="body_armor">
 		<ItemComponent>
 			<Armor body_armor="75" leg_armor="35" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="55"/>
@@ -1300,7 +1330,7 @@
 		<ItemComponent>
 			<Armor body_armor="75" leg_armor="50" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="32"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
 	<Item id="imperial_lamellar" name="Imperial Light Lamellar Over Mail" mesh="imperial_lamellar_a" culture="Culture.empire" weight="28.5" Type="BodyArmor" appearance="3" difficulty="0" subtype="body_armor">
 		<ItemComponent>
@@ -1314,6 +1344,12 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
+	<Item id="battanian_scale_armor_a" name="Highland Scale Over Mail Armor" mesh="battanian_scale_armor_a" culture="Culture.battania" weight="26" Type="BodyArmor" appearance="3" difficulty="0" subtype="body_armor">
+		<ItemComponent>
+			<Armor body_armor="79" leg_armor="35" covers_body="true" modifier_group="plate" material_type="Plate" has_gender_variations="true" arm_armor="50"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
 	<Item id="sturgia_cavalry_armor" name="{=REYaHXQb}Sturgia Cavalry Armor" mesh="sturgia_cavalry_armor" culture="Culture.sturgia" weight="19.4" Type="BodyArmor" appearance="1.5" difficulty="0" subtype="body_armor">
 		<ItemComponent>
 			<Armor body_armor="85" leg_armor="43" covers_body="true" modifier_group="plate" material_type="Plate" has_gender_variations="true" arm_armor="62"/>
@@ -1324,17 +1360,17 @@
 		<ItemComponent>
 			<Armor body_armor="85" leg_armor="30" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="45"/>
 		</ItemComponent>
+		<Flags UseTeamColor="true" Civilian="true"/>
+	</Item>
+	<Item id="aserai_scale_armor_on_chain" name="{=*}Mastercrafted Southern Scale over Chain Mail" mesh="aserai_scale_armor_on_chain" culture="Culture.aserai" weight="22" Type="BodyArmor" appearance="6" lod_atlas_index="3">
+		<ItemComponent>
+			<Armor body_armor="85" leg_armor="30" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="62"/>
+		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="imperial_lamellar_over_leather" name="{=ekTny86c}Imperial Lamellar Over Leather" mesh="empire_plate_armor" culture="Culture.empire" weight="15" Type="BodyArmor" appearance="1.3">
 		<ItemComponent>
 			<Armor body_armor="88" leg_armor="25" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="50"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true"/>
-	</Item>
-	<Item id="battanian_scale_armor_a" name="Highland Scale Over Mail Armor" mesh="battanian_scale_armor_a" culture="Culture.battania" weight="26" Type="BodyArmor" appearance="3" difficulty="0" subtype="body_armor">
-		<ItemComponent>
-			<Armor body_armor="79" leg_armor="35" covers_body="true" modifier_group="plate" material_type="Plate" has_gender_variations="true" arm_armor="50"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
@@ -1347,6 +1383,12 @@
 	<Item id="northern_coat_of_plates" name="{=WST7ftTa}Northern Coat Of Plates" mesh="sturgia_plate_armor" culture="Culture.sturgia" weight="20" Type="BodyArmor" appearance="2">
 		<ItemComponent>
 			<Armor body_armor="90" leg_armor="22" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="55"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="aserai_full_scale_armor_on_chain" name="{=*}Mastercrafted Southern Scale over Chain Hauberk" mesh="aserai_full_scale_armor_on_chain" culture="Culture.aserai" weight="28" Type="BodyArmor" appearance="7" lod_atlas_index="3">
+		<ItemComponent>
+			<Armor body_armor="90" leg_armor="65" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="65"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
@@ -1395,48 +1437,6 @@
 	<Item id="imperial_scale_armor" name="Imperial Scale Armor Over Double Mail" mesh="imperial_lamellar_b" culture="Culture.empire" weight="35.5" Type="BodyArmor" appearance="3" difficulty="0" subtype="body_armor">
 		<ItemComponent>
 			<Armor body_armor="135" leg_armor="122" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="86"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true"/>
-	</Item>
-	<Item id="aserai_full_scale_armor_on_chain" name="{=*}Mastercrafted Southern Scale over Chain Hauberk" mesh="aserai_full_scale_armor_on_chain" culture="Culture.aserai" weight="28" Type="BodyArmor" appearance="7" lod_atlas_index="3">
-		<ItemComponent>
-			<Armor body_armor="90" leg_armor="65" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="65"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true"/>
-	</Item>
-	<Item id="aserai_scale_armor_on_cloth" name="{=*}Mastercrafted Southern Scale Mail" mesh="aserai_scale_armor_on_cloth" culture="Culture.aserai" weight="18" Type="BodyArmor" appearance="6" lod_atlas_index="3">
-		<ItemComponent>
-			<Armor body_armor="70" leg_armor="20" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="45"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true"/>
-	</Item>
-	<Item id="aserai_scale_armor_on_chain" name="{=*}Mastercrafted Southern Scale over Chain Mail" mesh="aserai_scale_armor_on_chain" culture="Culture.aserai" weight="22" Type="BodyArmor" appearance="6" lod_atlas_index="3">
-		<ItemComponent>
-			<Armor body_armor="85" leg_armor="30" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="62"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true"/>
-	</Item>
-	<Item id="aserai_chain_plate_armor_a" name="{=*}Southern Reinforced Mail Armor" mesh="aserai_chain_plate_armor_a" culture="Culture.aserai" weight="22" Type="BodyArmor" appearance="4" lod_atlas_index="3">
-		<ItemComponent>
-			<Armor body_armor="60" leg_armor="35" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="40"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true"/>
-	</Item>
-	<Item id="aserai_chain_plate_armor_b" name="{=*}Southern Reinforced Sleeveless Mail Armor" mesh="aserai_chain_plate_armor_b" culture="Culture.aserai" weight="19" Type="BodyArmor" appearance="6" lod_atlas_index="3">
-		<ItemComponent>
-			<Armor body_armor="60" leg_armor="35" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="25"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true"/>
-	</Item>
-	<Item id="aserai_chain_plate_armor_c" name="{=*}Southern Reinforced Mail Vest" mesh="aserai_chain_plate_armor_c" culture="Culture.aserai" weight="15" Type="BodyArmor" appearance="4" lod_atlas_index="3">
-		<ItemComponent>
-			<Armor body_armor="60" leg_armor="10" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="25"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true"/>
-	</Item>
-	<Item id="aserai_chain_plate_armor_d" name="{=*}Southern Reinforced Short Mail Armor" mesh="aserai_chain_plate_armor_d" culture="Culture.aserai" weight="18" Type="BodyArmor" appearance="4" lod_atlas_index="3">
-		<ItemComponent>
-			<Armor body_armor="60" leg_armor="10" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="40"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
