@@ -38,6 +38,8 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 	public bool ChargeCavalry = false;
 	public bool ChargeHorseArchers = false;
 
+	public bool isFirstCharge = true;
+
 	public override float NavmeshlessTargetPositionPenalty => 1f;
 
 	public RBMBehaviorCavalryCharge(Formation formation)
@@ -46,9 +48,9 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 		_lastTarget = null;
 		base.CurrentOrder = MovementOrder.MovementOrderCharge;
 		CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
-		_chargeState = ChargeState.Undetermined;
+		_chargeState = ChargeState.Charging;
 		base.BehaviorCoherence = 0.5f;
-		_desiredChargeStopDistance = 110f;
+		_desiredChargeStopDistance = 120f;
 	}
 
 	public override void TickOccasionally()
@@ -85,7 +87,33 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                     {
 						if (_lastTarget == null || _lastTarget.Formation.CountOfUnits == 0)
 						{
-							result = ChargeState.Undetermined;
+							Formation correctEnemy = null;
+							if (ChargeInfantry)
+							{
+								correctEnemy = RealisticBattleAiModule.Utilities.FindSignificantEnemy(base.Formation, true, false, false, false, false);
+							}
+							else if (ChargeArchers)
+							{
+								correctEnemy = RealisticBattleAiModule.Utilities.FindSignificantEnemy(base.Formation, false, true, false, false, false);
+							}
+							else if (ChargeCavalry)
+							{
+								correctEnemy = RealisticBattleAiModule.Utilities.FindSignificantEnemy(base.Formation, false, false, true, true, true);
+							}
+							else
+							{
+								correctEnemy = RealisticBattleAiModule.Utilities.FindSignificantEnemy(base.Formation, true, true, false, false, false);
+							}
+							if (correctEnemy != null)
+							{
+								_lastTarget = correctEnemy.QuerySystem;
+							}
+							else
+							{
+								_lastTarget = base.Formation.QuerySystem.ClosestEnemyFormation;
+							}
+							_initialChargeDirection = _lastTarget.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition;
+							//result = ChargeState.Undetermined;
 						}
 						else if (_initialChargeDirection.DotProduct(_lastTarget.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition) <= 0f)
 						{
@@ -105,6 +133,10 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 				case ChargeState.ChargingPast:
 					if (_chargingPastTimer.Check(Mission.Current.CurrentTime) || base.Formation.QuerySystem.AveragePosition.Distance(_lastTarget.MedianPosition.AsVec2) >= _desiredChargeStopDistance)
 					{
+						if(base.Formation.QuerySystem.AveragePosition.Distance(_lastTarget.MedianPosition.AsVec2) >= _desiredChargeStopDistance)
+                        {
+							_lastReformDestination = base.Formation.QuerySystem.MedianPosition;
+                        }
 						result = ChargeState.Reforming;
 					}
 					break;
@@ -137,7 +169,19 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 			return;
 		}
 
-		ChargeState chargeState = CheckAndChangeState();	
+		ChargeState chargeState = CheckAndChangeState();
+
+        if (isFirstCharge)
+        {
+			Vec2 vec4 = (_lastTarget.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition).Normalized();
+			WorldPosition medianPosition3 = _lastTarget.MedianPosition;
+			Vec2 vec5 = medianPosition3.AsVec2 + vec4 * _desiredChargeStopDistance;
+			medianPosition3.SetVec2(vec5);
+			_lastReformDestination = medianPosition3;
+			base.CurrentOrder = MovementOrder.MovementOrderMove(medianPosition3);
+			CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec4);
+			isFirstCharge = false;
+        }
 
 		if (chargeState != _chargeState)
 		{
@@ -176,14 +220,22 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 						}
 						_initialChargeDirection = _lastTarget.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition;
 						float value = _initialChargeDirection.Normalize();
-						_desiredChargeStopDistance = 110f;
+						_desiredChargeStopDistance = 120f;
 						break;
 					}
 				case ChargeState.ChargingPast:
-					_chargingPastTimer = new Timer(Mission.Current.CurrentTime, 22f);
+					_chargingPastTimer = new Timer(Mission.Current.CurrentTime, 19f);
 					break;
 				case ChargeState.Reforming:
-					_reformTimer = new Timer(Mission.Current.CurrentTime, 11f);
+     //               if (isFirstCharge)
+     //               {
+					//	_reformTimer = new Timer(Mission.Current.CurrentTime, 0.1f);
+					//	isFirstCharge = false;
+					//}
+					//else
+                    //{
+						_reformTimer = new Timer(Mission.Current.CurrentTime, 10f);
+					//}
 					break;
 				case ChargeState.Bracing:
 					{
@@ -192,48 +244,52 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 						break;
 					}
 			}
-		}
 
-		switch (_chargeState)
-		{
-			case ChargeState.Undetermined:
-                {
-					base.CurrentOrder = MovementOrder.MovementOrderCharge;
+			switch (_chargeState)
+			{
+				case ChargeState.Undetermined:
+					{
+						base.CurrentOrder = MovementOrder.MovementOrderCharge;
+						CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
+						break;
+					}
+				case ChargeState.Charging:
+					{
+						Vec2 vec4 = (_lastTarget.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition).Normalized();
+						WorldPosition medianPosition3 = _lastTarget.MedianPosition;
+						Vec2 vec5 = medianPosition3.AsVec2 + vec4 * _desiredChargeStopDistance;
+						medianPosition3.SetVec2(vec5);
+						_lastReformDestination = medianPosition3;
+						base.CurrentOrder = MovementOrder.MovementOrderMove(medianPosition3);
+						CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec4);
+						break;
+					}
+				case ChargeState.ChargingPast:
+					{
+						//Vec2 vec2 = (base.Formation.QuerySystem.AveragePosition - _lastTarget.MedianPosition.AsVec2).Normalized();
+						//_lastReformDestination = _lastTarget.MedianPosition;
+						//Vec2 vec3 = _lastTarget.MedianPosition.AsVec2 + vec2 * _desiredChargeStopDistance;
+						//_lastReformDestination.SetVec2(vec3);
+						base.CurrentOrder = MovementOrder.MovementOrderMove(_lastReformDestination);
+						//CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(_initialChargeDirection);
+						CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
+						break;
+					}
+				case ChargeState.Reforming:
+					base.CurrentOrder = MovementOrder.MovementOrderMove(_lastReformDestination);
 					CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
 					break;
-				}
-			case ChargeState.Charging:
-				{
-					Vec2 vec4 = (_lastTarget.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition).Normalized();
-					WorldPosition medianPosition3 = _lastTarget.MedianPosition;
-					Vec2 vec5 = medianPosition3.AsVec2 + vec4 * _desiredChargeStopDistance;
-					medianPosition3.SetVec2(vec5);
-					base.CurrentOrder = MovementOrder.MovementOrderMove(medianPosition3);
-					CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec4);
-					break;
-				}
-			case ChargeState.ChargingPast:
-				{
-					Vec2 vec2 = (base.Formation.QuerySystem.AveragePosition - _lastTarget.MedianPosition.AsVec2).Normalized();
-					_lastReformDestination = _lastTarget.MedianPosition;
-					Vec2 vec3 = _lastTarget.MedianPosition.AsVec2 + vec2 * _desiredChargeStopDistance;
-					_lastReformDestination.SetVec2(vec3);
-					base.CurrentOrder = MovementOrder.MovementOrderMove(_lastReformDestination);
-					CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec2);
-					break;
-				}
-			case ChargeState.Reforming:
-				base.CurrentOrder = MovementOrder.MovementOrderMove(_lastReformDestination);
-				CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
-				break;
-			case ChargeState.Bracing:
-				{
-					WorldPosition medianPosition = base.Formation.QuerySystem.MedianPosition;
-					medianPosition.SetVec2(_bracePosition);
-					base.CurrentOrder = MovementOrder.MovementOrderMove(medianPosition);
-					break;
-				}
+				case ChargeState.Bracing:
+					{
+						WorldPosition medianPosition = base.Formation.QuerySystem.MedianPosition;
+						medianPosition.SetVec2(_bracePosition);
+						base.CurrentOrder = MovementOrder.MovementOrderMove(medianPosition);
+						break;
+					}
+			}
 		}
+
+		
 	}
 
 	protected override void OnBehaviorActivatedAux()
