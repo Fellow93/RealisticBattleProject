@@ -294,7 +294,7 @@ namespace RealisticBattleCombatModule
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Stone") ||
                     weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Boulder"))
                 {
-                    physicalDamage = (length * (weaponItem.Weight));
+                    physicalDamage = (length * length * (weaponItem.Weight) * 0.5f);
                 }
 
                 baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining;
