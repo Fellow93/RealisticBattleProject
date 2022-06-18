@@ -2269,7 +2269,7 @@ namespace RealisticBattleCombatModule
             ref readonly Vec3 victimAgentPosition = ref attackInformation.VictimAgentPosition;
             float num = ChargeDamageDotProduct(victimAgentPosition, chargerMovementDirection, acd.CollisionGlobalPosition);
             float num2 = vec2.Length * num;
-            baseMagnitude = (num2 * num2 * num * attackInformation.AttackerAgentMountChargeDamageProperty) / 2500f;
+            baseMagnitude = (num2 * num2 * attackInformation.AttackerAgentMountChargeDamageProperty * 0.5f) / 520f;
             specialMagnitude = baseMagnitude;
 
             return false;
