@@ -44,8 +44,9 @@
   </PropertyGroup>
   <!-- Bannerlord Native Assemblies -->
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\packages\Harmony.2.1.1.0\net472\0Harmony.dll</HintPath>
+    <Reference Include="0Harmony, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Harmony.2.2.1.0\net472\0Harmony.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="SandBox">
       <HintPath>..\..\SandBox\bin\Win64_Shipping_Client\SandBox.dll</HintPath>
@@ -194,6 +195,7 @@
     <Compile Include="AiModule\SiegePatches.cs" />
     <Compile Include="AiModule\SpawningPatches.cs" />
     <Compile Include="AiModule\Tactics.cs" />
+    <Compile Include="AiModule\Vroom.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />

@@ -146,29 +146,6 @@ namespace RealisticBattleAiModule
                 base.OnMissionBehaviorInitialize(mission);
             }
         }
-
-        protected override void OnApplicationTick(float dt)
-        {
-            if (Mission.Current == null)
-            {
-                return;
-            }
-            try{ 
-                if (ScreenManager.TopScreen != null)
-                {
-                    MissionScreen missionScreen = ScreenManager.TopScreen as MissionScreen;
-                    if (missionScreen != null && missionScreen.InputManager != null && missionScreen.InputManager.IsControlDown() && missionScreen.InputManager.IsKeyPressed(InputKey.V))
-                    {
-                        Mission.Current.SetFastForwardingFromUI(!Mission.Current.IsFastForward);
-                        InformationManager.DisplayMessage(new InformationMessage("Vroom = " + Mission.Current.IsFastForward, Color.FromUint(4282569842u)));
-                    }
-                }
-            }
-            catch (Exception)
-            {
-            }
-        }
-
     }
 
 }
