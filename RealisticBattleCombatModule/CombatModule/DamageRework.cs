@@ -302,13 +302,17 @@ namespace RealisticBattleCombatModule
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
                 {
                     //baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f)) * RBMCMConfig.ThrustMagnitudeModifier;
-                    if ((DamageTypes)acd.DamageType == DamageTypes.Cut || (DamageTypes)acd.DamageType == DamageTypes.Pierce)
+                    if ((DamageTypes)acd.DamageType == DamageTypes.Pierce)
                     {
                         baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f)) * RBMCMConfig.ThrustMagnitudeModifier;
                     }
+                    else if ((DamageTypes)acd.DamageType == DamageTypes.Cut)
+                    {
+                        baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f));
+                    }
                     else
                     {
-                        baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f)) * 0.25f;
+                        baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f)) * 0.5f;
                     }
                 }
 
@@ -337,7 +341,7 @@ namespace RealisticBattleCombatModule
                     }
                     else
                     {
-                        baseMagnitude = momentumDamage * missileTotalDamage * momentumRemaining; // momentum makes more sense for blunt attacks, maybe 500 damage is needed for sling projectiles
+                        baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining; // momentum makes more sense for blunt attacks, maybe 500 damage is needed for sling projectiles
                     }
                 }
                 specialMagnitude = baseMagnitude;
@@ -783,7 +787,7 @@ namespace RealisticBattleCombatModule
                                 }
                                 else if (damageType == DamageTypes.Blunt)
                                 {
-                                    skillBasedDamage = 0.25f * (magnitude + 40f + (effectiveSkill * 0.53f));
+                                    skillBasedDamage = magnitude + 0.50f * (40f + (effectiveSkill * 0.53f));
                                 }
                                 else
                                 {
@@ -803,7 +807,7 @@ namespace RealisticBattleCombatModule
                                 }
                                 else if (damageType == DamageTypes.Blunt)
                                 {
-                                    skillBasedDamage = 0.25f * (magnitude + (40f + (effectiveSkill * 0.53f)) * 1.3f);
+                                    skillBasedDamage = magnitude * 1.3f + 0.5f * ((40f + (effectiveSkill * 0.53f)) * 1.3f);
                                 }
                                 else
                                 {
@@ -821,7 +825,7 @@ namespace RealisticBattleCombatModule
                                 skillBasedDamage = magnitude + 60f + (effectiveSkill * 0.4f);
                                 if (damageType == DamageTypes.Blunt)
                                 {
-                                    skillBasedDamage = 0.25f * (magnitude + 60f + (effectiveSkill * 0.4f));
+                                    skillBasedDamage = magnitude + 0.5f * (60f + (effectiveSkill * 0.4f));
                                 }
                                 if (magnitude > 1f)
                                 {
@@ -834,7 +838,7 @@ namespace RealisticBattleCombatModule
                                 skillBasedDamage = magnitude + (60f + (effectiveSkill * 0.4f)) * 1.15f;
                                 if (damageType == DamageTypes.Blunt)
                                 {
-                                    skillBasedDamage = 0.25f * (magnitude + (60f + (effectiveSkill * 0.4f)) * 1.15f);
+                                    skillBasedDamage = magnitude * 1.15f + 0.5f * ((60f + (effectiveSkill * 0.4f)) * 1.15f);
                                 }
                                 if (magnitude > 1f)
                                 {
@@ -847,7 +851,7 @@ namespace RealisticBattleCombatModule
                                 skillBasedDamage = magnitude + (60f + (effectiveSkill * 0.4f)) * 1.3f;
                                 if (damageType == DamageTypes.Blunt)
                                 {
-                                    skillBasedDamage = 0.25f * (magnitude + (60f + (effectiveSkill * 0.4f)) * 1.30f);
+                                    skillBasedDamage = magnitude * 1.3f + 0.5f * ((60f + (effectiveSkill * 0.4f)) * 1.30f);
                                 }
                                 if (magnitude > 1f)
                                 {
@@ -895,7 +899,7 @@ namespace RealisticBattleCombatModule
                                 }
                                 else if (damageType == DamageTypes.Blunt && !isPassiveUsage)
                                 {
-                                    skillBasedDamage = magnitude + 30f + (effectiveSkill * 0.13f);
+                                    skillBasedDamage = magnitude + 30f + (effectiveSkill * 0.26f);
                                 }
                                 else
                                 {
@@ -935,7 +939,7 @@ namespace RealisticBattleCombatModule
                                             {
                                                 magnitude = poplarBreakTreshold;
                                             }
-                                            magnitude *= 0.5f;
+                                            magnitude *= 1f;
                                         }
 
                                         else
@@ -989,7 +993,7 @@ namespace RealisticBattleCombatModule
                                 }
                                 else if (damageType == DamageTypes.Blunt && !isPassiveUsage)
                                 {
-                                    skillBasedDamage = magnitude + (30f + (effectiveSkill * 0.13f) * 1.3f);
+                                    skillBasedDamage = magnitude + (30f + (effectiveSkill * 0.26f) * 1.3f);
                                 }
                                 else
                                 {
@@ -1028,7 +1032,7 @@ namespace RealisticBattleCombatModule
                                             {
                                                 magnitude = poplarBreakTreshold;
                                             }
-                                            magnitude *= 0.5f;
+                                            magnitude *= 1f;
                                         }
 
                                         else
