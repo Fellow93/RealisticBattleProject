@@ -11,9 +11,9 @@ namespace RealisticBattleCombatModule
     public static class RBMCMConfig
     {
         public static Dictionary<string, float> dict = new Dictionary<string, float> { };
-        public static float ThrustMagnitudeModifier = 0.014f;
-        public static float OneHandedThrustDamageBonus = 71.42f;
-        public static float TwoHandedThrustDamageBonus = 71.42f;
+        public static float ThrustMagnitudeModifier = 0.025f;
+        public static float OneHandedThrustDamageBonus = 40f;
+        public static float TwoHandedThrustDamageBonus = 40f;
     }
     
     public static class MyPatcher
