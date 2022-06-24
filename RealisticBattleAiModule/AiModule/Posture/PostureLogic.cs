@@ -200,7 +200,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                         {
                                             InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, perfect parry", Color.FromUint(4282569842u)));
                                         }
-                                        if (!victimAgent.HasMount)
+                                        if (!attackerAgent.HasMount)
                                         {
                                             makePostureRiposteBlow(ref __instance, ref __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
                                         }
@@ -518,7 +518,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                 //if (defenderWeaponLength > 0f && attackerWeaponLength > 0f)
                 //{
                 //    float relativeSpeed = (defenderAgent.Velocity - attackerAgent.Velocity).Length;
-                //    lwrpostureModifier = 1f+ ((attackerWeaponLength / defenderWeaponLength)*0.15f) + ((attackerWeaponWeight / defenderWeaponWeight) * 0.25f) + relativeSpeed * 0.25f;
+                //    lwrpostureModifier = 1f + ((attackerWeaponLength / defenderWeaponLength) * 0.1f) + ((attackerWeaponWeight / defenderWeaponWeight) * 0.25f) + relativeSpeed * 0.25f;
                 //}
                 //else
                 //{
@@ -720,24 +720,24 @@ namespace RealisticBattleAiModule.AiModule.Posture
                 attackerEffectiveStrengthSkill = attackerEffectiveStrengthSkill / strengthSkillModifier;
 
                 float lwrpostureModifier = 1f;
-                //if (defenderweaponlength > 0f && attackerweaponlength > 0f)
+                //if (defenderWeaponLength > 0f && attackerWeaponLength > 0f)
                 //{
-                //    float relativespeed = (attackeragent.velocity - defenderagent.velocity).length;
-                //    lwrposturemodifier = 1f + ((defenderweaponlength / attackerweaponlength) * 0.2f) + ((defenderweaponweight / attackerweaponweight) * 0.2f) + relativespeed * 0.2f;
+                //    float relativeSpeed = (attackerAgent.Velocity - defenderAgent.Velocity).Length;
+                //    lwrpostureModifier = 1f + ((defenderWeaponLength / attackerWeaponLength) * 0.2f) + ((defenderWeaponWeight / attackerWeaponWeight) * 0.2f) + relativeSpeed * 0.2f;
                 //}
                 //else
                 //{
-                //    if (defenderagent.getwieldeditemindex(agent.handindex.offhand) != equipmentindex.none)
+                //    if (defenderAgent.GetWieldedItemIndex(Agent.HandIndex.OffHand) != EquipmentIndex.None)
                 //    {
-                //        if (defenderagent.equipment[defenderagent.getwieldeditemindex(agent.handindex.offhand)].isshield())
+                //        if (defenderAgent.Equipment[defenderAgent.GetWieldedItemIndex(Agent.HandIndex.OffHand)].IsShield())
                 //        {
-                //            missionweapon defenderweapon = defenderagent.equipment[defenderagent.getwieldeditemindex(agent.handindex.offhand)];
+                //            MissionWeapon defenderWeapon = defenderAgent.Equipment[defenderAgent.GetWieldedItemIndex(Agent.HandIndex.OffHand)];
 
-                //            if (defenderweapon.currentusageitem != null)
+                //            if (defenderWeapon.CurrentUsageItem != null)
                 //            {
-                //                defenderweaponweight = defenderweapon.getweight();
-                //                float relativespeed = (defenderagent.velocity - attackeragent.velocity).length;
-                //                lwrposturemodifier = 1f + ((defenderweaponweight / attackerweaponweight) * 0.2f) + relativespeed * 0.2f;
+                //                defenderWeaponWeight = defenderWeapon.GetWeight();
+                //                float relativeSpeed = (defenderAgent.Velocity - attackerAgent.Velocity).Length;
+                //                lwrpostureModifier = 1f + ((defenderWeaponWeight / attackerWeaponWeight) * 0.2f) + relativeSpeed * 0.2f;
                 //            }
                 //        }
                 //    }

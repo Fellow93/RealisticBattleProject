@@ -3,7 +3,6 @@ using TaleWorlds.Library;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Xml;
-using TaleWorlds.Core;
 using TaleWorlds.Localization;
 using System.IO;
 

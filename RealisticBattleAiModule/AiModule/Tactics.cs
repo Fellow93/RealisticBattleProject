@@ -316,7 +316,7 @@ namespace RealisticBattleAiModule
                 {
                     float power = ___team.QuerySystem.TeamPower;
                     float enemyPower = ___team.QuerySystem.EnemyTeams.Sum((TeamQuerySystem et) => et.TeamPower);
-                    if (power / enemyPower <= 0.125f)
+                    if (power / enemyPower <= 0.18f)
                     {
                         foreach (Formation formation in ___team.Formations.ToList())
                         {
@@ -324,6 +324,7 @@ namespace RealisticBattleAiModule
                             formation.AI.SetBehaviorWeight<BehaviorRetreat>(100f);
                         }
                         __result = 1000f;
+                        return false;
                     }
                     else
                     {
@@ -362,7 +363,7 @@ namespace RealisticBattleAiModule
                 {
                     ____cavalry.AI.ResetBehaviorWeights();
                     ____cavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
-                    ____cavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
+                    ____cavalry.AI.SetBehaviorWeight<RBMBehaviorCavalryCharge>(1f);
                     ____cavalry.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f);
                     //____cavalry.AI.SetBehaviorWeight<BehaviorTacticalCharge>(0f);
                     //____cavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
