@@ -4,9 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using static RealisticBattleAiModule.Tactics;
 using static TaleWorlds.MountAndBlade.ArrangementOrder;
@@ -1023,6 +1025,15 @@ namespace RealisticBattleAiModule
         [HarmonyPatch("CalculateCurrentOrder")]
         static bool PrefixCalculateCurrentOrder(ref BehaviorCharge __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
         {
+            if (!(__instance.Formation.Team.IsPlayerTeam || __instance.Formation.Team.IsPlayerAlly) && MobileParty.MainParty != null && MobileParty.MainParty.MapEvent != null)
+            {
+                TextObject defenderName = MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Defender).Name;
+                TextObject attackerName = MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Attacker).Name;
+                if (defenderName.Contains("Looter") || defenderName.Contains("Bandit") || defenderName.Contains("Raider") || attackerName.Contains("Looter") || attackerName.Contains("Bandit") || attackerName.Contains("Raider"))
+                {
+                    return true;
+                }
+            }
             if (__instance.Formation != null && (__instance.Formation.QuerySystem.IsInfantryFormation || __instance.Formation.QuerySystem.IsRangedFormation) && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
                 Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true, 0.7f);
