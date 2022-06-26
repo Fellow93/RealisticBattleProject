@@ -1589,20 +1589,21 @@ namespace RealisticBattleAiModule
                 {
                     Vec2 vec = (enemyQuerySystem.AveragePosition - f.QuerySystem.AveragePosition).Normalized();
                     float distance = enemyQuerySystem.AveragePosition.Distance(f.QuerySystem.AveragePosition);
-                    float num = 2f;
+                    float num = 5f;
                     if (enemyQuerySystem.FormationPower < f.QuerySystem.FormationPower * 0.2f)
                     {
                         num = 0.1f;
                     }
                     newPosition.SetVec2(newPosition.AsVec2 - vec * num);
 
-                    if (distance > 5f)
+                    if (distance > 7f)
                     {
                         positionsStorage[f] = newPosition;
                         __result = newPosition;
                     }
                     else
                     {
+                        __instance = MovementOrder.MovementOrderChargeToTarget(enemyFormation);
                         WorldPosition tempPos = WorldPosition.Invalid;
                         if (positionsStorage.TryGetValue(f, out tempPos))
                         {
