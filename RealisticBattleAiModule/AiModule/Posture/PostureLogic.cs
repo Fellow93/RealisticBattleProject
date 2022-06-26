@@ -26,6 +26,29 @@ namespace RealisticBattleAiModule.AiModule.Posture
         {
             static void Postfix(ref Agent __instance, bool isOffHand, bool isWieldedInstantly, bool isWieldedOnSpawn)
             {
+                float playerPostureModifier;
+                switch (XmlConfig.dict["Global.PlayerPostureMultiplier"]) {
+                    case 0:
+                        {
+                            playerPostureModifier = 1f;
+                            break;
+                        }
+                    case 1:
+                        {
+                            playerPostureModifier = 1.5f;
+                            break;
+                        }
+                    case 2:
+                        {
+                            playerPostureModifier = 2f;
+                            break;
+                        }
+                    default:
+                        {
+                            playerPostureModifier = 1f;
+                            break;
+                        }
+                }
                 if (XmlConfig.dict["Global.PostureEnabled"] == 1)
                 {
                     //AgentPostures.values[__instance] = new Posture();
@@ -79,6 +102,12 @@ namespace RealisticBattleAiModule.AiModule.Posture
                                 posture.regenPerTick = (athleticRegenBase * (baseModifier + (effectiveAthleticSkill / strengthSkillModifier))) + (weaponSkillRegenBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
                                 //posture.maxPosture = 100f;
                                 //posture.regenPerTick = 0.035f;
+                            }
+
+                            if (__instance.IsPlayerControlled)
+                            {
+                                posture.maxPosture *= playerPostureModifier;
+                                posture.regenPerTick *= playerPostureModifier;
                             }
 
                             posture.posture = posture.maxPosture * oldPosturePercentage;

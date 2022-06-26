@@ -754,20 +754,37 @@ namespace RealisticBattleAiModule
             MissionState missionState = Game.Current.GameStateManager.ActiveState as MissionState;
             if (missionState != null)
             {
-                if (missionState.MissionName.Equals("EnhancedBattleTestFieldBattle") || missionState.MissionName.Equals("EnhancedBattleTestSiegeBattle"))
+                if (XmlConfig.dict["Global.VanillaCombatAi"] == 0)
                 {
-                    return 1.0f;
+                    if (missionState.MissionName.Equals("EnhancedBattleTestFieldBattle") || missionState.MissionName.Equals("EnhancedBattleTestSiegeBattle"))
+                    {
+                        return 1.0f;
+                    }
+                    switch (CampaignOptions.CombatAIDifficulty)
+                    {
+                        case CampaignOptions.Difficulty.VeryEasy:
+                            return 0.70f;
+                        case CampaignOptions.Difficulty.Easy:
+                            return 0.85f;
+                        case CampaignOptions.Difficulty.Realistic:
+                            return 1.0f;
+                        default:
+                            return 1.0f;
+                    }
                 }
-                switch (CampaignOptions.CombatAIDifficulty)
+                else
                 {
-                    case CampaignOptions.Difficulty.VeryEasy:
-                        return 0.70f;
-                    case CampaignOptions.Difficulty.Easy:
-                        return 0.85f;
-                    case CampaignOptions.Difficulty.Realistic:
-                        return 1.0f;
-                    default:
-                        return 1.0f;
+                    switch (CampaignOptions.CombatAIDifficulty)
+                    {
+                        case CampaignOptions.Difficulty.VeryEasy:
+                            return 0.1f;
+                        case CampaignOptions.Difficulty.Easy:
+                            return 0.32f;
+                        case CampaignOptions.Difficulty.Realistic:
+                            return 0.96f;
+                        default:
+                            return 0.5f;
+                    }
                 }
             }
             else
@@ -948,7 +965,7 @@ namespace RealisticBattleAiModule
 
         public static string GetConfigFilePath()
         {
-            return System.IO.Path.Combine(GetConfigFolderPath(), "config_2.xml");
+            return System.IO.Path.Combine(GetConfigFolderPath(), "config_3.xml");
         }
 
         public static string GetConfigFolderPath()

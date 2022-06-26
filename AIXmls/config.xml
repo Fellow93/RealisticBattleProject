@@ -4,6 +4,8 @@
 	<Global>
 		<SiegeTowersEnabled>1</SiegeTowersEnabled>
 		<PostureEnabled>1</PostureEnabled>
+		<PlayerPostureMultiplier>0</PlayerPostureMultiplier>
 		<PostureGUIEnabled>1</PostureGUIEnabled>
+		<VanillaCombatAi>0</VanillaCombatAi>
 	</Global>
 </config>
