@@ -13,6 +13,7 @@ using TaleWorlds.ScreenSystem;
 using System;
 using TaleWorlds.InputSystem;
 using TaleWorlds.MountAndBlade.View.Screens;
+using TaleWorlds.CampaignSystem.MapEvents;
 
 namespace RealisticBattleAiModule
 {
@@ -155,7 +156,7 @@ namespace RealisticBattleAiModule
             }
             try
             {
-                if (ScreenManager.TopScreen != null && (Mission.Current.IsFieldBattle || Mission.Current.IsSiegeBattle))
+                if (ScreenManager.TopScreen != null && (Mission.Current.IsFieldBattle || Mission.Current.IsSiegeBattle || Mission.Current.Mode == MissionMode.Tournament || (MapEvent.PlayerMapEvent != null && MapEvent.PlayerMapEvent.IsHideoutBattle)))
                 {
                     MissionScreen missionScreen = ScreenManager.TopScreen as MissionScreen;
                     if (missionScreen != null && missionScreen.InputManager != null && missionScreen.InputManager.IsControlDown() && missionScreen.InputManager.IsKeyPressed(InputKey.V))

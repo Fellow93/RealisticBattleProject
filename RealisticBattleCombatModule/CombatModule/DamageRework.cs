@@ -1,17 +1,19 @@
 ﻿using HarmonyLib;
 using Helpers;
-using JetBrains.Annotations;
-using SandBox;
 using SandBox.GameComponents;
 using SandBox.Missions.MissionLogics;
+using SandBox.Tournaments.MissionLogics;
 using StoryMode.GameComponents;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.CampaignSystem.TournamentGames;
 using TaleWorlds.Core;
 using TaleWorlds.DotNet;
 using TaleWorlds.Engine;
@@ -19,6 +21,10 @@ using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.CampaignSystem.ComponentInterfaces.CombatXpModel;
 using static TaleWorlds.MountAndBlade.Agent;
+using TaleWorlds.CampaignSystem.Extensions;
+using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.Roster;
+using System.Diagnostics;
 
 namespace RealisticBattleCombatModule
 {
@@ -2881,6 +2887,325 @@ namespace RealisticBattleCombatModule
         {
             __result = 1f;
             return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(TournamentFightMissionController))]
+    class TournamentFightMissionControllerPatch
+    {
+        [HarmonyPostfix]
+        [HarmonyPatch("PrepareForMatch")]
+        static void GetParticipantCharactersPrefix(ref TournamentFightMissionController __instance, ref TournamentMatch ____match, ref CultureObject ____culture)
+        {
+            //if (____match.IsPlayerParticipating())
+            //{
+            foreach (TournamentTeam team in ____match.Teams)
+            {
+                foreach (TournamentParticipant participant in team.Participants)
+                {
+                    for (EquipmentIndex index = EquipmentIndex.WeaponItemBeginSlot; index < EquipmentIndex.ExtraWeaponSlot; index++)
+                    {
+                        if (participant.MatchEquipment[index].Item != null && participant.MatchEquipment[index].Item.Type == ItemObject.ItemTypeEnum.Bow)
+                        {
+                            int playerTier = FightTournamentGamePatch.calculatePlayerTournamentTier();
+                            switch (playerTier)
+                            {
+                                case 1:
+                                    {
+                                        participant.MatchEquipment.AddEquipmentToSlotWithoutAgent(index, new EquipmentElement(Game.Current.ObjectManager.GetObject<ItemObject>("hunting_bow")));
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        participant.MatchEquipment.AddEquipmentToSlotWithoutAgent(index, new EquipmentElement(Game.Current.ObjectManager.GetObject<ItemObject>("mountain_hunting_bow")));
+                                        break;
+                                    }
+                                case 3:
+                                    {
+                                        participant.MatchEquipment.AddEquipmentToSlotWithoutAgent(index, new EquipmentElement(Game.Current.ObjectManager.GetObject<ItemObject>("steppe_bow")));
+                                        break;
+                                    }
+                                case 4:
+                                    {
+                                        participant.MatchEquipment.AddEquipmentToSlotWithoutAgent(index, new EquipmentElement(Game.Current.ObjectManager.GetObject<ItemObject>("composite_steppe_bow")));
+                                        break;
+                                    }
+                                case 5:
+                                    {
+                                        participant.MatchEquipment.AddEquipmentToSlotWithoutAgent(index, new EquipmentElement(Game.Current.ObjectManager.GetObject<ItemObject>("steppe_war_bow")));
+                                        break;
+                                    }
+                                case 6:
+                                    {
+                                        participant.MatchEquipment.AddEquipmentToSlotWithoutAgent(index, new EquipmentElement(Game.Current.ObjectManager.GetObject<ItemObject>("noble_bow")));
+                                        break;
+                                    }
+                            }
+                        }
+                        if (participant.MatchEquipment[index].Item != null && participant.MatchEquipment[index].Item.Type == ItemObject.ItemTypeEnum.Arrows)
+                        {
+                            int playerTier = FightTournamentGamePatch.calculatePlayerTournamentTier();
+                            switch (playerTier)
+                            {
+                                case 1:
+                                    {
+                                        participant.MatchEquipment.AddEquipmentToSlotWithoutAgent(index, new EquipmentElement(Game.Current.ObjectManager.GetObject<ItemObject>("range_arrows")));
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        participant.MatchEquipment.AddEquipmentToSlotWithoutAgent(index, new EquipmentElement(Game.Current.ObjectManager.GetObject<ItemObject>("barbed_arrows")));
+                                        break;
+                                    }
+                                case 3:
+                                    {
+                                        participant.MatchEquipment.AddEquipmentToSlotWithoutAgent(index, new EquipmentElement(Game.Current.ObjectManager.GetObject<ItemObject>("bodkin_arrows_b")));
+                                        break;
+                                    }
+                                case 4:
+                                    {
+                                        participant.MatchEquipment.AddEquipmentToSlotWithoutAgent(index, new EquipmentElement(Game.Current.ObjectManager.GetObject<ItemObject>("bodkin_arrows_a")));
+                                        break;
+                                    }
+                                case 5:
+                                    {
+                                        participant.MatchEquipment.AddEquipmentToSlotWithoutAgent(index, new EquipmentElement(Game.Current.ObjectManager.GetObject<ItemObject>("GRE_hardened_125_gr_arrows")));
+                                        break;
+                                    }
+                            }
+                        }
+                    }
+                }
+            }
+            //}
+        }
+    }
+
+    [HarmonyPatch(typeof(FightTournamentGame))]
+    public static class FightTournamentGamePatch
+    {
+        public static List<CharacterObject> FillTroopListUntilTier(CharacterObject starterTroop, int tier)
+        {
+            List<CharacterObject> troops = new List<CharacterObject>();
+            List<CharacterObject> lastUpgradeTargets = new List<CharacterObject>();
+
+            troops.Add(starterTroop);
+
+            lastUpgradeTargets.Clear();
+            lastUpgradeTargets.Add(starterTroop);
+
+            for (int i = 1; i < tier; i++)
+            {
+                List<CharacterObject> newUpgradeTargets = new List<CharacterObject>();
+                foreach (CharacterObject co in lastUpgradeTargets)
+                {
+                    troops.AddRange(co.UpgradeTargets);
+                    newUpgradeTargets.AddRange(co.UpgradeTargets);
+                }
+                lastUpgradeTargets = newUpgradeTargets;
+            }
+
+            return troops;
+        }
+
+        public static int calculatePlayerTournamentTier()
+        {
+            int playerLevelTier = MathF.Min(MathF.Max(MathF.Ceiling(((float)CharacterObject.PlayerCharacter.Level - 5f) / 5f), 0), Campaign.Current.Models.PartyTroopUpgradeModel.MaxCharacterTier);
+            Equipment playerEquipment = CharacterObject.PlayerCharacter.RandomBattleEquipment;
+            float armorTierSum = 0f;
+            int countOfArmor = 0;
+            for (EquipmentIndex index = EquipmentIndex.ArmorItemBeginSlot; index < EquipmentIndex.ArmorItemEndSlot; index++)
+            {
+                if (playerEquipment[index].Item != null)
+                {
+                    armorTierSum += playerEquipment[index].Item.Tierf;
+                    countOfArmor++;
+                }
+            }
+            int playerArmorTier = countOfArmor > 0 ? MathF.Round(armorTierSum / countOfArmor) : 0;
+
+            int playerTier = playerLevelTier > armorTierSum ? playerLevelTier : playerArmorTier;
+            return playerTier;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch("GetParticipantCharacters")]
+        static bool GetParticipantCharactersPrefix(ref FightTournamentGame __instance, ref List<CharacterObject> __result, Settlement settlement, bool includePlayer = true, bool includeHeroes = true)
+        {
+            List<CharacterObject> list = new List<CharacterObject>();
+            if (includePlayer)
+            {
+                int playerTier = calculatePlayerTournamentTier();
+                if (playerTier > 4)
+                {
+                    InformationManager.DisplayMessage(new InformationMessage("Main tournament"));
+                    return true;
+                }
+                InformationManager.DisplayMessage(new InformationMessage("Lower tier tournament: Tier " + playerTier));
+                //CultureObject cultureMercenaryObject = Game.Current.ObjectManager.GetObject<CultureObject>("neutral");
+                CultureObject culture = Settlement.CurrentSettlement.Culture;
+
+                List<CharacterObject> troops = FillTroopListUntilTier(culture.BasicTroop, playerTier);
+                List<CharacterObject> eliteTroops = FillTroopListUntilTier(culture.EliteBasicTroop, playerTier);
+                List<CharacterObject> mercenaryTroops = FillTroopListUntilTier(culture.BasicMercenaryTroop, playerTier);
+
+                list.Add(CharacterObject.PlayerCharacter);
+
+                while (list.Count < __instance.MaximumParticipantCount)
+                {
+                    float randomFloat = MBRandom.RandomFloat;
+                    CharacterObject troopToAdd = null;
+                    if(randomFloat < 0.6f)
+                    {
+                        List<CharacterObject> troopsFromTier = troops.FindAll((CharacterObject troop) => troop != null && troop.Tier == playerTier);
+                        if (!troopsFromTier.IsEmpty())
+                        {
+                            troopToAdd = troopsFromTier[MBRandom.RandomInt(troopsFromTier.Count)];
+                        }
+                    }
+                    else if(randomFloat < 0.85f)
+                    {
+                        List<CharacterObject> troopsFromTier = eliteTroops.FindAll((CharacterObject troop) => troop != null && troop.Tier == playerTier);
+                        if (!troopsFromTier.IsEmpty())
+                        {
+                            troopToAdd = troopsFromTier[MBRandom.RandomInt(troopsFromTier.Count)];
+                        }
+                    }
+                    else
+                    {
+                        List<CharacterObject> troopsFromTier = mercenaryTroops.FindAll((CharacterObject troop) => troop != null && troop.Tier == playerTier);
+                        if (!troopsFromTier.IsEmpty())
+                        {
+                            troopToAdd = troopsFromTier[MBRandom.RandomInt(troopsFromTier.Count)];
+                        }
+                    }
+                    //else
+                    //{
+                    //    troopToAdd = (mercenaryTroops.Find((CharacterObject troop) => troop != null && troop.Tier == playerTier));
+                    //}
+                    if(troopToAdd != null)
+                    {
+                        list.Add(troopToAdd);
+                    }
+                    else
+                    {
+                        List<CharacterObject> troopsFromTier = troops.FindAll((CharacterObject troop) => troop != null && troop.Tier == playerTier);
+                        troopToAdd = troopsFromTier[MBRandom.RandomInt(troopsFromTier.Count - 1)];
+                    }
+                }
+            }
+            else
+            {
+                return true;
+            }
+            __result = list;
+            return false;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch("GetTournamentPrize")]
+        static void GetTournamentPrizePostfix(ref FightTournamentGame __instance, ref ItemObject __result, bool includePlayer, int lastRecordedLordCountForTournamentPrize)
+        {
+            if (includePlayer)
+            {
+                CultureObject culture = __instance.Town.Culture;
+                int playerTier = calculatePlayerTournamentTier();
+                List<ItemObject> list = new List<ItemObject>();
+                foreach (ItemObject item in Items.All)
+                {
+                    if (!item.NotMerchandise && (item.Type == ItemObject.ItemTypeEnum.Bow || item.Type == ItemObject.ItemTypeEnum.Crossbow || item.Type == ItemObject.ItemTypeEnum.Shield ||  item.IsCraftedWeapon || item.IsMountable || item.ArmorComponent != null) && !item.IsCraftedByPlayer)
+                    {
+                        if (item.Culture == culture)
+                        {
+                            if((int)item.Tier == playerTier)
+                            {
+                                list.Add(item);
+                            }
+                        }
+                    }
+                }
+                if(list.Count > 0)
+                {
+                    __result = list.GetRandomElement();
+                }
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(ItemRoster))]
+    class ItemRosterPatch
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch("AddToCounts", new Type[] { typeof(ItemObject), typeof(int)} )]
+        static bool AddToCountsPrefix(ref ItemRoster __instance, ItemObject item, int number, ref int __result)
+        {
+            if ((new StackTrace()).GetFrame(2).GetMethod().Name.Contains("EndCurrentMatch"))
+            {
+                if (number == 0)
+                {
+                    __result =  - 1;
+                    return false;
+                }
+                List<ItemModifier> positiveIM = new List<ItemModifier>();
+                float imSum = 0f;
+                if(item.WeaponComponent != null && item.WeaponComponent.ItemModifierGroup != null)
+                {
+                    foreach(ItemModifier im in item.WeaponComponent.ItemModifierGroup.ItemModifiers)
+                    {
+                        if(im.PriceMultiplier >= 1f)
+                        {
+                            positiveIM.Add(im);
+                            imSum += im.PriceMultiplier;
+                        }
+                    }
+                    if (positiveIM.Count > 0)
+                    {
+                        foreach (ItemModifierProbability value in item.WeaponComponent.ItemModifierGroup.ItemModifiersWithProbability.Values)
+                        {
+                            ItemModifier imTemp = positiveIM.Find((ItemModifier im) => im != null && value.ItemModifier != null && im.Name.Equals(value.ItemModifier.Name));
+                            if (imTemp != null)
+                            {
+                                float randomF = MBRandom.RandomFloat;
+                                if (randomF < (value.Probability / 100f))
+                                {
+                                    __result = __instance.AddToCounts(new EquipmentElement(item, imTemp), number);
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+                else if(item.ArmorComponent != null && item.ArmorComponent.ItemModifierGroup != null)
+                {
+                    foreach (ItemModifier im in item.ArmorComponent.ItemModifierGroup.ItemModifiers)
+                    {
+                        if (im.PriceMultiplier >= 1f)
+                        {
+                            positiveIM.Add(im);
+                            imSum += im.PriceMultiplier;
+                        }
+                    }
+                    if (positiveIM.Count > 0)
+                    {
+                        foreach (ItemModifierProbability value in item.ArmorComponent.ItemModifierGroup.ItemModifiersWithProbability.Values)
+                        {
+                            ItemModifier imTemp = positiveIM.Find((ItemModifier im) => im != null && value.ItemModifier!= null && im.Name.Equals(value.ItemModifier.Name));
+                            if (imTemp != null)
+                            {
+                                float randomF = MBRandom.RandomFloat;
+                                if (randomF < (value.Probability / 100f))
+                                {
+                                    __result = __instance.AddToCounts(new EquipmentElement(item, imTemp), number);
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+                __result = __instance.AddToCounts(new EquipmentElement(item), number);
+                return false;
+            }
+            return true;
         }
     }
 
