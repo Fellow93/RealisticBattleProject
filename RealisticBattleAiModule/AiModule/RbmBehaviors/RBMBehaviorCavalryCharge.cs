@@ -131,21 +131,27 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 						break;
 					}
 				case ChargeState.ChargingPast:
-					if (_chargingPastTimer.Check(Mission.Current.CurrentTime) || base.Formation.QuerySystem.AveragePosition.Distance(_lastTarget.MedianPosition.AsVec2) >= _desiredChargeStopDistance)
 					{
-						if(base.Formation.QuerySystem.AveragePosition.Distance(_lastTarget.MedianPosition.AsVec2) >= _desiredChargeStopDistance)
-                        {
-							_lastReformDestination = base.Formation.QuerySystem.MedianPosition;
-                        }
-						result = ChargeState.Reforming;
+						float formationCoherence = (base.Formation.QuerySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents + 1f) / (base.Formation.QuerySystem.IdealAverageDisplacement + 1f);
+						if (_chargingPastTimer.Check(Mission.Current.CurrentTime) || base.Formation.QuerySystem.AveragePosition.Distance(_lastTarget.MedianPosition.AsVec2) >= _desiredChargeStopDistance)
+						{
+							if (base.Formation.QuerySystem.AveragePosition.Distance(_lastTarget.MedianPosition.AsVec2) >= _desiredChargeStopDistance)
+							{
+								_lastReformDestination = base.Formation.QuerySystem.MedianPosition;
+							}
+							result = ChargeState.Reforming;
+						}
+						break;
 					}
-					break;
 				case ChargeState.Reforming:
-					if (_reformTimer.Check(Mission.Current.CurrentTime) ) //|| base.Formation.QuerySystem.AveragePosition.Distance(_lastTarget.MedianPosition.AsVec2) <= 30f)
-					{
-						result = ChargeState.Charging;
+                    {
+						
+						if (_reformTimer.Check(Mission.Current.CurrentTime) || base.Formation.QuerySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents < 5f) //|| base.Formation.QuerySystem.AveragePosition.Distance(_lastTarget.MedianPosition.AsVec2) <= 30f)
+						{
+							result = ChargeState.Charging;
+						}
+						break;
 					}
-					break;
 				case ChargeState.Bracing:
 					{
 						bool flag = false;
