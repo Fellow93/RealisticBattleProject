@@ -3025,6 +3025,28 @@ namespace RealisticBattleCombatModule
             int playerArmorTier = countOfArmor > 0 ? MathF.Round(armorTierSum / countOfArmor) : 0;
 
             int playerTier = playerLevelTier > armorTierSum ? playerLevelTier : playerArmorTier;
+            playerTier = MBMath.ClampInt(playerTier, 1, 6);
+            return playerTier;
+        }
+
+        public static int calculateNpcTournamentTier(CharacterObject npc)
+        {
+            int playerLevelTier = MathF.Min(MathF.Max(MathF.Ceiling(((float)npc.Level - 5f) / 5f), 0), Campaign.Current.Models.PartyTroopUpgradeModel.MaxCharacterTier);
+            Equipment playerEquipment = npc.RandomBattleEquipment;
+            float armorTierSum = 0f;
+            int countOfArmor = 0;
+            for (EquipmentIndex index = EquipmentIndex.ArmorItemBeginSlot; index < EquipmentIndex.ArmorItemEndSlot; index++)
+            {
+                if (playerEquipment[index].Item != null)
+                {
+                    armorTierSum += playerEquipment[index].Item.Tierf;
+                    countOfArmor++;
+                }
+            }
+            int playerArmorTier = countOfArmor > 0 ? MathF.Round(armorTierSum / countOfArmor) : 0;
+
+            int playerTier = playerLevelTier > armorTierSum ? playerLevelTier : playerArmorTier;
+            playerTier = MBMath.ClampInt(playerTier, 1, 6);
             return playerTier;
         }
 
@@ -3036,10 +3058,89 @@ namespace RealisticBattleCombatModule
             if (includePlayer)
             {
                 int playerTier = calculatePlayerTournamentTier();
-                if (playerTier > 4)
+                if (playerTier >= 5)
                 {
+                    if (includeHeroes)
+                    {
+                        for (int i = 0; i < settlement.Parties.Count; i++)
+                        {
+                            if (list.Count >= __instance.MaximumParticipantCount)
+                            {
+                                break;
+                            }
+                            Hero leaderHero = settlement.Parties[i].LeaderHero;
+                            if (leaderHero != null && leaderHero.CharacterObject != null && calculateNpcTournamentTier(leaderHero.CharacterObject) >= 5)
+                            {
+                                if (leaderHero.CurrentSettlement != settlement)
+                                {
+                                    Debug.Print(leaderHero.StringId + " is in settlement.Parties list but current settlement is not, tournament settlement: " + settlement.StringId);
+                                }
+                                list.Add(leaderHero.CharacterObject);
+                            }
+                        }
+                    }
+                    if (includeHeroes)
+                    {
+                        for (int j = 0; j < settlement.HeroesWithoutParty.Count; j++)
+                        {
+                            if (list.Count >= __instance.MaximumParticipantCount)
+                            {
+                                break;
+                            }
+                            Hero hero = settlement.HeroesWithoutParty[j];
+                            if (hero != null && hero.CharacterObject != null && calculateNpcTournamentTier(hero.CharacterObject) >= 5 && hero.IsLord)
+                            {
+                                if (hero.CurrentSettlement != settlement)
+                                {
+                                    Debug.Print(hero.StringId + " is in settlement.HeroesWithoutParty list but current settlement is not, tournament settlement: " + settlement.StringId);
+                                }
+                                list.Add(hero.CharacterObject);
+                            }
+                        }
+                    }
+                    if (includeHeroes)
+                    {
+                        for (int k = 0; k < settlement.HeroesWithoutParty.Count; k++)
+                        {
+                            if (list.Count >= __instance.MaximumParticipantCount)
+                            {
+                                break;
+                            }
+                            Hero hero2 = settlement.HeroesWithoutParty[k];
+                            if (hero2 != null && hero2.CharacterObject != null && calculateNpcTournamentTier(hero2.CharacterObject) >= 5)
+                            {
+                                if (hero2.CurrentSettlement != settlement)
+                                {
+                                    Debug.Print(hero2.StringId + " is in settlement.HeroesWithoutParty list but current settlement is not, tournament settlement: " + settlement.StringId);
+                                }
+                                list.Add(hero2.CharacterObject);
+                            }
+                        }
+                        for (int l = 0; l < settlement.Parties.Count; l++)
+                        {
+                            if (list.Count >= __instance.MaximumParticipantCount)
+                            {
+                                break;
+                            }
+                            foreach (TroopRosterElement item2 in settlement.Parties[l].MemberRoster.GetTroopRoster())
+                            {
+                                if (list.Count >= __instance.MaximumParticipantCount)
+                                {
+                                    break;
+                                }
+                                CharacterObject character = item2.Character;
+                                if (character != null && character.IsHero && character.HeroObject.Clan == Clan.PlayerClan && calculateNpcTournamentTier(character) >=5)
+                                {
+                                    if (character.HeroObject.CurrentSettlement != settlement)
+                                    {
+                                        Debug.Print(character.HeroObject.StringId + " is in settlement.HeroesWithoutParty list but current settlement is not, tournament settlement: " + settlement.StringId);
+                                    }
+                                    list.Add(character);
+                                }
+                            }
+                        }
+                    }
                     InformationManager.DisplayMessage(new InformationMessage("Main tournament"));
-                    return true;
                 }
                 InformationManager.DisplayMessage(new InformationMessage("Lower tier tournament: Tier " + playerTier));
                 //CultureObject cultureMercenaryObject = Game.Current.ObjectManager.GetObject<CultureObject>("neutral");
