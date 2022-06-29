@@ -968,6 +968,11 @@ namespace RealisticBattleAiModule
             return System.IO.Path.Combine(GetConfigFolderPath(), "config_3.xml");
         }
 
+        public static string GetSiegeArcherPointsPath()
+        {
+            return System.IO.Path.Combine(GetConfigFolderPath(), "siege_points.xml");
+        }
+
         public static string GetConfigFolderPath()
         {
            return System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),

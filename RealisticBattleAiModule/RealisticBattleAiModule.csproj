@@ -192,6 +192,7 @@
     <Compile Include="AiModule\RbmTactics\TacticDefensiveEngagementPatch.cs" />
     <Compile Include="AiModule\RbmTactics\TacticDefensiveLinePatch.cs" />
     <Compile Include="AiModule\RbmTactics\TacticFullScaleAttackPatch.cs" />
+    <Compile Include="AiModule\SiegeArcherPoints\SiegeArcherPoints.cs" />
     <Compile Include="AiModule\SiegePatches.cs" />
     <Compile Include="AiModule\SpawningPatches.cs" />
     <Compile Include="AiModule\Tactics.cs" />

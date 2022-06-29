@@ -144,8 +144,9 @@ namespace RealisticBattleAiModule
             if (XmlConfig.dict["Global.PostureEnabled"] == 1 && XmlConfig.dict["Global.PostureGUIEnabled"] == 1)
             {
                 mission.AddMissionBehavior((MissionBehavior)(object)new PostureVisualLogic());
-                base.OnMissionBehaviorInitialize(mission);
             }
+            mission.AddMissionBehavior((MissionBehavior)(object)new SiegeArcherPoints());
+            base.OnMissionBehaviorInitialize(mission);
         }
 
         protected override void OnApplicationTick(float dt)
