@@ -3069,7 +3069,7 @@ namespace RealisticBattleCombatModule
                                 break;
                             }
                             Hero leaderHero = settlement.Parties[i].LeaderHero;
-                            if (leaderHero != null && leaderHero.CharacterObject != null && calculateNpcTournamentTier(leaderHero.CharacterObject) >= 5)
+                            if (leaderHero != null && leaderHero.CharacterObject != null && !leaderHero.CharacterObject.IsPlayerCharacter && calculateNpcTournamentTier(leaderHero.CharacterObject) >= 5)
                             {
                                 if (leaderHero.CurrentSettlement != settlement)
                                 {
@@ -3088,7 +3088,7 @@ namespace RealisticBattleCombatModule
                                 break;
                             }
                             Hero hero = settlement.HeroesWithoutParty[j];
-                            if (hero != null && hero.CharacterObject != null && calculateNpcTournamentTier(hero.CharacterObject) >= 5 && hero.IsLord)
+                            if (hero != null && hero.CharacterObject != null && !hero.CharacterObject.IsPlayerCharacter && calculateNpcTournamentTier(hero.CharacterObject) >= 5 && hero.IsLord)
                             {
                                 if (hero.CurrentSettlement != settlement)
                                 {
@@ -3107,7 +3107,7 @@ namespace RealisticBattleCombatModule
                                 break;
                             }
                             Hero hero2 = settlement.HeroesWithoutParty[k];
-                            if (hero2 != null && hero2.CharacterObject != null && calculateNpcTournamentTier(hero2.CharacterObject) >= 5)
+                            if (hero2 != null && hero2.CharacterObject != null && !hero2.CharacterObject.IsPlayerCharacter && calculateNpcTournamentTier(hero2.CharacterObject) >= 5)
                             {
                                 if (hero2.CurrentSettlement != settlement)
                                 {
@@ -3129,7 +3129,7 @@ namespace RealisticBattleCombatModule
                                     break;
                                 }
                                 CharacterObject character = item2.Character;
-                                if (character != null && character.IsHero && character.HeroObject.Clan == Clan.PlayerClan && calculateNpcTournamentTier(character) >=5)
+                                if (character != null && character.IsHero && character.HeroObject.Clan == Clan.PlayerClan && !character.IsPlayerCharacter && calculateNpcTournamentTier(character) >=5)
                                 {
                                     if (character.HeroObject.CurrentSettlement != settlement)
                                     {
@@ -3140,9 +3140,16 @@ namespace RealisticBattleCombatModule
                             }
                         }
                     }
+                }
+                if(playerTier >= 5)
+                {
                     InformationManager.DisplayMessage(new InformationMessage("Main tournament"));
                 }
-                InformationManager.DisplayMessage(new InformationMessage("Lower tier tournament: Tier " + playerTier));
+                else
+                {
+                    InformationManager.DisplayMessage(new InformationMessage("Lower tier tournament: Tier " + playerTier));
+
+                }
                 //CultureObject cultureMercenaryObject = Game.Current.ObjectManager.GetObject<CultureObject>("neutral");
                 CultureObject culture = Settlement.CurrentSettlement.Culture;
 
@@ -3158,7 +3165,7 @@ namespace RealisticBattleCombatModule
                     CharacterObject troopToAdd = null;
                     if(randomFloat < 0.6f)
                     {
-                        List<CharacterObject> troopsFromTier = troops.FindAll((CharacterObject troop) => troop != null && troop.Tier == playerTier);
+                        List<CharacterObject> troopsFromTier = troops.FindAll((CharacterObject troop) => troop != null && playerTier>=5 ? (troop.Tier >= playerTier) : troop.Tier == playerTier);
                         if (!troopsFromTier.IsEmpty())
                         {
                             troopToAdd = troopsFromTier[MBRandom.RandomInt(troopsFromTier.Count)];
@@ -3166,7 +3173,7 @@ namespace RealisticBattleCombatModule
                     }
                     else if(randomFloat < 0.85f)
                     {
-                        List<CharacterObject> troopsFromTier = eliteTroops.FindAll((CharacterObject troop) => troop != null && troop.Tier == playerTier);
+                        List<CharacterObject> troopsFromTier = eliteTroops.FindAll((CharacterObject troop) => troop != null && playerTier >= 5 ? (troop.Tier >= playerTier) : troop.Tier == playerTier);
                         if (!troopsFromTier.IsEmpty())
                         {
                             troopToAdd = troopsFromTier[MBRandom.RandomInt(troopsFromTier.Count)];
@@ -3174,7 +3181,7 @@ namespace RealisticBattleCombatModule
                     }
                     else
                     {
-                        List<CharacterObject> troopsFromTier = mercenaryTroops.FindAll((CharacterObject troop) => troop != null && troop.Tier == playerTier);
+                        List<CharacterObject> troopsFromTier = mercenaryTroops.FindAll((CharacterObject troop) => troop != null && playerTier >= 5 ? (troop.Tier >= playerTier) : troop.Tier == playerTier);
                         if (!troopsFromTier.IsEmpty())
                         {
                             troopToAdd = troopsFromTier[MBRandom.RandomInt(troopsFromTier.Count)];
@@ -3190,7 +3197,7 @@ namespace RealisticBattleCombatModule
                     }
                     else
                     {
-                        List<CharacterObject> troopsFromTier = troops.FindAll((CharacterObject troop) => troop != null && troop.Tier == playerTier);
+                        List<CharacterObject> troopsFromTier = troops.FindAll((CharacterObject troop) => troop != null && playerTier >= 5 ? (troop.Tier >= playerTier) : troop.Tier == playerTier);
                         troopToAdd = troopsFromTier[MBRandom.RandomInt(troopsFromTier.Count - 1)];
                     }
                 }
@@ -3218,7 +3225,7 @@ namespace RealisticBattleCombatModule
                     {
                         if (item.Culture == culture)
                         {
-                            if((int)item.Tier == playerTier)
+                            if(playerTier>=5 ? (int)item.Tier >= playerTier-1 : (int)item.Tier == playerTier)
                             {
                                 list.Add(item);
                             }
