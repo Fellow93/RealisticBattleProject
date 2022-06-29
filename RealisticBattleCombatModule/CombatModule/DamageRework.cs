@@ -2897,8 +2897,30 @@ namespace RealisticBattleCombatModule
         [HarmonyPatch("PrepareForMatch")]
         static void GetParticipantCharactersPrefix(ref TournamentFightMissionController __instance, ref TournamentMatch ____match, ref CultureObject ____culture)
         {
-            //if (____match.IsPlayerParticipating())
-            //{
+            int playerTier = FightTournamentGamePatch.calculatePlayerTournamentTier();
+            ItemObject oneHandReplacement = null;
+            if (playerTier <= 3)
+            {
+                List<ItemObject> list = new List<ItemObject>();
+                foreach (ItemObject item in Items.All)
+                {
+                    if (item.Type == ItemObject.ItemTypeEnum.OneHandedWeapon)
+                    {
+                        if (item.Culture == ____culture)
+                        {
+                            if ((int)item.Tier == playerTier - 1)
+                            {
+                                list.Add(item);
+                            }
+                        }
+                    }
+                }
+                if (list.Count > 0)
+                {
+                    oneHandReplacement = list.GetRandomElement();
+                }
+            }
+
             foreach (TournamentTeam team in ____match.Teams)
             {
                 foreach (TournamentParticipant participant in team.Participants)
@@ -2907,7 +2929,7 @@ namespace RealisticBattleCombatModule
                     {
                         if (participant.MatchEquipment[index].Item != null && participant.MatchEquipment[index].Item.Type == ItemObject.ItemTypeEnum.Bow)
                         {
-                            int playerTier = FightTournamentGamePatch.calculatePlayerTournamentTier();
+                            playerTier = FightTournamentGamePatch.calculatePlayerTournamentTier();
                             switch (playerTier)
                             {
                                 case 1:
@@ -2944,7 +2966,7 @@ namespace RealisticBattleCombatModule
                         }
                         if (participant.MatchEquipment[index].Item != null && participant.MatchEquipment[index].Item.Type == ItemObject.ItemTypeEnum.Arrows)
                         {
-                            int playerTier = FightTournamentGamePatch.calculatePlayerTournamentTier();
+                            playerTier = FightTournamentGamePatch.calculatePlayerTournamentTier();
                             switch (playerTier)
                             {
                                 case 1:
@@ -2972,6 +2994,13 @@ namespace RealisticBattleCombatModule
                                         participant.MatchEquipment.AddEquipmentToSlotWithoutAgent(index, new EquipmentElement(Game.Current.ObjectManager.GetObject<ItemObject>("GRE_hardened_125_gr_arrows")));
                                         break;
                                     }
+                            }
+                        }
+                        if (participant.MatchEquipment[index].Item != null && participant.MatchEquipment[index].Item.Type == ItemObject.ItemTypeEnum.OneHandedWeapon)
+                        {
+                            if(oneHandReplacement != null)
+                            {
+                                participant.MatchEquipment.AddEquipmentToSlotWithoutAgent(index, new EquipmentElement(oneHandReplacement));
                             }
                         }
                     }
@@ -3165,7 +3194,7 @@ namespace RealisticBattleCombatModule
                     CharacterObject troopToAdd = null;
                     if(randomFloat < 0.6f)
                     {
-                        List<CharacterObject> troopsFromTier = troops.FindAll((CharacterObject troop) => troop != null && playerTier>=5 ? (troop.Tier >= playerTier) : troop.Tier == playerTier);
+                        List<CharacterObject> troopsFromTier = troops.FindAll((CharacterObject troop) => troop != null && playerTier >= 5 ? (troop.Tier >= playerTier) : troop.Tier == playerTier);
                         if (!troopsFromTier.IsEmpty())
                         {
                             troopToAdd = troopsFromTier[MBRandom.RandomInt(troopsFromTier.Count)];
