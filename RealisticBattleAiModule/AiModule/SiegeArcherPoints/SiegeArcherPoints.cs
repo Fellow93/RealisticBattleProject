@@ -52,7 +52,8 @@ public class SiegeArcherPoints : MissionView
 				if (g.HasScriptOfType<StrategicArea>() && (!g.HasTag("PlayerStratPoint") | !g.HasTag("BeerMarkerPlayer")) && g.GetOldPrefabName() == "strategic_archer_point")
 				{
 					XmlElement pointNode = xmlDocument.CreateElement(string.Empty, "point", string.Empty);
-					string stringToBeSaved = g.GetGlobalFrame().rotation.s.x + "," + g.GetGlobalFrame().rotation.s.y + "," + g.GetGlobalFrame().rotation.s.z + ",";
+					string stringToBeSaved = "";
+					stringToBeSaved += g.GetGlobalFrame().rotation.s.x + "," + g.GetGlobalFrame().rotation.s.y + "," + g.GetGlobalFrame().rotation.s.z + ",";
 					stringToBeSaved += g.GetGlobalFrame().rotation.f.x + "," + g.GetGlobalFrame().rotation.f.y + "," + g.GetGlobalFrame().rotation.f.z + ",";
 					stringToBeSaved += g.GetGlobalFrame().rotation.u.x + "," + g.GetGlobalFrame().rotation.u.y + "," + g.GetGlobalFrame().rotation.u.z + ",";
 					stringToBeSaved += g.GetGlobalFrame().origin.x + "," + g.GetGlobalFrame().origin.y + "," + g.GetGlobalFrame().origin.z;
