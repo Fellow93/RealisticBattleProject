@@ -1,20 +1,28 @@
 ﻿// ScatterAroundExpanded.ScatterAroundExpanded
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
+using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.View.MissionViews;
 
 public class SiegeArcherPoints : MissionView
 {
-	public static bool firstTime = true;
-	public static bool xmlExists = false;
-	public static bool isEditingXml = true;
+	public bool firstTime = true;
+	public bool xmlExists = false;
+	public bool isEditingXml = true;
+	public bool editingWarningDisplayed = false;
 
 	public override void OnMissionScreenTick(float dt)
     {
+        if (!editingWarningDisplayed && isEditingXml)
+        {
+			InformationManager.DisplayMessage(new InformationMessage("YOU ARE IN EDIT MODE, YOU WILL REMOVE ALL ARCHER POINTS FROM THIS SCENE AFTER STARTING BATTLE", Color.FromUint(16711680u)));
+			editingWarningDisplayed = true;
+        }
 		if (firstTime && Mission.Current != null && Mission.Current.IsSiegeBattle && Mission.Current.Mode != MissionMode.Deployment)
 		{
 			((MissionBehavior)this).AfterStart();
@@ -28,19 +36,39 @@ public class SiegeArcherPoints : MissionView
 				xmlExists = true;
 			}
 
-    //        if (xmlExists)
-    //        {
-				//foreach (XmlNode childNode in xmlDocument.SelectSingleNode("/config").ChildNodes)
-				//{
-				//	foreach (XmlNode subNode in childNode)
-				//	{
-				//		XmlConfig.dict.Add(childNode.Name + "." + subNode.Name, float.Parse(subNode.InnerText));
-				//	}
-				//}
-				//return;
-    //        }
+            if (xmlExists)
+            {
+                if (isEditingXml)
+                {
+					XmlNode nodeToRemove = null;
+					foreach (XmlNode sceneXmlNode in xmlDocument.ChildNodes)
+					{
+                        if (sceneXmlNode.LocalName.Equals(Mission.Current.Scene.GetName() + "," + Mission.Current.Scene.GetUpgradeLevelMask()))
+                        {
+							nodeToRemove = sceneXmlNode;
+							break;
+                        }
+					}
+					xmlDocument.RemoveChild(nodeToRemove);
+				}
+                else
+                {
+					foreach (XmlNode sceneXmlNode in xmlDocument.ChildNodes)
+					{
+						if (sceneXmlNode.LocalName.Equals(Mission.Current.Scene.GetName() + "," + Mission.Current.Scene.GetUpgradeLevelMask()))
+						{
+							foreach(XmlNode pointNode in sceneXmlNode.ChildNodes)
+                            {
+								double[] parsed = Array.ConvertAll(pointNode.InnerText.Split(new[] { ',', }, StringSplitOptions.RemoveEmptyEntries),Double.Parse);
 
-			XmlDeclaration xmlDeclaration = xmlDocument.CreateXmlDeclaration("1.0", "UTF-8", null);
+                            }
+						}
+					}
+				}
+                return;
+            }
+
+            XmlDeclaration xmlDeclaration = xmlDocument.CreateXmlDeclaration("1.0", "UTF-8", null);
 
 			XmlElement root = xmlDocument.DocumentElement;
 			xmlDocument.InsertBefore(xmlDeclaration, root);
