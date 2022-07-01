@@ -1,4 +1,5 @@
 ﻿// ScatterAroundExpanded.ScatterAroundExpanded
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,6 +10,7 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.View.MissionViews;
+using static TaleWorlds.MountAndBlade.ArrangementOrder;
 
 public class SiegeArcherPoints : MissionView
 {
@@ -159,6 +161,40 @@ public class SiegeArcherPoints : MissionView
 			}
 			xmlDocument.Save(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath());
 			firstTime = false;
+		}
+	}
+
+	[HarmonyPatch(typeof(ArrangementOrder))]
+	[HarmonyPatch("GetCloseStrategicAreas")]
+	class HoldTheDoor
+	{
+		static bool Prefix(ref IEnumerable<StrategicArea> __result, Formation formation, ref ArrangementOrder __instance)
+		{
+			if (formation.Team?.TeamAI == null)
+			{
+				__result = new List<StrategicArea>();
+				return false;
+			}
+			__result = formation.Team.TeamAI.GetStrategicAreas().Where(delegate (StrategicArea sa)
+			{
+				float customDistanceToCheck = 70f;
+				if (sa.IsUsableBy(formation.Team.Side))
+				{
+					if (sa.IgnoreHeight)
+					{
+						if (MathF.Abs(sa.GameEntity.GlobalPosition.x - formation.OrderPosition.X) <= customDistanceToCheck)
+						{
+							return MathF.Abs(sa.GameEntity.GlobalPosition.y - formation.OrderPosition.Y) <= customDistanceToCheck;
+						}
+						return false;
+					}
+					WorldPosition worldPosition = formation.CreateNewOrderWorldPosition(WorldPosition.WorldPositionEnforcedCache.None);
+					Vec3 targetPoint = sa.GameEntity.GlobalPosition;
+					return worldPosition.DistanceSquaredWithLimit(in targetPoint, customDistanceToCheck * customDistanceToCheck + 1E-05f) < customDistanceToCheck * customDistanceToCheck;
+				}
+				return false;
+			});
+			return false;
 		}
 	}
 }
