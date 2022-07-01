@@ -970,7 +970,7 @@ namespace RealisticBattleAiModule
 
         public static string GetSiegeArcherPointsPath()
         {
-            return BasePath.Name + "Modules/RealisticBattleAiModule/ModuleData/siege_points.xml";
+            return BasePath.Name + "Modules/RealisticBattleAiModule/ModuleData/scene_positions/";
         }
 
         public static string GetConfigFolderPath()
