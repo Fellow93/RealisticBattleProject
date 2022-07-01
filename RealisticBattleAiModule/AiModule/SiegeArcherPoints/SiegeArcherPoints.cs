@@ -41,7 +41,7 @@ public class SiegeArcherPoints : MissionView
 						{
 							if (g2.HasScriptOfType<StrategicArea>() && (!g2.HasTag("PlayerStratPoint") & !g2.HasTag("BeerMarkerPlayer")) && g2.GetOldPrefabName() == "strategic_archer_point")
 							{
-								Mission.Current.PlayerTeam.TeamAI.RemoveStrategicArea(g2.GetFirstScriptOfType<StrategicArea>());
+								Mission.Current.Teams.Defender.TeamAI.RemoveStrategicArea(g2.GetFirstScriptOfType<StrategicArea>());
 								g2.RemoveAllChildren();
 								g2.Remove(1);
 							}
@@ -56,7 +56,7 @@ public class SiegeArcherPoints : MissionView
 						List<GameEntity> ListArrow = Mission.Current.Scene.FindEntitiesWithTag("BeerMarkerPlayer").ToList();
 						foreach (GameEntity g in ListG)
 						{
-							Mission.Current.PlayerTeam.TeamAI.RemoveStrategicArea(g.GetFirstScriptOfType<StrategicArea>());
+							Mission.Current.Teams.Defender.TeamAI.RemoveStrategicArea(g.GetFirstScriptOfType<StrategicArea>());
 							g.RemoveAllChildren();
 							g.Remove(1);
 						}
@@ -99,7 +99,7 @@ public class SiegeArcherPoints : MissionView
 		//InformationManager.DisplayMessage(new InformationMessage("YOU ARE IN EDIT MODE, YOU WILL REMOVE ALL ARCHER POINTS FROM THIS SCENE AFTER STARTING BATTLE", Color.FromUint(16711680u)));
 		//editingWarningDisplayed = true;
 		//     }
-		if (firstTime && Mission.Current != null && Mission.Current.IsSiegeBattle && Mission.Current.Mode != MissionMode.Deployment)
+		if (firstTime && Mission.Current != null && Mission.Current.IsSiegeBattle && Mission.Current.PlayerTeam.IsDefender && Mission.Current.Mode != MissionMode.Deployment)
 		{
 			((MissionBehavior)this).AfterStart();
 			List<GameEntity> gameEntities = new List<GameEntity>();
