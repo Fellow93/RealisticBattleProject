@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
@@ -34,6 +35,37 @@ public class SiegeArcherPoints : MissionView
 				{
 					if (sceneXmlNode.LocalName.Equals(Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask()))
 					{
+						List<GameEntity> gameEntities = new List<GameEntity>();
+						Mission.Current.Scene.GetEntities(ref gameEntities);
+						foreach (GameEntity g2 in gameEntities)
+						{
+							if (g2.HasScriptOfType<StrategicArea>() && (!g2.HasTag("PlayerStratPoint") & !g2.HasTag("BeerMarkerPlayer")) && g2.GetOldPrefabName() == "strategic_archer_point")
+							{
+								Mission.Current.PlayerTeam.TeamAI.RemoveStrategicArea(g2.GetFirstScriptOfType<StrategicArea>());
+								g2.RemoveAllChildren();
+								g2.Remove(1);
+							}
+						}
+						List<GameEntity> ListBase = Mission.Current.Scene.FindEntitiesWithTag("BeerMarkerBase").ToList();
+						foreach (GameEntity b in ListBase)
+						{
+							b.RemoveAllChildren();
+							b.Remove(1);
+						}
+						List<GameEntity> ListG = Mission.Current.Scene.FindEntitiesWithTag("PlayerStratPoint").ToList();
+						List<GameEntity> ListArrow = Mission.Current.Scene.FindEntitiesWithTag("BeerMarkerPlayer").ToList();
+						foreach (GameEntity g in ListG)
+						{
+							Mission.Current.PlayerTeam.TeamAI.RemoveStrategicArea(g.GetFirstScriptOfType<StrategicArea>());
+							g.RemoveAllChildren();
+							g.Remove(1);
+						}
+						foreach (GameEntity h in ListArrow)
+						{
+							h.RemoveAllChildren();
+							h.Remove(1);
+						}
+
 						foreach (XmlNode pointNode in sceneXmlNode.ChildNodes)
 						{
 							double[] parsed = Array.ConvertAll(pointNode.InnerText.Split(new[] { ',', }, StringSplitOptions.RemoveEmptyEntries), Double.Parse);
@@ -108,7 +140,7 @@ public class SiegeArcherPoints : MissionView
 
 			foreach (GameEntity g in gameEntities)
 			{
-				if (g.HasScriptOfType<StrategicArea>() && g.HasTag("PlayerStratPoint"))
+				if (g.HasScriptOfType<StrategicArea>() && g.GetOldPrefabName() == "strategic_archer_point")
 				{
 					XmlElement newPointNode = xmlDocument.CreateElement(string.Empty, "point", string.Empty);
 					string stringToBeSaved = "";
