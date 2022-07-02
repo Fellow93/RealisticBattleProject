@@ -172,7 +172,7 @@
   <Scene id="empire_town_f"
          name="{=zRbhAwyr}Vostrum"
          terrain="Plain"
-         is_siege_map="true"></Scene> lvl 1 done
+         is_siege_map="true"></Scene> lvl 1,2 and 3 done
 		 
   <Scene id="empire_town_k"
          name="{=TapuitFC}Onira"
