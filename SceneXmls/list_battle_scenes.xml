@@ -1,0 +1,384 @@
+﻿  <!--Siege Maps-->
+  <Scene id="battania_castle_b"
+         name="{=eeSLHoF6}Llanoc Hen Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="battania_castle_a"
+         name="{=SDoABuDm}Ab Comer Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="battania_town_b"
+         name="{=990Fhxcw}Pen Cannoc"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="battania_town_a"
+         name="{=2hIl3Pld}Car Banseth"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="battania_town_c"
+         name="{=0BPeUfA9}Dunglanys"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="vlandia_castle_005a"
+         name="{=txX7q3OL}Talivel Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_siege_001"
+         name="{=snbaIFOU}Veron Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="aserai_castle_002"
+         name="{=OLrhkKUo}Ain Baliq Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="aserai_castle_a"
+         name="{=Sk1x6LZK}Barihal Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="aserai_castle_c"
+         name="{=vK8aRweu}Jamayeh Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="aserai_castle_d"
+         name="{=WxSfaOM1}Medeni Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="sturgia_castle_003"
+         name="{=VZJF1eXu}Takor Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="sturgia_town_g"
+         name="{=TGPsNCI5}Varnovapol"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="sturgia_town_g"
+         name="{=68hY2ikn}Sibir"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="sturgia_town_c"
+         name="{=qaoM6HL6}Tyal"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="aserai_town_a"
+         name="{=KfHLVdry}Iyakis"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_castle_004"
+         name="{=9on9e5m7}Thractorae Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="aserai_town_c"
+         name="{=aRPxOOCW}Qasira"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="aserai_town_d"
+         name="{=PMf8vgt1}Askar"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_town_g"
+         name="{=Luj9oWEl}Lageta"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_town_i"
+         name="{=BWii0r6E}Syronea"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_town_h"
+         name="{=q0JVAZjz}Rhotae"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_town_a"
+         name="{=324mqAvm}Argoron"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_town_b"
+         name="{=ArtPdp9q}Amprela"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="khuzait_castle_siege_001"
+         name="{=3cBdEWg4}Hakkun Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="khuzait_city_a"
+         name="{=nx8dPxlY}Chaikand"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="khuzait_city_b"
+         name="{=RQ37o2Yu}Baltakhand"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="aserai_town_b"
+         name="{=TWmYlcCZ}Quyaz"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_town_j_siege"
+         name="{=eEqUBFb3}Epicrotea"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="khuzait_town_004"
+         name="{=FhgEIFWb}Makeb"
+         terrain="Steppe"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="sturgia_castle_siege_001"
+         name="{=IPbMskbi}Ustokol Castle"
+         terrain="Steppe"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_town_c"
+         name="{=K2NeKiuO}Ortysia"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_town_d"
+         name="{=UBbTKSsa}Zeonica"
+         terrain="Plain"
+         is_siege_map="true"></Scene> lvl 1,2 and 3 done
+		 
+  <Scene id="empire_town_e"
+         name="{=Sm9T9Qwi}Myzea"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_town_f"
+         name="{=zRbhAwyr}Vostrum"
+         terrain="Plain"
+         is_siege_map="true"></Scene> lvl 1 done
+		 
+  <Scene id="empire_town_k"
+         name="{=TapuitFC}Onira"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_town_l"
+         name="{=bskXLff6}Diathma"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_town_m"
+         name="{=uADa8Bmy}Lycaron"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_town_n"
+         name="{=YeWZBSx8}Jalmarys"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_castle_b"
+         name="{=rtiVr8Nm}Sestadaim Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_castle_c"
+         name="{=QuLrXJoP}Jogurys Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="sturgia_castle_c"
+         name="{=PF1ohppa}Mazhadan Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="vlandia_town_e"
+         name="{=JwMfPrlm}Rovalt"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="vlandia_town_f"
+         name="{=SdKNB1JO}Sargot"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="vlandia_town_g"
+         name="{=1hIKR8Sa}Ocs Hall"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="vlandia_castle_a"
+         name="{=r2cvi5pi}Hongard Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="vlandia_castle_d"
+         name="{=RgO750Ca}Usanc Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="vlandia_castle_c"
+         name="{=KirQzyQV}Caleus Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="vlandia_castle_b"
+         name="{=c8A1uisA}Verecsand Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <!--<Scene id="vlandia_castle_005a"
+         name="{=JaoBYmxR}vlandia_castle_005a"
+         terrain="Plain"
+         is_siege_map="true"></Scene>-->
+  <!--<Scene id="ai_siege_test_scn_spawner"
+         name="ai_siege_test_scn_spawner"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="ai_siege_test_scn" name="ai_siege_test_scn" terrain="Plain" is_siege_map="true">
+  </Scene>
+  <Scene id="battania_town_c"
+         name="battania_town_c"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="vlandia_castle_005a"
+         name="vlandia_castle_005a"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="empire_siege_001"
+         name="empire_siege_001"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="aserai_castle_002"
+         name="aserai_castle_002"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="sturgia_castle_003"
+         name="sturgia_castle_003"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="sturgia_town_b"
+         name="sturgia_town_b"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="sturgia_town_c"
+         name="sturgia_town_c"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="aserai_town_a"
+         name="aserai_town_a"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="empire_castle_004"
+         name="empire_castle_004"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="aserai_town_c"
+         name="aserai_town_c"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="empire_town_g"
+         name="empire_town_g"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="empire_town_h"
+         name="empire_town_h"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="empire_town_j_siege"
+         name="empire_town_j_siege"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="khuzait_castle_siege_001"
+         name="khuzait_castle_siege_001"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="ai_siege_test_scn_spawner"
+         name="ai_siege_test_scn_spawner"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="khuzait_city_a"
+         name="khuzait_city_a"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="khuzait_city_b"
+         name="khuzait_city_b"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="aserai_town_b"
+         name="aserai_town_b"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="ai_siege_test_scn" name="ai_siege_test_scn" terrain="Plain" is_siege_map="true">
+  </Scene>
+  <Scene id="archer_wall_test" name="archer_wall_test" terrain="Steppe">
+  </Scene>
+  <Scene id="archer_wall_test_l3" name="archer_wall_test_l3" terrain="Steppe">
+  </Scene>-->
+  
+  <Scene id="vlandia_town_a"
+         name="{=jHEGCQ8y}Charas"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="vlandia_town_c"
+         name="{=b33aHvbC}Jaculan"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="vlandia_city_a"
+         name="{=w7ImuzEs}Pravend"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="vlandia_town_d"
+         name="{=P6TPNvWz}Galend"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="khuzait_castle_002"
+         name="{=73f3hn4j}Simira Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="battania_town_d"
+         name="{=oxSVeo6J}Seonon"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+
