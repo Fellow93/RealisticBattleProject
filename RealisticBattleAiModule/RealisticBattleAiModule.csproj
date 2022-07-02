@@ -209,7 +209,8 @@ xcopy /d /y "$(SolutionDir)AIXmls\project.mbproj" "$(SolutionDir)..\RealisticBat
 xcopy /d /y "$(SolutionDir)AIXmls\SubModule.xml" "$(SolutionDir)..\RealisticBattleAiModule\"
 xcopy /d /y "$(SolutionDir)AIXmls\GUI\Prefabs\RBMAIMConfig.xml" "$(SolutionDir)..\RealisticBattleAiModule\GUI\Prefabs\"
 xcopy /d /y "$(SolutionDir)AIXmls\GUI\Prefabs\CombatUI.xml" "$(SolutionDir)..\RealisticBattleAiModule\GUI\Prefabs\"
-xcopy /d /y "$(SolutionDir)AIXmls\GUI\Brushes\CombatUI.xml" "$(SolutionDir)..\RealisticBattleAiModule\GUI\Brushes\"</PostBuildEvent>
+xcopy /d /y "$(SolutionDir)AIXmls\GUI\Brushes\CombatUI.xml" "$(SolutionDir)..\RealisticBattleAiModule\GUI\Brushes\"
+xcopy /d /y "$(SolutionDir)SceneXmls\scene_positions\" "$(SolutionDir)..\RealisticBattleAiModule\ModuleData\scene_positions\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
