@@ -1,0 +1,25 @@
+﻿<Module>
+  <Name value="RBM Tournament Module"/>
+  <Id value="RBMTournament"/>
+  <Version value="v1.0.0"/>
+  <SingleplayerModule value="true"/>
+  <MultiplayerModule value="false"/>
+  <DependedModules>
+    <DependedModule Id="Native" DependentVersion="e1.8.0" Optional="false"/>
+    <DependedModule Id="SandBoxCore" DependentVersion="e1.8.0" Optional="false"/>
+    <DependedModule Id="Sandbox" DependentVersion="e1.8.0" Optional="false"/>
+    <DependedModule Id="StoryMode" DependentVersion="e1.8.0" Optional="false"/>
+  </DependedModules>
+  <SubModules>
+    <SubModule>
+      <Name value="RBMTournament"/>
+      <DLLName value="RBMTournament.dll"/>
+      <SubModuleClassType value="RBMTournament.SubModule"/>
+      <Tags>
+        <Tag key="DedicatedServerType" value="none" />
+        <Tag key="IsNoRenderModeElement" value="false" />
+      </Tags>
+    </SubModule>
+  </SubModules>
+  <Xmls/>
+</Module>
