@@ -8,8 +8,18 @@ using TaleWorlds.MountAndBlade;
 
 namespace RealisticBattleAiModule.AiModule.Posture
 {
-    class PostureLogic
+    class PostureLogic : MissionLogic
     {
+        //private static int tickCooldownReset = 30;
+        //private static int tickCooldown = 0;
+        private static float timeToCalc = 0.5f;
+        private static float currentDt = 0f;
+
+        //private static float maxAcc = 1.5f;
+        //private static float minAcc = 0.1f;
+        //private static float curAcc = 1f;
+        //private static bool isCountingUp = false;
+
         [HarmonyPatch(typeof(Agent))]
         [HarmonyPatch("EquipItemsFromSpawnEquipment")]
         class EquipItemsFromSpawnEquipmentPatch
@@ -935,76 +945,62 @@ namespace RealisticBattleAiModule.AiModule.Posture
             }
         }
 
-        [HarmonyPatch(typeof(Mission))]
-        [HarmonyPatch("OnTick")]
-        class OnTickPatch
+        public override void OnMissionTick(float dt)
         {
-            //private static int tickCooldownReset = 30;
-            //private static int tickCooldown = 0;
-            private static float timeToCalc = 0.5f;
-            private static float currentDt = 0f;
-
-            //private static float maxAcc = 1.5f;
-            //private static float minAcc = 0.1f;
-            //private static float curAcc = 1f;
-            //private static bool isCountingUp = false;
-
-            static void Postfix(float dt)
+            base.OnMissionTick(dt);
+            if (XmlConfig.dict["Global.PostureEnabled"] == 1)
             {
-                if(XmlConfig.dict["Global.PostureEnabled"] == 1)
+                if (currentDt < timeToCalc)
                 {
-                    if (currentDt < timeToCalc)
+                    currentDt += dt;
+                }
+                else
+                {
+                    foreach (KeyValuePair<Agent, Posture> entry in AgentPostures.values)
                     {
-                        currentDt += dt;
-                    }
-                    else
-                    {
-                        foreach (KeyValuePair<Agent, Posture> entry in AgentPostures.values)
+
+                        //if (XmlConfig.dict["Global.PostureGUIEnabled"] == 1)
+                        //{
+                        //    if (entry.Key.IsPlayerControlled) {
+                        //        if (isCountingUp)
+                        //        {
+                        //            curAcc = 1.5f;
+                        //        }
+                        //        else
+                        //        {
+                        //            curAcc = 0f;
+                        //        }
+                        //        isCountingUp = !isCountingUp;
+                        //        entry.Key.AgentDrivenProperties.WeaponMaxMovementAccuracyPenalty = curAcc;
+                        //        entry.Key.AgentDrivenProperties.WeaponMaxUnsteadyAccuracyPenalty = curAcc;
+                        //    }
+                        //}
+
+                        // do something with entry.Value or entry.Key
+                        if (entry.Value.posture < entry.Value.maxPosture)
                         {
-
-                            //if (XmlConfig.dict["Global.PostureGUIEnabled"] == 1)
-                            //{
-                            //    if (entry.Key.IsPlayerControlled) {
-                            //        if (isCountingUp)
-                            //        {
-                            //            curAcc = 1.5f;
-                            //        }
-                            //        else
-                            //        {
-                            //            curAcc = 0f;
-                            //        }
-                            //        isCountingUp = !isCountingUp;
-                            //        entry.Key.AgentDrivenProperties.WeaponMaxMovementAccuracyPenalty = curAcc;
-                            //        entry.Key.AgentDrivenProperties.WeaponMaxUnsteadyAccuracyPenalty = curAcc;
-                            //    }
-                            //}
-
-                            // do something with entry.Value or entry.Key
-                            if (entry.Value.posture < entry.Value.maxPosture)
+                            if (XmlConfig.dict["Global.PostureGUIEnabled"] == 1)
                             {
-                                if (XmlConfig.dict["Global.PostureGUIEnabled"] == 1)
+                                if (entry.Key.IsPlayerControlled)
                                 {
-                                    if (entry.Key.IsPlayerControlled)
+                                    //InformationManager.DisplayMessage(new InformationMessage(entry.Value.posture.ToString()));
+                                    if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
                                     {
-                                        //InformationManager.DisplayMessage(new InformationMessage(entry.Value.posture.ToString()));
-                                        if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
-                                        {
-                                            AgentPostures.postureVisual._dataSource.PlayerPosture = (int)entry.Value.posture;
-                                            AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)entry.Value.maxPosture;
-                                        }
-                                    }
-
-                                    if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowEnemyStatus && AgentPostures.postureVisual.affectedAgent == entry.Key)
-                                    {
-                                        AgentPostures.postureVisual._dataSource.EnemyPosture = (int)entry.Value.posture;
-                                        AgentPostures.postureVisual._dataSource.EnemyPostureMax = (int)entry.Value.maxPosture;
+                                        AgentPostures.postureVisual._dataSource.PlayerPosture = (int)entry.Value.posture;
+                                        AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)entry.Value.maxPosture;
                                     }
                                 }
-                                entry.Value.posture += entry.Value.regenPerTick * 30f;
+
+                                if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowEnemyStatus && AgentPostures.postureVisual.affectedAgent == entry.Key)
+                                {
+                                    AgentPostures.postureVisual._dataSource.EnemyPosture = (int)entry.Value.posture;
+                                    AgentPostures.postureVisual._dataSource.EnemyPostureMax = (int)entry.Value.maxPosture;
+                                }
                             }
+                            entry.Value.posture += entry.Value.regenPerTick * 30f;
                         }
-                        currentDt = 0f;
                     }
+                    currentDt = 0f;
                 }
             }
         }

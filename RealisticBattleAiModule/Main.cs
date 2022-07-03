@@ -146,6 +146,7 @@ namespace RealisticBattleAiModule
                 mission.AddMissionBehavior((MissionBehavior)(object)new PostureVisualLogic());
             }
             mission.AddMissionBehavior((MissionBehavior)(object)new SiegeArcherPoints());
+            mission.AddMissionBehavior((MissionBehavior)(object)new PostureLogic());
             base.OnMissionBehaviorInitialize(mission);
         }
 
