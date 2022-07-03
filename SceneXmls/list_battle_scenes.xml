@@ -7,7 +7,7 @@
   <Scene id="battania_castle_a"
          name="{=SDoABuDm}Ab Comer Castle"
          terrain="Plain"
-         is_siege_map="true"></Scene>
+         is_siege_map="true"></Scene> lvl 1 and 2 complete
 		 
   <Scene id="battania_town_b"
          name="{=990Fhxcw}Pen Cannoc"
