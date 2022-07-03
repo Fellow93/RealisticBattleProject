@@ -40,20 +40,62 @@ namespace RealisticBattleAiModule.AiModule
             {
                 if (Mission.Current.Mode != MissionMode.Deployment)
                 {
-                    bool carryOutDefenceEnabledOut;
-                    if (!carryOutDefenceEnabled.TryGetValue(___team, out carryOutDefenceEnabledOut))
-                    {
-                        carryOutDefenceEnabled[___team] = false;
-                        doRangedJoinMelee = false;
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    //List<Formation> archerFormations = new List<Formation>();
+                    //foreach (Formation formation in ___team.Formations.ToList())
+                    //{
+                    //    if (formation.QuerySystem.IsRangedFormation)
+                    //    {
+                    //        archerFormations.Add(formation);
+                    //    }
+                    //}
+                    //if (archerFormations.Count > 1)
+                    //{
+                    //    foreach (Formation archerFormation in archerFormations.ToList())
+                    //    {
+                    //        archerFormation.AI.ResetBehaviorWeights();
+                    //        archerFormation.AI.SetBehaviorWeight<BehaviorShootFromCastleWalls>(100f);
+                    //        return false;
+                    //    }
+                    //}
+                    ////bool carryOutDefenceEnabledOut;
+                    //if (!carryOutDefenceEnabled.TryGetValue(___team, out carryOutDefenceEnabledOut))
+                    //{
+                    //    carryOutDefenceEnabled[___team] = false;
+                    doRangedJoinMelee = false;
+                    //    return true;
+                    //}
+                    //else
+                    //{
+                    //    return false;
+                    //}
                 }
                 return true;
             }
+
+            //[HarmonyPostfix]
+            //[HarmonyPatch("CarryOutDefense")]
+            //static void PostfixCarryOutDefense(ref TacticDefendCastle __instance, ref bool doRangedJoinMelee, ref Team ___team)
+            //{
+            //    if (Mission.Current.Mode != MissionMode.Deployment)
+            //    {
+            //        List<Formation> archerFormations = new List<Formation>();
+            //        foreach (Formation formation in ___team.Formations.ToList())
+            //        {
+            //            if (formation.QuerySystem.IsRangedFormation)
+            //            {
+            //                archerFormations.Add(formation);
+            //            }
+            //        }
+            //        if (archerFormations.Count > 1)
+            //        {
+            //            foreach (Formation archerFormation in archerFormations.ToList())
+            //            {
+            //                archerFormation.AI.ResetBehaviorWeights();
+            //                archerFormation.AI.SetBehaviorWeight<BehaviorShootFromCastleWalls>(100f);
+            //            }
+            //        }
+            //    }
+            //}
 
             [HarmonyPrefix]
             [HarmonyPatch("ArcherShiftAround")]
@@ -223,9 +265,9 @@ namespace RealisticBattleAiModule.AiModule
             {
                 __instance.Formation.SetMovementOrder(____currentOrder);
                 __instance.Formation.FacingOrder = ___CurrentFacingOrder;
-                __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderScatter;
+                __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
                 __instance.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
-                __instance.Formation.FormOrder = FormOrder.FormOrderCustom(40f);
+                __instance.Formation.FormOrder = FormOrder.FormOrderWider;
                 __instance.Formation.WeaponUsageOrder = WeaponUsageOrder.WeaponUsageOrderUseAny;
                 return false;
             }
@@ -234,6 +276,10 @@ namespace RealisticBattleAiModule.AiModule
             [HarmonyPatch("TickOccasionally")]
             static bool PrefixTickOccasionally(ref BehaviorShootFromCastleWalls __instance, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref TacticalPosition ____tacticalArcherPosition)
             {
+                if(__instance.Formation.ArrangementOrder == ArrangementOrder.ArrangementOrderLine)
+                {
+                    __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderScatter;
+                }
                 __instance.Formation.SetMovementOrder(____currentOrder);
                 __instance.Formation.FacingOrder = ___CurrentFacingOrder;
                 if (____tacticalArcherPosition != null)

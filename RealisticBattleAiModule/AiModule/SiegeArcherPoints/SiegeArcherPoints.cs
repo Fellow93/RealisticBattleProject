@@ -7,6 +7,7 @@ using System.Linq;
 using System.Xml;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
+using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.View.MissionViews;
@@ -20,9 +21,10 @@ public class SiegeArcherPoints : MissionView
 	public bool isFirstTimeLoading = true;
 
 	public override void OnMissionScreenTick(float dt)
-    {
-        if (isFirstTimeLoading && Mission.Current != null && Mission.Current.IsSiegeBattle)
-        {
+	{
+		//((MissionView)this).OnMissionScreenTick(dt);
+		if (isFirstTimeLoading && Mission.Current != null && Mission.Current.IsSiegeBattle)
+		{
 			XmlDocument xmlDocument = new XmlDocument();
 			if (File.Exists(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml"))
 			{
@@ -89,37 +91,30 @@ public class SiegeArcherPoints : MissionView
 			isFirstTimeLoading = false;
 			return;
 		}
-		//     if (!editingWarningDisplayed && isEditingXml)
-		//     {
-		//InformationManager.DisplayMessage(new InformationMessage("YOU ARE IN EDIT MODE, YOU WILL REMOVE ALL ARCHER POINTS FROM THIS SCENE AFTER STARTING BATTLE", Color.FromUint(16711680u)));
-		//editingWarningDisplayed = true;
-		//     }
+
 		if (firstTime && Mission.Current != null && Mission.Current.IsSiegeBattle && Mission.Current.PlayerTeam.IsDefender && Mission.Current.Mode != MissionMode.Deployment)
 		{
-			((MissionBehavior)this).AfterStart();
 			List<GameEntity> gameEntities = new List<GameEntity>();
 			Mission.Current.Scene.GetEntities(ref gameEntities);
 
 			XmlDocument xmlDocument = new XmlDocument();
-			bool shouldAppend = true;
 			if (File.Exists(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml"))
 			{
 				xmlDocument.Load(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
 				xmlExists = true;
 			}
 			else
-            {
+			{
 				XmlDeclaration xmlDeclaration = xmlDocument.CreateXmlDeclaration("1.0", "UTF-8", null);
 
 				XmlElement root = xmlDocument.DocumentElement;
 				xmlDocument.InsertBefore(xmlDeclaration, root);
 				xmlDocument.AppendChild(xmlDocument.CreateElement(string.Empty, "points", string.Empty));
-				shouldAppend = false;
 			}
 
 			XmlNode pointNode = xmlDocument.SelectSingleNode("/points");
-			if(pointNode == null)
-            {
+			if (pointNode == null)
+			{
 				pointNode = xmlDocument.CreateElement(string.Empty, "points", string.Empty);
 			}
 
@@ -143,11 +138,157 @@ public class SiegeArcherPoints : MissionView
 			xmlDocument.Save(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
 			firstTime = false;
 		}
+
+		//if (Mission.Current.MainAgent != null)
+		//{
+		//	if (Mission.Current.IsOrderMenuOpen)
+		//	{
+		//		if (((MissionView)this).Input.IsKeyPressed(InputKey.O) || ((MissionView)this).Input.IsKeyPressed(InputKey.P)
+		//		|| ((MissionView)this).Input.IsKeyPressed(InputKey.K) || ((MissionView)this).Input.IsKeyPressed(InputKey.L))
+		//		{
+		//			GameEntity cursor = Mission.Current.Scene.FindEntityWithTag("cursormain");
+		//			Vec2 rotation = cursor.GetGlobalFrame().rotation.f.AsVec2;
+		//			Vec3 flag = ((MissionView)this).MissionScreen.GetOrderFlagPosition();
+
+		//			XmlDocument xmlDocument = new XmlDocument();
+		//			if (File.Exists(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml"))
+		//			{
+		//				xmlDocument.Load(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml");
+		//				xmlExists = true;
+		//			}
+		//			else
+		//			{
+		//				XmlDeclaration xmlDeclaration = xmlDocument.CreateXmlDeclaration("1.0", "UTF-8", null);
+
+		//				XmlElement root = xmlDocument.DocumentElement;
+		//				xmlDocument.InsertBefore(xmlDeclaration, root);
+		//				xmlDocument.AppendChild(xmlDocument.CreateElement(string.Empty, "points", string.Empty));
+		//			}
+
+		//			XmlNode pointNode = xmlDocument.SelectSingleNode("/points");
+		//			if (pointNode == null)
+		//			{
+		//				pointNode = xmlDocument.CreateElement(string.Empty, "points", string.Empty);
+		//			}
+
+		//			string innerText = flag.x + "," + flag.y + "," + flag.z + "," + rotation.x + "," + rotation.y;
+
+		//			if (((MissionView)this).Input.IsKeyPressed(InputKey.O)){
+		//				XmlNode node = xmlDocument.SelectSingleNode("/points/left_wait");
+		//				if (node != null)
+  //                      {
+		//					node.InnerText = innerText;
+		//				}
+		//				else
+  //                      {
+		//					node = xmlDocument.CreateElement(string.Empty, "left_wait", string.Empty);
+		//					node.InnerText = innerText;
+		//					pointNode.AppendChild(node);
+		//				}
+		//			}
+		//			if (((MissionView)this).Input.IsKeyPressed(InputKey.P))
+		//			{
+		//				XmlNode node = xmlDocument.SelectSingleNode("/points/right_wait");
+		//				if (node != null)
+		//				{
+		//					node.InnerText = innerText;
+		//				}
+		//				else
+		//				{
+		//					node = xmlDocument.CreateElement(string.Empty, "right_wait", string.Empty);
+		//					node.InnerText = innerText;
+		//					pointNode.AppendChild(node);
+		//				}
+		//			}
+		//			if (((MissionView)this).Input.IsKeyPressed(InputKey.K))
+		//			{
+		//				XmlNode node = xmlDocument.SelectSingleNode("/points/left_ready");
+		//				if (node != null)
+		//				{
+		//					node.InnerText = innerText;
+		//				}
+		//				else
+		//				{
+		//					node = xmlDocument.CreateElement(string.Empty, "left_ready", string.Empty);
+		//					node.InnerText = innerText;
+		//					pointNode.AppendChild(node);
+		//				}
+		//			}
+		//			if (((MissionView)this).Input.IsKeyPressed(InputKey.L))
+		//			{
+		//				XmlNode node = xmlDocument.SelectSingleNode("/points/right_ready");
+		//				if (node != null)
+		//				{
+		//					node.InnerText = innerText;
+		//				}
+		//				else
+		//				{
+		//					node = xmlDocument.CreateElement(string.Empty, "right_ready", string.Empty);
+		//					node.InnerText = innerText;
+		//					pointNode.AppendChild(node);
+		//				}
+		//			}
+		//			xmlDocument.Save(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml");
+		//		}
+		//	}
+		//}
 	}
+
+	//[HarmonyPatch(typeof(BehaviorDefendCastleKeyPosition))]
+	//[HarmonyPatch("ResetOrderPositions")]
+	//class BehaviorDefendCastleKeyPositionPatch
+	//{
+	//	private enum BehaviorState
+	//	{
+	//		UnSet,
+	//		Waiting,
+	//		Ready
+	//	}
+
+	//	static void Postfix(ref BehaviorDefendCastleKeyPosition __instance, ref WorldPosition ____readyOrderPosition, ref MovementOrder ____waitOrder, 
+	//		ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState, ref FacingOrder ___CurrentFacingOrder,
+	//		ref FacingOrder ____readyFacingOrder, ref FacingOrder ____waitFacingOrder, ref TacticalPosition ____tacticalWaitPos)
+	//	{
+	//		XmlDocument xmlDocument = new XmlDocument();
+	//		if (File.Exists(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml"))
+	//		{
+	//			WorldPosition tempPos = ____tacticalWaitPos.Position;
+	//			xmlDocument.Load(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml");
+	//			if (__instance.Formation.AI.Side == FormationAI.BehaviorSide.Left)
+ //               {
+	//				double[] leftWait = Array.ConvertAll(xmlDocument.SelectSingleNode("/points/left_wait").InnerText.Split(new[] { ',', }, StringSplitOptions.RemoveEmptyEntries), Double.Parse);
+	//				double[] leftReady = Array.ConvertAll(xmlDocument.SelectSingleNode("/points/left_ready").InnerText.Split(new[] { ',', }, StringSplitOptions.RemoveEmptyEntries), Double.Parse);
+	//				____waitFacingOrder = FacingOrder.FacingOrderLookAtDirection(new Vec2((float)leftWait[3], (float)leftWait[4]));
+	//				____readyFacingOrder = FacingOrder.FacingOrderLookAtDirection(new Vec2((float)leftReady[3], (float)leftReady[4]));
+	//				tempPos.SetVec2(new Vec2((float)leftWait[0], (float)leftWait[1]));
+	//				____readyOrderPosition.SetVec3(UIntPtr.Zero, new Vec3((float)leftReady[0], (float)leftReady[1], (float)leftReady[2]), false);
+
+
+	//			}
+	//			else if (__instance.Formation.AI.Side == FormationAI.BehaviorSide.Right)
+	//			{
+	//				double[] rightWait = Array.ConvertAll(xmlDocument.SelectSingleNode("/points/right_wait").InnerText.Split(new[] { ',', }, StringSplitOptions.RemoveEmptyEntries), Double.Parse);
+	//				double[] rightReady = Array.ConvertAll(xmlDocument.SelectSingleNode("/points/right_ready").InnerText.Split(new[] { ',', }, StringSplitOptions.RemoveEmptyEntries), Double.Parse);
+	//				____waitFacingOrder = FacingOrder.FacingOrderLookAtDirection(new Vec2((float)rightWait[3], (float)rightWait[4]));
+	//				____readyFacingOrder = FacingOrder.FacingOrderLookAtDirection(new Vec2((float)rightReady[3], (float)rightReady[4]));
+	//				tempPos.SetVec2(new Vec2((float)rightWait[0], (float)rightWait[1]));
+	//				____readyOrderPosition.SetVec3(UIntPtr.Zero, new Vec3((float)rightReady[0], (float)rightReady[1], (float)rightReady[2]), false);
+
+
+	//			}
+
+	//			____waitOrder = MovementOrder.MovementOrderMove(tempPos);
+	//			____readyOrder = MovementOrder.MovementOrderMove(____readyOrderPosition);
+	//			____currentOrder = ((____behaviorState == BehaviorState.Ready) ? ____readyOrder : ____waitOrder);
+	//			___CurrentFacingOrder = ((__instance.Formation.QuerySystem.ClosestEnemyFormation != null && TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation.QuerySystem.ClosestEnemyFormation.Formation, includeOnlyPositionedUnits: true)) ? FacingOrder.FacingOrderLookAtEnemy : ((____behaviorState == BehaviorState.Ready) ? ____readyFacingOrder : ____waitFacingOrder));
+
+	//		}
+	//	}
+	//}
 
 	[HarmonyPatch(typeof(ArrangementOrder))]
 	[HarmonyPatch("GetCloseStrategicAreas")]
-	class HoldTheDoor
+	class GetCloseStrategicAreasPatch
 	{
 		static bool Prefix(ref IEnumerable<StrategicArea> __result, Formation formation, ref ArrangementOrder __instance)
 		{
