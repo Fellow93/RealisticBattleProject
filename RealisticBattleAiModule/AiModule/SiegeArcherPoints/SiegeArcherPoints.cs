@@ -298,7 +298,7 @@ public class SiegeArcherPoints : MissionView
 			}
 			__result = formation.Team.TeamAI.GetStrategicAreas().Where(delegate (StrategicArea sa)
 			{
-				float customDistanceToCheck = 70f;
+				float customDistanceToCheck = 150f;
 				if (sa.IsUsableBy(formation.Team.Side))
 				{
 					if (sa.IgnoreHeight)

@@ -3346,6 +3346,33 @@ namespace RealisticBattleCombatModule
         }
     }
 
+    [HarmonyPatch(typeof(DefaultTournamentModel))]
+    class DefaultTournamentModelPatch
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch("GetRenownReward")]
+        static bool GetRenownRewardPrefix(ref DefaultTournamentModel __instance, Hero winner, Town town, ref int __result)
+        {
+            if (winner.IsHumanPlayerCharacter)
+            {
+                float baseRenown = 3f;
+                int tournamentTier = FightTournamentGamePatch.calculatePlayerTournamentTier();
+
+                baseRenown *= tournamentTier;
+                if (winner.GetPerkValue(DefaultPerks.OneHanded.Duelist))
+                {
+                    baseRenown *= 2f;
+                }
+                __result = MathF.Round(baseRenown);
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(StoryModeCombatXpModel))]
     class GetXpFromHitPatch
     {
