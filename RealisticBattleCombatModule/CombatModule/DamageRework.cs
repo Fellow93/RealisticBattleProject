@@ -2136,11 +2136,37 @@ namespace RealisticBattleCombatModule
     }
 
     [HarmonyPatch(typeof(DefaultItemValueModel))]
+    [HarmonyPatch("CalculateAmmoTier")]
+    class CalculateAmmoTierPatch
+    {
+        static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
+        {
+            WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
+            //float missileWeight = weaponComponent.Item.Weight;
+            int missileDamage = weaponComponentData.MissileDamage;
+            int num = MathF.Max(0, weaponComponentData.MaxDataValue - 20);
+            __result = (float)missileDamage + (float)num * 0.1f;
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(DefaultItemValueModel))]
+    [HarmonyPatch("CalculateShieldTier")]
+    class CalculateShieldTierPatch
+    {
+        static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
+        {
+            WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
+            //weaponComponentData.MaxDataValue - hitpointy stitov
+            __result = ((float)weaponComponentData.MaxDataValue + 3f * (float)weaponComponentData.BodyArmor + (float)weaponComponentData.ThrustSpeed) / (6f + weaponComponent.Item.Weight) * 0.13f - 3f;
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(DefaultItemValueModel))]
     [HarmonyPatch("CalculateRangedWeaponTier")]
     class OverrideCalculateRangedWeaponTier
     {
-
-
         static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
         {
             WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
