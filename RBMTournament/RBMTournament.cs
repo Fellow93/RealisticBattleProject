@@ -475,8 +475,21 @@ namespace RBMTournament
                         }
                         else
                         {
-                            List<CharacterObject> troopsFromTier = troops.FindAll((CharacterObject troop) => troop != null && playerTier >= 5 ? (troop.Tier >= 5) : troop.Tier == playerTier);
-                            troopToAdd = troopsFromTier[MBRandom.RandomInt(troopsFromTier.Count - 1)];
+                            List<CharacterObject> troopsFromTier = new List<CharacterObject>();
+                            int tier = playerTier;
+                            do
+                            {
+                                troopsFromTier = troops.FindAll((CharacterObject troop) => troop != null && tier >= 5 ? (troop.Tier >= 5) : troop.Tier == tier);
+                                tier--;
+                                if(tier == 0)
+                                {
+                                    break;
+                                }
+                            } while (troopsFromTier.Count <= 0);
+                            if(troopsFromTier.Count > 0)
+                            {
+                                troopToAdd = troopsFromTier[MBRandom.RandomInt(troopsFromTier.Count - 1)];
+                            }
                         }
                     }
                 }

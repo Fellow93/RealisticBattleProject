@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Xml;
 using TaleWorlds.Localization;
 using System.IO;
+using System.Reflection;
 
 namespace RealisticBattleCombatModule
 {
@@ -21,6 +22,7 @@ namespace RealisticBattleCombatModule
         public static void DoPatching()
         {
             var harmony = new Harmony("com.pf.rbcm");
+            //harmony.PatchAll(Assembly.LoadFrom("../../Modules/RBMTournament/bin/Win64_Shipping_Client/RBMTournament.dll"));
             harmony.PatchAll();
         }
     }
@@ -57,9 +59,10 @@ namespace RealisticBattleCombatModule
                     RBMCMConfig.dict.Add(childNode.Name + "." + subNode.Name, float.Parse(subNode.InnerText));
                 }
             }
+
             MyPatcher.DoPatching();
 
-            Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("RBM Combat Module Settings"), 3, delegate
+            TaleWorlds.MountAndBlade.Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("RBM Combat Module Settings"), 3, delegate
             {
                 TaleWorlds.ScreenSystem.ScreenManager.PushScreen(new RbmConfigScreen());
             }, () => (false, new TextObject("RBM Combat Module Settings"))));
