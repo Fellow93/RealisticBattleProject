@@ -32,7 +32,7 @@
   <Scene id="empire_siege_001"
          name="{=snbaIFOU}Veron Castle"
          terrain="Plain"
-         is_siege_map="true"></Scene>
+         is_siege_map="true"></Scene> lvl 1, 2 and 3 complete
 		 
   <Scene id="aserai_castle_002"
          name="{=OLrhkKUo}Ain Baliq Castle"
