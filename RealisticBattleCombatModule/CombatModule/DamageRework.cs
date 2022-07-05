@@ -1980,6 +1980,26 @@ namespace RealisticBattleCombatModule
             else if (item.ItemComponent is WeaponComponent)
             {
                 price = (int)(200f * RBMCMConfig.dict["Global.WeaponPriceModifier"] * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
+                if (item.ItemType == ItemObject.ItemTypeEnum.Polearm)
+                {
+                    price *= 0.4f; 
+                }
+                if (item.ItemType == ItemObject.ItemTypeEnum.Thrown)
+                {
+                    price *= 0.3f;
+                }
+                if (item.ItemType == ItemObject.ItemTypeEnum.TwoHandedWeapon)
+                {
+                    price *= 1.5f;
+                }
+            }
+            else if (item.ItemType == ItemObject.ItemTypeEnum.Shield)
+            {
+                price *= 0.3f;
+            }
+            else if (item.ItemType == ItemObject.ItemTypeEnum.Arrows && item.ItemType == ItemObject.ItemTypeEnum.Bolts)
+            {
+                price *= 0.2f;
             }
             else if (item.ItemComponent is HorseComponent)
             {
@@ -2142,10 +2162,12 @@ namespace RealisticBattleCombatModule
         static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
         {
             WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
-            //float missileWeight = weaponComponent.Item.Weight;
-            int missileDamage = weaponComponentData.MissileDamage;
-            int num = MathF.Max(0, weaponComponentData.MaxDataValue - 20);
-            __result = (float)missileDamage + (float)num * 0.1f;
+            float missileWeight = weaponComponent.Item.Weight;
+            float missileDamage = weaponComponentData.MissileDamage;
+            float arrowTier = (missileDamage * 0.01f) * (((missileWeight * 100f - 4f) + 0.01f) * 0.8f);
+            if (arrowTier > 5.1f)
+            { arrowTier = 5.1f; }
+            __result = arrowTier;
             return false;
         }
     }
@@ -2158,7 +2180,14 @@ namespace RealisticBattleCombatModule
         {
             WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
             //weaponComponentData.MaxDataValue - hitpointy stitov
-            __result = ((float)weaponComponentData.MaxDataValue + 3f * (float)weaponComponentData.BodyArmor + (float)weaponComponentData.ThrustSpeed) / (6f + weaponComponent.Item.Weight) * 0.13f - 3f;
+            float hp = (float)weaponComponentData.MaxDataValue;
+            float bodyArmor = (float)weaponComponentData.BodyArmor;
+            float weaponLength = (float)weaponComponentData.WeaponLength;
+            float shieldTier = ((hp - 400f) * 0.005f + bodyArmor * 0.2f) * (weaponLength / 60f);
+            shieldTier += 1f;
+            if (shieldTier > 6f)
+            { shieldTier = 6f; }
+            __result = shieldTier;
             return false;
         }
     }
@@ -2188,25 +2217,25 @@ namespace RealisticBattleCombatModule
         }
     }
 
-    [HarmonyPatch(typeof(DefaultItemValueModel))]
-    [HarmonyPatch("CalculateAmmoTier")]
-    class OverrideCalculateAmmoTier
-    {
+    //[HarmonyPatch(typeof(DefaultItemValueModel))]
+    //[HarmonyPatch("CalculateAmmoTier")]
+    //class OverrideCalculateAmmoTier
+    //{
 
 
-        static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
-        {
-            WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
-            //float num;
-            float ArrowTier;
-            float ArrowWeight = (float)weaponComponentData.MissileSpeed * 1f;
+    //    static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
+    //    {
+    //        WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
+    //        //float num;
+    //        float ArrowTier;
+    //        float ArrowWeight = (float)weaponComponentData.MissileSpeed * 1f;
 
-            ArrowTier = (ArrowWeight - 40f) * 0.066f;
-            //num = ArrowTier;
-            __result = ArrowTier;
-            return false;
-        }
-    }
+    //        ArrowTier = (ArrowWeight - 40f) * 0.066f;
+    //        //num = ArrowTier;
+    //        __result = ArrowTier;
+    //        return false;
+    //    }
+    //}
 
     [HarmonyPatch(typeof(DefaultItemValueModel))]
     [HarmonyPatch("CalculateArmorTier")]

@@ -77,7 +77,6 @@ namespace RealisticBattleCombatModule
                                 case (int)WeaponClass.Mace:
                                 case (int)WeaponClass.OneHandedAxe:
                                 case (int)WeaponClass.OneHandedPolearm:
-                                case (int)WeaponClass.TwoHandedPolearm:
                                 case (int)WeaponClass.TwoHandedMace:
                                     {
                                         float swingskillModifier = 1f + (effectiveSkill / 1000f);
@@ -87,6 +86,17 @@ namespace RealisticBattleCombatModule
                                         weaponStatsData[i].SwingSpeed = MathF.Ceiling((weaponStatsData[i].SwingSpeed * 0.83f) * swingskillModifier);
                                         weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.9f) * thrustskillModifier);
                                         weaponStatsData[i].DefendSpeed = MathF.Ceiling((weaponStatsData[i].DefendSpeed * 0.83f) * handlingskillModifier);
+                                        break;
+                                    }
+                                case (int)WeaponClass.TwoHandedPolearm:
+                                    {
+                                        float swingskillModifier = 1f + (effectiveSkill / 1000f);
+                                        float thrustskillModifier = 1f + (effectiveSkill / 1000f);
+                                        float handlingskillModifier = 1f + (effectiveSkill / 700f);
+
+                                        weaponStatsData[i].SwingSpeed = MathF.Ceiling((weaponStatsData[i].SwingSpeed * 0.83f) * swingskillModifier);
+                                        weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 1.1f) * thrustskillModifier);
+                                        weaponStatsData[i].DefendSpeed = MathF.Ceiling((weaponStatsData[i].DefendSpeed * 1f) * handlingskillModifier);
                                         break;
                                     }
                                 case (int)WeaponClass.TwoHandedAxe:
