@@ -1,7 +1,7 @@
 ﻿<Module>
   <Name value="RBM Tournament Module"/>
   <Id value="RBMTournament"/>
-  <Version value="v1.0.0"/>
+  <Version value="v2.5.2"/>
   <SingleplayerModule value="true"/>
   <MultiplayerModule value="false"/>
   <DependedModules>
