@@ -242,7 +242,7 @@
   <Scene id="vlandia_castle_b"
          name="{=c8A1uisA}Verecsand Castle"
          terrain="Plain"
-         is_siege_map="true"></Scene>
+         is_siege_map="true"></Scene> lvl 1, 2 and 3 done
 		 
   <!--<Scene id="vlandia_castle_005a"
          name="{=JaoBYmxR}vlandia_castle_005a"
