@@ -598,12 +598,12 @@ namespace RBMTournament
                         }
                         if (positiveIM.Count > 0)
                         {
+                            float randomF = MBRandom.RandomFloat;
                             foreach (ItemModifierProbability value in item.ArmorComponent.ItemModifierGroup.ItemModifiersWithProbability.Values)
                             {
                                 ItemModifier imTemp = positiveIM.Find((ItemModifier im) => im != null && value.ItemModifier != null && im.Name.Equals(value.ItemModifier.Name));
                                 if (imTemp != null)
                                 {
-                                    float randomF = MBRandom.RandomFloat;
                                     if (randomF < (value.Probability / 100f))
                                     {
                                         __result = __instance.AddToCounts(new EquipmentElement(item, imTemp), number);
