@@ -2912,7 +2912,7 @@ namespace RealisticBattleCombatModule
         [HarmonyPatch("GetSurvivalChance")]
         static bool PrefixGetAiWeight(ref float __result, PartyBase party, CharacterObject character, DamageTypes damageType, PartyBase enemyParty = null)
         {
-            if (character.IsPlayerCharacter)
+            if ((character.IsHero && CampaignOptions.BattleDeath == CampaignOptions.Difficulty.VeryEasy) || (character.IsPlayerCharacter && CampaignOptions.BattleDeath == CampaignOptions.Difficulty.Easy))
             {
                 __result = 1f;
                 return false;
@@ -2933,7 +2933,10 @@ namespace RealisticBattleCombatModule
                 }
                 if (character.IsHero)
                 {
-                    stat.AddFactor(49f);
+                    stat.Add(character.GetTotalArmorSum() * 0.01f);
+                    stat.Add(character.Age * - 0.01f);
+                    stat.AddFactor(50f);
+                    //stat.AddFactor(49f);
                     //stat.Add(stat.ResultNumber * 50f - stat.ResultNumber);
                 }
                 ExplainedNumber stat2 = new ExplainedNumber(1f / stat.ResultNumber);
