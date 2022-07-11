@@ -1,8 +1,7 @@
 ﻿using HarmonyLib;
-using RealisticBattleAiModule.AiModule.RbmBehaviors;
 using TaleWorlds.MountAndBlade;
 
-namespace RealisticBattleAiModule.AiModule.RbmTactics
+namespace RBMAI
 {
     [HarmonyPatch(typeof(TacticDefensiveEngagement))]
     class TacticDefensiveEngagementPatch
@@ -11,7 +10,7 @@ namespace RealisticBattleAiModule.AiModule.RbmTactics
         [HarmonyPatch("HasBattleBeenJoined")]
         static bool PrefixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
         {
-            __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined);
+            __result = RBMAI.Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined);
             return false;
         }
 
@@ -61,7 +60,7 @@ namespace RealisticBattleAiModule.AiModule.RbmTactics
                 ____leftCavalry.AI.SetBehaviorWeight<RBMBehaviorCavalryCharge>(1f);
                 //____leftCavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
             }
-            Utilities.FixCharge(ref ____mainInfantry);
+            RBMAI.Utilities.FixCharge(ref ____mainInfantry);
         }
     }
 }

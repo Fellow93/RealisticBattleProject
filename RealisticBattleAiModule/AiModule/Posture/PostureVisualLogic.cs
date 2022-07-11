@@ -3,7 +3,7 @@ using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade.View.Screens;
 using TaleWorlds.MountAndBlade;
 
-namespace RealisticBattleAiModule.AiModule.Posture
+namespace RBMAI
 {
     public class PostureVisualLogic : MissionLogic
 	{

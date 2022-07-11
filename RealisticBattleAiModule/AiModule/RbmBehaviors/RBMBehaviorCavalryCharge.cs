@@ -90,19 +90,19 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 							Formation correctEnemy = null;
 							if (ChargeInfantry)
 							{
-								correctEnemy = RealisticBattleAiModule.Utilities.FindSignificantEnemy(base.Formation, true, false, false, false, false);
+								correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, true, false, false, false, false);
 							}
 							else if (ChargeArchers)
 							{
-								correctEnemy = RealisticBattleAiModule.Utilities.FindSignificantEnemy(base.Formation, false, true, false, false, false);
+								correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, false, true, false, false, false);
 							}
 							else if (ChargeCavalry)
 							{
-								correctEnemy = RealisticBattleAiModule.Utilities.FindSignificantEnemy(base.Formation, false, false, true, true, true);
+								correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, false, false, true, true, true);
 							}
 							else
 							{
-								correctEnemy = RealisticBattleAiModule.Utilities.FindSignificantEnemy(base.Formation, true, true, false, false, false);
+								correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, true, true, false, false, false);
 							}
 							if (correctEnemy != null)
 							{
@@ -202,19 +202,19 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 						Formation correctEnemy = null;
 						if (ChargeInfantry)
 						{
-							correctEnemy = RealisticBattleAiModule.Utilities.FindSignificantEnemy(base.Formation, true, false, false, false, false);
+							correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, true, false, false, false, false);
 						}
 						else if (ChargeArchers)
 						{
-							correctEnemy = RealisticBattleAiModule.Utilities.FindSignificantEnemy(base.Formation, false, true, false, false, false);
+							correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, false, true, false, false, false);
 						}
 						else if (ChargeCavalry)
 						{
-							correctEnemy = RealisticBattleAiModule.Utilities.FindSignificantEnemy(base.Formation, false, false, true, true, true);
+							correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, false, false, true, true, true);
 						}
 						else
 						{
-							correctEnemy = RealisticBattleAiModule.Utilities.FindSignificantEnemy(base.Formation, true, true, false, false, false);
+							correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, true, true, false, false, false);
 						}
 						if (correctEnemy != null)
 						{

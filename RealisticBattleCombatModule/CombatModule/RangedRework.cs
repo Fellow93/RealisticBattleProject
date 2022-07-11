@@ -7,13 +7,11 @@ using TaleWorlds.Library;
 using System.Collections;
 using System.Collections.Generic;
 using TaleWorlds.Localization;
-using RealisticBattleCombatModule.CombatModule;
 using System;
 using TaleWorlds.Engine;
 using static TaleWorlds.MountAndBlade.Agent;
-using SandBox.GameComponents;
 
-namespace RealisticBattleCombatModule
+namespace RBMCombat
 {
     public class RangedRework
     {
@@ -115,12 +113,12 @@ namespace RealisticBattleCombatModule
                                     }
                                 case (int)WeaponClass.Bow:
                                     {
-                                        if (RBMCMConfig.dict["Global.RealisticRangedReload"] == 1 || RBMCMConfig.dict["Global.RealisticRangedReload"] == 2)
+                                        if (RBMConfig.RBMConfig.realisticRangedReload.Equals("1") || RBMConfig.RBMConfig.realisticRangedReload.Equals("2"))
                                         {
                                             float DrawSpeedskillModifier = 1 + (effectiveSkill * 0.01f);
                                             weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.1f) * DrawSpeedskillModifier);
                                         }
-                                        if (RBMCMConfig.dict["Global.RealisticRangedReload"] == 0)
+                                        if (RBMConfig.RBMConfig.realisticRangedReload.Equals("0"))
                                         {
                                             weaponStatsData[i].ThrustSpeed = MathF.Ceiling(weaponStatsData[i].ThrustSpeed * 0.45f);
                                         }
@@ -794,7 +792,7 @@ namespace RealisticBattleCombatModule
         {
             static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem, AgentStatCalculateModel __instance)
             {
-                if (RBMCMConfig.dict["Global.RealisticRangedReload"] == 1)
+                if (RBMConfig.RBMConfig.realisticRangedReload.Equals("1"))
                 {
                     SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
                     if(skill != null)
@@ -826,7 +824,7 @@ namespace RealisticBattleCombatModule
                     }
                     
                 }
-                else if (RBMCMConfig.dict["Global.RealisticRangedReload"] == 2)
+                else if (RBMConfig.RBMConfig.realisticRangedReload.Equals("2"))
                 {
                     SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
                     if (skill != null)

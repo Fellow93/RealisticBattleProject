@@ -11,7 +11,7 @@ using TaleWorlds.MountAndBlade.Source.Missions.Handlers.Logic;
 using static TaleWorlds.MountAndBlade.FormationAI;
 using static TaleWorlds.MountAndBlade.SiegeLane;
 
-namespace RealisticBattleAiModule.AiModule
+namespace RBMAI.AiModule
 {
     class SiegePatches
     {
@@ -191,7 +191,7 @@ namespace RealisticBattleAiModule.AiModule
                         {
                             if (__instance.Formation != null)
                             {
-                                Formation enemyFormation = Utilities.FindSignificantEnemy(__instance.Formation, true, false, false, false, false, false);
+                                Formation enemyFormation = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, false, false, false, false, false);
                                 if (enemyFormation != null)
                                 {
                                     ____currentOrder = MovementOrder.MovementOrderChargeToTarget(enemyFormation);
@@ -522,7 +522,7 @@ namespace RealisticBattleAiModule.AiModule
                 if (__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && ____tacticalMiddlePos != null && ____innerGate == null && ____outerGate == null)
                 {
                     WorldPosition position = ____tacticalMiddlePos.Position;
-                    Formation correctEnemy = Utilities.FindSignificantEnemyToPosition(__instance.Formation, position, true, false, false, false, false, true);
+                    Formation correctEnemy = RBMAI.Utilities.FindSignificantEnemyToPosition(__instance.Formation, position, true, false, false, false, false, true);
                     if (correctEnemy != null)
                     {
                         if (TeamAISiegeComponent.IsFormationInsideCastle(correctEnemy, includeOnlyPositionedUnits: false, 0.10f))
@@ -719,7 +719,7 @@ namespace RealisticBattleAiModule.AiModule
             [HarmonyPatch("OnDeploymentStateChanged")]
             static void PostfixDeploymentStateChanged(ref SiegeTower __instance, ref List<SiegeLadder> ____sameSideSiegeLadders, ref GameEntity ____cleanState, ref List<LadderQueueManager> ____queueManagers)
             {
-                if (XmlConfig.dict["Global.SiegeTowersEnabled"] == 0)
+                if (!RBMConfig.RBMConfig.siegeTowersEnabled)
                 {
                     __instance.Disable();
                     ____cleanState.SetVisibilityExcludeParents(false);

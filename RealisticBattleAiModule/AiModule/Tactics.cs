@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using RealisticBattleAiModule.AiModule.RbmBehaviors;
 using SandBox.Missions.MissionLogics;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +8,9 @@ using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.ViewModelCollection.HUD.FormationMarker;
 using static TaleWorlds.Core.ItemObject;
 
-namespace RealisticBattleAiModule
+namespace RBMAI
 {
-    public class Tactics
+    public static class Tactics
     {
 
         public class AIDecision
@@ -181,11 +180,11 @@ namespace RealisticBattleAiModule
                     {
                         return TargetIconType.HorseArcher_Light.ToString();
                     }
-                    if (formation.QuerySystem.IsCavalryFormation && !Utilities.CheckIfMountedSkirmishFormation(formation, 0.6f))
+                    if (formation.QuerySystem.IsCavalryFormation && !RBMAI.Utilities.CheckIfMountedSkirmishFormation(formation, 0.6f))
                     {
                         return TargetIconType.Cavalry_Light.ToString();
                     }
-                    if (formation.QuerySystem.IsCavalryFormation && Utilities.CheckIfMountedSkirmishFormation(formation, 0.6f))
+                    if (formation.QuerySystem.IsCavalryFormation && RBMAI.Utilities.CheckIfMountedSkirmishFormation(formation, 0.6f))
                     {
                         return TargetIconType.Special_JavelinThrower.ToString();
                     }
@@ -205,7 +204,7 @@ namespace RealisticBattleAiModule
         {
             public static void Postfix()
             {
-                MyPatcher.DoPatching();
+                RBMAiPatcher.DoPatching();
             }
         }
 
@@ -216,7 +215,7 @@ namespace RealisticBattleAiModule
             public static void Postfix()
             {
                 aiDecisionCooldownDict.Clear();
-                MyPatcher.DoPatching();
+                RBMAiPatcher.DoPatching();
                 OnTickAsAIPatch.itemPickupDistanceStorage.Clear();
                 ManagedParameters.SetParameter(ManagedParametersEnum.BipedalRadius, 0.5f);
                 if (Mission.Current.Teams.Any())
@@ -375,14 +374,14 @@ namespace RealisticBattleAiModule
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
                     ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(0f);
                 }
-                Utilities.FixCharge(ref ____mainInfantry);
+                RBMAI.Utilities.FixCharge(ref ____mainInfantry);
             }
 
             [HarmonyPostfix]
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____cavalry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined( ____cavalry, ____hasBattleBeenJoined, 125f);
+                __result = RBMAI.Utilities.HasBattleBeenJoined( ____cavalry, ____hasBattleBeenJoined, 125f);
             }
 
             //[HarmonyPostfix]
@@ -447,14 +446,14 @@ namespace RealisticBattleAiModule
                     ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
                     ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(0f);
                 }
-                Utilities.FixCharge(ref ____mainInfantry);
+                RBMAI.Utilities.FixCharge(ref ____mainInfantry);
             }
 
             [HarmonyPostfix]
             [HarmonyPatch("HasBattleBeenJoined")]
             static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = Utilities.HasBattleBeenJoined( ____mainInfantry, ____hasBattleBeenJoined);
+                __result = RBMAI.Utilities.HasBattleBeenJoined( ____mainInfantry, ____hasBattleBeenJoined);
             }
 
             [HarmonyPostfix]

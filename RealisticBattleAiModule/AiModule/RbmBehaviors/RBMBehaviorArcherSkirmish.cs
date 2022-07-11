@@ -3,7 +3,7 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
-namespace RealisticBattleAiModule.AiModule.RbmBehaviors
+namespace RBMAI
 {
 	class RBMBehaviorArcherSkirmish : BehaviorComponent
 	{
@@ -52,14 +52,14 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 				Formation significantEnemy = null;
 				if (base.Formation != null && base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
 				{
-					significantEnemy = Utilities.FindSignificantEnemy(base.Formation, true, true, false, false, false);
+					significantEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, true, true, false, false, false);
 				}
 				if (significantEnemy == null)
 				{
 					significantEnemy = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation;
 				}
 				Formation significantAlly = null;
-				significantAlly = Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
+				significantAlly = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
 				
 				vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition;
 				float distance = vec.Normalize();
@@ -108,7 +108,7 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 							//_cantShoot = false;
 							if (base.Formation.QuerySystem.IsRangedFormation && distance < MathF.Min(effectiveShootingRange * 0.4f, _cantShootDistance * 0.666f))
 							{
-								Formation meleeFormation = Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
+								Formation meleeFormation = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
 								if (meleeFormation != null && meleeFormation.QuerySystem.IsInfantryFormation)
 								{
 									_behaviorState = BehaviorState.PullingBack;
@@ -123,7 +123,7 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 							
 							if (base.Formation.QuerySystem.IsRangedFormation && distance < MathF.Min(effectiveShootingRange * 0.4f, _cantShootDistance * 0.666f))
 							{
-								Formation meleeFormation = Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
+								Formation meleeFormation = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
 								if (meleeFormation != null && meleeFormation.QuerySystem.IsInfantryFormation)
                                 {
 									_cantShoot = true;
@@ -159,7 +159,7 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 						}
 						break;
 					case BehaviorState.PullingBack:
-						Formation meleeFormationPull = Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
+						Formation meleeFormationPull = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
 						if (meleeFormationPull == null || !meleeFormationPull.QuerySystem.IsInfantryFormation)
 						{
 							_behaviorState = BehaviorState.Shooting;
@@ -174,7 +174,7 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 						}
 						break;
 				}
-				bool isOnlyCavReamining = Utilities.CheckIfOnlyCavRemaining(base.Formation);
+				bool isOnlyCavReamining = RBMAI.Utilities.CheckIfOnlyCavRemaining(base.Formation);
                 if (isOnlyCavReamining)
                 {
 					_behaviorState = BehaviorState.Shooting;

@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using RealisticBattleAiModule.AiModule.RbmBehaviors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +10,11 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
-using static RealisticBattleAiModule.Tactics;
+using static RBMAI.Tactics;
 using static TaleWorlds.MountAndBlade.ArrangementOrder;
 using static TaleWorlds.MountAndBlade.HumanAIComponent;
 
-namespace RealisticBattleAiModule
+namespace RBMAI
 {
     class Behaviours
     {
@@ -56,7 +55,7 @@ namespace RealisticBattleAiModule
                     WorldPosition medianPositionNew = __instance.Formation.QuerySystem.MedianPosition;
                     medianPositionNew.SetVec2(__instance.Formation.QuerySystem.AveragePosition);
 
-                    Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
+                    Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
 
                     if (significantEnemy != null)
                     {
@@ -108,7 +107,7 @@ namespace RealisticBattleAiModule
                     WorldPosition medianPositionNew = __instance.Formation.QuerySystem.MedianPosition;
                     medianPositionNew.SetVec2(__instance.Formation.QuerySystem.AveragePosition);
 
-                    Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
+                    Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
 
                     if (significantEnemy != null)
                     {
@@ -209,7 +208,7 @@ namespace RealisticBattleAiModule
     //    {
     //        if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
     //        {
-    //            Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
+    //            Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
     //            if (significantEnemy != null)
     //            {
     //                float distance = significantEnemy.QuerySystem.MedianPosition.AsVec2.Distance(__instance.Formation.QuerySystem.MedianPosition.AsVec2);
@@ -228,7 +227,7 @@ namespace RealisticBattleAiModule
     //    {
     //        if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
     //        {
-    //            Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
+    //            Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
 
     //            int waitCountShooting;
     //            int waitCountApproaching;
@@ -346,7 +345,7 @@ namespace RealisticBattleAiModule
         {
             if (__instance.Formation != null && ____archerFormation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
-                Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, false);
+                Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, false);
 
                 if (significantEnemy != null)
                 {
@@ -571,7 +570,7 @@ namespace RealisticBattleAiModule
         static void PostfixCalculateCurrentOrder(BehaviorMountedSkirmish __instance, ref bool ____engaging, ref MovementOrder ____currentOrder, ref bool ____isEnemyReachable)
         {
             WorldPosition position = __instance.Formation.QuerySystem.MedianPosition;
-            Formation targetFormation = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
+            Formation targetFormation = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
             FormationQuerySystem targetFormationQS = null;
             if(targetFormation != null)
             {
@@ -606,7 +605,7 @@ namespace RealisticBattleAiModule
 
                     if (__instance.Formation != null && __instance.Formation.QuerySystem.IsInfantryFormation)
                     {
-                        enemyFormation = Utilities.FindSignificantEnemyToPosition(__instance.Formation, position, true, true, false, false, false, false);
+                        enemyFormation = RBMAI.Utilities.FindSignificantEnemyToPosition(__instance.Formation, position, true, true, false, false, false, false);
                     }
 
                     //foreach (Team team in Mission.Current.Teams.ToList())
@@ -668,7 +667,7 @@ namespace RealisticBattleAiModule
         {
             if (__instance.Formation != null && __instance.Formation.QuerySystem.IsCavalryFormation)
             {
-                if (Utilities.CheckIfMountedSkirmishFormation(__instance.Formation, 0.6f))
+                if (RBMAI.Utilities.CheckIfMountedSkirmishFormation(__instance.Formation, 0.6f))
                 {
                     __result = 5f;
                     return;
@@ -681,7 +680,7 @@ namespace RealisticBattleAiModule
             }
             else if (__instance.Formation != null && __instance.Formation.QuerySystem.IsRangedCavalryFormation)
             {
-                Formation enemyCav = Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
+                Formation enemyCav = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
                 if(enemyCav != null && __instance.Formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyCav.QuerySystem.MedianPosition.AsVec2) < 55f)
                 {
                     __result = 0.1f;
@@ -700,7 +699,7 @@ namespace RealisticBattleAiModule
                 int countOfSkirmishers = 0;
                 __instance.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
-                    if (Utilities.CheckIfSkirmisherAgent(agent, 1))
+                    if (RBMAI.Utilities.CheckIfSkirmisherAgent(agent, 1))
                     {
                         countOfSkirmishers++;
                     }
@@ -1037,11 +1036,11 @@ namespace RealisticBattleAiModule
             }
             if (__instance.Formation != null && (__instance.Formation.QuerySystem.IsInfantryFormation || __instance.Formation.QuerySystem.IsRangedFormation) && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
-                Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true, 0.7f);
+                Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true, 0.7f);
 
-                if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && __instance.Formation.QuerySystem.IsInfantryFormation && !Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
+                if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && __instance.Formation.QuerySystem.IsInfantryFormation && !RBMAI.Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
                 {
-                    Formation enemyCav = Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
+                    Formation enemyCav = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
 
                     if (enemyCav != null && !enemyCav.QuerySystem.IsCavalryFormation)
                     {
@@ -1062,7 +1061,7 @@ namespace RealisticBattleAiModule
                         Vec2 cavDirection = enemyCav.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                         cavDist = cavDirection.Normalize();
                     }
-                    bool isOnlyCavReamining = Utilities.CheckIfOnlyCavRemaining(__instance.Formation);
+                    bool isOnlyCavReamining = RBMAI.Utilities.CheckIfOnlyCavRemaining(__instance.Formation);
                     if ((enemyCav != null) && (cavDist <= signDist) && (enemyCav.CountOfUnits > __instance.Formation.CountOfUnits / 10) && ((signDist > 35f || significantEnemy == enemyCav) || isOnlyCavReamining))
                     {
                         if (isOnlyCavReamining)
@@ -1097,7 +1096,7 @@ namespace RealisticBattleAiModule
                                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
                             }
                             //__instance.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent) {
-                            //    if (Utilities.CheckIfCanBrace(agent))
+                            //    if (RBMAI.Utilities.CheckIfCanBrace(agent))
                             //    {
                             //        agent.SetFiringOrder(1);
                             //    }
@@ -1148,7 +1147,7 @@ namespace RealisticBattleAiModule
                                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
                                 }
                                 //__instance.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent) {
-                                //    if (Utilities.CheckIfCanBrace(agent))
+                                //    if (RBMAI.Utilities.CheckIfCanBrace(agent))
                                 //    {
                                 //        agent.SetFiringOrder(1);
                                 //    }
@@ -1163,7 +1162,7 @@ namespace RealisticBattleAiModule
                         }
                         positionsStorage.Remove(__instance.Formation);
                     }
-                    else if (significantEnemy != null && !significantEnemy.QuerySystem.IsRangedFormation &&signDist < 50f && Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.38f))
+                    else if (significantEnemy != null && !significantEnemy.QuerySystem.IsRangedFormation &&signDist < 50f && RBMAI.Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.38f))
                     {
                         WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
                         positionNew.SetVec2(positionNew.AsVec2 - __instance.Formation.Direction * 7f);
@@ -1195,7 +1194,7 @@ namespace RealisticBattleAiModule
                     __instance.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
                     ____currentOrder = MovementOrder.MovementOrderChargeToTarget(significantEnemy);
                     if (__instance.Formation.TargetFormation != null && __instance.Formation.TargetFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall
-                        && Utilities.ShouldFormationCopyShieldWall(__instance.Formation))
+                        && RBMAI.Utilities.ShouldFormationCopyShieldWall(__instance.Formation))
                     {
                         __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderShieldWall;
                     }
@@ -1327,7 +1326,7 @@ namespace RealisticBattleAiModule
 
                     if (unit.HasMount)
                     {
-                        if (Utilities.GetHarnessTier(unit) > 3)
+                        if (RBMAI.Utilities.GetHarnessTier(unit) > 3)
                         {
                             unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 7f, 4f, 20f, 1f);
                             unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
@@ -1359,7 +1358,7 @@ namespace RealisticBattleAiModule
                         //podmienky: twohandedpolearm v rukach
                         //unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0f, 40f, 4f, 50f, 6f);
                         //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 7f, 1f, 10f, 0.01f);
-                        //if (Utilities.CheckIfTwoHandedPolearmInfantry(unit))
+                        //if (RBMAI.Utilities.CheckIfTwoHandedPolearmInfantry(unit))
                         //{
                         //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 3.5f, 5f, 20f, 6f);
                         //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 3.5f, 4f, 20f, 0.01f);
@@ -1540,7 +1539,7 @@ namespace RealisticBattleAiModule
             }
             if (__instance.OrderEnum == MovementOrder.MovementOrderEnum.Advance)
             {
-                Formation enemyFormation = Utilities.FindSignificantEnemy(f, true, true, false, false, false, true);
+                Formation enemyFormation = RBMAI.Utilities.FindSignificantEnemy(f, true, true, false, false, false, true);
                 FormationQuerySystem querySystem = f.QuerySystem;
                 FormationQuerySystem enemyQuerySystem;
                 if (enemyFormation != null)
@@ -1649,16 +1648,16 @@ namespace RealisticBattleAiModule
         //        {
         //            if ((formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && (formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget))
         //            {
-        //                formations = Utilities.FindSignificantFormations(formation);
+        //                formations = RBMAI.Utilities.FindSignificantFormations(formation);
         //                if (formations.Count > 0)
         //                {
-        //                    __result = Utilities.NearestAgentFromMultipleFormations(__instance.Position.AsVec2, formations);
+        //                    __result = RBMAI.Utilities.NearestAgentFromMultipleFormations(__instance.Position.AsVec2, formations);
         //                    return false;
         //                }
         //                //Formation enemyFormation = formation.MovementOrder.TargetFormation;
         //                //if(enemyFormation != null)
         //                //{
-        //                //    __result = Utilities.NearestAgentFromFormation(__instance.Position.AsVec2, enemyFormation);
+        //                //    __result = RBMAI.Utilities.NearestAgentFromFormation(__instance.Position.AsVec2, enemyFormation);
         //                //    return false;
         //                //}
         //            }
@@ -1675,11 +1674,11 @@ namespace RealisticBattleAiModule
             {
                 if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                 {
-                    Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
+                    Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
 
-                    if (__instance.Formation.QuerySystem.IsInfantryFormation && !Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
+                    if (__instance.Formation.QuerySystem.IsInfantryFormation && !RBMAI.Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
                     {
-                        Formation enemyCav = Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
+                        Formation enemyCav = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
 
                         if (enemyCav != null && !enemyCav.QuerySystem.IsCavalryFormation)
                         {
@@ -1701,7 +1700,7 @@ namespace RealisticBattleAiModule
                         {
                             if (enemyCav.TargetFormation == __instance.Formation && (enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge))
                             {
-                                if (Utilities.CheckIfCanBrace(__instance))
+                                if (RBMAI.Utilities.CheckIfCanBrace(__instance))
                                 {
                                     //__instance.SetLookAgent(__instance.GetTargetAgent());
                                     order = 1;
@@ -1800,7 +1799,7 @@ namespace RealisticBattleAiModule
                     aiDecisionCooldownDict[unit] = new AIDecision();
                 }
                 bool isTargetArcher = false;
-                var targetAgent = Utilities.GetCorrectTarget(unit);
+                var targetAgent = RBMAI.Utilities.GetCorrectTarget(unit);
                 var vanillaTargetAgent = unit.GetTargetAgent();
                 Mission mission = Mission.Current;
 
@@ -2033,7 +2032,7 @@ namespace RealisticBattleAiModule
 
                         int enemyAgentsImmidiateCount = 0;
                         int enemyAgents10fCount = 0;
-                        int powerSumImmidiate = (int)Math.Floor(Utilities.GetPowerOfAgentsSum(enemyAgents0f) * 100);
+                        int powerSumImmidiate = (int)Math.Floor(RBMAI.Utilities.GetPowerOfAgentsSum(enemyAgents0f) * 100);
 
                         if (!isTargetArcher)
                         {
@@ -2335,7 +2334,7 @@ namespace RealisticBattleAiModule
         {
             if (__instance.Formation != null && __instance.Formation.QuerySystem.IsInfantryFormation && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
-                Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
+                Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
                 if (significantEnemy != null)
                 {
                     __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
@@ -2368,11 +2367,11 @@ namespace RealisticBattleAiModule
                 if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                 {
 
-                    Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
+                    Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
 
-                    if (__instance.Formation.QuerySystem.IsInfantryFormation && !Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
+                    if (__instance.Formation.QuerySystem.IsInfantryFormation && !RBMAI.Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
                     {
-                        Formation enemyCav = Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
+                        Formation enemyCav = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
 
                         if (enemyCav != null && !enemyCav.QuerySystem.IsCavalryFormation)
                         {
@@ -2419,7 +2418,7 @@ namespace RealisticBattleAiModule
                                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
                                 }
                                 //__instance.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent) {
-                                //    if (Utilities.CheckIfCanBrace(agent))
+                                //    if (RBMAI.Utilities.CheckIfCanBrace(agent))
                                 //    {
                                 //        agent.SetFiringOrder(1);
                                 //    }
@@ -2434,7 +2433,7 @@ namespace RealisticBattleAiModule
                             positionsStorage.Remove(__instance.Formation);
                             //medianPositionOld = WorldPosition.Invalid;
                         }
-                        else if (significantEnemy != null && signDist < 60f && Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.38f))
+                        else if (significantEnemy != null && signDist < 60f && RBMAI.Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.38f))
                         {
                             WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
 
@@ -2486,7 +2485,7 @@ namespace RealisticBattleAiModule
                 __instance.Formation.FacingOrder = ___CurrentFacingOrder;
                 if (__instance.Formation.IsInfantry())
                 {
-                    Formation significantEnemy = Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true, 0.7f);
+                    Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true, 0.7f);
                     if (significantEnemy != null)
                     {
                         float num = __instance.Formation.QuerySystem.AveragePosition.Distance(significantEnemy.QuerySystem.MedianPosition.AsVec2);

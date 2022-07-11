@@ -1,6 +1,4 @@
-﻿using RealisticBattleAiModule;
-using RealisticBattleAiModule.AiModule.RbmBehaviors;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.Core;
@@ -42,7 +40,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
                 //	}
                 //}
 
-                if (Utilities.CheckIfSkirmisherAgent(agent))
+                if (RBMAI.Utilities.CheckIfSkirmisherAgent(agent))
                 {
 					isSkirmisher = true;
 				}
@@ -78,7 +76,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 						//	}
 						//}
 
-						if (Utilities.CheckIfSkirmisherAgent(agent,2))
+						if (RBMAI.Utilities.CheckIfSkirmisherAgent(agent,2))
 						{
 							isSkirmisher = true;
 						}
@@ -228,11 +226,11 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
             //_skirmishers.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
             if (side == 0)
             {
-                _skirmishers.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Left;
+                _skirmishers.AI.SetBehaviorWeight<RBMAI.RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Left;
 			}
 			else
             {
-                _skirmishers.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Right;
+                _skirmishers.AI.SetBehaviorWeight<RBMAI.RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Right;
 			}
 		}
 		if (_mainInfantry != null)
@@ -339,7 +337,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 
 	private bool HasBattleBeenJoined()
 	{
-		return Utilities.HasBattleBeenJoined(_mainInfantry, _hasBattleBeenJoined);
+		return RBMAI.Utilities.HasBattleBeenJoined(_mainInfantry, _hasBattleBeenJoined);
 	}
 
 	protected override bool CheckAndSetAvailableFormationsChanged()
@@ -413,7 +411,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 		foreach(Agent agent in team.ActiveAgents.ToList())
         {
             if (agent.Formation != null && agent.Formation.QuerySystem.IsInfantryFormation) {
-                if (Utilities.CheckIfSkirmisherAgent(agent, 2))
+                if (RBMAI.Utilities.CheckIfSkirmisherAgent(agent, 2))
                 {
 					skirmisherCount++;
 				}

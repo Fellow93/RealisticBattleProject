@@ -6,7 +6,7 @@ using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.MissionSpawnHandlers;
 
-namespace RealisticBattleAiModule.AiModule
+namespace RBMAI.AiModule
 {
     class SpawningPatches
     {

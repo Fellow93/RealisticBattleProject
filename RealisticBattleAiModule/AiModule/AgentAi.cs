@@ -11,7 +11,7 @@ using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.MountAndBlade.ArrangementOrder;
 
-namespace RealisticBattleAiModule
+namespace RBMAI
 {
     class AgentAi
     {
@@ -34,17 +34,17 @@ namespace RealisticBattleAiModule
                 MethodInfo method = typeof(AgentStatCalculateModel).GetMethod("GetMeleeSkill", BindingFlags.NonPublic | BindingFlags.Instance);
                 method.DeclaringType.GetMethod("GetMeleeSkill");
 
-                //int meleeSkill = Utilities.GetMeleeSkill(agent, equippedItem, secondaryItem);
-                //int effectiveSkill = Utilities.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
+                //int meleeSkill = RBMAI.Utilities.GetMeleeSkill(agent, equippedItem, secondaryItem);
+                //int effectiveSkill = RBMAI.Utilities.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
 
                 SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
                 int meleeSkill = (int)method.Invoke(__instance, new object[] { agent, equippedItem, secondaryItem });
                 int effectiveSkill = __instance.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
-                float meleeLevel = Utilities.CalculateAILevel(agent, meleeSkill);                 //num
-                float effectiveSkillLevel = Utilities.CalculateAILevel(agent, effectiveSkill);    //num2
+                float meleeLevel = RBMAI.Utilities.CalculateAILevel(agent, meleeSkill);                 //num
+                float effectiveSkillLevel = RBMAI.Utilities.CalculateAILevel(agent, effectiveSkill);    //num2
                 float meleeDefensivness = meleeLevel + agent.Defensiveness;             //num3
                 
-                if (XmlConfig.isRbmCombatModuleEnabled)
+                if (RBMConfig.RBMConfig.rbmCombatEnabled)
                 {
                     agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 7f;
                 }
@@ -53,9 +53,9 @@ namespace RealisticBattleAiModule
                     agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 3.5f;
                 }
 
-                if (XmlConfig.dict["Global.VanillaCombatAi"] == 0)
+                if (RBMConfig.RBMConfig.vanillaCombatAi)
                 {
-                    if (XmlConfig.dict["Global.PostureEnabled"] == 1)
+                    if (RBMConfig.RBMConfig.postureEnabled)
                     {
                         agentDrivenProperties.AIBlockOnDecideAbility = MBMath.ClampFloat(meleeLevel * 2f, 0.3f, 1f);// chance for directed blocking, always correct side
                         agentDrivenProperties.AIParryOnDecideAbility = MBMath.ClampFloat(meleeLevel, 0.1f, 0.6f);// chance for parry, can be wrong side
@@ -85,7 +85,7 @@ namespace RealisticBattleAiModule
                         agentDrivenProperties.AiAttackingShieldDefenseChance = 1f;//MBMath.ClampFloat(meleeLevel * 2f, 0.1f, 1.0f); ; //0.2f + 0.3f * meleeLevel;
                         agentDrivenProperties.AiAttackingShieldDefenseTimer = MBMath.ClampFloat(-0.3f + (meleeLevel * 0.6f), -0.3f, 0f);  //-0.3f + 0.3f * meleeLevel; Delay between deciding to swith from attack to defense
                     }
-                    else if (XmlConfig.dict["Global.PostureEnabled"] == 0)
+                    else
                     {
                         agentDrivenProperties.AIBlockOnDecideAbility = MBMath.ClampFloat(0.1f + meleeLevel * 0.6f, 0.2f, 0.45f); // chance for directed blocking
                         agentDrivenProperties.AIParryOnDecideAbility = MBMath.ClampFloat((meleeLevel * 0.30f) + 0.15f, 0.1f, 0.45f);
@@ -321,7 +321,7 @@ namespace RealisticBattleAiModule
             MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
             WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
 
-            if (!XmlConfig.isRbmCombatModuleEnabled && (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && !shooterAgent.IsMainAgent && (wsd[0].WeaponClass == (int)WeaponClass.Javelin || wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe)))
+            if (!RBMConfig.RBMConfig.rbmCombatEnabled && (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && !shooterAgent.IsMainAgent && (wsd[0].WeaponClass == (int)WeaponClass.Javelin || wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe)))
             {
                 //float shooterSpeed = shooterAgent.MovementVelocity.Normalize();
                 if (!shooterAgent.HasMount)

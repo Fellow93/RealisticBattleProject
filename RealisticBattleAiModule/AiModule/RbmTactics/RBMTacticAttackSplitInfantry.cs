@@ -1,5 +1,4 @@
-﻿using RealisticBattleAiModule;
-using RealisticBattleAiModule.AiModule.RbmBehaviors;
+﻿using RBMAI;
 using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.Core;
@@ -463,7 +462,7 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 
 	private bool HasBattleBeenJoined()
 	{
-		return Utilities.HasBattleBeenJoined(_mainInfantry, _hasBattleBeenJoined);
+		return RBMAI.Utilities.HasBattleBeenJoined(_mainInfantry, _hasBattleBeenJoined);
 	}
 
 	protected override bool CheckAndSetAvailableFormationsChanged()

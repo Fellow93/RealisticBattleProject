@@ -2,7 +2,7 @@
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 
-namespace RealisticBattleCombatModule
+namespace  RBMCombat
 {
     class ArmorRework
     {

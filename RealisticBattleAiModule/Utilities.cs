@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
@@ -10,14 +9,14 @@ using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.Core.ItemObject;
 
-namespace RealisticBattleAiModule
+namespace RBMAI
 {
     public static class Utilities
     {
 
         public static bool HasBattleBeenJoined(Formation mainInfantry, bool hasBattleBeenJoined, float battleJoinRange = 75f)
         {
-            bool isOnlyCavReamining = Utilities.CheckIfOnlyCavRemaining(mainInfantry);
+            bool isOnlyCavReamining = CheckIfOnlyCavRemaining(mainInfantry);
             if (isOnlyCavReamining)
             {
                 return true;
@@ -41,7 +40,7 @@ namespace RealisticBattleAiModule
                 //}
                 if (mainInfantry.QuerySystem.ClosestEnemyFormation != null && mainInfantry.QuerySystem.ClosestEnemyFormation.Formation != null)
                 {
-                    Formation enemyForamtion = Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false, true);
+                    Formation enemyForamtion = RBMAI.Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false, true);
                     if (enemyForamtion != null)
                     {
                         //float distanceSpeedValue = mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(enemyForamtion.QuerySystem.MedianPosition.AsVec2) / enemyForamtion.QuerySystem.MovementSpeedMaximum;
@@ -170,10 +169,10 @@ namespace RealisticBattleAiModule
                 {
                     if ((formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && (formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget))
                     {
-                        formations = Utilities.FindSignificantFormations(formation);
+                        formations = RBMAI.Utilities.FindSignificantFormations(formation);
                         if (formations.Count > 0)
                         {
-                            return Utilities.NearestAgentFromMultipleFormations(agent.Position.AsVec2, formations);
+                            return RBMAI.Utilities.NearestAgentFromMultipleFormations(agent.Position.AsVec2, formations);
                         }
                     }
                 }
@@ -754,7 +753,7 @@ namespace RealisticBattleAiModule
             MissionState missionState = Game.Current.GameStateManager.ActiveState as MissionState;
             if (missionState != null)
             {
-                if (XmlConfig.dict["Global.VanillaCombatAi"] == 0)
+                if (RBMConfig.RBMConfig.vanillaCombatAi)
                 {
                     if (missionState.MissionName.Equals("EnhancedBattleTestFieldBattle") || missionState.MissionName.Equals("EnhancedBattleTestSiegeBattle"))
                     {
@@ -963,44 +962,11 @@ namespace RealisticBattleAiModule
             return result;
         }
 
-        public static string GetConfigFilePath()
-        {
-            return System.IO.Path.Combine(GetConfigFolderPath(), "config_3.xml");
-        }
-
         public static string GetSiegeArcherPointsPath()
         {
-            return BasePath.Name + "Modules/RealisticBattleAiModule/ModuleData/scene_positions/";
+            return BasePath.Name + "Modules/RBM/ModuleData/scene_positions/";
         }
 
-        public static string GetConfigFolderPath()
-        {
-           return System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-            "Mount and Blade II Bannerlord", "Configs", "RealisticBattleAiModule");
-        }
-
-        public static string GetRBMCMConfigFilePath()
-        {
-            return System.IO.Path.Combine(GetRBMCMConfigFolderPath(), "config.xml");
-        }
-
-        public static string GetRBMCMConfigFolderPath()
-        {
-            return System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-             "Mount and Blade II Bannerlord", "Configs", "RealisticBattleCombatModule");
-        }
-
-        public static bool CheckRBMCMEnabled()
-        {
-            foreach (MBSubModuleBase submodule in TaleWorlds.MountAndBlade.Module.CurrentModule.SubModules)
-            {
-                if (submodule.ToString().Equals("RealisticBattleCombatModule.Main"))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
     }
 }
 

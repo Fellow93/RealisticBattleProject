@@ -9,8 +9,8 @@
     <ProjectGuid>{39335729-4FAE-451E-991B-123D7898B3EB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RealisticBattleCombatModule</RootNamespace>
-    <AssemblyName>RealisticBattleCombatModule</AssemblyName>
+    <RootNamespace>RBMCombat</RootNamespace>
+    <AssemblyName>RBMCombat</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>$(SolutionDir)..\RealisticBattleCombatModule\bin\Win64_Shipping_Client</OutputPath>
+    <OutputPath>..\..\RBM\bin\Win64_Shipping_Client\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -188,18 +188,23 @@
   <ItemGroup>
     <Compile Include="CombatModule\ArmorRework.cs" />
     <Compile Include="CombatModule\RangedAmmoCombo.cs" />
-    <Compile Include="CombatModule\Config\RbmConfigScreen.cs" />
     <Compile Include="CombatModule\DamageRework.cs" />
     <Compile Include="CombatModule\RangedRework.cs" />
-    <Compile Include="CombatModule\Config\RbmMenuViewModel.cs" />
-    <Compile Include="CombatModule\Config\TextViewModel.cs" />
-    <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CombatModule\XmlLoadingPatches.cs" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RBMConfig\RBMConfig.csproj">
+      <Project>{D7F2B557-3D03-4DCF-850C-DA8E5E2D8505}</Project>
+      <Name>RBMConfig</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RBM\RBM.csproj">
+      <Project>{261D45DE-84C9-4102-B083-6F4A30BA5A3A}</Project>
+      <Name>RBM</Name>
+    </ProjectReference>
   </ItemGroup>
   <!-- Post-Build -->
   <PropertyGroup>

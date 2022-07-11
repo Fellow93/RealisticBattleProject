@@ -9,8 +9,8 @@
     <ProjectGuid>{7254E74D-4968-47C3-BB91-84D3FC207ACB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RealisticBattleAiModule</RootNamespace>
-    <AssemblyName>RealisticBattleAiModule</AssemblyName>
+    <RootNamespace>RBMAI</RootNamespace>
+    <AssemblyName>RBMAI</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>$(SolutionDir)..\RealisticBattleAiModule\bin\Win64_Shipping_Client</OutputPath>
+    <OutputPath>..\..\RBM\bin\Win64_Shipping_Client\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -176,10 +176,8 @@
   <ItemGroup>
     <Compile Include="AiModule\AgentAi.cs" />
     <Compile Include="AiModule\Behaviours.cs" />
-    <Compile Include="AiModule\Config\RbmConfigScreen.cs" />
-    <Compile Include="AiModule\Config\RbmMenuViewModel.cs" />
-    <Compile Include="AiModule\Config\TextViewModel.cs" />
     <Compile Include="AiModule\Posture\Posture.cs" />
+    <Compile Include="AiModule\Posture\AgentPostures.cs" />
     <Compile Include="AiModule\Posture\PostureLogic.cs" />
     <Compile Include="AiModule\Posture\PostureVisualLogic.cs" />
     <Compile Include="AiModule\Posture\PostureVisualVM.cs" />
@@ -200,13 +198,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\RBMConfig\RBMConfig.csproj">
+      <Project>{D7F2B557-3D03-4DCF-850C-DA8E5E2D8505}</Project>
+      <Name>RBMConfig</Name>
+    </ProjectReference>
+  </ItemGroup>
   <!-- Post-Build -->
   <PropertyGroup>
     <PostBuildEvent>xcopy /d /y "$(SolutionDir)Xmls\native_parameters_tweaks.xml" "$(SolutionDir)..\RealisticBattleAiModule\ModuleData\"
 xcopy /d /y "$(SolutionDir)AIXmls\module_strings.xml" "$(SolutionDir)..\RealisticBattleAiModule\ModuleData\"
 xcopy /d /y "$(SolutionDir)AIXmls\project.mbproj" "$(SolutionDir)..\RealisticBattleAiModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)AIXmls\SubModule.xml" "$(SolutionDir)..\RealisticBattleAiModule\"
 xcopy /d /y "$(SolutionDir)AIXmls\GUI\Prefabs\RBMAIMConfig.xml" "$(SolutionDir)..\RealisticBattleAiModule\GUI\Prefabs\"
 xcopy /d /y "$(SolutionDir)AIXmls\GUI\Prefabs\CombatUI.xml" "$(SolutionDir)..\RealisticBattleAiModule\GUI\Prefabs\"
 xcopy /d /y "$(SolutionDir)AIXmls\GUI\Brushes\CombatUI.xml" "$(SolutionDir)..\RealisticBattleAiModule\GUI\Brushes\"

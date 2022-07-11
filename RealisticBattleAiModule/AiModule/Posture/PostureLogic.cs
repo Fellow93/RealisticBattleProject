@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using RBMConfig;
 using System.Collections.Generic;
 using System.Diagnostics;
 using TaleWorlds.CampaignSystem.TournamentGames;
@@ -6,9 +7,9 @@ using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
-namespace RealisticBattleAiModule.AiModule.Posture
+namespace RBMAI
 {
-    class PostureLogic : MissionLogic
+    public class PostureLogic : MissionLogic
     {
         //private static int tickCooldownReset = 30;
         //private static int tickCooldown = 0;
@@ -37,7 +38,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
             static void Postfix(ref Agent __instance, bool isOffHand, bool isWieldedInstantly, bool isWieldedOnSpawn)
             {
                 float playerPostureModifier;
-                switch (XmlConfig.dict["Global.PlayerPostureMultiplier"]) {
+                switch (RBMConfig.RBMConfig.playerPostureMultiplier) {
                     case 0:
                         {
                             playerPostureModifier = 1f;
@@ -59,7 +60,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                             break;
                         }
                 }
-                if (XmlConfig.dict["Global.PostureEnabled"] == 1)
+                if (RBMConfig.RBMConfig.postureEnabled)
                 {
                     //AgentPostures.values[__instance] = new Posture();
                     Posture posture = null;
@@ -146,7 +147,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                 if ((new StackTrace()).GetFrame(3).GetMethod().Name.Contains("MeleeHit"))
                 {
 
-                    if (XmlConfig.dict["Global.PostureEnabled"] == 1 && attackerAgent != null && victimAgent != null && attackerWeapon.CurrentUsageItem != null &&
+                    if (RBMConfig.RBMConfig.postureEnabled && attackerAgent != null && victimAgent != null && attackerWeapon.CurrentUsageItem != null &&
                         attackerWeapon.CurrentUsageItem != null) {
                         Posture defenderPosture = null;
                         Posture attackerPosture = null;
@@ -415,7 +416,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
 
             static void addPosturedamageVisual(Agent attackerAgent, Agent victimAgent)
             {
-                if (XmlConfig.dict["Global.PostureGUIEnabled"] == 1)
+                if (RBMConfig.RBMConfig.postureEnabled)
                 {
                     if (victimAgent.IsPlayerControlled || attackerAgent.IsPlayerControlled)
                     {
@@ -923,7 +924,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                 foreach (KeyValuePair<Agent, Posture> entry in AgentPostures.values)
                 {
                     entry.Value.posture = entry.Value.maxPosture;
-                    if (XmlConfig.dict["Global.PostureGUIEnabled"] == 1)
+                    if (RBMConfig.RBMConfig.postureGUIEnabled)
                     {
                         if (entry.Key.IsPlayerControlled)
                         {
@@ -948,7 +949,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
         public override void OnMissionTick(float dt)
         {
             base.OnMissionTick(dt);
-            if (XmlConfig.dict["Global.PostureEnabled"] == 1)
+            if (RBMConfig.RBMConfig.postureEnabled)
             {
                 if (currentDt < timeToCalc)
                 {
@@ -979,7 +980,7 @@ namespace RealisticBattleAiModule.AiModule.Posture
                         // do something with entry.Value or entry.Key
                         if (entry.Value.posture < entry.Value.maxPosture)
                         {
-                            if (XmlConfig.dict["Global.PostureGUIEnabled"] == 1)
+                            if (RBMConfig.RBMConfig.postureGUIEnabled)
                             {
                                 if (entry.Key.IsPlayerControlled)
                                 {

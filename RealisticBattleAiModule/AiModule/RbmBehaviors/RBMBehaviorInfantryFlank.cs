@@ -4,7 +4,7 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
-namespace RealisticBattleAiModule.AiModule.RbmBehaviors
+namespace RBMAI
 {
     class RBMBehaviorInfantryFlank : BehaviorComponent
 	{
@@ -67,11 +67,11 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 				float feintRange = 30f;
 
 				Formation enemyFormation = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation;
-				Formation allyFormation = Utilities.FindSignificantAlly(base.Formation, true, true, false, false, false);
+				Formation allyFormation = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, true, false, false, false);
 
 				if (base.Formation != null && base.Formation.QuerySystem.IsInfantryFormation)
 				{
-					enemyFormation = Utilities.FindSignificantEnemyToPosition(base.Formation, position, true, true, false, false, false, false);
+					enemyFormation = RBMAI.Utilities.FindSignificantEnemyToPosition(base.Formation, position, true, true, false, false, false, false);
 				}
 
 				if(enemyFormation == null)

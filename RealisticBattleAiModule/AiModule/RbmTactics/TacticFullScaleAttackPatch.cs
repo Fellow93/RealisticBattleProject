@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using RealisticBattleAiModule.AiModule.RbmBehaviors;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -7,7 +6,7 @@ using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.Core.ItemObject;
 
-namespace RealisticBattleAiModule.AiModule.RbmTactics
+namespace RBMAI.AiModule.RbmTactics
 {
     [HarmonyPatch(typeof(TacticFullScaleAttack))]
     class TacticFullScaleAttackPatch
@@ -74,14 +73,14 @@ namespace RealisticBattleAiModule.AiModule.RbmTactics
                 //____leftCavalry.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
             }
 
-            Utilities.FixCharge(ref ____mainInfantry);
+            RBMAI.Utilities.FixCharge(ref ____mainInfantry);
         }
 
         [HarmonyPostfix]
         [HarmonyPatch("HasBattleBeenJoined")]
         static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
         {
-            __result = Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined);
+            __result = RBMAI.Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined);
         }
 
         [HarmonyPostfix]

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using TaleWorlds.Localization;
 
-namespace RealisticBattleCombatModule.CombatModule
+namespace  RBMCombat
 {
     public class RangedWeaponStatsComparer : IEqualityComparer<string>
     {

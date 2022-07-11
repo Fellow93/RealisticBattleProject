@@ -4,7 +4,7 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
-namespace RealisticBattleAiModule.AiModule.RbmBehaviors
+namespace RBMAI
 {
     class RBMBehaviorForwardSkirmish : BehaviorComponent
 	{
@@ -43,7 +43,7 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 			}
 			if (base.Formation != null && base.Formation.QuerySystem.IsCavalryFormation)
 			{
-				if (Utilities.CheckIfMountedSkirmishFormation(base.Formation, 0.6f))
+				if (RBMAI.Utilities.CheckIfMountedSkirmishFormation(base.Formation, 0.6f))
 				{
 					return 5f;
 				}
@@ -53,7 +53,7 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 				int countOfSkirmishers = 0;
 				base.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
 				{
-					if (Utilities.CheckIfSkirmisherAgent(agent, 1))
+					if (RBMAI.Utilities.CheckIfSkirmisherAgent(agent, 1))
 					{
 						countOfSkirmishers++;
 					}
@@ -105,11 +105,11 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 				float flankRange = 25f;
 
 				Formation enemyFormation = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation;
-				Formation allyFormation = Utilities.FindSignificantAlly(base.Formation, true, true, false, false, false);
+				Formation allyFormation = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, true, false, false, false);
 
 				if (base.Formation != null && base.Formation.QuerySystem.IsInfantryFormation)
 				{
-					enemyFormation = Utilities.FindSignificantEnemyToPosition(base.Formation, position, true, true, false, false, false, false);
+					enemyFormation = RBMAI.Utilities.FindSignificantEnemyToPosition(base.Formation, position, true, true, false, false, false, false);
 				}
 
 				Vec2 averageAllyFormationPosition = base.Formation.QuerySystem.Team.AveragePosition;

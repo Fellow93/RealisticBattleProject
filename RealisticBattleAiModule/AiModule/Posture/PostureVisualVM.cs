@@ -1,4 +1,4 @@
-﻿namespace RealisticBattleAiModule.AiModule.Posture
+﻿namespace RBMAI
 {
 	// MBTargetEnemyStatus.TargetEnemyStatusVM
 	using TaleWorlds.Library;

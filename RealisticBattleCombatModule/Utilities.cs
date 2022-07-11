@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Reflection;
-using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 
-namespace RealisticBattleCombatModule
+namespace  RBMCombat
 {
     public static class Utilities
     {

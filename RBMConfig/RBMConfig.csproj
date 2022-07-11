@@ -6,11 +6,11 @@
     <PlatformTarget Condition=" '$(PlatformTarget)' == '' ">x64</PlatformTarget>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{407303F4-BDA8-4629-96F6-A642611FB1DD}</ProjectGuid>
+    <ProjectGuid>{D7F2B557-3D03-4DCF-850C-DA8E5E2D8505}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RBMTournament</RootNamespace>
-    <AssemblyName>RBMTournament</AssemblyName>
+    <RootNamespace>RBMConfig</RootNamespace>
+    <AssemblyName>RBMConfig</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -65,6 +65,7 @@
       <HintPath>..\..\SandBox\bin\Win64_Shipping_Client\SandBox.ViewModelCollection.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Xml" />
     <Reference Include="TaleWorlds.AchievementSystem.dll">
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.AchievementSystem.dll</HintPath>
       <Private>False</Private>
@@ -301,7 +302,13 @@
   </ItemGroup>
   <!-- Files & Classes -->
   <ItemGroup>
-    <Compile Include="RBMTournament.cs" />
+    <Compile Include="ConfigUtilities.cs" />
+    <Compile Include="Config\RbmConfigScreen.cs" />
+    <Compile Include="Config\RbmMenuViewModel.cs" />
+    <Compile Include="Config\TextViewModel.cs" />
+    <Compile Include="RBMCombatConfigPriceMultipliers.cs" />
+    <Compile Include="RBMCombatConfigWeaponType.cs" />
+    <Compile Include="RBMConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <!-- Post-Build -->

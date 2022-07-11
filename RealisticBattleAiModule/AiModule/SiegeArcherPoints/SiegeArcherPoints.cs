@@ -25,9 +25,9 @@ public class SiegeArcherPoints : MissionView
 		if (isFirstTimeLoading && Mission.Current != null && Mission.Current.IsSiegeBattle)
 		{
 			XmlDocument xmlDocument = new XmlDocument();
-			if (File.Exists(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml"))
+			if (File.Exists(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml"))
 			{
-				xmlDocument.Load(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
+				xmlDocument.Load(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
 				xmlExists = true;
 			}
 
@@ -97,9 +97,9 @@ public class SiegeArcherPoints : MissionView
 			Mission.Current.Scene.GetEntities(ref gameEntities);
 
 			XmlDocument xmlDocument = new XmlDocument();
-			if (File.Exists(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml"))
+			if (File.Exists(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml"))
 			{
-				xmlDocument.Load(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
+				xmlDocument.Load(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
 				xmlExists = true;
 			}
 			else
@@ -134,7 +134,7 @@ public class SiegeArcherPoints : MissionView
 					pointNode.AppendChild(newPointNode);
 				}
 			}
-			xmlDocument.Save(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
+			xmlDocument.Save(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
 			firstTime = false;
 		}
 
@@ -150,9 +150,9 @@ public class SiegeArcherPoints : MissionView
 		//			Vec3 flag = ((MissionView)this).MissionScreen.GetOrderFlagPosition();
 
 		//			XmlDocument xmlDocument = new XmlDocument();
-		//			if (File.Exists(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml"))
+		//			if (File.Exists(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml"))
 		//			{
-		//				xmlDocument.Load(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml");
+		//				xmlDocument.Load(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml");
 		//				xmlExists = true;
 		//			}
 		//			else
@@ -227,7 +227,7 @@ public class SiegeArcherPoints : MissionView
 		//					pointNode.AppendChild(node);
 		//				}
 		//			}
-		//			xmlDocument.Save(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml");
+		//			xmlDocument.Save(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml");
 		//		}
 		//	}
 		//}
@@ -249,10 +249,10 @@ public class SiegeArcherPoints : MissionView
 	//		ref FacingOrder ____readyFacingOrder, ref FacingOrder ____waitFacingOrder, ref TacticalPosition ____tacticalWaitPos)
 	//	{
 	//		XmlDocument xmlDocument = new XmlDocument();
-	//		if (File.Exists(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml"))
+	//		if (File.Exists(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml"))
 	//		{
 	//			WorldPosition tempPos = ____tacticalWaitPos.Position;
-	//			xmlDocument.Load(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml");
+	//			xmlDocument.Load(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml");
 	//			if (__instance.Formation.AI.Side == FormationAI.BehaviorSide.Left)
  //               {
 	//				double[] leftWait = Array.ConvertAll(xmlDocument.SelectSingleNode("/points/left_wait").InnerText.Split(new[] { ',', }, StringSplitOptions.RemoveEmptyEntries), Double.Parse);
