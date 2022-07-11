@@ -25,9 +25,11 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 
 		private float _cantShootDistance = float.MaxValue;
 
-		private BehaviorState _behaviorState = BehaviorState.Shooting;
+		private BehaviorState _behaviorState = BehaviorState.PullingBack;
 
 		private Timer _cantShootTimer;
+
+		private bool switchedToSkirmish = true;
 
 		public RBMBehaviorArcherSkirmish(Formation formation)
 			: base(formation)
@@ -74,105 +76,114 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 				{
 					effectiveShootingRange *= 1.9f;
 				}
+				
 				switch (_behaviorState)
 				{
 					case BehaviorState.Shooting:
-						if (distance > effectiveShootingRange * 1.1f)
 						{
-							_behaviorState = BehaviorState.Approaching;
-							_cantShootDistance = MathF.Min(_cantShootDistance, effectiveShootingRange);
-							break;
-						}
-						if (base.Formation.QuerySystem.MakingRangedAttackRatio <= ratioOfShooting)
-						{
-							if (distance > effectiveShootingRange)
+							if (distance > effectiveShootingRange * 1.1f)
 							{
 								_behaviorState = BehaviorState.Approaching;
 								_cantShootDistance = MathF.Min(_cantShootDistance, effectiveShootingRange);
 								break;
 							}
-							else if (!_cantShoot)
+							if (base.Formation.QuerySystem.MakingRangedAttackRatio <= ratioOfShooting)
 							{
-								_cantShoot = true;
-								_cantShootTimer.Reset(Mission.Current.CurrentTime, MBMath.Lerp(5f, 10f, (MBMath.ClampFloat(base.Formation.CountOfUnits, 10f, 60f) - 10f) * 0.02f));
-								break;
-							}
-							else if (_cantShootTimer.Check(Mission.Current.CurrentTime))
-							{
-								_behaviorState = BehaviorState.Approaching;
-								_cantShootDistance = MathF.Min(_cantShootDistance, distance);
-								break;
-							}
-
-							_cantShootDistance = MathF.Max(_cantShootDistance, distance);
-							//_cantShoot = false;
-							if (base.Formation.QuerySystem.IsRangedFormation && distance < MathF.Min(effectiveShootingRange * 0.4f, _cantShootDistance * 0.666f))
-							{
-								Formation meleeFormation = Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
-								if (meleeFormation != null && meleeFormation.QuerySystem.IsInfantryFormation)
+								if (distance > effectiveShootingRange)
 								{
-									_behaviorState = BehaviorState.PullingBack;
+									_behaviorState = BehaviorState.Approaching;
+									_cantShootDistance = MathF.Min(_cantShootDistance, effectiveShootingRange);
 									break;
 								}
-							}
-
-						}
-						else
-						{
-							_cantShootDistance = MathF.Max(_cantShootDistance, distance);
-							
-							if (base.Formation.QuerySystem.IsRangedFormation && distance < MathF.Min(effectiveShootingRange * 0.4f, _cantShootDistance * 0.666f))
-							{
-								Formation meleeFormation = Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
-								if (meleeFormation != null && meleeFormation.QuerySystem.IsInfantryFormation)
-                                {
+								else if (!_cantShoot)
+								{
 									_cantShoot = true;
-									_behaviorState = BehaviorState.PullingBack;
+									_cantShootTimer.Reset(Mission.Current.CurrentTime, MBMath.Lerp(5f, 10f, (MBMath.ClampFloat(base.Formation.CountOfUnits, 10f, 60f) - 10f) * 0.02f));
 									break;
 								}
+								else if (_cantShootTimer.Check(Mission.Current.CurrentTime))
+								{
+									_behaviorState = BehaviorState.Approaching;
+									_cantShootDistance = MathF.Min(_cantShootDistance, distance);
+									break;
+								}
+
+								_cantShootDistance = MathF.Max(_cantShootDistance, distance);
+								//_cantShoot = false;
+								if (base.Formation.QuerySystem.IsRangedFormation && distance < MathF.Min(effectiveShootingRange * 0.5f, _cantShootDistance * 0.666f))
+								{
+									Formation meleeFormation = Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
+									if (meleeFormation != null && meleeFormation.QuerySystem.IsInfantryFormation)
+									{
+										_behaviorState = BehaviorState.PullingBack;
+										break;
+									}
+								}
+
 							}
+							else
+							{
+								_cantShootDistance = MathF.Max(_cantShootDistance, distance);
+
+								if (base.Formation.QuerySystem.IsRangedFormation && distance < MathF.Min(effectiveShootingRange * 0.4f, _cantShootDistance * 0.666f))
+								{
+									Formation meleeFormation = Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
+									if (meleeFormation != null && meleeFormation.QuerySystem.IsInfantryFormation)
+									{
+										_cantShoot = true;
+										_behaviorState = BehaviorState.PullingBack;
+										break;
+									}
+								}
+							}
+							break;
 						}
-						break;
 					case BehaviorState.Approaching:
-						if (distance < _cantShootDistance * 0.8f && distance < effectiveShootingRange * 0.9f)
-						{
-							_behaviorState = BehaviorState.Shooting;
-							_cantShoot = false;
-							flag = true;
-						}
-						else if (base.Formation.QuerySystem.MakingRangedAttackRatio >= ratioOfShooting * 1.2f && distance < effectiveShootingRange * 0.9f)
-						{
-							_behaviorState = BehaviorState.Shooting;
-							_cantShoot = false;
-							flag = true;
-						}else if(distance < effectiveShootingRange * 0.4f)
                         {
-							_behaviorState = BehaviorState.PullingBack;
-							_cantShoot = false;
-							flag = true;
-						}else if(distance < effectiveShootingRange * 0.9f && !wasShootingBefore)
-                        {
-							_behaviorState = BehaviorState.Shooting;
-							_cantShoot = false;
-							flag = true;
-							wasShootingBefore = true;
+							if (distance < _cantShootDistance * 0.8f && distance < effectiveShootingRange * 0.9f)
+							{
+								_behaviorState = BehaviorState.Shooting;
+								_cantShoot = false;
+								flag = true;
+							}
+							else if (base.Formation.QuerySystem.MakingRangedAttackRatio >= ratioOfShooting * 1.2f && distance < effectiveShootingRange * 0.9f)
+							{
+								_behaviorState = BehaviorState.Shooting;
+								_cantShoot = false;
+								flag = true;
+							}
+							else if (distance < effectiveShootingRange * 0.4f)
+							{
+								_behaviorState = BehaviorState.PullingBack;
+								_cantShoot = false;
+								flag = true;
+							}
+							else if (distance < effectiveShootingRange * 0.9f && !wasShootingBefore)
+							{
+								_behaviorState = BehaviorState.Shooting;
+								_cantShoot = false;
+								flag = true;
+								wasShootingBefore = true;
+							}
+							break;
 						}
-						break;
 					case BehaviorState.PullingBack:
-						Formation meleeFormationPull = Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
-						if (meleeFormationPull == null || !meleeFormationPull.QuerySystem.IsInfantryFormation)
-						{
-							_behaviorState = BehaviorState.Shooting;
-							_cantShoot = false;
-							flag = true;
+                        {
+							Formation meleeFormationPull = Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
+							if (meleeFormationPull == null || !meleeFormationPull.QuerySystem.IsInfantryFormation)
+							{
+								_behaviorState = BehaviorState.Shooting;
+								_cantShoot = false;
+								flag = true;
+							}
+							if (distance > MathF.Min(_cantShootDistance, effectiveShootingRange) * 0.9f)
+							{
+								_behaviorState = BehaviorState.Shooting;
+								_cantShoot = false;
+								flag = true;
+							}
+							break;
 						}
-						if (distance > MathF.Min(_cantShootDistance, effectiveShootingRange) * 0.9f)
-						{
-							_behaviorState = BehaviorState.Shooting;
-							_cantShoot = false;
-							flag = true;
-						}
-						break;
 				}
 				bool isOnlyCavReamining = Utilities.CheckIfOnlyCavRemaining(base.Formation);
                 if (isOnlyCavReamining)
@@ -180,6 +191,20 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 					_behaviorState = BehaviorState.Shooting;
 					_cantShoot = false;
 				}
+				//if (effectiveShootingRange <= 0f)
+				//{
+				//	_behaviorState = BehaviorState.PullingBack;
+				//	medianPosition.SetVec2(base.Formation.QuerySystem.AveragePosition);
+				//	if (!base.CurrentOrder.GetPosition(base.Formation).IsValid || _behaviorState != BehaviorState.Shooting || flag)
+				//	{
+				//		base.CurrentOrder = MovementOrder.MovementOrderMove(medianPosition);
+				//	}
+				//	if (!CurrentFacingOrder.GetDirection(base.Formation).IsValid || _behaviorState != BehaviorState.Shooting || flag)
+				//	{
+				//		CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
+				//	}
+				//	return;
+				//}
 				switch (_behaviorState)
 				{
 					case BehaviorState.Shooting:
@@ -194,11 +219,11 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 						//medianPosition.SetVec2(medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f - 10f));
 						if (side == 0)
                         {
-                            medianPosition.SetVec2((medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f - 10f)) + base.Formation.QuerySystem.AveragePosition.LeftVec().Normalized() * 20f);
+                            medianPosition.SetVec2((medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f - 10f)) + base.Formation.QuerySystem.AveragePosition.LeftVec().Normalized() * MBRandom.RandomFloat * 20f);
                         }
                         else if (side == 1)
                         {
-                            medianPosition.SetVec2((medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f - 10f)) + base.Formation.QuerySystem.AveragePosition.RightVec().Normalized() * 20f);
+                            medianPosition.SetVec2((medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f - 10f)) + base.Formation.QuerySystem.AveragePosition.RightVec().Normalized() * MBRandom.RandomFloat * 20f);
                         }
                         break;
 				}
@@ -222,9 +247,10 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 
 		protected override void OnBehaviorActivatedAux()
 		{
+			switchedToSkirmish = true;
 			_cantShoot = false;
 			_cantShootDistance = float.MaxValue;
-			_behaviorState = BehaviorState.Shooting;
+			_behaviorState = BehaviorState.PullingBack;
 			_cantShootTimer.Reset(Mission.Current.CurrentTime, MBMath.Lerp(5f, 10f, (MBMath.ClampFloat(base.Formation.CountOfUnits, 10f, 60f) - 10f) * 0.02f));
 			CalculateCurrentOrder();
 			base.Formation.SetMovementOrder(base.CurrentOrder);

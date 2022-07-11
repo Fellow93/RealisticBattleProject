@@ -2440,6 +2440,8 @@ namespace RealisticBattleCombatModule
                 }
             }
 
+            
+
             if (victimAgent!= null && victimAgent.Character != null && victimAgent.Character.IsPlayerCharacter)
             {
                 if (collisionData.CollisionResult == CombatCollisionResult.Blocked || collisionData.CollisionResult == CombatCollisionResult.Parried || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked)
@@ -2608,12 +2610,49 @@ namespace RealisticBattleCombatModule
         }
     }
 
+    [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
+    [HarmonyPatch("DecideMountRearedByBlow")]
+    class DecideMountRearedByBlowPatch
+    {
+        static bool Prefix(ref Mission __instance, Agent attackerAgent, Agent victimAgent, in AttackCollisionData collisionData, WeaponComponentData attackerWeapon, in Blow blow, ref bool __result)
+        {
+            float damageMultiplierOfCombatDifficulty = Mission.Current.GetDamageMultiplierOfCombatDifficulty(victimAgent, attackerAgent);
+            if(collisionData.IsMissile && victimAgent.IsMount && attackerAgent != null && victimAgent.GetAgentFlags().HasAnyFlag(AgentFlag.CanRear) && Vec3.DotProduct(blow.Direction, victimAgent.Frame.rotation.f) < -0.35f)
+            {
+                __result = (float)collisionData.InflictedDamage >= 25f * damageMultiplierOfCombatDifficulty;
+                return false;
+            }
+            if (attackerWeapon != null && (attackerWeapon.WeaponFlags.HasFlag(WeaponFlags.WideGrip) || attackerWeapon.WeaponClass == WeaponClass.OneHandedPolearm || attackerWeapon.WeaponClass == WeaponClass.TwoHandedPolearm || attackerWeapon.WeaponClass == WeaponClass.LowGripPolearm) 
+                && blow.StrikeType == StrikeType.Thrust && attackerAgent != null && victimAgent.GetAgentFlags().HasAnyFlag(AgentFlag.CanRear) && Vec3.DotProduct(blow.Direction, victimAgent.Frame.rotation.f) < -0.35f)
+            {
+                //__result = (float)collisionData.InflictedDamage >= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.MakesRearAttackDamageThreshold) * damageMultiplierOfCombatDifficulty;
+                __result = (float)collisionData.InflictedDamage >= 13f * damageMultiplierOfCombatDifficulty;
+                return false;
+            }
+            __result = false;
+            return false;
+        }
+    }
+
     [HarmonyPatch(typeof(Mission))]
     [HarmonyPatch("RegisterBlow")]
     class RegisterBlowPatch
     {
-        static bool Prefix(ref Mission __instance, Agent attacker, Agent victim, GameEntity realHitEntity, Blow b, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, ref CombatLogData combatLogData)
+        static bool Prefix(ref Mission __instance,ref Agent attacker,ref Agent victim, GameEntity realHitEntity,ref Blow b, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, ref CombatLogData combatLogData)
         {
+            if (victim.IsMount && collisionData.IsMissile)
+            {
+                if(MissionGameModels.Current.AgentApplyDamageModel.DecideMountRearedByBlow(attacker, victim, in collisionData, attackerWeapon.CurrentUsageItem, in b))
+                {
+                    b.BlowFlag |= BlowFlags.MakesRear;
+                }
+            }
+            if (attacker.IsMount && collisionData.IsHorseCharge)
+            {
+                b.SelfInflictedDamage = MathF.Ceiling(b.BaseMagnitude/6f);
+                attacker.CreateBlowFromBlowAsReflection(in b, in collisionData, out var outBlow, out var outCollisionData);
+                attacker.RegisterBlow(outBlow, in outCollisionData);
+            }
             if (!collisionData.AttackBlockedWithShield && !collisionData.CollidedWithShieldOnBack)
             {
                 return true;

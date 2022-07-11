@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Xml;
 using System.IO;
 using RealisticBattleAiModule.AiModule.Posture;
-using TaleWorlds.ModuleManager;
 using SandBox.Missions.MissionLogics;
 using TaleWorlds.Localization;
 using TaleWorlds.ScreenSystem;
