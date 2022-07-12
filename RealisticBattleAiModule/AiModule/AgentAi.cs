@@ -53,7 +53,7 @@ namespace RBMAI
                     agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 3.5f;
                 }
 
-                if (RBMConfig.RBMConfig.vanillaCombatAi)
+                if (!RBMConfig.RBMConfig.vanillaCombatAi)
                 {
                     if (RBMConfig.RBMConfig.postureEnabled)
                     {
