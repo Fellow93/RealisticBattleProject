@@ -5,4 +5,6 @@
 	{?}{\?}{?IS_LEFT}Left {TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\?}{TROOP_NAMES_END} is doing hit and run.{?}{\?}" />
 	<string id="str_formation_ai_behavior_text.RBMBehaviorInfantryFlank" text="{=Tqa0r78c}{?IS_RIGHT}Right {TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\?}{TROOP_NAMES_END} is flanking.
 	{?}{\?}{?IS_LEFT}Left {TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\?}{TROOP_NAMES_END} is flanking.{?}{\?}" />
+	<string id="str_formation_ai_behavior_text.RBMBehaviorCavalryCharge" text="{=dyY3hkH1}{TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\?}{TROOP_NAMES_END} 
+	are charging at {?IS_PLURAL}different enemy formations{?}an enemy formation{\?}." />
 </strings>
