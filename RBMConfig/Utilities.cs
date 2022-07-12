@@ -2,7 +2,7 @@
 
 namespace RBMConfig
 {
-    public static class ConfigUtilities
+    public static class Utilities
     {
         public static string GetConfigFilePath()
         {

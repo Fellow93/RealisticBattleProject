@@ -208,43 +208,39 @@
   </ItemGroup>
   <!-- Post-Build -->
   <PropertyGroup>
-    <PostBuildEvent>xcopy /d /y "$(SolutionDir)Xmls\native_parameters_tweaks.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\project.mbproj" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\arm_armors_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\Axe_pieces.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\body_armors_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\bowArrowQualityFix.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\CouchedLances.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\head_armors_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\horse_armors_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\lances_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\leg_armors_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\mace_pieces.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\ranged_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\shields_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\shoulder_armors_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\sword_blades.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\sword_pieces.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\unit_overhaul.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\horses_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\Gladius_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\arrow_visuals_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\no_bastard_axes.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\siege_engines_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\spear_managed_core_parameters.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\spear_combat_parameters.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\bow_shields.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\siege_ranged_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\SubModule.xml" "$(SolutionDir)..\RealisticBattleCombatModule\"
-xcopy /d /y "$(SolutionDir)Xmls\GUI\Prefabs\RBMCMConfig.xml" "$(SolutionDir)..\RealisticBattleCombatModule\GUI\Prefabs\"
-xcopy /d /y "$(SolutionDir)Xmls\item_modifiers_groups_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)Xmls\weapon_descriptions_modified.xml" "$(SolutionDir)..\RealisticBattleCombatModule\ModuleData\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_arm_armors.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_axe_pieces.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_body_armors.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_item_modifiers.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_couched_lances.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_head_armors.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_horse_armors.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_lances.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_leg_armors.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_mace_pieces.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_ranged.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_shields.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_shoulder_armors.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_sword_blades.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_sword_pieces.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_unit_overhaul.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_horses.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_gladius.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_arrow_visuals.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_no_bastard_axes.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_siege_engines.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_siege_ranged.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\SubModule.xml" "$(SolutionDir)..\RBM\"
+xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\RBMConfig.xml" "$(SolutionDir)..\RBM\GUI\Prefabs\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_item_modifiers_groups.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_weapon_descriptions.xml" "$(SolutionDir)..\RBM\ModuleData\"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>xcopy /d /y "$(SolutionDir)Xmls\config.xml" "$(SolutionDir)..\RealisticBattleCombatModule\"</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>

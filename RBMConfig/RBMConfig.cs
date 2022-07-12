@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Xml;
-using TaleWorlds.Core;
+using TaleWorlds.Library;
 
 namespace RBMConfig
 {
@@ -15,7 +16,6 @@ namespace RBMConfig
         public static bool rbmAiEnabled = true;
         public static bool rbmCombatEnabled = true;
         //RBMAI
-        public static bool siegeTowersEnabled = true;
         public static bool postureEnabled = true;
         public static float playerPostureMultiplier = 1f;
         public static bool postureGUIEnabled = true;
@@ -33,6 +33,30 @@ namespace RBMConfig
         public static RBMCombatConfigPriceMultipliers priceMultipliers = new RBMCombatConfigPriceMultipliers();
         public static List<RBMCombatConfigWeaponType> weaponTypesFactors = new List<RBMCombatConfigWeaponType>();
 
+        public static void LoadConfig()
+        {
+            string defaultConfigFilePath = BasePath.Name + "Modules/RBM/DefaultConfigDONOTEDIT.xml";
+            string configFolderPath = Utilities.GetConfigFolderPath();
+            string configFilePath = Utilities.GetConfigFilePath();
+
+            if (!Directory.Exists(configFolderPath))
+            {
+                Directory.CreateDirectory(configFolderPath);
+            }
+
+            if (File.Exists(configFilePath))
+            {
+                xmlConfig.Load(configFilePath);
+            }
+            else
+            {
+                File.Copy(defaultConfigFilePath, configFilePath);
+                xmlConfig.Load(configFilePath);
+            }
+
+            parseXmlConfig();
+        }
+
         public static void parseXmlConfig()
         {
             //modules
@@ -40,7 +64,6 @@ namespace RBMConfig
             rbmAiEnabled = xmlConfig.SelectSingleNode("/Config/RBMAI/Enabled").InnerText.Equals("1");
             rbmCombatEnabled = xmlConfig.SelectSingleNode("/Config/RBMCombat/Enabled").InnerText.Equals("1");
             //RBMAI
-            siegeTowersEnabled = xmlConfig.SelectSingleNode("/Config/RBMAI/SiegeTowersEnabled").InnerText.Equals("1");
             postureEnabled = xmlConfig.SelectSingleNode("/Config/RBMAI/PostureEnabled").InnerText.Equals("1");
             postureGUIEnabled = xmlConfig.SelectSingleNode("/Config/RBMAI/PostureGUIEnabled").InnerText.Equals("1");
             vanillaCombatAi = xmlConfig.SelectSingleNode("/Config/RBMAI/VanillaCombatAi").InnerText.Equals("1");
@@ -117,7 +140,6 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/Enabled"), rbmAiEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Enabled"), rbmCombatEnabled);
             //RBMAI
-            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/SiegeTowersEnabled"), siegeTowersEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureEnabled"), postureEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureGUIEnabled"), postureGUIEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/VanillaCombatAi"), vanillaCombatAi);
@@ -166,7 +188,7 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/HorsePriceModifier"), priceMultipliers.HorsePriceModifier.ToString());
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/TradePriceModifier"), priceMultipliers.TradePriceModifier.ToString());
 
-            xmlConfig.Save(ConfigUtilities.GetConfigFilePath());
+            xmlConfig.Save(Utilities.GetConfigFilePath());
 
         }
 

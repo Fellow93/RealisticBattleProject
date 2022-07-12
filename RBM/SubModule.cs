@@ -69,38 +69,16 @@ namespace RBM
             }
         }
 
-        public static void LoadConfig()
-        {
-            string defaultConfigFilePath = BasePath.Name + "Modules/RBM/DefaultConfigDONOTEDIT.xml";
-            string configFolderPath = RBMConfig.ConfigUtilities.GetConfigFolderPath();
-            string configFilePath = RBMConfig.ConfigUtilities.GetConfigFilePath();
-
-            if (!Directory.Exists(configFolderPath))
-            {
-                Directory.CreateDirectory(configFolderPath);
-            }
-
-            if (File.Exists(configFilePath))
-            {
-                RBMConfig.RBMConfig.xmlConfig.Load(configFilePath);
-            }
-            else
-            {
-                File.Copy(defaultConfigFilePath, configFilePath);
-                RBMConfig.RBMConfig.xmlConfig.Load(configFilePath);
-            }
-
-            RBMConfig.RBMConfig.parseXmlConfig();
-        }
+        
 
         protected override void OnSubModuleLoad()
         {
-            LoadConfig();
+            RBMConfig.RBMConfig.LoadConfig();
             ApplyHarmonyPatches();
 
             TaleWorlds.MountAndBlade.Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("RBM Configuration"), 3, delegate
             {
-                TaleWorlds.ScreenSystem.ScreenManager.PushScreen(new RBMConfig.RbmConfigScreen());
+               ScreenManager.PushScreen(new RBMConfig.RbmConfigScreen());
             }, () => (false, new TextObject("RBM Configuration"))));
         }
 
@@ -129,7 +107,7 @@ namespace RBM
 
         protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
         {
-            LoadConfig();
+            RBMConfig.RBMConfig.LoadConfig();
             ApplyHarmonyPatches();
         }
 
@@ -144,6 +122,21 @@ namespace RBM
                 }
                 mission.AddMissionBehavior((MissionBehavior)(object)new SiegeArcherPoints());
                 mission.AddMissionBehavior((MissionBehavior)(object)new PostureLogic());
+            }
+            else
+            {
+                if(mission.GetMissionBehavior<SiegeArcherPoints>() != null)
+                {
+                    mission.RemoveMissionBehavior(mission.GetMissionBehavior<SiegeArcherPoints>());
+                }
+                if (mission.GetMissionBehavior<PostureVisualLogic>() != null)
+                {
+                    mission.RemoveMissionBehavior(mission.GetMissionBehavior<PostureVisualLogic>());
+                }
+                if (mission.GetMissionBehavior<PostureLogic>() != null)
+                {
+                    mission.RemoveMissionBehavior(mission.GetMissionBehavior<PostureLogic>());
+                }
             }
             base.OnMissionBehaviorInitialize(mission);
         }

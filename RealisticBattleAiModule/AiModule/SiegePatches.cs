@@ -715,23 +715,23 @@ namespace RBMAI.AiModule
             //    }
             //}
 
-            [HarmonyPostfix]
-            [HarmonyPatch("OnDeploymentStateChanged")]
-            static void PostfixDeploymentStateChanged(ref SiegeTower __instance, ref List<SiegeLadder> ____sameSideSiegeLadders, ref GameEntity ____cleanState, ref List<LadderQueueManager> ____queueManagers)
-            {
-                if (!RBMConfig.RBMConfig.siegeTowersEnabled)
-                {
-                    __instance.Disable();
-                    ____cleanState.SetVisibilityExcludeParents(false);
-                    if (____sameSideSiegeLadders != null)
-                    {
-                        foreach (SiegeLadder sameSideSiegeLadder in ____sameSideSiegeLadders)
-                        {
-                            sameSideSiegeLadder.GameEntity.SetVisibilityExcludeParents(true);
-                        }
-                    }
-                }
-            }
+            //[HarmonyPostfix]
+            //[HarmonyPatch("OnDeploymentStateChanged")]
+            //static void PostfixDeploymentStateChanged(ref SiegeTower __instance, ref List<SiegeLadder> ____sameSideSiegeLadders, ref GameEntity ____cleanState, ref List<LadderQueueManager> ____queueManagers)
+            //{
+            //    if (!RBMConfig.RBMConfig.siegeTowersEnabled)
+            //    {
+            //        __instance.Disable();
+            //        ____cleanState.SetVisibilityExcludeParents(false);
+            //        if (____sameSideSiegeLadders != null)
+            //        {
+            //            foreach (SiegeLadder sameSideSiegeLadder in ____sameSideSiegeLadders)
+            //            {
+            //                sameSideSiegeLadder.GameEntity.SetVisibilityExcludeParents(true);
+            //            }
+            //        }
+            //    }
+            //}
 
             //[HarmonyPostfix]
             //[HarmonyPatch("OnDestroyed")]

@@ -302,7 +302,7 @@
   </ItemGroup>
   <!-- Files & Classes -->
   <ItemGroup>
-    <Compile Include="ConfigUtilities.cs" />
+    <Compile Include="Utilities.cs" />
     <Compile Include="Config\RbmConfigScreen.cs" />
     <Compile Include="Config\RbmMenuViewModel.cs" />
     <Compile Include="Config\TextViewModel.cs" />

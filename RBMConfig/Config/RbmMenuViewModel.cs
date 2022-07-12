@@ -26,9 +26,6 @@ namespace RBMConfig
 
 		private bool _booleanValue;
 
-		public TextViewModel SiegeTowersEnabledText { get; }
-		public SelectorVM<SelectorItemVM> SiegeTowersEnabled { get; }
-
 		public TextViewModel PostureSystemEnabledText { get; }
 		public SelectorVM<SelectorItemVM> PostureSystemEnabled { get; }
 
@@ -147,10 +144,6 @@ namespace RBMConfig
 				BetterArrowVisuals.SelectedIndex = 0;
 			}
 
-			List<string> siegeTowersOptions = new List<string> { "Disabled", "Enabled" };
-			SiegeTowersEnabledText = new TextViewModel(new TextObject("Siege Towers"));
-			SiegeTowersEnabled = new SelectorVM<SelectorItemVM>(siegeTowersOptions, 0, null);
-
 			List<string> postureOptions = new List<string> { "Disabled", "Enabled (Default)" };
 			PostureSystemEnabledText = new TextViewModel(new TextObject("Posture System"));
 			PostureSystemEnabled = new SelectorVM<SelectorItemVM>(postureOptions, 0, null);
@@ -166,15 +159,6 @@ namespace RBMConfig
 			List<string> vanillaCombatAiOptions = new List<string> { "Disabled (Default)", "Enabled" };
 			VanillaCombatAiText = new TextViewModel(new TextObject("Vanilla AI Block/Parry/Attack"));
 			VanillaCombatAi = new SelectorVM<SelectorItemVM>(vanillaCombatAiOptions, 0, null);
-
-            if (RBMConfig.siegeTowersEnabled)
-            {
-                SiegeTowersEnabled.SelectedIndex = 1;
-            }
-            else
-            {
-                SiegeTowersEnabled.SelectedIndex = 0;
-            }
 
 			if (RBMConfig.playerPostureMultiplier == 1f)
 			{
@@ -280,15 +264,6 @@ namespace RBMConfig
 				RBMConfig.troopOverhaulActive = true;
 			}
 
-			if (ActiveTroopOverhaul.SelectedIndex == 0)
-			{
-				RBMConfig.troopOverhaulActive = false;
-			}
-			if (ActiveTroopOverhaul.SelectedIndex == 1)
-			{
-				RBMConfig.troopOverhaulActive = true;
-			}
-
 			if (RangedReloadSpeed.SelectedIndex == 0)
 			{
 				RBMConfig.realisticRangedReload = "0";
@@ -315,18 +290,9 @@ namespace RBMConfig
 			{
 				RBMConfig.betterArrowVisuals = false;
 			}
-			if (PassiveShoulderShields.SelectedIndex == 1)
+			if (BetterArrowVisuals.SelectedIndex == 1)
 			{
 				RBMConfig.betterArrowVisuals = true;
-			}
-
-            if (SiegeTowersEnabled.SelectedIndex == 0)
-            {
-				RBMConfig.siegeTowersEnabled = false;
-			}
-			if (SiegeTowersEnabled.SelectedIndex == 1)
-            {
-				RBMConfig.siegeTowersEnabled = true;
 			}
 
 			if (PostureSystemEnabled.SelectedIndex == 0)
@@ -364,7 +330,7 @@ namespace RBMConfig
 			{
 				RBMConfig.vanillaCombatAi = false;
 			}
-			if (PostureGUIEnabled.SelectedIndex == 1)
+			if (VanillaCombatAi.SelectedIndex == 1)
 			{
 				RBMConfig.vanillaCombatAi = true;
 			}
@@ -397,7 +363,7 @@ namespace RBMConfig
 			}
 
 			RBMConfig.saveXmlConfig();
-			RBMConfig.parseXmlConfig();
+			//RBMConfig.parseXmlConfig();
 			TaleWorlds.ScreenSystem.ScreenManager.PopScreen();
 		}
 

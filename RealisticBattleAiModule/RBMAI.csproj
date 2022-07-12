@@ -206,16 +206,14 @@
   </ItemGroup>
   <!-- Post-Build -->
   <PropertyGroup>
-    <PostBuildEvent>xcopy /d /y "$(SolutionDir)Xmls\native_parameters_tweaks.xml" "$(SolutionDir)..\RealisticBattleAiModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)AIXmls\module_strings.xml" "$(SolutionDir)..\RealisticBattleAiModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)AIXmls\project.mbproj" "$(SolutionDir)..\RealisticBattleAiModule\ModuleData\"
-xcopy /d /y "$(SolutionDir)AIXmls\GUI\Prefabs\RBMAIMConfig.xml" "$(SolutionDir)..\RealisticBattleAiModule\GUI\Prefabs\"
-xcopy /d /y "$(SolutionDir)AIXmls\GUI\Prefabs\CombatUI.xml" "$(SolutionDir)..\RealisticBattleAiModule\GUI\Prefabs\"
-xcopy /d /y "$(SolutionDir)AIXmls\GUI\Brushes\CombatUI.xml" "$(SolutionDir)..\RealisticBattleAiModule\GUI\Brushes\"
-xcopy /d /y "$(SolutionDir)SceneXmls\scene_positions\" "$(SolutionDir)..\RealisticBattleAiModule\ModuleData\scene_positions\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBMAI_module_strings.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\CombatUI.xml" "$(SolutionDir)..\RBM\GUI\Prefabs\"
+xcopy /d /y "$(SolutionDir)RBMXML\GUI\Brushes\CombatUI.xml" "$(SolutionDir)..\RBM\GUI\Brushes\"
+xcopy /d /y "$(SolutionDir)SceneXmls\scene_positions\" "$(SolutionDir)..\RBM\ModuleData\scene_positions\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>xcopy /d /y "$(SolutionDir)AIXmls\config.xml" "$(SolutionDir)..\RealisticBattleAiModule\"</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>

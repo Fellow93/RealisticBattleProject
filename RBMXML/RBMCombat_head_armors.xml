@@ -1,0 +1,1533 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Items>
+	<Item id="aserai_civil_c_head" name="{=ZFETxZKP}Keffiyeh with Silken Band" mesh="aserai_civil_c_head" culture="Culture.aserai" weight="0.1" appearance="1" Type="HeadArmor" value="175">
+		<ItemComponent>
+			<Armor head_armor="6" has_gender_variations="true" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="aserai_civil_e_hscarf" name="{=f2awUw9x}Colored Keffiyeh" mesh="aserai_civil_e_hscarf" culture="Culture.aserai" weight="0.1" appearance="1" Type="HeadArmor" value="175">
+		<ItemComponent>
+			<Armor head_armor="6" has_gender_variations="true" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="aserai_civil_hscarf_a" name="{=W8OGOfyt}Keffiyeh with Brown Band" mesh="aserai_civil_hscarf_a" culture="Culture.aserai" weight="0.1" appearance="1" Type="HeadArmor" value="175">
+		<ItemComponent>
+			<Armor head_armor="6" has_gender_variations="true" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="aserai_civil_hscarf_b" name="{=OrEgjXZ1}Roughspun Keffiyeh" mesh="aserai_civil_hscarf_b" culture="Culture.aserai" weight="0.1" appearance="1" Type="HeadArmor" value="175">
+		<ItemComponent>
+			<Armor head_armor="6" has_gender_variations="true" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="head_scarf" name="{=2rvCcBuS}Brown Hijab" mesh="head_scarf_b" culture="Culture.aserai" weight="0.1" appearance="1" Type="HeadArmor" value="175">
+		<ItemComponent>
+			<Armor head_armor="6" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="merchants_hat" name="{=S9htzkbe}Merchant's Hat" mesh="costume_merchant_v4_head" culture="Culture.neutral_culture" weight="0.1" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="6" has_gender_variations="false" hair_cover_type="type1" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="womens_headwrap_b" name="{=baDdigZj}Northern Style Head Wrap" mesh="womens_headwrap_b" culture="Culture.sturgia" weight="0.2" appearance="1" Type="HeadArmor" value="175">
+		<ItemComponent>
+			<Armor head_armor="6" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="womens_headwrap_c" name="{=VHPPqw9J}Western Head Wrap" mesh="womens_headwrap_c" culture="Culture.vlandia" weight="0.1" appearance="1" Type="HeadArmor" value="175">
+		<ItemComponent>
+			<Armor head_armor="6" has_gender_variations="false" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="aserai_villager_female_headdress" name="{=6J0aJo7u}Southern Rural Headdress" mesh="aserai_villager_female_headdress" culture="Culture.aserai" weight="0.2" appearance="1" Type="HeadArmor" value="200">
+		<ItemComponent>
+			<Armor head_armor="7" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="fur_hat" name="{=ZbmlNZpU}Eastern Fur Hat" mesh="khuzait_helmet_o" culture="Culture.khuzait" weight="0.5" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="7" has_gender_variations="false" hair_cover_type="type1" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="headscarf_d" name="{=wW3iouiU}Hijab" mesh="headscarf_d" culture="Culture.aserai" weight="0.5" appearance="1" Type="HeadArmor" value="200">
+		<ItemComponent>
+			<Armor head_armor="7" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="pilgrim_hood" name="{=VXFwEF3M}Pilgrim's Hood" mesh="sneak_costume_head" culture="Culture.empire" weight="0.2" appearance="0.3" Type="headArmor" difficulty="0" value="200">
+		<ItemComponent>
+			<Armor head_armor="7" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="aserai_civil_f_cape" name="{=AoJ4Ztl2}Bandit Leather Hood" mesh="aserai_civil_f_cape" culture="Culture.aserai" weight="0.1" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="8" has_gender_variations="true" hair_cover_type="type2" modifier_group="leather" material_type="Leather" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="aserai_civil_d_hscarf" name="{=l91l1TJo}Colored Turban" mesh="aserai_civil_d_hscarf" culture="Culture.aserai" weight="0.1" appearance="0.6" Type="HeadArmor" value="250">
+		<ItemComponent>
+			<Armor head_armor="9" has_gender_variations="true" hair_cover_type="type1" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="desert_headdress" name="{=4n6n3KL7}Desert Headdress" mesh="aserai_female_costume_headdress" culture="Culture.aserai" weight="0.2" appearance="1" Type="HeadArmor" value="250">
+		<ItemComponent>
+			<Armor head_armor="9" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="head_wrapped" name="{=VHPPqw9J}Western Head Wrap" mesh="womens_headwrap" culture="Culture.vlandia" weight="0.3" appearance="1" Type="HeadArmor" value="250">
+		<ItemComponent>
+			<Armor head_armor="9" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="head_wrapping" name="{=j5O8mt4I}Western Head Wrapping" mesh="head_scarf_d" culture="Culture.vlandia" weight="0.05" appearance="1" Type="HeadArmor" value="250">
+		<ItemComponent>
+			<Armor head_armor="9" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="headscarf_c" name="{=f7RmWqJ2}Western Head Scarf" mesh="headscarf_c" culture="Culture.vlandia" weight="0.3" appearance="1" Type="HeadArmor" value="250">
+		<ItemComponent>
+			<Armor head_armor="9" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="turban" name="{=8SNS2wF9}Turban" mesh="aserai_helmet_i" culture="Culture.aserai" weight="0.5" appearance="1" Type="HeadArmor" value="250">
+		<ItemComponent>
+			<Armor head_armor="9" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="wrapped_headcloth" name="{=Pv3YQMk1}Highland Wrapped Headcloth" mesh="battania_helmet_b" culture="Culture.battania" weight="0.2" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor" value="250">
+		<ItemComponent>
+			<Armor head_armor="9" has_gender_variations="false" hair_cover_type="type3" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="aserai_female_civil_hscarf" name="{=NEupkuqV}Desert Headscarf" mesh="aserai_female_civil_hscarf" culture="Culture.aserai" weight="0.4" appearance="1" Type="HeadArmor" value="275">
+		<ItemComponent>
+			<Armor head_armor="10" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="aserai_female_civil_hscarf_b" name="{=sc2x2QRe}Headscarf with Fez" mesh="aserai_female_civil_hscarf_b" culture="Culture.aserai" weight="0.4" appearance="1" Type="HeadArmor" value="275">
+		<ItemComponent>
+			<Armor head_armor="10" has_gender_variations="false" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="female_head_wrap" name="{=KhXnRIan}Female Head Wrap" mesh="female_peasant_cape_c" culture="Culture.aserai" weight="0.4" appearance="1" Type="HeadArmor" value="275">
+		<ItemComponent>
+			<Armor head_armor="10" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="head_piece" name="{=FSa9qv8i}Western Scarf" mesh="head_scarf_c" culture="Culture.vlandia" weight="0.2" appearance="1" Type="HeadArmor" value="275">
+		<ItemComponent>
+			<Armor head_armor="10" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="headscarf" name="{=fqHrMC1v}Western Loose Head Scarf" mesh="headscarf" culture="Culture.vlandia" weight="0.5" appearance="1" Type="HeadArmor" value="275">
+		<ItemComponent>
+			<Armor head_armor="10" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="open_head_scarf" name="{=qsVRoGUv}Open Head Scarf" mesh="aserai_helmet_c" culture="Culture.aserai" weight="0.6" appearance="1" Type="HeadArmor" value="275">
+		<ItemComponent>
+			<Armor head_armor="10" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="battania_civil_hood" name="{=xYUHruEl}Highland Hood" mesh="battania_civil_hood" culture="Culture.battania" weight="0.5" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor" value="300">
+		<ItemComponent>
+			<Armor head_armor="11" has_gender_variations="false" hair_cover_type="type3" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="cloth_headwrap" name="{=frwBm3Oh}Cloth Headwrap" mesh="vlandia_helmet_d" culture="Culture.vlandia" weight="0.4" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor" value="300">
+		<ItemComponent>
+			<Armor head_armor="11" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="tuareg" name="{=02g6K4Yw}Southern Tribal Turban" mesh="tuareg_b" culture="Culture.aserai" weight="0.6" appearance="0.7" Type="HeadArmor" difficulty="0" subtype="head_armor" value="300">
+		<ItemComponent>
+			<Armor head_armor="11" has_gender_variations="false" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="woven_turban" name="{=ArPvuBYK}Woven Turban" mesh="aserai_helmet_h" culture="Culture.aserai" weight="0.8" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor" value="300">
+		<ItemComponent>
+			<Armor head_armor="11" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="wrapped_desert_cap" name="{=0bE9MxK4}Wrapped Southern Cap" mesh="aserai_helmet_o" culture="Culture.aserai" weight="0.5" appearance="0.3" Type="HeadArmor" value="300">
+		<ItemComponent>
+			<Armor head_armor="11" has_gender_variations="false" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="fur_hood" name="{=7rGaUG0W}Eastern Fur Hood" mesh="khuzait_helmet_d" culture="Culture.khuzait" weight="0.6" appearance="1.2" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="12" has_gender_variations="false" hair_cover_type="type3" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="closed_head_scarf" name="{=gUTqDROO}Closed Head Scarf" mesh="aserai_helmet_d" culture="Culture.aserai" weight="0.6" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor" value="375">
+		<ItemComponent>
+			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="desert_cap" name="{=4BaTgzia}Southern Cap" mesh="aserai_helmet_m" culture="Culture.aserai" weight="0.4" appearance="1" Type="HeadArmor" value="375">
+		<ItemComponent>
+			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="type1" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="eastern_cap" name="{=UvJDlhMq}Eastern Cap" mesh="khuzait_helmet_n" culture="Culture.khuzait" weight="0.3" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor" value="375">
+		<ItemComponent>
+			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="laced_cloth_coif" name="{=kmdjRAoG}Laced Cloth Coif" mesh="empire_helmet_c" culture="Culture.empire" weight="0.4" appearance="0.3" Type="HeadArmor" difficulty="0" subtype="head_armor" value="375">
+		<ItemComponent>
+			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="type3" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="leather_cap" name="{=uLpnmNkZ}Leather Cap" mesh="leather_cap_a" culture="Culture.empire" weight="0.4" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="type3" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="nomad_cap" name="{=Oa4h7TVi}Nomad Cap" mesh="khuzait_helmet_h" culture="Culture.khuzait" weight="0.3" appearance="1" Type="HeadArmor" value="375">
+		<ItemComponent>
+			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="type1" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="nordic_leather_cap" name="{=2VYmGLC6}Northern Leather Cap" mesh="sturgia_leather_cap_a" culture="Culture.sturgia" weight="0.4" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="type1" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="peaked_fur_hood" name="{=8tHbqjmB}Peaked Fur Hood" mesh="khuzait_helmet_e" culture="Culture.khuzait" weight="0.7" appearance="1.2" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="type3" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="tied_head_wrapping" name="{=ndfDy5B8}Tied Head Wrapping" mesh="aserai_helmet_p" culture="Culture.aserai" weight="0.5" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor" value="375">
+		<ItemComponent>
+			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="tight_head_scarf" name="{=U4n0uSlg}Tight Head Scarf" mesh="aserai_helmet_f" culture="Culture.aserai" weight="0.7" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor" value="375">
+		<ItemComponent>
+			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="type3" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="upturned_fur_cap" name="{=3bqwOJ8z}Upturned Fur Cap" mesh="khuzait_helmet_a" culture="Culture.khuzait" weight="0.6" appearance="1.4" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="14" has_gender_variations="false" hair_cover_type="type2" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="battania_crown" name="{=sDWEWefz}Highland Ceremonial Crown" mesh="battania_crown" culture="Culture.battania" weight="0.5" appearance="8.5" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="15" has_gender_variations="false" hair_cover_type="none" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="decorated_nomad_cap" name="{=smHA8Apa}Decorated Nomad Cap" mesh="khuzait_helmet_i" culture="Culture.khuzait" weight="0.4" appearance="1.6" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="15" has_gender_variations="false" hair_cover_type="type1" modifier_group="cloth" material_type="Cloth" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="empire_crown_north" name="{=WF14UrdR}Golden Laurel Crown" mesh="empire_crown_north" culture="Culture.empire" weight="0.3" appearance="7" Type="HeadArmor" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="15" has_gender_variations="false" hair_cover_type="none" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="false"/>
+	</Item>
+	<Item id="empire_crown_v2" name="{=u5eafobF}Imperial Jeweled Band" mesh="empire_crown_v2" culture="Culture.empire" weight="0.85" appearance="6" Type="HeadArmor" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="15" has_gender_variations="false" hair_cover_type="none" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="false"/>
+	</Item>
+	<Item id="empire_crown_west" name="{=u5eafobF}Imperial Jeweled Band" mesh="empire_crown_west" culture="Culture.empire" weight="0.5" appearance="6" Type="HeadArmor" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="15" has_gender_variations="false" hair_cover_type="none" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="false"/>
+	</Item>
+	<Item id="vlandia_crown" name="{=1b6T0M72}Austere Crown" mesh="vlandia_crown" culture="Culture.empire" weight="0.35" appearance="6" Type="HeadArmor" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="15" has_gender_variations="false" hair_cover_type="none" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="false"/>
+	</Item>
+	<Item id="padded_cap" name="{=Dc4ia4m9}Padded Cap" mesh="vlandia_helmet_e" culture="Culture.vlandia" weight="0.2" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="16" has_gender_variations="false" hair_cover_type="type3" modifier_group="cloth" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="padded_coif" name="{=zQv3w264}Padded Half Coif" mesh="vlandia_helmet_b" culture="Culture.vlandia" weight="0.5" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="16" has_gender_variations="false" hair_cover_type="type3" modifier_group="cloth" material_type="Cloth" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="arming_cap" name="{=SV1pTR2P}Padded Coif" mesh="arming_cap_a" culture="Culture.vlandia" weight="0.2" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="17" has_gender_variations="false" hair_cover_type="type3" modifier_group="cloth" material_type="Cloth" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="imperial_cloth_coif" name="{=Qazvdg1P}Imperial Cloth Coif" mesh="empire_helmet_e" culture="Culture.empire" weight="0.2" appearance="0.3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="17" has_gender_variations="false" hair_cover_type="type3" modifier_group="cloth" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="nordic_fur_cap" name="{=wEJAab0A}Northern Cap" mesh="sturgia_helmet_m" culture="Culture.sturgia" weight="0.3" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="18" has_gender_variations="false" hair_cover_type="type2" modifier_group="leather" material_type="Leather" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="thinhide_coif" name="{=Ybq7jZDj}Highland Thinhide Coif" mesh="battania_helmet_a" culture="Culture.battania" weight="0.5" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="18" has_gender_variations="false" hair_cover_type="type3" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="laced_coif" name="{=qFL0VxZX}Laced Coif" mesh="vlandia_helmet_c" culture="Culture.vlandia" weight="0.4" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="19" has_gender_variations="false" hair_cover_type="type3" modifier_group="cloth" material_type="Cloth" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="northern_fur_cap" name="{=mFbFEOVz}Northern Fur Cap" mesh="sturgia_helmet_j" culture="Culture.sturgia" weight="0.5" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="19" has_gender_variations="false" hair_cover_type="type2" modifier_group="leather" material_type="Leather" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="nomad_padded_hood" name="{=yMi4ijgI}Nomad Padded Hood" mesh="khuzait_helmet_p" culture="Culture.khuzait" weight="0.4" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="20" has_gender_variations="false" hair_cover_type="type2" modifier_group="cloth" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="open_padded_coif" name="{=WUArer5A}Open Padded Coif" mesh="vlandia_helmet_y" culture="Culture.vlandia" weight="0.3" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="21" has_gender_variations="false" hair_cover_type="type3" modifier_group="cloth" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="roughhide_cap" name="{=ZEybMjoq}Northern Roughhide Cap" mesh="sturgia_helmet_d" culture="Culture.sturgia" weight="0.5" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="21" has_gender_variations="false" hair_cover_type="type2" modifier_group="cloth" material_type="Cloth" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="arming_coif" name="{=mlJKNbbn}Leather Coif" mesh="vlandia_helmet_f" culture="Culture.vlandia" weight="0.3" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="22" has_gender_variations="false" hair_cover_type="type3" modifier_group="cloth" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="imperial_padded_coif" name="{=Da1bV3ph}Imperial Padded Coif" mesh="empire_helmet_b" culture="Culture.empire" weight="0.5" appearance="0.6" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="22" has_gender_variations="false" hair_cover_type="type3" modifier_group="cloth" material_type="Cloth" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="imperial_leather_coif" name="{=aPa3Cp4l}Imperial Leather Coif" mesh="empire_helmet_d" culture="Culture.empire" weight="0.3" appearance="0.5" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="23" has_gender_variations="false" hair_cover_type="type3" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags Civilian="true" UseTeamColor="true"/>
+	</Item>
+	<Item id="leather_studdedhelm" name="{=ZuOWvXMB}Highland Leather Studded Helm" mesh="battania_helmet_k" culture="Culture.battania" weight="0.5" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="23" has_gender_variations="false" hair_cover_type="type1" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="leather_studdedhelm_over_headcloth" name="{=beMSPAOG}Leather Studdedhelm Over Headcloth" mesh="battania_helmet_k_b" culture="Culture.battania" weight="1.1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="24" has_gender_variations="false" hair_cover_type="type2" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="leather_studdedhelm_over_thinhide" name="{=2m1kWsao}Leather Studdedhelm Over Thinhide" mesh="battania_helmet_k_a" culture="Culture.battania" weight="1.2" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="25" has_gender_variations="false" hair_cover_type="type3" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="wolfhead" name="{=B7tbURzI}Wolf Head" mesh="battania_helmet_i" culture="Culture.battania" weight="1.3" appearance="1.5" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="25" has_gender_variations="false" hair_cover_type="type2" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="leather_studdedhelm_over_roughscale" name="{=X1Wn0sBa}Leather Studdedhelm Over Roughscale" mesh="battania_helmet_k_e" culture="Culture.battania" weight="3.6" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="27" has_gender_variations="false" hair_cover_type="type3" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="padded_leather_cape" name="{=SHZ0P7Iu}Padded Leather Cape" mesh="shoulder_padding_cape" culture="Culture.vlandia" weight="1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="31" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="vlandia_bandit_cape_a" name="{=ewSpZ10R}Rough Padded Cap" mesh="vlandia_bandit_cape_a" culture="Culture.looters" weight="2.5" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="32" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="vlandia_bandit_cape_b" name="{=7D3jvAfS}Hide Cap" mesh="vlandia_bandit_cape_b" culture="Culture.looters" weight="2.5" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="32" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="open_mail_coif" name="{=OpYdqPWs}Open Mail Coif" mesh="vlandia_helmet_v" culture="Culture.empire" weight="1.6" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="33" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="battania_fur_helmet" name="{=YteV789y}Highland Fur Helmet" mesh="battania_fur_helmet_a" culture="Culture.battania" weight="1.3" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="34" has_gender_variations="true" hair_cover_type="type2" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="bearhead" name="{=GXmDq2KR}Bear Head" mesh="battania_helmet_g" culture="Culture.battania" weight="1.4" appearance="2" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="34" has_gender_variations="false" hair_cover_type="type2" modifier_group="leather" material_type="Leather"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="imperial_open_mail_coif" name="{=nNGCuIUf}Imperial Open Mail Coif" mesh="empire_helmet_f" culture="Culture.empire" weight="1.5" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="34" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="mail_coif" name="{=77RIGK7B}Mail Coif" mesh="vlandia_helmet_a" culture="Culture.empire" weight="1.7" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="34" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="imperial_mail_coif" name="{=xsO9LNmO}Imperial Mail Coif" mesh="empire_helmet_a" culture="Culture.empire" weight="1.7" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="38" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="loose_wrapped_desert_helmet" name="{=xkX9T0yT}Loose Wrapped Southern Helmet" mesh="aserai_helmet_e" culture="Culture.aserai" weight="1.2" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="44" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="khuzait_crown" name="{=noqT1MMC}Ornate Steel Cap" mesh="khuzait_crown" culture="Culture.khuzait" weight="1.4" appearance="8" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="45" has_gender_variations="false" hair_cover_type="type1" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="open_desert_helmet" name="{=T49rswmY}Open Southern Helmet" mesh="aserai_helmet_a" culture="Culture.aserai" weight="1.3" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="45" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="plumed_fur_lined_helmet" name="{=ZRDoABz9}Plumed Fur Lined Helmet" mesh="khuzait_helmet_b" culture="Culture.khuzait" weight="1.1" appearance="1.6" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="45" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="desert_helmet" name="{=ITvet7CV}Southern Helmet" mesh="aserai_helmet_n" culture="Culture.aserai" weight="1.2" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="46" has_gender_variations="false" hair_cover_type="type1" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="empire_crown" name="{=FZ6VCoKI}empire_crown" mesh="empire_crown" culture="Culture.empire" weight="3.1" appearance="6" Type="HeadArmor" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="46" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="closed_desert_helmet" name="{=4XAa0tca}Closed Southern Helmet" mesh="aserai_helmet_b" culture="Culture.aserai" weight="1.4" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="47" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="leatherlame_roundkettle" name="{=qoT97j7u}Bronze Roundkettle" mesh="empire_helmet_j__a" culture="Culture.empire" weight="1.8" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="47" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="cervelliere_over_laced_coif" name="{=bfFNYaiU}Cervelliere Over Laced Coif" mesh="vlandia_helmet_n_c" culture="Culture.vlandia" weight="1.1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="48" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="cervelliere_over_cloth_headwrap" name="{=e9BpfZ9L}Cervelliere Over Cloth Headwrap" mesh="vlandia_helmet_n_d" culture="Culture.vlandia" weight="1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="50" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="nasal_helmet" name="{=4c7e0RCE}Northern Nasal Helmet" mesh="nasal_helmet_a" culture="Culture.sturgia" weight="1.8" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="50" has_gender_variations="false" hair_cover_type="type1" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="sturgian_crown" name="{=5kAqcWac}Jeweled Fur Rimmed Helmet" mesh="sturgian_crown" culture="Culture.sturgia" weight="2.4" appearance="2" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="50" has_gender_variations="false" hair_cover_type="type1" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="cervelliere_over_padded_cap" name="{=wG582fzT}Cervelliere Over Padded Cap" mesh="vlandia_helmet_n_e" culture="Culture.vlandia" weight="1" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="51" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="cervelliere_over_arming_coif" name="{=7dAy51ln}Cervelliere Over Arming Coif" mesh="vlandia_helmet_n_f" culture="Culture.vlandia" weight="0.9" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="53" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="segmented_cervelliere_over_laced_coif" name="{=z8d2uyY1}Segmented Cevelliere Over Laced Coif" mesh="vlandia_helmet_u_c" culture="Culture.vlandia" weight="1.3" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="53" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="nasal_cervelliere_over_laced_coif" name="{=h6UXvU3B}Nasal Cervelliere Over Laced Coif" mesh="vlandia_helmet_o_c" culture="Culture.vlandia" weight="1.1" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="54" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="ironlame_nasalhelm_over_imperial_cloth" name="{=kIMOcPgn}Iron Nasalhelm Over Imperial Cloth" mesh="empire_helmet_h_eb" culture="Culture.empire" weight="3.2" appearance="1.3" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="55" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type1"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="ironlame_nasalhelm_over_imperial_coif" name="{=SXCa9d1n}Iron Nasalhelm Over Imperial Coif" mesh="empire_helmet_h_ab" culture="Culture.empire" weight="4.1" appearance="1.3" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="55" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="ironlame_roundkettle_over_imperial_leather" name="{=nUarDXVH}Iron Roundkettle Over Imperial Leather" mesh="empire_helmet_j_db" culture="Culture.empire" weight="3.1" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="56" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="nasal_helmet_over_cloth_headwrap" name="{=olamAwhb}Nasal Helmet Over Cloth Headwrap" mesh="vlandia_helmet_p_d" culture="Culture.vlandia" weight="1.1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="56" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="nomad_helmet" name="{=WvDZMmaj}Nomad Helmet" mesh="khuzait_helmet_j" culture="Culture.khuzait" weight="1.1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="56" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="segmented_cervelliere_over_padded_cloth" name="{=vsavMoLZ}Segmented Cervelliere Over Padded Cloth" mesh="vlandia_helmet_u_y" culture="Culture.vlandia" weight="1.2" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="56" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="ironlame_nasalhelm_over_imperial_padding" name="{=e6WzpsWz}Iron Nasalhelm Over Imperial Padding" mesh="empire_helmet_h_bb" culture="Culture.empire" weight="3.4" appearance="1.3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="57" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="nasal_helmet_over_padded_cloth" name="{=bubcrmTC}Nasal Helmet Over Padded Cloth" mesh="vlandia_helmet_p_y" culture="Culture.vlandia" weight="1.2" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="57" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="pointed_skullcap_over_laced_coif" name="{=6n44BIll}Pointed Skullcap Over Laced Coif" mesh="vlandia_helmet_l_c" culture="Culture.aserai" weight="1.2" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="57" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="trailed_desert_helmet" name="{=aq8lbNZo}Trailed Southern Helmet" mesh="aserai_helmet_g" culture="Culture.aserai" weight="1.1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="57" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type1"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="leatherlame_roundkettle_over_imperial_leather" name="{=Sn2O0Ogx}Bronze Roundkettle Over Imperial Leather" mesh="empire_helmet_j_da" culture="Culture.empire" weight="1.4" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="58" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="nasal_helmet_over_padded_coif" name="{=Tp7zXWGa}Nasal Helmet Over Padded Coif" mesh="vlandia_helmet_p_b" culture="Culture.vlandia" weight="1.4" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="58" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="nasal_cervelliere_over_padded_cap" name="{=4BfbPgkY}Nasal Cervelliere Over Padded Cap" mesh="vlandia_helmet_o_e" culture="Culture.vlandia" weight="1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="59" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="aserai_crown" name="{=6Dk7LClc}Luxury Turban Over Helmet" mesh="aserai_crown" culture="Culture.aserai" weight="2.8" appearance="8" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="60" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="nasal_helmet_over_laced_coif" name="{=FWFDkjBk}Nasal Helmet Over Laced Coif" mesh="vlandia_helmet_p_c" culture="Culture.vlandia" weight="1.3" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="60" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="plumed_nomad_helmet" name="{=m3Nv9rt2}Plumed Nomad Helmet" mesh="khuzait_helmet_k" culture="Culture.khuzait" weight="1.1" appearance="1.2" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="60" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="spiked_kettle_over_imperial_padding" name="{=vbOjUu9M}Spiked Kettle Over Imperial Padding" mesh="empire_helmet_k_b" culture="Culture.empire" weight="1.5" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="60" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="battania_earmuff_helmet_b_brnz" name="{=PyeZ22FL}Bronze Cap With Cheek Guards" mesh="battania_earmuff_helmet_b_brnz" culture="Culture.battania" weight="3" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="61" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="leatherlame_nasalhelm_over_imperial_leather" name="{=KmZHXINa}Bronze Nasalhelm Over Imperial Leather" mesh="empire_helmet_h_da" culture="Culture.empire" weight="1.9" appearance="1.3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="61" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="nasal_cervelliere_over_padded_coif" name="{=JjLQ2VdT}Nasal Cervelliere Over Padded Coif" mesh="vlandia_helmet_o_b" culture="Culture.vlandia" weight="1.2" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="61" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="spangenhelm_with_padded_cloth" name="{=ebHdQfbX}Spangenhelm With Padded Cloth" mesh="spangenhelm_arming" culture="Culture.sturgia" weight="1.3" appearance="1.6" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="61" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="pointed_skullcap_over_cloth_headwrap" name="{=LqA9uBH9}Pointed Skullcap Over Cloth Headwrap" mesh="vlandia_helmet_l_d" culture="Culture.aserai" weight="1.1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="62" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="battania_earmuff_helmet_c_cpr" name="{=UVdYqQGj}Fringed Decorated Copper Cap With Cheek Guards" mesh="battania_earmuff_helmet_c_cpr" culture="Culture.battania" weight="3.3" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="63" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="nasal_helmet_with_leather" name="{=TxAYmCjr}Nasal Helmet With Leather" mesh="nasal_helmet_neckguard" culture="Culture.sturgia" weight="1.2" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="63" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="roundkettle_over_imperial_cloth" name="{=maYSspDY}Roundkettle Over Imperial Cloth" mesh="empire_helmet_j_e" culture="Culture.empire" weight="1.2" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="64" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="battania_earmuff_helmet_a_brnz" name="{=HBaSQlSJ}Fringed Bronze Cap With Cheek Guards" mesh="battania_earmuff_helmet_a_brnz" culture="Culture.battania" weight="3.2" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="65" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="desert_helmet_with_mail" name="{=G40DJB7q}Southern Helmet With Mail" mesh="aserai_helmet_l" culture="Culture.aserai" weight="1.9" appearance="1.2" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="65" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="ironlame_feathered_spangenhelm" name="{=B5akzp6B}Iron Feathered Spangenhelm" mesh="empire_helmet_i" culture="Culture.empire" weight="3.2" appearance="1.3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="65" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="nasal_helmet_with_mail" name="{=EWR2MNeM}Nasal Helmet With Mail" mesh="nasal_helmet_reinforced" culture="Culture.sturgia" weight="1.5" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="65" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="nasalhelm_over_leather" name="{=AVcbBH1J}Northern Nasalhelm Over Leather" mesh="sturgia_helmet_f" culture="Culture.sturgia" weight="1.4" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="65" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="peaked_helmet_over_laced_coif" name="{=Rhfp7ath}Peaked Helmet Over Laced Coif" mesh="vlandia_helmet_t_c" culture="Culture.vlandia" weight="1.1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="65" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="roundkettle_over_laced_cloth" name="{=9BENgwRK}Roundkettle Over Laced Cloth" mesh="empire_helmet_j_c" culture="Culture.empire" weight="1.3" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="65" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="steppe_helmet" name="{=R4RT36MH}Eastern Helmet" mesh="khuzait_helmet_l" culture="Culture.khuzait" weight="1.2" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="65" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="battania_battle_crown" name="{=KbW3IFOd}Two Pronged Brass Crown" mesh="battania_battle_crown" culture="Culture.battania" weight="2.3" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="66" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="closed_desert_helmet_with_mail" name="{=vwAaIwnD}Closed Southern Helmet With Mail" mesh="aserai_helmet_k" culture="Culture.aserai" weight="3.2" appearance="1.3" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="67" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="roundkettle_over_imperial_padding" name="{=qaraQjXa}Roundkettle Over Imperial Padding" mesh="empire_helmet_j_b" culture="Culture.empire" weight="1.4" appearance="1.3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="67" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="spangenhelm_with_leather" name="{=3Z91Nxbf}Spangenhelm With Leather" mesh="spangenhelm_a" culture="Culture.sturgia" weight="1.2" appearance="1.6" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="67" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="peaked_helmet_over_padded_cloth" name="{=TFT2Xapz}Peaked Helmet Over Padded Cloth" mesh="vlandia_helmet_t_y" culture="Culture.vlandia" weight="1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="68" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="battania_earmuff_helmet_d_brnz" name="{=RDbqA36B}Ridged Decorated Bronze Cap With Cheek Guards" mesh="battania_earmuff_helmet_d_brnz" culture="Culture.battania" weight="3.3" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="71" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="battania_earmuff_helmet_c_brnz" name="{=KoyU5yeY}Fringed Decorated Bronze Cap With Cheek Guards" mesh="battania_earmuff_helmet_c_brnz" culture="Culture.battania" weight="3.3" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="73" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="ironlame_spiked_kettle_over_mail" name="{=IX3kafcb}Iron Spiked Kettle Over Mail" mesh="empire_helmet_k_fb" culture="Culture.empire" weight="3.8" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="73" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="pointed_skullcap_with_mail" name="{=3DV3GoHb}Pointed Skullcap with Mail" mesh="vlandia_helmet_l_v" culture="Culture.aserai" weight="2.8" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="73" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="segmented_skullcap_over_laced_coif" name="{=VylHwqVq}Segmented Skullcap Over Laced Coif" mesh="vlandia_helmet_r_c" culture="Culture.vlandia" weight="1.2" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="73" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="battania_earmuff_helmet_b" name="{=HvjviTTW}Steel Cap With Cheek Guards" mesh="battania_earmuff_helmet_b" culture="Culture.battania" weight="2.9" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="74" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="leatherlame_roundkettle_over_imperial_mail" name="{=rXO7ajRX}Bronze Roundkettle Over Imperial Mail" mesh="empire_helmet_j_fa" culture="Culture.empire" weight="3.4" appearance="1.1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="74" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="roundkettle_over_imperial_leather" name="{=9Hr4oEvw}Roundkettle Over Imperial Leather" mesh="empire_helmet_j_d" culture="Culture.empire" weight="1.3" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="74" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="nasalhelm_over_mail" name="{=1bdDdwub}Nasalhelm Over Mail" mesh="sturgia_helmet_a" culture="Culture.sturgia" weight="1.8" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="75" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="segmented_skullcap_over_padded_coif" name="{=zAvb7WKe}Segmented Skullcap Over Padded Coif" mesh="vlandia_helmet_r_b" culture="Culture.vlandia" weight="1.3" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="75" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type1"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="brass_aserai_helmet_leather" name="{=*}Brass Southern Helmet with Leather Flaps" mesh="brass_aserai_helmet_leather" culture="Culture.aserai" weight="1.8" appearance="6" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="75" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="leatherlame_feathered_spangenhelm_over_leather" name="{=bzrVXGAl}Bronze Feathered Spangenhelm Over Leather" mesh="empire_helmet_i_da" culture="Culture.empire" weight="1.7" appearance="1.6" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="76" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type1"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="ironlame_feathered_spangenhelm_over_leather" name="{=MvvlKO0U}Iron Feathered Spangenhelm Over Leather" mesh="empire_helmet_i_db" culture="Culture.empire" weight="2.8" appearance="1.3" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="77" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="kettle_helmet_over_padded_cap" name="{=2qisE5ys}Kettle Helmet Over Padded Cap" mesh="vlandia_helmet_h_e" culture="Culture.vlandia" weight="1.2" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="77" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="plumed_lamellar_helmet" name="{=YqhOxb1Z}Plumed Lamellar Helmet" mesh="khuzait_helmet_c" culture="Culture.khuzait" weight="3.3" appearance="1.6" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="77" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="segmented_skullcap_over_padded_cloth" name="{=b1pqUQju}Segmented Skullcap Over Padded Cloth" mesh="vlandia_helmet_r_y" culture="Culture.vlandia" weight="1.1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="77" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="brass_aserai_helmet_b_leather" name="{=*}Brass Turbaned Helmet with Leather Flaps" mesh="brass_aserai_helmet_b_leather" culture="Culture.aserai" weight="1.9" appearance="7" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="77" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="ironlame_roundkettle_over_imperial_mail" name="{=ZqbyJ5Pl}Iron Roundkettle Over Imperial Mail" mesh="empire_helmet_j_fb" culture="Culture.empire" weight="3.6" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="78" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="battania_earmuff_helmet_a" name="{=HkwJao2z}Fringed Steel Cap With Cheek Guards" mesh="battania_earmuff_helmet_a" culture="Culture.battania" weight="3" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="79" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="kettle_helmet_over_laced_coif" name="{=AB1mV5Pg}Kettle Helmet Over Laced Coif" mesh="vlandia_helmet_h_c" culture="Culture.vlandia" weight="1.2" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="80" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="nasal_cervelliere_over_mail_coif" name="{=mRGIxvYh}Nasal Cervelliere Over Mail Coif" mesh="vlandia_helmet_o_a" culture="Culture.vlandia" weight="2.6" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="81" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="guards_kettle_over_laced_coif" name="{=Jpt1WvTM}Guard's Kettle Over Laced Coif" mesh="vlandia_helmet_j_c" culture="Culture.vlandia" weight="1.4" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="83" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="kettle_helmet_over_padded_cloth" name="{=VcbEaV7T}Kettle Helmet Over Padded Cloth" mesh="vlandia_helmet_h_y" culture="Culture.vlandia" weight="1.1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="83" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="sturgian_helmet_base" name="{=OzUsuoDO}Northern Helmet" mesh="sturgian_helmet_base" culture="Culture.sturgia" weight="1.8" appearance="1.6" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="83" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="brass_aserai_helmet_open" name="{=*}Brass Southern Helmet" mesh="brass_aserai_helmet_open" culture="Culture.aserai" weight="2.2" appearance="7" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="83" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="kettle_hat_over_padded_coif" name="{=2MdVVkVL}Kettle Hat Over Padded Coif" mesh="vlandia_helmet_i_b" culture="Culture.vlandia" weight="1.4" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="84" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="segmented_cervelliere_over_mail" name="{=bdpjqoGe}Segmented Cevelliere Over Mail" mesh="vlandia_helmet_u_v" culture="Culture.vlandia" weight="3.3" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="84" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="tall_helmet" name="{=9FgxK9se}Tall Helmet" mesh="roman_helmet_c" culture="Culture.empire" weight="1.8" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="84" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="kettle_hat_over_padded_cloth" name="{=wBfGpcCO}Kettle Hat Over Padded Cloth" mesh="vlandia_helmet_i_y" culture="Culture.vlandia" weight="1.2" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="85" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="kettle_helmet_over_padded_coif" name="{=1GpTOIqU}Kettle Helmet Over Padded Coif" mesh="vlandia_helmet_h_b" culture="Culture.vlandia" weight="1.3" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="85" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="pointed_skullcap_over_mail" name="{=xS7m37o7}Pointed Skullcap Over Mail" mesh="vlandia_helmet_l_b" culture="Culture.aserai" weight="1.3" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="85" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="sturgian_helmet_open" name="{=JEaU5XOP}Northern Open Helmet" mesh="sturgian_helmet_open" culture="Culture.sturgia" weight="1.8" appearance="1.6" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="85" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="brass_aserai_helmet_b_open" name="{=*}Brass Southern Helmet with Turban" mesh="brass_aserai_helmet_b_open" culture="Culture.aserai" weight="2.3" appearance="8" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="85" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="nasal_helmet_over_mail" name="{=tpQLvMSM}Nasal Helmet Over Mail" mesh="vlandia_helmet_p_v" culture="Culture.vlandia" weight="3.1" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="86" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="nordic_helmet" name="{=FHu0bGub}Northern Visored Cap" mesh="sturgia_masked_helm_a" culture="Culture.sturgia" weight="4.1" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="86" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="segmented_cervelliere_over_mail_coif" name="{=WMqHlEvb}Segmented Cevelliere Over Mail Coif" mesh="vlandia_helmet_u_a" culture="Culture.vlandia" weight="3.2" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="86" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="goggled_helmet_over_leather" name="{=ydxXW0ZW}Northern Helmet Over Leather" mesh="sturgia_helmet_b" culture="Culture.sturgia" weight="1.4" appearance="1.6" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="87" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="kettle_helmet_over_arming_coif" name="{=3iq3rOh8}Kettle Helmet Over Arming Coif" mesh="vlandia_helmet_h_f" culture="Culture.vlandia" weight="1" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="87" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="leatherlame_nasalhelm_over_imperial_mail" name="{=siuuhU6b}Bronze Nasalhelm Over Imperial Mail" mesh="empire_helmet_h_fa" culture="Culture.empire" weight="3.7" appearance="2" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="87" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type1"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="feathered_spangenhelm_over_imperial_coif" name="{=1Fdtj39w}Feathered Spangenhelm Over Imperial Coif" mesh="empire_helmet_i_a" culture="Culture.empire" weight="3.1" appearance="1.3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="88" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="kettle_helmet_with_leather" name="{=ZV1bKLUn}Kettle Helmet With Leather" mesh="kettle_helmet_leather" culture="Culture.vlandia" weight="1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="88" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="pointed_skullcap_over_mail_coif" name="{=ZOWdFaUi}Pointed Skullcap Over Mail Coif" mesh="vlandia_helmet_l_a" culture="Culture.aserai" weight="3" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="88" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="roughscale_helmet" name="{=jakLnIQv}Roughscale Helmet" mesh="battania_helmet_e" culture="Culture.battania" weight="3.2" appearance="1.5" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="88" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="brass_aserai_helmet_closed" name="{=*}Brass Southern Closed Helmet" mesh="brass_aserai_helmet_closed" culture="Culture.aserai" weight="2.5" appearance="7" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="88" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="battania_earmuff_helmet_c" name="{=1zFYpSSY}Fringed Decorated Steel Cap With Cheek Guards" mesh="battania_earmuff_helmet_c" culture="Culture.battania" weight="3.1" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="89" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="guards_kettle_over_padded_coif" name="{=bAvyfxIy}Guard's Kettle Over Padded Coif" mesh="vlandia_helmet_j_b" culture="Culture.vlandia" weight="1.5" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="89" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="nasal_helmet_over_mail_coif" name="{=PVgSGCYK}Nasal Helmet Over Mail Coif" mesh="vlandia_helmet_p_a" culture="Culture.vlandia" weight="2.7" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="89" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="northern_goggled_helmet" name="{=IPyPb4Dp}Northern Goggled Helmet" mesh="sturgia_helmet_k" culture="Culture.sturgia" weight="1.8" appearance="1.6" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="89" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="aserai_battle_crown" name="{=fBAf3OWb}Ornate Desert Battle Crown" mesh="aserai_battle_crown" culture="Culture.aserai" weight="2.8" appearance="9" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="90" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="desert_mail_coif" name="{=sQAXkEQ7}Southern Mail Coif" mesh="aserai_helmet_j" culture="Culture.aserai" weight="3" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="90" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="ironlame_nasalhelm_over_imperial_mail" name="{=htACXBhH}Iron Nasalhelm Over Imperial Mail" mesh="empire_helmet_h_fb" culture="Culture.empire" weight="3.9" appearance="2" Type="HeadArmor" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="90" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate" beard_cover_type="type1"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="khuzait_battle_crown" name="{=5c4cHL9Z}Khuzait Battle Crown" mesh="khuzait_battle_crown" culture="Culture.khuzait" weight="2.7" appearance="4" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="90" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="spiked_kettle_over_imperial_mail" name="{=DYwjfcM8}Spiked Kettle Over Imperial Mail" mesh="empire_helmet_k_f" culture="Culture.empire" weight="3.6" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="90" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="visored_helmet_over_laced_coif" name="{=51EcVnzd}Visored Helmet Over Laced Coif" mesh="vlandia_helmet_m_c" culture="Culture.vlandia" weight="2.4" appearance="1" Type="headArmor">
+		<ItemComponent>
+			<Armor head_armor="90" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="vlandia_lord_helmet_b2" name="{=o67ySkfH}Plated Helmet" mesh="vlandia_lord_helmet_b2" culture="Culture.vlandia" weight="4.1" appearance="2" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="90" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="brass_aserai_helmet_b_closed" name="{=*}Brass Southern Closed Helmet with Turban" mesh="brass_aserai_helmet_b_closed" culture="Culture.aserai" weight="2.55" appearance="8" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
+		<ItemComponent>
+			<Armor head_armor="90" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="aserai_lord_helmet_a" name="{=Xs8a5YxN}Southern Lord Helmet" mesh="aserai_lord_helmet_a" culture="Culture.aserai" weight="3.7" appearance="3.8" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="91" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="battania_earmuff_helmet_d" name="{=wQY1oqdK}Ridged Decorated Steel Cap With Cheek Guards" mesh="battania_earmuff_helmet_d" culture="Culture.battania" weight="3.2" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="92" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="kettle_helmet_with_mail" name="{=UsOgGylA}Kettle Helmet With Mail" mesh="kettle_helmet_reinforced" culture="Culture.vlandia" weight="2.7" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="92" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="peaked_helmet_over_mail" name="{=JvhvtKsT}Peaked Helmet Over Mail" mesh="vlandia_helmet_t_v" culture="Culture.vlandia" weight="2.6" appearance="1.6" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="92" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="roundkettle_over_imperial_mail" name="{=JTrZ8ugB}Roundkettle Over Imperial Mail" mesh="empire_helmet_j_f" culture="Culture.empire" weight="3.3" appearance="1.1" Type="HeadArmor" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="92" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="segmented_skullcap_over_mail_coif" name="{=P8GrNSkF}Segmented Skullcap Over Mail Coif" mesh="vlandia_helmet_r_a" culture="Culture.vlandia" weight="3.5" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="92" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="visored_helmet_over_padded_cloth" name="{=A8MJWbhf}Visored Helmet Over Padded Cloth" mesh="vlandia_helmet_m_y" culture="Culture.vlandia" weight="2.3" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="93" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="emirs_helmet" name="{=efW2XbK8}Emir's Helmet" mesh="aserai_helmet_r" culture="Culture.aserai" weight="3" appearance="1.5" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="94" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="helmet_with_faceguard" name="{=UoHZGyZa}Helmet With Faceguard" mesh="roman_helmet_b" culture="Culture.empire" weight="3.5" appearance="2" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="94" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="ridged_northernhelm" name="{=vtoxbHmB}Ridged Highland helm" mesh="battania_helmet_f" culture="Culture.battania" weight="3.4" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="94" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="spiked_helmet" name="{=ygfhbfr0}Spiked Helmet" mesh="khuzait_helmet_g" culture="Culture.khuzait" weight="4.5" appearance="2.2" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="94" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="battanian_plated_noble_helmet" name="{=KpyTaAwL}Highland Plated Noble Helmet" mesh="battania_lord_helmet_a" culture="Culture.battania" weight="2.9" appearance="3" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="95" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="ironlame_feathered_spangenhelm_over_mail" name="{=Ze9u7Saj}Iron Feathered Spangenhelm Over Mail" mesh="empire_helmet_i_fb" culture="Culture.empire" weight="3.3" appearance="2" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="95" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="peaked_helmet_over_mail_coif" name="{=AdafHtud}Peaked Helmet Over Mail Coif" mesh="vlandia_helmet_t_a" culture="Culture.vlandia" weight="2.7" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="95" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="southern_noble_helmet" name="{=ESqqwNDd}Southern Noble Helmet" mesh="aserai_lord_helmet_b" culture="Culture.aserai" weight="3.5" appearance="3.4" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="95" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="heavy_nasalhelm_over_laced_cloth" name="{=z6eTba5h}Heavy Nasalhelm Over Laced Cloth" mesh="empire_helmet_g_c" culture="Culture.empire" weight="3.1" appearance="1.3" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="97" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type1"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="imperial_nasal_helm" name="{=XazcYatD}Imperial Nasal Helm" mesh="empire_helmet_h" culture="Culture.empire" weight="2.2" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="97" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="leatherlame_feathered_spangenhelm_over_mail" name="{=mtVcMgWO}Bronze Feathered Spangenhelm Over Mail" mesh="empire_helmet_i_aa" culture="Culture.empire" weight="3.4" appearance="2" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="97" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="sturgian_helmet_b_open" name="{=JEaU5XOP}Northern Open Helmet" mesh="sturgian_helmet_b_open" culture="Culture.sturgia" weight="1.8" appearance="2.4" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="98" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="vlandian_faceguard_helmet_b" name="{=zkt4AwSi}Knight Helmet With Brass Faceguard" mesh="vlandian_faceguard_helmet_b" culture="Culture.vlandia" weight="2.3" appearance="1.5" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="98" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="western_plated_helmet" name="{=9j9fb5pR}Plated Helmet with Sideguards" mesh="vlandia_lord_helmet_b" culture="Culture.vlandia" weight="4.1" appearance="3" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="98" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="visored_helmet_over_padded_coif" name="{=agqzAXa9}Visored Helmet Over Padded Coif" mesh="vlandia_helmet_m_b" culture="Culture.vlandia" weight="2.5" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="99" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="heavy_nasalhelm_over_imperial_padding" name="{=WCbpw1wM}Heavy Nasalhelm Over Imperial Padding" mesh="empire_helmet_g_b" culture="Culture.empire" weight="3.2" appearance="1.3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="100" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags UseTeamColor="true"/>
+	</Item>
+	<Item id="southern_lord_helmet" name="{=Xs8a5YxN}Southern Lord Helmet" mesh="aserai_lord_helmet_c" culture="Culture.aserai" weight="3.9" appearance="3.6" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="100" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="western_crowned_helmet" name="{=LSgDVSfl}Western Crowned Helmet" mesh="vlandia_lord_helmet_a" culture="Culture.vlandia" weight="3.7" appearance="3" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="100" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="battanian_noble_helmet_with_feather" name="{=H41qKfaL}Highland Noble Helmet with Feather" mesh="battania_lord_helmet_b" culture="Culture.battania" weight="3.1" appearance="3" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="102" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="khuzait_noble_helmet_with_neckguard" name="{=bQXR1jzG}Eastern Noble Helmet with Neckguard" mesh="khuzait_lord_helmet_b" culture="Culture.khuzait" weight="4" appearance="3.6" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="102" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="vlandian_faceguard_helmet_a" name="{=axaK9y6E}Closed Knight Helmet" mesh="vlandian_faceguard_helmet_a" culture="Culture.vlandia" weight="2.2" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="103" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="closed_goggled_helmet" name="{=oIOYBIbv}Northern Closed Helmet" mesh="sturgia_helmet_l" culture="Culture.sturgia" weight="4.1" appearance="1.6" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="104" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="empire_battle_crown_north" name="{=AK0lNDmN}Jeweled Plumed Battle Crown" mesh="empire_battle_crown_north" culture="Culture.empire" weight="2.1" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="104" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="plumed_helmet" name="{=sJ1R62Tn}Plumed Helmet" mesh="roman_helmet_d" culture="Culture.empire" weight="2.9" appearance="1.3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="104" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="heavy_nasalhelm_over_imperial_leather" name="{=FSGtJ7eX}Heavy Nasalhelm Over Imperial Leather" mesh="empire_helmet_g_d" culture="Culture.empire" weight="3" appearance="1.3" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="105" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="kettle_hat_over_mail_coif" name="{=tMLH04n4}Kettle Hat Over Mail Coif" mesh="vlandia_helmet_i_a" culture="Culture.vlandia" weight="2.9" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="105" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="khuzait_noble_helmet_with_feathers" name="{=MZzQZcCf}Eastern Noble Helmet with Feathers" mesh="khuzait_lord_helmet_a" culture="Culture.khuzait" weight="3.4" appearance="3.6" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="105" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="western_crowned_plated_helmet" name="{=kweDHlz8}Western Crowned Plated Helmet" mesh="vlandia_lord_helmet_c" culture="Culture.vlandia" weight="3.9" appearance="3.2" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="105" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="eastern_vendel_helmet" name="{=brvgn9Ja}Eastern Vendel Helmet" mesh="khuzait_helmet_m" culture="Culture.khuzait" weight="4" appearance="2.6" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="106" has_gender_variations="false" hair_cover_type="type3" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="goggled_helmet_over_mail" name="{=qc0P0b2r}Goggled Helmet Over Mail" mesh="sturgia_helmet_c" culture="Culture.sturgia" weight="1.8" appearance="1.6" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="106" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="kettle_helmet_over_mail" name="{=zZ2G7uIO}Kettle Helmet Over Mail" mesh="vlandia_helmet_h_v" culture="Culture.vlandia" weight="3.1" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="107" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="sturgian_helmet_b_close" name="{=oIOYBIbv}Northern Closed Helmet" mesh="sturgian_helmet_b_close" culture="Culture.sturgia" weight="3" appearance="2" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="107" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="empire_battle_crown_west" name="{=EOplBvKz}Imperial Plumed Helmet" mesh="empire_battle_crown_west" culture="Culture.empire" weight="3.1" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="109" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="guards_kettle_over_mail_coif" name="{=r8b5miDE}Guard's Kettle Over Mail Coif" mesh="vlandia_helmet_j_a" culture="Culture.vlandia" weight="3.2" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="109" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="northern_warlord_helmet" name="{=TpjbgasA}Northern Warlord Helmet" mesh="sturgia_helmet_i" culture="Culture.sturgia" weight="3.6" appearance="3" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="113" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type1"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="goggled_helmet_over_full_mail" name="{=mAEjSAlV}Northern Closed Helmet Over Mail" mesh="sturgia_helmet_e" culture="Culture.sturgia" weight="4.4" appearance="1.6" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="114" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="sturgian_lord_helmet_b" name="{=loHYOJA9}Northern Lord Helmet With Open Mail Coif" mesh="sturgian_lord_helmet_b" culture="Culture.sturgia" weight="3.4" appearance="3" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="115" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="sturgian_lord_helmet_a" name="{=YAOfXanz}Northern Lord Helmet" mesh="sturgian_lord_helmet_a" culture="Culture.sturgia" weight="3.6" appearance="3" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="116" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="sturgian_helmet_closed" name="{=a2XnhQ3V}Northern Helmet Closed" mesh="sturgian_helmet_closed" culture="Culture.sturgia" weight="1.8" appearance="3" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="118" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="lendman_helmet_over_mail" name="{=meC5HTQD}Northern Warlord Helmet Over Mail" mesh="sturgia_helmet_g" culture="Culture.sturgia" weight="1.9" appearance="3" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="119" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="spiked_helmet_with_facemask" name="{=5n4rWI9T}Spiked Helmet With Facemask" mesh="khuzait_helmet_f" culture="Culture.khuzait" weight="4.5" appearance="2.4" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="119" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>
+	<Item id="visored_helmet_over_mail_coif" name="{=d8DrtmwP}Visored Helmet Over Mail Coif" mesh="vlandia_helmet_m_a" culture="Culture.vlandia" weight="3.6" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="119" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="empire_helmet_with_metal_strips" name="{=Gxual4pG}Imperial Helmet with Metal Strips" mesh="empire_lord_helmet_c_2" culture="Culture.empire" weight="3.8" appearance="3" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="120" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="sturgia_heavy_cavalary_helmet" name="{=xl5MgK49}Sturgia Heavy Cavalry Helmet" mesh="sturgia_helmet_o" culture="Culture.sturgia" weight="2.8" appearance="2" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="120" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="battanian_crowned_helmet" name="{=YDibTDob}Highland Crowned Helmet" mesh="battania_lord_helmet_c" culture="Culture.battania" weight="3.2" appearance="3" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="121" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="full_helm_over_laced_coif" name="{=wEfZyccm}Full Helm Over Laced Coif" mesh="vlandia_helmet_s_c" culture="Culture.vlandia" weight="3.5" appearance="2" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="121" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="empire_lord_helmet" name="{=VXER7AbJ}Imperial Lord Helmet" mesh="empire_lord_helmet_a" culture="Culture.empire" weight="3.5" appearance="3" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="123" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="full_helm_over_cloth_headwrap" name="{=SYvBTD0p}Full Helm Over Cloth Headwrap" mesh="vlandia_helmet_s_d" culture="Culture.vlandia" weight="3.2" appearance="2" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="123" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="full_helm_over_arming_coif" name="{=WYytQbvS}Full Helm Over Arming Coif" mesh="vlandia_helmet_s_f" culture="Culture.vlandia" weight="3" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="124" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="heavy_nasalhelm_over_imperial_mail" name="{=ITUNob5T}Heavy Nasalhelm Over Imperial Mail" mesh="empire_helmet_g_f" culture="Culture.empire" weight="3.6" appearance="2" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="124" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="empire_jewelled_helmet" name="{=BD07fj39}Imperial Jewelled Helmet" mesh="empire_lord_helmet_c" culture="Culture.empire" weight="3.8" appearance="5" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="125" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="sturgian_battle_crown" name="{=OFxwPQyA}Battle Crown" mesh="sturgian_battle_crown" culture="Culture.sturgia" weight="2.2" appearance="3" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="125" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="full_helm_over_padded_cloth" name="{=xnoAJwoy}Full Helm Over Padded Cloth" mesh="vlandia_helmet_s_y" culture="Culture.vlandia" weight="3.1" appearance="2" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="126" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="lendman_helmet_over_full_mail" name="{=ljE4zLrf}Northern Warlord Helmet Over Full Mail" mesh="sturgia_helmet_h" culture="Culture.sturgia" weight="4.3" appearance="3" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="127" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="full_helm_over_padded_cap" name="{=qVj5NqrL}Full Helm Over Padded Cap" mesh="vlandia_helmet_s_e" culture="Culture.vlandia" weight="3.1" appearance="2" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="128" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="empire_guarded_lord_helmet" name="{=gLfxeU17}Imperial Guarded Lord Helmet" mesh="empire_lord_helmet_b" culture="Culture.empire" weight="3.7" appearance="3" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="130" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="decorated_goggled_helmet" name="{=X3FAb6Wm}Northern Decorated Visored Helmet" mesh="sturgia_helmet_n" culture="Culture.sturgia" weight="4.2" appearance="3" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="133" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="khuzait_noble_helmet_with_fur" name="{=XoISdMVx}Eastern Noble Helmet with Fur" mesh="khuzait_lord_helmet_c" culture="Culture.khuzait" weight="3.9" appearance="3.6" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="141" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="imperial_goggled_helmet" name="Imperial Visored Helmet" mesh="imperial_helmet" culture="Culture.empire" weight="4.2" appearance="2.6" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="144" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="type2"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="full_helm_over_mail_coif" name="{=FsDZC8Yl}Full Helm Over Mail Coif" mesh="vlandia_helmet_s_a" culture="Culture.vlandia" weight="4.5" appearance="2" Type="HeadArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="150" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="sturgian_lord_helmet_c" name="{=wSaoZOr2}Pointed Northern Lord Helmet With Feather" mesh="sturgian_lord_helmet_c" culture="Culture.sturgia" weight="4.4" appearance="3" Type="headArmor" difficulty="0" subtype="head_armor">
+		<ItemComponent>
+			<Armor head_armor="150" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+</Items>
