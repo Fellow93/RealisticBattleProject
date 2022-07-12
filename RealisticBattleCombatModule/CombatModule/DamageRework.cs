@@ -1967,7 +1967,7 @@ namespace  RBMCombat
             else if (item.ItemComponent is WeaponComponent)
             {
                 //price = (int)(200f * RBMCMConfig.dict["Global.WeaponPriceModifier"] * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
-                price = (int)(500f + (tier * 100f)) * RBMCMConfig.dict["Global.WeaponPriceModifier"];
+                price = (int)(500f + (tier * 100f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
                 if (item.ItemType == ItemObject.ItemTypeEnum.Polearm)
                 {
                     price *= 0.4f;
@@ -1988,7 +1988,7 @@ namespace  RBMCombat
                 }
                 if (item.ItemType == ItemObject.ItemTypeEnum.Arrows || item.ItemType == ItemObject.ItemTypeEnum.Bolts)
                 {
-                    price = (int)(50f + (tier * 10f)) * RBMCMConfig.dict["Global.WeaponPriceModifier"];
+                    price = (int)(50f + (tier * 10f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
                     //price = (int)(200f * RBMCMConfig.dict["Global.WeaponPriceModifier"] * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f)) * 0.2f;
                 }
             }
