@@ -2596,14 +2596,14 @@ namespace  RBMCombat
     {
         static bool Prefix(ref Mission __instance, ref Agent attacker, ref Agent victim, GameEntity realHitEntity, ref Blow b, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, ref CombatLogData combatLogData)
         {
-            if (victim.IsMount && collisionData.IsMissile)
+            if (victim != null && victim.IsMount && collisionData.IsMissile)
             {
                 if (MissionGameModels.Current.AgentApplyDamageModel.DecideMountRearedByBlow(attacker, victim, in collisionData, attackerWeapon.CurrentUsageItem, in b))
                 {
                     b.BlowFlag |= BlowFlags.MakesRear;
                 }
             }
-            if (attacker.IsMount && collisionData.IsHorseCharge)
+            if (attacker != null && attacker.IsMount && collisionData.IsHorseCharge)
             {
                 b.SelfInflictedDamage = MathF.Ceiling(b.BaseMagnitude / 6f);
                 attacker.CreateBlowFromBlowAsReflection(in b, in collisionData, out var outBlow, out var outCollisionData);
