@@ -19,6 +19,7 @@ namespace RBM
         public static Harmony rbmaiHarmony = new Harmony("com.rbmai");
         public static Harmony rbmtHarmony = new Harmony("com.rbmt");
         public static Harmony rbmcombatHarmony = new Harmony("com.rbmcombat");
+        public static Harmony rbmHarmony = new Harmony("com.rbmmain");
     }
 
     public class SubModule : MBSubModuleBase
@@ -40,8 +41,8 @@ namespace RBM
 
         public static void ApplyHarmonyPatches()
         {
-            var harmony = new Harmony("com.rbmmain");
-            harmony.PatchAll();
+            UnpatchAllRBM();
+            HarmonyModules.rbmHarmony.PatchAll();
             if (RBMConfig.RBMConfig.rbmTournamentEnabled)
             {
                 HarmonyModules.rbmtHarmony.PatchAll(Assembly.LoadFrom("../../Modules/RBM/bin/Win64_Shipping_Client/RBMTournament.dll"));
@@ -52,7 +53,7 @@ namespace RBM
             }
             if (RBMConfig.RBMConfig.rbmAiEnabled)
             {
-                RBMAiPatcher.FirstPatch(HarmonyModules.rbmaiHarmony);
+                RBMAiPatcher.FirstPatch(ref HarmonyModules.rbmaiHarmony);
                 //rbmaiHarmony.PatchAll(Assembly.LoadFrom("../../Modules/RBM/bin/Win64_Shipping_Client/RBMAI.dll"));
             }
             else
@@ -69,12 +70,19 @@ namespace RBM
             }
         }
 
-        
+        public static void UnpatchAllRBM()
+        {
+            RBMAiPatcher.patched = false;
+            HarmonyModules.rbmHarmony.UnpatchAll(HarmonyModules.rbmHarmony.Id);
+            HarmonyModules.rbmtHarmony.UnpatchAll(HarmonyModules.rbmtHarmony.Id);
+            HarmonyModules.rbmaiHarmony.UnpatchAll(HarmonyModules.rbmaiHarmony.Id);
+            HarmonyModules.rbmcombatHarmony.UnpatchAll(HarmonyModules.rbmcombatHarmony.Id);
+        }
 
         protected override void OnSubModuleLoad()
         {
             RBMConfig.RBMConfig.LoadConfig();
-            ApplyHarmonyPatches();
+            //ApplyHarmonyPatches();
 
             TaleWorlds.MountAndBlade.Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("RBM Configuration"), 3, delegate
             {

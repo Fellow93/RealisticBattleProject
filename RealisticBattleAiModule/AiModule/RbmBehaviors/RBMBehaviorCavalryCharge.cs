@@ -33,11 +33,12 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
 	private Vec2 _bracePosition = Vec2.Invalid;
 
-	public bool ChargeArchers = false;
-	public bool ChargeInfantry = false;
+	public bool ChargeArchers = true;
+	public bool ChargeInfantry = true;
 	public bool ChargeCavalry = false;
 	public bool ChargeHorseArchers = false;
 
+	public bool newTarget = false;
 	public bool isFirstCharge = true;
 
 	public override float NavmeshlessTargetPositionPenalty => 1f;
@@ -112,6 +113,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 							{
 								_lastTarget = base.Formation.QuerySystem.ClosestEnemyFormation;
 							}
+							newTarget = true;
 							_initialChargeDirection = _lastTarget.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition;
 							//result = ChargeState.Undetermined;
 						}
@@ -146,7 +148,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 				case ChargeState.Reforming:
                     {
 						
-						if (_reformTimer.Check(Mission.Current.CurrentTime) || base.Formation.QuerySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents < 5f) //|| base.Formation.QuerySystem.AveragePosition.Distance(_lastTarget.MedianPosition.AsVec2) <= 30f)
+						if (_reformTimer.Check(Mission.Current.CurrentTime) || base.Formation.QuerySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents < 4f) //|| base.Formation.QuerySystem.AveragePosition.Distance(_lastTarget.MedianPosition.AsVec2) <= 30f)
 						{
 							result = ChargeState.Charging;
 						}
@@ -189,8 +191,9 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 			isFirstCharge = false;
         }
 
-		if (chargeState != _chargeState)
+		if (chargeState != _chargeState || newTarget)
 		{
+			newTarget = false;
 			_chargeState = chargeState;
 			switch (_chargeState)
 			{

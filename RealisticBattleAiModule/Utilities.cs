@@ -753,7 +753,7 @@ namespace RBMAI
             MissionState missionState = Game.Current.GameStateManager.ActiveState as MissionState;
             if (missionState != null)
             {
-                if (RBMConfig.RBMConfig.vanillaCombatAi)
+                if (!RBMConfig.RBMConfig.vanillaCombatAi)
                 {
                     if (missionState.MissionName.Equals("EnhancedBattleTestFieldBattle") || missionState.MissionName.Equals("EnhancedBattleTestSiegeBattle"))
                     {

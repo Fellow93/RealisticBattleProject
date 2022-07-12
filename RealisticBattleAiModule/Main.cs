@@ -18,7 +18,7 @@ namespace RBMAI
             }
         }
 
-        public static void FirstPatch(Harmony rbmaiHarmony)
+        public static void FirstPatch(ref Harmony rbmaiHarmony)
         {
             harmony = rbmaiHarmony;
             var original = AccessTools.Method(typeof(MissionCombatantsLogic), "EarlyStart");
