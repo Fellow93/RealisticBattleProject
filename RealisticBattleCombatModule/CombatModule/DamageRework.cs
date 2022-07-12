@@ -656,7 +656,7 @@ namespace  RBMCombat
                     weaponWeight += 0.5f;
                 }
                 float kineticEnergy = 0.5f * weaponWeight * combinedSpeed * combinedSpeed;
-                float mixedEnergy = 0.5f *  (weaponWeight + 1.5f) * combinedSpeed * combinedSpeed;
+                float mixedEnergy = 0.5f * (weaponWeight + 1.5f) * combinedSpeed * combinedSpeed;
                 //float basedamage = 0.5f * (weaponWeight + 4.5f) * combinedSpeed * combinedSpeed;
                 float basedamage = 120f;
                 if (mixedEnergy > 120f)
@@ -929,7 +929,7 @@ namespace  RBMCombat
                                                 magnitude = skillCap;
                                             }
 
-                                            if ((BluntLanceBalistics * (weaponWeight + BraceBonus)) >= skillCap ) //ballistics
+                                            if ((BluntLanceBalistics * (weaponWeight + BraceBonus)) >= skillCap) //ballistics
                                             {
                                                 magnitude = (BluntLanceBalistics * (weaponWeight + BraceBonus));
                                             }
@@ -1336,7 +1336,7 @@ namespace  RBMCombat
                     {
                         weaponType = attackerWeapon.WeaponClass.ToString();
                     }
-                    
+
                     bool isPassiveUsage = attackInformation.IsAttackerAgentDoingPassiveAttack;
 
                     float skillBasedDamage = 0f;
@@ -1350,7 +1350,7 @@ namespace  RBMCombat
                         case "OneHandedSword":
                         case "ThrowingKnife":
                             {
-                                if(blowMagnitude > 1f)
+                                if (blowMagnitude > 1f)
                                 {
                                     if (damageType == DamageTypes.Cut)
                                     {
@@ -1626,7 +1626,7 @@ namespace  RBMCombat
                                     {
                                         localInflictedDamage *= 1f;
                                     }
-                                    else if(attackCollisionData.DamageType == 1)//pierce
+                                    else if (attackCollisionData.DamageType == 1)//pierce
                                     {
                                         localInflictedDamage *= 0.09f;
                                     }
@@ -1908,7 +1908,7 @@ namespace  RBMCombat
             }
 
             float materialPriceModifier = 1f;
-            if(item.ArmorComponent != null)
+            if (item.ArmorComponent != null)
             {
                 switch (item.ArmorComponent.MaterialType)
                 {
@@ -1939,7 +1939,7 @@ namespace  RBMCombat
                         }
                 }
             }
-            
+
             if (item.ItemType == ItemObject.ItemTypeEnum.LegArmor)
             {
                 price = (int)((75f + (float)item.ArmorComponent.LegArmor * materialPriceModifier) * RBMConfig.RBMConfig.priceMultipliers.ArmorPriceModifier);
@@ -1966,8 +1966,42 @@ namespace  RBMCombat
             }
             else if (item.ItemComponent is WeaponComponent)
             {
-                price = (int)(200f * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
+                //price = (int)(200f * RBMCMConfig.dict["Global.WeaponPriceModifier"] * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
+                price = (int)(500f + (tier * 100f)) * RBMCMConfig.dict["Global.WeaponPriceModifier"];
+                if (item.ItemType == ItemObject.ItemTypeEnum.Polearm)
+                {
+                    price *= 0.4f;
+                }
+                if (item.ItemType == ItemObject.ItemTypeEnum.Thrown)
+                {
+                    price *= 0.3f;
+                }
+                if (item.ItemType == ItemObject.ItemTypeEnum.TwoHandedWeapon)
+                {
+                    price *= 1.5f;
+                }
+                if (item.ItemType == ItemObject.ItemTypeEnum.Shield)
+                {
+                    price *= 0.5f;
+                    //price = (int)(200f + (tier * tier) * 200f) * RBMCMConfig.dict["Global.WeaponPriceModifier"];
+                    //price = (int)(200f * RBMCMConfig.dict["Global.WeaponPriceModifier"] * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f)) * 0.3f;
+                }
+                if (item.ItemType == ItemObject.ItemTypeEnum.Arrows || item.ItemType == ItemObject.ItemTypeEnum.Bolts)
+                {
+                    price = (int)(50f + (tier * 10f)) * RBMCMConfig.dict["Global.WeaponPriceModifier"];
+                    //price = (int)(200f * RBMCMConfig.dict["Global.WeaponPriceModifier"] * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f)) * 0.2f;
+                }
             }
+            //else if (item.ItemType == ItemObject.ItemTypeEnum.Shield)
+            //{
+            //    price = (int)(200f + (tier * tier) * 200f) * RBMCMConfig.dict["Global.WeaponPriceModifier"];
+            //    //price = (int)(200f * RBMCMConfig.dict["Global.WeaponPriceModifier"] * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f)) * 0.3f;
+            //}
+            //else if (item.ItemType == ItemObject.ItemTypeEnum.Arrows && item.ItemType == ItemObject.ItemTypeEnum.Bolts)
+            //{
+            //    price = (int)(100f + (tier * 500f)) * RBMCMConfig.dict["Global.WeaponPriceModifier"];
+            //    //price = (int)(200f * RBMCMConfig.dict["Global.WeaponPriceModifier"] * tier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f)) * 0.2f;
+            //}
             else if (item.ItemComponent is HorseComponent)
             {
                 price = (int)(200f * tier * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
@@ -2113,9 +2147,9 @@ namespace  RBMCombat
             {
                 num2 = 0f;
             }
-            if (num2 > 5.1f)
+            if (num2 > 6.5f)
             {
-                num2 = 5.1f;
+                num2 = 6.5f;
             }
             __result = num2;
             return false;
@@ -2129,13 +2163,16 @@ namespace  RBMCombat
         static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
         {
             WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
-            //float missileWeight = weaponComponent.Item.Weight;
-            int missileDamage = weaponComponentData.MissileDamage;
-            int num = MathF.Max(0, weaponComponentData.MaxDataValue - 20);
-            __result = (float)missileDamage + (float)num * 0.1f;
+            float missileWeight = weaponComponent.Item.Weight;
+            float missileDamage = weaponComponentData.MissileDamage;
+            float arrowTier = (missileDamage * 0.01f) * (((missileWeight * 100f - 4f) + 0.01f) * 0.8f);
+            if (arrowTier > 6.5f)
+            { arrowTier = 6.5f; }
+            __result = arrowTier;
             return false;
         }
     }
+
     [HarmonyPatch(typeof(DefaultItemValueModel))]
     [HarmonyPatch("CalculateShieldTier")]
     class CalculateShieldTierPatch
@@ -2144,16 +2181,22 @@ namespace  RBMCombat
         {
             WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
             //weaponComponentData.MaxDataValue - hitpointy stitov
-            __result = ((float)weaponComponentData.MaxDataValue + 3f * (float)weaponComponentData.BodyArmor + (float)weaponComponentData.ThrustSpeed) / (6f + weaponComponent.Item.Weight) * 0.13f - 3f;
+            float hp = (float)weaponComponentData.MaxDataValue;
+            float bodyArmor = (float)weaponComponentData.BodyArmor;
+            float weaponLength = (float)weaponComponentData.WeaponLength;
+            float shieldTier = ((hp - 400f) * 0.005f + bodyArmor * 0.2f) * (weaponLength / 60f);
+            shieldTier += 1f;
+            if (shieldTier > 6.5f)
+            { shieldTier = 6.5f; }
+            __result = shieldTier;
             return false;
         }
     }
+
     [HarmonyPatch(typeof(DefaultItemValueModel))]
     [HarmonyPatch("CalculateRangedWeaponTier")]
     class OverrideCalculateRangedWeaponTier
     {
-
-
         static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
         {
             WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
@@ -2175,25 +2218,25 @@ namespace  RBMCombat
         }
     }
 
-    [HarmonyPatch(typeof(DefaultItemValueModel))]
-    [HarmonyPatch("CalculateAmmoTier")]
-    class OverrideCalculateAmmoTier
-    {
+    //[HarmonyPatch(typeof(DefaultItemValueModel))]
+    //[HarmonyPatch("CalculateAmmoTier")]
+    //class OverrideCalculateAmmoTier
+    //{
 
 
-        static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
-        {
-            WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
-            //float num;
-            float ArrowTier;
-            float ArrowWeight = (float)weaponComponentData.MissileSpeed * 1f;
+    //    static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
+    //    {
+    //        WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
+    //        //float num;
+    //        float ArrowTier;
+    //        float ArrowWeight = (float)weaponComponentData.MissileSpeed * 1f;
 
-            ArrowTier = (ArrowWeight - 40f) * 0.066f;
-            //num = ArrowTier;
-            __result = ArrowTier;
-            return false;
-        }
-    }
+    //        ArrowTier = (ArrowWeight - 40f) * 0.066f;
+    //        //num = ArrowTier;
+    //        __result = ArrowTier;
+    //        return false;
+    //    }
+    //}
 
     [HarmonyPatch(typeof(DefaultItemValueModel))]
     [HarmonyPatch("CalculateArmorTier")]
@@ -2375,7 +2418,7 @@ namespace  RBMCombat
 
     //}
 
-    
+
 
     [HarmonyPatch(typeof(Mission))]
     [HarmonyPatch("CreateMeleeBlow")]
@@ -2398,7 +2441,9 @@ namespace  RBMCombat
                 }
             }
 
-            if (victimAgent!= null && victimAgent.Character != null && victimAgent.Character.IsPlayerCharacter)
+
+
+            if (victimAgent != null && victimAgent.Character != null && victimAgent.Character.IsPlayerCharacter)
             {
                 if (collisionData.CollisionResult == CombatCollisionResult.Blocked || collisionData.CollisionResult == CombatCollisionResult.Parried || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked)
                 {
@@ -2409,7 +2454,7 @@ namespace  RBMCombat
 
                     float experience = 1f;
                     Campaign.Current.Models.CombatXpModel.GetXpFromHit(heroObject.CharacterObject, null, affectorCharacter, heroObject.PartyBelongedTo?.Party, (int)collisionData.InflictedDamage, false, CombatXpModel.MissionTypeEnum.Battle, out var xpAmount);
-                    if(collisionData.CollisionResult == CombatCollisionResult.Blocked && collisionData.AttackBlockedWithShield)
+                    if (collisionData.CollisionResult == CombatCollisionResult.Blocked && collisionData.AttackBlockedWithShield)
                     {
                         experience = xpAmount * 0.8f;
                     }
@@ -2510,7 +2555,7 @@ namespace  RBMCombat
                     //__result.InflictedDamage = 1;
                     __result.VictimBodyPart = collisionData.VictimHitBodyPart;
                     __result.BlowFlag |= BlowFlags.KnockBack;
-                    victimAgent.RegisterBlow(__result,collisionData);
+                    victimAgent.RegisterBlow(__result, collisionData);
                     foreach (MissionBehavior missionBehaviour in __instance.MissionBehaviors)
                     {
                         missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, null, __result, ref collisionData, in attackerWeapon);
@@ -2631,7 +2676,7 @@ namespace  RBMCombat
             {
                 bool isFatal = affectedAgent.Health - (float)blow.InflictedDamage < 1f;
                 bool isTeamKill;
-                if (affectedAgent.Team != null )
+                if (affectedAgent.Team != null)
                 {
                     isTeamKill = affectedAgent.Team.Side == affectorAgent.Team.Side;
                 }
@@ -2653,9 +2698,9 @@ namespace  RBMCombat
     [HarmonyPatch("HandleBlow")]
     class HandleBlowPatch
     {
-        private static ArmorComponent.ArmorMaterialTypes GetProtectorArmorMaterialOfBone(Agent agent,sbyte boneIndex)
+        private static ArmorComponent.ArmorMaterialTypes GetProtectorArmorMaterialOfBone(Agent agent, sbyte boneIndex)
         {
-            if(agent != null && agent.SpawnEquipment != null)
+            if (agent != null && agent.SpawnEquipment != null)
             {
                 if (boneIndex >= 0)
                 {
@@ -2682,18 +2727,18 @@ namespace  RBMCombat
                     }
                     if (equipmentIndex != EquipmentIndex.None && agent.SpawnEquipment[equipmentIndex].Item != null)
                     {
-                        if(agent.SpawnEquipment[equipmentIndex].Item.ArmorComponent != null)
+                        if (agent.SpawnEquipment[equipmentIndex].Item.ArmorComponent != null)
                         {
                             return agent.SpawnEquipment[equipmentIndex].Item.ArmorComponent.MaterialType;
                         }
                     }
                 }
             }
-	        return ArmorComponent.ArmorMaterialTypes.None;
+            return ArmorComponent.ArmorMaterialTypes.None;
         }
         static bool Prefix(ref Agent __instance, ref Blow b, AgentLastHitInfo ____lastHitInfo, in AttackCollisionData collisionData)
         {
-            b.BaseMagnitude = Math.Min(b.BaseMagnitude, 1000f)/8f;
+            b.BaseMagnitude = Math.Min(b.BaseMagnitude, 1000f) / 8f;
             Agent agent = (b.OwnerId != -1) ? __instance.Mission.FindAgentWithIndex(b.OwnerId) : __instance;
             if (!b.BlowFlag.HasAnyFlag(BlowFlags.NoSound))
             {
@@ -2702,7 +2747,7 @@ namespace  RBMCombat
                 bool isOwnerHumanoid = agent?.IsHuman ?? false;
                 bool isNonTipThrust = b.BlowFlag.HasAnyFlag(BlowFlags.NonTipThrust);
                 int hitSound = b.WeaponRecord.GetHitSound(isOwnerHumanoid, isCriticalBlow, isLowBlow, isNonTipThrust, b.AttackType, b.DamageType);
-                float soundParameterForArmorType = 0.1f*(float)GetProtectorArmorMaterialOfBone(__instance, b.BoneIndex);
+                float soundParameterForArmorType = 0.1f * (float)GetProtectorArmorMaterialOfBone(__instance, b.BoneIndex);
                 SoundEventParameter parameter = new SoundEventParameter("Armor Type", soundParameterForArmorType);
                 __instance.Mission.MakeSound(hitSound, b.Position, soundCanBePredicted: false, isReliable: true, b.OwnerId, __instance.Index, ref parameter);
                 if (b.IsMissile && agent != null)
@@ -2726,7 +2771,7 @@ namespace  RBMCombat
 
             if (b.AttackType == AgentAttackType.Bash || b.AttackType == AgentAttackType.Kick)
             {
-                if(b.InflictedDamage <= 0)
+                if (b.InflictedDamage <= 0)
                 {
                     b.InflictedDamage = 1;
                 }
@@ -2735,7 +2780,7 @@ namespace  RBMCombat
             {
                 b.InflictedDamage = 1;
             }
-            if( b.InflictedDamage == 1 && isKnockBack)
+            if (b.InflictedDamage == 1 && isKnockBack)
             {
 
             }
@@ -2766,7 +2811,7 @@ namespace  RBMCombat
             MethodInfo method3 = typeof(Mission).GetMethod("OnAgentHit", BindingFlags.NonPublic | BindingFlags.Instance);
             method3.DeclaringType.GetMethod("OnAgentHit");
             bool isBlocked = false;
-            if(collisionData.CollisionResult == CombatCollisionResult.Blocked || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked || collisionData.CollisionResult == CombatCollisionResult.Parried)
+            if (collisionData.CollisionResult == CombatCollisionResult.Blocked || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked || collisionData.CollisionResult == CombatCollisionResult.Parried)
             {
                 isBlocked = true;
             }
@@ -2834,11 +2879,11 @@ namespace  RBMCombat
         {
             if (!blow.IsMissile)
             {
-                if (victimAgent!= null && victimAgent.HasMount && victimAgent.Character != null && victimAgent.Origin != null)
+                if (victimAgent != null && victimAgent.HasMount && victimAgent.Character != null && victimAgent.Origin != null)
                 {
                     int ridingSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(victimAgent.Character, victimAgent.Origin, victimAgent.Formation, DefaultSkills.Riding);
                     if (attackerWeapon != null && attackerWeapon.ItemUsage != null && blow.StrikeType == StrikeType.Thrust && blow.BaseMagnitude > (2.4f + (ridingSkill * 0.01f)) &&
-                    (blow.VictimBodyPart == BoneBodyPartType.Head || blow.VictimBodyPart == BoneBodyPartType.Neck) && 
+                    (blow.VictimBodyPart == BoneBodyPartType.Head || blow.VictimBodyPart == BoneBodyPartType.Neck) &&
                     (attackerWeapon.ItemUsage.Equals("polearm_couch") || attackerWeapon.ItemUsage.Equals("polearm_bracing")))
                     {
                         blow.BlowFlag |= BlowFlags.CanDismount;
@@ -2890,7 +2935,7 @@ namespace  RBMCombat
                 if (character.IsHero)
                 {
                     stat.Add(character.GetTotalArmorSum() * 0.01f);
-                    stat.Add(character.Age * -0.01f);
+                    stat.Add(character.Age * - 0.01f);
                     stat.AddFactor(50f);
                     //stat.AddFactor(49f);
                     //stat.Add(stat.ResultNumber * 50f - stat.ResultNumber);
@@ -2991,7 +3036,7 @@ namespace  RBMCombat
                     {
                         MethodInfo method = typeof(DefaultCombatXpModel).GetMethod("GetBattleXpBonusFromPerks", BindingFlags.NonPublic | BindingFlags.Instance);
                         method.DeclaringType.GetMethod("GetBattleXpBonusFromPerks");
-                        method.Invoke(__instance, new object[] { party, xpToGain, attackerTroop});
+                        method.Invoke(__instance, new object[] { party, xpToGain, attackerTroop });
                     }
                     if (party.IsMobile && party.MobileParty.IsGarrison && party.MobileParty.CurrentSettlement?.Town.Governor != null)
                     {
@@ -3018,7 +3063,7 @@ namespace  RBMCombat
     [HarmonyPatch("UpdateHorseStats")]
     class UpdateHorseStatsPatch
     {
-        static void Postfix(ref SandboxAgentStatCalculateModel __instance, ref Agent agent,ref AgentDrivenProperties agentDrivenProperties)
+        static void Postfix(ref SandboxAgentStatCalculateModel __instance, ref Agent agent, ref AgentDrivenProperties agentDrivenProperties)
         {
             if (agent.RiderAgent != null)
             {
@@ -3050,10 +3095,11 @@ namespace  RBMCombat
                 }
 
                 int mountMastery = effectiveRidingSkill - mountDifficulty;
-                if(mountMastery < 0)
+                if (mountMastery < 0)
                 {
                     mountMastery = 0;
-                }else if(mountMastery > mountSkillDifficultyTreshold)
+                }
+                else if (mountMastery > mountSkillDifficultyTreshold)
                 {
                     mountMastery = mountSkillDifficultyTreshold;
                 }

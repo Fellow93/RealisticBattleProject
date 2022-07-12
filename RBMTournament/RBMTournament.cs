@@ -356,7 +356,10 @@ namespace RBMTournament
                                     {
                                         Debug.Print(leaderHero.StringId + " is in settlement.Parties list but current settlement is not, tournament settlement: " + settlement.StringId);
                                     }
-                                    list.Add(leaderHero.CharacterObject);
+                                    if (!list.Contains(leaderHero.CharacterObject))
+                                    {
+                                        list.Add(leaderHero.CharacterObject);
+                                    }
                                 }
                             }
                         }
@@ -375,7 +378,10 @@ namespace RBMTournament
                                     {
                                         Debug.Print(hero.StringId + " is in settlement.HeroesWithoutParty list but current settlement is not, tournament settlement: " + settlement.StringId);
                                     }
-                                    list.Add(hero.CharacterObject);
+                                    if (!list.Contains(hero.CharacterObject))
+                                    {
+                                        list.Add(hero.CharacterObject);
+                                    }
                                 }
                             }
                         }
@@ -394,7 +400,10 @@ namespace RBMTournament
                                     {
                                         Debug.Print(hero2.StringId + " is in settlement.HeroesWithoutParty list but current settlement is not, tournament settlement: " + settlement.StringId);
                                     }
-                                    list.Add(hero2.CharacterObject);
+                                    if (!list.Contains(hero2.CharacterObject))
+                                    {
+                                        list.Add(hero2.CharacterObject);
+                                    }
                                 }
                             }
                             for (int l = 0; l < settlement.Parties.Count; l++)
@@ -416,7 +425,10 @@ namespace RBMTournament
                                         {
                                             Debug.Print(character.HeroObject.StringId + " is in settlement.HeroesWithoutParty list but current settlement is not, tournament settlement: " + settlement.StringId);
                                         }
-                                        list.Add(character);
+                                        if (!list.Contains(character))
+                                        {
+                                            list.Add(character);
+                                        }
                                     }
                                 }
                             }
@@ -586,12 +598,12 @@ namespace RBMTournament
                         }
                         if (positiveIM.Count > 0)
                         {
+                            float randomF = MBRandom.RandomFloat;
                             foreach (ItemModifierProbability value in item.ArmorComponent.ItemModifierGroup.ItemModifiersWithProbability.Values)
                             {
                                 ItemModifier imTemp = positiveIM.Find((ItemModifier im) => im != null && value.ItemModifier != null && im.Name.Equals(value.ItemModifier.Name));
                                 if (imTemp != null)
                                 {
-                                    float randomF = MBRandom.RandomFloat;
                                     if (randomF < (value.Probability / 100f))
                                     {
                                         __result = __instance.AddToCounts(new EquipmentElement(item, imTemp), number);
