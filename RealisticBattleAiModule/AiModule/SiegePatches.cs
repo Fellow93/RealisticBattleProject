@@ -811,5 +811,67 @@ namespace RealisticBattleAiModule.AiModule
                 return true;
             }
         }
+
+        //[HarmonyPatch(typeof(TacticDefendCastle))]
+        //class IsSallyOutApplicablePatch
+        //{
+        //    [HarmonyPrefix]
+        //    [HarmonyPatch("IsSallyOutApplicable")]
+        //    static bool Prefix(ref bool __result)
+        //    {
+        //        __result = false;
+        //        return false;
+        //    }
+        //}
+
+        [HarmonyPatch(typeof(TacticDefendCastle))]
+        class StopUsingStrategicAreasPatch
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch("StopUsingStrategicAreas")]
+            static bool Prefix()
+            {
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(TacticDefendCastle))]
+        class StopUsingAllMachinesPatch
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch("StopUsingAllMachines")]
+            static bool Prefix()
+            {
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(TacticDefendCastle))]
+        class StopUsingAllRangedSiegeWeaponsPatch
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch("StopUsingAllRangedSiegeWeapons")]
+            static bool Prefix()
+            {
+                return false;
+            }
+        }
+
+        //[HarmonyPatch(typeof(TacticBreachWalls))]
+        //class StartTacticalRetreatPatch
+        //{
+        //    [HarmonyPrefix]
+        //    [HarmonyPatch("StartTacticalRetreat")]
+        //    static bool Prefix(ref TacticBreachWalls __instance, ref Team ___team)
+        //    {
+        //        float enemyPower = Mission.Current.Teams.GetEnemiesOf(___team).Sum((Team t) => t.QuerySystem.TeamPower);
+        //        float allyPower = Mission.Current.Teams.GetAlliesOf(___team, true).Sum((Team t) => t.QuerySystem.TeamPower);
+        //        if (allyPower >= enemyPower * 0.3f)
+        //        {
+        //            return false;
+        //        }
+        //        return true;
+        //    }
+        //}
     }
 }
