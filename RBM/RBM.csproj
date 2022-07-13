@@ -266,7 +266,6 @@
     <Compile Include="SubModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XmlLoadingPatches.cs" />
-    <Content Include="SubModule.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RealisticBattleAiModule\RBMAI.csproj">

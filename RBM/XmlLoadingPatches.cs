@@ -2,22 +2,12 @@
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Linq;
-using TaleWorlds.Core;
 using TaleWorlds.ObjectSystem;
 
 namespace RBM
 {
     class XmlLoadingPatches
     {
-        [HarmonyPatch(typeof(ManagedParameters))]
-        [HarmonyPatch("LoadFromXml")]
-        class LoadFromXmlPatch
-        {
-            static bool Prefix(XmlNode doc)
-            {
-                return true;
-            }
-        }
 
         [HarmonyPatch(typeof(MBObjectManager))]
         [HarmonyPatch("MergeTwoXmls")]
