@@ -289,19 +289,6 @@ namespace RBMTournament
                 return troops;
             }
 
-            public static List<CharacterObject> FillTroopListFromCulture(CultureObject culture)
-            {
-                List<CharacterObject> troops = new List<CharacterObject>();
-                foreach (CharacterObject character in CharacterObject.All)
-                {
-                    if (character.Occupation == Occupation.Soldier && character.Culture == culture && !character.HiddenInEncylopedia)
-                    {
-                        troops.Add(character);
-                    }
-                }
-                return troops;
-            }
-
             public static int calculatePlayerTournamentTier()
             {
                 int playerLevelTier = MathF.Min(MathF.Max(MathF.Ceiling(((float)CharacterObject.PlayerCharacter.Level - 5f) / 5f), 0), Campaign.Current.Models.PartyTroopUpgradeModel.MaxCharacterTier);
@@ -459,41 +446,40 @@ namespace RBMTournament
                     //CultureObject cultureMercenaryObject = Game.Current.ObjectManager.GetObject<CultureObject>("neutral");
                     CultureObject culture = Settlement.CurrentSettlement.Culture;
 
-                    //List<CharacterObject> troops = FillTroopListUntilTier(culture.BasicTroop, playerTier);
-                    //List<CharacterObject> eliteTroops = FillTroopListUntilTier(culture.EliteBasicTroop, playerTier);
-                    //List<CharacterObject> mercenaryTroops = FillTroopListUntilTier(culture.BasicMercenaryTroop, playerTier);
-                    List<CharacterObject> troops = FillTroopListFromCulture(culture);
+                    List<CharacterObject> troops = FillTroopListUntilTier(culture.BasicTroop, playerTier);
+                    List<CharacterObject> eliteTroops = FillTroopListUntilTier(culture.EliteBasicTroop, playerTier);
+                    List<CharacterObject> mercenaryTroops = FillTroopListUntilTier(culture.BasicMercenaryTroop, playerTier);
 
                     list.Add(CharacterObject.PlayerCharacter);
 
-                    for (int i = 0; i < __instance.MaximumParticipantCount && list.Count < __instance.MaximumParticipantCount; i++)
+                    while (list.Count < __instance.MaximumParticipantCount)
                     {
-                        //float randomFloat = MBRandom.RandomFloat;
+                        float randomFloat = MBRandom.RandomFloat;
                         CharacterObject troopToAdd = null;
-                        //if (randomFloat < 0.6f)
-                        //{
-                        List<CharacterObject> troopsFromTier = troops.FindAll((CharacterObject troop) => troop != null && playerTier >= 5 ? (troop.Tier >= 5) : troop.Tier == playerTier);
-                        if (!troopsFromTier.IsEmpty())
+                        if (randomFloat < 0.6f)
                         {
-                            troopToAdd = troopsFromTier[MBRandom.RandomInt(troopsFromTier.Count)];
+                            List<CharacterObject> troopsFromTier = troops.FindAll((CharacterObject troop) => troop != null && playerTier >= 5 ? (troop.Tier >= 5) : troop.Tier == playerTier);
+                            if (!troopsFromTier.IsEmpty())
+                            {
+                                troopToAdd = troopsFromTier[MBRandom.RandomInt(troopsFromTier.Count)];
+                            }
                         }
-                        //}
-                        //else if (randomFloat < 0.85f)
-                        //{
-                        //    List<CharacterObject> troopsFromTier = eliteTroops.FindAll((CharacterObject troop) => troop != null && playerTier >= 5 ? (troop.Tier >= 5) : troop.Tier == playerTier);
-                        //    if (!troopsFromTier.IsEmpty())
-                        //    {
-                        //        troopToAdd = troopsFromTier[MBRandom.RandomInt(troopsFromTier.Count)];
-                        //    }
-                        //}
-                        //else
-                        //{
-                        //    List<CharacterObject> troopsFromTier = mercenaryTroops.FindAll((CharacterObject troop) => troop != null && playerTier >= 5 ? (troop.Tier >= 5) : troop.Tier == playerTier);
-                        //    if (!troopsFromTier.IsEmpty())
-                        //    {
-                        //        troopToAdd = troopsFromTier[MBRandom.RandomInt(troopsFromTier.Count)];
-                        //    }
-                        //}
+                        else if (randomFloat < 0.85f)
+                        {
+                            List<CharacterObject> troopsFromTier = eliteTroops.FindAll((CharacterObject troop) => troop != null && playerTier >= 5 ? (troop.Tier >= 5) : troop.Tier == playerTier);
+                            if (!troopsFromTier.IsEmpty())
+                            {
+                                troopToAdd = troopsFromTier[MBRandom.RandomInt(troopsFromTier.Count)];
+                            }
+                        }
+                        else
+                        {
+                            List<CharacterObject> troopsFromTier = mercenaryTroops.FindAll((CharacterObject troop) => troop != null && playerTier >= 5 ? (troop.Tier >= 5) : troop.Tier == playerTier);
+                            if (!troopsFromTier.IsEmpty())
+                            {
+                                troopToAdd = troopsFromTier[MBRandom.RandomInt(troopsFromTier.Count)];
+                            }
+                        }
 
                         if (troopToAdd != null)
                         {
@@ -501,6 +487,7 @@ namespace RBMTournament
                         }
                         else
                         {
+                            List<CharacterObject> troopsFromTier = new List<CharacterObject>();
                             int tier = playerTier;
                             do
                             {
@@ -514,10 +501,6 @@ namespace RBMTournament
                             if(troopsFromTier.Count > 0)
                             {
                                 troopToAdd = troopsFromTier[MBRandom.RandomInt(troopsFromTier.Count - 1)];
-                                if (troopToAdd != null)
-                                {
-                                    list.Add(troopToAdd);
-                                }
                             }
                         }
                     }
