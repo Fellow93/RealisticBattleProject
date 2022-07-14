@@ -101,7 +101,7 @@ namespace RBMCombat
                 {
                     shotDifficulty = 14.4f;
                 }
-                __result = MBMath.Lerp(1f, 3f, (shotDifficulty - 1f) / 13.4f);
+                __result = MBMath.Lerp(0.5f, 2.5f, (shotDifficulty - 1f) / 13.4f);
                 return false;
             }
         }
@@ -124,9 +124,9 @@ namespace RBMCombat
                     float troopPower = 0f;
                     troopPower = ((party?.MapEvent == null) ? Campaign.Current.Models.MilitaryPowerModel.GetTroopPowerBasedOnContext(attackerTroop) : Campaign.Current.Models.MilitaryPowerModel.GetTroopPowerBasedOnContext(attackerTroop, party.MapEvent.EventType, party.Side, missionType == MissionTypeEnum.SimulationBattle));
                     float rawXpNum = 0;
-                    //if (damage < 20)
+                    //if (damage < 30)
                     //{
-                    rawXpNum = 0.4f * ((troopPower + 0.5f) * (float)(25 + (isFatal ? 50 : 0)));
+                        rawXpNum = 0.4f * ((troopPower + 0.5f) * (float)(30 + (isFatal ? 75 : 0)));
                     //}
                     //else
                     //{
