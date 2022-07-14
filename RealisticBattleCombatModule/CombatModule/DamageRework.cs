@@ -1956,7 +1956,7 @@ namespace RBMCombat
             }
             if (attacker != null && attacker.IsMount && collisionData.IsHorseCharge)
             {
-                b.SelfInflictedDamage = MathF.Ceiling(b.BaseMagnitude / 6f);
+                b.SelfInflictedDamage = MathF.Ceiling(b.BaseMagnitude / 7f);
                 attacker.CreateBlowFromBlowAsReflection(in b, in collisionData, out var outBlow, out var outCollisionData);
                 attacker.RegisterBlow(outBlow, in outCollisionData);
             }
