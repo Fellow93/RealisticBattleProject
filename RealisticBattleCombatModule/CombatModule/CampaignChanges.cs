@@ -126,7 +126,7 @@ namespace RBMCombat
                     float rawXpNum = 0;
                     //if (damage < 30)
                     //{
-                        rawXpNum = 0.4f * ((troopPower + 0.5f) * (float)(30 + (isFatal ? 75 : 0)));
+                        rawXpNum = 0.4f * ((troopPower + 0.5f) * (float)(30 + (isFatal ? 70 : 0)));
                     //}
                     //else
                     //{
