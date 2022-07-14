@@ -367,6 +367,6 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 			num9 = 1.2f;
 		}
 		float num10 = querySystem.GetClassWeightedFactor(1f, 1f, 1.5f, 1.5f) * querySystem.ClosestEnemyFormation.GetClassWeightedFactor(1f, 1f, 0.5f, 0.5f);
-		return num3 * num7 * num8 * num9 * num10;
+		return (num3 * num7 * num8 * num9 * num10) * 2f;
 	}
 }

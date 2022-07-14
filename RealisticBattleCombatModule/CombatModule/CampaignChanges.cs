@@ -191,60 +191,63 @@ namespace RBMCombat
         {
             static void Postfix(ref Mission __instance, ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
             {
-                if (victimAgent != null && victimAgent.Character != null && victimAgent.Character.IsHero)
+                if(Campaign.Current != null)
                 {
-                    if (collisionData.CollisionResult == CombatCollisionResult.Blocked || collisionData.CollisionResult == CombatCollisionResult.Parried || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked)
+                    if (victimAgent != null && victimAgent.Character != null && victimAgent.Character.IsHero)
                     {
-                        CharacterObject affectedCharacter = (CharacterObject)victimAgent.Character;
-                        Hero heroObject = affectedCharacter.HeroObject;
+                        if (collisionData.CollisionResult == CombatCollisionResult.Blocked || collisionData.CollisionResult == CombatCollisionResult.Parried || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked)
+                        {
+                            CharacterObject affectedCharacter = (CharacterObject)victimAgent.Character;
+                            Hero heroObject = affectedCharacter.HeroObject;
 
-                        CharacterObject affectorCharacter = (CharacterObject)attackerAgent.Character;
+                            CharacterObject affectorCharacter = (CharacterObject)attackerAgent.Character;
 
-                        float experience = 1f;
-                        Campaign.Current.Models.CombatXpModel.GetXpFromHit(heroObject.CharacterObject, null, affectorCharacter, heroObject.PartyBelongedTo?.Party, (int)collisionData.InflictedDamage, false, CombatXpModel.MissionTypeEnum.Battle, out var xpAmount);
-                        if (collisionData.CollisionResult == CombatCollisionResult.Blocked && collisionData.AttackBlockedWithShield)
-                        {
-                            experience = xpAmount * 0.8f;
-                        }
-                        if (collisionData.CollisionResult == CombatCollisionResult.Parried || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked)
-                        {
-                            experience = xpAmount * 1.2f;
-                        }
-                        WeaponComponentData parryWeapon = victimAgent.WieldedWeapon.CurrentUsageItem;
-                        if (parryWeapon != null)
-                        {
-                            SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(parryWeapon, false);
-                            float num2 = ((skillForWeapon == DefaultSkills.Bow) ? 0.5f : 1f);
-                            affectedCharacter.HeroObject.AddSkillXp(skillForWeapon, experience);
-                        }
-                        else
-                        {
-                            heroObject.AddSkillXp(DefaultSkills.Athletics, MBRandom.RoundRandomized(experience));
-                        }
-                        if (victimAgent.HasMount)
-                        {
-                            float num3 = 0.1f;
-                            float speedBonusFromMovement = collisionData.MovementSpeedDamageModifier;
-                            if (speedBonusFromMovement > 0f)
+                            float experience = 1f;
+                            Campaign.Current.Models.CombatXpModel.GetXpFromHit(heroObject.CharacterObject, null, affectorCharacter, heroObject.PartyBelongedTo?.Party, (int)collisionData.InflictedDamage, false, CombatXpModel.MissionTypeEnum.Battle, out var xpAmount);
+                            if (collisionData.CollisionResult == CombatCollisionResult.Blocked && collisionData.AttackBlockedWithShield)
                             {
-                                num3 *= 1f + speedBonusFromMovement;
+                                experience = xpAmount * 0.8f;
                             }
-                            if (num3 > 0f)
+                            if (collisionData.CollisionResult == CombatCollisionResult.Parried || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked)
                             {
-                                heroObject.AddSkillXp(DefaultSkills.Riding, MBRandom.RoundRandomized(num3 * experience));
+                                experience = xpAmount * 1.2f;
                             }
-                        }
-                        else
-                        {
-                            float num5 = 0.2f;
-                            float speedBonusFromMovement = collisionData.MovementSpeedDamageModifier;
-                            if (speedBonusFromMovement > 0f)
+                            WeaponComponentData parryWeapon = victimAgent.WieldedWeapon.CurrentUsageItem;
+                            if (parryWeapon != null)
                             {
-                                num5 += 1.5f * speedBonusFromMovement;
+                                SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(parryWeapon, false);
+                                float num2 = ((skillForWeapon == DefaultSkills.Bow) ? 0.5f : 1f);
+                                affectedCharacter.HeroObject.AddSkillXp(skillForWeapon, experience);
                             }
-                            if (num5 > 0f)
+                            else
                             {
-                                heroObject.AddSkillXp(DefaultSkills.Athletics, num5 * experience);
+                                heroObject.AddSkillXp(DefaultSkills.Athletics, MBRandom.RoundRandomized(experience));
+                            }
+                            if (victimAgent.HasMount)
+                            {
+                                float num3 = 0.1f;
+                                float speedBonusFromMovement = collisionData.MovementSpeedDamageModifier;
+                                if (speedBonusFromMovement > 0f)
+                                {
+                                    num3 *= 1f + speedBonusFromMovement;
+                                }
+                                if (num3 > 0f)
+                                {
+                                    heroObject.AddSkillXp(DefaultSkills.Riding, MBRandom.RoundRandomized(num3 * experience));
+                                }
+                            }
+                            else
+                            {
+                                float num5 = 0.2f;
+                                float speedBonusFromMovement = collisionData.MovementSpeedDamageModifier;
+                                if (speedBonusFromMovement > 0f)
+                                {
+                                    num5 += 1.5f * speedBonusFromMovement;
+                                }
+                                if (num5 > 0f)
+                                {
+                                    heroObject.AddSkillXp(DefaultSkills.Athletics, num5 * experience);
+                                }
                             }
                         }
                     }

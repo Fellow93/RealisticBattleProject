@@ -176,6 +176,7 @@
   <ItemGroup>
     <Compile Include="AiModule\AgentAi.cs" />
     <Compile Include="AiModule\Behaviours.cs" />
+    <Compile Include="AiModule\Frontline.cs" />
     <Compile Include="AiModule\Posture\Posture.cs" />
     <Compile Include="AiModule\Posture\AgentPostures.cs" />
     <Compile Include="AiModule\Posture\PostureLogic.cs" />
