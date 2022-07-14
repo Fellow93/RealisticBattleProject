@@ -691,7 +691,7 @@ namespace RBMAI
                     __result = 0.1f;
                     return;
                 }
-                __result = 1f;
+                __result = 2f;
                 return;
             }
             else

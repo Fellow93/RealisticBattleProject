@@ -181,15 +181,6 @@ namespace RBMConfig
 				PostureSystemEnabled.SelectedIndex = 0;
 			}
 
-			if (RBMConfig.postureEnabled)
-			{
-				PostureSystemEnabled.SelectedIndex = 1;
-			}
-			else
-			{
-				PostureSystemEnabled.SelectedIndex = 0;
-			}
-
 			if (RBMConfig.postureGUIEnabled)
 			{
 				PostureGUIEnabled.SelectedIndex = 1;
@@ -235,7 +226,7 @@ namespace RBMConfig
 				RBMAIEnabled.SelectedIndex = 0;
 			}
 
-			if (RBMConfig.rbmCombatEnabled)
+			if (RBMConfig.rbmTournamentEnabled)
 			{
 				RBMTournamentEnabled.SelectedIndex = 1;
 			}

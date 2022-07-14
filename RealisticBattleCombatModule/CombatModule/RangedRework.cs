@@ -32,7 +32,7 @@ namespace RBMCombat
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionJavelin, 0.0025f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionAxe, 0.01f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionKnife, 0.01f);
-                ManagedParameters.SetParameter(ManagedParametersEnum.MissileMinimumDamageToStick, 20);
+                ManagedParameters.SetParameter(ManagedParametersEnum.MissileMinimumDamageToStick, 35);
             }
         }
 
@@ -42,13 +42,14 @@ namespace RBMCombat
         //{
         //    public static void Postfix(ref Agent __instance, EquipmentIndex slotIndex, short totalAmmo)
         //    {
-        //        if(!__instance.IsPlayerControlled && slotIndex != EquipmentIndex.None)
+        //        if (!__instance.IsPlayerControlled && slotIndex != EquipmentIndex.None)
         //        {
         //            __instance.Equipment.GetAmmoCountAndIndexOfType(__instance.Equipment[slotIndex].Item.Type, out var ammouCount, out var eIndex);
         //            bool isBowTripleFire = !(__instance.Equipment[slotIndex].GetWeaponComponentDataForUsage(0).WeaponFlags.HasFlag(WeaponFlags.UnloadWhenSheathed));
         //            if ((ammouCount <= 1 && __instance.Equipment[slotIndex].Item.Type == ItemObject.ItemTypeEnum.Crossbow) || (ammouCount <= 3 && __instance.Equipment[slotIndex].Item.Type == ItemObject.ItemTypeEnum.Bow && isBowTripleFire && totalAmmo <= 0))
         //            {
-        //                __instance.DropItem(slotIndex);
+        //                __instance.SetAlwaysAttackInMelee(true);
+        //                __instance.WieldNextWeapon(HandIndex.MainHand, WeaponWieldActionType.WithAnimationUninterruptible);
         //            }
         //        }
         //        //return true;

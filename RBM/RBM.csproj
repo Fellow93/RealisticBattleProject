@@ -273,9 +273,7 @@
       <Name>RBMAI</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Utilities\" />
-  </ItemGroup>
+  <ItemGroup />
   <!-- Post-Build -->
   <PropertyGroup>
     <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBM_native_parameters_tweaks.xml" "$(SolutionDir)..\RBM\ModuleData\"
