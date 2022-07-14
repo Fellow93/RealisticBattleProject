@@ -303,9 +303,9 @@
   <!-- Files & Classes -->
   <ItemGroup>
     <Compile Include="Utilities.cs" />
-    <Compile Include="Config\RbmConfigScreen.cs" />
-    <Compile Include="Config\RbmMenuViewModel.cs" />
-    <Compile Include="Config\TextViewModel.cs" />
+    <Compile Include="RBMConfigUI\RBMConfigScreen.cs" />
+    <Compile Include="RBMConfigUI\RBMConfigViewModel.cs" />
+    <Compile Include="RBMConfigUI\TextViewModel.cs" />
     <Compile Include="RBMCombatConfigPriceMultipliers.cs" />
     <Compile Include="RBMCombatConfigWeaponType.cs" />
     <Compile Include="RBMConfig.cs" />

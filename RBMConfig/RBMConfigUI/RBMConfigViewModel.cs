@@ -1,13 +1,12 @@
 ﻿// CunningLords.Interaction.CunningLordsMenuViewModel
 using System.Collections.Generic;
-using System.Xml;
 using TaleWorlds.Core.ViewModelCollection.Selector;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
 namespace RBMConfig
 {
-	internal class RbmMenuViewModel : ViewModel
+	internal class RBMConfigViewModel : ViewModel
 	{
 
 		private string _doneText;
@@ -76,7 +75,7 @@ namespace RBMConfig
 			}
 		}
 
-		public RbmMenuViewModel()
+		public RBMConfigViewModel()
 		{
 			_doneText = new TextObject("{=ATDone}Done").ToString();
 			_cancelText = new TextObject("{=ATCancel}Cancel").ToString();
