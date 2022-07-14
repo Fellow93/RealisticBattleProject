@@ -92,6 +92,21 @@ namespace RBMCombat
         }
 
         [HarmonyPatch(typeof(DefaultCombatXpModel))]
+        [HarmonyPatch("GetXpMultiplierFromShotDifficulty")]
+        class GetXpMultiplierFromShotDifficultyPatch
+        {
+            static bool Prefix(DefaultCombatXpModel __instance, float shotDifficulty, ref float __result)
+            {
+                if (shotDifficulty > 14.4f)
+                {
+                    shotDifficulty = 14.4f;
+                }
+                __result = MBMath.Lerp(1f, 3f, (shotDifficulty - 1f) / 13.4f);
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(DefaultCombatXpModel))]
         class GetXpFromHitPatch
         {
             [HarmonyPrefix]
