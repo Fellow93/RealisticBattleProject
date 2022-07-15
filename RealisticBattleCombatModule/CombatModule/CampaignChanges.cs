@@ -421,7 +421,7 @@ namespace RBMCombat
                 float missFactor = (float)brokenBreakableCount / (float)breakablesCount;
                 if(missFactor >= 1f)
                 {
-                    missFactor = 1.5f;
+                    missFactor = 1.25f;
                 }
                 float defaultTime = 80f;
                 float timeFactor = defaultTime / ____timeScore;
