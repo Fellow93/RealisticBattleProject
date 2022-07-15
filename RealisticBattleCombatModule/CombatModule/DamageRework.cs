@@ -560,7 +560,7 @@ namespace RBMCombat
 
     [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
     [HarmonyPatch("ComputeBlowDamage")]
-    class OverrideDamageCalc
+    public class OverrideDamageCalc
     {
         static bool Prefix(ref AttackInformation attackInformation, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, DamageTypes damageType, float magnitude, int speedBonus, bool cancelDamage, out int inflictedDamage, out int absorbedByArmor)
         {
@@ -1526,7 +1526,7 @@ namespace RBMCombat
             }
         }
 
-        private static float MyComputeDamage(string weaponType, DamageTypes damageType, float magnitude, float armorEffectiveness, float absorbedDamageRatio, BasicCharacterObject player = null, bool isPlayerVictim = false)
+        public static float MyComputeDamage(string weaponType, DamageTypes damageType, float magnitude, float armorEffectiveness, float absorbedDamageRatio, BasicCharacterObject player = null, bool isPlayerVictim = false)
         {
 
             float damage = 0f;
@@ -1956,7 +1956,9 @@ namespace RBMCombat
             }
             if (attacker != null && attacker.IsMount && collisionData.IsHorseCharge)
             {
-                b.SelfInflictedDamage = MathF.Ceiling(b.BaseMagnitude / 7f);
+                float horseBodyPartArmor = attacker.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Chest);
+                //b.SelfInflictedDamage = MathF.Ceiling(b.BaseMagnitude / 6f);
+                b.SelfInflictedDamage = MBMath.ClampInt(MathF.Ceiling(Game.Current.BasicModels.StrikeMagnitudeModel.ComputeRawDamage(DamageTypes.Blunt, b.BaseMagnitude / 6f, horseBodyPartArmor, 1f)), 0, 2000);
                 attacker.CreateBlowFromBlowAsReflection(in b, in collisionData, out var outBlow, out var outCollisionData);
                 attacker.RegisterBlow(outBlow, in outCollisionData);
             }
