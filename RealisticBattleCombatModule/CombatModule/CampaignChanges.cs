@@ -349,5 +349,108 @@ namespace RBMCombat
                 }
             }
         }
+
+        [HarmonyPatch(typeof(TrainingFieldMissionController))]
+        [HarmonyPatch("MountedTrainingUpdate")]
+        static class MountedTrainingUpdatePatch
+        {
+            static int lastBreakeableCount = -1;
+            static bool shouldCount = false;
+            static void Postfix(int ____trainingProgress, TutorialArea ____activeTutorialArea, int ____trainingSubTypeIndex)
+            {
+                if (____trainingProgress == 1)
+                {
+                    lastBreakeableCount = -1;
+                }
+                if (____trainingProgress == 4)
+                {
+                    if (lastBreakeableCount == -1)
+                    {
+                        lastBreakeableCount = ____activeTutorialArea.GetBrokenBreakableCount(____trainingSubTypeIndex);
+                    }
+                    else
+                    {
+                        if (lastBreakeableCount != ____activeTutorialArea.GetBrokenBreakableCount(____trainingSubTypeIndex))
+                        {
+                            lastBreakeableCount = ____activeTutorialArea.GetBrokenBreakableCount(____trainingSubTypeIndex);
+                            shouldCount = true;
+                        }
+                    }
+                }
+                if (shouldCount && ____trainingProgress == 4)
+                {
+                    shouldCount = false;
+                    EquipmentIndex ei = Mission.Current.MainAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                    if (ei != EquipmentIndex.None)
+                    {
+                        CharacterObject playerCharacter = (CharacterObject)CharacterObject.PlayerCharacter;
+                        if (playerCharacter != null)
+                        {
+                            if (Mission.Current.MainAgent.WieldedWeapon.CurrentUsageItem != null)
+                            {
+                                WeaponComponentData wieldedWeapon = Mission.Current.MainAgent.WieldedWeapon.CurrentUsageItem;
+                                SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(wieldedWeapon, false);
+                                if (skillForWeapon != null)
+                                {
+                                    playerCharacter.HeroObject.AddSkillXp(skillForWeapon, 50);
+                                    if (Mission.Current.MainAgent.HasMount)
+                                    {
+                                        playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Riding, 25);
+                                    }
+                                    else
+                                    {
+                                        playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Athletics, 25);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(TrainingFieldMissionController))]
+        [HarmonyPatch("MountedTrainingEndedSuccessfully")]
+        static class MountedTrainingEndedSuccessfullyPatch
+        {
+            static void Postfix(int ____trainingProgress, TutorialArea ____activeTutorialArea, int ____trainingSubTypeIndex, float ____timeScore)
+            {
+                int brokenBreakableCount = ____activeTutorialArea.GetBrokenBreakableCount(____trainingSubTypeIndex);
+                int breakablesCount = ____activeTutorialArea.GetBreakablesCount(____trainingSubTypeIndex);
+                float missFactor = (float)brokenBreakableCount / (float)breakablesCount;
+                if(missFactor >= 1f)
+                {
+                    missFactor = 1.5f;
+                }
+                float defaultTime = 80f;
+                float timeFactor = defaultTime / ____timeScore;
+                EquipmentIndex ei = Mission.Current.MainAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                if (ei != EquipmentIndex.None)
+                {
+                    CharacterObject playerCharacter = (CharacterObject)CharacterObject.PlayerCharacter;
+                    if (playerCharacter != null)
+                    {
+                        if (Mission.Current.MainAgent.WieldedWeapon.CurrentUsageItem != null)
+                        {
+                            WeaponComponentData wieldedWeapon = Mission.Current.MainAgent.WieldedWeapon.CurrentUsageItem;
+                            SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(wieldedWeapon, false);
+                            if (skillForWeapon != null)
+                            {
+                                playerCharacter.HeroObject.AddSkillXp(skillForWeapon, 1000 * missFactor * timeFactor);
+                                if (Mission.Current.MainAgent.HasMount)
+                                {
+                                    playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Riding, 500 * missFactor * timeFactor);
+                                }
+                                else
+                                {
+                                    playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Athletics, 500 * missFactor * timeFactor);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
