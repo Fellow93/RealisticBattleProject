@@ -5,10 +5,12 @@ using StoryMode.Missions;
 using System;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -449,6 +451,26 @@ namespace RBMCombat
                             }
                         }
                     }
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(DefaultVolunteerModel))]
+        [HarmonyPatch("GetBasicVolunteer")]
+        static class DefaultVolunteerModelPatch
+        {
+            static bool Prefix(Hero sellerHero, ref CharacterObject __result)
+            {
+                float randomF = MBRandom.RandomFloat;
+                if(randomF < 0.15f)
+                {
+                    __result = sellerHero.Culture.EliteBasicTroop;
+                    return false;
+                }
+                else
+                {
+                    __result = sellerHero.Culture.BasicTroop;
+                    return false;
                 }
             }
         }
