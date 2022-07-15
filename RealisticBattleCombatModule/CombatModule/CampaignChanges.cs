@@ -290,19 +290,62 @@ namespace RBMCombat
                     if (ei != EquipmentIndex.None)
                     {
                         CharacterObject playerCharacter = (CharacterObject)CharacterObject.PlayerCharacter;
-                        WeaponComponentData wieldedWeapon = Mission.Current.MainAgent.WieldedWeapon.CurrentUsageItem;
-                        SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(wieldedWeapon, false);
-                        playerCharacter.HeroObject.AddSkillXp(skillForWeapon, 50);
-                        if (Mission.Current.MainAgent.HasMount)
+                        if (playerCharacter != null)
                         {
-                            playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Riding, 25);
-                        }
-                        else
-                        {
-                            playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Athletics, 25);
+                            if (Mission.Current.MainAgent.WieldedWeapon.CurrentUsageItem != null)
+                            {
+                                WeaponComponentData wieldedWeapon = Mission.Current.MainAgent.WieldedWeapon.CurrentUsageItem;
+                                SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(wieldedWeapon, false);
+                                if(skillForWeapon != null)
+                                {
+                                    playerCharacter.HeroObject.AddSkillXp(skillForWeapon, 50);
+                                    if (Mission.Current.MainAgent.HasMount)
+                                    {
+                                        playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Riding, 25);
+                                    }
+                                    else
+                                    {
+                                        playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Athletics, 25);
+                                    }
+                                }
+                            }
                         }
                     }
                     
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(TrainingFieldMissionController))]
+        [HarmonyPatch("BowTrainingEndedSuccessfully")]
+        static class BowTrainingEndedSuccessfullyPatch
+        {
+            static void Postfix(int ____trainingProgress, TutorialArea ____activeTutorialArea, int ____trainingSubTypeIndex)
+            {
+                EquipmentIndex ei = Mission.Current.MainAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                if (ei != EquipmentIndex.None)
+                {
+                    CharacterObject playerCharacter = (CharacterObject)CharacterObject.PlayerCharacter;
+                    if(playerCharacter != null)
+                    {
+                        if(Mission.Current.MainAgent.WieldedWeapon.CurrentUsageItem != null)
+                        {
+                            WeaponComponentData wieldedWeapon = Mission.Current.MainAgent.WieldedWeapon.CurrentUsageItem;
+                            SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(wieldedWeapon, false);
+                            if (skillForWeapon != null)
+                            {
+                                playerCharacter.HeroObject.AddSkillXp(skillForWeapon, 500);
+                                if (Mission.Current.MainAgent.HasMount)
+                                {
+                                    playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Riding, 250);
+                                }
+                                else
+                                {
+                                    playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Athletics, 250);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
