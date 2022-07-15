@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Helpers;
 using StoryMode.GameComponents;
+using StoryMode.Missions;
 using System;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
@@ -251,6 +252,57 @@ namespace RBMCombat
                             }
                         }
                     }
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(TrainingFieldMissionController))]
+        [HarmonyPatch("BowInTrainingAreaUpdate")]
+        static class BowInTrainingAreaUpdatePatch
+        {
+            static int lastBreakeableCount = -1;
+            static bool shouldCount = false;
+            static void Postfix(int ____trainingProgress, TutorialArea ____activeTutorialArea, int ____trainingSubTypeIndex)
+            {
+                if (____trainingProgress == 1)
+                {
+                    lastBreakeableCount = -1;
+                }
+                if(____trainingProgress == 4)
+                {
+                    if (lastBreakeableCount == -1)
+                    {
+                        lastBreakeableCount = ____activeTutorialArea.GetBrokenBreakableCount(____trainingSubTypeIndex);
+                    }
+                    else
+                    {
+                        if (lastBreakeableCount != ____activeTutorialArea.GetBrokenBreakableCount(____trainingSubTypeIndex))
+                        {
+                            lastBreakeableCount = ____activeTutorialArea.GetBrokenBreakableCount(____trainingSubTypeIndex);
+                            shouldCount = true;
+                        }
+                    }
+                }
+                if (shouldCount && ____trainingProgress == 4)
+                {
+                    shouldCount = false;
+                    EquipmentIndex ei = Mission.Current.MainAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                    if (ei != EquipmentIndex.None)
+                    {
+                        CharacterObject playerCharacter = (CharacterObject)CharacterObject.PlayerCharacter;
+                        WeaponComponentData wieldedWeapon = Mission.Current.MainAgent.WieldedWeapon.CurrentUsageItem;
+                        SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(wieldedWeapon, false);
+                        playerCharacter.HeroObject.AddSkillXp(skillForWeapon, 50);
+                        if (Mission.Current.MainAgent.HasMount)
+                        {
+                            playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Riding, 25);
+                        }
+                        else
+                        {
+                            playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Athletics, 25);
+                        }
+                    }
+                    
                 }
             }
         }
