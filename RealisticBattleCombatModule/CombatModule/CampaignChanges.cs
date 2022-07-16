@@ -9,6 +9,7 @@ using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.GameComponents;
+using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
@@ -118,18 +119,22 @@ namespace RBMCombat
             {
                 if (missionType == MissionTypeEnum.Battle || missionType == MissionTypeEnum.PracticeFight || missionType == MissionTypeEnum.Tournament)
                 {
-                    float attackerLevel = attackerTroop.Level;
-                    float attackedLevel = attackedTroop.Level;
-
-                    float levelDiffModifier = Math.Max(1f, 1f + ((attackedLevel / attackerLevel) / 10f));
-
-                    int attackedTroopMaxHP = attackedTroop.MaxHitPoints();
-                    float troopPower = 0f;
-                    troopPower = ((party?.MapEvent == null) ? Campaign.Current.Models.MilitaryPowerModel.GetTroopPowerBasedOnContext(attackerTroop) : Campaign.Current.Models.MilitaryPowerModel.GetTroopPowerBasedOnContext(attackerTroop, party.MapEvent.EventType, party.Side, missionType == MissionTypeEnum.SimulationBattle));
+                    float victimTroopPower = 0f;
+                    float attackerTroopPower = 0f;
+                    if (party?.MapEvent != null)
+                    {
+                        victimTroopPower = Campaign.Current.Models.MilitaryPowerModel.GetTroopPowerBasedOnContext(attackedTroop, party.MapEvent?.EventType ?? MapEvent.BattleTypes.None, party.Side, missionType == MissionTypeEnum.SimulationBattle);
+                        attackerTroopPower = Campaign.Current.Models.MilitaryPowerModel.GetTroopPowerBasedOnContext(attackerTroop, party.MapEvent?.EventType ?? MapEvent.BattleTypes.None, party.Side, missionType == MissionTypeEnum.SimulationBattle);
+                    }
+                    else
+                    {
+                        victimTroopPower = Campaign.Current.Models.MilitaryPowerModel.GetTroopPowerBasedOnContext(attackedTroop);
+                        attackerTroopPower = Campaign.Current.Models.MilitaryPowerModel.GetTroopPowerBasedOnContext(attackerTroop);
+                    }
                     float rawXpNum = 0;
                     //if (damage < 30)
                     //{
-                        rawXpNum = 0.4f * ((troopPower + 0.5f) * (float)(30 + (isFatal ? 70 : 0)));
+                        rawXpNum = 0.4f * (victimTroopPower + 0.5f) * (attackerTroopPower + 0.5f) * (float)(35);
                     //}
                     //else
                     //{
@@ -157,24 +162,14 @@ namespace RBMCombat
                             //    xpModifier = 1f;
                             //    break;
                     }
-                    rawXpNum = rawXpNum * xpModifier * levelDiffModifier;
+                    //rawXpNum = rawXpNum * xpModifier * levelDiffModifier;
+                    rawXpNum = rawXpNum * xpModifier;
                     ExplainedNumber xpToGain = new ExplainedNumber(rawXpNum);
                     if (party != null)
                     {
-                        if (party.IsMobile && party.MobileParty.LeaderHero != null)
-                        {
-                            MethodInfo method = typeof(DefaultCombatXpModel).GetMethod("GetBattleXpBonusFromPerks", BindingFlags.NonPublic | BindingFlags.Instance);
-                            method.DeclaringType.GetMethod("GetBattleXpBonusFromPerks");
-                            method.Invoke(__instance, new object[] { party, xpToGain, attackerTroop });
-                        }
-                        if (party.IsMobile && party.MobileParty.IsGarrison && party.MobileParty.CurrentSettlement?.Town.Governor != null)
-                        {
-                            PerkHelper.AddPerkBonusForTown(DefaultPerks.TwoHanded.ArrowDeflection, party.MobileParty.CurrentSettlement.Town, ref xpToGain);
-                            if (attackerTroop.IsMounted)
-                            {
-                                PerkHelper.AddPerkBonusForTown(DefaultPerks.Polearm.Guards, party.MobileParty.CurrentSettlement.Town, ref xpToGain);
-                            }
-                        }
+                        MethodInfo method = typeof(DefaultCombatXpModel).GetMethod("GetBattleXpBonusFromPerks", BindingFlags.NonPublic | BindingFlags.Instance);
+                        method.DeclaringType.GetMethod("GetBattleXpBonusFromPerks");
+                        method.Invoke(__instance, new object[] { party, xpToGain, attackerTroop });
                     }
                     if (captain != null && captain.IsHero && captain.GetPerkValue(DefaultPerks.Leadership.InspiringLeader))
                     {
