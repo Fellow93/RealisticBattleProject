@@ -506,7 +506,7 @@ namespace RBMAI
 
                 float strengthSkillModifier = 500f;
                 float weaponSkillModifier = 500f;
-                float basePostureDamage = 30f;
+                float basePostureDamage = 25f;
 
                 SkillObject attackerWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(weapon.CurrentUsageItem.WeaponClass);
                 float attackerEffectiveWeaponSkill = 0;
@@ -700,7 +700,7 @@ namespace RBMAI
 
                 float strengthSkillModifier = 500f;
                 float weaponSkillModifier = 500f;
-                float basePostureDamage = 30f;
+                float basePostureDamage = 25f;
 
                 SkillObject attackerWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(weapon.CurrentUsageItem.WeaponClass);
 
@@ -774,7 +774,21 @@ namespace RBMAI
                 attackerEffectiveWeaponSkill = attackerEffectiveWeaponSkill / weaponSkillModifier;
                 attackerEffectiveStrengthSkill = attackerEffectiveStrengthSkill / strengthSkillModifier;
 
-                float lwrpostureModifier = calculateAttackerLWRPostureModifier(attackerAgent, defenderAgent, attackerWeaponLength, defenderWeaponLength, attackerWeaponWeight, defenderWeaponWeight);
+                bool attackBlockedByOneHanedWithoutShield = false;
+                if (!collisionData.AttackBlockedWithShield)
+                {
+                    EquipmentIndex ei = defenderAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                    if (ei != EquipmentIndex.None)
+                    {
+                        WeaponClass ws = defenderAgent.Equipment[defenderAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand)].CurrentUsageItem.WeaponClass;
+                        if (ws == WeaponClass.OneHandedAxe || ws == WeaponClass.OneHandedPolearm || ws == WeaponClass.OneHandedSword || ws == WeaponClass.Mace)
+                        {
+                            attackBlockedByOneHanedWithoutShield = true;
+                        }
+                    }
+                }
+
+                float lwrpostureModifier = calculateAttackerLWRPostureModifier(attackerAgent, defenderAgent, attackerWeaponLength, defenderWeaponLength, attackerWeaponWeight, defenderWeaponWeight, attackBlockedByOneHanedWithoutShield, collisionData.AttackBlockedWithShield);
 
                 basePostureDamage = basePostureDamage * ((1f + defenderEffectiveStrengthSkill + defenderEffectiveWeaponSkill) / (1f + attackerEffectiveStrengthSkill + attackerEffectiveWeaponSkill)) * lwrpostureModifier;
 
@@ -841,30 +855,24 @@ namespace RBMAI
             public static float calculateAttackerLWRPostureModifier(
                 Agent attackerAgent, Agent defenderAgent,
                 float attackerWeaponLength, float defenderWeaponLength,
-                float attackerWeaponWeight, float defenderWeaponWeight)
+                float attackerWeaponWeight, float defenderWeaponWeight, bool attackBlockedByOneHanded, bool attackBlockedByShield)
             {
-                //if (defenderWeaponLength > 0f && attackerWeaponLength > 0f)
-                //{
-                //    float relativeSpeed = (attackerAgent.Velocity - defenderAgent.Velocity).Length;
-                //    return 1f + (relativeSpeed * relativeSpeedPostureFactor) / lwrResultModifier;
-                //}
-                //else
-                //{
-                //    if (defenderAgent.GetWieldedItemIndex(Agent.HandIndex.OffHand) != EquipmentIndex.None)
-                //    {
-                //        if (defenderAgent.Equipment[defenderAgent.GetWieldedItemIndex(Agent.HandIndex.OffHand)].IsShield())
-                //        {
-                //            MissionWeapon defenderWeapon = defenderAgent.Equipment[defenderAgent.GetWieldedItemIndex(Agent.HandIndex.OffHand)];
-
-                //            if (defenderWeapon.CurrentUsageItem != null)
-                //            {
-                //                defenderWeaponWeight = defenderWeapon.GetWeight() / 2f;
-                //                float relativeSpeed = (defenderAgent.Velocity - attackerAgent.Velocity).Length;
-                //                return 1f + (relativeSpeed * relativeSpeedPostureFactor) / lwrResultModifier;
-                //            }
-                //        }
-                //    }
-                //}
+                float relativeSpeed = (defenderAgent.Velocity - attackerAgent.Velocity).Length * relativeSpeedPostureFactor;
+                if (attackBlockedByShield)
+                {
+                    return 1f + ((attackerWeaponWeight / 2f) + relativeSpeed) / 2f;
+                }
+                else
+                {
+                    if (attackBlockedByOneHanded)
+                    {
+                        return 1f + ((attackerWeaponWeight / 2f) + relativeSpeed) / 4f;
+                    }
+                    else
+                    {
+                        return 1f + ((attackerWeaponWeight / 2f) + relativeSpeed) / 3f;
+                    }
+                }
                 return 1f;
             }
 
