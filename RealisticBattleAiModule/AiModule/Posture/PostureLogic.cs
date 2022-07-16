@@ -494,7 +494,7 @@ namespace RBMAI
                 armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ArmRight);
                 armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Legs);
 
-                armorSumPosture = (armorSumPosture / 9f) / 2f;
+                armorSumPosture = (armorSumPosture / 9f);
 
                 return MBMath.ClampInt(MathF.Ceiling(Game.Current.BasicModels.StrikeMagnitudeModel.ComputeRawDamage(b.DamageType, overPostureDamage, armorSumPosture, 1f)), 0, 2000);
             }
