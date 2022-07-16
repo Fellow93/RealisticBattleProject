@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using RBMConfig;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using TaleWorlds.CampaignSystem.TournamentGames;
@@ -175,7 +176,7 @@ namespace RBMAI
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (defenderPosture.posture <= 0f)
                                     {
-                                        float healthDamage = defenderPosture.posture * -1f;
+                                        float healthDamage = calculateHealthDamage(defenderPosture.posture * -1f, __result, victimAgent);
                                         EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
                                         if (wieldedItemIndex != EquipmentIndex.None)
                                         {
@@ -217,7 +218,7 @@ namespace RBMAI
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (defenderPosture.posture <= 0f)
                                     {
-                                        float healthDamage = defenderPosture.posture * -1f;
+                                        float healthDamage = calculateHealthDamage(defenderPosture.posture *-1f, __result, victimAgent);
                                         EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
                                         if (wieldedItemIndex != EquipmentIndex.None)
                                         {
@@ -403,7 +404,7 @@ namespace RBMAI
                                 addPosturedamageVisual(attackerAgent, victimAgent);
                                 if (attackerPosture.posture <= 0f)
                                 {
-                                    float healthDamage = attackerPosture.posture * -1f;
+                                    float healthDamage = calculateHealthDamage(attackerPosture.posture * -1f, __result, attackerAgent);
                                     if (attackerAgent.IsPlayerControlled)
                                     {
                                         InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, chamber block " + MathF.Floor(healthDamage) + " damage crushed through", Color.FromUint(4282569842u)));
@@ -480,6 +481,24 @@ namespace RBMAI
                     }
                 }
             }
+
+            public static float calculateHealthDamage(float overPostureDamage, Blow b, Agent victimAgent)
+            {
+                float armorSumPosture = victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Head);
+                armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Neck);
+                armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Chest);
+                armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Abdomen);
+                armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ShoulderLeft);
+                armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ShoulderRight);
+                armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ArmLeft);
+                armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ArmRight);
+                armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Legs);
+
+                armorSumPosture = (armorSumPosture / 9f) / 2f;
+
+                return MBMath.ClampInt(MathF.Ceiling(Game.Current.BasicModels.StrikeMagnitudeModel.ComputeRawDamage(b.DamageType, overPostureDamage, armorSumPosture, 1f)), 0, 2000);
+            }
+
             static float calculateDefenderPostureDamage(Agent defenderAgent, Agent attackerAgent, float absoluteDamageModifier, float actionTypeDamageModifier, ref AttackCollisionData collisionData, MissionWeapon weapon)
             {
                 float result = 0f;
