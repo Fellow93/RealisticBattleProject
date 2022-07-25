@@ -18,6 +18,7 @@ public class SiegeArcherPoints : MissionView
 	public static bool isEditingXml = true;
 	public bool editingWarningDisplayed = false;
 	public bool isFirstTimeLoading = true;
+	public bool ISRELEASE = true;
 
 	public override void OnMissionScreenTick(float dt)
 	{
@@ -93,6 +94,17 @@ public class SiegeArcherPoints : MissionView
 
 		if (firstTime && Mission.Current != null && Mission.Current.IsSiegeBattle && Mission.Current.PlayerTeam.IsDefender && Mission.Current.Mode != MissionMode.Deployment)
 		{
+
+			if (firstTime && !ISRELEASE)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("!!! RELEASE JE FALSE, NEZABUDNUT ZMENIT NA TRUE PRE UPLOAD"));
+			}
+			else if (firstTime && ISRELEASE)
+			{
+				firstTime = false;
+				return;
+			}
+
 			List<GameEntity> gameEntities = new List<GameEntity>();
 			Mission.Current.Scene.GetEntities(ref gameEntities);
 
@@ -175,11 +187,11 @@ public class SiegeArcherPoints : MissionView
 		//			if (((MissionView)this).Input.IsKeyPressed(InputKey.O)){
 		//				XmlNode node = xmlDocument.SelectSingleNode("/points/left_wait");
 		//				if (node != null)
-  //                      {
+		//                      {
 		//					node.InnerText = innerText;
 		//				}
 		//				else
-  //                      {
+		//                      {
 		//					node = xmlDocument.CreateElement(string.Empty, "left_wait", string.Empty);
 		//					node.InnerText = innerText;
 		//					pointNode.AppendChild(node);
@@ -254,7 +266,7 @@ public class SiegeArcherPoints : MissionView
 	//			WorldPosition tempPos = ____tacticalWaitPos.Position;
 	//			xmlDocument.Load(RealisticBattleAiModule.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml");
 	//			if (__instance.Formation.AI.Side == FormationAI.BehaviorSide.Left)
- //               {
+	//               {
 	//				double[] leftWait = Array.ConvertAll(xmlDocument.SelectSingleNode("/points/left_wait").InnerText.Split(new[] { ',', }, StringSplitOptions.RemoveEmptyEntries), Double.Parse);
 	//				double[] leftReady = Array.ConvertAll(xmlDocument.SelectSingleNode("/points/left_ready").InnerText.Split(new[] { ',', }, StringSplitOptions.RemoveEmptyEntries), Double.Parse);
 	//				____waitFacingOrder = FacingOrder.FacingOrderLookAtDirection(new Vec2((float)leftWait[3], (float)leftWait[4]));
