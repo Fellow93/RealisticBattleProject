@@ -184,6 +184,10 @@ namespace RBMAI
                             {
                                 if (unit != null)
                                 {
+                                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 10f, 2f, 10f, 20f, 10f);
+                                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 0f, 2f, 0f, 20f, 0f);
+                                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
+
                                     Vec2 leftVec = direction.LeftVec() + direction * 1f;
                                     Vec2 rightVec = direction.RightVec() + direction * 1f;
                                     IEnumerable<Agent> agentsLeft = mission.GetNearbyAllyAgents(unitPosition + leftVec * 1.1f, 1f, unit.Team);
@@ -266,7 +270,7 @@ namespace RBMAI
                                             else
                                             {
                                                 WorldPosition backPosition = unit.GetWorldPosition();
-                                                backPosition.SetVec2(unitPosition - unit.Formation.Direction * 1f);
+                                                backPosition.SetVec2(unitPosition - unit.Formation.Direction * 1.15f);
                                                 __result = backPosition;
                                                 aiDecisionCooldownDict[unit].customMaxCoolDown = 3;
                                                 aiDecisionCooldownDict[unit].position = __result; return false;
@@ -285,6 +289,18 @@ namespace RBMAI
                                 }
                                 //}
                             }
+                        }
+                        if (!isFieldBattle)
+                        {
+                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
+                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 2f, 1f, 10f, 0.01f);
+                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0.03f);
+                        }
+                        else
+                        {
+                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
+                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5f, 2f, 1f, 10f, 0.01f);
+                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
                         }
                         if (isFieldBattle)
                         {
@@ -336,7 +352,7 @@ namespace RBMAI
                                     if (unitPower * 2 < randImmidiate)
                                     {
                                         WorldPosition backPosition = unit.GetWorldPosition();
-                                        backPosition.SetVec2(unitPosition - unit.Formation.Direction * 1.5f);
+                                        backPosition.SetVec2(unitPosition - unit.Formation.Direction * 1.15f);
                                         __result = backPosition;
                                         //aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
                                         aiDecisionCooldownDict[unit].position = __result; return false;
@@ -348,7 +364,7 @@ namespace RBMAI
                                     //if(unitPower / 2 < randImmidiate)
                                     //{
                                     WorldPosition backPosition = unit.GetWorldPosition();
-                                    backPosition.SetVec2(unitPosition - unit.Formation.Direction * 1.5f);
+                                    backPosition.SetVec2(unitPosition - unit.Formation.Direction * 1.15f);
                                     __result = backPosition;
                                     //aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
                                     aiDecisionCooldownDict[unit].position = __result; return false;
@@ -364,7 +380,7 @@ namespace RBMAI
                                             //if (unitPower / 2 < randImmidiate)
                                             //{
                                             WorldPosition backPosition = unit.GetWorldPosition();
-                                            backPosition.SetVec2(unitPosition - unit.Formation.Direction * 1.5f);
+                                            backPosition.SetVec2(unitPosition - unit.Formation.Direction * 1.15f);
                                             __result = backPosition;
                                             //aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
                                             aiDecisionCooldownDict[unit].position = __result; return false;
@@ -384,7 +400,7 @@ namespace RBMAI
                                         else
                                         {
                                             WorldPosition backPosition = unit.GetWorldPosition();
-                                            backPosition.SetVec2(unitPosition - unit.Formation.Direction * 1.5f);
+                                            backPosition.SetVec2(unitPosition - unit.Formation.Direction * 1.15f);
                                             __result = backPosition;
                                             //aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
                                             aiDecisionCooldownDict[unit].position = __result; return false;
