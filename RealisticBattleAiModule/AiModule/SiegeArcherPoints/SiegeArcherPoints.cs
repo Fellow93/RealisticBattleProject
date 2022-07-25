@@ -18,7 +18,6 @@ public class SiegeArcherPoints : MissionView
 	public static bool isEditingXml = true;
 	public bool editingWarningDisplayed = false;
 	public bool isFirstTimeLoading = true;
-	public bool ISRELEASE = true;
 
 	public override void OnMissionScreenTick(float dt)
 	{
@@ -95,15 +94,12 @@ public class SiegeArcherPoints : MissionView
 		if (firstTime && Mission.Current != null && Mission.Current.IsSiegeBattle && Mission.Current.PlayerTeam.IsDefender && Mission.Current.Mode != MissionMode.Deployment)
 		{
 
-			if (firstTime && !ISRELEASE)
+            if (firstTime && !RBMConfig.RBMConfig.developerMode)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("!!! RELEASE JE FALSE, NEZABUDNUT ZMENIT NA TRUE PRE UPLOAD"));
-			}else if(firstTime && ISRELEASE)
-			{
-				firstTime = false;
-				return;
+                firstTime = false;
+                return;
 			}
-
+			InformationManager.DisplayMessage(new InformationMessage("!!! DEVELOPER MODE, NORMAL USER SHOULDN'T SEE THIS MESSAGE"));
 			List<GameEntity> gameEntities = new List<GameEntity>();
 			Mission.Current.Scene.GetEntities(ref gameEntities);
 
