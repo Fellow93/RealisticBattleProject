@@ -93,6 +93,13 @@ public class SiegeArcherPoints : MissionView
 
 		if (firstTime && Mission.Current != null && Mission.Current.IsSiegeBattle && Mission.Current.PlayerTeam.IsDefender && Mission.Current.Mode != MissionMode.Deployment)
 		{
+
+            if (firstTime && !RBMConfig.RBMConfig.developerMode)
+			{
+                firstTime = false;
+                return;
+			}
+			InformationManager.DisplayMessage(new InformationMessage("!!! DEVELOPER MODE, NORMAL USER SHOULDN'T SEE THIS MESSAGE"));
 			List<GameEntity> gameEntities = new List<GameEntity>();
 			Mission.Current.Scene.GetEntities(ref gameEntities);
 
@@ -299,7 +306,7 @@ public class SiegeArcherPoints : MissionView
 			__result = formation.Team.TeamAI.GetStrategicAreas().Where(delegate (StrategicArea sa)
 			{
 				float customDistanceToCheck = 150f;
-				if (sa.IsUsableBy(formation.Team.Side))
+				if (sa != null && formation!= null &&  sa.GameEntity != null && sa.GameEntity.GlobalPosition != null && sa.IsUsableBy(formation.Team.Side))
 				{
 					if (sa.IgnoreHeight)
 					{

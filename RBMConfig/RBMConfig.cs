@@ -15,6 +15,7 @@ namespace RBMConfig
         public static bool rbmTournamentEnabled = true;
         public static bool rbmAiEnabled = true;
         public static bool rbmCombatEnabled = true;
+        public static bool developerMode = false;
         //RBMAI
         public static bool postureEnabled = true;
         public static float playerPostureMultiplier = 1f;
@@ -59,6 +60,10 @@ namespace RBMConfig
 
         public static void parseXmlConfig()
         {
+            if(xmlConfig.SelectSingleNode("/Config/DeveloperMode") != null)
+            {
+                developerMode = true;
+            }
             //modules
             rbmTournamentEnabled = xmlConfig.SelectSingleNode("/Config/RBMTournament/Enabled").InnerText.Equals("1");
             rbmAiEnabled = xmlConfig.SelectSingleNode("/Config/RBMAI/Enabled").InnerText.Equals("1");
