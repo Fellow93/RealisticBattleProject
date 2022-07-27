@@ -315,7 +315,7 @@ namespace RBMAI
                 {
                     float power = ___team.QuerySystem.TeamPower;
                     float enemyPower = ___team.QuerySystem.EnemyTeams.Sum((TeamQuerySystem et) => et.TeamPower);
-                    if (power / enemyPower <= 0.18f)
+                    if (power / enemyPower <= 0.15f)
                     {
                         foreach (Formation formation in ___team.Formations.ToList())
                         {
