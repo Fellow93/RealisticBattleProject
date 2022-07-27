@@ -389,14 +389,43 @@ namespace RBMCombat
                 if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && !shooterAgent.IsMainAgent && (wsd[0].WeaponClass == (int)WeaponClass.Javelin || wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe))
                 {
                     //float shooterSpeed = shooterAgent.MovementVelocity.Normalize();
-                    if (!shooterAgent.HasMount)
+                    Agent targetAgent = shooterAgent.GetTargetAgent();
+                    if(targetAgent != null)
                     {
-                        velocity.z = velocity.z - 1.4f;
+                        float relativeSpeed = (targetAgent.Velocity - shooterAgent.Velocity).Length;
+                        float relativeModifier = Vec3.DotProduct(shooterAgent.Velocity.NormalizedCopy(), targetAgent.Velocity.NormalizedCopy());
+                        float shooterSpeed = shooterAgent.Velocity.Length;
+                        if(shooterSpeed > 0)
+                        {
+                            float shooterRelativeSpeed =  shooterSpeed * relativeModifier;
+                            double rotRad;
+                            rotRad = +(0.0174533 * shooterRelativeSpeed) * 3f;
+                            if (wsd[0].WeaponClass == (int)WeaponClass.Javelin)
+                            {
+                                rotRad = +(0.0174533 * shooterRelativeSpeed) / 1.1f;
+                            }
+                            if (shooterRelativeSpeed > 0)
+                            {
+                                rotRad = 0;
+                            }
+                            float vecLength = velocity.Length;
+                            double currentRad = (double)Math.Acos(velocity.z / vecLength);
+                            float newZ = velocity.Length * ((float)Math.Cos(currentRad - rotRad));
+                            velocity.z = newZ;
+                        }
                     }
                     else
                     {
-                        velocity.z = velocity.z - 2f;
+                        if (!shooterAgent.HasMount)
+                        {
+                            velocity.z = velocity.z - 1.4f;
+                        }
+                        else
+                        {
+                            velocity.z = velocity.z - 2f;
+                        }
                     }
+                    
                 }
 
                 if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
