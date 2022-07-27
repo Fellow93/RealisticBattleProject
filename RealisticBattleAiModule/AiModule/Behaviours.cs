@@ -498,10 +498,10 @@ namespace RBMAI
                     if (enemyFormation != null && enemyFormation.QuerySystem != null)
                     {
                         bool isEnemyCav = enemyFormation.QuerySystem.IsCavalryFormation || enemyFormation.QuerySystem.IsRangedCavalryFormation;
-                        float distance = 75f;
+                        float distance = 70f;
                         if (!__instance.Formation.QuerySystem.IsRangedCavalryFormation)
                         {
-                            distance = 40f;
+                            distance = 30f;
                         }
                         //distance += (enemyFormation.Depth + __instance.Formation.Width) * 0.5f;
                         //num5 = Math.Min(num5, __instance.Formation.QuerySystem.MissileRange - __instance.Formation.Width * 0.5f);
