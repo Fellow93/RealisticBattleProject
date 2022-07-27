@@ -497,18 +497,22 @@ namespace RBMAI
 
                     if (enemyFormation != null && enemyFormation.QuerySystem != null)
                     {
-                        bool flag = enemyFormation.QuerySystem.IsCavalryFormation || enemyFormation.QuerySystem.IsRangedCavalryFormation;
-                        float num5 = flag ? 50f : 50f;
-                        num5 += (enemyFormation.Depth + __instance.Formation.Width) * 0.5f;
+                        bool isEnemyCav = enemyFormation.QuerySystem.IsCavalryFormation || enemyFormation.QuerySystem.IsRangedCavalryFormation;
+                        float distance = 75f;
+                        if (!__instance.Formation.QuerySystem.IsRangedCavalryFormation)
+                        {
+                            distance = 40f;
+                        }
+                        //distance += (enemyFormation.Depth + __instance.Formation.Width) * 0.5f;
                         //num5 = Math.Min(num5, __instance.Formation.QuerySystem.MissileRange - __instance.Formation.Width * 0.5f);
                         if (__instance.Formation.QuerySystem.IsRangedCavalryFormation)
                         {
-                            Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, num5, enemyFormation.Width * 0.5f * (flag ? 1.5f : 1f), enemyFormation.Direction);
+                            Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, enemyFormation.Width * 0.5f * (isEnemyCav ? 1.5f : 1f), enemyFormation.Direction);
                             position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 20f));
                         }
                         else
                         {
-                            Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, num5, enemyFormation.Width * 0.25f * (flag ? 1.5f : 1f), enemyFormation.Direction);
+                            Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, enemyFormation.Width * 0.5f * (isEnemyCav ? 1.5f : 1f), enemyFormation.Direction);
                             position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 20f));
                         }
                     }
