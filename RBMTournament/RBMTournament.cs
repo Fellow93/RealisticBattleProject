@@ -33,7 +33,7 @@ namespace RBMTournament
                 List<ItemObject> shieldList = new List<ItemObject>();
                 foreach (ItemObject item in Items.All)
                 {
-                    if (item.Type == ItemObject.ItemTypeEnum.Shield)
+                    if (!item.IsCraftedByPlayer && item.Type == ItemObject.ItemTypeEnum.Shield)
                     {
                         if (item.Culture == ____culture)
                         {
@@ -52,7 +52,7 @@ namespace RBMTournament
                 List<ItemObject> oneHandedList = new List<ItemObject>();
                 foreach (ItemObject item in Items.All)
                 {
-                    if (item.Type == ItemObject.ItemTypeEnum.OneHandedWeapon)
+                    if (!item.IsCraftedByPlayer && item.Type == ItemObject.ItemTypeEnum.OneHandedWeapon)
                     {
                         if (item.Culture == ____culture)
                         {
@@ -60,7 +60,7 @@ namespace RBMTournament
                             {
                                 if (playerTier > 3)
                                 {
-                                    if(item.PrimaryWeapon.WeaponClass == WeaponClass.OneHandedAxe || item.PrimaryWeapon.WeaponClass == WeaponClass.Mace)
+                                    if (item.PrimaryWeapon.WeaponClass == WeaponClass.OneHandedAxe || item.PrimaryWeapon.WeaponClass == WeaponClass.Mace)
                                     {
                                         oneHandedList.Add(item);
                                     }
@@ -81,7 +81,7 @@ namespace RBMTournament
                 List<ItemObject> twoHandedList = new List<ItemObject>();
                 foreach (ItemObject item in Items.All)
                 {
-                    if (item.Type == ItemObject.ItemTypeEnum.TwoHandedWeapon)
+                    if (!item.IsCraftedByPlayer && item.Type == ItemObject.ItemTypeEnum.TwoHandedWeapon)
                     {
                         if (item.Culture == ____culture)
                         {
@@ -90,7 +90,8 @@ namespace RBMTournament
                                 twoHandedList.Add(item);
                             }
                         }
-                    }else if (item.Type == ItemObject.ItemTypeEnum.Polearm && item.PrimaryWeapon.SwingDamage > 0)
+                    }
+                    else if (!item.IsCraftedByPlayer && item.Type == ItemObject.ItemTypeEnum.Polearm && item.PrimaryWeapon.SwingDamage > 0)
                     {
                         if (item.Culture == ____culture)
                         {
