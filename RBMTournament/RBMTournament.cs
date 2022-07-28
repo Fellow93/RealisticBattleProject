@@ -12,6 +12,8 @@ using TaleWorlds.Library;
 using TaleWorlds.CampaignSystem.Extensions;
 using TaleWorlds.CampaignSystem.Roster;
 using System.Diagnostics;
+using System.Reflection;
+using System.Linq;
 
 namespace RBMTournament
 {
@@ -21,6 +23,88 @@ namespace RBMTournament
         [HarmonyPatch(typeof(TournamentFightMissionController))]
         class TournamentFightMissionControllerPatch
         {
+
+            [HarmonyPrefix]
+            [HarmonyPatch("Simulate")]
+            static bool SimulatePrefix(ref TournamentFightMissionController __instance, ref TournamentMatch ____match, ref CultureObject ____culture, ref bool ____isSimulated,
+                ref List<TournamentParticipant> ____aliveParticipants, ref List<TournamentTeam> ____aliveTeams)
+            {
+                ____isSimulated = false;
+                if (__instance.Mission.Agents.Count == 0)
+                {
+                    ____aliveParticipants = ____match.Participants.ToList();
+                    ____aliveTeams = ____match.Teams.ToList();
+                }
+                TournamentParticipant tournamentParticipant = ____aliveParticipants.FirstOrDefault((TournamentParticipant x) => x.Character == CharacterObject.PlayerCharacter);
+                if (tournamentParticipant != null)
+                {
+                    TournamentTeam team = tournamentParticipant.Team;
+                    foreach (TournamentParticipant participant in team.Participants)
+                    {
+                        participant.ResetScore();
+                        ____aliveParticipants.Remove(participant);
+                    }
+                    ____aliveTeams.Remove(team);
+                    MethodInfo method2 = typeof(TournamentFightMissionController).GetMethod("AddScoreToRemainingTeams", BindingFlags.NonPublic | BindingFlags.Instance);
+                    method2.DeclaringType.GetMethod("AddScoreToRemainingTeams");
+                    method2.Invoke(__instance, new object[] { });
+                }
+                Dictionary<TournamentParticipant, Tuple<float, float>> dictionary = new Dictionary<TournamentParticipant, Tuple<float, float>>();
+                foreach (TournamentParticipant aliveParticipant in ____aliveParticipants)
+                {
+                    aliveParticipant.Character.GetSimulationAttackPower(out var attackPoints, out var defencePoints, aliveParticipant.MatchEquipment);
+                    if (attackPoints <= 0)
+                    {
+                        attackPoints = 1;
+                    }
+                    if (defencePoints <= 0)
+                    {
+                        defencePoints = 1;
+                    }
+                    dictionary.Add(aliveParticipant, new Tuple<float, float>(attackPoints, defencePoints));
+                }
+                int num = 0;
+                while (____aliveParticipants.Count > 1 && ____aliveTeams.Count > 1)
+                {
+                    num++;
+                    num %= ____aliveParticipants.Count;
+                    TournamentParticipant tournamentParticipant2 = ____aliveParticipants[num];
+                    int num2;
+                    TournamentParticipant tournamentParticipant3;
+                    do
+                    {
+                        num2 = MBRandom.RandomInt(____aliveParticipants.Count);
+                        tournamentParticipant3 = ____aliveParticipants[num2];
+                    }
+                    while (tournamentParticipant2 == tournamentParticipant3 || tournamentParticipant2.Team == tournamentParticipant3.Team);
+                    if (dictionary[tournamentParticipant3].Item2 - dictionary[tournamentParticipant2].Item1 > 0f)
+                    {
+                        dictionary[tournamentParticipant3] = new Tuple<float, float>(dictionary[tournamentParticipant3].Item1, dictionary[tournamentParticipant3].Item2 - dictionary[tournamentParticipant2].Item1);
+                        continue;
+                    }
+                    dictionary.Remove(tournamentParticipant3);
+                    ____aliveParticipants.Remove(tournamentParticipant3);
+
+                    MethodInfo method = typeof(TournamentFightMissionController).GetMethod("CheckIfTeamIsDead", BindingFlags.NonPublic | BindingFlags.Instance);
+                    method.DeclaringType.GetMethod("CheckIfTeamIsDead");
+                    bool checkifteamdead = (bool)method.Invoke(__instance, new object[] { tournamentParticipant3.Team });
+
+                    if (checkifteamdead)
+                    {
+                        ____aliveTeams.Remove(tournamentParticipant3.Team);
+                        MethodInfo method2 = typeof(TournamentFightMissionController).GetMethod("AddScoreToRemainingTeams", BindingFlags.NonPublic | BindingFlags.Instance);
+                        method2.DeclaringType.GetMethod("AddScoreToRemainingTeams");
+                        method2.Invoke(__instance, new object[] { });
+                    }
+                    if (num2 < num)
+                    {
+                        num--;
+                    }
+                }
+                ____isSimulated = true;
+                return false;
+            }
+
             [HarmonyPostfix]
             [HarmonyPatch("PrepareForMatch")]
             static void GetParticipantCharactersPrefix(ref TournamentFightMissionController __instance, ref TournamentMatch ____match, ref CultureObject ____culture)
