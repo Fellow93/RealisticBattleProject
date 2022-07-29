@@ -150,6 +150,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 						
 						if (_reformTimer.Check(Mission.Current.CurrentTime) || base.Formation.QuerySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents < 4f) //|| base.Formation.QuerySystem.AveragePosition.Distance(_lastTarget.MedianPosition.AsVec2) <= 30f)
 						{
+							CheckForNewChargeTarget();
 							result = ChargeState.Charging;
 						}
 						break;
@@ -167,6 +168,21 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 			}
 		}
 		return result;
+	}
+
+	public void CheckForNewChargeTarget()
+    {
+		Formation correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, true, true, false, false, false);
+		if (correctEnemy != null)
+		{
+			_lastTarget = correctEnemy.QuerySystem;
+		}
+		else
+		{
+			_lastTarget = base.Formation.QuerySystem.ClosestEnemyFormation;
+		}
+		newTarget = true;
+		_initialChargeDirection = _lastTarget.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition;
 	}
 
 	protected override void CalculateCurrentOrder()
@@ -202,23 +218,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 					break;
 				case ChargeState.Charging:
                     {
-						Formation correctEnemy = null;
-						if (ChargeInfantry)
-						{
-							correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, true, false, false, false, false);
-						}
-						else if (ChargeArchers)
-						{
-							correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, false, true, false, false, false);
-						}
-						else if (ChargeCavalry)
-						{
-							correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, false, false, true, true, true);
-						}
-						else
-						{
-							correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, true, true, false, false, false);
-						}
+						Formation correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, true, true, false, false, false);
 						if (correctEnemy != null)
 						{
 							_lastTarget = correctEnemy.QuerySystem;

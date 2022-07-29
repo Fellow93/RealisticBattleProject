@@ -19,7 +19,28 @@ namespace RBMTournament
 {
     class RBMTournament
     {
-        
+
+        public static int calculatePlayerTournamentTier()
+        {
+            int playerLevelTier = MathF.Min(MathF.Max(MathF.Ceiling(((float)CharacterObject.PlayerCharacter.Level - 5f) / 5f), 0), Campaign.Current.Models.PartyTroopUpgradeModel.MaxCharacterTier);
+            Equipment playerEquipment = CharacterObject.PlayerCharacter.RandomBattleEquipment;
+            float armorTierSum = 0f;
+            int countOfArmor = 0;
+            for (EquipmentIndex index = EquipmentIndex.ArmorItemBeginSlot; index < EquipmentIndex.ArmorItemEndSlot; index++)
+            {
+                if (playerEquipment[index].Item != null)
+                {
+                    armorTierSum += playerEquipment[index].Item.Tierf;
+                    countOfArmor++;
+                }
+            }
+            int playerArmorTier = countOfArmor > 0 ? MathF.Round(armorTierSum / countOfArmor) : 0;
+
+            int playerTier = playerLevelTier > armorTierSum ? playerLevelTier : playerArmorTier;
+            playerTier = MBMath.ClampInt(playerTier, 1, 6);
+            return playerTier;
+        }
+
         [HarmonyPatch(typeof(TournamentFightMissionController))]
         class TournamentFightMissionControllerPatch
         {
@@ -108,7 +129,7 @@ namespace RBMTournament
             [HarmonyPatch("PrepareForMatch")]
             static void GetParticipantCharactersPrefix(ref TournamentFightMissionController __instance, ref TournamentMatch ____match, ref CultureObject ____culture)
             {
-                int playerTier = FightTournamentGamePatch.calculatePlayerTournamentTier();
+                int playerTier = calculatePlayerTournamentTier();
                 ItemObject oneHandReplacement = null;
                 ItemObject twoHandReplacement = null;
                 ItemObject shieldReplacement = null;
@@ -197,7 +218,7 @@ namespace RBMTournament
                         {
                             if (participant.MatchEquipment[index].Item != null && participant.MatchEquipment[index].Item.Type == ItemObject.ItemTypeEnum.Bow)
                             {
-                                playerTier = FightTournamentGamePatch.calculatePlayerTournamentTier();
+                                playerTier = calculatePlayerTournamentTier();
                                 switch (playerTier)
                                 {
                                     case 1:
@@ -232,7 +253,7 @@ namespace RBMTournament
                             }
                             if (participant.MatchEquipment[index].Item != null && participant.MatchEquipment[index].Item.Type == ItemObject.ItemTypeEnum.Arrows)
                             {
-                                playerTier = FightTournamentGamePatch.calculatePlayerTournamentTier();
+                                playerTier = calculatePlayerTournamentTier();
                                 switch (playerTier)
                                 {
                                     case 1:
@@ -265,7 +286,7 @@ namespace RBMTournament
                             }
                             if (participant.MatchEquipment[index].Item != null && participant.MatchEquipment[index].Item.Type == ItemObject.ItemTypeEnum.Crossbow)
                             {
-                                playerTier = FightTournamentGamePatch.calculatePlayerTournamentTier();
+                                playerTier = calculatePlayerTournamentTier();
                                 switch (playerTier)
                                 {
                                     case 1:
@@ -292,7 +313,7 @@ namespace RBMTournament
                             }
                             if (participant.MatchEquipment[index].Item != null && participant.MatchEquipment[index].Item.Type == ItemObject.ItemTypeEnum.Bolts)
                             {
-                                playerTier = FightTournamentGamePatch.calculatePlayerTournamentTier();
+                                playerTier = calculatePlayerTournamentTier();
                                 switch (playerTier)
                                 {
                                     case 1:
@@ -386,26 +407,7 @@ namespace RBMTournament
                 return troops;
             }
 
-            public static int calculatePlayerTournamentTier()
-            {
-                int playerLevelTier = MathF.Min(MathF.Max(MathF.Ceiling(((float)CharacterObject.PlayerCharacter.Level - 5f) / 5f), 0), Campaign.Current.Models.PartyTroopUpgradeModel.MaxCharacterTier);
-                Equipment playerEquipment = CharacterObject.PlayerCharacter.RandomBattleEquipment;
-                float armorTierSum = 0f;
-                int countOfArmor = 0;
-                for (EquipmentIndex index = EquipmentIndex.ArmorItemBeginSlot; index < EquipmentIndex.ArmorItemEndSlot; index++)
-                {
-                    if (playerEquipment[index].Item != null)
-                    {
-                        armorTierSum += playerEquipment[index].Item.Tierf;
-                        countOfArmor++;
-                    }
-                }
-                int playerArmorTier = countOfArmor > 0 ? MathF.Round(armorTierSum / countOfArmor) : 0;
-
-                int playerTier = playerLevelTier > armorTierSum ? playerLevelTier : playerArmorTier;
-                playerTier = MBMath.ClampInt(playerTier, 1, 6);
-                return playerTier;
-            }
+            
 
             public static int calculateNpcTournamentTier(CharacterObject npc)
             {
@@ -618,8 +620,8 @@ namespace RBMTournament
             [HarmonyPatch("GetTournamentPrize")]
             static void GetTournamentPrizePostfix(ref FightTournamentGame __instance, ref ItemObject __result, bool includePlayer, int lastRecordedLordCountForTournamentPrize)
             {
-                if (includePlayer)
-                {
+                //if (includePlayer)
+                //{
                     CultureObject culture = __instance.Town.Culture;
                     int playerTier = calculatePlayerTournamentTier();
                     List<ItemObject> list = new List<ItemObject>();
@@ -640,6 +642,28 @@ namespace RBMTournament
                     {
                         __result = list.GetRandomElement();
                     }
+                //}
+            }
+        }
+
+        [HarmonyPatch(typeof(TournamentGame))]
+        class TournamentGamePatch
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch("UpdateTournamentPrize")]
+            static bool UpdateTournamentPrizePrefix(ref TournamentGame __instance, ref bool includePlayer, ref bool removeCurrentPrize)
+            {
+                if(__instance.Prize != null)
+                {
+                    if((int)__instance.Prize.Tier != calculatePlayerTournamentTier())
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+                else
+                {
+                    return true;
                 }
             }
         }
@@ -731,14 +755,14 @@ namespace RBMTournament
                 if (winner.IsHumanPlayerCharacter)
                 {
                     float baseRenown = 3f;
-                    int tournamentTier = FightTournamentGamePatch.calculatePlayerTournamentTier();
-
-                    baseRenown *= tournamentTier;
+                    float tournamentTier = (float)calculatePlayerTournamentTier();
+                    float tournamentTierBonus = (baseRenown * (tournamentTier - 1f)) / 2f;
+                    float gainedRenown = baseRenown + tournamentTierBonus;
                     if (winner.GetPerkValue(DefaultPerks.OneHanded.Duelist))
                     {
-                        baseRenown *= 2f;
+                        gainedRenown *= 2f;
                     }
-                    __result = MathF.Round(baseRenown);
+                    __result = MathF.Ceiling(gainedRenown);
                     return false;
                 }
                 else
