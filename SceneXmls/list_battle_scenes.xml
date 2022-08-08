@@ -82,7 +82,7 @@
   <Scene id="empire_castle_004"
          name="{=9on9e5m7}Thractorae Castle"
          terrain="Plain"
-         is_siege_map="true"></Scene>
+         is_siege_map="true"></Scene> lvl 1 and 2 done
 		 
   <Scene id="aserai_town_c"
          name="{=aRPxOOCW}Qasira"
