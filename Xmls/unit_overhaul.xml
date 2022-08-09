@@ -5027,11 +5027,11 @@
       <equipment slot="Body"
                  id="Item.western_scale_mail" />
       <equipment slot="Leg"
-                 id="Item.battania_fur_boots" />
+                 id="Item.plated_strip_boots" />
       <equipment slot="Head"
                  id="Item.ridged_northernhelm" />
       <equipment slot="Gloves"
-                 id="Item.highland_gloves" />
+                 id="Item.plated_strip_gauntlets" />
       <equipment slot="Cape"
                  id="Item.armored_bearskin" />
       </EquipmentRoster>
@@ -5047,11 +5047,11 @@
       <equipment slot="Body"
                  id="Item.western_scale_mail" />
       <equipment slot="Leg"
-                 id="Item.battania_fur_boots" />
+                 id="Item.plated_strip_boots" />
       <equipment slot="Head"
                  id="Item.battania_earmuff_helmet_d" />
       <equipment slot="Gloves"
-                 id="Item.highland_gloves" />
+                 id="Item.plated_strip_gauntlets" />
       <equipment slot="Cape"
                  id="Item.armored_bearskin" />
       </EquipmentRoster>
@@ -5067,11 +5067,11 @@
       <equipment slot="Body"
                  id="Item.western_scale_mail" />
       <equipment slot="Leg"
-                 id="Item.battania_fur_boots" />
+                 id="Item.plated_strip_boots" />
       <equipment slot="Head"
                  id="Item.battania_earmuff_helmet_c" />
       <equipment slot="Gloves"
-                 id="Item.highland_gloves" />
+                 id="Item.plated_strip_gauntlets" />
       <equipment slot="Cape"
                  id="Item.armored_bearskin" />
       </EquipmentRoster>
