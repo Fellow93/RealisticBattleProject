@@ -832,10 +832,75 @@ namespace RBMCombat
         {
             static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem, AgentStatCalculateModel __instance)
             {
-                if (RBMConfig.RBMConfig.realisticRangedReload.Equals("1"))
+                if (agent.IsPlayerControlled)
+                {
+                    if (RBMConfig.RBMConfig.realisticRangedReload.Equals("1"))
+                    {
+                        SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
+                        if (skill != null)
+                        {
+                            int effectiveSkill = __instance.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
+
+                            if (equippedItem != null)
+                            {
+                                switch (equippedItem.ItemUsage)
+                                {
+                                    case "bow":
+                                    case "long_bow":
+                                        {
+                                            agentDrivenProperties.ReloadSpeed = 0.19f * (1.5f + (0.0075f * effectiveSkill));
+                                            break;
+                                        }
+                                    case "crossbow_fast":
+                                        {
+                                            agentDrivenProperties.ReloadSpeed = 0.36f * (1f + (0.0035f * effectiveSkill));
+                                            break;
+                                        }
+                                    case "crossbow":
+                                        {
+                                            agentDrivenProperties.ReloadSpeed = 0.18f * (1f + (0.0035f * effectiveSkill));
+                                            break;
+                                        }
+                                }
+                            }
+                        }
+
+                    }
+                    else if (RBMConfig.RBMConfig.realisticRangedReload.Equals("2"))
+                    {
+                        SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
+                        if (skill != null)
+                        {
+                            int effectiveSkill = __instance.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
+                            if (equippedItem != null)
+                            {
+                                switch (equippedItem.ItemUsage)
+                                {
+                                    case "bow":
+                                    case "long_bow":
+                                        {
+                                            agentDrivenProperties.ReloadSpeed = 0.38f * (1.5f + (0.0075f * effectiveSkill));
+                                            break;
+                                        }
+                                    case "crossbow_fast":
+                                        {
+                                            agentDrivenProperties.ReloadSpeed = 0.72f * (1 + (0.0035f * effectiveSkill));
+                                            break;
+                                        }
+                                    case "crossbow":
+                                        {
+                                            agentDrivenProperties.ReloadSpeed = 0.36f * (1 + (0.0035f * effectiveSkill));
+                                            break;
+                                        }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
                 {
                     SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
-                    if(skill != null)
+                    if (skill != null)
                     {
                         int effectiveSkill = __instance.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
 
@@ -862,39 +927,7 @@ namespace RBMCombat
                             }
                         }
                     }
-                    
                 }
-                else if (RBMConfig.RBMConfig.realisticRangedReload.Equals("2"))
-                {
-                    SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
-                    if (skill != null)
-                    {
-                        int effectiveSkill = __instance.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
-                        if (equippedItem != null)
-                        {
-                            switch (equippedItem.ItemUsage)
-                            {
-                                case "bow":
-                                case "long_bow":
-                                    {
-                                        agentDrivenProperties.ReloadSpeed = 0.38f * (1.5f + (0.0075f * effectiveSkill));
-                                        break;
-                                    }
-                                case "crossbow_fast":
-                                    {
-                                        agentDrivenProperties.ReloadSpeed = 0.72f * (1 + (0.0035f * effectiveSkill));
-                                        break;
-                                    }
-                                case "crossbow":
-                                    {
-                                        agentDrivenProperties.ReloadSpeed = 0.36f * (1 + (0.0035f * effectiveSkill));
-                                        break;
-                                    }
-                            }
-                        }
-                    }
-                }
-
                 //0.12 for heavy crossbows, 0.19f for light crossbows, composite bows and longbows.
             }
         }
