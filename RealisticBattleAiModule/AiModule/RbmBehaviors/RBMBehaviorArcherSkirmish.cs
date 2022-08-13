@@ -54,7 +54,7 @@ namespace RBMAI
 				Formation significantEnemy = null;
 				if (base.Formation != null && base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
 				{
-					significantEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, true, true, false, false, false);
+					significantEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, true, true, false, false, false, true, 0.20f);
 				}
 				if (significantEnemy == null)
 				{
@@ -66,7 +66,7 @@ namespace RBMAI
 				vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition;
 				float distance = vec.Normalize();
 				//float ratioOfShooting = MBMath.Lerp(0.1f, 0.33f, 1f - MBMath.ClampFloat(base.Formation.CountOfUnits, 1f, 50f) * 0.02f) * base.Formation.QuerySystem.RangedUnitRatio;
-				float ratioOfShooting = 0.33f;
+				float ratioOfShooting = 0.3f;
 				//base.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
 				//{
 				//	agent.SetScriptedCombatFlags(agent.GetScriptedCombatFlags() | Agent.AISpecialCombatModeFlags.IgnoreAmmoLimitForRangeCalculation);

@@ -205,11 +205,30 @@ namespace RBMAI
             {
                 formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
-                    float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
-                    if (newDist < distance)
+                    if (agent.IsAIControlled)
                     {
-                        targetAgent = agent;
-                        distance = newDist;
+                        if (agent.CommonAIComponent != null && agent.CommonAIComponent.IsRetreating)
+                        {
+                            float panick = agent.CommonAIComponent.Morale;
+                        }
+                        else
+                        {
+                            float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
+                            if (newDist < distance)
+                            {
+                                targetAgent = agent;
+                                distance = newDist;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
+                            if (newDist < distance)
+                            {
+                                targetAgent = agent;
+                                distance = newDist;
+                            }
                     }
                 });
             }

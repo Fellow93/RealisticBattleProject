@@ -22,7 +22,7 @@ namespace RBMAI
         {
             harmony = rbmaiHarmony;
             var original = AccessTools.Method(typeof(MissionCombatantsLogic), "EarlyStart");
-            var postfix = AccessTools.Method(typeof(Tactics.TeamAiFieldBattle), nameof(Tactics.TeamAiFieldBattle.Postfix));
+            var postfix = AccessTools.Method(typeof(Tactics.EarlyStartPatch), nameof(Tactics.EarlyStartPatch.Postfix));
             harmony.Patch(original, null, new HarmonyMethod(postfix));
             var original2 = AccessTools.Method(typeof(CampaignMissionComponent), "EarlyStart");
             var postfix2 = AccessTools.Method(typeof(Tactics.CampaignMissionComponentPatch), nameof(Tactics.CampaignMissionComponentPatch.Postfix));

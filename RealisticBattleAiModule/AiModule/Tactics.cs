@@ -157,6 +157,8 @@ namespace RBMAI
                 formation.AI.AddAiBehavior(new RBMBehaviorForwardSkirmish(formation));
                 formation.AI.AddAiBehavior(new RBMBehaviorInfantryFlank(formation));
                 formation.AI.AddAiBehavior(new RBMBehaviorCavalryCharge(formation));
+                formation.AI.AddAiBehavior(new RBMBehaviorEmbolon(formation));
+                formation.AI.AddAiBehavior(new RBMBehaviorArcherFlank(formation));
             }
         }
 
@@ -208,11 +210,40 @@ namespace RBMAI
             }
         }
 
+        //[HarmonyPatch(typeof(MissionCombatantsLogic))]
+        //[HarmonyPatch("AfterStart")]
+        //public class AfterStartPatch
+        //{
+        //    public static void Postfix(ref IBattleCombatant ____attackerLeaderBattleCombatant)
+        //    {
+        //        if (Mission.Current.Teams.Any())
+        //        {
+        //            if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
+        //            {
+        //                foreach (Team team in Mission.Current.Teams.Where((Team t) => t.HasTeamAi).ToList())
+        //                {
+        //                    if (team.Side == BattleSideEnum.Attacker)
+        //                    {
+        //                        if (____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Empire)
+        //                        {
+        //                            team.AddTacticOption(new RBMTacticEmbolon(team));
+        //                        }
+        //                        else
+        //                        {
+        //                            team.AddTacticOption(new TacticFrontalCavalryCharge(team));
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
+
         [HarmonyPatch(typeof(MissionCombatantsLogic))]
         [HarmonyPatch("EarlyStart")]
-        public class TeamAiFieldBattle
+        public class EarlyStartPatch
         {
-            public static void Postfix()
+            public static void Postfix(ref IBattleCombatant ____attackerLeaderBattleCombatant, ref IBattleCombatant ____defenderLeaderBattleCombatant)
             {
                 aiDecisionCooldownDict.Clear();
                 RBMAiPatcher.DoPatching();
@@ -227,9 +258,33 @@ namespace RBMAI
                             if (team.Side == BattleSideEnum.Attacker)
                             {
                                 team.ClearTacticOptions();
-                                team.AddTacticOption(new TacticFullScaleAttack(team));
                                 team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
-                                team.AddTacticOption(new TacticFrontalCavalryCharge(team));
+                                if (____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Empire)
+                                {
+                                    team.AddTacticOption(new RBMTacticEmbolon(team));
+                                }
+                                else
+                                {
+                                    team.AddTacticOption(new TacticFrontalCavalryCharge(team));
+                                }
+                                if (____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Aserai)
+                                {
+                                    team.AddTacticOption(new RBMTacticAttackSplitSkirmishers(team));
+                                }
+                                if (____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Sturgia)
+                                {
+                                    team.AddTacticOption(new RBMTacticAttackSplitInfantry(team));
+                                }
+                                if (____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Battania)
+                                {
+                                    team.AddTacticOption(new RBMTacticAttackSplitArchers(team));
+                                }
+                                else
+                                {
+                                    team.AddTacticOption(new TacticFullScaleAttack(team));
+                                }
+                                //team.AddTacticOption(new RBMTacticEmbolon(team));
+
                                 team.AddTacticOption(new TacticCoordinatedRetreat(team));
                                 //team.AddTacticOption(new TacticCharge(team));
                                 //team.AddTacticOption(new RBMTacticAttackSplitSkirmishers(team));
@@ -238,8 +293,15 @@ namespace RBMAI
                             if (team.Side == BattleSideEnum.Defender)
                             {
                                 team.ClearTacticOptions();
-                                team.AddTacticOption(new TacticDefensiveEngagement(team));
-                                team.AddTacticOption(new TacticDefensiveLine(team));
+                                if (____defenderLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Battania)
+                                {
+                                    team.AddTacticOption(new RBMTacticDefendSplitArchers(team));
+                                }
+                                else
+                                {
+                                    team.AddTacticOption(new TacticDefensiveEngagement(team));
+                                    team.AddTacticOption(new TacticDefensiveLine(team));
+                                }
                                 team.AddTacticOption(new TacticFullScaleAttack(team));
                                 //team.AddTacticOption(new TacticCharge(team));
                                 team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
@@ -396,6 +458,13 @@ namespace RBMAI
             //            __result = currentTeam.QuerySystem.CavalryRatio * 4f;
             //        }
             //}
+
+            [HarmonyPostfix]
+            [HarmonyPatch("GetTacticWeight")]
+            static void PostfixGetTacticWeight(ref float __result)
+            {
+                __result *= 0.75f;
+            }
         }
 
         [HarmonyPatch(typeof(TacticRangedHarrassmentOffensive))]
@@ -565,13 +634,14 @@ namespace RBMAI
                     {
                         f.AI.SetBehaviorWeight<BehaviorCharge>(1f);
                     }
-                    f.AI.SetBehaviorWeight<BehaviorPullBack>(1f);
-                    f.AI.SetBehaviorWeight<BehaviorStop>(1f);
+                    f.AI.SetBehaviorWeight<BehaviorPullBack>(0f);
+                    f.AI.SetBehaviorWeight<BehaviorStop>(0f);
                     f.AI.SetBehaviorWeight<BehaviorReserve>(0f);
                 }
                 return false;
             }
         }
 
+        
     }
 }

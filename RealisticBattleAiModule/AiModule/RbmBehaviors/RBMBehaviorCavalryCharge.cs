@@ -148,7 +148,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 				case ChargeState.Reforming:
                     {
 						
-						if (_reformTimer.Check(Mission.Current.CurrentTime) || base.Formation.QuerySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents < 4f) //|| base.Formation.QuerySystem.AveragePosition.Distance(_lastTarget.MedianPosition.AsVec2) <= 30f)
+						if (_reformTimer.Check(Mission.Current.CurrentTime) || base.Formation.QuerySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents < 5f) //|| base.Formation.QuerySystem.AveragePosition.Distance(_lastTarget.MedianPosition.AsVec2) <= 30f)
 						{
 							CheckForNewChargeTarget();
 							result = ChargeState.Charging;

@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
@@ -603,6 +604,8 @@ namespace RBMAI
         [HarmonyPatch("CalculateCurrentOrder")]
         static bool PrefixCalculateCurrentOrder(ref BehaviorProtectFlank __instance, ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviorState ____protectFlankState, ref Formation ____mainFormation, ref FormationAI.BehaviorSide ___behaviorSide)
         {
+            WorldPosition position = __instance.Formation.QuerySystem.MedianPosition;
+            Vec2 averagePosition = __instance.Formation.QuerySystem.AveragePosition;
 
             float distanceFromMainFormation = 80f;
             float closerDistanceFromMainFormation = 30f;
@@ -630,11 +633,19 @@ namespace RBMAI
                     vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + distanceFromMainFormation);
                     vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
                     vec += ____mainFormation.Direction * distanceOffsetFromMainFormation;
-                    if (!Mission.Current.IsPositionInsideBoundaries(vec) || __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.1f)
+                    position.SetVec2(vec);
+                    if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(vec) || __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.1f)
                     {
                         vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + closerDistanceFromMainFormation);
                         vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
                         vec += ____mainFormation.Direction;
+                        position.SetVec2(vec);
+                        if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(vec))
+                        {
+                            vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized();
+                            vec -= ____mainFormation.Direction * 5f;
+                            position.SetVec2(vec);
+                        }
                     }
                 }
                 else if (___behaviorSide == FormationAI.BehaviorSide.Left || ___FlankSide == FormationAI.BehaviorSide.Left)
@@ -642,20 +653,29 @@ namespace RBMAI
                     vec = ____mainFormation.CurrentPosition + v.LeftVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + distanceFromMainFormation);
                     vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
                     vec += ____mainFormation.Direction * distanceOffsetFromMainFormation;
-                    if (!Mission.Current.IsPositionInsideBoundaries(vec) || __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.1f)
+                    position.SetVec2(vec);
+                    if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(vec) || __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.1f)
                     {
                         vec = ____mainFormation.CurrentPosition + v.LeftVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + closerDistanceFromMainFormation);
                         vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
                         vec += ____mainFormation.Direction;
+                        position.SetVec2(vec);
+                        if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(vec))
+                        {
+                            vec = ____mainFormation.CurrentPosition + v.LeftVec().Normalized();
+                            vec -= ____mainFormation.Direction * 10f;
+                            position.SetVec2(vec);
+                        }
                     }
                 }
                 else
                 {
                     vec = ____mainFormation.CurrentPosition + v * ((____mainFormation.Depth + __instance.Formation.Depth) * 0.5f + 10f);
+                    position.SetVec2(vec);
                 }
-                WorldPosition medianPosition = ____mainFormation.QuerySystem.MedianPosition;
-                medianPosition.SetVec2(vec);
-                ____movementOrder = MovementOrder.MovementOrderMove(medianPosition);
+                //WorldPosition medianPosition = ____mainFormation.QuerySystem.MedianPosition;
+                //medianPosition.SetVec2(vec);
+                ____movementOrder = MovementOrder.MovementOrderMove(position);
                 ____currentOrder = ____movementOrder;
                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(direction);
             }
@@ -776,14 +796,21 @@ namespace RBMAI
             return true;
         }
 
-        [HarmonyPostfix]
+        [HarmonyPrefix]
         [HarmonyPatch("GetAiWeight")]
-        static void PostfixGetAiWeight(ref float __result)
+        static bool PostfixGetAiWeight(ref BehaviorProtectFlank __instance, ref float __result, ref Formation ____mainFormation)
         {
-            if (__result > 0f)
+            if (____mainFormation == null || !____mainFormation.AI.IsMainFormation)
             {
-                __result = __result + 0.5f;
+                ____mainFormation = __instance.Formation.Team.Formations.FirstOrDefault((Formation f) => f.AI.IsMainFormation);
             }
+            if (____mainFormation == null || __instance.Formation.AI.IsMainFormation)
+            {
+                __result = 0f;
+                return false;
+            }
+            __result = 10f;
+            return false;
         }
     }
 
@@ -806,13 +833,39 @@ namespace RBMAI
                 }
             }
             else if(agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null && 
-                (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorForwardSkirmish) || agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorInfantryFlank)))
+                (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorForwardSkirmish) || 
+                agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorInfantryFlank)))
             {
-                if(limitIsMultiplier && desiredSpeed < 0.8f)
+                if(limitIsMultiplier && desiredSpeed < 0.85f)
+                {
+                    desiredSpeed = 0.85f;
+                }
+                //___Agent.SetMaximumSpeedLimit(100f, false);
+            }
+            if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
+                (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorRegroup)))
+            {
+                if (limitIsMultiplier && desiredSpeed < 0.95f)
+                {
+                    desiredSpeed = 0.95f;
+                }
+                //___Agent.SetMaximumSpeedLimit(100f, false);
+            }
+            if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
+                (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorCharge)))
+            {
+                if (limitIsMultiplier && desiredSpeed < 0.8f)
                 {
                     desiredSpeed = 0.8f;
                 }
-                //___Agent.SetMaximumSpeedLimit(100f, false);
+            }
+            if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
+                (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorArcherFlank)))
+            {
+                if (limitIsMultiplier && desiredSpeed < 0.9f)
+                {
+                    desiredSpeed = 0.9f;
+                }
             }
             //else if(agent.Formation != null && agent.Formation.Team.HasTeamAi)
             //{
@@ -830,7 +883,7 @@ namespace RBMAI
             //            }
             //        }
             //    }
-                
+
             //}
             return true;
         }
@@ -875,14 +928,22 @@ namespace RBMAI
             __instance.Formation.FacingOrder = ___CurrentFacingOrder;
             if (__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && __instance.Formation.QuerySystem.AveragePosition.DistanceSquared(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MedianPosition.AsVec2) > 1600f && __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.2f - ((__instance.Formation.ArrangementOrder.OrderEnum == ArrangementOrder.ArrangementOrderEnum.Loose) ? 0.1f : 0f))
             {
-                __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
+                __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderSkein;
             }
             else
             {
-                __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+                __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderSkein;
             }
 
             return false;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch("OnBehaviorActivatedAux")]
+        static void PostfixOnBehaviorActivatedAux(ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder, BehaviorVanguard __instance)
+        {
+            __instance.Formation.FormOrder = FormOrder.FormOrderDeep;
+            __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderSkein;
         }
     }
 
@@ -985,7 +1046,7 @@ namespace RBMAI
                         }
                         else
                         {
-                            if (enemyCav.TargetFormation == __instance.Formation && (enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge))
+                            if (!(__instance.Formation.AI?.Side == FormationAI.BehaviorSide.Left || __instance.Formation.AI?.Side == FormationAI.BehaviorSide.Right) && enemyCav.TargetFormation == __instance.Formation)
                             {
                                 Vec2 vec = enemyCav.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                                 WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
@@ -1088,6 +1149,13 @@ namespace RBMAI
             }
             ____currentOrder = MovementOrder.MovementOrderCharge;
             return false;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch("GetAiWeight")]
+        static void PrefixGetAiWeight(ref BehaviorCharge __instance, ref float __result)
+        {
+            __result = __result;
         }
     }
 
@@ -1605,6 +1673,71 @@ namespace RBMAI
             return true;
         }
     }
+
+    //[HarmonyPatch(typeof(BehaviorComponent))]
+    //class OverrideFindBestBehavior
+    //{
+    //    [HarmonyPrefix]
+    //    [HarmonyPatch("GetAIWeight")]
+    //    static bool PrefixFindBestBehavior(ref BehaviorComponent __instance, ref float __result)
+    //    {
+    //        __instance.NavmeshlessTargetPositionPenalty = 1f;
+    //        return true;
+    //    }
+    //}
+
+
+    //[HarmonyPatch(typeof(FormationAI))]
+    //class OverrideFindBestBehavior
+    //{
+    //    [HarmonyPrefix]
+    //    [HarmonyPatch("FindBestBehavior")]
+    //    static bool PrefixFindBestBehavior(FormationAI __instance, ref bool __result,
+    //        ref List<BehaviorComponent> ____behaviors, ref Formation ____formation, ref BehaviorComponent ____activeBehavior)
+    //    {
+    //        BehaviorComponent behaviorComponent = null;
+    //        float num = float.MinValue;
+    //        foreach (BehaviorComponent behavior in ____behaviors)
+    //        {
+    //            if (!(behavior.WeightFactor > 1E-07f))
+    //            {
+    //                continue;
+    //            }
+    //            float num2 = behavior.GetAIWeight() * behavior.WeightFactor;
+    //            if (behavior == __instance.ActiveBehavior)
+    //            {
+    //                num2 *= MBMath.Lerp(1.2f, 2f, MBMath.ClampFloat((behavior.PreserveExpireTime - Mission.Current.CurrentTime) / 5f, 0f, 1f), float.MinValue);
+    //            }
+    //            if (num2 > num)
+    //            {
+    //                if (behavior.NavmeshlessTargetPositionPenalty > 0f)
+    //                {
+    //                    num2 /= behavior.NavmeshlessTargetPositionPenalty;
+    //                }
+    //                behavior.PrecalculateMovementOrder();
+    //                num2 *= behavior.NavmeshlessTargetPositionPenalty;
+    //                if (num2 > num)
+    //                {
+    //                    behaviorComponent = behavior;
+    //                    num = num2;
+    //                }
+    //            }
+    //        }
+    //        if (behaviorComponent != null)
+    //        {
+    //            typeof(FormationAI).GetProperty("ActiveBehavior").SetValue(__instance, behaviorComponent, null);
+    //            if (behaviorComponent != ____behaviors[0])
+    //            {
+    //                ____behaviors.Remove(behaviorComponent);
+    //                ____behaviors.Insert(0, behaviorComponent);
+    //            }
+    //            __result = true;
+    //            return false;
+    //        }
+    //        __result = false;
+    //        return false;
+    //    }
+    //}
 
     [HarmonyPatch(typeof(BehaviorRegroup))]
     class OverrideBehaviorRegroup

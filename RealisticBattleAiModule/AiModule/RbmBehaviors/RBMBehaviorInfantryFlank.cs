@@ -44,7 +44,7 @@ namespace RBMAI
 		{
 			CalculateCurrentOrder();
 			base.Formation.SetMovementOrder(base.CurrentOrder);
-			base.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+			base.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
 			base.Formation.FacingOrder = FacingOrder.FacingOrderLookAtEnemy;
 			base.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
 			base.Formation.FormOrder = FormOrder.FormOrderDeep;
@@ -63,7 +63,7 @@ namespace RBMAI
 			}
 			else
 			{
-				float flankRange = 80f;
+				float flankRange = 85f;
 				float feintRange = 30f;
 
 				Formation enemyFormation = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation;
@@ -101,7 +101,7 @@ namespace RBMAI
 							{
 								if (enemyFormation != null)
 								{
-									Vec2 calcPosition = enemyFormation.CurrentPosition + enemyDirection.RightVec().Normalized() * (enemyFormation.Width + base.Formation.Width + flankRange);
+									Vec2 calcPosition = enemyFormation.CurrentPosition + enemyDirection.RightVec().Normalized() * (enemyFormation.Width * 0.5f + flankRange);
 									position.SetVec2(calcPosition);
 								}
 								else
@@ -113,7 +113,7 @@ namespace RBMAI
 							{
 								if (enemyFormation != null)
 								{
-									Vec2 calcPosition = enemyFormation.CurrentPosition + enemyDirection.LeftVec().Normalized() * (enemyFormation.Width + base.Formation.Width + flankRange);
+									Vec2 calcPosition = enemyFormation.CurrentPosition + enemyDirection.LeftVec().Normalized() * (enemyFormation.Width * 0.5f + flankRange);
 									position.SetVec2(calcPosition);
 								}
 								else

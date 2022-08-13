@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RBMAI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.Core;
@@ -6,11 +7,10 @@ using TaleWorlds.MountAndBlade;
 
 public class RBMTacticAttackSplitSkirmishers : TacticComponent
 {
-
 	protected Formation _skirmishers;
 	int side = MBRandom.RandomInt(2);
 	int waitCountMainFormation = 0;
-	int waitCountMainFormationMax = 40;
+	int waitCountMainFormationMax = 25;
 
 	protected void AssignTacticFormations()
 	{
@@ -128,35 +128,38 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 			//});
 
 			skirmishersList = skirmishersList.OrderBy(o => o.CharacterPowerCached).ToList();
+			if(skirmIndex != -1)
+            {
+				int j = 0;
+				int infCount = Formations.ToList()[0].CountOfUnits + Formations.ToList()[skirmIndex].CountOfUnits;
+				foreach (Agent agent in skirmishersList.ToList())
+				{
+					if (j < infCount / 4f)
+					{
+						agent.Formation = Formations.ToList()[skirmIndex];
+					}
+					else
+					{
+						agent.Formation = Formations.ToList()[0];
+					}
+					j++;
+				}
 
-			int j = 0;
-			int infCount = Formations.ToList()[0].CountOfUnits + Formations.ToList()[skirmIndex].CountOfUnits;
-			foreach (Agent agent in skirmishersList.ToList())
-			{
-				if (j < infCount / 4f)
+				foreach (Agent agent in meleeList.ToList())
 				{
-					agent.Formation = Formations.ToList()[skirmIndex];
-                }
-                else
-                {
-					agent.Formation = Formations.ToList()[0];
+					if (j < infCount / 4f)
+					{
+						agent.Formation = Formations.ToList()[skirmIndex];
+					}
+					else
+					{
+						agent.Formation = Formations.ToList()[0];
+					}
+					j++;
 				}
-				j++;
-			}
-
-			foreach (Agent agent in meleeList.ToList())
-			{
-				if (j < infCount / 4f)
-				{
-					agent.Formation = Formations.ToList()[skirmIndex];
-				}
-				else
-				{
-					agent.Formation = Formations.ToList()[0];
-				}
-				j++;
 			}
 		}
+
 		_archers = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsRangedFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
 		List<Formation> list = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower);
 		if (list.Count > 0)
@@ -180,7 +183,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 		}
 		_rangedCavalry = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsRangedCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
 
-		if(Formations.Count() > skirmIndex && Formations.ToList()[skirmIndex].QuerySystem.IsInfantryFormation)
+		if(skirmIndex != -1 && Formations.Count() > skirmIndex && Formations.ToList()[skirmIndex].QuerySystem.IsInfantryFormation)
         {
 			_skirmishers = Formations.ToList()[skirmIndex];
             _skirmishers.AI.IsMainFormation = false;
@@ -227,10 +230,12 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
             if (side == 0)
             {
                 _skirmishers.AI.SetBehaviorWeight<RBMAI.RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Left;
+				_skirmishers.AI.Side = FormationAI.BehaviorSide.Left;
 			}
 			else
             {
                 _skirmishers.AI.SetBehaviorWeight<RBMAI.RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Right;
+				_skirmishers.AI.Side = FormationAI.BehaviorSide.Right;
 			}
 		}
 		if (_mainInfantry != null)
@@ -309,7 +314,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 		if (_archers != null)
 		{
 			_archers.AI.ResetBehaviorWeights();
-			_archers.AI.SetBehaviorWeight<BehaviorSkirmish>(1f);
+			_archers.AI.SetBehaviorWeight<RBMBehaviorArcherSkirmish>(1f);
 			_archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
 			_archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(0f);
 		}
@@ -317,27 +322,27 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 		{
 			_leftCavalry.AI.ResetBehaviorWeights();
 			_leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
-			_leftCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
+			_leftCavalry.AI.SetBehaviorWeight<RBMBehaviorCavalryCharge>(1f);
 		}
 		if (_rightCavalry != null)
 		{
 			_rightCavalry.AI.ResetBehaviorWeights();
 			_rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
-			_rightCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
+			_rightCavalry.AI.SetBehaviorWeight<RBMBehaviorCavalryCharge>(1f);
 		}
 		if (_rangedCavalry != null)
 		{
 			_rangedCavalry.AI.ResetBehaviorWeights();
 			TacticComponent.SetDefaultBehaviorWeights(_rangedCavalry);
 			_rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
-			_rangedCavalry.AI.SetBehaviorWeight<BehaviorHorseArcherSkirmish>(1f);
+			//_rangedCavalry.AI.SetBehaviorWeight<BehaviorHorseArcherSkirmish>(1f);
 		}
 		IsTacticReapplyNeeded = false;
 	}
 
 	private bool HasBattleBeenJoined()
 	{
-		return RBMAI.Utilities.HasBattleBeenJoined(_mainInfantry, _hasBattleBeenJoined);
+		return RBMAI.Utilities.HasBattleBeenJoined(_mainInfantry, _hasBattleBeenJoined, 85f);
 	}
 
 	protected override bool CheckAndSetAvailableFormationsChanged()
@@ -418,8 +423,19 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 				infCount++;
 			}
         }
+		if(infCount < 60)
+        {
+			return 0.01f;
+		}
 		float num = team.QuerySystem.RangedCavalryRatio * (float)team.QuerySystem.MemberCount;
 		float skirmisherRatio = skirmisherCount / infCount;
-		return team.QuerySystem.InfantryRatio * skirmisherRatio * 1.7f * (float)team.QuerySystem.MemberCount / ((float)team.QuerySystem.MemberCount - num) * (float)Math.Sqrt(team.QuerySystem.TotalPowerRatio);
+		if(team.QuerySystem.InfantryRatio > 0.45f)
+        {
+			return team.QuerySystem.InfantryRatio * skirmisherRatio * 1.7f * (float)team.QuerySystem.MemberCount / ((float)team.QuerySystem.MemberCount - num) * (float)Math.Sqrt(team.QuerySystem.TotalPowerRatio);
+        }
+        else
+        {
+			return 0.01f;
+        }
 	}
 }
