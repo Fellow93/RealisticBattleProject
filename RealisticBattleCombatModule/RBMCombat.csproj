@@ -236,7 +236,8 @@ xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_siege_ranged.xml" "$(SolutionDir)..\
 xcopy /d /y "$(SolutionDir)RBMXML\SubModule.xml" "$(SolutionDir)..\RBM\"
 xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\RBMConfig.xml" "$(SolutionDir)..\RBM\GUI\Prefabs\"
 xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_item_modifiers_groups.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_weapon_descriptions.xml" "$(SolutionDir)..\RBM\ModuleData\"</PostBuildEvent>
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_weapon_descriptions.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_spcultures.xml" "$(SolutionDir)..\RBM\ModuleData\"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>

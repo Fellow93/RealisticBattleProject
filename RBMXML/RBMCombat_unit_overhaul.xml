@@ -659,6 +659,26 @@
                     civilian="true" />
     </Equipments>
   </NPCCharacter>
+  <NPCCharacter id="tournament_template_empire_one_participant_set_v2"
+                default_group="Infantry"
+                level="6"
+                name="{=!}tournament_template_empire_one_participant_set_v1"
+                culture="Culture.empire"
+                skill_template="SkillSet.infantry_heavyinfantry_level6_template_skills">
+    <face>
+      <face_key_template value="BodyProperty.fighter_empire" />
+    </face>
+    <skills></skills>
+    <upgrade_targets></upgrade_targets>
+    <Equipments>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.empire_mace_5_t5" />
+      </EquipmentRoster>
+      <EquipmentSet id="npc_wanderer_equipment_template_empire_civilian"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
   <NPCCharacter id="tournament_template_empire_two_participant_set_v1"
                 default_group="Infantry"
                 level="6"
@@ -14486,15 +14506,15 @@
       <equipment slot="Item3"
                  id="Item.battania_2haxe_1_t2" />
       <equipment slot="Body"
-                 id="Item.layered_leather_tunic" />
+                 id="Item.padded_coat" />
       <equipment slot="Head"
                  id="Item.cervelliere_over_arming_coif" />
       <equipment slot="Leg"
-                 id="Item.strapped_shoes" />
+                 id="Item.leather_cavalier_boots" />
       <equipment slot="Cape"
-                 id="Item.battania_woodland_cloak" />
+                 id="Item.eastern_studded_shoulders" />
       <equipment slot="Gloves"
-                 id="Item.rough_tied_bracers" />
+                 id="Item.studded_leather_vambraces" />
       </EquipmentRoster>
       <EquipmentSet id="vlandia_troop_civilian_template_t1"
                     civilian="true" />
@@ -14543,13 +14563,13 @@
       <equipment slot="Head"
                  id="Item.kettle_helmet_over_arming_coif" />
       <equipment slot="Body"
-                 id="Item.veteran_mercenary_armor" />
+                 id="Item.red_coat_over_mail" />
       <equipment slot="Leg"
-                 id="Item.leather_cavalier_boots" />
+                 id="Item.mail_chausses" />
       <equipment slot="Cape"
                  id="Item.eastern_studded_shoulders" />
       <equipment slot="Gloves"
-                 id="Item.studded_leather_vambraces" />
+                 id="Item.mail_mitten" />
       </EquipmentRoster>
       <EquipmentSet id="vlandia_troop_civilian_template_t2"
                     civilian="true" />
@@ -14596,11 +14616,11 @@
       <equipment slot="Head"
                  id="Item.peaked_helmet_over_mail_coif" />
       <equipment slot="Body"
-                 id="Item.hauberk" />
+                 id="Item.coat_of_plates_over_mail" />
       <equipment slot="Leg"
-                 id="Item.mail_cavalier_boots" />
+                 id="Item.battania_warlord_boots" />
       <equipment slot="Gloves"
-                 id="Item.mail_mitten" />
+                 id="Item.battania_warlord_bracers" />
       <equipment slot="Cape"
                  id="Item.battanian_chainmail_shoulder_b" />
       </EquipmentRoster>
@@ -16381,6 +16401,7 @@
                 level="19"
                 occupation="Soldier"
                 culture="Culture.khuzait"
+                upgrade_requires="ItemCategory.horse"
                 name="{=lduchnvD}Karakhuzait Rider">
     <face>
       <face_key_template value="BodyProperty.fighter_khuzait" />
@@ -16462,6 +16483,7 @@
                 level="29"
                 occupation="Soldier"
                 culture="Culture.khuzait"
+                upgrade_requires="ItemCategory.war_horse"
                 name="{=gBuGfUg3}Karakhuzait Elder">
     <face>
       <face_key_template value="BodyProperty.fighter_khuzait" />

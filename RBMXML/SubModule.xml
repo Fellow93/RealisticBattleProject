@@ -223,6 +223,15 @@
 	</XmlNode>
 	<XmlNode>                
 		<XmlName id="GameText" path="RBMAI_module_strings"/>
-	</XmlNode>   
+	</XmlNode>
+	<XmlNode>                
+		<XmlName id="SPCultures" path="RBMCombat_spcultures"/>
+		<IncludedGameTypes>
+			<GameType value = "Campaign"/>
+			<GameType value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+			<GameType value = "EditorGame"/>
+		</IncludedGameTypes>
+	</XmlNode> 	
   </Xmls>
 </Module>
