@@ -659,26 +659,6 @@
                     civilian="true" />
     </Equipments>
   </NPCCharacter>
-  <NPCCharacter id="tournament_template_empire_one_participant_set_v2"
-                default_group="Infantry"
-                level="6"
-                name="{=!}tournament_template_empire_one_participant_set_v1"
-                culture="Culture.empire"
-                skill_template="SkillSet.infantry_heavyinfantry_level6_template_skills">
-    <face>
-      <face_key_template value="BodyProperty.fighter_empire" />
-    </face>
-    <skills></skills>
-    <upgrade_targets></upgrade_targets>
-    <Equipments>
-      <EquipmentRoster>
-      <equipment slot="Item0"
-                 id="Item.empire_mace_5_t5" />
-      </EquipmentRoster>
-      <EquipmentSet id="npc_wanderer_equipment_template_empire_civilian"
-                    civilian="true" />
-    </Equipments>
-  </NPCCharacter>
   <NPCCharacter id="tournament_template_empire_two_participant_set_v1"
                 default_group="Infantry"
                 level="6"
