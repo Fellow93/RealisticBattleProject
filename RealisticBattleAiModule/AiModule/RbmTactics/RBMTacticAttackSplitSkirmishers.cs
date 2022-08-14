@@ -157,7 +157,10 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 					}
 					j++;
 				}
+				//this.team.TriggerOnFormationsChanged(Formations.ToList()[skirmIndex]);
+				//this.team.TriggerOnFormationsChanged(Formations.ToList()[0]);
 			}
+			
 		}
 
 		_archers = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsRangedFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
@@ -229,13 +232,13 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
             //_skirmishers.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
             if (side == 0)
             {
-                _skirmishers.AI.SetBehaviorWeight<RBMAI.RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Left;
 				_skirmishers.AI.Side = FormationAI.BehaviorSide.Left;
+				_skirmishers.AI.SetBehaviorWeight<RBMAI.RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Left;
 			}
 			else
             {
-                _skirmishers.AI.SetBehaviorWeight<RBMAI.RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Right;
 				_skirmishers.AI.Side = FormationAI.BehaviorSide.Right;
+				_skirmishers.AI.SetBehaviorWeight<RBMAI.RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Right;
 			}
 		}
 		if (_mainInfantry != null)

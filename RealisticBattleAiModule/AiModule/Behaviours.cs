@@ -499,7 +499,7 @@ namespace RBMAI
                     if (enemyFormation != null && enemyFormation.QuerySystem != null)
                     {
                         bool isEnemyCav = enemyFormation.QuerySystem.IsCavalryFormation || enemyFormation.QuerySystem.IsRangedCavalryFormation;
-                        float distance = 70f;
+                        float distance = 50f;
                         if (!__instance.Formation.QuerySystem.IsRangedCavalryFormation)
                         {
                             distance = 30f;
@@ -515,7 +515,11 @@ namespace RBMAI
                             else
                             {
                                 Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, enemyFormation.Width * 0.5f * (isEnemyCav ? 1.5f : 1f), enemyFormation.Direction);
-                                position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 20f));
+                                position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 30f));
+                                if(position.GetNavMesh() == UIntPtr.Zero)
+                                {
+                                    position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 10f));
+                                }
                             }
                         }
                         else

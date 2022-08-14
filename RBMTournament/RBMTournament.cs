@@ -129,6 +129,8 @@ namespace RBMTournament
             [HarmonyPatch("PrepareForMatch")]
             static void GetParticipantCharactersPrefix(ref TournamentFightMissionController __instance, ref TournamentMatch ____match, ref CultureObject ____culture)
             {
+                float randomFloat = MBRandom.RandomFloat;
+                int teamSize = ____match.Teams.First().Participants.Count();
                 int playerTier = calculatePlayerTournamentTier();
                 ItemObject oneHandReplacement = null;
                 ItemObject twoHandReplacement = null;
@@ -354,9 +356,16 @@ namespace RBMTournament
                             }
                             if (participant.MatchEquipment[index].Item != null && participant.MatchEquipment[index].Item.Type == ItemObject.ItemTypeEnum.Shield)
                             {
-                                if (shieldReplacement != null)
+                                if((teamSize == 1 || teamSize == 2) && randomFloat >= 0.5f)
                                 {
-                                    participant.MatchEquipment.AddEquipmentToSlotWithoutAgent(index, new EquipmentElement(shieldReplacement));
+                                    participant.MatchEquipment.AddEquipmentToSlotWithoutAgent(index, new EquipmentElement(null));
+                                }
+                                else
+                                {
+                                    if (shieldReplacement != null)
+                                    {
+                                        participant.MatchEquipment.AddEquipmentToSlotWithoutAgent(index, new EquipmentElement(shieldReplacement));
+                                    }
                                 }
                             }
                         }
