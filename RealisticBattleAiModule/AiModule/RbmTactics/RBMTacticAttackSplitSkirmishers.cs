@@ -157,9 +157,9 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 					}
 					j++;
 				}
-				//this.team.TriggerOnFormationsChanged(Formations.ToList()[skirmIndex]);
-				//this.team.TriggerOnFormationsChanged(Formations.ToList()[0]);
-			}
+                this.team.TriggerOnFormationsChanged(Formations.ToList()[skirmIndex]);
+                this.team.TriggerOnFormationsChanged(Formations.ToList()[0]);
+            }
 			
 		}
 
