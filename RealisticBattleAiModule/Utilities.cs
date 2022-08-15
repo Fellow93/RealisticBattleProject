@@ -938,37 +938,83 @@ namespace RBMAI
             }
         }
 
-        public static int CountSoldiersInPolygon(Formation formation, Vec2[] polygon)
+        public static IEnumerable<Agent> CountSoldiersInPolygon(Formation formation, Vec2[] polygon)
         {
+            List<Agent> enemyAgents = new List<Agent>();
             int result = 0;
-
-            formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+            foreach (Team team in Mission.Current.Teams.ToList())
             {
-                if (IsPointInPolygon(polygon, agent.Position.AsVec2))
+                if (team.IsEnemyOf(formation.Team))
                 {
-                    result++;
+                    foreach (Formation enemyFormation in team.Formations.ToList())
+                    {
+                        formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+                        {
+                            if (IsPointInPolygon(polygon, agent.Position.AsVec2))
+                            {
+                                result++;
+                                enemyAgents.Add(agent);
+                            }
+                        });
+                    }
                 }
-            });
-
-            return result;
+            }
+            return enemyAgents;
         }
 
         public static bool IsPointInPolygon(Vec2[] polygon, Vec2 testPoint)
         {
-            bool result = false;
-            int j = polygon.Count() - 1;
-            for (int i = 0; i < polygon.Count(); i++)
+            //bool result = false;
+            //int j = polygon.Count() - 1;
+            //for (int i = 0; i < polygon.Count(); i++)
+            //{
+            //    if (polygon[i].Y < testPoint.Y && polygon[j].Y >= testPoint.Y || polygon[j].Y < testPoint.Y && polygon[i].Y >= testPoint.Y)
+            //    {
+            //        if (polygon[i].X + (testPoint.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) * (polygon[j].X - polygon[i].X) < testPoint.X)
+            //        {
+            //            result = !result;
+            //        }
+            //    }
+            //    j = i;
+            //}
+            //return result;
+            Vec2 p1, p2;
+            bool inside = false;
+
+            if (polygon.Length < 3)
             {
-                if (polygon[i].Y < testPoint.Y && polygon[j].Y >= testPoint.Y || polygon[j].Y < testPoint.Y && polygon[i].Y >= testPoint.Y)
-                {
-                    if (polygon[i].X + (testPoint.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) * (polygon[j].X - polygon[i].X) < testPoint.X)
-                    {
-                        result = !result;
-                    }
-                }
-                j = i;
+                return inside;
             }
-            return result;
+
+            var oldPoint = new Vec2(
+                polygon[polygon.Length - 1].X, polygon[polygon.Length - 1].Y);
+
+            for (int i = 0; i < polygon.Length; i++)
+            {
+                var newPoint = new Vec2(polygon[i].X, polygon[i].Y);
+
+                if (newPoint.X > oldPoint.X)
+                {
+                    p1 = oldPoint;
+                    p2 = newPoint;
+                }
+                else
+                {
+                    p1 = newPoint;
+                    p2 = oldPoint;
+                }
+
+                if ((newPoint.X < testPoint.X) == (testPoint.X <= oldPoint.X)
+                    && (testPoint.Y - (long)p1.Y) * (p2.X - p1.X)
+                    < (p2.Y - (long)p1.Y) * (testPoint.X - p1.X))
+                {
+                    inside = !inside;
+                }
+
+                oldPoint = newPoint;
+            }
+
+            return inside;
         }
 
         public static float GetPowerOfAgentsSum(IEnumerable<Agent> agents)
