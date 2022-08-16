@@ -3,6 +3,7 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.Engine;
+using System.Reflection;
 
 public class RBMBehaviorCavalryCharge : BehaviorComponent
 {
@@ -67,6 +68,15 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
 	private ChargeState CheckAndChangeState()
 	{
+		FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
+        _currentTacticField.DeclaringType.GetField("_currentTactic");
+		//TacticComponent _currentTactic = (TacticComponent);
+
+        if (_currentTacticField.GetValue(base.Formation?.Team?.TeamAI).ToString().Contains("Embolon"))
+		{
+			_desiredChargeStopDistance = 60f;
+			base.BehaviorCoherence = 0.85f;
+		}
 		ChargeState result = _chargeState;
 		if (base.Formation.QuerySystem.ClosestEnemyFormation == null)
 		{
@@ -148,7 +158,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 				case ChargeState.Reforming:
                     {
 						
-						if (_reformTimer.Check(Mission.Current.CurrentTime) || base.Formation.QuerySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents < 5f) //|| base.Formation.QuerySystem.AveragePosition.Distance(_lastTarget.MedianPosition.AsVec2) <= 30f)
+						if (_reformTimer.Check(Mission.Current.CurrentTime) || base.Formation.QuerySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents < 6f) //|| base.Formation.QuerySystem.AveragePosition.Distance(_lastTarget.MedianPosition.AsVec2) <= 30f)
 						{
 							CheckForNewChargeTarget();
 							result = ChargeState.Charging;
@@ -229,7 +239,6 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 						}
 						_initialChargeDirection = _lastTarget.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition;
 						float value = _initialChargeDirection.Normalize();
-						_desiredChargeStopDistance = 120f;
 						break;
 					}
 				case ChargeState.ChargingPast:

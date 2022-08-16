@@ -87,18 +87,21 @@ public class RBMTacticAttackSplitArchers : TacticComponent
 		{
 			SoundTacticalHorn(MoveHornSoundIndex);
 		}
-		if (waitCountMainFormation < waitCountMainFormationMax)
-		{
-			_mainInfantry.AI.ResetBehaviorWeights();
-			TacticComponent.SetDefaultBehaviorWeights(_mainInfantry);
-			_mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
-			waitCountMainFormation++;
-			IsTacticReapplyNeeded = true;
-		}
-		else
-		{
-			_mainInfantry.AI.SetBehaviorWeight<BehaviorAdvance>(1f);
-			IsTacticReapplyNeeded = false;
+		if(_mainInfantry != null)
+        {
+			if (waitCountMainFormation < waitCountMainFormationMax)
+			{
+				_mainInfantry.AI.ResetBehaviorWeights();
+				TacticComponent.SetDefaultBehaviorWeights(_mainInfantry);
+				_mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
+				waitCountMainFormation++;
+				IsTacticReapplyNeeded = true;
+			}
+			else
+			{
+				_mainInfantry.AI.SetBehaviorWeight<BehaviorAdvance>(1f);
+				IsTacticReapplyNeeded = false;
+			}
 		}
 		if ( leftArchers != null)
 		{

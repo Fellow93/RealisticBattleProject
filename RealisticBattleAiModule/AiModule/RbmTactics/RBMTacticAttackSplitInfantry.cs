@@ -325,7 +325,6 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 		}
 		if(_flankingInfantry != null)
         {
-
 			_flankingInfantry.AI.ResetBehaviorWeights();
 			//TacticComponent.SetDefaultBehaviorWeights(_flankingInfantry);
             //_skirmishers.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
@@ -580,7 +579,7 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 				}
 			}
 		}
-		if(allyInfatryPower > enemyInfatryPower * 1.33f && allyInfCount > 60)
+		if(allyInfatryPower > enemyInfatryPower * 1.25f && allyInfCount > 60)
         {
 			return 5f;
         }

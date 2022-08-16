@@ -826,6 +826,16 @@ namespace RBMAI
         [HarmonyPatch("AdjustSpeedLimit")]
         static bool AdjustSpeedLimitPrefix(ref HumanAIComponent __instance,ref Agent agent,ref float desiredSpeed,ref bool limitIsMultiplier, ref Agent ___Agent)
         {
+            FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
+            _currentTacticField.DeclaringType.GetField("_currentTactic");
+            if (agent.Formation != null && agent.Formation.QuerySystem.IsCavalryFormation && _currentTacticField.GetValue(agent.Formation?.Team?.TeamAI) != null && _currentTacticField.GetValue(agent.Formation?.Team?.TeamAI).ToString().Contains("Embolon"))
+            {
+                if (limitIsMultiplier && desiredSpeed < 0.45f)
+                {
+                    desiredSpeed = 0.45f;
+                }
+                return true;
+            }
             if(agent.Formation != null && (agent.Formation.QuerySystem.IsRangedCavalryFormation || agent.Formation.QuerySystem.IsCavalryFormation))
             {
                 if(agent.MountAgent != null)
@@ -1202,8 +1212,6 @@ namespace RBMAI
                 }
                 if (unit.Formation.QuerySystem.IsCavalryFormation)
                 {
-
-
                     if (unit.HasMount)
                     {
                         if (RBMAI.Utilities.GetHarnessTier(unit) > 3)

@@ -90,18 +90,21 @@ public class RBMTacticDefendSplitArchers : TacticComponent
 		{
 			SoundTacticalHorn(TacticComponent.MoveHornSoundIndex);
 		}
-		if (waitCountMainFormation < waitCountMainFormationMax)
-		{
-			_mainInfantry.AI.ResetBehaviorWeights();
-			TacticComponent.SetDefaultBehaviorWeights(_mainInfantry);
-			_mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
-			waitCountMainFormation++;
-			IsTacticReapplyNeeded = true;
-		}
-		else
-		{
-			_mainInfantry.AI.SetBehaviorWeight<BehaviorHoldHighGround>(1f);
-			IsTacticReapplyNeeded = false;
+		if(_mainInfantry != null)
+        {
+			if (waitCountMainFormation < waitCountMainFormationMax)
+			{
+				_mainInfantry.AI.ResetBehaviorWeights();
+				TacticComponent.SetDefaultBehaviorWeights(_mainInfantry);
+				_mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
+				waitCountMainFormation++;
+				IsTacticReapplyNeeded = true;
+			}
+			else
+			{
+				_mainInfantry.AI.SetBehaviorWeight<BehaviorHoldHighGround>(1f);
+				IsTacticReapplyNeeded = false;
+			}
 		}
 		if ( leftArchers != null)
 		{
@@ -247,22 +250,30 @@ public class RBMTacticDefendSplitArchers : TacticComponent
 
 	protected override float GetTacticWeight()
 	{
-		if (!team.TeamAI.IsDefenseApplicable || base.Formations.All((Formation f) => !f.QuerySystem.IsInfantryFormation))
+		//if (!team.TeamAI.IsDefenseApplicable || base.Formations.All((Formation f) => !f.QuerySystem.IsInfantryFormation))
+		//{
+		//	return 0f;
+		//}
+		//Formation formation = _mainInfantry ?? base.Formations.Where((Formation f) => f.QuerySystem.IsInfantryFormation).MaxBy((Formation f) => f.CountOfUnits);
+		//if (formation == null)
+		//{
+		//	return 0f;
+		//}
+		//if (_mainInfantry == null)
+		//{
+		//	_mainInfantry = formation;
+		//}
+		//float num = team.QuerySystem.InfantryRatio + team.QuerySystem.RangedRatio;
+		//float value = _mainInfantry.QuerySystem.AveragePosition.Distance(_mainInfantry.QuerySystem.HighGroundCloseToForeseenBattleGround);
+		//float num2 = MBMath.Lerp(0.7f, 1f, (150f - MBMath.ClampFloat(value, 50f, 150f)) / 100f);
+		//return num * 1.1f * TacticComponent.CalculateNotEngagingTacticalAdvantage(team.QuerySystem) * num2 / MathF.Sqrt(team.QuerySystem.RemainingPowerRatio);
+		if (team.QuerySystem.RangedRatio > 0.2f)
 		{
-			return 0f;
+			return 10f;
 		}
-		Formation formation = _mainInfantry ?? base.Formations.Where((Formation f) => f.QuerySystem.IsInfantryFormation).MaxBy((Formation f) => f.CountOfUnits);
-		if (formation == null)
+		else
 		{
-			return 0f;
+			return 0.2f;
 		}
-		if (_mainInfantry == null)
-		{
-			_mainInfantry = formation;
-		}
-		float num = team.QuerySystem.InfantryRatio + team.QuerySystem.RangedRatio;
-		float value = _mainInfantry.QuerySystem.AveragePosition.Distance(_mainInfantry.QuerySystem.HighGroundCloseToForeseenBattleGround);
-		float num2 = MBMath.Lerp(0.7f, 1f, (150f - MBMath.ClampFloat(value, 50f, 150f)) / 100f);
-		return num * 1.1f * TacticComponent.CalculateNotEngagingTacticalAdvantage(team.QuerySystem) * num2 / MathF.Sqrt(team.QuerySystem.RemainingPowerRatio);
 	}
 }

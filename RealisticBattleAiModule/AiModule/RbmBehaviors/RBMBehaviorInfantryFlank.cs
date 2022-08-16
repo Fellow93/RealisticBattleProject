@@ -63,7 +63,7 @@ namespace RBMAI
 			}
 			else
 			{
-				float flankRange = 85f;
+				float flankRange = 65f;
 				float feintRange = 30f;
 
 				Formation enemyFormation = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation;
