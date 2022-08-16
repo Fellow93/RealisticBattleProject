@@ -186,13 +186,14 @@ namespace RBMAI
                         }
                         else
                         {
-                            agents = mission.GetNearbyAllyAgents(unitPosition + lookDirection * 1.1f, 1f, unit.Team);
+                            agents = mission.GetNearbyAllyAgents(unitPosition + lookDirection * 1f, 1f, unit.Team);
                         }
 
                         int agentsCount = agents.Count();
 
                         if (!isFieldBattle)
                         {
+                            allyAgentsCountTreshold = 2;
                             if (agentsCount > allyAgentsCountTreshold)
                             {
                                 int relevantAgentCount = 0;
