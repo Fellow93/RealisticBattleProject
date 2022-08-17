@@ -499,7 +499,7 @@ namespace RBMAI
                     if (enemyFormation != null && enemyFormation.QuerySystem != null)
                     {
                         bool isEnemyCav = enemyFormation.QuerySystem.IsCavalryFormation || enemyFormation.QuerySystem.IsRangedCavalryFormation;
-                        float distance = 50f;
+                        float distance = 60f;
                         if (!__instance.Formation.QuerySystem.IsRangedCavalryFormation)
                         {
                             distance = 30f;
@@ -1169,7 +1169,11 @@ namespace RBMAI
         [HarmonyPatch("GetAiWeight")]
         static void PrefixGetAiWeight(ref BehaviorCharge __instance, ref float __result)
         {
-            __result = __result;
+            if(__instance.Formation != null && __instance.Formation.QuerySystem.IsRangedCavalryFormation)
+            {
+                __result = __result * 0.33f;
+            }
+            //__result = __result;
         }
     }
 
