@@ -857,6 +857,31 @@ namespace RBMAI.AiModule
             }
         }
 
+        //[HarmonyPatch(typeof(SiegeMissionController))]
+        //class SetupTeamsOfSidePatch
+        //{
+        //    [HarmonyPostfix]
+        //    [HarmonyPatch("SetupTeamsOfSide")]
+        //    static void Postfix(BattleSideEnum side)
+        //    {
+        //        if(side == BattleSideEnum.Defender)
+        //        {
+        //            foreach (Formation item2 in Mission.Current.DefenderTeam.FormationsIncludingSpecial)
+        //            {
+        //                Mission.Current.AllowAiTicking = true;
+        //                item2.ApplyActionOnEachUnit(delegate (Agent agent)
+        //                {
+        //                    if (agent.IsAIControlled)
+        //                    {
+        //                        agent.AIStateFlags |= Agent.AIStateFlag.Alarmed;
+        //                        agent.SetIsAIPaused(isPaused: false);
+        //                    }
+        //                });
+        //            }
+        //        }
+        //    }
+        //}
+
         //[HarmonyPatch(typeof(TacticBreachWalls))]
         //class StartTacticalRetreatPatch
         //{
