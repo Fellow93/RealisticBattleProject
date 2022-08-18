@@ -4,9 +4,8 @@ using System.Linq;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 
-public class RBMTacticAttackSplitInfantry : TacticComponent
+public class RBMTacticDefendSplitInfantry : TacticComponent
 {
-
 	protected Formation _flankingInfantry = null;
 	protected Formation _leftFlankingInfantry = null;
 	protected Formation _rightFlankingInfantry = null;
@@ -41,37 +40,6 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 			List<Agent> flankersList = new List<Agent>();
 			List<Agent> mainList = new List<Agent>();
 
-			//_mainInfantry.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
-			//{
-			//	bool isFlanker = false;
-   //             //for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-   //             //{
-   //             //	if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
-   //             //	{
-   //             //		if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown)
-   //             //		{
-   //             //			isSkirmisher = true;
-   //             //			break;
-   //             //		}
-   //             //	}
-   //             //}
-
-   //             if (!agent.HasShieldCached)
-   //             {
-			//		isFlanker = true;
-			//	}
-
-
-			//	if (isFlanker)
-			//	{
-			//		flankersList.Add(agent);
-			//	}
-			//	else
-			//	{
-			//		mainList.Add(agent);
-			//	}
-			//});
-
 			int i = 0;
 			foreach(Formation formation in Formations.ToList())
             {
@@ -80,17 +48,6 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 					if (formation.IsInfantry())
 					{
 						bool isFlanker = false;
-						//for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-						//{
-						//	if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
-						//	{
-						//		if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown)
-						//		{
-						//			isSkirmisher = true;
-						//			break;
-						//		}
-						//	}
-						//}
 
 						if (agent.WieldedWeapon.CurrentUsageItem?.WeaponClass == WeaponClass.TwoHandedAxe || agent.WieldedWeapon.CurrentUsageItem?.WeaponClass == WeaponClass.TwoHandedPolearm)
 						{
@@ -126,62 +83,21 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 				i++;
             }
 
-			//Formations.ToList()[1].ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
-			//{
-			//	bool isSkirmisher = false;
-			//	//for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-			//	//{
-			//	//	if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
-			//	//	{
-			//	//		if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown)
-			//	//		{
-			//	//			isSkirmisher = true;
-			//	//			break;
-			//	//		}
-			//	//	}
-			//	//}
-
-			//	if (agent.HasThrownCached)
-			//	{
-			//		isSkirmisher = true;
-			//	}
-
-
-			//	if (isSkirmisher)
-			//	{
-			//		skirmishersList.Add(agent);
-			//	}
-			//	else
-			//	{
-			//		meleeList.Add(agent);
-			//	}
-			//});
-
 			flankersList = flankersList.OrderBy(o => o.CharacterPowerCached).ToList();
 
 			int j = 0;
-			//int infCount = Formations.ToList()[0].CountOfUnits + Formations.ToList()[flankersIndex].CountOfUnits;
-			//if(Formations.ToList()[flankersIndex].CountOfUnits > infCount / 4)
-			//         {
-			//	int countToTransfer = Formations.ToList()[flankersIndex].CountOfUnits - infCount / 4;
-			//	Formations.ToList()[flankersIndex].TransferUnits(Formations.ToList()[0], countToTransfer);
-			//}else if (Formations.ToList()[flankersIndex].CountOfUnits < infCount / 4)
-			//         {
-			//	int countToTransfer = infCount / 4 - Formations.ToList()[flankersIndex].CountOfUnits;
-			//	Formations.ToList()[0].TransferUnits(Formations.ToList()[flankersIndex], countToTransfer);
-			//}
 			if (leftflankersIndex > 0 && rightflankersIndex > 0)
 			{
 				foreach (Agent agent in flankersList.ToList())
 				{
 				if (isDoubleFlank)
 				{
-					if (j < infCount / 8)
+					if (j < infCount / 6)
 					{
 						//agent.Formation.TransferUnits(Formations.ToList()[flankersIndex], 1);
 						agent.Formation = Formations.ToList()[leftflankersIndex];
 					}
-					else if(j < infCount / 4)
+					else if(j < infCount / 3)
 					{
 						//agent.Formation.TransferUnits(Formations.ToList()[0], 1);
 						agent.Formation = Formations.ToList()[rightflankersIndex];
@@ -194,7 +110,7 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 				}
                 else
                 {
-					if (j < infCount / 4)
+					if (j < infCount / 3)
 					{
 						//agent.Formation.TransferUnits(Formations.ToList()[flankersIndex], 1);
 						agent.Formation = Formations.ToList()[flankersIndex];
@@ -212,12 +128,12 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 				{
 					if (isDoubleFlank)
 					{
-						if (j < infCount / 8)
+						if (j < infCount / 6)
 						{
 							//agent.Formation.TransferUnits(Formations.ToList()[flankersIndex], 1);
 							agent.Formation = Formations.ToList()[leftflankersIndex];
 						}
-						else if (j < infCount / 4)
+						else if (j < infCount / 3)
 						{
 							//agent.Formation.TransferUnits(Formations.ToList()[0], 1);
 							agent.Formation = Formations.ToList()[rightflankersIndex];
@@ -230,7 +146,7 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 					}
 					else
 					{
-						if (j < infCount / 4)
+						if (j < infCount / 3)
 						{
 							//agent.Formation.TransferUnits(Formations.ToList()[flankersIndex], 1);
 							agent.Formation = Formations.ToList()[flankersIndex];
@@ -290,23 +206,12 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 			}
 		}
 		
-        //if (_skirmishers != null)
-        //{
-        //_skirmishers.AI.Side = FormationAI.BehaviorSide.BehaviorSideNotSet;
-        //_skirmishers.AI.IsMainFormation = false;
-        //_skirmishers.AI.ResetBehaviorWeights();
-        //SetDefaultBehaviorWeights(_skirmishers);
-        //team.ClearRecentlySplitFormations(_skirmishers);
-
-        //_skirmishers = Formations.ToList()[1];
-        //}
-
         IsTacticReapplyNeeded = true;
     }
 
 	private bool _hasBattleBeenJoined;
 
-	public RBMTacticAttackSplitInfantry(Team team)
+	public RBMTacticDefendSplitInfantry(Team team)
 		: base(team)
 	{
 		_hasBattleBeenJoined = false;
@@ -317,7 +222,7 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 		AssignTacticFormations();
 	}
 
-	private void Advance()
+	private void Defend()
 	{
 		if (team.IsPlayerTeam && !team.IsPlayerGeneral && team.IsPlayerSergeant)
 		{
@@ -326,16 +231,14 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 		if(_flankingInfantry != null)
         {
 			_flankingInfantry.AI.ResetBehaviorWeights();
-			//TacticComponent.SetDefaultBehaviorWeights(_flankingInfantry);
-            //_skirmishers.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
             if (side == 0)
             {
-				_flankingInfantry.AI.SetBehaviorWeight<RBMBehaviorInfantryAttackFlank>(1f).FlankSide = FormationAI.BehaviorSide.Left;
+				_flankingInfantry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Left;
 				_flankingInfantry.AI.Side = FormationAI.BehaviorSide.Left;
 			}
 			else
             {
-				_flankingInfantry.AI.SetBehaviorWeight<RBMBehaviorInfantryAttackFlank>(1f).FlankSide = FormationAI.BehaviorSide.Right;
+				_flankingInfantry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Right;
 				_flankingInfantry.AI.Side = FormationAI.BehaviorSide.Right;
 			}
 		}
@@ -343,25 +246,20 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 		{
 
 			_leftFlankingInfantry.AI.ResetBehaviorWeights();
-			//TacticComponent.SetDefaultBehaviorWeights(_flankingInfantry);
-			//_skirmishers.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
-			_leftFlankingInfantry.AI.SetBehaviorWeight<RBMBehaviorInfantryAttackFlank>(1f).FlankSide = FormationAI.BehaviorSide.Left;
+			_leftFlankingInfantry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Left;
 			_leftFlankingInfantry.AI.Side = FormationAI.BehaviorSide.Left;
 		}
 		if (_rightFlankingInfantry != null)
 		{
 
 			_rightFlankingInfantry.AI.ResetBehaviorWeights();
-			//TacticComponent.SetDefaultBehaviorWeights(_flankingInfantry);
-			//_skirmishers.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
-			_rightFlankingInfantry.AI.SetBehaviorWeight<RBMBehaviorInfantryAttackFlank>(1f).FlankSide = FormationAI.BehaviorSide.Right;
+			_rightFlankingInfantry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Right;
 			_rightFlankingInfantry.AI.Side = FormationAI.BehaviorSide.Right;
 		}
 		if (_mainInfantry != null)
 		{
 			_mainInfantry.AI.ResetBehaviorWeights();
-			//TacticComponent.SetDefaultBehaviorWeights(_mainInfantry);
-			_mainInfantry.AI.SetBehaviorWeight<BehaviorAdvance>(1f);
+			_mainInfantry.AI.SetBehaviorWeight<BehaviorHoldHighGround>(1f);
 			_mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
 		}
 		if (_archers != null)
@@ -378,25 +276,24 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 			_leftCavalry.AI.ResetBehaviorWeights();
 			TacticComponent.SetDefaultBehaviorWeights(_leftCavalry);
 			_leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Left;
-			_leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+			//_leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
 		}
 		if (_rightCavalry != null)
 		{
 			_rightCavalry.AI.ResetBehaviorWeights();
 			TacticComponent.SetDefaultBehaviorWeights(_rightCavalry);
 			_rightCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Right;
-			_rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+			//_rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
 		}
 		if (_rangedCavalry != null)
 		{
 			_rangedCavalry.AI.ResetBehaviorWeights();
 			TacticComponent.SetDefaultBehaviorWeights(_rangedCavalry);
 			_rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
-			_rangedCavalry.AI.SetBehaviorWeight<BehaviorHorseArcherSkirmish>(1f);
 		}
 	}
 
-	private void Attack()
+	private void Engage()
 	{
 		if (team.IsPlayerTeam && !team.IsPlayerGeneral && team.IsPlayerSergeant)
 		{
@@ -423,14 +320,6 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 		{
 			_flankingInfantry.AI.ResetBehaviorWeights();
 			_flankingInfantry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
-			//if (side == 0)
-			//{
-			//	_skirmishers.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Left;
-			//}
-			//else
-			//{
-			//	_skirmishers.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Right;
-			//}
 		}
 		if (_archers != null)
 		{
@@ -456,13 +345,12 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 			_rangedCavalry.AI.ResetBehaviorWeights();
 			TacticComponent.SetDefaultBehaviorWeights(_rangedCavalry);
 			_rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
-			//_rangedCavalry.AI.SetBehaviorWeight<BehaviorHorseArcherSkirmish>(1f);
 		}
 	}
 
 	private bool HasBattleBeenJoined()
 	{
-		return RBMAI.Utilities.HasBattleBeenJoined(_mainInfantry, _hasBattleBeenJoined, 70f);
+		return RBMAI.Utilities.HasBattleBeenJoined(_mainInfantry, _hasBattleBeenJoined);
 	}
 
 	protected override bool CheckAndSetAvailableFormationsChanged()
@@ -509,11 +397,11 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 			ManageFormationCounts();
 			if (_hasBattleBeenJoined)
 			{
-				Attack();
+				Engage();
 			}
 			else
 			{
-				Advance();
+				Defend();
 			}
 			IsTacticReapplyNeeded = false;
 		}
@@ -523,11 +411,11 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 			_hasBattleBeenJoined = flag;
 			if (_hasBattleBeenJoined)
 			{
-				Attack();
+				Engage();
 			}
 			else
 			{
-				Advance();
+				Defend();
 			}
 			IsTacticReapplyNeeded = false;
 		}
@@ -587,6 +475,5 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
         {
 			return 0.01f;
         }
-		//return allyInfatryPower / ((enemyArcherPower * 0.5f) + enemyInfatryPower / (allyCavalryPower * 0.5f));
 	}
 }

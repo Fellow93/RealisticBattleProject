@@ -61,7 +61,7 @@ namespace RBMAI
 					significantEnemy = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation;
 				}
 				Formation significantAlly = null;
-				significantAlly = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
+				significantAlly = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false, true);
 
 				vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition;
 				float distance = vec.Normalize();

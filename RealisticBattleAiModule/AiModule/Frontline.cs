@@ -102,7 +102,7 @@ namespace RBMAI
                     int hasShieldBonusNumber = 30;
                     int isAttackingArcherNumber = -60;
                     int aggresivnesModifier = 0;
-                    float backStepDistance = 1.15f;
+                    float backStepDistance = 1.25f;
                     if (isAgentInDefensiveOrder)
                     {
                         allyAgentsCountTreshold = 3;
@@ -308,7 +308,7 @@ namespace RBMAI
                                             if (MBRandom.RandomInt(unitPower / 4) == 0)
                                             {
                                                 aiDecisionCooldownDict[unit].position = WorldPosition.Invalid;
-                                                aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
+                                                aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
                                                 return true;
                                             }
                                             else
@@ -330,7 +330,7 @@ namespace RBMAI
                                 else
                                 {
                                     aiDecisionCooldownDict[unit].position = WorldPosition.Invalid;
-                                    aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
+                                    aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
                                     return true;
                                 }
                                 //}

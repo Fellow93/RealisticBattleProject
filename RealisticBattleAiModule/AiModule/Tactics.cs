@@ -156,7 +156,7 @@ namespace RBMAI
             {
                 formation.AI.AddAiBehavior(new RBMBehaviorArcherSkirmish(formation));
                 formation.AI.AddAiBehavior(new RBMBehaviorForwardSkirmish(formation));
-                formation.AI.AddAiBehavior(new RBMBehaviorInfantryFlank(formation));
+                formation.AI.AddAiBehavior(new RBMBehaviorInfantryAttackFlank(formation));
                 formation.AI.AddAiBehavior(new RBMBehaviorCavalryCharge(formation));
                 formation.AI.AddAiBehavior(new RBMBehaviorEmbolon(formation));
                 formation.AI.AddAiBehavior(new RBMBehaviorArcherFlank(formation));
@@ -302,6 +302,10 @@ namespace RBMAI
                                 {
                                     team.AddTacticOption(new TacticDefensiveEngagement(team));
                                     team.AddTacticOption(new TacticDefensiveLine(team));
+                                }
+                                if(____defenderLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Sturgia)
+                                {
+                                    team.AddTacticOption(new RBMTacticDefendSplitInfantry(team));
                                 }
                                 team.AddTacticOption(new TacticFullScaleAttack(team));
                                 //team.AddTacticOption(new TacticCharge(team));

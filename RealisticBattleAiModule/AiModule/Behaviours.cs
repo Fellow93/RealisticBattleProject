@@ -509,13 +509,13 @@ namespace RBMAI
                         if (__instance.Formation.QuerySystem.IsRangedCavalryFormation)
                         {
                             if(Utilities.FormationFightingInMelee(enemyFormation, 0.1f)){
-                                Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, enemyFormation.Width * 0.25f * (isEnemyCav ? 1.5f : 1f), enemyFormation.Direction);
+                                Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, enemyFormation.Width * 0.25f * 1f, enemyFormation.Direction);
                                 position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 20f));
                             }
                             else
                             {
-                                Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, enemyFormation.Width * 0.5f * (isEnemyCav ? 1.5f : 1f), enemyFormation.Direction);
-                                position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 30f));
+                                Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, enemyFormation.Width * 0.5f * 1f, __instance.Formation.Direction);
+                                position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 20f));
                                 if(position.GetNavMesh() == UIntPtr.Zero)
                                 {
                                     position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 10f));
@@ -557,7 +557,7 @@ namespace RBMAI
             else if (__instance.Formation != null && __instance.Formation.QuerySystem.IsRangedCavalryFormation)
             {
                 Formation enemyCav = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
-                if(enemyCav != null && __instance.Formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyCav.QuerySystem.MedianPosition.AsVec2) < 55f)
+                if (enemyCav != null && __instance.Formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyCav.QuerySystem.MedianPosition.AsVec2) < 55f && enemyCav.CountOfUnits * 0.5f >= __instance.Formation.CountOfUnits)
                 {
                     __result = 0.1f;
                     return;
@@ -619,7 +619,7 @@ namespace RBMAI
             {
                 distanceFromMainFormation = 10f;
                 closerDistanceFromMainFormation = 5f;
-                distanceOffsetFromMainFormation = 60f;
+                distanceOffsetFromMainFormation = 10f;
             }
 
             if (____mainFormation == null || __instance.Formation == null || __instance.Formation.QuerySystem.ClosestEnemyFormation == null)
@@ -800,6 +800,16 @@ namespace RBMAI
             return true;
         }
 
+        [HarmonyPostfix]
+        [HarmonyPatch("OnBehaviorActivatedAux")]
+        static void PostfixOnBehaviorActivatedAux(ref BehaviorProtectFlank __instance)
+        {
+            if (__instance.Formation != null && __instance.Formation.QuerySystem.IsInfantryFormation)
+            {
+                __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
+            }
+        }
+
         [HarmonyPrefix]
         [HarmonyPatch("GetAiWeight")]
         static bool PostfixGetAiWeight(ref BehaviorProtectFlank __instance, ref float __result, ref Formation ____mainFormation)
@@ -848,7 +858,7 @@ namespace RBMAI
             }
             else if(agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null && 
                 (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorForwardSkirmish) || 
-                agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorInfantryFlank)))
+                agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorInfantryAttackFlank)))
             {
                 if(limitIsMultiplier && desiredSpeed < 0.85f)
                 {

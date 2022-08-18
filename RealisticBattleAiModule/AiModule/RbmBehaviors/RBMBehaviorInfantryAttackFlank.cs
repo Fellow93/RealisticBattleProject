@@ -6,7 +6,7 @@ using TaleWorlds.MountAndBlade;
 
 namespace RBMAI
 {
-    class RBMBehaviorInfantryFlank : BehaviorComponent
+    class RBMBehaviorInfantryAttackFlank : BehaviorComponent
 	{
 		private FlankMode flankMode;
 
@@ -26,7 +26,7 @@ namespace RBMAI
 
 		private bool _isEnemyReachable = true;
 
-		public RBMBehaviorInfantryFlank(Formation formation)
+		public RBMBehaviorInfantryAttackFlank(Formation formation)
 			: base(formation)
 		{
 			flankMode = FlankMode.Flank;
