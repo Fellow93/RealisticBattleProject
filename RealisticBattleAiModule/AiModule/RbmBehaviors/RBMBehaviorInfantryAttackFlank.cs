@@ -63,7 +63,7 @@ namespace RBMAI
 			}
 			else
 			{
-				float flankRange = 65f;
+				float flankRange = 45f;
 				float feintRange = 30f;
 
 				Formation enemyFormation = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation;
@@ -106,7 +106,7 @@ namespace RBMAI
 								}
 								else
 								{
-									position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+									position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 140f);
 								}
 							}
 							else if (behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
@@ -118,7 +118,7 @@ namespace RBMAI
 								}
 								else
 								{
-									position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+									position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 140f);
 								}
 							}
                             else
@@ -129,7 +129,7 @@ namespace RBMAI
 								}
 								else
                                 {
-									position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+									position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 140f);
 								}
 							}
 							break;

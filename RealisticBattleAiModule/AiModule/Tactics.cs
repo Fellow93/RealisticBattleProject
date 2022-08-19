@@ -266,7 +266,7 @@ namespace RBMAI
                                 }
                                 else
                                 {
-                                    team.AddTacticOption(new TacticFrontalCavalryCharge(team));
+                                    //team.AddTacticOption(new TacticFrontalCavalryCharge(team));
                                 }
                                 if (____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Aserai)
                                 {
@@ -280,10 +280,7 @@ namespace RBMAI
                                 {
                                     team.AddTacticOption(new RBMTacticAttackSplitArchers(team));
                                 }
-                                else
-                                {
-                                    team.AddTacticOption(new TacticFullScaleAttack(team));
-                                }
+                                team.AddTacticOption(new TacticFullScaleAttack(team));
                                 //team.AddTacticOption(new RBMTacticEmbolon(team));
 
                                 team.AddTacticOption(new TacticCoordinatedRetreat(team));
@@ -298,11 +295,8 @@ namespace RBMAI
                                 {
                                     team.AddTacticOption(new RBMTacticDefendSplitArchers(team));
                                 }
-                                else
-                                {
-                                    team.AddTacticOption(new TacticDefensiveEngagement(team));
-                                    team.AddTacticOption(new TacticDefensiveLine(team));
-                                }
+                                team.AddTacticOption(new TacticDefensiveEngagement(team));
+                                team.AddTacticOption(new TacticDefensiveLine(team));
                                 if(____defenderLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Sturgia)
                                 {
                                     team.AddTacticOption(new RBMTacticDefendSplitInfantry(team));

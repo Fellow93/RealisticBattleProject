@@ -457,7 +457,7 @@ namespace RBMAI
                 }
                 else
                 {
-                    Vec2 vec = (__instance.Formation.QuerySystem.AveragePosition - targetFormationQS.AveragePosition).Normalized().LeftVec();
+                    Vec2 vec = (__instance.Formation.QuerySystem.MedianPosition.AsVec2 - targetFormationQS.MedianPosition.AsVec2).Normalized().LeftVec();
                     FormationQuerySystem closestSignificantlyLargeEnemyFormation = targetFormationQS;
                     float num2 = 50f + (targetFormationQS.Formation.Width + __instance.Formation.Depth) * 0.5f;
                     float num3 = 0f;
@@ -891,6 +891,14 @@ namespace RBMAI
                     desiredSpeed = 0.9f;
                 }
             }
+            if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
+                (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorArcherSkirmish)))
+            {
+                if (limitIsMultiplier && desiredSpeed < 0.9f)
+                {
+                    desiredSpeed = 0.9f;
+                }
+            }
             //else if(agent.Formation != null && agent.Formation.Team.HasTeamAi)
             //{
             //    FieldInfo field = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -992,7 +1000,7 @@ namespace RBMAI
             }
             if (__instance.Formation != null && (__instance.Formation.QuerySystem.IsInfantryFormation || __instance.Formation.QuerySystem.IsRangedFormation) && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
-                Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true, 0.7f);
+                Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
 
                 if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && __instance.Formation.QuerySystem.IsInfantryFormation && !RBMAI.Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
                 {
@@ -1946,7 +1954,7 @@ namespace RBMAI
                 __instance.Formation.FacingOrder = ___CurrentFacingOrder;
                 if (__instance.Formation.IsInfantry())
                 {
-                    Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true, 0.7f);
+                    Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
                     if (significantEnemy != null)
                     {
                         float num = __instance.Formation.QuerySystem.AveragePosition.Distance(significantEnemy.QuerySystem.MedianPosition.AsVec2);

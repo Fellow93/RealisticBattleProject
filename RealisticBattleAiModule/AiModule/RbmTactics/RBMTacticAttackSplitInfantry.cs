@@ -581,7 +581,7 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 		}
 		if(allyInfatryPower > enemyInfatryPower * 1.25f && allyInfCount > 60)
         {
-			return 5f;
+			return 10f;
         }
         else
         {

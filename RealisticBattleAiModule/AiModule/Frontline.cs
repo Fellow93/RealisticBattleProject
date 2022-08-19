@@ -98,7 +98,7 @@ namespace RBMAI
                     int allyAgentsCountTreshold = 3;
                     int enemyAgentsCountTreshold = 3;
                     int enemyAgentsCountDangerousTreshold = 4;
-                    int enemyAgentsCountCriticalTreshold = 7;
+                    int enemyAgentsCountCriticalTreshold = 6;
                     int hasShieldBonusNumber = 30;
                     int isAttackingArcherNumber = -60;
                     int aggresivnesModifier = 0;
@@ -111,7 +111,7 @@ namespace RBMAI
                         enemyAgentsCountCriticalTreshold = 7;
                         backStepDistance = 1.15f;
                         hasShieldBonusNumber = 40;
-                        aggresivnesModifier = 10;
+                        aggresivnesModifier = 0;
                     }
 
                     if (targetAgent != null && vanillaTargetAgent != null)
@@ -181,14 +181,14 @@ namespace RBMAI
                         IEnumerable<Agent> agents;
                         if (isFieldBattle)
                         {
-                            agents = mission.GetNearbyAllyAgents(unitPosition + direction * 1.1f, 1f, unit.Team);
-
+                            agents = mission.GetNearbyAllyAgents(unitPosition + direction * 1.1f, 1.1f, unit.Team);
                         }
                         else
                         {
                             agents = mission.GetNearbyAllyAgents(unitPosition + lookDirection * 1f, 1f, unit.Team);
                         }
-
+                        Agent tempAgent = unit;
+                        agents = agents.Where(a => a != tempAgent).ToList();
                         int agentsCount = agents.Count();
 
                         if (!isFieldBattle)
@@ -226,14 +226,14 @@ namespace RBMAI
                             {
                                 if (unit != null)
                                 {
-                                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 10f, 2f, 10f, 20f, 10f);
-                                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 0f, 2f, 0f, 20f, 0f);
+                                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 5f, 2f, 4f, 10f, 6f);
+                                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 4.9f, 1.9f, 1.1f, 10f, 0.01f);
                                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
 
                                     Vec2 leftVec = direction.LeftVec() + direction * 1f;
                                     Vec2 rightVec = direction.RightVec() + direction * 1f;
-                                    IEnumerable<Agent> agentsLeft = mission.GetNearbyAllyAgents(unitPosition + leftVec * 1.1f, 1f, unit.Team);
-                                    IEnumerable<Agent> agentsRight = mission.GetNearbyAllyAgents(unitPosition + rightVec * 1.1f, 1f, unit.Team);
+                                    IEnumerable<Agent> agentsLeft = mission.GetNearbyAllyAgents(unitPosition + leftVec * 1.1f, 1.1f, unit.Team);
+                                    IEnumerable<Agent> agentsRight = mission.GetNearbyAllyAgents(unitPosition + rightVec * 1.1f, 1.1f, unit.Team);
                                     IEnumerable<Agent> furtherAllyAgents = mission.GetNearbyAllyAgents(unitPosition + direction * 3f, 2f, unit.Team);
 
                                     int agentsLeftCount = agentsLeft.Count();
@@ -305,7 +305,7 @@ namespace RBMAI
                                         }
                                         else
                                         {
-                                            if (MBRandom.RandomInt(unitPower / 4) == 0)
+                                            if (MBRandom.RandomInt(unitPower / 3) == 0)
                                             {
                                                 aiDecisionCooldownDict[unit].position = WorldPosition.Invalid;
                                                 aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
@@ -374,8 +374,8 @@ namespace RBMAI
                             if (enemyAgentsImmidiateCount > enemyAgentsCountTreshold || enemyAgents10fCount > enemyAgentsCountTreshold)
                             {
                                 unit.LookDirection = direction.ToVec3();
-                                int unitPower = (int)Math.Floor(unit.Character.GetPower() * 100);
-                                int randInt = MBRandom.RandomInt(unitPower + aggresivnesModifier);
+                                float unitPower = (float)Math.Floor(unit.Character.GetPower() * 100);
+                                int randInt = MBRandom.RandomInt((int)unitPower + aggresivnesModifier);
                                 int defensivnesModifier = 0;
 
                                 if (unit.WieldedOffhandWeapon.IsShield())
@@ -437,7 +437,7 @@ namespace RBMAI
                                     }
                                     else
                                     {
-                                        if (MBRandom.RandomInt(unitPower / 4) == 0)
+                                        if (MBRandom.RandomInt((int)(unitPower / 4)) == 0)
                                         {
                                             __result = unit.GetWorldPosition();
                                             //__result = WorldPosition.Invalid;
@@ -503,7 +503,7 @@ namespace RBMAI
                     }
                     Vec2 direction = (result.AsVec2 - unitPosition).Normalized();
                     float distance = unitPosition.Distance(result.AsVec2);
-                    if (distance > 1.15f)
+                    if (distance > 1.25f)
                     {
                         result.SetVec2(unitPosition + direction * 0.9f);
                     }

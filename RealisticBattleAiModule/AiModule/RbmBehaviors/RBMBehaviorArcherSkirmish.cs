@@ -41,6 +41,10 @@ namespace RBMAI
 
 		protected override void CalculateCurrentOrder()
 		{
+			if(base.Formation.Width > 70f)
+            {
+				base.Formation.FormOrder = FormOrder.FormOrderCustom(70f);
+			}
 			WorldPosition medianPosition = base.Formation.QuerySystem.MedianPosition;
 			bool flag = false;
 			Vec2 vec;
@@ -54,7 +58,7 @@ namespace RBMAI
 				Formation significantEnemy = null;
 				if (base.Formation != null && base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
 				{
-					significantEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, true, true, false, false, false, true, 0.20f);
+					significantEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, true, false, false, false, false, true);
 				}
 				if (significantEnemy == null)
 				{
@@ -63,7 +67,7 @@ namespace RBMAI
 				Formation significantAlly = null;
 				significantAlly = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false, true);
 
-				vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition;
+				vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - base.Formation.QuerySystem.MedianPosition.AsVec2;
 				float distance = vec.Normalize();
 				//float ratioOfShooting = MBMath.Lerp(0.1f, 0.33f, 1f - MBMath.ClampFloat(base.Formation.CountOfUnits, 1f, 50f) * 0.02f) * base.Formation.QuerySystem.RangedUnitRatio;
 				float ratioOfShooting = 0.3f;
@@ -234,7 +238,9 @@ namespace RBMAI
 			}
 			if (!CurrentFacingOrder.GetDirection(base.Formation).IsValid || _behaviorState != BehaviorState.Shooting || flag)
 			{
-				CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
+				Vec2 averageAllyFormationPosition = base.Formation.QuerySystem.Team.AveragePosition;
+				WorldPosition medianTargetFormationPosition = base.Formation.QuerySystem.Team.MedianTargetFormationPosition;
+				CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection((medianTargetFormationPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition).Normalized());
 			}
 		}
 
