@@ -505,6 +505,22 @@ namespace RBMAI
                         }
 
                     }
+                    if (significantEnemy == null)
+                    {
+                        dist = 10000f;
+                        float unitCountRatio = 0f;
+                        foreach (Formation enemyFormation in allEnemyFormations)
+                        {
+                            float newUnitCountRatio = (float)(enemyFormation.CountOfUnits) / (float)formation.CountOfUnits;
+                            float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                            if (newDist < dist * newUnitCountRatio)
+                            {
+                                significantEnemy = enemyFormation;
+                                unitCountRatio = newUnitCountRatio;
+                                dist = newDist;
+                            }
+                        }
+                    }
                 }
             }
 
@@ -677,7 +693,7 @@ namespace RBMAI
                             float unitCountRatio = 0f;
                             foreach (Formation enemyFormation in allEnemyFormations)
                             {
-                                float newUnitCountRatio = (enemyFormation.CountOfUnits) / formation.CountOfUnits;
+                                float newUnitCountRatio = (float)(enemyFormation.CountOfUnits) / (float)formation.CountOfUnits;
                                 float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
                                 if (newDist < dist * newUnitCountRatio)
                                 {

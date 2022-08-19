@@ -185,7 +185,7 @@ namespace RBMAI
                         }
                         else
                         {
-                            agents = mission.GetNearbyAllyAgents(unitPosition + lookDirection * 1f, 1f, unit.Team);
+                            agents = mission.GetNearbyAllyAgents(unitPosition + direction * 1f, 1f, unit.Team);
                         }
                         Agent tempAgent = unit;
                         agents = agents.Where(a => a != tempAgent).ToList();
@@ -214,6 +214,7 @@ namespace RBMAI
                                     return true;
                                 }
                             }
+                            
                             return true;
                         }
                         if (agentsCount > allyAgentsCountTreshold && !unit.IsDoingPassiveAttack)

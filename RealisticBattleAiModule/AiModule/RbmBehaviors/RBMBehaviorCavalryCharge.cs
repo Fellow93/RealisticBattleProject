@@ -162,6 +162,11 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 						{
 							CheckForNewChargeTarget();
 							result = ChargeState.Charging;
+							if(_lastTarget != null && _lastTarget.Formation != null)
+                            {
+								base.Formation.FormOrder = FormOrder.FormOrderCustom(_lastTarget.Formation.Width);
+
+							}
 						}
 						break;
 					}

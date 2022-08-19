@@ -189,6 +189,11 @@ namespace RBMAI.AiModule
                 {
                     case BehaviorState.ClimbWall:
                         {
+                            if (__instance.Formation != null && __instance.Formation.QuerySystem.MedianPosition.AsVec2.Distance(____wallSegmentMoveOrder.GetPosition(__instance.Formation)) > 60f)
+                            {
+                                ____currentOrder = ____wallSegmentMoveOrder;
+                                break;
+                            }
                             if (__instance.Formation != null)
                             {
                                 Formation enemyFormation = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, false, false, false, false, false);
@@ -215,9 +220,21 @@ namespace RBMAI.AiModule
                             break;
                         }
                     case BehaviorState.Charging:
+                        {
+                            if (__instance.Formation.AI.Side == BehaviorSide.Left || __instance.Formation.AI.Side == BehaviorSide.Right)
+                            {
+
+                                //__instance.Formation.DisbandAttackEntityDetachment();
+
+                                //foreach (IDetachment detach in __instance.Formation.Detachments.ToList())
+                                //{
+                                //    __instance.Formation.LeaveDetachment(detach);
+                                //}
+                            }
+                            break;
+                        }
                     case BehaviorState.TakeControl:
                         {
-
                             if (__instance.Formation.AI.Side == BehaviorSide.Middle)
                             {
                                 //__instance.Formation.DisbandAttackEntityDetachment();
@@ -265,7 +282,7 @@ namespace RBMAI.AiModule
             {
                 __instance.Formation.SetMovementOrder(____currentOrder);
                 __instance.Formation.FacingOrder = ___CurrentFacingOrder;
-                __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+                __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderScatter;
                 __instance.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
                 __instance.Formation.FormOrder = FormOrder.FormOrderWider;
                 __instance.Formation.WeaponUsageOrder = WeaponUsageOrder.WeaponUsageOrderUseAny;
@@ -525,11 +542,14 @@ namespace RBMAI.AiModule
                     Formation correctEnemy = RBMAI.Utilities.FindSignificantEnemyToPosition(__instance.Formation, position, true, false, false, false, false, true);
                     if (correctEnemy != null)
                     {
-                        if (TeamAISiegeComponent.IsFormationInsideCastle(correctEnemy, includeOnlyPositionedUnits: false, 0.10f))
+                        float distance = __instance.Formation.QuerySystem.MedianPosition.AsVec2.Distance(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.MedianPosition.AsVec2);
+                        if (TeamAISiegeComponent.IsFormationInsideCastle(correctEnemy, includeOnlyPositionedUnits: false, 0.4f) || (TeamAISiegeComponent.IsFormationInsideCastle(correctEnemy, includeOnlyPositionedUnits: false, 0.10f) && TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation, includeOnlyPositionedUnits: false, 0.25f) && distance < 35f))
                         {
                             ____readyOrder = MovementOrder.MovementOrderChargeToTarget(correctEnemy);
+                            ____waitOrder = MovementOrder.MovementOrderChargeToTarget(correctEnemy);
                             ____currentOrder = ____readyOrder;
                         }
+
                     }
                 }
 

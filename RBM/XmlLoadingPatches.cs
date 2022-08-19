@@ -13,8 +13,7 @@ namespace RBM
         [HarmonyPatch("MergeTwoXmls")]
         class MergeTwoXmlsPatch
         {
-
-            static bool Prefix(XmlDocument xmlDocument1, XmlDocument xmlDocument2, ref XmlDocument __result)
+            static bool Prefix(ref XmlDocument xmlDocument1, ref XmlDocument xmlDocument2, ref XmlDocument __result)
             {
                 XDocument originalXml = MBObjectManager.ToXDocument(xmlDocument1);
                 XDocument mergedXml = MBObjectManager.ToXDocument(xmlDocument2);
@@ -25,7 +24,7 @@ namespace RBM
                     __result = MBObjectManager.ToXmlDocument(originalXml);
                     return false;
                 }
-                if (!RBMConfig.RBMConfig.troopOverhaulActive && xmlDocument2.BaseURI.Contains("unit_overhaul"))
+                if ((!RBMConfig.RBMConfig.rbmCombatEnabled || !RBMConfig.RBMConfig.troopOverhaulActive) && xmlDocument2.BaseURI.Contains("unit_overhaul"))
                 {
                     __result = MBObjectManager.ToXmlDocument(originalXml);
                     return false;
