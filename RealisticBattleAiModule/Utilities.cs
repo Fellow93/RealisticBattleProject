@@ -419,7 +419,7 @@ namespace RBMAI
                                 dist = newDist;
                             }
 
-                            float newUnitCountRatio = (enemyFormation.CountOfUnits * unitCountModifier) / formation.CountOfUnits;
+                            float newUnitCountRatio = ((float)enemyFormation.CountOfUnits * unitCountModifier) / (float)formation.CountOfUnits;
                             if (unitCountMatters)
                             {
                                 if (newUnitCountRatio > significantTreshold)
@@ -437,7 +437,7 @@ namespace RBMAI
                                 dist = newDist;
                             }
 
-                            float newUnitCountRatio = (enemyFormation.CountOfUnits * unitCountModifier) / formation.CountOfUnits;
+                            float newUnitCountRatio = ((float)enemyFormation.CountOfUnits * unitCountModifier) / (float)formation.CountOfUnits;
                             if (unitCountMatters)
                             {
                                 if (newUnitCountRatio > significantTreshold)
@@ -513,7 +513,7 @@ namespace RBMAI
                         {
                             float newUnitCountRatio = (float)(enemyFormation.CountOfUnits) / (float)formation.CountOfUnits;
                             float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
-                            if (newDist < dist * newUnitCountRatio)
+                            if (newDist < dist * newUnitCountRatio * 1.5f)
                             {
                                 significantEnemy = enemyFormation;
                                 unitCountRatio = newUnitCountRatio;
@@ -635,7 +635,7 @@ namespace RBMAI
                             {
                                 float newUnitCountRatio = (float)(significantFormation.CountOfUnits) / (float)formation.CountOfUnits;
                                 float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(significantFormation.QuerySystem.MedianPosition.AsVec2);
-                                if (newDist < dist * (newUnitCountRatio *1.5f))
+                                if (newDist < dist * (newUnitCountRatio * 1.5f))
                                 {
                                     significantEnemy = significantFormation;
                                     unitCount = significantFormation.CountOfUnits;
@@ -653,7 +653,7 @@ namespace RBMAI
                                 float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
                                 if (formation != null && includeInfantry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
                                 {
-                                    if (newDist < dist * newUnitCountRatio)
+                                    if (newDist < dist * newUnitCountRatio * 1.5f)
                                     {
                                         significantEnemy = enemyFormation;
                                         unitCountRatio = newUnitCountRatio;
@@ -662,7 +662,7 @@ namespace RBMAI
                                 }
                                 if (formation != null && includeRanged && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
                                 {
-                                    if (newDist < dist * newUnitCountRatio)
+                                    if (newDist < dist * newUnitCountRatio * 1.5f)
                                     {
                                         significantEnemy = enemyFormation;
                                         dist = newDist;
@@ -670,7 +670,7 @@ namespace RBMAI
                                 }
                                 if (formation != null && includeCavalry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsCavalryFormation && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
                                 {
-                                    if (newDist < dist * newUnitCountRatio)
+                                    if (newDist < dist * newUnitCountRatio * 1.5f)
                                     {
                                         significantEnemy = enemyFormation;
                                         dist = newDist;
@@ -678,7 +678,7 @@ namespace RBMAI
                                 }
                                 if (formation != null && includeHorseArchers && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedCavalryFormation)
                                 {
-                                    if (newDist < dist * newUnitCountRatio)
+                                    if (newDist < dist * newUnitCountRatio * 1.5f)
                                     {
                                         significantEnemy = enemyFormation;
                                         dist = newDist;
@@ -695,7 +695,7 @@ namespace RBMAI
                             {
                                 float newUnitCountRatio = (float)(enemyFormation.CountOfUnits) / (float)formation.CountOfUnits;
                                 float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
-                                if (newDist < dist * newUnitCountRatio)
+                                if (newDist < dist * newUnitCountRatio * 1.5f)
                                 {
                                     significantEnemy = enemyFormation;
                                     unitCountRatio = newUnitCountRatio;
