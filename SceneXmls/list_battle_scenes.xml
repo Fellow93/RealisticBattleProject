@@ -202,7 +202,7 @@
   <Scene id="empire_castle_c"
          name="{=QuLrXJoP}Jogurys Castle"
          terrain="Plain"
-         is_siege_map="true"></Scene>
+         is_siege_map="true"></Scene> lvl 1, 2 and 3 done
 		 
   <Scene id="sturgia_castle_c"
          name="{=PF1ohppa}Mazhadan Castle"
