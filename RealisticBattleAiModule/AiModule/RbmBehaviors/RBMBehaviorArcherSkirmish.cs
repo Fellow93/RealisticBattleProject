@@ -132,7 +132,7 @@ namespace RBMAI
 								if (base.Formation.QuerySystem.IsRangedFormation && distance < MathF.Min(effectiveShootingRange * 0.4f, _cantShootDistance * 0.666f))
 								{
 									Formation meleeFormation = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
-									if (meleeFormation != null && meleeFormation.QuerySystem.IsInfantryFormation)
+									if (meleeFormation != null && meleeFormation.QuerySystem.IsInfantryFormation && meleeFormation.QuerySystem.MedianPosition.AsVec2.Distance(base.Formation.QuerySystem.MedianPosition.AsVec2) <= base.Formation.QuerySystem.MissileRange)
 									{
 										_cantShoot = true;
 										_behaviorState = BehaviorState.PullingBack;
@@ -174,6 +174,12 @@ namespace RBMAI
 					case BehaviorState.PullingBack:
 						{
 							Formation meleeFormationPull = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
+							if (meleeFormationPull != null && meleeFormationPull.QuerySystem.MedianPosition.AsVec2.Distance(base.Formation.QuerySystem.MedianPosition.AsVec2) > base.Formation.QuerySystem.MissileRange)
+							{
+								_behaviorState = BehaviorState.Shooting;
+								_cantShoot = false;
+								flag = true;
+							}
 							if (meleeFormationPull == null || !meleeFormationPull.QuerySystem.IsInfantryFormation)
 							{
 								_behaviorState = BehaviorState.Shooting;

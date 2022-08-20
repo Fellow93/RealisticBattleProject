@@ -26,7 +26,7 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
 			}
 		}
 		isDoubleFlank = true;
-		ManageFormationCounts(1, 1, 2, 1);
+		//ManageFormationCounts(1, 1, 2, 1);
 		ManageFormationCounts(3, 1, 2, 1);
 		_mainInfantry = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsInfantryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
 		if (_mainInfantry != null)
