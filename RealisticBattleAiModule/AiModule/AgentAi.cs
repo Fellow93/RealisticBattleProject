@@ -98,10 +98,16 @@ namespace RBMAI
                         agentDrivenProperties.AIAttackOnDecideChance = 0.5f;//MBMath.ClampFloat(0.23f * CalculateAIAttackOnDecideMaxValue() * (3f - agent.Defensiveness), 0.05f, 1f); //0.05-1f, 0.66-line, 0.44 - shield wall - aggressiveness / chance of attack instead of anything else / when set to 0 AI never attacks on its own
                     }
                 }
-
-                agentDrivenProperties.AiRangedHorsebackMissileRange = 0.45f; // percentage of maximum range is used, range of HA circle
+                if (RBMConfig.RBMConfig.rbmCombatEnabled)
+                {
+                    agentDrivenProperties.AiRangedHorsebackMissileRange = 0.35f; // percentage of maximum range is used, range of HA circle
+                }
+                else
+                {
+                    agentDrivenProperties.AiRangedHorsebackMissileRange = 0.235f; // percentage of maximum range is used, range of HA circle
+                }
                 agentDrivenProperties.AiUseShieldAgainstEnemyMissileProbability = 0.95f;
-                agentDrivenProperties.AiFlyingMissileCheckRadius = 250f;
+                //agentDrivenProperties.AiFlyingMissileCheckRadius = 250f;
 
                 agentDrivenProperties.AiShooterError = 0.0001f;
 

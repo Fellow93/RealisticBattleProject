@@ -428,9 +428,10 @@ namespace RBMAI
 
         [HarmonyPostfix]
         [HarmonyPatch("CalculateCurrentOrder")]
-        static void PostfixCalculateCurrentOrder(BehaviorMountedSkirmish __instance, ref bool ____engaging, ref MovementOrder ____currentOrder, ref bool ____isEnemyReachable)
+        static void PostfixCalculateCurrentOrder(BehaviorMountedSkirmish __instance, ref bool ____engaging, ref MovementOrder ____currentOrder, ref bool ____isEnemyReachable, ref FacingOrder ___CurrentFacingOrder)
         {
             WorldPosition position = __instance.Formation.QuerySystem.MedianPosition;
+            WorldPosition position2 = __instance.Formation.QuerySystem.MedianPosition;
             Formation targetFormation = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
             FormationQuerySystem targetFormationQS = null;
             if(targetFormation != null)
@@ -510,23 +511,24 @@ namespace RBMAI
                         {
                             if(Utilities.FormationFightingInMelee(enemyFormation, 0.1f)){
                                 Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, enemyFormation.Width * 0.25f * 1f, enemyFormation.Direction);
-                                position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 20f));
+                                position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f));
+                                position2.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f));
                             }
                             else
                             {
                                 Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, enemyFormation.Width * 0.5f * 1f, __instance.Formation.Direction);
-                                position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 20f));
-                                if(position.GetNavMesh() == UIntPtr.Zero)
-                                {
-                                    position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 10f));
-                                }
+                                position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f));
+                                position2.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f));
                             }
+                            //____currentOrder = MovementOrder.MovementOrderMove(position);
                         }
                         else
                         {
                             Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, enemyFormation.Width * 0.5f * (isEnemyCav ? 1.5f : 1f), enemyFormation.Direction);
-                            position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 20f));
+                            position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f));
+                            position2.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f));
                         }
+                        ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyFormation.QuerySystem.AveragePosition);
                     }
                     else
                     {
@@ -535,6 +537,7 @@ namespace RBMAI
                 }
             }
             ____currentOrder = MovementOrder.MovementOrderMove(position);
+            
         }
 
         [HarmonyPostfix]
@@ -557,7 +560,7 @@ namespace RBMAI
             else if (__instance.Formation != null && __instance.Formation.QuerySystem.IsRangedCavalryFormation)
             {
                 Formation enemyCav = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
-                if (enemyCav != null && __instance.Formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyCav.QuerySystem.MedianPosition.AsVec2) < 55f && enemyCav.CountOfUnits * 0.5f >= __instance.Formation.CountOfUnits)
+                if (enemyCav != null && enemyCav.QuerySystem.IsCavalryFormation && __instance.Formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyCav.QuerySystem.MedianPosition.AsVec2) < 55f && enemyCav.CountOfUnits * 0.5f >= __instance.Formation.CountOfUnits)
                 {
                     __result = 0.1f;
                     return;
@@ -567,7 +570,7 @@ namespace RBMAI
                     __result = 0.1f;
                     return;
                 }
-                __result = 2f;
+                __result = 100f;
                 return;
             }
             else
@@ -1189,7 +1192,7 @@ namespace RBMAI
         {
             if(__instance.Formation != null && __instance.Formation.QuerySystem.IsRangedCavalryFormation)
             {
-                __result = __result * 0.33f;
+                __result = __result * 0.1f;
             }
             //__result = __result;
         }
@@ -1343,10 +1346,10 @@ namespace RBMAI
                 if (unit.Formation.QuerySystem.IsRangedCavalryFormation)
                 {
                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 15f, 5f, 20f, 5f);
-                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 0.02f, 2f, 0.01f, 20f, 0.01f);
+                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 0.065f, 2f, 0.065f, 20f, 0.065f);
                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0.02f, 7f, 0.04f, 20f, 0.03f);
-                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 2f, 0.55f, 30f, 0.55f);
-                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 10f, 15f, 0.065f, 30f, 0.065f);
+                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 0.065f, 2f, 0.065f, 30f, 0.065f);
+                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 1f, 15f, 0.065f, 30f, 0.065f);
                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
                     return false;

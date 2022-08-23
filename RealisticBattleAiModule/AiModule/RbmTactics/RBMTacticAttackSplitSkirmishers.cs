@@ -247,7 +247,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
             {
 				_mainInfantry.AI.ResetBehaviorWeights();
 				TacticComponent.SetDefaultBehaviorWeights(_mainInfantry);
-				_mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
+				_mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(1.5f);
 				waitCountMainFormation++;
 				IsTacticReapplyNeeded = true;
 			}
@@ -265,7 +265,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 			_archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
 			_archers.AI.SetBehaviorWeight<BehaviorSkirmish>(0f);
 			_archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
-			_archers.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
+			_archers.AI.SetBehaviorWeight<BehaviorRegroup>(1.25f);
 		}
 		if (_leftCavalry != null)
 		{
@@ -286,7 +286,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 			_rangedCavalry.AI.ResetBehaviorWeights();
 			TacticComponent.SetDefaultBehaviorWeights(_rangedCavalry);
 			_rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
-			_rangedCavalry.AI.SetBehaviorWeight<BehaviorHorseArcherSkirmish>(1f);
+			//_rangedCavalry.AI.SetBehaviorWeight<BehaviorHorseArcherSkirmish>(1f);
 		}
 	}
 
@@ -324,13 +324,15 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 		if (_leftCavalry != null)
 		{
 			_leftCavalry.AI.ResetBehaviorWeights();
-			_leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+            SetDefaultBehaviorWeights(_leftCavalry);
+            _leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
 			_leftCavalry.AI.SetBehaviorWeight<RBMBehaviorCavalryCharge>(1f);
 		}
 		if (_rightCavalry != null)
 		{
 			_rightCavalry.AI.ResetBehaviorWeights();
-			_rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+            SetDefaultBehaviorWeights(_rightCavalry);
+            _rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
 			_rightCavalry.AI.SetBehaviorWeight<RBMBehaviorCavalryCharge>(1f);
 		}
 		if (_rangedCavalry != null)
