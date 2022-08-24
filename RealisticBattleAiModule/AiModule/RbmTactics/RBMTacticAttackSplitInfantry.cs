@@ -392,7 +392,6 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 			_rangedCavalry.AI.ResetBehaviorWeights();
 			TacticComponent.SetDefaultBehaviorWeights(_rangedCavalry);
 			_rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
-			//_rangedCavalry.AI.SetBehaviorWeight<BehaviorHorseArcherSkirmish>(1f);
 		}
 	}
 
@@ -458,7 +457,6 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 			_rangedCavalry.AI.ResetBehaviorWeights();
 			TacticComponent.SetDefaultBehaviorWeights(_rangedCavalry);
 			_rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
-			//_rangedCavalry.AI.SetBehaviorWeight<BehaviorHorseArcherSkirmish>(1f);
 		}
 	}
 

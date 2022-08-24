@@ -2,6 +2,7 @@
 using SandBox.Missions.MissionLogics;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -34,7 +35,7 @@ namespace RBMAI
         //    {
         //        if (__instance.Banner != null)
         //        {
-        //            if (i == 500)
+        //            if (i == 100)
         //            {
 
         //                if (__instance.IsAttacker)
@@ -43,7 +44,7 @@ namespace RBMAI
         //                    _currentTacticField.DeclaringType.GetField("_currentTactic");
         //                    TacticComponent _currentTactic = (TacticComponent)_currentTacticField.GetValue(__instance.TeamAI);
 
-        //                    InformationManager.DisplayMessage(new InformationMessage("Attacker " + __instance.TeamIndex + " : " + _currentTactic));
+        //                    //InformationManager.DisplayMessage(new InformationMessage("Attacker " + __instance.TeamIndex + " : " + _currentTactic));
 
         //                    FieldInfo _availableTacticsField = typeof(TeamAIComponent).GetField("_availableTactics", BindingFlags.NonPublic | BindingFlags.Instance);
         //                    _availableTacticsField.DeclaringType.GetField("_availableTactics");
@@ -53,26 +54,26 @@ namespace RBMAI
         //                        MethodInfo method = typeof(TacticComponent).GetMethod("GetTacticWeight", BindingFlags.NonPublic | BindingFlags.Instance);
         //                        method.DeclaringType.GetMethod("GetTacticWeight");
         //                        float weight = (float)method.Invoke(tc, new object[] { });
-        //                        InformationManager.DisplayMessage(new InformationMessage(tc + ": " + weight));
+        //                        //InformationManager.DisplayMessage(new InformationMessage(tc + ": " + weight));
         //                    }
 
         //                    foreach (Formation formation in __instance.Formations)
         //                    {
         //                        if (formation.QuerySystem.IsMeleeFormation)
         //                        {
-        //                            InformationManager.DisplayMessage(new InformationMessage("infantry: " + formation.AI.ActiveBehavior));
+        //                            //InformationManager.DisplayMessage(new InformationMessage("infantry: " + formation.AI.ActiveBehavior));
         //                        }
         //                        else if (formation.QuerySystem.IsCavalryFormation)
         //                        {
-        //                            InformationManager.DisplayMessage(new InformationMessage("cavalry: " + formation.AI.ActiveBehavior));
+        //                            //InformationManager.DisplayMessage(new InformationMessage("cavalry: " + formation.AI.ActiveBehavior));
         //                        }
         //                        else if (formation.QuerySystem.IsRangedCavalryFormation)
         //                        {
-        //                            InformationManager.DisplayMessage(new InformationMessage("ranged cavalry: " + formation.AI.ActiveBehavior));
+        //                            InformationManager.DisplayMessage(new InformationMessage("HA:" + formation.AI.ActiveBehavior));
         //                        }
         //                        else if (formation.QuerySystem.IsRangedFormation)
         //                        {
-        //                            InformationManager.DisplayMessage(new InformationMessage("ranged: " + formation.AI.ActiveBehavior + " " + formation.QuerySystem.MissileRange));
+        //                            //InformationManager.DisplayMessage(new InformationMessage("ranged: " + formation.AI.ActiveBehavior + " " + formation.QuerySystem.MissileRange));
         //                        }
         //                    }
         //                }
@@ -82,7 +83,7 @@ namespace RBMAI
         //                    _currentTacticField.DeclaringType.GetField("_currentTactic");
         //                    TacticComponent _currentTactic = (TacticComponent)_currentTacticField.GetValue(__instance.TeamAI);
 
-        //                    InformationManager.DisplayMessage(new InformationMessage("Defender " + __instance.TeamIndex + " : " + _currentTactic));
+        //                    //InformationManager.DisplayMessage(new InformationMessage("Defender " + __instance.TeamIndex + " : " + _currentTactic));
 
         //                    FieldInfo _availableTacticsField = typeof(TeamAIComponent).GetField("_availableTactics", BindingFlags.NonPublic | BindingFlags.Instance);
         //                    _availableTacticsField.DeclaringType.GetField("_availableTactics");
@@ -92,26 +93,26 @@ namespace RBMAI
         //                        MethodInfo method = typeof(TacticComponent).GetMethod("GetTacticWeight", BindingFlags.NonPublic | BindingFlags.Instance);
         //                        method.DeclaringType.GetMethod("GetTacticWeight");
         //                        float weight = (float)method.Invoke(tc, new object[] { });
-        //                        InformationManager.DisplayMessage(new InformationMessage(tc + ": " + weight));
+        //                        //InformationManager.DisplayMessage(new InformationMessage(tc + ": " + weight));
         //                    }
 
         //                    foreach (Formation formation in __instance.Formations)
         //                    {
         //                        if (formation.QuerySystem.IsMeleeFormation)
         //                        {
-        //                            InformationManager.DisplayMessage(new InformationMessage("infantry: " + formation.AI.ActiveBehavior));
+        //                            //InformationManager.DisplayMessage(new InformationMessage("infantry: " + formation.AI.ActiveBehavior));
         //                        }
         //                        else if (formation.QuerySystem.IsCavalryFormation)
         //                        {
-        //                            InformationManager.DisplayMessage(new InformationMessage("cavalry: " + formation.AI.ActiveBehavior));
+        //                            //InformationManager.DisplayMessage(new InformationMessage("cavalry: " + formation.AI.ActiveBehavior));
         //                        }
         //                        else if (formation.QuerySystem.IsRangedCavalryFormation)
         //                        {
-        //                            InformationManager.DisplayMessage(new InformationMessage("ranged cavalry: " + formation.AI.ActiveBehavior));
+        //                            InformationManager.DisplayMessage(new InformationMessage("HA:" + formation.AI.ActiveBehavior));
         //                        }
         //                        else if (formation.QuerySystem.IsRangedFormation)
         //                        {
-        //                            InformationManager.DisplayMessage(new InformationMessage("ranged: " + formation.AI.ActiveBehavior + " " + formation.QuerySystem.MissileRange));
+        //                            //InformationManager.DisplayMessage(new InformationMessage("ranged: " + formation.AI.ActiveBehavior + " " + formation.QuerySystem.MissileRange));
         //                        }
         //                    }
         //                }
@@ -160,6 +161,7 @@ namespace RBMAI
                 formation.AI.AddAiBehavior(new RBMBehaviorCavalryCharge(formation));
                 formation.AI.AddAiBehavior(new RBMBehaviorEmbolon(formation));
                 formation.AI.AddAiBehavior(new RBMBehaviorArcherFlank(formation));
+                formation.AI.AddAiBehavior(new RBMBehaviorHorseArcherSkirmish(formation));
             }
         }
 
@@ -496,7 +498,7 @@ namespace RBMAI
                 }
                 if (____rangedCavalry != null)
                 {
-                    ____rangedCavalry.AI.ResetBehaviorWeights();
+                        ____rangedCavalry.AI.ResetBehaviorWeights();
                     TacticFullScaleAttack.SetDefaultBehaviorWeights(____rangedCavalry);
                     ____rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                 }
