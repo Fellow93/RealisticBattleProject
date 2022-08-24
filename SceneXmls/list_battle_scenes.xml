@@ -222,7 +222,7 @@
   <Scene id="vlandia_town_g"
          name="{=1hIKR8Sa}Ocs Hall"
          terrain="Plain"
-         is_siege_map="true"></Scene>
+         is_siege_map="true"></Scene> lvl 1, 2 and 3 done
 		 
   <Scene id="vlandia_castle_a"
          name="{=r2cvi5pi}Hongard Castle"
