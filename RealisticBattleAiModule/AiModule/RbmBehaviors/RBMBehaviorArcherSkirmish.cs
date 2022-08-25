@@ -9,6 +9,7 @@ namespace RBMAI
 	{
 
 		private int flankCooldownMax = 40;
+		public float customWidth = 90f;
 
 		public int side = MBRandom.RandomInt(2);
 		public int cooldown = 0;
@@ -41,10 +42,6 @@ namespace RBMAI
 
 		protected override void CalculateCurrentOrder()
 		{
-			if(base.Formation.Width > 70f)
-            {
-				base.Formation.FormOrder = FormOrder.FormOrderCustom(70f);
-			}
 			WorldPosition medianPosition = base.Formation.QuerySystem.MedianPosition;
 			bool flag = false;
 			Vec2 vec;
@@ -80,8 +77,9 @@ namespace RBMAI
 				{
 					effectiveShootingRange *= 1.9f;
 				}
-
-				switch (_behaviorState)
+				float rollPullBackAngle = 0f;
+				BehaviorState previousBehavior = _behaviorState;
+                switch (_behaviorState)
 				{
 					case BehaviorState.Shooting:
 						{
@@ -119,7 +117,8 @@ namespace RBMAI
 									Formation meleeFormation = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
 									if (meleeFormation != null && meleeFormation.QuerySystem.IsInfantryFormation)
 									{
-										_behaviorState = BehaviorState.PullingBack;
+										rollPullBackAngle = MBRandom.RandomFloat;
+                                        _behaviorState = BehaviorState.PullingBack;
 										break;
 									}
 								}
@@ -135,7 +134,8 @@ namespace RBMAI
 									if (meleeFormation != null && meleeFormation.QuerySystem.IsInfantryFormation && meleeFormation.QuerySystem.MedianPosition.AsVec2.Distance(base.Formation.QuerySystem.MedianPosition.AsVec2) <= base.Formation.QuerySystem.MissileRange)
 									{
 										_cantShoot = true;
-										_behaviorState = BehaviorState.PullingBack;
+                                        rollPullBackAngle = MBRandom.RandomFloat;
+                                        _behaviorState = BehaviorState.PullingBack;
 										break;
 									}
 								}
@@ -158,7 +158,8 @@ namespace RBMAI
 							}
 							else if (distance < effectiveShootingRange * 0.4f)
 							{
-								_behaviorState = BehaviorState.PullingBack;
+                                rollPullBackAngle = MBRandom.RandomFloat;
+                                _behaviorState = BehaviorState.PullingBack;
 								_cantShoot = false;
 								flag = true;
 							}
@@ -192,6 +193,12 @@ namespace RBMAI
 								_cantShoot = false;
 								flag = true;
 							}
+							if(base.Formation.QuerySystem.MakingRangedAttackRatio > ratioOfShooting && distance > effectiveShootingRange * 0.4f )
+							{
+                                _behaviorState = BehaviorState.Shooting;
+                                _cantShoot = false;
+                                flag = true;
+                            }
 							break;
 						}
 				}
@@ -215,45 +222,52 @@ namespace RBMAI
 				//	}
 				//	return;
 				//}
-				switch (_behaviorState)
+				if(previousBehavior != _behaviorState)
 				{
-					case BehaviorState.Shooting:
-						medianPosition.SetVec2(base.Formation.QuerySystem.AveragePosition);
-						break;
-					case BehaviorState.Approaching:
-						//medianPosition = significantEnemy.QuerySystem.MedianPosition;
-						medianPosition.SetVec2(significantEnemy.QuerySystem.AveragePosition);
-						break;
-					case BehaviorState.PullingBack:
-						medianPosition = significantEnemy.QuerySystem.MedianPosition;
-						//medianPosition.SetVec2(medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f - 10f));
-						if (side == 0)
-						{
-							medianPosition.SetVec2((medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f - 10f)) + base.Formation.QuerySystem.AveragePosition.LeftVec().Normalized() * MBRandom.RandomFloat * 20f);
-						}
-						else if (side == 1)
-						{
-							medianPosition.SetVec2((medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f - 10f)) + base.Formation.QuerySystem.AveragePosition.RightVec().Normalized() * MBRandom.RandomFloat * 20f);
-						}
-						break;
-				}
+                    switch (_behaviorState)
+                    {
+                        case BehaviorState.Shooting:
+                            medianPosition.SetVec2(base.Formation.QuerySystem.AveragePosition);
+                            break;
+                        case BehaviorState.Approaching:
+                            //medianPosition = significantEnemy.QuerySystem.MedianPosition;
+                            medianPosition.SetVec2(significantEnemy.QuerySystem.AveragePosition);
+                            break;
+                        case BehaviorState.PullingBack:
+                            medianPosition = significantEnemy.QuerySystem.MedianPosition;
+                            if (side == 0)
+                            {
+                                medianPosition.SetVec2((medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f)) + medianPosition.AsVec2.LeftVec().Normalized() * MBRandom.RandomFloat * 20f);
+                            }
+                            else if (side == 1)
+                            {
+                                medianPosition.SetVec2((medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f)) + medianPosition.AsVec2.RightVec().Normalized() * MBRandom.RandomFloat * 20f);
+                            }
+                            break;
+                    }
+                    if (!base.CurrentOrder.GetPosition(base.Formation).IsValid || _behaviorState != BehaviorState.Shooting || flag)
+                    {
+                        base.CurrentOrder = MovementOrder.MovementOrderMove(medianPosition);
+                    }
+                    if (!CurrentFacingOrder.GetDirection(base.Formation).IsValid || _behaviorState != BehaviorState.Shooting || flag)
+                    {
+                        Vec2 averageAllyFormationPosition = base.Formation.QuerySystem.Team.AveragePosition;
+                        WorldPosition medianTargetFormationPosition = base.Formation.QuerySystem.Team.MedianTargetFormationPosition;
+                        CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection((medianTargetFormationPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition).Normalized());
+                    }
+                }
 			}
-			if (!base.CurrentOrder.GetPosition(base.Formation).IsValid || _behaviorState != BehaviorState.Shooting || flag)
-			{
-				base.CurrentOrder = MovementOrder.MovementOrderMove(medianPosition);
-			}
-			if (!CurrentFacingOrder.GetDirection(base.Formation).IsValid || _behaviorState != BehaviorState.Shooting || flag)
-			{
-				Vec2 averageAllyFormationPosition = base.Formation.QuerySystem.Team.AveragePosition;
-				WorldPosition medianTargetFormationPosition = base.Formation.QuerySystem.Team.MedianTargetFormationPosition;
-				CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection((medianTargetFormationPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition).Normalized());
-			}
+			
 		}
 
 		public override void TickOccasionally()
 		{
 			CalculateCurrentOrder();
-			base.Formation.SetMovementOrder(base.CurrentOrder);
+            if(base.Formation.Width > customWidth)
+            {
+                base.Formation.FormOrder = FormOrder.FormOrderCustom(customWidth);
+            }
+            base.Formation.SetMovementOrder(base.CurrentOrder);
 			base.Formation.FacingOrder = CurrentFacingOrder;
 		}
 

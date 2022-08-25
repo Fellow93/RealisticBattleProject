@@ -195,15 +195,17 @@ namespace RBMAI
 							break;
 						}
 				}
-			}
-			base.CurrentOrder = MovementOrder.MovementOrderMove(position);
+                CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
+            }
+            CurrentOrder = MovementOrder.MovementOrderMove(position);
 		}
 
 		public override void TickOccasionally()
 		{
 			CalculateCurrentOrder();
-			base.Formation.SetMovementOrder(base.CurrentOrder);
-		}
+			Formation.SetMovementOrder(base.CurrentOrder);
+			Formation.FacingOrder = CurrentFacingOrder;
+        }
 
 		public override TextObject GetBehaviorString()
 		{

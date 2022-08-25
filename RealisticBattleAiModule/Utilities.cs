@@ -148,9 +148,9 @@ namespace RBMAI
                     {
                         if (equipmentElement.Item != null)
                         {
-                            if (Game.Current.BasicModels.ItemValueModel != null)
+                            if (equipmentElement.Item.Effectiveness < 50f)
                             {
-                                tier = (int)equipmentElement.Item.Tier;
+                                tier = (int)1;
                             }
                         }
                     }

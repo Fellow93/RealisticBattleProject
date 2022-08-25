@@ -180,7 +180,9 @@
     <Compile Include="AiModule\Posture\Posture.cs" />
     <Compile Include="AiModule\Posture\AgentPostures.cs" />
     <Compile Include="AiModule\Posture\PostureLogic.cs" />
+    <Compile Include="AiModule\Posture\BattleStatsLogic.cs" />
     <Compile Include="AiModule\Posture\PostureVisualLogic.cs" />
+    <Compile Include="AiModule\Posture\BattleStatsVM.cs" />
     <Compile Include="AiModule\Posture\PostureVisualVM.cs" />
     <Compile Include="AiModule\RbmBehaviors\RBMBehaviorArcherSkirmish.cs" />
     <Compile Include="AiModule\RbmBehaviors\RBMBehaviorCavalryCharge.cs" />
@@ -217,7 +219,8 @@
     <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBMAI_module_strings.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\CombatUI.xml" "$(SolutionDir)..\RBM\GUI\Prefabs\"
 xcopy /d /y "$(SolutionDir)RBMXML\GUI\Brushes\CombatUI.xml" "$(SolutionDir)..\RBM\GUI\Brushes\"
-xcopy /d /y "$(SolutionDir)SceneXmls\scene_positions\" "$(SolutionDir)..\RBM\ModuleData\scene_positions\"</PostBuildEvent>
+xcopy /d /y "$(SolutionDir)SceneXmls\scene_positions\" "$(SolutionDir)..\RBM\ModuleData\scene_positions\"
+xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\BattleStats.xml" "$(SolutionDir)..\RBM\GUI\Prefabs\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

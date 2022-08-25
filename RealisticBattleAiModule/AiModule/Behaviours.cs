@@ -268,7 +268,7 @@ namespace RBMAI
                                 }
                                 else
                                 {
-                                    if (waitCountApproachingStorage[__instance.Formation] > 30)
+                                    if (waitCountApproachingStorage[__instance.Formation] > 35)
                                     {
                                         if (distance < 150f)
                                         {
@@ -528,7 +528,8 @@ namespace RBMAI
                             position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f));
                             //position2.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f));
                         }
-                        ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection((targetFormation.QuerySystem.MedianPosition.AsVec2 - position.AsVec2).Normalized());
+                        //___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection((targetFormation.QuerySystem.MedianPosition.AsVec2 - position.AsVec2).Normalized());
+                        
                     }
                     else
                     {
@@ -536,7 +537,15 @@ namespace RBMAI
                     }
                 }
             }
-            ____currentOrder = MovementOrder.MovementOrderMove(position);
+            if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(position.AsVec2))
+            {
+                position = __instance.Formation.QuerySystem.MedianPosition;
+                ____currentOrder = MovementOrder.MovementOrderMove(position);
+            }
+            else
+            {
+                ____currentOrder = MovementOrder.MovementOrderMove(position);
+            }
 
         }
 
@@ -1192,7 +1201,7 @@ namespace RBMAI
         {
             if(__instance.Formation != null && __instance.Formation.QuerySystem.IsRangedCavalryFormation)
             {
-                __result = __result;
+                __result = __result * 0.2f;
             }
             //__result = __result;
         }
@@ -1246,7 +1255,7 @@ namespace RBMAI
                         }
                         else
                         {
-                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 1f, 2f, 4f, 20f, 1f);
+                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 1f, 2f, 1f, 20f, 1f);
                             unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
                         }
                     }
@@ -1257,7 +1266,7 @@ namespace RBMAI
                     }
                     //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 1f, 2f, 4f, 20f, 1f);
                     //unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
-                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0f, 7f, 4f, 20f, 6f);
+                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 1f, 7f, 4f, 20f, 6f);
                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 2f, 7f, 4f, 20f, 5f);
                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 0f, 10f, 3f, 20f, 6f);
                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);

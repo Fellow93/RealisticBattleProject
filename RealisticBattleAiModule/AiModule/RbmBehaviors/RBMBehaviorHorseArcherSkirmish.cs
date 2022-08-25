@@ -135,8 +135,8 @@ namespace RBMAI
                         }
                         Ellipse ellipse = new Ellipse(targetFormation.QuerySystem.MedianPosition.AsVec2, distance, targetFormation.Width * 0.5f, targetFormation.Direction);
                         position.SetVec2(ellipse.GetTargetPos(Formation.QuerySystem.AveragePosition, 35f));
-                        //CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(targetFormation.QuerySystem.AveragePosition);
-                        Formation.FacingOrder = FacingOrder.FacingOrderLookAtDirection((targetFormation.QuerySystem.MedianPosition.AsVec2 - position.AsVec2).Normalized());
+                        CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(targetFormation.QuerySystem.AveragePosition);
+                        //Formation.FacingOrder = FacingOrder.FacingOrderLookAtDirection((targetFormation.QuerySystem.MedianPosition.AsVec2 - position.AsVec2).Normalized());
                     }
                 }
                 else
@@ -160,6 +160,7 @@ namespace RBMAI
         {
             CalculateCurrentOrder();
             Formation.SetMovementOrder(CurrentOrder);
+            Formation.FacingOrder = CurrentFacingOrder;
         }
 
         protected override void OnBehaviorActivatedAux()

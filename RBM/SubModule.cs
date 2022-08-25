@@ -121,6 +121,10 @@ namespace RBM
         public override void OnMissionBehaviorInitialize(Mission mission)
         {
             Game.Current.GameTextManager.LoadGameTexts();
+            if (RBMConfig.RBMConfig.developerMode)
+            {
+                mission.AddMissionBehavior((MissionBehavior)(object)new BattleStatsLogic());
+            }
             if (RBMConfig.RBMConfig.rbmAiEnabled)
             {
                 if (RBMConfig.RBMConfig.postureEnabled && RBMConfig.RBMConfig.postureGUIEnabled)
