@@ -6,10 +6,10 @@
         <TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="430"  Text="@Atkha" />
 		<TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="445"  Text="@Atkcav" />
 		<TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="460"  Text="@Atkinf" />
-		<TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="475"  Text="@Defarc" />
-		<TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="490"  Text="@Defha" />
-		<TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="505"  Text="@Defcav" />
-		<TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="520"  Text="@Definf" />
+		<TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="490"  Text="@Defarc" />
+		<TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="505"  Text="@Defha" />
+		<TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="520"  Text="@Defcav" />
+		<TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="535"  Text="@Definf" />
 	  </Children>
     </Widget>
   </Window>
