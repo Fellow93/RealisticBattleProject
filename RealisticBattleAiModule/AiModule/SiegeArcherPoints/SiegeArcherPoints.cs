@@ -46,15 +46,18 @@ public class SiegeArcherPoints : MissionView
                     _strategicArea.GameEntity.RemoveAllChildren();
                     _strategicArea.GameEntity.Remove(1);
                 }
-    //            foreach (GameEntity g2 in gameEntities)
-				//{
-    //                if (g2.HasScriptOfType<StrategicArea>() && (!g2.HasTag("PlayerStratPoint") & !g2.HasTag("BeerMarkerPlayer")) && g2.GetOldPrefabName() == "strategic_archer_point")
-				//	{
-				//		Mission.Current.Teams.Defender.TeamAI.RemoveStrategicArea(g2.GetFirstScriptOfType<StrategicArea>());
-				//		g2.RemoveAllChildren();
-				//		g2.Remove(1);
-				//	}
-				//}
+				foreach (GameEntity g2 in gameEntities)
+				{
+					if (g2.HasScriptOfType<StrategicArea>() && (!g2.HasTag("PlayerStratPoint") & !g2.HasTag("BeerMarkerPlayer")) && g2.GetOldPrefabName() == "strategic_archer_point")
+					{
+						if (g2.GetFirstScriptOfType<StrategicArea>().IsUsableBy(BattleSideEnum.Defender))
+						{
+                            Mission.Current.Teams.Defender.TeamAI.RemoveStrategicArea(g2.GetFirstScriptOfType<StrategicArea>());
+                            g2.RemoveAllChildren();
+                            g2.Remove(1);
+                        }
+					}
+				}
 				List<GameEntity> ListBase = Mission.Current.Scene.FindEntitiesWithTag("BeerMarkerBase").ToList();
 				foreach (GameEntity b in ListBase)
 				{
@@ -254,59 +257,59 @@ public class SiegeArcherPoints : MissionView
 		//}
 	}
 
-	//[HarmonyPatch(typeof(BehaviorDefendCastleKeyPosition))]
-	//[HarmonyPatch("ResetOrderPositions")]
-	//class BehaviorDefendCastleKeyPositionPatch
-	//{
-	//	private enum BehaviorState
-	//	{
-	//		UnSet,
-	//		Waiting,
-	//		Ready
-	//	}
+    //[HarmonyPatch(typeof(BehaviorDefendCastleKeyPosition))]
+    //[HarmonyPatch("ResetOrderPositions")]
+    //class BehaviorDefendCastleKeyPositionPatch
+    //{
+    //	private enum BehaviorState
+    //	{
+    //		UnSet,
+    //		Waiting,
+    //		Ready
+    //	}
 
-	//	static void Postfix(ref BehaviorDefendCastleKeyPosition __instance, ref WorldPosition ____readyOrderPosition, ref MovementOrder ____waitOrder, 
-	//		ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState, ref FacingOrder ___CurrentFacingOrder,
-	//		ref FacingOrder ____readyFacingOrder, ref FacingOrder ____waitFacingOrder, ref TacticalPosition ____tacticalWaitPos)
-	//	{
-	//		XmlDocument xmlDocument = new XmlDocument();
-	//		if (File.Exists(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml"))
-	//		{
-	//			WorldPosition tempPos = ____tacticalWaitPos.Position;
-	//			xmlDocument.Load(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml");
-	//			if (__instance.Formation.AI.Side == FormationAI.BehaviorSide.Left)
- //               {
-	//				double[] leftWait = Array.ConvertAll(xmlDocument.SelectSingleNode("/points/left_wait").InnerText.Split(new[] { ',', }, StringSplitOptions.RemoveEmptyEntries), Double.Parse);
-	//				double[] leftReady = Array.ConvertAll(xmlDocument.SelectSingleNode("/points/left_ready").InnerText.Split(new[] { ',', }, StringSplitOptions.RemoveEmptyEntries), Double.Parse);
-	//				____waitFacingOrder = FacingOrder.FacingOrderLookAtDirection(new Vec2((float)leftWait[3], (float)leftWait[4]));
-	//				____readyFacingOrder = FacingOrder.FacingOrderLookAtDirection(new Vec2((float)leftReady[3], (float)leftReady[4]));
-	//				tempPos.SetVec2(new Vec2((float)leftWait[0], (float)leftWait[1]));
-	//				____readyOrderPosition.SetVec3(UIntPtr.Zero, new Vec3((float)leftReady[0], (float)leftReady[1], (float)leftReady[2]), false);
-
-
-	//			}
-	//			else if (__instance.Formation.AI.Side == FormationAI.BehaviorSide.Right)
-	//			{
-	//				double[] rightWait = Array.ConvertAll(xmlDocument.SelectSingleNode("/points/right_wait").InnerText.Split(new[] { ',', }, StringSplitOptions.RemoveEmptyEntries), Double.Parse);
-	//				double[] rightReady = Array.ConvertAll(xmlDocument.SelectSingleNode("/points/right_ready").InnerText.Split(new[] { ',', }, StringSplitOptions.RemoveEmptyEntries), Double.Parse);
-	//				____waitFacingOrder = FacingOrder.FacingOrderLookAtDirection(new Vec2((float)rightWait[3], (float)rightWait[4]));
-	//				____readyFacingOrder = FacingOrder.FacingOrderLookAtDirection(new Vec2((float)rightReady[3], (float)rightReady[4]));
-	//				tempPos.SetVec2(new Vec2((float)rightWait[0], (float)rightWait[1]));
-	//				____readyOrderPosition.SetVec3(UIntPtr.Zero, new Vec3((float)rightReady[0], (float)rightReady[1], (float)rightReady[2]), false);
+    //	static void Postfix(ref BehaviorDefendCastleKeyPosition __instance, ref WorldPosition ____readyOrderPosition, ref MovementOrder ____waitOrder, 
+    //		ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState, ref FacingOrder ___CurrentFacingOrder,
+    //		ref FacingOrder ____readyFacingOrder, ref FacingOrder ____waitFacingOrder, ref TacticalPosition ____tacticalWaitPos)
+    //	{
+    //		XmlDocument xmlDocument = new XmlDocument();
+    //		if (File.Exists(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml"))
+    //		{
+    //			WorldPosition tempPos = ____tacticalWaitPos.Position;
+    //			xmlDocument.Load(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml");
+    //			if (__instance.Formation.AI.Side == FormationAI.BehaviorSide.Left)
+    //               {
+    //				double[] leftWait = Array.ConvertAll(xmlDocument.SelectSingleNode("/points/left_wait").InnerText.Split(new[] { ',', }, StringSplitOptions.RemoveEmptyEntries), Double.Parse);
+    //				double[] leftReady = Array.ConvertAll(xmlDocument.SelectSingleNode("/points/left_ready").InnerText.Split(new[] { ',', }, StringSplitOptions.RemoveEmptyEntries), Double.Parse);
+    //				____waitFacingOrder = FacingOrder.FacingOrderLookAtDirection(new Vec2((float)leftWait[3], (float)leftWait[4]));
+    //				____readyFacingOrder = FacingOrder.FacingOrderLookAtDirection(new Vec2((float)leftReady[3], (float)leftReady[4]));
+    //				tempPos.SetVec2(new Vec2((float)leftWait[0], (float)leftWait[1]));
+    //				____readyOrderPosition.SetVec3(UIntPtr.Zero, new Vec3((float)leftReady[0], (float)leftReady[1], (float)leftReady[2]), false);
 
 
-	//			}
+    //			}
+    //			else if (__instance.Formation.AI.Side == FormationAI.BehaviorSide.Right)
+    //			{
+    //				double[] rightWait = Array.ConvertAll(xmlDocument.SelectSingleNode("/points/right_wait").InnerText.Split(new[] { ',', }, StringSplitOptions.RemoveEmptyEntries), Double.Parse);
+    //				double[] rightReady = Array.ConvertAll(xmlDocument.SelectSingleNode("/points/right_ready").InnerText.Split(new[] { ',', }, StringSplitOptions.RemoveEmptyEntries), Double.Parse);
+    //				____waitFacingOrder = FacingOrder.FacingOrderLookAtDirection(new Vec2((float)rightWait[3], (float)rightWait[4]));
+    //				____readyFacingOrder = FacingOrder.FacingOrderLookAtDirection(new Vec2((float)rightReady[3], (float)rightReady[4]));
+    //				tempPos.SetVec2(new Vec2((float)rightWait[0], (float)rightWait[1]));
+    //				____readyOrderPosition.SetVec3(UIntPtr.Zero, new Vec3((float)rightReady[0], (float)rightReady[1], (float)rightReady[2]), false);
 
-	//			____waitOrder = MovementOrder.MovementOrderMove(tempPos);
-	//			____readyOrder = MovementOrder.MovementOrderMove(____readyOrderPosition);
-	//			____currentOrder = ((____behaviorState == BehaviorState.Ready) ? ____readyOrder : ____waitOrder);
-	//			___CurrentFacingOrder = ((__instance.Formation.QuerySystem.ClosestEnemyFormation != null && TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation.QuerySystem.ClosestEnemyFormation.Formation, includeOnlyPositionedUnits: true)) ? FacingOrder.FacingOrderLookAtEnemy : ((____behaviorState == BehaviorState.Ready) ? ____readyFacingOrder : ____waitFacingOrder));
 
-	//		}
-	//	}
-	//}
+    //			}
 
-	[HarmonyPatch(typeof(ArrangementOrder))]
+    //			____waitOrder = MovementOrder.MovementOrderMove(tempPos);
+    //			____readyOrder = MovementOrder.MovementOrderMove(____readyOrderPosition);
+    //			____currentOrder = ((____behaviorState == BehaviorState.Ready) ? ____readyOrder : ____waitOrder);
+    //			___CurrentFacingOrder = ((__instance.Formation.QuerySystem.ClosestEnemyFormation != null && TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation.QuerySystem.ClosestEnemyFormation.Formation, includeOnlyPositionedUnits: true)) ? FacingOrder.FacingOrderLookAtEnemy : ((____behaviorState == BehaviorState.Ready) ? ____readyFacingOrder : ____waitFacingOrder));
+
+    //		}
+    //	}
+    //}
+
+    [HarmonyPatch(typeof(ArrangementOrder))]
 	[HarmonyPatch("GetCloseStrategicAreas")]
 	class GetCloseStrategicAreasPatch
 	{
@@ -320,7 +323,7 @@ public class SiegeArcherPoints : MissionView
 			__result = formation.Team.TeamAI.GetStrategicAreas().Where(delegate (StrategicArea sa)
 			{
 				float customDistanceToCheck = 150f;
-				if (sa != null && formation!= null &&  sa.GameEntity != null && sa.GameEntity.GlobalPosition != null && sa.IsUsableBy(formation.Team.Side))
+				if (sa != null && formation != null && sa.GameEntity != null && sa.GameEntity.GlobalPosition != null && sa.IsUsableBy(formation.Team.Side))
 				{
 					if (sa.IgnoreHeight)
 					{
@@ -335,7 +338,10 @@ public class SiegeArcherPoints : MissionView
 					return worldPosition.DistanceSquaredWithLimit(in targetPoint, customDistanceToCheck * customDistanceToCheck + 1E-05f) < customDistanceToCheck * customDistanceToCheck;
 				}
 				return false;
-			});
+			});//.OrderByDescending(o =>o.GameEntity.GlobalPosition.z).ToList();
+			//List<StrategicArea> newlist = __result.ToList();
+			//newlist.Randomize();
+			//__result = newlist;
 			return false;
 		}
 	}
