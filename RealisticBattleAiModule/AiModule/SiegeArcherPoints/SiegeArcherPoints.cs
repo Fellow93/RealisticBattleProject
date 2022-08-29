@@ -37,21 +37,24 @@ public class SiegeArcherPoints : MissionView
 				Mission.Current.Scene.GetEntities(ref gameEntities);
                 StrategicArea strategicArea;
                 List<StrategicArea> _strategicAreas = (from amo in Mission.Current.ActiveMissionObjects
-                                   where (strategicArea = amo as StrategicArea) != null && strategicArea.IsActive && strategicArea.IsUsableBy(BattleSideEnum.Defender) && strategicArea.GameEntity.GetOldPrefabName().Contains("archer_position")
+                                   where (strategicArea = amo as StrategicArea) != null && strategicArea.IsActive && strategicArea.IsUsableBy(BattleSideEnum.Defender) 
+								   && (strategicArea.GameEntity.GetOldPrefabName().Contains("archer_position") || strategicArea.GameEntity.GetOldPrefabName().Contains("strategic_archer_point"))
                                                        select amo as StrategicArea).ToList();
 				foreach (StrategicArea _strategicArea in _strategicAreas)
 				{
 					Mission.Current.Teams.Defender.TeamAI.RemoveStrategicArea(_strategicArea);
-				}
-                foreach (GameEntity g2 in gameEntities)
-				{
-                    if (g2.HasScriptOfType<StrategicArea>() && (!g2.HasTag("PlayerStratPoint") & !g2.HasTag("BeerMarkerPlayer")) && g2.GetOldPrefabName() == "strategic_archer_point")
-					{
-						Mission.Current.Teams.Defender.TeamAI.RemoveStrategicArea(g2.GetFirstScriptOfType<StrategicArea>());
-						g2.RemoveAllChildren();
-						g2.Remove(1);
-					}
-				}
+                    _strategicArea.GameEntity.RemoveAllChildren();
+                    _strategicArea.GameEntity.Remove(1);
+                }
+    //            foreach (GameEntity g2 in gameEntities)
+				//{
+    //                if (g2.HasScriptOfType<StrategicArea>() && (!g2.HasTag("PlayerStratPoint") & !g2.HasTag("BeerMarkerPlayer")) && g2.GetOldPrefabName() == "strategic_archer_point")
+				//	{
+				//		Mission.Current.Teams.Defender.TeamAI.RemoveStrategicArea(g2.GetFirstScriptOfType<StrategicArea>());
+				//		g2.RemoveAllChildren();
+				//		g2.Remove(1);
+				//	}
+				//}
 				List<GameEntity> ListBase = Mission.Current.Scene.FindEntitiesWithTag("BeerMarkerBase").ToList();
 				foreach (GameEntity b in ListBase)
 				{
@@ -139,7 +142,7 @@ public class SiegeArcherPoints : MissionView
 
 			foreach (GameEntity g in gameEntities)
 			{
-				if (g.HasScriptOfType<StrategicArea>() && g.GetOldPrefabName() == "strategic_archer_point")
+				if (g.HasScriptOfType<StrategicArea>() && g.GetFirstScriptOfType<StrategicArea>().IsUsableBy(BattleSideEnum.Defender) && g.GetOldPrefabName() == "strategic_archer_point")
 				{
 					XmlElement newPointNode = xmlDocument.CreateElement(string.Empty, "point", string.Empty);
 					string stringToBeSaved = "";
