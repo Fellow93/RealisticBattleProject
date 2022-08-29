@@ -45,11 +45,6 @@ public class SiegeArcherPoints : MissionView
 				}
                 foreach (GameEntity g2 in gameEntities)
 				{
-					if (g2.HasScriptOfType<StrategicArea>())
-					{
-                        string str = g2.GetOldPrefabName();
-                        int num = g2.ChildCount;
-                    }
                     if (g2.HasScriptOfType<StrategicArea>() && (!g2.HasTag("PlayerStratPoint") & !g2.HasTag("BeerMarkerPlayer")) && g2.GetOldPrefabName() == "strategic_archer_point")
 					{
 						Mission.Current.Teams.Defender.TeamAI.RemoveStrategicArea(g2.GetFirstScriptOfType<StrategicArea>());
