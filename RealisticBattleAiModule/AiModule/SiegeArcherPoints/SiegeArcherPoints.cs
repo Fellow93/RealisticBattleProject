@@ -35,9 +35,22 @@ public class SiegeArcherPoints : MissionView
 			{
 				List<GameEntity> gameEntities = new List<GameEntity>();
 				Mission.Current.Scene.GetEntities(ref gameEntities);
-				foreach (GameEntity g2 in gameEntities)
+                StrategicArea strategicArea;
+                List<StrategicArea> _strategicAreas = (from amo in Mission.Current.ActiveMissionObjects
+                                   where (strategicArea = amo as StrategicArea) != null && strategicArea.IsActive && strategicArea.IsUsableBy(BattleSideEnum.Defender) && strategicArea.GameEntity.GetOldPrefabName().Contains("archer_position")
+                                                       select amo as StrategicArea).ToList();
+				foreach (StrategicArea _strategicArea in _strategicAreas)
 				{
-					if (g2.HasScriptOfType<StrategicArea>() && (!g2.HasTag("PlayerStratPoint") & !g2.HasTag("BeerMarkerPlayer")) && g2.GetOldPrefabName() == "strategic_archer_point")
+					Mission.Current.Teams.Defender.TeamAI.RemoveStrategicArea(_strategicArea);
+				}
+                foreach (GameEntity g2 in gameEntities)
+				{
+					if (g2.HasScriptOfType<StrategicArea>())
+					{
+                        string str = g2.GetOldPrefabName();
+                        int num = g2.ChildCount;
+                    }
+                    if (g2.HasScriptOfType<StrategicArea>() && (!g2.HasTag("PlayerStratPoint") & !g2.HasTag("BeerMarkerPlayer")) && g2.GetOldPrefabName() == "strategic_archer_point")
 					{
 						Mission.Current.Teams.Defender.TeamAI.RemoveStrategicArea(g2.GetFirstScriptOfType<StrategicArea>());
 						g2.RemoveAllChildren();
@@ -72,7 +85,7 @@ public class SiegeArcherPoints : MissionView
 					//	(float)parsed[4], (float)parsed[5], (float)parsed[6], (float)parsed[7], (float)parsed[8]), new WorldPosition(Mission.Current.Scene, new Vec3((float)parsed[9], (float)parsed[10], (float)parsed[11])));
 
 					MatrixFrame matFrame = new MatrixFrame((float)parsed[0], (float)parsed[1], (float)parsed[2], (float)parsed[3],
-						(float)parsed[4], (float)parsed[5], (float)parsed[6], (float)parsed[7], (float)parsed[8],(float)parsed[9], (float)parsed[10], (float)parsed[11]);
+						(float)parsed[4], (float)parsed[5], (float)parsed[6], (float)parsed[7], (float)parsed[8], (float)parsed[9], (float)parsed[10], (float)parsed[11]);
 
 					GameEntity gameEntity = GameEntity.Instantiate(Mission.Current.Scene, "strategic_archer_point", matFrame);
 					gameEntity.SetMobility(GameEntity.Mobility.dynamic);
@@ -86,7 +99,7 @@ public class SiegeArcherPoints : MissionView
 					BeerMark.SetVisibilityExcludeParents(visible: false);
 					BeerMark.GetGlobalScale().Normalize();
 					BeerMark.SetMobility(GameEntity.Mobility.dynamic);
-					Mission.Current.Teams.Defender.TeamAI.AddStrategicArea(firstScriptOfType);
+                    Mission.Current.Teams.Defender.TeamAI.AddStrategicArea(firstScriptOfType);
 				}
 			}
 
