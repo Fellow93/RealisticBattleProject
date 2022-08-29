@@ -147,7 +147,7 @@ namespace RBMAI
                         //}
                         //var dot = __instance.Direction.x * direction.x + __instance.Direction.y * direction.y;
 
-                        if (targetAgent != vanillaTargetAgent && vanillaTargetAgent.HasMount)
+                        if (targetAgent != vanillaTargetAgent && vanillaTargetAgent.HasMount || vanillaTargetAgent.IsRunningAway)
                         {
                             __result = targetAgent.GetWorldPosition();
                             aiDecisionCooldownDict[unit].position = __result;

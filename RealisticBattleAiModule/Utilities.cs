@@ -207,11 +207,7 @@ namespace RBMAI
                 {
                     if (agent.IsAIControlled)
                     {
-                        if (agent.CommonAIComponent != null && agent.CommonAIComponent.IsRetreating)
-                        {
-                            float panick = agent.CommonAIComponent.Morale;
-                        }
-                        else
+                        if (!agent.IsRunningAway)
                         {
                             float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
                             if (newDist < distance)
