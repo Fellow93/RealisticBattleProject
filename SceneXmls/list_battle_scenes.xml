@@ -57,7 +57,7 @@
   <Scene id="sturgia_castle_003"
          name="{=VZJF1eXu}Takor Castle"
          terrain="Plain"
-         is_siege_map="true"></Scene>
+         is_siege_map="true"></Scene> lvl 1, 2 and 3 done
 		 
   <Scene id="sturgia_town_g"
          name="{=TGPsNCI5}Varnovapol"
