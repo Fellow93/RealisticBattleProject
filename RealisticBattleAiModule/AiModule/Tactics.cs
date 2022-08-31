@@ -395,7 +395,6 @@ namespace RBMAI
                             if (team.Side == BattleSideEnum.Attacker)
                             {
                                 team.ClearTacticOptions();
-                                team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
                                 if (____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Empire)
                                 {
                                     team.AddTacticOption(new RBMTacticEmbolon(team));
@@ -416,9 +415,12 @@ namespace RBMAI
                                 {
                                     team.AddTacticOption(new RBMTacticAttackSplitArchers(team));
                                 }
+                                if (____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() != CultureCode.Vlandia)
+                                {
+                                    team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
+                                }
                                 team.AddTacticOption(new TacticFullScaleAttack(team));
                                 //team.AddTacticOption(new RBMTacticEmbolon(team));
-
                                 team.AddTacticOption(new TacticCoordinatedRetreat(team));
                                 //team.AddTacticOption(new TacticCharge(team));
                                 //team.AddTacticOption(new RBMTacticAttackSplitSkirmishers(team));

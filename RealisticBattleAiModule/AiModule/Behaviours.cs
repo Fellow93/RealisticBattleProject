@@ -1138,7 +1138,7 @@ namespace RBMAI
                         }
                         positionsStorage.Remove(__instance.Formation);
                     }
-                    else if (significantEnemy != null && !significantEnemy.QuerySystem.IsRangedFormation &&signDist < 50f && RBMAI.Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.33f))
+                    else if (significantEnemy != null && !significantEnemy.QuerySystem.IsRangedFormation && signDist < 50f && RBMAI.Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.38f))
                     {
                         WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
                         positionNew.SetVec2(positionNew.AsVec2 - __instance.Formation.Direction * 7f);
