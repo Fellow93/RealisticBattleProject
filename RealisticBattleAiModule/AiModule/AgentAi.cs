@@ -242,38 +242,35 @@ namespace RBMAI
         {
             if (!formation.QuerySystem.IsCavalryFormation && !formation.QuerySystem.IsRangedCavalryFormation)
             {
-
-                float currentTime = MBCommon.GetTotalMissionTime();
-                if (currentTime - unit.LastRangedAttackTime < 7f)
+                if(Mission.Current != null)
                 {
-                    __result = Agent.UsageDirection.None;
-                    return;
-                }
-                switch (orderEnum)
-                {
-                    case ArrangementOrderEnum.Line:
-                    case ArrangementOrderEnum.Loose:
-                        {
-                            //float currentTime = MBCommon.TimeType.Mission.GetTime();
-                            float lastMeleeAttackTime = unit.LastMeleeAttackTime;
-                            float lastMeleeHitTime = unit.LastMeleeHitTime;
-                            float lastRangedHit = unit.LastRangedHitTime;
-                            if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
+                    float currentTime = Mission.Current.CurrentTime;
+                    if (currentTime - unit.LastRangedAttackTime < 7f)
+                    {
+                        __result = Agent.UsageDirection.None;
+                        return;
+                    }
+                    switch (orderEnum)
+                    {
+                        case ArrangementOrderEnum.Line:
+                        case ArrangementOrderEnum.Loose:
                             {
-                                __result = Agent.UsageDirection.None;
-                                return;
+                                float lastMeleeAttackTime = unit.LastMeleeAttackTime;
+                                float lastMeleeHitTime = unit.LastMeleeHitTime;
+                                float lastRangedHit = unit.LastRangedHitTime;
+                                if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
+                                {
+                                    __result = Agent.UsageDirection.None;
+                                    return;
+                                }
+                                if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && formation.QuerySystem.IsInfantryFormation && (((currentTime - lastRangedHit < 2f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.08f)))
+                                {
+                                    __result = Agent.UsageDirection.DefendDown;
+                                    return;
+                                }
+                                break;
                             }
-                            if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && (((currentTime - lastRangedHit < 2f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.08f)))
-                            {
-                                __result = Agent.UsageDirection.DefendDown;
-                                return;
-                            }
-                            //else
-                            //{
-                            //    __result = Agent.UsageDirection.None;
-                            //}
-                            break;
-                        }
+                    }
                 }
             }
         }

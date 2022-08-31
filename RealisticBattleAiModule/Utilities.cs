@@ -23,31 +23,15 @@ namespace RBMAI
             }
             if (mainInfantry != null)
             {
-                //if (FormationFightingInMelee(mainInfantry, 0.4f))
-                //{
-                //    if (mainInfantry.IsAIControlled)
-                //    {
-                //        mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
-                //        return true;
-                //    }
-                //}
-                //else
-                //{
-                //    if (mainInfantry.IsAIControlled)
-                //    {
-                //        mainInfantry.FiringOrder = FiringOrder.FiringOrderFireAtWill;
-                //    }
-                //}
+                if (FormationFightingInMelee(mainInfantry, 0.35f)){ 
+                    return true;
+                }
                 if (mainInfantry.QuerySystem.ClosestEnemyFormation != null && mainInfantry.QuerySystem.ClosestEnemyFormation.Formation != null)
                 {
                     Formation enemyForamtion = RBMAI.Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false, true);
                     if (enemyForamtion != null)
                     {
-                        //float distanceSpeedValue = mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(enemyForamtion.QuerySystem.MedianPosition.AsVec2) / enemyForamtion.QuerySystem.MovementSpeedMaximum;
                         float distance = mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(enemyForamtion.QuerySystem.MedianPosition.AsVec2);
-                        //{
-                        //    mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
-                        //}
                         return (distance <= (battleJoinRange + (hasBattleBeenJoined ? 5f : 0f)));
                     }
                 }
@@ -257,11 +241,75 @@ namespace RBMAI
             return targetAgent;
         }
 
+        public static float RatioOfCrossbowmen(Formation formation)
+        {
+            float ratio = 0f;
+            int crossCount = 0;
+            if (formation != null)
+            {
+                formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+                {
+                    bool isCrossbowmen = false;
+                    for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                    {
+                        if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
+                        {
+                            if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Crossbow)
+                            {
+                                isCrossbowmen = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (isCrossbowmen)
+                    {
+                        crossCount++;
+                    }
+                });
+                ratio = (float)crossCount / (float)formation.CountOfUnits;
+                return ratio;
+            }
+            return ratio;
+        }
+
+        public static bool IsFormationShooting(Formation formation, float desiredRatio = 0.3f, float lastAttackTimeTreshold = 10f)
+        {
+            float ratio = 0f;
+            int countOfShooting = 0;
+            if (formation != null && Mission.Current != null)
+            {
+                float ratioOfCrossbowmen;
+                if (RBMConfig.RBMConfig.rbmCombatEnabled)
+                {
+                    ratioOfCrossbowmen = RatioOfCrossbowmen(formation);
+                }
+                else
+                {
+                    ratioOfCrossbowmen = 0f;
+                }
+                formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+                {
+                    float currentTime = Mission.Current.CurrentTime;
+                    if (agent.LastRangedAttackTime > 0f && (currentTime - agent.LastRangedAttackTime) < (lastAttackTimeTreshold + (20f * ratioOfCrossbowmen)))
+                    {
+                        countOfShooting++;
+                    }
+                    ratio = (float)countOfShooting / (float)formation.CountOfUnits;
+
+                });
+                if (ratio > desiredRatio)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static bool FormationActiveSkirmishersRatio(Formation formation, float desiredRatio)
         {
             float ratio = 0f;
             int countOfSkirmishers = 0;
-            if (formation != null)
+            if (formation != null && Mission.Current != null)
             {
                 formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
@@ -272,7 +320,7 @@ namespace RBMAI
                     //}
                     bool isActiveSkrimisher = false;
                     float countedUnits = 0f;
-                    float currentTime = MBCommon.GetTotalMissionTime();
+                    float currentTime = Mission.Current.CurrentTime;
                     if (agent.LastRangedAttackTime > 0f && currentTime - agent.LastRangedAttackTime < 9f && ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
                     {
                         for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
@@ -305,7 +353,7 @@ namespace RBMAI
 
         public static bool FormationFightingInMelee(Formation formation, float desiredRatio)
         {
-            float currentTime = MBCommon.GetTotalMissionTime();
+            float currentTime = Mission.Current.CurrentTime;
             float countedUnits = 0;
             float ratio = 0f;
             float countOfUnitsFightingInMelee = 0;
