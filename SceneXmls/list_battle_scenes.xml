@@ -152,7 +152,7 @@
   <Scene id="sturgia_castle_siege_001"
          name="{=IPbMskbi}Ustokol Castle"
          terrain="Steppe"
-         is_siege_map="true"></Scene>
+         is_siege_map="true"></Scene> lvl 1, 2 and 3 done
 		 
   <Scene id="empire_town_c"
          name="{=K2NeKiuO}Ortysia"
@@ -162,7 +162,7 @@
   <Scene id="empire_town_d"
          name="{=UBbTKSsa}Zeonica"
          terrain="Plain"
-         is_siege_map="true"></Scene> lvl 1,2 and 3 done
+         is_siege_map="true"></Scene> lvl 1, 2 and 3 done
 		 
   <Scene id="empire_town_e"
          name="{=Sm9T9Qwi}Myzea"
