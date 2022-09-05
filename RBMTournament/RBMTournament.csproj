@@ -294,6 +294,7 @@
   </ItemGroup>
   <!-- Files & Classes -->
   <ItemGroup>
+    <Compile Include="RBMTournamentPatcher.cs" />
     <Compile Include="RBMTournament.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

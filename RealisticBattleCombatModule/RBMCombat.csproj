@@ -193,6 +193,7 @@
     <Compile Include="CombatModule\RangedAmmoCombo.cs" />
     <Compile Include="CombatModule\DamageRework.cs" />
     <Compile Include="CombatModule\RangedRework.cs" />
+    <Compile Include="CombatModule\RBMCombatPatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>

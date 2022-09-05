@@ -1,6 +1,9 @@
 ﻿using HarmonyLib;
 using RBMAI;
+using RBMCombat;
+using RBMTournament;
 using System;
+using System.IO;
 using System.Reflection;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.Core;
@@ -42,9 +45,12 @@ namespace RBM
         {
             UnpatchAllRBM();
             HarmonyModules.rbmHarmony.PatchAll();
+            //string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             if (RBMConfig.RBMConfig.rbmTournamentEnabled)
             {
-                HarmonyModules.rbmtHarmony.PatchAll(Assembly.LoadFrom("../../Modules/RBM/bin/Win64_Shipping_Client/RBMTournament.dll"));
+                //string xmlFileName = Path.Combine(assemblyFolder, "RBMTournament.dll");
+                //HarmonyModules.rbmtHarmony.PatchAll(Assembly.LoadFrom(xmlFileName));
+                RBMTournamentPatcher.DoPatching(ref HarmonyModules.rbmtHarmony);
             }
             else
             {
@@ -53,7 +59,6 @@ namespace RBM
             if (RBMConfig.RBMConfig.rbmAiEnabled)
             {
                 RBMAiPatcher.FirstPatch(ref HarmonyModules.rbmaiHarmony);
-                //rbmaiHarmony.PatchAll(Assembly.LoadFrom("../../Modules/RBM/bin/Win64_Shipping_Client/RBMAI.dll"));
             }
             else
             {
@@ -61,7 +66,9 @@ namespace RBM
             }
             if (RBMConfig.RBMConfig.rbmCombatEnabled)
             {
-                HarmonyModules.rbmcombatHarmony.PatchAll(Assembly.LoadFrom("../../Modules/RBM/bin/Win64_Shipping_Client/RBMCombat.dll"));
+                //string xmlFileName = Path.Combine(assemblyFolder, "RBMCombat.dll");
+                //HarmonyModules.rbmcombatHarmony.PatchAll(Assembly.LoadFrom(xmlFileName));
+                RBMCombatPatcher.DoPatching(ref HarmonyModules.rbmcombatHarmony);
             }
             else
             {
