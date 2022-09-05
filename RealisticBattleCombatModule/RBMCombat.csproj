@@ -205,10 +205,6 @@
       <Project>{D7F2B557-3D03-4DCF-850C-DA8E5E2D8505}</Project>
       <Name>RBMConfig</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RBM\RBM.csproj">
-      <Project>{261D45DE-84C9-4102-B083-6F4A30BA5A3A}</Project>
-      <Name>RBM</Name>
-    </ProjectReference>
   </ItemGroup>
   <!-- Post-Build -->
   <PropertyGroup>
