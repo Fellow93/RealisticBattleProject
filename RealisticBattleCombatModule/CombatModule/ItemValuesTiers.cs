@@ -117,11 +117,11 @@ namespace RBMCombat
                 //}
                 else if (item.ItemComponent is HorseComponent)
                 {
-                    price = (int)(200f * tier * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
+                    price = (int)(200f * tier * RBMConfig.RBMConfig.priceMultipliers.HorsePriceModifier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
                 }
                 else if (item.ItemComponent is TradeItemComponent)
                 {
-                    price = (int)(100f * tier * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
+                    price = (int)(100f * tier * RBMConfig.RBMConfig.priceMultipliers.TradePriceModifier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f));
                 }
                 else
                 {
