@@ -2251,7 +2251,7 @@
       <equipment slot="Head"
                  id="Item.desert_helmet" />
       <equipment slot="Cape"
-                 id="Item.desert_leather_shoulderpad" />
+                 id="" />
       <equipment slot="Body"
                  id="Item.desert_padded_cloth" />
       <equipment slot="Leg"
@@ -2271,7 +2271,7 @@
       <equipment slot="Head"
                  id="Item.open_desert_helmet" />
       <equipment slot="Cape"
-                 id="Item.desert_leather_shoulderpad" />
+                 id="" />
       <equipment slot="Body"
                  id="Item.desert_padded_cloth" />
       <equipment slot="Leg"
@@ -2291,7 +2291,7 @@
       <equipment slot="Head"
                  id="Item.loose_wrapped_desert_helmet" />
       <equipment slot="Cape"
-                 id="Item.desert_leather_shoulderpad" />
+                 id="" />
       <equipment slot="Body"
                  id="Item.desert_padded_cloth" />
       <equipment slot="Leg"
@@ -2352,7 +2352,7 @@
       <equipment slot="Gloves"
                  id="Item.studded_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.aserai_horseman_shoulder" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -2372,7 +2372,7 @@
       <equipment slot="Gloves"
                  id="Item.studded_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.aserai_horseman_shoulder" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -2394,7 +2394,7 @@
       <equipment slot="Gloves"
                  id="Item.studded_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.aserai_horseman_shoulder" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="aserai_troop_civilian_template_t2"
                     civilian="true" />
@@ -2445,7 +2445,7 @@
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Cape"
-                 id="Item.a_aserai_scale_b_shoulder_a" />
+                 id="" />
       <equipment slot="Gloves"
                  id="Item.reinforced_leather_vambraces" />
       </EquipmentRoster>
@@ -2465,7 +2465,7 @@
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Cape"
-                 id="Item.a_aserai_scale_b_shoulder_a" />
+                 id="" />
       <equipment slot="Gloves"
                  id="Item.reinforced_leather_vambraces" />
       </EquipmentRoster>
@@ -2485,7 +2485,7 @@
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Cape"
-                 id="Item.a_aserai_scale_b_shoulder_a" />
+                 id="" />
       <equipment slot="Gloves"
                  id="Item.reinforced_leather_vambraces" />
       </EquipmentRoster>
@@ -2950,7 +2950,7 @@
       <equipment slot="Gloves"
                  id="Item.studded_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.a_aserai_scale_b_shoulder_c" />
+                 id="" />
       <equipment slot="Horse"
                  id="Item.aserai_horse" />
       <equipment slot="HorseHarness"
@@ -2974,7 +2974,7 @@
       <equipment slot="Gloves"
                  id="Item.studded_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.a_aserai_scale_b_shoulder_c" />
+                 id="" />
       <equipment slot="Horse"
                  id="Item.aserai_horse" />
       <equipment slot="HorseHarness"
@@ -2996,7 +2996,7 @@
       <equipment slot="Leg"
                  id="Item.strapped_mail_chausses" />
       <equipment slot="Cape"
-                 id="Item.a_aserai_scale_b_shoulder_c" />
+                 id="" />
       <equipment slot="Gloves"
                  id="Item.studded_leather_vambraces" />
       <equipment slot="Horse"
@@ -3050,7 +3050,7 @@
       <equipment slot="Head"
                  id="Item.desert_mail_coif" />
       <equipment slot="Cape"
-                 id="Item.a_aserai_scale_b_shoulder_e" />
+                 id="" />
       <equipment slot="Body"
                  id="Item.aserai_chain_plate_armor_a" />
       <equipment slot="Leg"
@@ -3074,7 +3074,7 @@
       <equipment slot="Head"
                  id="Item.desert_mail_coif" />
       <equipment slot="Cape"
-                 id="Item.a_aserai_scale_b_shoulder_e" />
+                 id="" />
       <equipment slot="Body"
                  id="Item.aserai_chain_plate_armor_a" />
       <equipment slot="Leg"
@@ -3098,7 +3098,7 @@
       <equipment slot="Head"
                  id="Item.desert_mail_coif" />
       <equipment slot="Cape"
-                 id="Item.a_aserai_scale_b_shoulder_e" />
+                 id="" />
       <equipment slot="Body"
                  id="Item.aserai_chain_plate_armor_b" />
       <equipment slot="Leg"
@@ -6374,7 +6374,7 @@
       <equipment slot="Item0"
                  id="Item.empire_lance_1_t3" />
       <equipment slot="Item1"
-                 id="Item.tall_heater_shield_shoulder" />
+                 id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
                  id="Item.empire_mace_2_t4" />
       <equipment slot="Head"
@@ -6387,12 +6387,14 @@
                  id="Item.mail_mitten" />
       <equipment slot="Leg"
                  id="Item.strapped_mail_chausses" />
+	  <equipment slot="HorseHarness"
+                 id="Item.halfchain_barding" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.empire_lance_1_t3" />
       <equipment slot="Item1"
-                 id="Item.tall_heater_shield_shoulder" />
+                 id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
                  id="Item.empire_mace_2_t4" />
       <equipment slot="Head"
@@ -6405,12 +6407,14 @@
                  id="Item.mail_mitten" />
       <equipment slot="Leg"
                  id="Item.strapped_mail_chausses" />
+	  <equipment slot="HorseHarness"
+                 id="Item.half_scale_barding" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.empire_lance_1_t3" />
       <equipment slot="Item1"
-                 id="Item.tall_heater_shield_shoulder" />
+                 id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
                  id="Item.empire_sword_6_t5" />
       <equipment slot="Head"
@@ -6423,13 +6427,13 @@
                  id="Item.mail_mitten" />
       <equipment slot="Leg"
                  id="Item.strapped_mail_chausses" />
+	  <equipment slot="HorseHarness"
+                 id="Item.half_scale_barding" />
       </EquipmentRoster>
       <EquipmentSet id="empire_troop_civilian_template_t2"
                     civilian="true" />
     <equipment slot="Horse"
                id="Item.t2_empire_horse" />
-    <equipment slot="HorseHarness"
-               id="Item.half_scale_barding" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="imperial_cataphract"
@@ -6468,7 +6472,7 @@
       <equipment slot="Item0"
                  id="Item.empire_lance_2_t4" />
       <equipment slot="Item1"
-                 id="Item.heavy_horsemans_kite_shield" />
+                 id="Item.battania_shield_targe_a" />
       <equipment slot="Item2"
                  id="Item.empire_mace_3_t4" />
       <equipment slot="Head"
@@ -6483,12 +6487,14 @@
                  id="Item.pauldron_cape_a" />
       <equipment slot="Horse"
                 id="Item.t2_empire_horse" />
+      <equipment slot="HorseHarness"
+                 id="Item.chain_barding" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.empire_lance_2_t4" />
       <equipment slot="Item1"
-                 id="Item.heavy_horsemans_kite_shield" />
+                 id="Item.battania_shield_targe_a" />
       <equipment slot="Item2"
                  id="Item.empire_mace_3_t4" />
       <equipment slot="Head"
@@ -6503,12 +6509,14 @@
                  id="Item.varangian_bra_mail" />
       <equipment slot="Horse"
                 id="Item.noble_horse_imperial" />
+      <equipment slot="HorseHarness"
+                 id="Item.imperial_scale_barding" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.empire_lance_2_t4" />
       <equipment slot="Item1"
-                 id="Item.heavy_horsemans_kite_shield" />
+                 id="Item.battania_shield_targe_a" />
       <equipment slot="Item2"
                  id="Item.empire_mace_3_t4" />
       <equipment slot="Head"
@@ -6522,12 +6530,12 @@
       <equipment slot="Cape"
                  id="Item.varangian_bra_mail" />
       <equipment slot="Horse"
-                id="Item.t2_empire_horse" />
+                 id="Item.t2_empire_horse" />
+      <equipment slot="HorseHarness"
+                 id="Item.imperial_scale_barding" />
       </EquipmentRoster>
       <EquipmentSet id="empire_troop_civilian_template_t3"
                     civilian="true" />
-    <equipment slot="HorseHarness"
-               id="Item.imperial_scale_barding" />
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="imperial_elite_cataphract"
@@ -6561,8 +6569,9 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_lance_3_t5" />
-
+                 id="Item.empire_lance_2_t4" />
+      <equipment slot="Item1"
+                 id="Item.battania_shield_targe_a" />
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Head"
@@ -6580,8 +6589,9 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_lance_3_t5" />
-
+                 id="Item.empire_lance_2_t4" />
+      <equipment slot="Item1"
+                 id="Item.battania_shield_targe_a" />
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Head"
@@ -6599,8 +6609,9 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_lance_3_t5" />
-
+                 id="Item.empire_lance_2_t4" />
+      <equipment slot="Item1"
+                 id="Item.battania_shield_targe_a" />
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Head"
@@ -6987,7 +6998,7 @@
       <equipment slot="Leg"
                  id="Item.strapped_leather_boots" />
       <equipment slot="Cape"
-                 id="Item.empire_cape_a" />
+                 id="" />
       <equipment slot="Gloves"
                  id="Item.armwraps" />
       </EquipmentRoster>
@@ -7007,7 +7018,7 @@
       <equipment slot="Leg"
                  id="Item.strapped_shoes" />
       <equipment slot="Cape"
-                 id="Item.empire_cape_a" />
+                 id="" />
       <equipment slot="Gloves"
                  id="Item.armwraps" />
       </EquipmentRoster>
@@ -7027,7 +7038,7 @@
       <equipment slot="Leg"
                  id="Item.strapped_shoes" />
       <equipment slot="Cape"
-                 id="Item.empire_cape_a" />
+                 id="" />
       <equipment slot="Gloves"
                  id="Item.armwraps" />
       </EquipmentRoster>
@@ -7055,9 +7066,9 @@
       <skill id="TwoHanded"
              value="40" />
       <skill id="Polearm"
-             value="115" />
+             value="120" />
       <skill id="Bow"
-             value="115" />
+             value="110" />
       <skill id="Crossbow"
              value="60" />
       <skill id="Throwing"
@@ -7067,13 +7078,13 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_war_bow" />
+                 id="Item.composite_steppe_bow" />
       <equipment slot="Item1"
-                 id="Item.GRE_arrow_emp_1_a" />
+                 id="Item.GRE_hardened_100_gr_arrows" />
       <equipment slot="Item2"
                  id="Item.GRE_hardened_100_gr_arrows" />
       <equipment slot="Item3"
-                 id="Item.empire_lance_1_t3" />
+                 id="Item.empire_lance_3_t5" />
       <equipment slot="Head"
                  id="Item.plumed_helmet" />
       <equipment slot="Gloves"
@@ -7083,17 +7094,17 @@
       <equipment slot="Leg"
                  id="Item.mail_cavalier_boots" />
       <equipment slot="Cape"
-                 id="Item.studded_imperial_neckguard" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_war_bow" />
+                 id="Item.composite_steppe_bow" />
       <equipment slot="Item1"
                  id="Item.GRE_hardened_100_gr_arrows" />
       <equipment slot="Item2"
-                 id="Item.GRE_arrow_emp_1_a" />
+                 id="Item.GRE_hardened_100_gr_arrows" />
       <equipment slot="Item3"
-                 id="Item.empire_lance_1_t3" />
+                 id="Item.empire_lance_3_t5" />
       <equipment slot="Head"
                  id="Item.helmet_with_faceguard" />
       <equipment slot="Gloves"
@@ -7103,17 +7114,17 @@
       <equipment slot="Leg"
                  id="Item.mail_cavalier_boots" />
       <equipment slot="Cape"
-                 id="Item.studded_imperial_neckguard" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_war_bow" />
+                 id="Item.composite_steppe_bow" />
       <equipment slot="Item1"
-                 id="Item.GRE_arrow_emp_1_a" />
+                 id="Item.GRE_hardened_100_gr_arrows" />
       <equipment slot="Item2"
                  id="Item.GRE_hardened_100_gr_arrows" />
       <equipment slot="Item3"
-                 id="Item.empire_lance_1_t3" />
+                 id="Item.empire_lance_3_t5" />
       <equipment slot="Head"
                  id="Item.tall_helmet" />
       <equipment slot="Gloves"
@@ -7123,7 +7134,7 @@
       <equipment slot="Leg"
                  id="Item.mail_cavalier_boots" />
       <equipment slot="Cape"
-                 id="Item.studded_imperial_neckguard" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="empire_troop_civilian_template_t3"
                     civilian="true" />
@@ -7183,7 +7194,7 @@
       <equipment slot="Head"
                  id="Item.leatherlame_roundkettle" />
       <equipment slot="Cape"
-                 id="Item.woven_leather_shoulders" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -7203,7 +7214,7 @@
       <equipment slot="Head"
                  id="Item.leatherlame_roundkettle_over_imperial_leather" />
       <equipment slot="Cape"
-                 id="Item.a_pauldron_cape_c" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="empire_troop_civilian_template_t2"
                     civilian="true" />
@@ -7259,7 +7270,7 @@
       <equipment slot="Gloves"
                  id="Item.plated_strip_gauntlets" />
       <equipment slot="Cape"
-                 id="Item.empire_plate_armor_shoulder_b" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -7279,7 +7290,7 @@
       <equipment slot="Gloves"
                  id="Item.plated_strip_gauntlets" />
       <equipment slot="Cape"
-                 id="Item.a_pauldron_cape_b" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -7299,7 +7310,7 @@
       <equipment slot="Gloves"
                  id="Item.plated_strip_gauntlets" />
       <equipment slot="Cape"
-                 id="Item.a_empire_plated_shoulder_b" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="empire_troop_civilian_template_t2"
                     civilian="true" />
@@ -7352,7 +7363,7 @@
       <equipment slot="Head"
                  id="Item.empire_lord_helmet" />
       <equipment slot="Cape"
-                 id="Item.pauldron_cape_a" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -7372,7 +7383,7 @@
       <equipment slot="Gloves"
                  id="Item.decorated_imperial_gauntlets" />
       <equipment slot="Cape"
-                 id="Item.pauldron_cape_a" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -7392,7 +7403,7 @@
       <equipment slot="Gloves"
                  id="Item.decorated_imperial_gauntlets" />
       <equipment slot="Cape"
-                 id="Item.pauldron_cape_a" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -7412,7 +7423,7 @@
       <equipment slot="Gloves"
                  id="Item.decorated_imperial_gauntlets" />
       <equipment slot="Cape"
-                 id="Item.pauldron_cape_a" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -7432,7 +7443,7 @@
       <equipment slot="Gloves"
                  id="Item.decorated_imperial_gauntlets" />
       <equipment slot="Cape"
-                 id="Item.pauldron_cape_a" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="empire_troop_civilian_template_t3"
                     civilian="true" />
@@ -7642,7 +7653,7 @@
       <equipment slot="Item2"
                  id="Item.empire_sword_5_t4" />
       <equipment slot="Item3"
-                 id="Item.reinforced_kite_shield_shoulder" />
+                 id="Item.pavise_shield_shoulder" />
       <equipment slot="Gloves"
                  id="Item.reinforced_padded_mitten" />
       <equipment slot="Body"
@@ -7662,7 +7673,7 @@
       <equipment slot="Item2"
                  id="Item.empire_mace_2_t4" />
       <equipment slot="Item3"
-                 id="Item.reinforced_kite_shield_shoulder" />
+                 id="Item.pavise_shield_shoulder" />
       <equipment slot="Gloves"
                  id="Item.reinforced_padded_mitten" />
       <equipment slot="Body"
@@ -7682,7 +7693,7 @@
       <equipment slot="Item2"
                  id="Item.empire_mace_3_t4" />
       <equipment slot="Item3"
-                 id="Item.reinforced_kite_shield_shoulder" />
+                 id="Item.pavise_shield_shoulder" />
       <equipment slot="Gloves"
                  id="Item.reinforced_padded_mitten" />
       <equipment slot="Body"
@@ -7735,7 +7746,7 @@
       <equipment slot="Item2"
                  id="Item.empire_mace_2_t4" />
       <equipment slot="Item3"
-                 id="Item.fortified_kite_shield_shoulder" />
+                 id="Item.pavise_shield_shoulder" />
       <equipment slot="Body"
                  id="Item.empire_legion_b" />
       <equipment slot="Gloves"
@@ -7755,7 +7766,7 @@
       <equipment slot="Item2"
                  id="Item.empire_mace_4_t5" />
       <equipment slot="Item3"
-                 id="Item.fortified_kite_shield_shoulder" />
+                 id="Item.pavise_shield_shoulder" />
       <equipment slot="Body"
                  id="Item.imperial_lamellar_over_leather" />
       <equipment slot="Gloves"
@@ -7775,7 +7786,7 @@
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Item3"
-                 id="Item.fortified_kite_shield_shoulder" />
+                 id="Item.pavise_shield_shoulder" />
       <equipment slot="Body"
                  id="Item.empire_legion_b" />
       <equipment slot="Gloves"
@@ -7795,7 +7806,7 @@
       <equipment slot="Item2"
                  id="Item.empire_mace_4_t5" />
       <equipment slot="Item3"
-                 id="Item.fortified_kite_shield_shoulder" />
+                 id="Item.pavise_shield_shoulder" />
       <equipment slot="Body"
                  id="Item.imperial_lamellar_over_leather" />
       <equipment slot="Gloves"
@@ -7815,7 +7826,7 @@
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Item3"
-                 id="Item.fortified_kite_shield_shoulder" />
+                 id="Item.pavise_shield_shoulder" />
       <equipment slot="Body"
                  id="Item.empire_legion_b" />
       <equipment slot="Gloves"
@@ -8059,7 +8070,7 @@
       <equipment slot="Head"
                  id="Item.decorated_nomad_cap" />
       <equipment slot="Cape"
-                 id="Item.scarf" />
+                 id="" />
       <equipment slot="Leg"
                  id="Item.eastern_leather_boots" />
       <equipment slot="Gloves"
@@ -8083,7 +8094,7 @@
       <equipment slot="Gloves"
                  id="Item.buttoned_leather_bracers" />
       <equipment slot="Cape"
-                 id="Item.scarf" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -8103,7 +8114,7 @@
       <equipment slot="Gloves"
                  id="Item.steppe_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.scarf" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="khuzait_troop_civilian_template_t1"
                     civilian="true" />
@@ -8263,7 +8274,7 @@
       <equipment slot="Gloves"
                  id="Item.studded_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.a_leather_lamellar_armor_shoulder_a" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -8281,7 +8292,7 @@
       <equipment slot="Leg"
                  id="Item.eastern_leather_boots" />
       <equipment slot="Cape"
-                 id="Item.a_brass_lamellar_shoulder_a" />
+                 id="" />
       <equipment slot="Gloves"
                  id="Item.studded_leather_vambraces" />
       </EquipmentRoster>
@@ -8303,7 +8314,7 @@
       <equipment slot="Gloves"
                  id="Item.studded_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.a_leather_lamellar_armor_shoulder_a" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="khuzait_troop_civilian_template_t2"
                     civilian="true" />
@@ -8444,7 +8455,7 @@
       <equipment slot="Gloves"
                  id="Item.studded_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.reinforced_suede_shoulders" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -8464,7 +8475,7 @@
       <equipment slot="Gloves"
                  id="Item.studded_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.a_khuzait_leather_shoulder_b_b" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -8484,7 +8495,7 @@
       <equipment slot="Gloves"
                  id="Item.studded_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.bolted_leather_strips" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="khuzait_troop_civilian_template_t2"
                     civilian="true" />
@@ -8737,7 +8748,7 @@
       <equipment slot="Leg"
                  id="Item.reinforced_suede_boots" />
       <equipment slot="Cape"
-                 id="Item.eastern_studded_shoulders" />
+                 id="" />
       <equipment slot="Gloves"
                  id="Item.reinforced_leather_vambraces" />
       </EquipmentRoster>
@@ -8757,7 +8768,7 @@
       <equipment slot="Leg"
                  id="Item.reinforced_suede_boots" />
       <equipment slot="Cape"
-                 id="Item.eastern_studded_shoulders" />
+                 id="" />
       <equipment slot="Gloves"
                  id="Item.reinforced_leather_vambraces" />
       </EquipmentRoster>
@@ -8777,7 +8788,7 @@
       <equipment slot="Leg"
                  id="Item.reinforced_suede_boots" />
       <equipment slot="Cape"
-                 id="Item.eastern_studded_shoulders" />
+                 id="" />
       <equipment slot="Gloves"
                  id="Item.reinforced_leather_vambraces" />
       </EquipmentRoster>
@@ -8926,7 +8937,7 @@
       <equipment slot="Gloves"
                  id="Item.reinforced_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.leather_lamellar_shoulders" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -8946,7 +8957,7 @@
       <equipment slot="Gloves"
                  id="Item.reinforced_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.leather_lamellar_shoulders" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -8966,7 +8977,7 @@
       <equipment slot="Gloves"
                  id="Item.reinforced_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.leather_lamellar_shoulders" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="khuzait_troop_civilian_template_t2"
                     civilian="true" />
@@ -9216,7 +9227,7 @@
       <equipment slot="Gloves"
                  id="Item.eastern_plated_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.lamellar_shoulders" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -9236,7 +9247,7 @@
       <equipment slot="Gloves"
                  id="Item.eastern_plated_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.lamellar_shoulders" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -9256,7 +9267,7 @@
       <equipment slot="Gloves"
                  id="Item.eastern_plated_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.lamellar_shoulders" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="khuzait_troop_civilian_template_t3"
                     civilian="true" />
@@ -9395,7 +9406,7 @@
       <equipment slot="Gloves"
                  id="Item.eastern_plated_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.lamellar_shoulders" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -9415,7 +9426,7 @@
       <equipment slot="Gloves"
                  id="Item.eastern_plated_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.lamellar_shoulders" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -9435,7 +9446,7 @@
       <equipment slot="Gloves"
                  id="Item.eastern_plated_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.lamellar_shoulders" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="khuzait_troop_civilian_template_t3"
                     civilian="true" />
@@ -10925,7 +10936,7 @@
       <equipment slot="Gloves"
                  id="Item.guarded_padded_vambrace" />
       <equipment slot="Cape"
-                 id="Item.battanian_leather_shoulder_a" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -10945,7 +10956,7 @@
       <equipment slot="Gloves"
                  id="Item.guarded_padded_vambrace" />
       <equipment slot="Cape"
-                 id="Item.battanian_leather_shoulder_a" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -10965,7 +10976,7 @@
       <equipment slot="Gloves"
                  id="Item.guarded_padded_vambrace" />
       <equipment slot="Cape"
-                 id="Item.battanian_leather_shoulder_a" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="sturgia_troop_civilian_template_t2"
                     civilian="true" />
@@ -11020,7 +11031,7 @@
       <equipment slot="Gloves"
                  id="Item.reinforced_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.wolf_shoulder" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -11040,7 +11051,7 @@
       <equipment slot="Gloves"
                  id="Item.reinforced_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.battania_cloak_furr" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -11060,7 +11071,7 @@
       <equipment slot="Gloves"
                  id="Item.reinforced_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.wolf_shoulder" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="sturgia_troop_civilian_template_t2"
                     civilian="true" />
@@ -11113,7 +11124,7 @@
       <equipment slot="Gloves"
                  id="Item.northern_brass_bracers" />
       <equipment slot="Cape"
-                 id="Item.a_brass_lamellar_shoulder_white_b" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -11133,7 +11144,7 @@
       <equipment slot="Gloves"
                  id="Item.northern_brass_bracers" />
       <equipment slot="Cape"
-                 id="Item.armored_bearskin" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -11153,7 +11164,7 @@
       <equipment slot="Gloves"
                  id="Item.northern_brass_bracers" />
       <equipment slot="Cape"
-                 id="Item.a_brass_lamellar_shoulder_white_b" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="sturgia_troop_civilian_template_t3"
                     civilian="true" />
@@ -12945,7 +12956,7 @@
       <equipment slot="Item2"
                  id="Item.vlandia_sword_2_t3" />
       <equipment slot="Item3"
-                 id="Item.reinforced_kite_shield_shoulder" />
+                 id="Item.pavise_shield_shoulder" />
       <equipment slot="Body"
                  id="Item.sleeveless_padded_short_coat" />
       <equipment slot="Leg"
@@ -12965,7 +12976,7 @@
       <equipment slot="Item2"
                  id="Item.vlandia_mace_1_t2" />
       <equipment slot="Item3"
-                 id="Item.reinforced_kite_shield_shoulder" />
+                 id="Item.pavise_shield_shoulder" />
       <equipment slot="Body"
                  id="Item.padded_short_coat" />
       <equipment slot="Leg"
@@ -12985,7 +12996,7 @@
       <equipment slot="Item2"
                  id="Item.vlandia_axe_1_t3" />
       <equipment slot="Item3"
-                 id="Item.reinforced_kite_shield_shoulder" />
+                 id="Item.pavise_shield_shoulder" />
       <equipment slot="Body"
                  id="Item.leather_scale_armor" />
       <equipment slot="Leg"
@@ -14547,7 +14558,7 @@
       <equipment slot="Leg"
                  id="Item.mail_chausses" />
       <equipment slot="Cape"
-                 id="Item.eastern_studded_shoulders" />
+                 id="Item.battanian_chainmail_shoulder_b" />
       <equipment slot="Gloves"
                  id="Item.mail_mitten" />
       </EquipmentRoster>
@@ -14602,7 +14613,7 @@
       <equipment slot="Gloves"
                  id="Item.battania_warlord_bracers" />
       <equipment slot="Cape"
-                 id="Item.battanian_chainmail_shoulder_b" />
+                 id="Item.noble_pauldron" />
       </EquipmentRoster>
       <EquipmentSet id="vlandia_troop_civilian_template_t3"
                     civilian="true" />
@@ -15593,7 +15604,7 @@
       <equipment slot="Head"
                  id="Item.battania_civil_hood" />
       <equipment slot="Cape"
-                 id="Item.green_hood" />
+                 id="" />
       <equipment slot="Body"
                  id="Item.aketon" />
       <equipment slot="Leg"
@@ -15654,7 +15665,7 @@
       <equipment slot="Gloves"
                  id="Item.studded_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.bearskin" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="vlandia_troop_civilian_template_t2"
                     civilian="true" />
@@ -15705,7 +15716,7 @@
       <equipment slot="Gloves"
                  id="Item.reinforced_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.battanian_chainmail_shoulder_b" />
+                 id="" />
       <equipment slot="Head"
                  id="Item.ridged_northernhelm" />
       </EquipmentRoster>
@@ -15827,7 +15838,7 @@
       <equipment slot="Gloves"
                  id="Item.padded_vambrace" />
       <equipment slot="Cape"
-                 id="Item.scarf" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -15847,7 +15858,7 @@
       <equipment slot="Gloves"
                  id="Item.padded_vambrace" />
       <equipment slot="Cape"
-                 id="Item.scarf" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="empire_troop_civilian_template_t2"
                     civilian="true" />
@@ -15900,7 +15911,7 @@
       <equipment slot="Gloves"
                  id="Item.leather_gloves" />
       <equipment slot="Cape"
-                 id="Item.padded_leather_shoulders" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -15920,7 +15931,7 @@
       <equipment slot="Gloves"
                  id="Item.leather_gloves" />
       <equipment slot="Cape"
-                 id="Item.padded_leather_shoulders" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="empire_troop_civilian_template_t3"
                     civilian="true" />
@@ -16296,7 +16307,7 @@
       <equipment slot="Gloves"
                  id="Item.eastern_wrapped_armguards" />
 	  <equipment slot="Cape"
-                 id="Item.reinforced_suede_shoulders" />
+                 id="" />
       <equipment slot="Horse"
                  id="Item.khuzait_horse" />
       <equipment slot="HorseHarness"
@@ -16320,7 +16331,7 @@
       <equipment slot="Gloves"
                  id="Item.eastern_wrapped_armguards" />
 	  <equipment slot="Cape"
-                 id="Item.reinforced_suede_shoulders" />
+                 id="" />
       <equipment slot="Horse"
                  id="Item.khuzait_horse" />
       <equipment slot="HorseHarness"
@@ -16344,7 +16355,7 @@
       <equipment slot="Gloves"
                  id="Item.eastern_wrapped_armguards" />
 	  <equipment slot="Cape"
-                 id="Item.reinforced_suede_shoulders" />
+                 id="" />
       <equipment slot="Horse"
                  id="Item.khuzait_horse" />
       <equipment slot="HorseHarness"
@@ -16368,7 +16379,7 @@
       <equipment slot="Gloves"
                  id="Item.eastern_wrapped_armguards" />
 	  <equipment slot="Cape"
-                 id="Item.reinforced_suede_shoulders" />
+                 id="" />
       <equipment slot="Horse"
                  id="Item.khuzait_horse" />
       <equipment slot="HorseHarness"
@@ -16422,7 +16433,7 @@
       <equipment slot="Body"
                  id="Item.leather_lamellar_armor" />
       <equipment slot="Cape"
-                 id="Item.khuzait_leather_pauldron" />
+                 id="" />
       <equipment slot="Leg"
                  id="Item.khuzait_curved_boots" />
       <equipment slot="Gloves"
@@ -16446,7 +16457,7 @@
       <equipment slot="Body"
                  id="Item.khuzait_fortified_armor" />
       <equipment slot="Cape"
-                 id="Item.leather_lamellar_shoulders" />
+                 id="" />
       <equipment slot="Leg"
                  id="Item.khuzait_curved_boots" />
       <equipment slot="Gloves"
@@ -16504,7 +16515,7 @@
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Cape"
-                 id="Item.lamellar_shoulders" />
+                 id="" />
       <equipment slot="Gloves"
                  id="Item.eastern_plated_leather_vambraces" />
       <equipment slot="Horse"
@@ -16528,7 +16539,7 @@
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Cape"
-                 id="Item.brass_lamellar_shoulder" />
+                 id="" />
       <equipment slot="Gloves"
                  id="Item.eastern_plated_leather_vambraces" />
       <equipment slot="Horse"
@@ -16589,7 +16600,7 @@
       <equipment slot="Gloves"
                  id="Item.armwraps" />
       <equipment slot="Cape"
-                 id="Item.battania_civil_cloak" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="sturgia_troop_civilian_template_t1"
                     civilian="true" />
@@ -16644,7 +16655,7 @@
       <equipment slot="Gloves"
                  id="Item.studded_leather_vambraces" />
       <equipment slot="Cape"
-                 id="Item.stitched_leather_shoulders" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="sturgia_troop_civilian_template_t2"
                     civilian="true" />
@@ -16697,7 +16708,7 @@
       <equipment slot="Gloves"
                  id="Item.northern_brass_bracers" />
       <equipment slot="Cape"
-                 id="Item.rough_bearskin" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentSet id="sturgia_troop_civilian_template_t3"
                     civilian="true" />
@@ -17432,7 +17443,7 @@
       <equipment slot="Gloves"
                  id="Item.buttoned_leather_bracers" />
       <equipment slot="Cape"
-                 id="Item.wrapped_scarf" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -17452,7 +17463,7 @@
       <equipment slot="Leg"
                  id="Item.eastern_leather_boots" />
       <equipment slot="Cape"
-                 id="Item.wrapped_scarf" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -17472,7 +17483,7 @@
       <equipment slot="Gloves"
                  id="Item.buttoned_leather_bracers" />
       <equipment slot="Cape"
-                 id="Item.wrapped_scarf" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster civilian="true">
       <equipment slot="Item0"
@@ -17492,7 +17503,7 @@
       <equipment slot="Gloves"
                  id="Item.buttoned_leather_bracers" />
       <equipment slot="Cape"
-                 id="Item.wrapped_scarf" />
+                 id="" />
       </EquipmentRoster>
     </Equipments>
   </NPCCharacter>
@@ -17543,7 +17554,7 @@
       <equipment slot="Gloves"
                  id="Item.guarded_padded_vambrace" />
       <equipment slot="Cape"
-                 id="Item.wrapped_scarf" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -17563,7 +17574,7 @@
       <equipment slot="Leg"
                  id="Item.eastern_leather_boots" />
       <equipment slot="Cape"
-                 id="Item.wrapped_scarf" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -17583,7 +17594,7 @@
       <equipment slot="Gloves"
                  id="Item.guarded_padded_vambrace" />
       <equipment slot="Cape"
-                 id="Item.wrapped_scarf" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster civilian="true">
       <equipment slot="Item0"
@@ -17603,7 +17614,7 @@
       <equipment slot="Gloves"
                  id="Item.guarded_padded_vambrace" />
       <equipment slot="Cape"
-                 id="Item.wrapped_scarf" />
+                 id="" />
       </EquipmentRoster>
     </Equipments>
   </NPCCharacter>
@@ -17852,7 +17863,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.western_kite_shield_shoulder" />
+                 id="Item.pavise_shield_shoulder" />
       <equipment slot="Item3"
                  id="Item.vlandia_mace_1_t2" />
       <equipment slot="Head"
@@ -17872,7 +17883,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.western_kite_shield_shoulder" />
+                 id="Item.pavise_shield_shoulder" />
       <equipment slot="Item3"
                  id="Item.vlandia_mace_1_t2" />
       <equipment slot="Head"
@@ -17892,7 +17903,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.western_kite_shield_shoulder" />
+                 id="Item.pavise_shield_shoulder" />
       <equipment slot="Item3"
                  id="Item.vlandia_mace_1_t2" />
       <equipment slot="Head"
@@ -17912,7 +17923,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.western_kite_shield_shoulder" />
+                 id="Item.pavise_shield_shoulder" />
       <equipment slot="Item3"
                  id="Item.vlandia_mace_1_t2" />
       <equipment slot="Head"
@@ -18292,7 +18303,7 @@
       <equipment slot="Leg"
                  id="Item.highland_leg_wrappings" />
       <equipment slot="Cape"
-                 id="Item.battania_civil_cape" />
+                 id="" />
       <equipment slot="Head"
                  id="Item.bearhead" />
       <equipment slot="Gloves"
@@ -18312,7 +18323,7 @@
       <equipment slot="Leg"
                  id="Item.highland_leg_wrappings" />
       <equipment slot="Cape"
-                 id="Item.battania_civil_cape" />
+                 id="" />
       <equipment slot="Head"
                  id="Item.bearhead" />
       <equipment slot="Gloves"
@@ -18332,7 +18343,7 @@
       <equipment slot="Leg"
                  id="Item.highland_leg_wrappings" />
       <equipment slot="Cape"
-                 id="Item.battania_civil_cape" />
+                 id="" />
       <equipment slot="Head"
                  id="Item.bearhead" />
       <equipment slot="Gloves"
@@ -18352,7 +18363,7 @@
       <equipment slot="Leg"
                  id="Item.highland_leg_wrappings" />
       <equipment slot="Cape"
-                 id="Item.battania_civil_cape" />
+                 id="" />
       <equipment slot="Head"
                  id="Item.bearhead" />
       <equipment slot="Gloves"
@@ -18403,7 +18414,7 @@
       <equipment slot="Leg"
                  id="Item.highland_leg_wrappings" />
       <equipment slot="Cape"
-                 id="Item.battania_civil_cape" />
+                 id="" />
       <equipment slot="Head"
                  id="Item.ridged_northernhelm" />
       <equipment slot="Gloves"
@@ -18423,7 +18434,7 @@
       <equipment slot="Leg"
                  id="Item.highland_leg_wrappings" />
       <equipment slot="Cape"
-                 id="Item.battania_civil_cape" />
+                 id="" />
       <equipment slot="Head"
                  id="Item.ridged_northernhelm" />
       <equipment slot="Gloves"
@@ -18443,7 +18454,7 @@
       <equipment slot="Leg"
                  id="Item.highland_leg_wrappings" />
       <equipment slot="Cape"
-                 id="Item.battania_civil_cape" />
+                 id="" />
       <equipment slot="Head"
                  id="Item.ridged_northernhelm" />
       <equipment slot="Gloves"
@@ -18463,7 +18474,7 @@
       <equipment slot="Leg"
                  id="Item.highland_leg_wrappings" />
       <equipment slot="Cape"
-                 id="Item.battania_civil_cape" />
+                 id="" />
       <equipment slot="Head"
                  id="Item.ridged_northernhelm" />
       <equipment slot="Gloves"
@@ -18734,7 +18745,7 @@
       <equipment slot="Head"
                  id="Item.imperial_padded_coif" />
       <equipment slot="Cape"
-                 id="Item.scarf" />
+                 id="" />
       <equipment slot="Body"
                  id="Item.empire_warrior_padded_armor_e" />
       <equipment slot="Leg"
@@ -18839,7 +18850,7 @@
       <equipment slot="Head"
                  id="Item.roundkettle_over_imperial_padding" />
       <equipment slot="Cape"
-                 id="Item.scarf" />
+                 id="" />
       <equipment slot="Body"
                  id="Item.imperial_mail_over_leather" />
       <equipment slot="Leg"
@@ -19160,7 +19171,7 @@
       <equipment slot="Body"
                  id="Item.nordic_padded_cloth" />
       <equipment slot="Cape"
-                 id="Item.scarf" />
+                 id="" />
       <equipment slot="Gloves"
                  id="Item.highland_gloves" />
       <equipment slot="Leg"
@@ -19182,7 +19193,7 @@
       <equipment slot="Gloves"
                  id="Item.highland_gloves" />
       <equipment slot="Cape"
-                 id="Item.scarf" />
+                 id="" />
       <equipment slot="Leg"
                  id="Item.highland_leg_wrappings" />
       </EquipmentRoster>
@@ -19267,7 +19278,7 @@
       <equipment slot="Body"
                  id="Item.sturgian_chainmale_shortsleeve" />
       <equipment slot="Cape"
-                 id="Item.scarf" />
+                 id="" />
       <equipment slot="Gloves"
                  id="Item.highland_gloves" />
       <equipment slot="Leg"
@@ -19289,7 +19300,7 @@
       <equipment slot="Gloves"
                  id="Item.highland_gloves" />
       <equipment slot="Cape"
-                 id="Item.scarf" />
+                 id="" />
       <equipment slot="Leg"
                  id="Item.highland_leg_wrappings" />
       </EquipmentRoster>
@@ -19608,7 +19619,7 @@
       <equipment slot="Gloves"
                  id="Item.eastern_wrapped_armguards" />
       <equipment slot="Cape"
-                 id="Item.scarf" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -19628,7 +19639,7 @@
       <equipment slot="Gloves"
                  id="Item.eastern_wrapped_armguards" />
       <equipment slot="Cape"
-                 id="Item.scarf" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -19648,7 +19659,7 @@
       <equipment slot="Gloves"
                  id="Item.eastern_wrapped_armguards" />
       <equipment slot="Cape"
-                 id="Item.scarf" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster civilian="true">
       <equipment slot="Item0"
@@ -19668,7 +19679,7 @@
       <equipment slot="Gloves"
                  id="Item.eastern_wrapped_armguards" />
       <equipment slot="Cape"
-                 id="Item.scarf" />
+                 id="" />
       </EquipmentRoster>
     </Equipments>
   </NPCCharacter>
@@ -19719,7 +19730,7 @@
       <equipment slot="Gloves"
                  id="Item.eastern_wrapped_armguards" />
       <equipment slot="Cape"
-                 id="Item.scarf" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -19739,7 +19750,7 @@
       <equipment slot="Gloves"
                  id="Item.eastern_wrapped_armguards" />
       <equipment slot="Cape"
-                 id="Item.scarf" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -19759,7 +19770,7 @@
       <equipment slot="Gloves"
                  id="Item.eastern_wrapped_armguards" />
       <equipment slot="Cape"
-                 id="Item.scarf" />
+                 id="" />
       </EquipmentRoster>
       <EquipmentRoster civilian="true">
       <equipment slot="Item0"
@@ -19779,7 +19790,7 @@
       <equipment slot="Gloves"
                  id="Item.eastern_wrapped_armguards" />
       <equipment slot="Cape"
-                 id="Item.scarf" />
+                 id="" />
       </EquipmentRoster>
     </Equipments>
   </NPCCharacter>
