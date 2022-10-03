@@ -290,7 +290,7 @@ namespace RBMAI
                 formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
                     float currentTime = Mission.Current.CurrentTime;
-                    if (agent.LastRangedAttackTime > 0f && (currentTime - agent.LastRangedAttackTime) < (lastAttackTimeTreshold + (20f * ratioOfCrossbowmen)))
+                    if (agent.LastRangedAttackTime > 0f && currentTime > agent.LastRangedAttackTime && (currentTime - agent.LastRangedAttackTime) < (lastAttackTimeTreshold + (20f * ratioOfCrossbowmen)))
                     {
                         countOfShooting++;
                     }

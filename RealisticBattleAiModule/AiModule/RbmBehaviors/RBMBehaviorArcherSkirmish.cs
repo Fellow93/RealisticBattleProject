@@ -10,9 +10,10 @@ namespace RBMAI
 
 		private int flankCooldownMax = 40;
 		public float customWidth = 90f;
-		public Timer repositionTimer = new Timer(0f, 0f);
+        public Timer repositionTimer = null;
 		public int side = MBRandom.RandomInt(2);
 		public int cooldown = 0;
+        public bool nudgeFormation;
 
 		public bool wasShootingBefore = false;
 		private enum BehaviorState
@@ -108,7 +109,7 @@ namespace RBMAI
                             }
                             else
                             {
-                                _cantShootDistance = MathF.Max(_cantShootDistance, distance);
+                                _cantShootDistance = distance;
                                 if (base.Formation.QuerySystem.IsRangedFormation && distance < MathF.Min(effectiveShootingRange * 0.4f, _cantShootDistance * 0.666f))
                                 {
                                     Formation meleeFormation = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
@@ -118,6 +119,21 @@ namespace RBMAI
                                         rollPullBackAngle = MBRandom.RandomFloat;
                                         _behaviorState = BehaviorState.PullingBack;
                                         break;
+                                    }
+                                }
+                                else
+                                {
+                                    if(repositionTimer == null)
+                                    {
+                                        repositionTimer = new Timer(Mission.Current.CurrentTime, 30f);
+                                        _cantShoot = true;
+                                        _behaviorState = BehaviorState.Approaching;
+                                    }
+                                    else
+                                    {
+                                        if(repositionTimer.Check(Mission.Current.CurrentTime)){
+                                            repositionTimer = null;
+                                        }
                                     }
                                 }
                             }
@@ -203,11 +219,11 @@ namespace RBMAI
                             medianPosition = significantEnemy.QuerySystem.MedianPosition;
                             if (side == 0)
                             {
-                                medianPosition.SetVec2((medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f)) + medianPosition.AsVec2.LeftVec().Normalized() * rollPullBackAngle * 20f);
+                                medianPosition.SetVec2((medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f)) + medianPosition.AsVec2.LeftVec().Normalized() * rollPullBackAngle * 30f);
                             }
                             else if (side == 1)
                             {
-                                medianPosition.SetVec2((medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f)) + medianPosition.AsVec2.RightVec().Normalized() * rollPullBackAngle * 20f);
+                                medianPosition.SetVec2((medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f)) + medianPosition.AsVec2.RightVec().Normalized() * rollPullBackAngle * 30f);
                             }
                             break;
                     }
