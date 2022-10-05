@@ -4,6 +4,7 @@ using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.Engine;
 using System.Reflection;
+using System.Linq;
 
 public class RBMBehaviorCavalryCharge : BehaviorComponent
 {
@@ -202,7 +203,41 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
 	protected override void CalculateCurrentOrder()
 	{
-		if (base.Formation.QuerySystem.ClosestEnemyFormation == null)
+		Team allyTeam = base.Formation.Team;
+		bool shouldSimpleCharge = false;
+		//int countOfEnemyTeams = 0;
+		//int countOfAllyTeams = 0;
+		//int countOfSimpleChargeEnemy = 0;
+		//int countOfSimpleChargeAlly = 0;
+  //      foreach (Team team in Mission.Current.Teams.ToList())
+  //      {
+  //          if (team.IsEnemyOf(allyTeam))
+  //          {
+  //              countOfEnemyTeams++;
+  //              if (team.QuerySystem.InfantryRatio <= 0.1f && team.QuerySystem.RangedRatio <= 0.1f)
+		//		{
+  //                  countOfSimpleChargeEnemy++;
+
+  //              }
+  //          }
+  //      }
+  //      foreach (Team team in Mission.Current.Teams.ToList())
+  //      {
+  //          if (!team.IsEnemyOf(allyTeam))
+  //          {
+  //              countOfAllyTeams++;
+  //              if (team.QuerySystem.InfantryRatio <= 0.1f && team.QuerySystem.RangedRatio <= 0.1f)
+  //              {
+  //                  countOfSimpleChargeAlly++;
+
+  //              }
+  //          }
+  //      }
+  //      if (countOfEnemyTeams == countOfSimpleChargeEnemy || countOfAllyTeams == countOfSimpleChargeAlly)
+		//{
+		//	shouldSimpleCharge = true;
+  //      }
+        if (base.Formation.QuerySystem.ClosestEnemyFormation == null || shouldSimpleCharge)
 		{
 			base.CurrentOrder = MovementOrder.MovementOrderCharge;
 			return;

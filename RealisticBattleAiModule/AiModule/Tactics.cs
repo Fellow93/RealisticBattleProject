@@ -1,18 +1,13 @@
 ﻿using HarmonyLib;
 using SandBox.Missions.MissionLogics;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.ViewModelCollection.HUD.FormationMarker;
-using static RBMAI.Tactics;
 using static TaleWorlds.Core.ItemObject;
-using static TaleWorlds.MountAndBlade.Agent;
-using static TaleWorlds.MountAndBlade.CompressionInfo;
 
 namespace RBMAI
 {
@@ -415,10 +410,10 @@ namespace RBMAI
                                 {
                                     team.AddTacticOption(new RBMTacticAttackSplitArchers(team));
                                 }
-                                if (____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() != CultureCode.Vlandia)
-                                {
-                                    team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
-                                }
+                                //if (____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() != CultureCode.Vlandia)
+                                //{
+                                //    team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
+                                //}
                                 team.AddTacticOption(new TacticFullScaleAttack(team));
                                 //team.AddTacticOption(new RBMTacticEmbolon(team));
                                 team.AddTacticOption(new TacticCoordinatedRetreat(team));
