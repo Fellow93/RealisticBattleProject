@@ -2,7 +2,7 @@
 
 <CraftingTemplates>
 
-  <CraftingTemplate id="TwoHandedAxe" item_type="TwoHandedWeapon" item_modifier_group="axe" item_holsters="axe_back:axe_back_2:axe_back_3:axe_back_4" default_item_holster_position_offset="0,0,-0.65" use_weapon_as_holster_mesh="true">
+  <CraftingTemplate id="TwoHandedAxe" item_type="TwoHandedWeapon" modifier_group="axe" item_holsters="axe_back:axe_back_2:axe_back_3:axe_back_4" default_item_holster_position_offset="0,0,-0.65" use_weapon_as_holster_mesh="true">
     <PieceDatas>
       <PieceData piece_type="Handle" build_order="0"/>
       <PieceData piece_type="Blade" build_order="1"/>
@@ -152,7 +152,7 @@
   
   <CraftingTemplate id="Pike"
                     item_type="Polearm"
-                    item_modifier_group="polearm"
+                    modifier_group="polearm"
                     item_holsters="polearm_back:polearm_back_2:polearm_back_3:polearm_back_4"
                     default_item_holster_position_offset="0,0,-0.30"
                     use_weapon_as_holster_mesh="true">
@@ -262,7 +262,7 @@
   
   <CraftingTemplate id="Javelin"
                     item_type="Thrown"
-                    item_modifier_group="spear_dart_throwing"
+                    modifier_group="spear_dart_throwing"
                     item_holsters="javelins:javelins_2:bow_hip:bow_hip_2"
                     default_item_holster_position_offset="0,0,-0.10"
                     piece_type_to_scale_holster_with="Pommel"
@@ -417,7 +417,7 @@
 
   <CraftingTemplate id="TwoHandedPolearm"
                     item_type="Polearm"
-                    item_modifier_group="polearm"
+                    modifier_group="polearm"
                     item_holsters="polearm_back:polearm_back_2:polearm_back_3:polearm_back_4"
                     default_item_holster_position_offset="0,0,-0.30"
                     use_weapon_as_holster_mesh="true">
@@ -812,7 +812,7 @@
   
   <CraftingTemplate id="ThrowingAxe"
                     item_type="Thrown"
-                    item_modifier_group="axe_throwing"
+                    modifier_group="axe_throwing"
                     item_holsters="throwing_axe:throwing_axe_2:axe_right_hip_2:axe_back"
                     default_item_holster_position_offset="0,0,0.05"
                     always_show_holster_with_weapon="true">
@@ -892,7 +892,7 @@
   
   <CraftingTemplate id="TwoHandedSword"
                     item_type="TwoHandedWeapon"
-                    item_modifier_group="sword"
+                    modifier_group="sword"
                     item_holsters="sword_left_hip_3:sword_left_hip:sword_left_hip_2:sword_back"
                     piece_type_to_scale_holster_with="Blade"
                     hidden_piece_types_on_holster="Blade"

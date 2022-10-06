@@ -22,7 +22,7 @@ namespace RBMTournament
 
         public static int calculatePlayerTournamentTier()
         {
-            int playerLevelTier = MathF.Min(MathF.Max(MathF.Ceiling(((float)CharacterObject.PlayerCharacter.Level - 5f) / 5f), 0), Campaign.Current.Models.PartyTroopUpgradeModel.MaxCharacterTier);
+            int playerLevelTier = MathF.Min(MathF.Max(MathF.Ceiling(((float)CharacterObject.PlayerCharacter.Level - 5f) / 5f), 0), Campaign.Current.Models.CharacterStatsModel.MaxCharacterTier);
             Equipment playerEquipment = CharacterObject.PlayerCharacter.RandomBattleEquipment;
             float armorTierSum = 0f;
             int countOfArmor = 0;
@@ -127,7 +127,7 @@ namespace RBMTournament
 
             [HarmonyPostfix]
             [HarmonyPatch("PrepareForMatch")]
-            static void GetParticipantCharactersPrefix(ref TournamentFightMissionController __instance, ref TournamentMatch ____match, ref CultureObject ____culture)
+            static void PrepareForMatchPrefix(ref TournamentFightMissionController __instance, ref TournamentMatch ____match, ref CultureObject ____culture)
             {
                 float randomFloat = MBRandom.RandomFloat;
                 int teamSize = ____match.Teams.First().Participants.Count();
@@ -420,7 +420,7 @@ namespace RBMTournament
 
             public static int calculateNpcTournamentTier(CharacterObject npc)
             {
-                int playerLevelTier = MathF.Min(MathF.Max(MathF.Ceiling(((float)npc.Level - 5f) / 5f), 0), Campaign.Current.Models.PartyTroopUpgradeModel.MaxCharacterTier);
+                int playerLevelTier = MathF.Min(MathF.Max(MathF.Ceiling(((float)npc.Level - 5f) / 5f), 0), Campaign.Current.Models.CharacterStatsModel.MaxCharacterTier);
                 Equipment playerEquipment = npc.RandomBattleEquipment;
                 float armorTierSum = 0f;
                 int countOfArmor = 0;
@@ -441,7 +441,7 @@ namespace RBMTournament
 
             [HarmonyPrefix]
             [HarmonyPatch("GetParticipantCharacters")]
-            static bool GetParticipantCharactersPrefix(ref FightTournamentGame __instance, ref List<CharacterObject> __result, Settlement settlement, bool includePlayer = true, bool includeHeroes = true)
+            static bool GetParticipantCharactersPrefix(ref FightTournamentGame __instance, ref List<CharacterObject> __result, Settlement settlement, bool includePlayer = true)
             {
                 List<CharacterObject> list = new List<CharacterObject>();
                 if (includePlayer)
@@ -449,99 +449,90 @@ namespace RBMTournament
                     int playerTier = calculatePlayerTournamentTier();
                     if (playerTier >= 5)
                     {
-                        if (includeHeroes)
+                        for (int i = 0; i < settlement.Parties.Count; i++)
                         {
-                            for (int i = 0; i < settlement.Parties.Count; i++)
+                            if (list.Count >= __instance.MaximumParticipantCount)
                             {
-                                if (list.Count >= __instance.MaximumParticipantCount)
+                                break;
+                            }
+                            Hero leaderHero = settlement.Parties[i].LeaderHero;
+                            if (leaderHero != null && leaderHero.CharacterObject != null && !leaderHero.CharacterObject.IsPlayerCharacter && calculateNpcTournamentTier(leaderHero.CharacterObject) >= 5)
+                            {
+                                if (leaderHero.CurrentSettlement != settlement)
                                 {
-                                    break;
+                                    Debug.Print(leaderHero.StringId + " is in settlement.Parties list but current settlement is not, tournament settlement: " + settlement.StringId);
                                 }
-                                Hero leaderHero = settlement.Parties[i].LeaderHero;
-                                if (leaderHero != null && leaderHero.CharacterObject != null && !leaderHero.CharacterObject.IsPlayerCharacter && calculateNpcTournamentTier(leaderHero.CharacterObject) >= 5)
+                                if (!list.Contains(leaderHero.CharacterObject))
                                 {
-                                    if (leaderHero.CurrentSettlement != settlement)
-                                    {
-                                        Debug.Print(leaderHero.StringId + " is in settlement.Parties list but current settlement is not, tournament settlement: " + settlement.StringId);
-                                    }
-                                    if (!list.Contains(leaderHero.CharacterObject))
-                                    {
-                                        list.Add(leaderHero.CharacterObject);
-                                    }
+                                    list.Add(leaderHero.CharacterObject);
                                 }
                             }
                         }
-                        if (includeHeroes)
+                        for (int j = 0; j < settlement.HeroesWithoutParty.Count; j++)
                         {
-                            for (int j = 0; j < settlement.HeroesWithoutParty.Count; j++)
+                            if (list.Count >= __instance.MaximumParticipantCount)
                             {
-                                if (list.Count >= __instance.MaximumParticipantCount)
-                                {
-                                    break;
-                                }
-                                Hero hero = settlement.HeroesWithoutParty[j];
-                                if (hero != null && hero.CharacterObject != null && !hero.CharacterObject.IsPlayerCharacter && calculateNpcTournamentTier(hero.CharacterObject) >= 5 && hero.IsLord)
-                                {
-                                    if (hero.CurrentSettlement != settlement)
-                                    {
-                                        Debug.Print(hero.StringId + " is in settlement.HeroesWithoutParty list but current settlement is not, tournament settlement: " + settlement.StringId);
-                                    }
-                                    if (!list.Contains(hero.CharacterObject))
-                                    {
-                                        list.Add(hero.CharacterObject);
-                                    }
-                                }
+                                break;
                             }
-                        }
-                        if (includeHeroes)
-                        {
-                            for (int k = 0; k < settlement.HeroesWithoutParty.Count; k++)
+                            Hero hero = settlement.HeroesWithoutParty[j];
+                            if (hero != null && hero.CharacterObject != null && !hero.CharacterObject.IsPlayerCharacter && calculateNpcTournamentTier(hero.CharacterObject) >= 5 && hero.IsLord)
                             {
-                                if (list.Count >= __instance.MaximumParticipantCount)
+                                if (hero.CurrentSettlement != settlement)
                                 {
-                                    break;
+                                    Debug.Print(hero.StringId + " is in settlement.HeroesWithoutParty list but current settlement is not, tournament settlement: " + settlement.StringId);
                                 }
-                                Hero hero2 = settlement.HeroesWithoutParty[k];
-                                if (hero2 != null && hero2.CharacterObject != null && !hero2.CharacterObject.IsPlayerCharacter && calculateNpcTournamentTier(hero2.CharacterObject) >= 5)
+                                if (!list.Contains(hero.CharacterObject))
                                 {
-                                    if (hero2.CurrentSettlement != settlement)
-                                    {
-                                        Debug.Print(hero2.StringId + " is in settlement.HeroesWithoutParty list but current settlement is not, tournament settlement: " + settlement.StringId);
-                                    }
-                                    if (!list.Contains(hero2.CharacterObject))
-                                    {
-                                        list.Add(hero2.CharacterObject);
-                                    }
-                                }
-                            }
-                            for (int l = 0; l < settlement.Parties.Count; l++)
-                            {
-                                if (list.Count >= __instance.MaximumParticipantCount)
-                                {
-                                    break;
-                                }
-                                foreach (TroopRosterElement item2 in settlement.Parties[l].MemberRoster.GetTroopRoster())
-                                {
-                                    if (list.Count >= __instance.MaximumParticipantCount)
-                                    {
-                                        break;
-                                    }
-                                    CharacterObject character = item2.Character;
-                                    if (character != null && character.IsHero && character.HeroObject.Clan == Clan.PlayerClan && !character.IsPlayerCharacter && calculateNpcTournamentTier(character) >= 5)
-                                    {
-                                        if (character.HeroObject.CurrentSettlement != settlement)
-                                        {
-                                            Debug.Print(character.HeroObject.StringId + " is in settlement.HeroesWithoutParty list but current settlement is not, tournament settlement: " + settlement.StringId);
-                                        }
-                                        if (!list.Contains(character))
-                                        {
-                                            list.Add(character);
-                                        }
-                                    }
+                                    list.Add(hero.CharacterObject);
                                 }
                             }
                         }
                     }
+                        for (int k = 0; k < settlement.HeroesWithoutParty.Count; k++)
+                        {
+                            if (list.Count >= __instance.MaximumParticipantCount)
+                            {
+                                break;
+                            }
+                            Hero hero2 = settlement.HeroesWithoutParty[k];
+                            if (hero2 != null && hero2.CharacterObject != null && !hero2.CharacterObject.IsPlayerCharacter && calculateNpcTournamentTier(hero2.CharacterObject) >= 5)
+                            {
+                                if (hero2.CurrentSettlement != settlement)
+                                {
+                                    Debug.Print(hero2.StringId + " is in settlement.HeroesWithoutParty list but current settlement is not, tournament settlement: " + settlement.StringId);
+                                }
+                                if (!list.Contains(hero2.CharacterObject))
+                                {
+                                    list.Add(hero2.CharacterObject);
+                                }
+                            }
+                        }
+                        for (int l = 0; l < settlement.Parties.Count; l++)
+                        {
+                            if (list.Count >= __instance.MaximumParticipantCount)
+                            {
+                                break;
+                            }
+                            foreach (TroopRosterElement item2 in settlement.Parties[l].MemberRoster.GetTroopRoster())
+                            {
+                                if (list.Count >= __instance.MaximumParticipantCount)
+                                {
+                                    break;
+                                }
+                                CharacterObject character = item2.Character;
+                                if (character != null && character.IsHero && character.HeroObject.Clan == Clan.PlayerClan && !character.IsPlayerCharacter && calculateNpcTournamentTier(character) >= 5)
+                                {
+                                    if (character.HeroObject.CurrentSettlement != settlement)
+                                    {
+                                        Debug.Print(character.HeroObject.StringId + " is in settlement.HeroesWithoutParty list but current settlement is not, tournament settlement: " + settlement.StringId);
+                                    }
+                                    if (!list.Contains(character))
+                                    {
+                                        list.Add(character);
+                                    }
+                                }
+                            }
+                        }
                     if (playerTier >= 5)
                     {
                         InformationManager.DisplayMessage(new InformationMessage("Main tournament"));
@@ -677,82 +668,82 @@ namespace RBMTournament
             }
         }
 
-        [HarmonyPatch(typeof(ItemRoster))]
-        class ItemRosterPatch
-        {
-            [HarmonyPrefix]
-            [HarmonyPatch("AddToCounts", new Type[] { typeof(ItemObject), typeof(int) })]
-            static bool AddToCountsPrefix(ref ItemRoster __instance, ItemObject item, int number, ref int __result)
-            {
-                if ((new StackTrace()).GetFrame(2).GetMethod().Name.Contains("EndCurrentMatch"))
-                {
-                    if (number == 0)
-                    {
-                        __result = -1;
-                        return false;
-                    }
-                    List<ItemModifier> positiveIM = new List<ItemModifier>();
-                    float imSum = 0f;
-                    if (item.WeaponComponent != null && item.WeaponComponent.ItemModifierGroup != null)
-                    {
-                        foreach (ItemModifier im in item.WeaponComponent.ItemModifierGroup.ItemModifiers)
-                        {
-                            if (im.PriceMultiplier >= 1f)
-                            {
-                                positiveIM.Add(im);
-                                imSum += im.PriceMultiplier;
-                            }
-                        }
-                        if (positiveIM.Count > 0)
-                        {
-                            foreach (ItemModifierProbability value in item.WeaponComponent.ItemModifierGroup.ItemModifiersWithProbability.Values)
-                            {
-                                ItemModifier imTemp = positiveIM.Find((ItemModifier im) => im != null && value.ItemModifier != null && im.Name.Equals(value.ItemModifier.Name));
-                                if (imTemp != null)
-                                {
-                                    float randomF = MBRandom.RandomFloat;
-                                    if (randomF < (value.Probability / 100f))
-                                    {
-                                        __result = __instance.AddToCounts(new EquipmentElement(item, imTemp), number);
-                                        return false;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else if (item.ArmorComponent != null && item.ArmorComponent.ItemModifierGroup != null)
-                    {
-                        foreach (ItemModifier im in item.ArmorComponent.ItemModifierGroup.ItemModifiers)
-                        {
-                            if (im.PriceMultiplier >= 1f)
-                            {
-                                positiveIM.Add(im);
-                                imSum += im.PriceMultiplier;
-                            }
-                        }
-                        if (positiveIM.Count > 0)
-                        {
-                            float randomF = MBRandom.RandomFloat;
-                            foreach (ItemModifierProbability value in item.ArmorComponent.ItemModifierGroup.ItemModifiersWithProbability.Values)
-                            {
-                                ItemModifier imTemp = positiveIM.Find((ItemModifier im) => im != null && value.ItemModifier != null && im.Name.Equals(value.ItemModifier.Name));
-                                if (imTemp != null)
-                                {
-                                    if (randomF < (value.Probability / 100f))
-                                    {
-                                        __result = __instance.AddToCounts(new EquipmentElement(item, imTemp), number);
-                                        return false;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    __result = __instance.AddToCounts(new EquipmentElement(item), number);
-                    return false;
-                }
-                return true;
-            }
-        }
+        //[HarmonyPatch(typeof(ItemRoster))]
+        //class ItemRosterPatch
+        //{
+        //    [HarmonyPrefix]
+        //    [HarmonyPatch("AddToCounts", new Type[] { typeof(ItemObject), typeof(int) })]
+        //    static bool AddToCountsPrefix(ref ItemRoster __instance, ItemObject item, int number, ref int __result)
+        //    {
+        //        if ((new StackTrace()).GetFrame(2).GetMethod().Name.Contains("EndCurrentMatch"))
+        //        {
+        //            if (number == 0)
+        //            {
+        //                __result = -1;
+        //                return false;
+        //            }
+        //            List<ItemModifier> positiveIM = new List<ItemModifier>();
+        //            float imSum = 0f;
+        //            if (item.WeaponComponent != null && item.WeaponComponent.ItemModifierGroup != null)
+        //            {
+        //                foreach (ItemModifier im in item.WeaponComponent.ItemModifierGroup.ItemModifiers)
+        //                {
+        //                    if (im.PriceMultiplier >= 1f)
+        //                    {
+        //                        positiveIM.Add(im);
+        //                        imSum += im.PriceMultiplier;
+        //                    }
+        //                }
+        //                if (positiveIM.Count > 0)
+        //                {
+        //                    foreach (ItemModifier value in item.WeaponComponent.ItemModifierGroup.ItemModifiers)
+        //                    {
+        //                        ItemModifier imTemp = positiveIM.Find((ItemModifier im) => im != null && value.ItemModifier != null && im.Name.Equals(value.ItemModifier.Name));
+        //                        if (imTemp != null)
+        //                        {
+        //                            float randomF = MBRandom.RandomFloat;
+        //                            if (randomF < (value.Probability / 100f))
+        //                            {
+        //                                __result = __instance.AddToCounts(new EquipmentElement(item, imTemp), number);
+        //                                return false;
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //            else if (item.ArmorComponent != null && item.ArmorComponent.ItemModifierGroup != null)
+        //            {
+        //                foreach (ItemModifier im in item.ArmorComponent.ItemModifierGroup.ItemModifiers)
+        //                {
+        //                    if (im.PriceMultiplier >= 1f)
+        //                    {
+        //                        positiveIM.Add(im);
+        //                        imSum += im.PriceMultiplier;
+        //                    }
+        //                }
+        //                if (positiveIM.Count > 0)
+        //                {
+        //                    float randomF = MBRandom.RandomFloat;
+        //                    foreach (ItemModifierProbability value in item.ArmorComponent.ItemModifierGroup.ItemModifiersWithProbability.Values)
+        //                    {
+        //                        ItemModifier imTemp = positiveIM.Find((ItemModifier im) => im != null && value.ItemModifier != null && im.Name.Equals(value.ItemModifier.Name));
+        //                        if (imTemp != null)
+        //                        {
+        //                            if (randomF < (value.Probability / 100f))
+        //                            {
+        //                                __result = __instance.AddToCounts(new EquipmentElement(item, imTemp), number);
+        //                                return false;
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //            __result = __instance.AddToCounts(new EquipmentElement(item), number);
+        //            return false;
+        //        }
+        //        return true;
+        //    }
+        //}
 
         [HarmonyPatch(typeof(DefaultTournamentModel))]
         class DefaultTournamentModelPatch

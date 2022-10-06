@@ -354,7 +354,7 @@
 				value="500"
                name="Pine Throwing Dart"
                crafting_template="Javelin"
-			   item_modifier_group="spear_dart_throwing">
+			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_15"
              Type="Blade"
@@ -376,7 +376,7 @@
                name="Pine Javelin"
                crafting_template="Javelin"
                culture="Culture.sturgia"
-			   item_modifier_group="spear_dart_throwing">
+			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_16"
              Type="Blade"
@@ -399,7 +399,7 @@
                crafting_template="Javelin"
 			   value="5200"
                culture="Culture.vlandia"
-			   item_modifier_group="spear_dart_throwing">
+			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_42"
              Type="Blade"
@@ -420,7 +420,7 @@
                name="Ash Throwing Lance"
 			   value="8500"
                crafting_template="Javelin"
-			   item_modifier_group="spear_dart_throwing">
+			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_42"
              Type="Blade"
@@ -441,7 +441,7 @@
                crafting_template="Javelin"
 			   value="5400"
                culture="Culture.battania"
-			   item_modifier_group="spear_dart_throwing">
+			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_16"
              Type="Blade"
@@ -464,7 +464,7 @@
                crafting_template="Javelin"
 			   value="10000"
                culture="Culture.vlandia"
-			   item_modifier_group="spear_dart_throwing">
+			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_42"
              Type="Blade"
@@ -485,7 +485,7 @@
                crafting_template="Javelin"
 			   value="8000"
                culture="Culture.sturgia"
-			   item_modifier_group="spear_dart_throwing">
+			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_27"
              Type="Blade"
@@ -508,7 +508,7 @@
                crafting_template="Javelin"
 			   value ="2200"
                culture="Culture.khuzait"
-			   item_modifier_group="spear_dart_throwing">
+			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_15"
              Type="Blade"
@@ -530,7 +530,7 @@
                crafting_template="Javelin"
 			   value="4500"
                culture="Culture.khuzait"
-			   item_modifier_group="spear_dart_throwing">
+			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_16"
              Type="Blade"
@@ -552,7 +552,7 @@
 			   value="11500"
                crafting_template="Javelin"
                culture="Culture.aserai"
-			   item_modifier_group="spear_dart_throwing">
+			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_42"
              Type="Blade"
@@ -570,7 +570,7 @@
   </CraftedItem>
   <!-- #endregion -->
   <!-- Pilum -->
-    <CraftedItem id="imperial_throwing_spear_1_t4" name="{=v3lIxLvX}Pila" crafting_template="Javelin" culture="Culture.empire" item_modifier_group="spear_dart_throwing">
+    <CraftedItem id="imperial_throwing_spear_1_t4" name="{=v3lIxLvX}Pila" crafting_template="Javelin" culture="Culture.empire" modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_38" Type="Blade" scale_factor="280" />
       <Piece id="default_polearm_guard" Type="Guard" scale_factor="100" />
@@ -583,7 +583,7 @@
                name="{=kJzIZMBR}Triangular Throwing Spear"
                crafting_template="Javelin"
                culture="Culture.khuzait"
-			   item_modifier_group="spear_dart_throwing">
+			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_13"
              Type="Blade"
@@ -604,7 +604,7 @@
                name="{=EgrNdBct}Jagged Throwing Spear"
                crafting_template="Javelin"
                culture="Culture.khuzait"
-			   item_modifier_group="spear_dart_throwing">
+			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_35"
              Type="Blade"
