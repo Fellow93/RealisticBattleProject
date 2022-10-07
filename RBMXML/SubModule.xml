@@ -205,6 +205,14 @@
 			<GameType value = "CustomGame"/>
 		</IncludedGameTypes>
 	</XmlNode>
+	<XmlNode>
+		<XmlName id="ItemModifiers" path="RBMCombat_item_modifiers"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
 	<XmlNode>                
 		<XmlName id="GameText" path="RBMAI_module_strings"/>
 	</XmlNode>
