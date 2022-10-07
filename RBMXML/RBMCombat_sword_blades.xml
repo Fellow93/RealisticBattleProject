@@ -10,6 +10,7 @@
                  culture="Culture.empire"
                  length="86.9"
                  weight="0.4"
+				 is_hidden="true"
                  CraftingCost="75">
 
     <BladeData stack_amount="3"
@@ -37,6 +38,7 @@
                  culture="Culture.empire"
                  length="86.9"
                  weight="0.7"
+				 is_hidden="true"
                  CraftingCost="75">
 
     <BladeData stack_amount="3"
