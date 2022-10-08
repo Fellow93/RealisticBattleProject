@@ -240,38 +240,97 @@ namespace RBMAI
     {
         static void Postfix(ref Agent.UsageDirection __result, Formation formation, Agent unit, ArrangementOrderEnum orderEnum)
         {
-            if (!formation.QuerySystem.IsCavalryFormation && !formation.QuerySystem.IsRangedCavalryFormation)
+            //if (!formation.QuerySystem.IsCavalryFormation && !formation.QuerySystem.IsRangedCavalryFormation)
+            //{
+            //    if(Mission.Current != null)
+            //    {
+            //        float currentTime = Mission.Current.CurrentTime;
+            //        if (currentTime - unit.LastRangedAttackTime < 7f)
+            //        {
+            //            __result = Agent.UsageDirection.None;
+            //            return;
+            //        }
+            //        switch (orderEnum)
+            //        {
+            //            case ArrangementOrderEnum.Line:
+            //            case ArrangementOrderEnum.Loose:
+            //                {
+            //                    float lastMeleeAttackTime = unit.LastMeleeAttackTime;
+            //                    float lastMeleeHitTime = unit.LastMeleeHitTime;
+            //                    float lastRangedHit = unit.LastRangedHitTime;
+            //                    if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
+            //                    {
+            //                        __result = Agent.UsageDirection.None;
+            //                        return;
+            //                    }
+            //                    if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && formation.QuerySystem.IsInfantryFormation && (((currentTime - lastRangedHit < 2f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.08f)))
+            //                    {
+            //                        __result = Agent.UsageDirection.DefendDown;
+            //                        return;
+            //                    }
+            //                    break;
+            //                }
+            //        }
+            //    }
+            //}
+            if (unit.IsDetachedFromFormation)
             {
-                if(Mission.Current != null)
-                {
-                    float currentTime = Mission.Current.CurrentTime;
-                    if (currentTime - unit.LastRangedAttackTime < 7f)
+                __result = Agent.UsageDirection.None;
+                return;
+            }
+            switch (orderEnum)
+            {
+                case ArrangementOrderEnum.ShieldWall:
+
+                    bool test = true;
+                     if (unit.Formation.FiringOrder.OrderEnum != FiringOrder.RangedWeaponUsageOrderEnum.HoldYourFire)
                     {
-                        __result = Agent.UsageDirection.None;
+                        bool hasRanged = unit.Equipment.HasAnyWeaponWithFlags(WeaponFlags.HasString);
+                        bool hasTwoHanded = unit.Equipment.HasAnyWeaponWithFlags(WeaponFlags.NotUsableWithOneHand);
+                        if (hasRanged || hasTwoHanded)
+                        {
+                            test = false;
+                        }
+                    }
+                    if (test)
+                    {
+                        if (((IFormationUnit)unit).FormationRankIndex == 0)
+                        {
+                            __result = Agent.UsageDirection.DefendDown;
+                            return;
+                        }
+                        if (formation.Arrangement.GetNeighborUnitOfLeftSide(unit) == null)
+                        {
+                            __result = Agent.UsageDirection.DefendLeft;
+                            return;
+                        }
+                        if (formation.Arrangement.GetNeighborUnitOfRightSide(unit) == null)
+                        {
+                            __result = Agent.UsageDirection.DefendRight;
+                            return;
+                        }
+                        __result = Agent.UsageDirection.AttackEnd;
                         return;
                     }
-                    switch (orderEnum)
+                    __result = Agent.UsageDirection.None;
+                    return;
+                case ArrangementOrderEnum.Circle:
+                case ArrangementOrderEnum.Square:
+                    if (((IFormationUnit)unit).IsShieldUsageEncouraged)
                     {
-                        case ArrangementOrderEnum.Line:
-                        case ArrangementOrderEnum.Loose:
-                            {
-                                float lastMeleeAttackTime = unit.LastMeleeAttackTime;
-                                float lastMeleeHitTime = unit.LastMeleeHitTime;
-                                float lastRangedHit = unit.LastRangedHitTime;
-                                if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
-                                {
-                                    __result = Agent.UsageDirection.None;
-                                    return;
-                                }
-                                if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && formation.QuerySystem.IsInfantryFormation && (((currentTime - lastRangedHit < 2f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.08f)))
-                                {
-                                    __result = Agent.UsageDirection.DefendDown;
-                                    return;
-                                }
-                                break;
-                            }
+                        if (((IFormationUnit)unit).FormationRankIndex == 0)
+                        {
+                            __result = Agent.UsageDirection.DefendDown;
+                            return;
+                        }
+                        __result = Agent.UsageDirection.AttackEnd;
+                        return;
                     }
-                }
+                    __result = Agent.UsageDirection.None;
+                    return;
+                default:
+                    __result = Agent.UsageDirection.None;
+                    return;
             }
         }
     }
