@@ -630,7 +630,7 @@ namespace RBMAI
                 if (____rangedCavalry != null)
                 {
                         ____rangedCavalry.AI.ResetBehaviorWeights();
-                    TacticFullScaleAttack.SetDefaultBehaviorWeights(____rangedCavalry);
+                    TacticRangedHarrassmentOffensive.SetDefaultBehaviorWeights(____rangedCavalry);
                     ____rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                 }
             }
@@ -657,7 +657,7 @@ namespace RBMAI
                 if (____rangedCavalry != null)
                 {
                     ____rangedCavalry.AI.ResetBehaviorWeights();
-                    TacticFullScaleAttack.SetDefaultBehaviorWeights(____rangedCavalry);
+                    TacticRangedHarrassmentOffensive.SetDefaultBehaviorWeights(____rangedCavalry);
                     ____rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                 }
                 if (____archers != null)
