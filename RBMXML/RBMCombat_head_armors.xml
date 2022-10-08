@@ -566,7 +566,7 @@
 	</Item>
 	<Item id="ironlame_nasalhelm_over_imperial_coif" name="{=SXCa9d1n}Iron Nasalhelm Over Imperial Coif" mesh="empire_helmet_h_ab" culture="Culture.empire" weight="4.1" appearance="1.3" Type="HeadArmor">
 		<ItemComponent>
-			<Armor head_armor="55" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+			<Armor head_armor="67" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
