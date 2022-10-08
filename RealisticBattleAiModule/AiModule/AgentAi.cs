@@ -278,12 +278,11 @@ namespace RBMAI
                 __result = Agent.UsageDirection.None;
                 return;
             }
+            bool test = true;
             switch (orderEnum)
             {
                 case ArrangementOrderEnum.ShieldWall:
-
-                    bool test = true;
-                     if (unit.Formation.FiringOrder.OrderEnum != FiringOrder.RangedWeaponUsageOrderEnum.HoldYourFire)
+                    if (unit.Formation.FiringOrder.OrderEnum != FiringOrder.RangedWeaponUsageOrderEnum.HoldYourFire)
                     {
                         bool hasRanged = unit.Equipment.HasAnyWeaponWithFlags(WeaponFlags.HasString);
                         bool hasTwoHanded = unit.Equipment.HasAnyWeaponWithFlags(WeaponFlags.NotUsableWithOneHand);
@@ -316,7 +315,16 @@ namespace RBMAI
                     return;
                 case ArrangementOrderEnum.Circle:
                 case ArrangementOrderEnum.Square:
-                    if (((IFormationUnit)unit).IsShieldUsageEncouraged)
+                    if (unit.Formation.FiringOrder.OrderEnum != FiringOrder.RangedWeaponUsageOrderEnum.HoldYourFire)
+                    {
+                        bool hasRanged = unit.Equipment.HasAnyWeaponWithFlags(WeaponFlags.HasString);
+                        bool hasTwoHanded = unit.Equipment.HasAnyWeaponWithFlags(WeaponFlags.NotUsableWithOneHand);
+                        if (hasRanged || hasTwoHanded)
+                        {
+                            test = false;
+                        }
+                    }
+                    if (test)
                     {
                         if (((IFormationUnit)unit).FormationRankIndex == 0)
                         {
