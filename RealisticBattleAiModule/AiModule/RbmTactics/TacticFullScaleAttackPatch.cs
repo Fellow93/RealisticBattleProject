@@ -104,7 +104,7 @@ namespace RBMAI.AiModule.RbmTactics
                     __result = 100f;
                 }
             }
-            if(__result == 0f || float.IsNaN(__result))
+            if(float.IsNaN(__result))
             {
                 __result = 0.01f;
             }
