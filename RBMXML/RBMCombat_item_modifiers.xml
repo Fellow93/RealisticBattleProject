@@ -121,8 +121,8 @@
                 loot_drop_score="10"
                 production_drop_score="15"
                 damage="0"
-                stack_count="2"
-                price_factor="2" />
+                stack_count="15"
+                price_factor="1.5" />
   <ItemModifier modifier_group="ItemModifierGroup.arrow"
                 id="bent_arrows"
                 name="{=eb4miTUB}Bent {ITEMNAME}"
@@ -151,7 +151,7 @@
                 loot_drop_score="10"
                 production_drop_score="15"
                 damage="0"
-                stack_count="2"
+                stack_count="15"
                 price_factor="1.5" />
   <ItemModifier modifier_group="ItemModifierGroup.bolt"
                 id="bent_bolts"
@@ -305,7 +305,7 @@
                 name="{=3JaHZA3Y}Large Bag of {ITEMNAME}"
                 loot_drop_score="10"
                 production_drop_score="5"
-                stack_count="2"
+                stack_count="3"
                 missile_speed="0"
                 price_factor="2.5" />
   <ItemModifier modifier_group="ItemModifierGroup.axe_throwing"
@@ -347,11 +347,11 @@
                 name="{=3JaHZA3Y}Large Bag of {ITEMNAME}"
                 loot_drop_score="10"
                 production_drop_score="15"
-                stack_count="2"
+                stack_count="4"
                 damage="0"
                 speed="0"
                 missile_speed="0"
-                price_factor="1.5" />
+                price_factor="2" />
   <ItemModifier modifier_group="ItemModifierGroup.knife_throwing"
                 id="bent_knife_throwing"
                 name="{=eb4miTUB}Bent {ITEMNAME}"
@@ -385,11 +385,11 @@
                 name="{=3JaHZA3Y}Large Bag of {ITEMNAME}"
                 loot_drop_score="10"
                 production_drop_score="15"
-                stack_count="2"
+                stack_count="3"
                 damage="0"
                 speed="0"
                 missile_speed="0"
-                price_factor="1.5" />
+                price_factor="2" />
   <ItemModifier modifier_group="ItemModifierGroup.spear_dart_throwing"
                 id="bent_spear_dart_throwing"
                 name="{=eb4miTUB}Bent {ITEMNAME}"
