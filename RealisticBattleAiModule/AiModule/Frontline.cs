@@ -102,14 +102,14 @@ namespace RBMAI
                     int hasShieldBonusNumber = 30;
                     int isAttackingArcherNumber = -60;
                     int aggresivnesModifier = 0;
-                    float backStepDistance = 1.5f;
+                    float backStepDistance = 1.15f;
                     if (isAgentInDefensiveOrder)
                     {
                         allyAgentsCountTreshold = 3;
                         enemyAgentsCountTreshold = 3;
                         enemyAgentsCountDangerousTreshold = 4;
                         enemyAgentsCountCriticalTreshold = 7;
-                        backStepDistance = 1.25f;
+                        backStepDistance = 1f;
                         hasShieldBonusNumber = 40;
                         aggresivnesModifier = 0;
                     }
