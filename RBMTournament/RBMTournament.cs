@@ -487,7 +487,6 @@ namespace RBMTournament
                                 }
                             }
                         }
-                    }
                         for (int k = 0; k < settlement.HeroesWithoutParty.Count; k++)
                         {
                             if (list.Count >= __instance.MaximumParticipantCount)
@@ -533,6 +532,7 @@ namespace RBMTournament
                                 }
                             }
                         }
+                    }
                     if (playerTier >= 5)
                     {
                         InformationManager.DisplayMessage(new InformationMessage("Main tournament"));
