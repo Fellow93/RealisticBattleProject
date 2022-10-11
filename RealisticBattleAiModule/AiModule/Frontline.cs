@@ -292,21 +292,21 @@ namespace RBMAI
                                     }
                                     if (isFieldBattle)
                                     {
-                                        int unitPower = (int)Math.Floor(unit.Character.GetPower() * 100);
+                                        int unitPower = (int)Math.Floor(unit.Character.GetPower() * 75);
                                         int randInt = MBRandom.RandomInt(unitPower + aggresivnesModifier);
                                         int defensivnesModifier = 0;
                                         if (unit.WieldedOffhandWeapon.IsShield())
                                         {
                                             defensivnesModifier += hasShieldBonusNumber;
                                         }
-                                        if (randInt < (unitPower / 2.5f + defensivnesModifier))
+                                        if (randInt < (unitPower / 3f + defensivnesModifier))
                                         {
                                             __result = getNearbyAllyWorldPosition(mission, unitPosition, unit);
                                             aiDecisionCooldownDict[unit].position = __result; return false;
                                         }
                                         else
                                         {
-                                            if (MBRandom.RandomInt(unitPower / 2) == 0)
+                                            if (MBRandom.RandomInt(unitPower / 3) == 0)
                                             {
                                                 aiDecisionCooldownDict[unit].position = WorldPosition.Invalid;
                                                 aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
@@ -375,7 +375,7 @@ namespace RBMAI
                             if (enemyAgentsImmidiateCount > enemyAgentsCountTreshold || enemyAgents10fCount > enemyAgentsCountTreshold)
                             {
                                 unit.LookDirection = direction.ToVec3();
-                                float unitPower = (float)Math.Floor(unit.Character.GetPower() * 100);
+                                int unitPower = (int)Math.Floor(unit.Character.GetPower() * 75);
                                 int randInt = MBRandom.RandomInt((int)unitPower + aggresivnesModifier);
                                 int defensivnesModifier = 0;
 

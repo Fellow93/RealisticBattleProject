@@ -1165,6 +1165,11 @@ namespace RBMAI
             return BasePath.Name + "Modules/RBM/ModuleData/scene_positions/";
         }
 
+        private static float GetPowerOriginal(int tier, bool isHero = false, bool isMounted = false)
+        {
+            return (float)((2 + tier) * (8 + tier)) * 0.02f * (isHero ? 1.5f : (isMounted ? 1.2f : 1f));
+        }
+
     }
 }
 

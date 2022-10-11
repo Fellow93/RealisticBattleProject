@@ -10,6 +10,7 @@ using TaleWorlds.Localization;
 using System;
 using TaleWorlds.Engine;
 using static TaleWorlds.MountAndBlade.Agent;
+using static TaleWorlds.MountAndBlade.Mission;
 
 namespace RBMCombat
 {
@@ -32,7 +33,7 @@ namespace RBMCombat
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionJavelin, 0.0025f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionAxe, 0.01f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionKnife, 0.01f);
-                ManagedParameters.SetParameter(ManagedParametersEnum.MissileMinimumDamageToStick, 35);
+                //ManagedParameters.SetParameter(ManagedParametersEnum.MissileMinimumDamageToStick, 25f);
             }
         }
 
@@ -971,6 +972,52 @@ namespace RBMCombat
             return true;
 
         }
-
     }
+
+    //[HarmonyPatch(typeof(Mission))]
+    //class HandleMissileCollisionReaction
+    //{
+    //    [HarmonyPrefix]
+    //    [HarmonyPatch("HandleMissileCollisionReaction")]
+    //    static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, int missileIndex,ref MissileCollisionReaction collisionReaction, MatrixFrame attachLocalFrame, Agent attackerAgent, Agent attachedAgent, bool attachedToShield, sbyte attachedBoneIndex, MissionObject attachedMissionObject, Vec3 bounceBackVelocity, Vec3 bounceBackAngularVelocity, int forcedSpawnIndex)
+    //    {
+    //        if(!attachedToShield && collisionReaction == MissileCollisionReaction.Stick && attachedAgent != null && forcedSpawnIndex == -1)
+    //        {
+    //            return false;
+    //        }
+    //        return true;
+    //    }
+    //}
+
+    //[UsedImplicitly]
+    //[MBCallback]
+    //[HarmonyPatch(typeof(Mission))]
+    //class HandleMissileCollisionReactionPatch
+    //{
+
+    //    [HarmonyPostfix]
+    //    [HarmonyPatch("MissileHitCallback")]
+    //    static void Postfix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
+    //    {
+    //        if(collisionData.IsColliderAgent && !collisionData.AttackBlockedWithShield )
+    //        {
+    //            if(collisionData.InflictedDamage >= 20)
+    //            {
+    //                if (!collisionData.MissileHasPhysics)
+    //                {
+    //                    Missile missile = ____missiles[collisionData.AffectorWeaponSlotOrMissileIndex];
+    //                    MatrixFrame attachLocalFrame;
+
+    //                    MethodInfo method = typeof(Mission).GetMethod("CalculateAttachedLocalFrame", BindingFlags.NonPublic | BindingFlags.Instance);
+    //                    method.DeclaringType.GetMethod("CalculateAttachedLocalFrame");
+    //                    attachLocalFrame = (MatrixFrame)method.Invoke(__instance, new object[] { attachGlobalFrame, collisionData, missile.Weapon.CurrentUsageItem, victim, hitEntity, movementVelocity, missileAngularVelocity, affectedShieldGlobalFrame, true });
+
+    //                    Vec3 velocity = Vec3.Zero;
+    //                    Vec3 angularVelocity = Vec3.Zero;
+    //                    __instance.HandleMissileCollisionReaction(collisionData.AffectorWeaponSlotOrMissileIndex, MissileCollisionReaction.Stick, attachLocalFrame, attacker, victim, collisionData.AttackBlockedWithShield, collisionData.CollisionBoneIndex, null, velocity, angularVelocity, 99);
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
 }
