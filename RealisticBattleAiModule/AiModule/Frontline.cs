@@ -19,7 +19,7 @@ namespace RBMAI
         class OverrideFormation
         {
 
-            private static int aiDecisionCooldownTime = 2;
+            private static int aiDecisionCooldownTime = 3;
             private static int aiDecisionCooldownTimeSiege = 0;
 
             [HarmonyPrefix]
@@ -108,7 +108,7 @@ namespace RBMAI
                         allyAgentsCountTreshold = 3;
                         enemyAgentsCountTreshold = 3;
                         enemyAgentsCountDangerousTreshold = 4;
-                        enemyAgentsCountCriticalTreshold = 7;
+                        enemyAgentsCountCriticalTreshold = 6;
                         backStepDistance = 1f;
                         hasShieldBonusNumber = 40;
                         aggresivnesModifier = 0;
@@ -172,7 +172,7 @@ namespace RBMAI
                             else
                             {
                                 unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                                unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5f, 2f, 1.1f, 10f, 0.01f);
+                                unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1.1f, 10f, 0.01f);
                                 unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
                             }
                         }
@@ -228,7 +228,7 @@ namespace RBMAI
                                 if (unit != null)
                                 {
                                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 5f, 2f, 4f, 10f, 6f);
-                                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 4.9f, 1.9f, 1.1f, 10f, 0.01f);
+                                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 4.9f, 1.5f, 1.1f, 10f, 0.01f);
                                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
 
                                     Vec2 leftVec = direction.LeftVec() + direction * 1f;
@@ -292,7 +292,7 @@ namespace RBMAI
                                     }
                                     if (isFieldBattle)
                                     {
-                                        int unitPower = (int)Math.Floor(unit.Character.GetPower() * 75);
+                                        int unitPower = MBMath.ClampInt((int)Math.Floor(unit.Character.GetPower() * 65), 65, 200);
                                         int randInt = MBRandom.RandomInt(unitPower + aggresivnesModifier);
                                         int defensivnesModifier = 0;
                                         if (unit.WieldedOffhandWeapon.IsShield())
@@ -306,7 +306,7 @@ namespace RBMAI
                                         }
                                         else
                                         {
-                                            if (MBRandom.RandomInt(unitPower / 3) == 0)
+                                            if (MBRandom.RandomInt(unitPower / 2) == 0)
                                             {
                                                 aiDecisionCooldownDict[unit].position = WorldPosition.Invalid;
                                                 aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
@@ -346,7 +346,7 @@ namespace RBMAI
                         else
                         {
                             unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5f, 2f, 1f, 10f, 0.01f);
+                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1f, 10f, 0.01f);
                             unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
                         }
                         if (isFieldBattle)
@@ -375,7 +375,7 @@ namespace RBMAI
                             if (enemyAgentsImmidiateCount > enemyAgentsCountTreshold || enemyAgents10fCount > enemyAgentsCountTreshold)
                             {
                                 unit.LookDirection = direction.ToVec3();
-                                int unitPower = (int)Math.Floor(unit.Character.GetPower() * 75);
+                                int unitPower = MBMath.ClampInt((int)Math.Floor(unit.Character.GetPower() * 65), 65, 200);
                                 int randInt = MBRandom.RandomInt((int)unitPower + aggresivnesModifier);
                                 int defensivnesModifier = 0;
 
@@ -458,7 +458,7 @@ namespace RBMAI
                                 else if (randInt < unitPower)
                                 {
                                     aiDecisionCooldownDict[unit].position = WorldPosition.Invalid;
-                                    aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
+                                    aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
                                     return true;
                                 }
                             }
