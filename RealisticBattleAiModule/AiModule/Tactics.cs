@@ -380,7 +380,7 @@ namespace RBMAI
                 agentDamage.Clear();
                 RBMAiPatcher.DoPatching();
                 OnTickAsAIPatch.itemPickupDistanceStorage.Clear();
-                ManagedParameters.SetParameter(ManagedParametersEnum.BipedalRadius, 0.5f);
+                ManagedParameters.SetParameter(ManagedParametersEnum.BipedalRadius, 0.38f);
                 if (Mission.Current.Teams.Any())
                 {
                     if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)

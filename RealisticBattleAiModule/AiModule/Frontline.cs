@@ -292,7 +292,7 @@ namespace RBMAI
                                     }
                                     if (isFieldBattle)
                                     {
-                                        int unitPower = MBMath.ClampInt((int)Math.Floor(unit.Character.GetPower() * 65), 65, 200);
+                                        int unitPower = MBMath.ClampInt((int)Math.Floor(unit.Character.GetPower() * 65), 65, 125);
                                         int randInt = MBRandom.RandomInt(unitPower + aggresivnesModifier);
                                         int defensivnesModifier = 0;
                                         if (unit.WieldedOffhandWeapon.IsShield())
@@ -357,7 +357,7 @@ namespace RBMAI
 
                             int enemyAgentsImmidiateCount = 0;
                             int enemyAgents10fCount = 0;
-                            int powerSumImmidiate = (int)Math.Floor(RBMAI.Utilities.GetPowerOfAgentsSum(enemyAgents0f) * 100);
+                            int powerSumImmidiate = (int)Math.Floor(RBMAI.Utilities.GetPowerOfAgentsSum(enemyAgents0f) * 65);
 
                             if (!isTargetArcher)
                             {
@@ -375,7 +375,7 @@ namespace RBMAI
                             if (enemyAgentsImmidiateCount > enemyAgentsCountTreshold || enemyAgents10fCount > enemyAgentsCountTreshold)
                             {
                                 unit.LookDirection = direction.ToVec3();
-                                int unitPower = MBMath.ClampInt((int)Math.Floor(unit.Character.GetPower() * 65), 65, 200);
+                                int unitPower = MBMath.ClampInt((int)Math.Floor(unit.Character.GetPower() * 65), 65, 125);
                                 int randInt = MBRandom.RandomInt((int)unitPower + aggresivnesModifier);
                                 int defensivnesModifier = 0;
 
