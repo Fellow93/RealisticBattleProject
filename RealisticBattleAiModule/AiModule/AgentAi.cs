@@ -109,17 +109,22 @@ namespace RBMAI
                 agentDrivenProperties.AiUseShieldAgainstEnemyMissileProbability = 0.95f;
                 //agentDrivenProperties.AiFlyingMissileCheckRadius = 250f;
 
-                agentDrivenProperties.AiShooterError = 0.0001f;
+                agentDrivenProperties.AiShooterError = 0.008f;
 
-                //agentDrivenProperties.AiRangerLeadErrorMin = 0f;
-                //agentDrivenProperties.AiRangerLeadErrorMax = 0f;
+                agentDrivenProperties.AiRangerLeadErrorMin = 0.2f;
+                agentDrivenProperties.AiRangerLeadErrorMax = 0.3f;
 
-                if(equippedItem != null && equippedItem.RelevantSkill == DefaultSkills.Bow)
+                if (equippedItem != null && equippedItem.RelevantSkill == DefaultSkills.Bow)
                 {
                     if(agent.MountAgent != null)
                     {
-                        agentDrivenProperties.AiRangerVerticalErrorMultiplier = 0f;//horse archers
-                        agentDrivenProperties.AiRangerHorizontalErrorMultiplier = 0f;//horse archers
+                        //agentDrivenProperties.AiRangerVerticalErrorMultiplier = 0f;//horse archers
+                        //agentDrivenProperties.AiRangerHorizontalErrorMultiplier = 0f;//horse archers
+                        agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.025f - effectiveSkill * 0.0001f, 0.01f, 0.025f);//bow
+                        agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.025f - effectiveSkill * 0.0001f, 0.01f, 0.025f);//bow
+                        agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
+                        agentDrivenProperties.WeaponMaxUnsteadyAccuracyPenalty *= 0.5f;
+                        agentDrivenProperties.WeaponRotationalAccuracyPenaltyInRadians = 0.02f;
                     }
                     else
                     {
@@ -222,8 +227,6 @@ namespace RBMAI
                     stat2.AddFactor(value);
                     stat3.AddFactor(value);
 
-                    agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.7f;
-                    agentDrivenProperties.WeaponMaxUnsteadyAccuracyPenalty *= 0.7f;
                 }
                 agentDrivenProperties.SwingSpeedMultiplier = stat.ResultNumber;
                 agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier = stat2.ResultNumber;
