@@ -110,7 +110,7 @@ namespace RBMAI
                 agentDrivenProperties.AiUseShieldAgainstEnemyMissileProbability = 0.95f;
                 //agentDrivenProperties.AiFlyingMissileCheckRadius = 250f;
 
-                agentDrivenProperties.AiShooterError = 0.008f;
+                agentDrivenProperties.AiShooterError = 0.001f;
 
                 agentDrivenProperties.AiRangerLeadErrorMin = 0.2f;
                 agentDrivenProperties.AiRangerLeadErrorMax = 0.3f;
