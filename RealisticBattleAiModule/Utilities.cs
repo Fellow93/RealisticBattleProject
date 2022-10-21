@@ -366,7 +366,7 @@ namespace RBMAI
                 {
                     float lastMeleeAttackTime = agent.LastMeleeAttackTime;
                     float lastMeleeHitTime = agent.LastMeleeHitTime;
-                    if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
+                    if ((currentTime - lastMeleeAttackTime < 6f) || (currentTime - lastMeleeHitTime < 6f))
                     {
                         countOfUnitsFightingInMelee++;
                     }
