@@ -849,7 +849,7 @@ namespace RBMCombat
                                     case "bow":
                                     case "long_bow":
                                         {
-                                            agentDrivenProperties.ReloadSpeed = 0.19f * (1.5f + (0.0075f * effectiveSkill));
+                                            agentDrivenProperties.ReloadSpeed = 0.25f * (1.5f + (0.012f * effectiveSkill));
                                             break;
                                         }
                                     case "crossbow_fast":
@@ -912,7 +912,7 @@ namespace RBMCombat
                                 case "bow":
                                 case "long_bow":
                                     {
-                                        agentDrivenProperties.ReloadSpeed = 0.19f * (1.5f + (0.0075f * effectiveSkill));
+                                        agentDrivenProperties.ReloadSpeed = 0.25f * (1.5f + (0.012f * effectiveSkill));
                                         break;
                                     }
                                 case "crossbow_fast":
