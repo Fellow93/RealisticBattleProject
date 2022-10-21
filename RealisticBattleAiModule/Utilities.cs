@@ -289,7 +289,8 @@ namespace RBMAI
                 }
                 formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
-                    float currentTime = Mission.Current.CurrentTime;
+                    //float currentTime = agent.Mission.CurrentTime;
+                    float currentTime = MBCommon.GetTotalMissionTime();
                     if (agent.LastRangedAttackTime > 0f && currentTime > agent.LastRangedAttackTime && (currentTime - agent.LastRangedAttackTime) < (lastAttackTimeTreshold + (20f * ratioOfCrossbowmen)))
                     {
                         countOfShooting++;
@@ -320,7 +321,8 @@ namespace RBMAI
                     //}
                     bool isActiveSkrimisher = false;
                     float countedUnits = 0f;
-                    float currentTime = Mission.Current.CurrentTime;
+                    //float currentTime = Mission.Current.CurrentTime;
+                    float currentTime = MBCommon.GetTotalMissionTime();
                     if (agent.LastRangedAttackTime > 0f && currentTime - agent.LastRangedAttackTime < 9f && currentTime > agent.LastRangedAttackTime && ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
                     {
                         for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
@@ -353,7 +355,8 @@ namespace RBMAI
 
         public static bool FormationFightingInMelee(Formation formation, float desiredRatio)
         {
-            float currentTime = Mission.Current.CurrentTime;
+            //float currentTime = Mission.Current.CurrentTime;
+            float currentTime = MBCommon.GetTotalMissionTime();
             float countedUnits = 0;
             float ratio = 0f;
             float countOfUnitsFightingInMelee = 0;

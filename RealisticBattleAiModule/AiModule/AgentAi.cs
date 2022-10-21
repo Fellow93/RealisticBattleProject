@@ -10,6 +10,7 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.MountAndBlade.ArrangementOrder;
+using static TaleWorlds.MountAndBlade.Mission;
 
 namespace RBMAI
 {
@@ -343,6 +344,54 @@ namespace RBMAI
                     __result = Agent.UsageDirection.None;
                     return;
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(Agent))]
+    [HarmonyPatch("UpdateLastAttackAndHitTimes")]
+    class UpdateLastAttackAndHitTimesFix
+    {
+
+        static bool Prefix(ref Agent __instance, Agent attackerAgent, bool isMissile)
+        {
+            PropertyInfo LastRangedHitTime = typeof(Agent).GetProperty("LastRangedHitTime");
+            LastRangedHitTime.DeclaringType.GetProperty("LastRangedHitTime");
+
+            PropertyInfo LastRangedAttackTime = typeof(Agent).GetProperty("LastRangedAttackTime");
+            LastRangedAttackTime.DeclaringType.GetProperty("LastRangedAttackTime");
+
+            PropertyInfo LastMeleeHitTime = typeof(Agent).GetProperty("LastMeleeHitTime");
+            LastMeleeHitTime.DeclaringType.GetProperty("LastMeleeHitTime");
+
+            PropertyInfo LastMeleeAttackTime = typeof(Agent).GetProperty("LastMeleeAttackTime");
+            LastMeleeAttackTime.DeclaringType.GetProperty("LastMeleeAttackTime");
+
+            float currentTime = MBCommon.GetTotalMissionTime();
+            if (isMissile)
+            {
+                //__instance.LastRangedHitTime = currentTime;
+                LastRangedHitTime.SetValue(__instance, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+            }
+            else
+            {
+                //LastMeleeHitTime = currentTime;
+                LastMeleeHitTime.SetValue(__instance, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+
+            }
+            if (attackerAgent != __instance && attackerAgent != null)
+            {
+                if (isMissile)
+                {
+                    //attackerAgent.LastRangedAttackTime = currentTime;
+                    LastRangedAttackTime.SetValue(attackerAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                }
+                else
+                {
+                    //attackerAgent.LastMeleeAttackTime = currentTime;
+                    LastMeleeAttackTime.SetValue(attackerAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                }
+            }
+            return false;
         }
     }
 

@@ -154,7 +154,7 @@ namespace RBMAI
                                 _cantShoot = false;
                                 flag = true;
                             }
-                            else if (Utilities.IsFormationShooting(base.Formation, 0.35f) && distance < effectiveShootingRange * 0.9f)
+                            else if (Utilities.IsFormationShooting(base.Formation, 0.2f) && distance < effectiveShootingRange * 0.9f)
                             {
                                 _behaviorState = BehaviorState.Shooting;
                                 _cantShoot = false;
