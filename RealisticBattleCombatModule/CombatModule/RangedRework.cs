@@ -854,12 +854,12 @@ namespace RBMCombat
                                         }
                                     case "crossbow_fast":
                                         {
-                                            agentDrivenProperties.ReloadSpeed = 0.36f * (1f + (0.0035f * effectiveSkill));
+                                            agentDrivenProperties.ReloadSpeed = 0.4f * (1f + (0.0045f * effectiveSkill));
                                             break;
                                         }
                                     case "crossbow":
                                         {
-                                            agentDrivenProperties.ReloadSpeed = 0.18f * (1f + (0.0035f * effectiveSkill));
+                                            agentDrivenProperties.ReloadSpeed = 0.2f * (1f + (0.0045f * effectiveSkill));
                                             break;
                                         }
                                 }
@@ -917,12 +917,12 @@ namespace RBMCombat
                                     }
                                 case "crossbow_fast":
                                     {
-                                        agentDrivenProperties.ReloadSpeed = 0.36f * (1f + (0.0035f * effectiveSkill));
+                                        agentDrivenProperties.ReloadSpeed = 0.4f * (1f + (0.0045f * effectiveSkill));
                                         break;
                                     }
                                 case "crossbow":
                                     {
-                                        agentDrivenProperties.ReloadSpeed = 0.18f * (1f + (0.0035f * effectiveSkill));
+                                        agentDrivenProperties.ReloadSpeed = 0.2f * (1f + (0.0045f * effectiveSkill));
                                         break;
                                     }
                             }
