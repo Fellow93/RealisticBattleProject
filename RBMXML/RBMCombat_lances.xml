@@ -2,6 +2,8 @@
 <Items>
       <!-- #region Used Lances -->
   <!-- #region Tier 3 -->
+<!--<khuzait spear banner 16, 17  />-->
+<!--<larger spear banner 4, 5, 9, 12, 18, 23, 24  />-->
   <CraftedItem id="vlandia_lance_1_t3"
                name="{=ctkNWKbq}Vlandian Light Lance"
                crafting_template="TwoHandedPolearm"
@@ -9,6 +11,9 @@
     <Pieces>
       <Piece id="spear_blade_23"
              Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_banner_4"
+             Type="Guard"
              scale_factor="100" />
       <Piece id="spear_handle_13"
              Type="Handle"
@@ -23,6 +28,9 @@
       <Piece id="spear_blade_23"
              Type="Blade"
              scale_factor="100" />
+      <Piece id="spear_banner_5"
+             Type="Guard"
+             scale_factor="100" />
       <Piece id="spear_handle_13"
              Type="Handle"
              scale_factor="118" />
@@ -35,6 +43,9 @@
     <Pieces>
       <Piece id="spear_blade_23"
              Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_banner_16"
+             Type="Guard"
              scale_factor="100" />
       <Piece id="spear_handle_20"
              Type="Handle"
@@ -51,6 +62,9 @@
       <Piece id="spear_blade_20"
              Type="Blade"
              scale_factor="100" />
+      <Piece id="spear_banner_9"
+             Type="Guard"
+             scale_factor="100" />
       <Piece id="spear_handle_23"
              Type="Handle"
              scale_factor="132" />
@@ -63,6 +77,9 @@
     <Pieces>
       <Piece id="spear_blade_20"
              Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_banner_12"
+             Type="Guard"
              scale_factor="100" />
       <Piece id="spear_handle_23"
              Type="Handle"
@@ -77,6 +94,9 @@
       <Piece id="spear_blade_20"
              Type="Blade"
              scale_factor="100" />
+      <Piece id="spear_banner_18"
+             Type="Guard"
+             scale_factor="100" />
       <Piece id="spear_handle_17"
              Type="Handle"
              scale_factor="163" />
@@ -89,6 +109,9 @@
     <Pieces>
       <Piece id="spear_blade_20"
              Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_banner_17"
+             Type="Guard"
              scale_factor="100" />
       <Piece id="spear_handle_20"
              Type="Handle"
@@ -105,6 +128,9 @@
       <Piece id="spear_blade_5"
              Type="Blade"
              scale_factor="100" />
+      <Piece id="spear_banner_23"
+             Type="Guard"
+             scale_factor="100" />
       <Piece id="spear_handle_19"
              Type="Handle"
              scale_factor="172" />
@@ -117,6 +143,9 @@
     <Pieces>
       <Piece id="spear_blade_5"
              Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_banner_23"
+             Type="Guard"
              scale_factor="100" />
       <Piece id="spear_handle_19"
              Type="Handle"
@@ -131,6 +160,9 @@
       <Piece id="spear_blade_5"
              Type="Blade"
              scale_factor="100" />
+      <Piece id="spear_banner_24"
+             Type="Guard"
+             scale_factor="100" />
       <Piece id="spear_handle_24"
              Type="Handle"
              scale_factor="153" />
@@ -144,7 +176,7 @@
       <Piece id="spear_blade_5"
              Type="Blade"
              scale_factor="100" />
-      <Piece id="spear_guard_13"
+      <Piece id="spear_banner_24"
              Type="Guard"
              scale_factor="100" />
       <Piece id="spear_handle_20"
@@ -162,6 +194,9 @@
     <Pieces>
       <Piece id="spear_blade_5"
              Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_banner_23"
+             Type="Guard"
              scale_factor="100" />
       <Piece id="spear_handle_23"
              Type="Handle"
@@ -202,7 +237,9 @@
   <CraftedItem id="sturgia_polearm_1_t5" name="{=160aqzPm}Warrazor" crafting_template="TwoHandedPolearm" culture="Culture.sturgia">
     <Pieces>
       <Piece id="spear_blade_43" Type="Blade" scale_factor="90" />
-      <Piece id="default_polearm_guard" Type="Guard" scale_factor="100" />
+      <Piece id="spear_banner_1"
+             Type="Guard"
+             scale_factor="100" />
       <Piece id="spear_handle_26" Type="Handle" scale_factor="70" />
       <Piece id="default_polearm_pommel" Type="Pommel" scale_factor="100" />
     </Pieces>
@@ -220,7 +257,9 @@
   <CraftedItem id="khuzait_polearm_1_t4" name="{=6hwZwODh}Glaive" crafting_template="TwoHandedPolearm" culture="Culture.khuzait">
     <Pieces>
       <Piece id="spear_blade_19" Type="Blade" scale_factor="100" />
-      <Piece id="default_polearm_guard" Type="Guard" scale_factor="100" />
+      <Piece id="spear_banner_16"
+             Type="Guard"
+             scale_factor="100" />
       <Piece id="spear_handle_15" Type="Handle" scale_factor="125" />
       <Piece id="default_polearm_pommel" Type="Pommel" scale_factor="100" />
     </Pieces>
@@ -239,7 +278,9 @@
   <CraftedItem id="southern_spear_3_t4" name="{=vXYlLH6L}Long Thamaskene Tipped Spear" crafting_template="TwoHandedPolearm" culture="Culture.aserai">
     <Pieces>
       <Piece id="spear_blade_11" Type="Blade" scale_factor="100" />
-      <Piece id="spear_guard_7" Type="Guard" scale_factor="100" />
+      <Piece id="spear_banner_3"
+             Type="Guard"
+             scale_factor="100" />
       <Piece id="spear_handle_5" Type="Handle" scale_factor="110" />
       <Piece id="spear_pommel_11" Type="Pommel" scale_factor="100" />
     </Pieces>
@@ -295,7 +336,7 @@
       <Piece id="spear_blade_36"
              Type="Blade"
              scale_factor="100" />
-      <Piece id="spear_guard_2"
+      <Piece id="spear_banner_6"
              Type="Guard"
              scale_factor="100" />
       <Piece id="spear_handle_16"
@@ -335,7 +376,7 @@
       <Piece id="spear_blade_42"
              Type="Blade"
              scale_factor="100" />
-      <Piece id="spear_guard_3"
+      <Piece id="spear_banner_10"
              Type="Guard"
              scale_factor="100" />
       <Piece id="spear_handle_16"
@@ -750,4 +791,295 @@
     </Pieces>
   </CraftedItem> 
   <!-- #endregion -->
+  <!-- #region Used Spears -->
+  <!-- #region Tier 2 -->
+  <CraftedItem id="western_spear_1_t2"
+               name="{=hyq1zBg5}Simple Commoner Spear"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.vlandia"
+               modifier_group="polearm">
+    <Pieces>
+      <Piece id="spear_blade_1"
+             Type="Blade"
+             scale_factor="90" />
+      <Piece id="spear_handle_5"
+             Type="Handle"
+             scale_factor="90" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="western_spear_2_t2"
+               name="{=bue69aD4}Simple Short Spear"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.vlandia"
+               modifier_group="polearm">
+    <Pieces>
+      <Piece id="spear_blade_9"
+             Type="Blade"
+             scale_factor="90" />
+      <Piece id="spear_handle_6"
+             Type="Handle"
+             scale_factor="90" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="eastern_spear_1_t2"
+               name="{=yCvBx27Z}Jagged Spear"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.aserai"
+               modifier_group="polearm">
+    <Pieces>
+      <Piece id="spear_blade_35"
+             Type="Blade"
+             scale_factor="95" />
+      <Piece id="spear_handle_3"
+             Type="Handle"
+             scale_factor="95" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="northern_spear_1_t2"
+               name="{=RzLZHrYT}Short Simple Raider Spear"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.sturgia"
+               modifier_group="polearm">
+    <Pieces>
+      <Piece id="spear_blade_15"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_handle_6"
+             Type="Handle"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <!-- RENAME CIHAN -->
+  <CraftedItem id="imperial_spear_t2"
+               name="{=Vyw5KNxR}Short Militia Spear"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.empire"
+               modifier_group="polearm">
+    <Pieces>
+      <Piece id="spear_blade_3"
+             Type="Blade"
+             scale_factor="90" />
+      <Piece id="spear_handle_5"
+             Type="Handle"
+             scale_factor="90" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="highland_spear_t2"
+               name="{=rhWOdhjr}Highland War Spear"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.battania"
+               modifier_group="polearm">
+    <Pieces>
+      <Piece id="spear_blade_13"
+             Type="Blade"
+             scale_factor="90" />
+      <Piece id="spear_guard_3"
+             Type="Guard"
+             scale_factor="90" />
+      <Piece id="spear_handle_5"
+             Type="Handle"
+             scale_factor="90" />
+    </Pieces>
+  </CraftedItem>
+  <!-- RENAME CIHAN -->
+  <CraftedItem id="military_fork_t2"
+               name="{=FbG3CW5p}Military Fork"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.sturgia"
+               modifier_group="polearm">
+    <Pieces>
+      <Piece id="spear_blade_26"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_handle_6"
+             Type="Handle"
+             scale_factor="90" />
+    </Pieces>
+  </CraftedItem>
+  <!-- #endregion -->
+  <!-- #region Tier 3 -->
+  <CraftedItem id="western_spear_3_t3"
+               name="{=WQksMqMR}Tall Tipped Long Spear"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.vlandia"
+               modifier_group="polearm">
+    <Pieces>
+      <Piece id="spear_blade_8"
+             Type="Blade"
+             scale_factor="90" />
+      <Piece id="spear_banner_12"
+             Type="Guard"
+             scale_factor="90" />
+      <Piece id="spear_handle_25"
+             Type="Handle"
+             scale_factor="90" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="western_spear_4_t3"
+               name="{=NFT4sLva}Tall Tipped Spear"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.vlandia"
+               modifier_group="polearm">
+    <Pieces>
+      <Piece id="spear_blade_8"
+             Type="Blade"
+             scale_factor="94" />
+      <Piece id="spear_handle_25"
+             Type="Handle"
+             scale_factor="90" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="southern_spear_3_t3"
+               name="{=zH0QF7mE}Knob Headed Spear with Frills"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.aserai"
+               modifier_group="polearm">
+    <Pieces>
+      <Piece id="spear_blade_14"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_handle_21"
+             Type="Handle"
+             scale_factor="90" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="southern_spear_4_t3"
+               name="{=IDfl59yt}Knob Headed Spear"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.aserai"
+               modifier_group="polearm">
+    <Pieces>
+      <Piece id="spear_blade_14"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="default_polearm_guard"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_21"
+             Type="Handle"
+             scale_factor="90" />
+    </Pieces>
+  </CraftedItem>
+  <!-- RENAME CIHAN -->
+  <CraftedItem id="triangluar_spear_t3"
+               name="{=Jkd2gmyj}Triangular Headed Spear"
+               crafting_template="TwoHandedPolearm"
+               modifier_group="polearm">
+    <Pieces>
+      <Piece id="spear_blade_2"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_handle_25"
+             Type="Handle"
+             scale_factor="90" />
+    </Pieces>
+  </CraftedItem>
+  <!-- #endregion -->
+  <!-- #region Tier 4 -->
+  <CraftedItem id="western_spear_4_t4"
+               name="{=t28VYqjP}Long Fine Steel Spear"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.empire"
+               modifier_group="polearm">
+    <Pieces>
+      <Piece id="spear_blade_4"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_banner_10"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_27"
+             Type="Handle"
+             scale_factor="90" />
+      <Piece id="spear_pommel_4"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <CraftedItem id="western_spear_5_t4"
+               name="{=jcOJqWGA}Fine Steel Spear"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.empire"
+               modifier_group="polearm">
+    <Pieces>
+      <Piece id="spear_blade_4"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_banner_10"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_27"
+             Type="Handle"
+             scale_factor="90" />
+      <Piece id="spear_pommel_4"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <!-- RENAME CIHAN -->
+  <CraftedItem id="wide_leaf_spear_t4"
+               name="{=hz87PBsa}Wide Leaf Spear"
+               crafting_template="TwoHandedPolearm"
+               modifier_group="polearm">
+    <Pieces>
+      <Piece id="spear_blade_39"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_banner_2"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_27"
+             Type="Handle"
+             scale_factor="100" />
+      <Piece id="spear_pommel_9"
+             Type="Pommel"
+             scale_factor="90" />
+    </Pieces>
+  </CraftedItem>
+  <!-- #endregion -->
+  <!-- #region Tier 3-->
+  <!-- RENAME CIHAN -->
+  <CraftedItem id="billhook_polearm_t2"
+               name="{=Dj64aJKQ}Billhook"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.vlandia"
+               modifier_group="polearm">
+    <Pieces>
+      <Piece id="spear_blade_33"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="default_polearm_guard"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_4"
+             Type="Handle"
+             scale_factor="90" />
+      <Piece id="default_polearm_pommel"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <!-- #endregion -->
+  <!-- #region Tier 4-->
+  <CraftedItem id="khuzait_polearm_2_t5"
+               name="{=JxV66l02}Long Glaive"
+               crafting_template="TwoHandedPolearm"
+               culture="Culture.khuzait"
+               modifier_group="polearm">
+    <Pieces>
+      <Piece id="spear_blade_24"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="spear_banner_17"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="spear_handle_8"
+             Type="Handle"
+             scale_factor="100" />
+      <Piece id="default_polearm_pommel"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+  </CraftedItem>
+  <!-- #endregion -->  
 </Items>
