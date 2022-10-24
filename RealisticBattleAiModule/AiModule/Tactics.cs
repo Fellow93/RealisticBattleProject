@@ -451,50 +451,6 @@ namespace RBMAI
             }
         }
 
-        [HarmonyPatch(typeof(Mission))]
-        class SpawnTroopPatch
-        {
-            [HarmonyPrefix]
-            [HarmonyPatch("SpawnTroop")]
-            static bool PrefixSpawnTroop(ref Mission __instance, IAgentOriginBase troopOrigin, bool isPlayerSide, bool hasFormation, bool spawnWithHorse, bool isReinforcement, int formationTroopCount, int formationTroopIndex, bool isAlarmed, bool wieldInitialWeapons, bool forceDismounted,ref Vec3? initialPosition,ref Vec2? initialDirection, string specialActionSetSuffix = null)
-            {
-                if (Mission.Current != null && Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
-                {
-                    if (isReinforcement)
-                    {
-                        if (hasFormation)
-                        {
-                            BasicCharacterObject troop = troopOrigin.Troop;
-                            Team agentTeam = Mission.GetAgentTeam(troopOrigin, isPlayerSide);
-                            Formation formation = agentTeam.GetFormation(troop.GetFormationClass());
-                            if (formation.CountOfUnits == 0)
-                            {
-                                foreach (Formation allyFormation in agentTeam.Formations)
-                                {
-                                    if (allyFormation.CountOfUnits > 0)
-                                    {
-                                        formation = allyFormation;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (formation.CountOfUnits == 0)
-                            {
-                                return true;
-                            }
-                            Vec2 tempPos = Mission.Current.GetClosestFleePositionForFormation(formation).AsVec2;
-                            tempPos.x = tempPos.x + MBRandom.RandomInt(40);
-                            tempPos.y = tempPos.y + MBRandom.RandomInt(40);
-
-                            initialPosition = Mission.Current.DeploymentPlan?.GetClosestDeploymentBoundaryPosition(agentTeam.Side, tempPos, DeploymentPlanType.Reinforcement).ToVec3();
-                            initialDirection = tempPos - formation.CurrentPosition;
-                        }
-                    }
-                }
-                return true;
-            }
-        }
-
         [HarmonyPatch(typeof(TacticCoordinatedRetreat))]
         class OverrideTacticCoordinatedRetreat
         {
