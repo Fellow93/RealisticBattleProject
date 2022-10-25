@@ -2916,6 +2916,26 @@
       <AvailablePiece id="mp_test_lance_handle"/>
       <AvailablePiece id="mp_pilum_blade"/>
       <AvailablePiece id="mp_pilum_blade_extraammo"/>
+	  
+	  <AvailablePiece id="spear_banner_1"/>
+	  <AvailablePiece id="spear_banner_2"/>
+	  <AvailablePiece id="spear_banner_3"/>
+	  <AvailablePiece id="spear_banner_4"/>
+	  <AvailablePiece id="spear_banner_5"/>
+	  <AvailablePiece id="spear_banner_6"/>
+	  <AvailablePiece id="spear_banner_9"/>
+	  <AvailablePiece id="spear_banner_10"/>
+	  <AvailablePiece id="spear_banner_12"/>
+	  <AvailablePiece id="spear_banner_15"/>
+	  <AvailablePiece id="spear_banner_16"/>
+	  <AvailablePiece id="spear_banner_17"/>
+	  <AvailablePiece id="spear_banner_18"/>
+	  <AvailablePiece id="spear_banner_19"/>
+	  <AvailablePiece id="spear_banner_20"/>
+	  <AvailablePiece id="spear_banner_21"/>
+	  <AvailablePiece id="spear_banner_22"/>
+	  <AvailablePiece id="spear_banner_23"/>
+	  <AvailablePiece id="spear_banner_24"/>
       <!-- AvailablePieces,TwoHandedPolearm_Couchable -->
     </AvailablePieces>
   </WeaponDescription>
