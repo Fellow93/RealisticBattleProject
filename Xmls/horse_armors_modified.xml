@@ -70,7 +70,8 @@
         mesh="horse_harness_b"
         weight="5"
         appearance="1"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.vlandia">
     <ItemComponent>
       <Armor body_armor="5"
 	         head_armor="5"
@@ -91,7 +92,8 @@
         mesh="horse_harness_vlandia_b_clotest"
         weight="16"
         appearance="0.6"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.vlandia">
     <ItemComponent>
       <Armor body_armor="40"
 	         head_armor="60"
@@ -113,7 +115,8 @@
         mesh="horse_harness_vlandia_a_clotest"
         weight="26"
         appearance="0.5"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.vlandia">
     <ItemComponent>
       <Armor body_armor="40"
 	         head_armor="90"
@@ -138,7 +141,8 @@
         weight="24"
         difficulty="0"
         appearance="0.6"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.vlandia">
     <ItemComponent>
       <Armor body_armor="40"
 	         head_armor="50"
@@ -165,7 +169,8 @@
         weight="17"
         difficulty="0"
         appearance="1"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.empire">
     <ItemComponent>
       <Armor body_armor="5"
 	         head_armor="10"
@@ -184,7 +189,8 @@
         mesh="horse_harness_a_new"
         weight="6"
         appearance="1"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.empire">
     <ItemComponent>
       <Armor body_armor="8"
 	         head_armor="5"
@@ -206,7 +212,8 @@
         weight="17"
         difficulty="0"
         appearance="0.5"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.empire">
     <ItemComponent>
       <Armor body_armor="50"
 	         head_armor="90"
@@ -228,7 +235,8 @@
         weight="30"
         difficulty="0"
         appearance="0.5"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.empire">
     <ItemComponent>
       <Armor body_armor="50"
 	         head_armor="90"
@@ -238,7 +246,7 @@
              family_type="1"
              modifier_group="chain"
              reins_mesh="horse_harness_imperial_b_rein"
-             material_type="Chainmail" />
+             material_type="Chainmail"/>
     </ItemComponent>
     <Flags Civilian="true" />
   </Item>
@@ -250,7 +258,8 @@
         weight="23"
         difficulty="0"
         appearance="0.6"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.khuzait">
     <ItemComponent>
       <Armor body_armor="35"
 	         head_armor="55"
@@ -272,7 +281,8 @@
         weight="7.3"
         difficulty="0"
         appearance="1"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.aserai">
     <ItemComponent>
       <Armor body_armor="8"
 	         head_armor="5"
@@ -294,7 +304,8 @@
         weight="6.1"
         difficulty="0"
         appearance="1"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.aserai">
     <ItemComponent>
       <Armor body_armor="8"
 	         head_armor="5"
@@ -316,7 +327,8 @@
         weight="16"
         difficulty="0"
         appearance="0.6"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.aserai">
     <ItemComponent>
       <Armor body_armor="47"
 	         head_armor="90"
@@ -338,7 +350,8 @@
         weight="26.8"
         difficulty="0"
         appearance="0.4"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.aserai">
     <ItemComponent>
       <Armor body_armor="47"
 	         head_armor="90"
@@ -360,7 +373,8 @@
         weight="8.5"
         difficulty="0"
         appearance="1"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.khuzait">
     <ItemComponent>
       <Armor body_armor="0"
 	         head_armor="5"
@@ -382,7 +396,8 @@
         weight="8.2"
         difficulty="0"
         appearance="1"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.khuzait">
     <ItemComponent>
       <Armor body_armor="0"
 	         head_armor="5"
@@ -404,7 +419,8 @@
         weight="11"
         difficulty="0"
         appearance="1"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.khuzait">
     <ItemComponent>
       <Armor body_armor="35"
 	         head_armor="55"
@@ -431,7 +447,8 @@
         mesh="horse_harness_roman_b_new"
         weight="7.2"
         appearance="1"
-         Type="HorseHarness">
+         Type="HorseHarness"
+		 culture="Culture.sturgia">
     <ItemComponent>
       <Armor body_armor="10"
 	         head_armor="20"
@@ -441,7 +458,7 @@
              family_type="1"
              modifier_group="leather"
 			 reins_mesh="horse_harness_roman_b_new_rein"
-             material_type="Leather" />
+             material_type="Leather"/>
     </ItemComponent>
     <Flags Civilian="true" />
   </Item>
@@ -450,7 +467,8 @@
         mesh="horse_harness_sturgia_b_clotest"
         weight="8.9"
         appearance="1"
-       Type="HorseHarness">
+       Type="HorseHarness"
+	   culture="Culture.sturgia">
     <ItemComponent>
       <Armor body_armor="5"
 	         head_armor="8"
@@ -460,7 +478,7 @@
              family_type="1"
              modifier_group="leather"
              reins_mesh="horse_harness_sturgia_b_rein"
-             material_type="Leather" />
+             material_type="Leather"/>
     </ItemComponent>
     <Flags Civilian="true" />
   </Item>
@@ -469,7 +487,8 @@
         mesh="horse_harness_sturgia_a_clotest"
         weight="15.2"
         appearance="0.9"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.sturgia">
     <ItemComponent>
       <Armor body_armor="35"
 	         head_armor="45"
@@ -488,7 +507,8 @@
         mesh="battania_horse_harness"
         weight="10.3"
         appearance="1"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.battania">
     <ItemComponent>
       <Armor body_armor="15"
 	         head_armor="10"
@@ -506,12 +526,13 @@
         mesh="battania_horse_harness_halfscaled"
         weight="15"
         appearance="1"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.battania">
     <ItemComponent>
       <Armor body_armor="35"
 	         head_armor="50"
 			 arm_armor="45"
-	         leg_armor="30"
+	         leg_armor="20"
              mane_cover_type="all"
              family_type="1"
              modifier_group="chain"
@@ -524,12 +545,13 @@
         mesh="battania_horse_harness_scaled"
         weight="20.6"
         appearance="0.65"
-        Type="HorseHarness">
+        Type="HorseHarness"
+		culture="Culture.battania">
     <ItemComponent>
       <Armor body_armor="35"
 	         head_armor="50"
 			 arm_armor="45"
-	         leg_armor="20"
+	         leg_armor="30"
              mane_cover_type="all"
              family_type="1"
              modifier_group="chain"

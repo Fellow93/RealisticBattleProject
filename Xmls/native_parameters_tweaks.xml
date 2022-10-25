@@ -3,7 +3,7 @@
   <native_parameters>
     <!-- human movement related -->
 	<native_parameter id="bipedal_speed_multiplier" value="5.2"/>
-	<native_parameter id="ranged_target_radius_multiplier" value="3.25"/>
+	<native_parameter id="ranged_target_radius_multiplier" value="2.5"/>
     <native_parameter id="defend_speed_multiplier" value="5.2"/>
     <native_parameter id="defend_right_stance_speed_multiplier" value="1.0"/>
 	

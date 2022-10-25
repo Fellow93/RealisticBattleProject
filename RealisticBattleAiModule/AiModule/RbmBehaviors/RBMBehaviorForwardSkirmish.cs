@@ -4,7 +4,7 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
-namespace RealisticBattleAiModule.AiModule.RbmBehaviors
+namespace RBMAI
 {
     class RBMBehaviorForwardSkirmish : BehaviorComponent
 	{
@@ -43,7 +43,7 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 			}
 			if (base.Formation != null && base.Formation.QuerySystem.IsCavalryFormation)
 			{
-				if (Utilities.CheckIfMountedSkirmishFormation(base.Formation, 0.6f))
+				if (RBMAI.Utilities.CheckIfMountedSkirmishFormation(base.Formation, 0.6f))
 				{
 					return 5f;
 				}
@@ -53,7 +53,7 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 				int countOfSkirmishers = 0;
 				base.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
 				{
-					if (Utilities.CheckIfSkirmisherAgent(agent, 1))
+					if (RBMAI.Utilities.CheckIfSkirmisherAgent(agent, 1))
 					{
 						countOfSkirmishers++;
 					}
@@ -74,7 +74,7 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 		{
 			CalculateCurrentOrder();
 			base.Formation.SetMovementOrder(base.CurrentOrder);
-			base.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+			base.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
 			base.Formation.FacingOrder = FacingOrder.FacingOrderLookAtEnemy;
 			base.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
 			base.Formation.FormOrder = FormOrder.FormOrderDeep;
@@ -105,11 +105,11 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 				float flankRange = 25f;
 
 				Formation enemyFormation = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation;
-				Formation allyFormation = Utilities.FindSignificantAlly(base.Formation, true, true, false, false, false);
+				Formation allyFormation = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, true, false, false, false);
 
 				if (base.Formation != null && base.Formation.QuerySystem.IsInfantryFormation)
 				{
-					enemyFormation = Utilities.FindSignificantEnemyToPosition(base.Formation, position, true, true, false, false, false, false);
+					enemyFormation = RBMAI.Utilities.FindSignificantEnemyToPosition(base.Formation, position, true, true, false, false, false, false);
 				}
 
 				Vec2 averageAllyFormationPosition = base.Formation.QuerySystem.Team.AveragePosition;
@@ -121,39 +121,59 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 					case SkirmishMode.Reform:
                         {
 							_returnTimer = null;
-							if (averagePosition.Distance(enemyFormation.QuerySystem.AveragePosition) > skirmishRange)
-                            {
-								if (_reformTimer == null)
+							if (enemyFormation != null)
+							{
+								if (averagePosition.Distance(enemyFormation.QuerySystem.AveragePosition) > skirmishRange)
 								{
-									_reformTimer = new Timer(Mission.Current.CurrentTime, 4f/ mobilityModifier);
+									if (_reformTimer == null)
+									{
+										_reformTimer = new Timer(Mission.Current.CurrentTime, 4f / mobilityModifier);
+									}
 								}
-							}
-							if (_reformTimer != null && _reformTimer.Check(Mission.Current.CurrentTime))
-							{
-								_skirmishMode = SkirmishMode.Attack;
-							}
-
-							if (behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
-							{
-								Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.RightVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
-								position.SetVec2(calcPosition);
-							}
-							else if (behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
-							{
-								Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.LeftVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
-								position.SetVec2(calcPosition);
-							}
-                            else
-                            {
-								if (allyFormation != null)
+								if (_reformTimer != null && _reformTimer.Check(Mission.Current.CurrentTime))
 								{
-									position = allyFormation.QuerySystem.MedianPosition;
+									_skirmishMode = SkirmishMode.Attack;
+								}
 
+								if (behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
+								{
+									if (allyFormation != null)
+									{
+										Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.RightVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
+										position.SetVec2(calcPosition);
+									}
+									else
+									{
+										position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+									}
+								}
+								else if (behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
+								{
+									if (allyFormation != null)
+									{
+										Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.LeftVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
+										position.SetVec2(calcPosition);
+									}
+									else
+									{
+										position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+									}
 								}
 								else
-                                {
-									position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+								{
+									if (allyFormation != null)
+									{
+										position = allyFormation.QuerySystem.MedianPosition;
+									}
+									else
+									{
+										position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+									}
 								}
+							}
+							else
+							{
+								position = WorldPosition.Invalid;
 							}
 							break;
                         }
@@ -171,13 +191,27 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 
 							if (behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
 							{
-								Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.RightVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
-								position.SetVec2(calcPosition);
+								if (allyFormation != null)
+								{
+									Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.RightVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
+									position.SetVec2(calcPosition);
+								}
+								else
+                                {
+									position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+								}
 							}
 							else if (behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
 							{
-								Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.LeftVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
-								position.SetVec2(calcPosition);
+								if (allyFormation != null)
+								{
+									Vec2 calcPosition = allyFormation.CurrentPosition + enemyDirection.LeftVec().Normalized() * (allyFormation.Width + base.Formation.Width + flankRange);
+									position.SetVec2(calcPosition);
+								}
+								else
+								{
+									position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+								}
 							}
 							else
 							{
@@ -196,41 +230,46 @@ namespace RealisticBattleAiModule.AiModule.RbmBehaviors
 						}
 					case SkirmishMode.Attack:
 						{
-							_reformTimer = null;
-							if ((averagePosition.Distance(enemyFormation.QuerySystem.AveragePosition) < skirmishRange) || (base.Formation.QuerySystem.MakingRangedAttackRatio > 0.1f))
-							{
-								if(_attackTimer == null)
-                                {
-									_attackTimer = new Timer(Mission.Current.CurrentTime, 3f * mobilityModifier);
-								}
-							}
-							if (_attackTimer != null && _attackTimer.Check(Mission.Current.CurrentTime))
+							if(enemyFormation != null)
                             {
-								_skirmishMode = SkirmishMode.Returning;
-							}
+								_reformTimer = null;
+								if ((averagePosition.Distance(enemyFormation.QuerySystem.AveragePosition) < skirmishRange) || (base.Formation.QuerySystem.MakingRangedAttackRatio > 0.1f))
+								{
+									if (_attackTimer == null)
+									{
+										_attackTimer = new Timer(Mission.Current.CurrentTime, 3f * mobilityModifier);
+									}
+								}
+								if (_attackTimer != null && _attackTimer.Check(Mission.Current.CurrentTime))
+								{
+									_skirmishMode = SkirmishMode.Returning;
+								}
 
-							if (behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
-							{
-								position = medianTargetFormationPosition;
-								Vec2 calcPosition = position.AsVec2 - enemyDirection * (skirmishRange - (10f + base.Formation.Depth * 0.5f));
-								calcPosition = calcPosition + enemyFormation.Direction.LeftVec().Normalized() * (enemyFormation.Width / 2f) * mobilityModifier;
-								position.SetVec2(calcPosition);
+								if (behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
+								{
+									position = medianTargetFormationPosition;
+									Vec2 calcPosition = position.AsVec2 - enemyDirection * (skirmishRange - (10f + base.Formation.Depth * 0.5f));
+									calcPosition = calcPosition + enemyFormation.Direction.LeftVec().Normalized() * (enemyFormation.Width / 2f) * mobilityModifier;
+									position.SetVec2(calcPosition);
+								}
+								else if (behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
+								{
+									position = medianTargetFormationPosition;
+									Vec2 calcPosition = position.AsVec2 - enemyDirection * (skirmishRange - (10f + base.Formation.Depth * 0.5f));
+									calcPosition = calcPosition + enemyFormation.Direction.RightVec().Normalized() * (enemyFormation.Width / 2f) * mobilityModifier;
+									position.SetVec2(calcPosition);
+								}
+								else
+								{
+									position = medianTargetFormationPosition;
+									Vec2 calcPosition = position.AsVec2 - enemyDirection * (skirmishRange - (10f + base.Formation.Depth * 0.5f));
+									position.SetVec2(calcPosition);
+								}
+                            }
+                            else
+                            {
+								position = WorldPosition.Invalid;
 							}
-							else if (behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
-							{
-								position = medianTargetFormationPosition;
-								Vec2 calcPosition = position.AsVec2 - enemyDirection * (skirmishRange - (10f + base.Formation.Depth * 0.5f));
-								calcPosition = calcPosition + enemyFormation.Direction.RightVec().Normalized() * (enemyFormation.Width/2f) * mobilityModifier;
-								position.SetVec2(calcPosition);
-							}
-							else
-							{
-								position = medianTargetFormationPosition;
-								Vec2 calcPosition = position.AsVec2 - enemyDirection * (skirmishRange - (10f + base.Formation.Depth * 0.5f));
-								position.SetVec2(calcPosition);
-							}
-
-							//position = enemyFormation.QuerySystem.MedianPosition;
 							break;
 						}
 				}

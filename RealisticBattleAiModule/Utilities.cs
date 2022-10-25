@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
@@ -8,44 +9,33 @@ using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.Core.ItemObject;
 
-namespace RealisticBattleAiModule
+namespace RBMAI
 {
     public static class Utilities
     {
 
-        public static bool HasBattleBeenJoined(Formation mainInfantry, bool hasBattleBeenJoined, float battleJoinRange)
+        public static bool HasBattleBeenJoined(Formation mainInfantry, bool hasBattleBeenJoined, float battleJoinRange = 75f)
         {
+            bool isOnlyCavReamining = CheckIfOnlyCavRemaining(mainInfantry);
+            if (isOnlyCavReamining)
+            {
+                return true;
+            }
             if (mainInfantry != null)
             {
-                //if (FormationFightingInMelee(mainInfantry, 0.4f))
-                //{
-                //    if (mainInfantry.IsAIControlled)
-                //    {
-                //        mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
-                //        return true;
-                //    }
-                //}
-                //else
-                //{
-                //    if (mainInfantry.IsAIControlled)
-                //    {
-                //        mainInfantry.FiringOrder = FiringOrder.FiringOrderFireAtWill;
-                //    }
-                //}
-                if(mainInfantry.QuerySystem.ClosestEnemyFormation != null && mainInfantry.QuerySystem.ClosestEnemyFormation.Formation != null)
+                if (FormationFightingInMelee(mainInfantry, 0.35f)){ 
+                    return true;
+                }
+                if (mainInfantry.QuerySystem.ClosestEnemyFormation != null && mainInfantry.QuerySystem.ClosestEnemyFormation.Formation != null)
                 {
-                    Formation enemyForamtion = Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false, true);
+                    Formation enemyForamtion = RBMAI.Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false, true);
                     if (enemyForamtion != null)
                     {
-                        float distanceSpeedValue = mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(enemyForamtion.QuerySystem.MedianPosition.AsVec2) / enemyForamtion.QuerySystem.MovementSpeedMaximum;
-                        //if (distanceSpeedValue <= 6f)
-                        //{
-                        //    mainInfantry.FiringOrder = FiringOrder.FiringOrderHoldYourFire;
-                        //}
-                        return (distanceSpeedValue <= (battleJoinRange + (hasBattleBeenJoined ? 5f : 0f)));
+                        float distance = mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(enemyForamtion.QuerySystem.MedianPosition.AsVec2);
+                        return (distance <= (battleJoinRange + (hasBattleBeenJoined ? 5f : 0f)));
                     }
                 }
-                    
+
             }
             return true;
         }
@@ -69,7 +59,7 @@ namespace RealisticBattleAiModule
                 formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
                     bool ismountedSkrimisher = false;
-                    if(ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
+                    if (ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
                     {
                         for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                         {
@@ -96,7 +86,7 @@ namespace RealisticBattleAiModule
                     return true;
                 }
             }
-                return false;
+            return false;
         }
 
         public static bool CheckIfTwoHandedPolearmInfantry(Agent agent)
@@ -134,16 +124,17 @@ namespace RealisticBattleAiModule
         {
             int tier = 10;
             EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
-            if (agent != null){
+            if (agent != null)
+            {
                 if (agent.MountAgent != null)
                 {
                     if (agent.SpawnEquipment != null)
                     {
                         if (equipmentElement.Item != null)
                         {
-                            if (Game.Current.BasicModels.ItemValueModel != null)
+                            if (equipmentElement.Item.Effectiveness < 50f)
                             {
-                                    tier = (int)equipmentElement.Item.Tier;
+                                tier = (int)1;
                             }
                         }
                     }
@@ -151,6 +142,28 @@ namespace RealisticBattleAiModule
             }
             return tier;
         }
+
+        public static Agent GetCorrectTarget(Agent agent)
+        {
+            List<Formation> formations;
+            if (agent != null)
+            {
+                Formation formation = agent.Formation;
+                if (formation != null)
+                {
+                    if ((formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && (formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget))
+                    {
+                        formations = RBMAI.Utilities.FindSignificantFormations(formation);
+                        if (formations.Count > 0)
+                        {
+                            return RBMAI.Utilities.NearestAgentFromMultipleFormations(agent.Position.AsVec2, formations);
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
 
         public static Agent NearestAgentFromFormation(Vec2 unitPosition, Formation targetFormation)
         {
@@ -172,15 +185,30 @@ namespace RealisticBattleAiModule
         {
             Agent targetAgent = null;
             float distance = 10000f;
-            foreach(Formation formation in formations.ToList())
+            foreach (Formation formation in formations.ToList())
             {
                 formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
-                    float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
-                    if (newDist < distance)
+                    if (agent.IsAIControlled)
                     {
-                        targetAgent = agent;
-                        distance = newDist;
+                        if (!agent.IsRunningAway)
+                        {
+                            float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
+                            if (newDist < distance)
+                            {
+                                targetAgent = agent;
+                                distance = newDist;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
+                            if (newDist < distance)
+                            {
+                                targetAgent = agent;
+                                distance = newDist;
+                            }
                     }
                 });
             }
@@ -213,11 +241,76 @@ namespace RealisticBattleAiModule
             return targetAgent;
         }
 
+        public static float RatioOfCrossbowmen(Formation formation)
+        {
+            float ratio = 0f;
+            int crossCount = 0;
+            if (formation != null)
+            {
+                formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+                {
+                    bool isCrossbowmen = false;
+                    for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                    {
+                        if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
+                        {
+                            if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Crossbow)
+                            {
+                                isCrossbowmen = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (isCrossbowmen)
+                    {
+                        crossCount++;
+                    }
+                });
+                ratio = (float)crossCount / (float)formation.CountOfUnits;
+                return ratio;
+            }
+            return ratio;
+        }
+
+        public static bool IsFormationShooting(Formation formation, float desiredRatio = 0.3f, float lastAttackTimeTreshold = 10f)
+        {
+            float ratio = 0f;
+            int countOfShooting = 0;
+            if (formation != null && Mission.Current != null)
+            {
+                float ratioOfCrossbowmen;
+                if (RBMConfig.RBMConfig.rbmCombatEnabled)
+                {
+                    ratioOfCrossbowmen = RatioOfCrossbowmen(formation);
+                }
+                else
+                {
+                    ratioOfCrossbowmen = 0f;
+                }
+                formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+                {
+                    //float currentTime = agent.Mission.CurrentTime;
+                    float currentTime = MBCommon.GetTotalMissionTime();
+                    if (agent.LastRangedAttackTime > 0f && currentTime > agent.LastRangedAttackTime && (currentTime - agent.LastRangedAttackTime) < (lastAttackTimeTreshold + (20f * ratioOfCrossbowmen)))
+                    {
+                        countOfShooting++;
+                    }
+                    ratio = (float)countOfShooting / (float)formation.CountOfUnits;
+
+                });
+                if (ratio > desiredRatio)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static bool FormationActiveSkirmishersRatio(Formation formation, float desiredRatio)
         {
             float ratio = 0f;
             int countOfSkirmishers = 0;
-            if(formation != null)
+            if (formation != null && Mission.Current != null)
             {
                 formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
@@ -228,8 +321,9 @@ namespace RealisticBattleAiModule
                     //}
                     bool isActiveSkrimisher = false;
                     float countedUnits = 0f;
-                    float currentTime = Mission.Current.CurrentTime;
-                    if (currentTime - agent.LastRangedAttackTime < 7f && ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
+                    //float currentTime = Mission.Current.CurrentTime;
+                    float currentTime = MBCommon.GetTotalMissionTime();
+                    if (agent.LastRangedAttackTime > 0f && currentTime - agent.LastRangedAttackTime < 9f && currentTime > agent.LastRangedAttackTime && ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
                     {
                         for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                         {
@@ -249,7 +343,7 @@ namespace RealisticBattleAiModule
                     }
                     countedUnits++;
                     ratio = (float)countOfSkirmishers / (float)formation.CountOfUnits;
-                    
+
                 });
                 if (ratio > desiredRatio)
                 {
@@ -261,7 +355,8 @@ namespace RealisticBattleAiModule
 
         public static bool FormationFightingInMelee(Formation formation, float desiredRatio)
         {
-            float currentTime = Mission.Current.CurrentTime;
+            //float currentTime = Mission.Current.CurrentTime;
+            float currentTime = MBCommon.GetTotalMissionTime();
             float countedUnits = 0;
             float ratio = 0f;
             float countOfUnitsFightingInMelee = 0;
@@ -271,7 +366,7 @@ namespace RealisticBattleAiModule
                 {
                     float lastMeleeAttackTime = agent.LastMeleeAttackTime;
                     float lastMeleeHitTime = agent.LastMeleeHitTime;
-                    if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
+                    if ((currentTime - lastMeleeAttackTime < 6f) || (currentTime - lastMeleeHitTime < 6f))
                     {
                         countOfUnitsFightingInMelee++;
                     }
@@ -305,7 +400,7 @@ namespace RealisticBattleAiModule
                             {
                                 if (formation != null && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
                                 {
-                                     formations.Add(enemyFormation);
+                                    formations.Add(enemyFormation);
                                 }
                                 if (formation != null && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
                                 {
@@ -357,7 +452,7 @@ namespace RealisticBattleAiModule
                     {
                         if (withSide)
                         {
-                            if(formation.AI.Side != enemyFormation.AI.Side)
+                            if (formation.AI.Side != enemyFormation.AI.Side)
                             {
                                 continue;
                             }
@@ -371,7 +466,7 @@ namespace RealisticBattleAiModule
                                 dist = newDist;
                             }
 
-                            float newUnitCountRatio = (enemyFormation.CountOfUnits * unitCountModifier) / formation.CountOfUnits;
+                            float newUnitCountRatio = ((float)enemyFormation.CountOfUnits * unitCountModifier) / (float)formation.CountOfUnits;
                             if (unitCountMatters)
                             {
                                 if (newUnitCountRatio > significantTreshold)
@@ -389,7 +484,7 @@ namespace RealisticBattleAiModule
                                 dist = newDist;
                             }
 
-                            float newUnitCountRatio = (enemyFormation.CountOfUnits * unitCountModifier) / formation.CountOfUnits;
+                            float newUnitCountRatio = ((float)enemyFormation.CountOfUnits * unitCountModifier) / (float)formation.CountOfUnits;
                             if (unitCountMatters)
                             {
                                 if (newUnitCountRatio > significantTreshold)
@@ -457,14 +552,31 @@ namespace RealisticBattleAiModule
                         }
 
                     }
+                    if (significantEnemy == null)
+                    {
+                        dist = 10000f;
+                        float unitCountRatio = 0f;
+                        foreach (Formation enemyFormation in allEnemyFormations)
+                        {
+                            float newUnitCountRatio = (float)(enemyFormation.CountOfUnits) / (float)formation.CountOfUnits;
+                            float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                            if (newDist < dist * newUnitCountRatio * 1.5f)
+                            {
+                                significantEnemy = enemyFormation;
+                                unitCountRatio = newUnitCountRatio;
+                                dist = newDist;
+                            }
+                        }
+                    }
                 }
             }
 
             return significantEnemy;
         }
 
-        public static Formation FindSignificantEnemy(Formation formation, bool includeInfantry, bool includeRanged, bool includeCavalry, bool includeMountedSkirmishers, bool includeHorseArchers, bool unitCountMatters = false, float unitCountModifier = 1f)
+        public static Formation FindSignificantEnemy(Formation formation, bool includeInfantry, bool includeRanged, bool includeCavalry, bool includeMountedSkirmishers, bool includeHorseArchers, bool unitCountMatters = true)
         {
+            unitCountMatters = true;
             Formation significantEnemy = null;
             List<Formation> significantFormations = new List<Formation>();
             float dist = 10000f;
@@ -479,7 +591,6 @@ namespace RealisticBattleAiModule
                     {
                         if (team.IsEnemyOf(formation.Team))
                         {
-
                             foreach (Formation enemyFormation in team.Formations.ToList())
                             {
                                 allEnemyFormations.Add(enemyFormation);
@@ -497,56 +608,44 @@ namespace RealisticBattleAiModule
                     {
                         if (formation != null && includeInfantry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
                         {
-                            float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
-                            if (newDist < dist)
-                            {
-                                significantEnemy = enemyFormation;
-                                dist = newDist;
-                            }
+                            //float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                            //if (newDist < dist)
+                            //{
+                            //    significantEnemy = enemyFormation;
+                            //    dist = newDist;
+                            //}
 
-                            float newUnitCountRatio = (enemyFormation.CountOfUnits * unitCountModifier) / formation.CountOfUnits;
                             if (unitCountMatters)
                             {
-                                if (newUnitCountRatio > significantTreshold)
-                                {
-                                    significantFormations.Add(enemyFormation);
-                                }
+                                significantFormations.Add(enemyFormation);
                             }
                         }
                         if (formation != null && includeRanged && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
                         {
-                            float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
-                            if (newDist < dist)
-                            {
-                                significantEnemy = enemyFormation;
-                                dist = newDist;
-                            }
+                            //float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                            //if (newDist < dist)
+                            //{
+                            //    significantEnemy = enemyFormation;
+                            //    dist = newDist;
+                            //}
 
-                            float newUnitCountRatio = (enemyFormation.CountOfUnits * unitCountModifier) / formation.CountOfUnits;
                             if (unitCountMatters)
                             {
-                                if (newUnitCountRatio > significantTreshold)
-                                {
-                                    significantFormations.Add(enemyFormation);
-                                }
+                                significantFormations.Add(enemyFormation);
                             }
                         }
                         if (formation != null && includeCavalry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsCavalryFormation && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
                         {
-                            float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
-                            if (newDist < dist)
-                            {
-                                significantEnemy = enemyFormation;
-                                dist = newDist;
-                            }
+                            //float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                            //if (newDist < dist)
+                            //{
+                            //    significantEnemy = enemyFormation;
+                            //    dist = newDist;
+                            //}
 
-                            float newUnitCountRatio = (enemyFormation.CountOfUnits * unitCountModifier) / formation.CountOfUnits;
                             if (unitCountMatters)
                             {
-                                if (newUnitCountRatio > significantTreshold)
-                                {
-                                    significantFormations.Add(enemyFormation);
-                                }
+                                significantFormations.Add(enemyFormation);
                             }
                         }
                         //if (formation != null && includeMountedSkirmishers && enemyFormation.CountOfUnits > 0 && CheckIfMountedSkirmishFormation(enemyFormation))
@@ -558,58 +657,150 @@ namespace RealisticBattleAiModule
                         //        dist = newDist;
                         //    }
                         //}
-                        //if (formation != null && includeHorseArchers && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedCavalryFormation)
-                        //{
-                        //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
-                        //    if (newDist < dist)
-                        //    {
-                        //        significantEnemy = enemyFormation;
-                        //        dist = newDist;
-                        //    }
-                        //}
+                        if (formation != null && includeHorseArchers && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedCavalryFormation)
+                        {
+                            //float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                            //if (newDist < dist)
+                            //{
+                            //    significantEnemy = enemyFormation;
+                            //    dist = newDist;
+                            //}
+
+                            if (unitCountMatters)
+                            {
+                                significantFormations.Add(enemyFormation);
+                            }
                         }
+                    }
 
                     if (unitCountMatters)
                     {
                         if (significantFormations.Count > 0)
                         {
-                            dist = 10000f;
+                            //float unitCount = 0;
+                            float formationWeight = 10000f;
                             foreach (Formation significantFormation in significantFormations)
                             {
-                                float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(significantFormation.QuerySystem.MedianPosition.AsVec2);
-                                if (newDist < dist)
+                                bool isMain = false;
+                                if (significantFormation.AI != null)
+                                {
+                                    isMain = significantFormation.AI.IsMainFormation;
+                                }
+                                float unitCount = (float)formation.CountOfUnits;
+                                float distance = formation.QuerySystem.MedianPosition.AsVec2.Distance(significantFormation.QuerySystem.MedianPosition.AsVec2);
+                                float newFormationWeight = (distance / unitCount) / (isMain ? 1.5f : 1f);
+                                
+                                if (newFormationWeight < formationWeight)
                                 {
                                     significantEnemy = significantFormation;
-                                    dist = newDist;
+                                    formationWeight = newFormationWeight;
                                 }
                             }
                         }
                         else
                         {
+                            float unitCountRatio = 0f;
                             dist = 10000f;
                             foreach (Formation enemyFormation in allEnemyFormations)
                             {
-                                float newUnitCountRatio = (enemyFormation.CountOfUnits * unitCountModifier) / formation.CountOfUnits;
+                                float newUnitCountRatio = (float)(enemyFormation.CountOfUnits) / (float)formation.CountOfUnits;
                                 float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
-                                if (newDist < dist * newUnitCountRatio)
+                                if (formation != null && includeInfantry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
+                                {
+                                    if (newDist < dist * newUnitCountRatio * 1.5f)
+                                    {
+                                        significantEnemy = enemyFormation;
+                                        unitCountRatio = newUnitCountRatio;
+                                        dist = newDist;
+                                    }
+                                }
+                                if (formation != null && includeRanged && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
+                                {
+                                    if (newDist < dist * newUnitCountRatio * 1.5f)
+                                    {
+                                        significantEnemy = enemyFormation;
+                                        dist = newDist;
+                                    }
+                                }
+                                if (formation != null && includeCavalry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsCavalryFormation && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
+                                {
+                                    if (newDist < dist * newUnitCountRatio * 1.5f)
+                                    {
+                                        significantEnemy = enemyFormation;
+                                        dist = newDist;
+                                    }
+                                }
+                                if (formation != null && includeHorseArchers && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedCavalryFormation)
+                                {
+                                    if (newDist < dist * newUnitCountRatio * 1.5f)
+                                    {
+                                        significantEnemy = enemyFormation;
+                                        dist = newDist;
+                                    }
+                                }
+                                
+                            }
+                        }
+                        if(significantEnemy == null)
+                        {
+                            dist = 10000f;
+                            float unitCountRatio = 0f;
+                            foreach (Formation enemyFormation in allEnemyFormations)
+                            {
+                                float newUnitCountRatio = (float)(enemyFormation.CountOfUnits) / (float)formation.CountOfUnits;
+                                float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                                if (newDist < dist * newUnitCountRatio * 1.5f)
                                 {
                                     significantEnemy = enemyFormation;
+                                    unitCountRatio = newUnitCountRatio;
                                     dist = newDist;
                                 }
                             }
                         }
-
                     }
                 }
             }
-
             return significantEnemy;
         }
-
-        public static Formation FindSignificantAlly(Formation formation, bool includeInfantry, bool includeRanged, bool includeCavalry, bool includeMountedSkirmishers, bool includeHorseArchers)
+        
+        public static bool CheckIfOnlyCavRemaining(Formation formation)
         {
-            Formation significantEnemy = null;
+            List<Formation> allEnemyFormations = new List<Formation>();
+            bool result = true;
+            if (formation != null)
+            {
+                if (formation.QuerySystem.ClosestEnemyFormation != null)
+                {
+                    foreach (Team team in Mission.Current.Teams.ToList())
+                    {
+                        if (team.IsEnemyOf(formation.Team))
+                        {
+                            foreach (Formation enemyFormation in team.Formations.ToList())
+                            {
+                                allEnemyFormations.Add(enemyFormation);
+                            }
+                        }
+                    }
+
+                    foreach (Formation enemyFormation in allEnemyFormations.ToList())
+                    {
+                        if(!enemyFormation.QuerySystem.IsCavalryFormation && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
+                        {
+                            result = false;
+                        }
+                    }
+
+                }
+            }
+
+            return result;
+        }
+
+        public static Formation FindSignificantAlly(Formation formation, bool includeInfantry, bool includeRanged, bool includeCavalry, bool includeMountedSkirmishers, bool includeHorseArchers, bool unitCountMatters = false)
+        {
+            Formation significantAlly = null;
             float dist = 10000f;
+            List<Formation> significantFormations = new List<Formation>();
             if (formation != null)
             {
                 if (formation.QuerySystem.ClosestEnemyFormation != null)
@@ -620,83 +811,134 @@ namespace RealisticBattleAiModule
                         {
                             if (team.Formations.ToList().Count == 1)
                             {
-                                significantEnemy = team.Formations.ToList()[0];
-                                return significantEnemy;
+                                significantAlly = team.Formations.ToList()[0];
+                                return significantAlly;
                             }
-                            foreach (Formation enemyFormation in team.Formations.ToList())
+                            if (unitCountMatters)
                             {
-                                if (formation != null && includeInfantry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
+                                int unitCount = -1;
+                                foreach (Formation allyFormation in team.Formations.ToList())
                                 {
-                                    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
-                                    if (newDist < dist)
+                                    if (formation != null && includeInfantry && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsInfantryFormation)
                                     {
-                                        significantEnemy = enemyFormation;
-                                        dist = newDist;
+                                        if(allyFormation.CountOfUnits > unitCount)
+                                        {
+                                            significantAlly = allyFormation;
+                                            unitCount = allyFormation.CountOfUnits;
+                                        }
+                                    }
+                                    if (formation != null && includeRanged && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsRangedFormation)
+                                    {
+                                        if (allyFormation.CountOfUnits > unitCount)
+                                        {
+                                            significantAlly = allyFormation;
+                                            unitCount = allyFormation.CountOfUnits;
+                                        }
+                                    }
+                                    if (formation != null && includeCavalry && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsCavalryFormation && !allyFormation.QuerySystem.IsRangedCavalryFormation)
+                                    {
+                                        if (allyFormation.CountOfUnits > unitCount)
+                                        {
+                                            significantAlly = allyFormation;
+                                            unitCount = allyFormation.CountOfUnits;
+                                        }
                                     }
                                 }
-                                if (formation != null && includeRanged && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
+                            }
+                            else
+                            {
+                                foreach (Formation allyFormation in team.Formations.ToList())
                                 {
-                                    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
-                                    if (newDist < dist)
+                                    if (formation != null && includeInfantry && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsInfantryFormation)
                                     {
-                                        significantEnemy = enemyFormation;
-                                        dist = newDist;
+                                        float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(allyFormation.QuerySystem.MedianPosition.AsVec2);
+                                        if (newDist < dist)
+                                        {
+                                            significantAlly = allyFormation;
+                                            dist = newDist;
+                                        }
                                     }
-                                }
-                                if (formation != null && includeCavalry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsCavalryFormation && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
-                                {
-                                    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
-                                    if (newDist < dist)
+                                    if (formation != null && includeRanged && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsRangedFormation)
                                     {
-                                        significantEnemy = enemyFormation;
-                                        dist = newDist;
+                                        float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(allyFormation.QuerySystem.MedianPosition.AsVec2);
+                                        if (newDist < dist)
+                                        {
+                                            significantAlly = allyFormation;
+                                            dist = newDist;
+                                        }
                                     }
+                                    if (formation != null && includeCavalry && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsCavalryFormation && !allyFormation.QuerySystem.IsRangedCavalryFormation)
+                                    {
+                                        float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(allyFormation.QuerySystem.MedianPosition.AsVec2);
+                                        if (newDist < dist)
+                                        {
+                                            significantAlly = allyFormation;
+                                            dist = newDist;
+                                        }
+                                    }
+                                    //if (formation != null && includeMountedSkirmishers && allyFormation.CountOfUnits > 0 && CheckIfMountedSkirmishFormation(allyFormation))
+                                    //{
+                                    //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(allyFormation.QuerySystem.MedianPosition.AsVec2);
+                                    //    if (newDist < dist)
+                                    //    {
+                                    //        significantEnemy = allyFormation;
+                                    //        dist = newDist;
+                                    //    }
+                                    //}
+                                    //if (formation != null && includeHorseArchers && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsRangedCavalryFormation)
+                                    //{
+                                    //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(allyFormation.QuerySystem.MedianPosition.AsVec2);
+                                    //    if (newDist < dist)
+                                    //    {
+                                    //        significantEnemy = allyFormation;
+                                    //        dist = newDist;
+                                    //    }
+                                    //}
                                 }
-                                //if (formation != null && includeMountedSkirmishers && enemyFormation.CountOfUnits > 0 && CheckIfMountedSkirmishFormation(enemyFormation))
-                                //{
-                                //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
-                                //    if (newDist < dist)
-                                //    {
-                                //        significantEnemy = enemyFormation;
-                                //        dist = newDist;
-                                //    }
-                                //}
-                                //if (formation != null && includeHorseArchers && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedCavalryFormation)
-                                //{
-                                //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
-                                //    if (newDist < dist)
-                                //    {
-                                //        significantEnemy = enemyFormation;
-                                //        dist = newDist;
-                                //    }
-                                //}
                             }
                         }
                     }
                 }
             }
-            return significantEnemy;
+            return significantAlly;
         }
 
         public static float GetCombatAIDifficultyMultiplier()
         {
             MissionState missionState = Game.Current.GameStateManager.ActiveState as MissionState;
-            if(missionState != null)
+            if (missionState != null)
             {
-                if (missionState.MissionName.Equals("EnhancedBattleTestFieldBattle") || missionState.MissionName.Equals("EnhancedBattleTestSiegeBattle"))
+                if (!RBMConfig.RBMConfig.vanillaCombatAi)
                 {
-                    return 1.0f;
+                    if (missionState.MissionName.Equals("EnhancedBattleTestFieldBattle") || missionState.MissionName.Equals("EnhancedBattleTestSiegeBattle"))
+                    {
+                        return 1.0f;
+                    }
+                    switch (CampaignOptions.CombatAIDifficulty)
+                    {
+                        case CampaignOptions.Difficulty.VeryEasy:
+                            return 0.70f;
+                        case CampaignOptions.Difficulty.Easy:
+                            return 0.85f;
+                        case CampaignOptions.Difficulty.Realistic:
+                            return 1.0f;
+                        default:
+                            return 1.0f;
+                    }
                 }
-                switch (CampaignOptions.CombatAIDifficulty)
+                else
                 {
-                    case CampaignOptions.Difficulty.VeryEasy:
-                        return 0.70f;
-                    case CampaignOptions.Difficulty.Easy:
-                        return 0.85f;
-                    case CampaignOptions.Difficulty.Realistic:
-                        return 1.0f;
-                    default:
-                        return 1.0f;
+                    switch (CampaignOptions.CombatAIDifficulty)
+                    {
+                        case CampaignOptions.Difficulty.VeryEasy:
+                            return 0.1f;
+                        case CampaignOptions.Difficulty.Easy:
+                            return 0.32f;
+                        case CampaignOptions.Difficulty.Realistic:
+                            return 0.96f;
+                        default:
+                            return 0.5f;
+                    }
                 }
             }
             else
@@ -751,7 +993,7 @@ namespace RealisticBattleAiModule
         public static bool CheckIfSkirmisherAgent(Agent agent, float ammoAmout = 0)
         {
             CharacterObject characterObject = agent.Character as CharacterObject;
-            if(characterObject != null && characterObject.Tier > 3)
+            if (characterObject != null && characterObject.Tier > 3)
             {
                 return false;
             }
@@ -782,7 +1024,7 @@ namespace RealisticBattleAiModule
                     }
                     foreach (WeaponComponentData weapon2 in weapon.Item.Weapons)
                     {
-                        string weaponUsageId = weapon2.WeaponUsageId;
+                        string weaponUsageId = weapon2.WeaponDescriptionId;
                         if (weaponUsageId != null && weaponUsageId.IndexOf("bracing", StringComparison.OrdinalIgnoreCase) >= 0)
                         {
                             return true;
@@ -793,6 +1035,144 @@ namespace RealisticBattleAiModule
             }
             return false;
         }
+
+        public static bool ShouldFormationCopyShieldWall(Formation formation, float haveShieldThreshold = 0.6f)
+        {
+            int countAll = 0;
+            int countHasShield = 0;
+
+            if(formation.Team.HasTeamAi)
+            {
+                FieldInfo field = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
+                field.DeclaringType.GetField("_currentTactic");
+                TacticComponent currentTactic = (TacticComponent)field.GetValue(formation.Team.TeamAI);
+
+                if(currentTactic != null && currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry) || currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry))
+                {
+                    return false;
+                }
+            }
+            formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+            {
+                if (agent != null)
+                {
+                    if (agent.HasShieldCached)
+                    {
+                        countHasShield++;
+                    }
+                    countAll++;
+                }
+            });
+
+            if(countHasShield/countAll >= haveShieldThreshold)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static IEnumerable<Agent> CountSoldiersInPolygon(Formation formation, Vec2[] polygon)
+        {
+            List<Agent> enemyAgents = new List<Agent>();
+            int result = 0;
+            foreach (Team team in Mission.Current.Teams.ToList())
+            {
+                if (team.IsEnemyOf(formation.Team))
+                {
+                    foreach (Formation enemyFormation in team.Formations.ToList())
+                    {
+                        formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+                        {
+                            if (IsPointInPolygon(polygon, agent.Position.AsVec2))
+                            {
+                                result++;
+                                enemyAgents.Add(agent);
+                            }
+                        });
+                    }
+                }
+            }
+            return enemyAgents;
+        }
+
+        public static bool IsPointInPolygon(Vec2[] polygon, Vec2 testPoint)
+        {
+            //bool result = false;
+            //int j = polygon.Count() - 1;
+            //for (int i = 0; i < polygon.Count(); i++)
+            //{
+            //    if (polygon[i].Y < testPoint.Y && polygon[j].Y >= testPoint.Y || polygon[j].Y < testPoint.Y && polygon[i].Y >= testPoint.Y)
+            //    {
+            //        if (polygon[i].X + (testPoint.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) * (polygon[j].X - polygon[i].X) < testPoint.X)
+            //        {
+            //            result = !result;
+            //        }
+            //    }
+            //    j = i;
+            //}
+            //return result;
+            Vec2 p1, p2;
+            bool inside = false;
+
+            if (polygon.Length < 3)
+            {
+                return inside;
+            }
+
+            var oldPoint = new Vec2(
+                polygon[polygon.Length - 1].X, polygon[polygon.Length - 1].Y);
+
+            for (int i = 0; i < polygon.Length; i++)
+            {
+                var newPoint = new Vec2(polygon[i].X, polygon[i].Y);
+
+                if (newPoint.X > oldPoint.X)
+                {
+                    p1 = oldPoint;
+                    p2 = newPoint;
+                }
+                else
+                {
+                    p1 = newPoint;
+                    p2 = oldPoint;
+                }
+
+                if ((newPoint.X < testPoint.X) == (testPoint.X <= oldPoint.X)
+                    && (testPoint.Y - (long)p1.Y) * (p2.X - p1.X)
+                    < (p2.Y - (long)p1.Y) * (testPoint.X - p1.X))
+                {
+                    inside = !inside;
+                }
+
+                oldPoint = newPoint;
+            }
+
+            return inside;
+        }
+
+        public static float GetPowerOfAgentsSum(IEnumerable<Agent> agents)
+        {
+            float result = 0f;
+            foreach(Agent agent in agents)
+            {
+                result += agent.CharacterPowerCached;
+            }
+            return result;
+        }
+
+        public static string GetSiegeArcherPointsPath()
+        {
+            return BasePath.Name + "Modules/RBM/ModuleData/scene_positions/";
+        }
+
+        private static float GetPowerOriginal(int tier, bool isHero = false, bool isMounted = false)
+        {
+            return (float)((2 + tier) * (8 + tier)) * 0.02f * (isHero ? 1.5f : (isMounted ? 1.2f : 1f));
+        }
+
     }
 }
 
