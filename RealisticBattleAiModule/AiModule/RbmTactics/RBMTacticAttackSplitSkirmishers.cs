@@ -157,8 +157,11 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 					}
 					j++;
 				}
-                this.team.TriggerOnFormationsChanged(Formations.ToList()[skirmIndex]);
-                this.team.TriggerOnFormationsChanged(Formations.ToList()[0]);
+				if(Formations.ElementAtOrDefault(skirmIndex) != null)
+				{
+                    this.team.TriggerOnFormationsChanged(Formations.ToList()[skirmIndex]);
+                    this.team.TriggerOnFormationsChanged(Formations.ToList()[0]);
+                }
             }
 			
 		}
@@ -415,23 +418,67 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 	protected override float GetTacticWeight()
 	{
 		float skirmisherCount = 0;
-		float infCount = 0;
-		foreach(Agent agent in team.ActiveAgents.ToList())
+
+        float allyInfatryPower = 0f;
+        float allyCavalryPower = 0f;
+        float enemyInfatryPower = 0f;
+        float enemyArcherPower = 0f;
+        int allyInfCount = 0;
+
+        foreach (Team team in Mission.Current.Teams.ToList())
+        {
+            if (team.IsEnemyOf(base.team))
+            {
+                foreach (Formation formation in team.Formations.ToList())
+                {
+                    if (formation.QuerySystem.IsInfantryFormation)
+                    {
+                        enemyInfatryPower += formation.QuerySystem.FormationPower;
+                    }
+                    //if (formation.QuerySystem.IsRangedFormation)
+                    //{
+                    //    enemyArcherPower += formation.QuerySystem.FormationPower;
+                    //}
+                }
+            }
+        }
+
+        foreach (Team team in Mission.Current.Teams.ToList())
+        {
+            if (!team.IsEnemyOf(base.team))
+            {
+                foreach (Formation formation in team.Formations.ToList())
+                {
+                    if (formation.QuerySystem.IsInfantryFormation)
+                    {
+                        allyInfatryPower += formation.QuerySystem.FormationPower;
+                        allyInfCount += formation.CountOfUnits;
+                    }
+                    //if (formation.QuerySystem.IsCavalryFormation)
+                    //{
+                    //    allyCavalryPower += formation.QuerySystem.FormationPower;
+                    //}
+                }
+            }
+        }
+
+        if (allyInfatryPower  < enemyInfatryPower * 1.25f || allyInfCount < 60)
+        {
+            return 0.01f;
+        }
+
+        foreach (Agent agent in team.ActiveAgents.ToList())
         {
             if (agent.Formation != null && agent.Formation.QuerySystem.IsInfantryFormation) {
                 if (RBMAI.Utilities.CheckIfSkirmisherAgent(agent, 2))
                 {
 					skirmisherCount++;
 				}
-				infCount++;
 			}
         }
-		if(infCount < 60)
-        {
-			return 0.01f;
-		}
-		float num = team.QuerySystem.RangedCavalryRatio * (float)team.QuerySystem.MemberCount;
-		float skirmisherRatio = skirmisherCount / infCount;
+
+        float num = team.QuerySystem.RangedCavalryRatio * (float)team.QuerySystem.MemberCount;
+		float skirmisherRatio = skirmisherCount / allyInfCount;
 		if(team.QuerySystem.InfantryRatio > 0.45f)
         {
 			return team.QuerySystem.InfantryRatio * skirmisherRatio * 1.7f * (float)team.QuerySystem.MemberCount / ((float)team.QuerySystem.MemberCount - num) * (float)Math.Sqrt(team.QuerySystem.TotalPowerRatio);

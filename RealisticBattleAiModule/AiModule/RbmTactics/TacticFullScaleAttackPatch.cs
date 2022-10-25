@@ -104,6 +104,10 @@ namespace RBMAI.AiModule.RbmTactics
                     __result = 100f;
                 }
             }
+            if(float.IsNaN(__result))
+            {
+                __result = 0.01f;
+            }
         }
 
         [HarmonyPostfix]

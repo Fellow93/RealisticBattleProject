@@ -1,14 +1,14 @@
 ﻿<Module>
   <Name value="(RBM) Realistic Battle Mod"/>
   <Id value="RBM"/>
-  <Version value="v3.0.3"/>
+  <Version value="v3.1.1"/>
   <SingleplayerModule value="true"/>
   <MultiplayerModule value="false"/>
   <DependedModules>
-    <DependedModule Id="Native" DependentVersion="e1.8.0" Optional="false"/>
-    <DependedModule Id="SandBoxCore" DependentVersion="e1.8.0" Optional="false"/>
-    <DependedModule Id="Sandbox" DependentVersion="e1.8.0" Optional="false"/>
-    <DependedModule Id="StoryMode" DependentVersion="e1.8.0" Optional="false"/>
+    <DependedModule Id="Native" DependentVersion="e1.9.0" Optional="false"/>
+    <DependedModule Id="SandBoxCore" DependentVersion="e1.9.0" Optional="false"/>
+    <DependedModule Id="Sandbox" DependentVersion="e1.9.0" Optional="false"/>
+    <DependedModule Id="StoryMode" DependentVersion="e1.9.0" Optional="false"/>
   </DependedModules>
   <SubModules>
     <SubModule>
@@ -111,22 +111,6 @@
 		</IncludedGameTypes>
 	</XmlNode>
 	<XmlNode>
-		<XmlName id="ItemModifiers" path="RBMCombat_item_modifiers"/>
-		<IncludedGameTypes>
-			<Gametype value = "Campaign"/>
-			<Gametype value = "CampaignStoryMode"/>
-			<GameType value = "CustomGame"/>
-		</IncludedGameTypes>
-	</XmlNode>
-	<XmlNode>
-		<XmlName id="ItemModifierGroups" path="RBMCombat_item_modifiers_groups"/>
-		<IncludedGameTypes>
-			<Gametype value = "Campaign"/>
-			<Gametype value = "CampaignStoryMode"/>
-			<GameType value = "CustomGame"/>
-		</IncludedGameTypes>
-	</XmlNode>
-	<XmlNode>
 		<XmlName id="CraftingPieces" path="RBMCombat_couched_lances"/>
 		<IncludedGameTypes>
 			<Gametype value = "Campaign"/>
@@ -215,6 +199,14 @@
 	</XmlNode>
 	<XmlNode>                
 			<XmlName id="WeaponDescriptions" path="RBMCombat_weapon_descriptions"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="ItemModifiers" path="RBMCombat_item_modifiers"/>
 		<IncludedGameTypes>
 			<Gametype value = "Campaign"/>
 			<Gametype value = "CampaignStoryMode"/>

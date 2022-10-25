@@ -289,7 +289,8 @@ namespace RBMAI
                 }
                 formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
-                    float currentTime = Mission.Current.CurrentTime;
+                    //float currentTime = agent.Mission.CurrentTime;
+                    float currentTime = MBCommon.GetTotalMissionTime();
                     if (agent.LastRangedAttackTime > 0f && currentTime > agent.LastRangedAttackTime && (currentTime - agent.LastRangedAttackTime) < (lastAttackTimeTreshold + (20f * ratioOfCrossbowmen)))
                     {
                         countOfShooting++;
@@ -320,8 +321,9 @@ namespace RBMAI
                     //}
                     bool isActiveSkrimisher = false;
                     float countedUnits = 0f;
-                    float currentTime = Mission.Current.CurrentTime;
-                    if (agent.LastRangedAttackTime > 0f && currentTime - agent.LastRangedAttackTime < 9f && ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
+                    //float currentTime = Mission.Current.CurrentTime;
+                    float currentTime = MBCommon.GetTotalMissionTime();
+                    if (agent.LastRangedAttackTime > 0f && currentTime - agent.LastRangedAttackTime < 9f && currentTime > agent.LastRangedAttackTime && ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
                     {
                         for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                         {
@@ -353,7 +355,8 @@ namespace RBMAI
 
         public static bool FormationFightingInMelee(Formation formation, float desiredRatio)
         {
-            float currentTime = Mission.Current.CurrentTime;
+            //float currentTime = Mission.Current.CurrentTime;
+            float currentTime = MBCommon.GetTotalMissionTime();
             float countedUnits = 0;
             float ratio = 0f;
             float countOfUnitsFightingInMelee = 0;
@@ -363,7 +366,7 @@ namespace RBMAI
                 {
                     float lastMeleeAttackTime = agent.LastMeleeAttackTime;
                     float lastMeleeHitTime = agent.LastMeleeHitTime;
-                    if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
+                    if ((currentTime - lastMeleeAttackTime < 6f) || (currentTime - lastMeleeHitTime < 6f))
                     {
                         countOfUnitsFightingInMelee++;
                     }
@@ -1163,6 +1166,11 @@ namespace RBMAI
         public static string GetSiegeArcherPointsPath()
         {
             return BasePath.Name + "Modules/RBM/ModuleData/scene_positions/";
+        }
+
+        private static float GetPowerOriginal(int tier, bool isHero = false, bool isMounted = false)
+        {
+            return (float)((2 + tier) * (8 + tier)) * 0.02f * (isHero ? 1.5f : (isMounted ? 1.2f : 1f));
         }
 
     }

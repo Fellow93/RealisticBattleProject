@@ -10,6 +10,7 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.MountAndBlade.ArrangementOrder;
+using static TaleWorlds.MountAndBlade.Mission;
 
 namespace RBMAI
 {
@@ -109,17 +110,22 @@ namespace RBMAI
                 agentDrivenProperties.AiUseShieldAgainstEnemyMissileProbability = 0.95f;
                 //agentDrivenProperties.AiFlyingMissileCheckRadius = 250f;
 
-                agentDrivenProperties.AiShooterError = 0.0001f;
+                agentDrivenProperties.AiShooterError = 0.001f;
 
-                //agentDrivenProperties.AiRangerLeadErrorMin = 0f;
-                //agentDrivenProperties.AiRangerLeadErrorMax = 0f;
+                agentDrivenProperties.AiRangerLeadErrorMin = 0.2f;
+                agentDrivenProperties.AiRangerLeadErrorMax = 0.3f;
 
-                if(equippedItem != null && equippedItem.RelevantSkill == DefaultSkills.Bow)
+                if (equippedItem != null && equippedItem.RelevantSkill == DefaultSkills.Bow)
                 {
                     if(agent.MountAgent != null)
                     {
-                        agentDrivenProperties.AiRangerVerticalErrorMultiplier = 0f;//horse archers
-                        agentDrivenProperties.AiRangerHorizontalErrorMultiplier = 0f;//horse archers
+                        //agentDrivenProperties.AiRangerVerticalErrorMultiplier = 0f;//horse archers
+                        //agentDrivenProperties.AiRangerHorizontalErrorMultiplier = 0f;//horse archers
+                        agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.025f - effectiveSkill * 0.0001f, 0.01f, 0.025f);//bow
+                        agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.025f - effectiveSkill * 0.0001f, 0.01f, 0.025f);//bow
+                        agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
+                        agentDrivenProperties.WeaponMaxUnsteadyAccuracyPenalty *= 0.5f;
+                        agentDrivenProperties.WeaponRotationalAccuracyPenaltyInRadians = 0.02f;
                     }
                     else
                     {
@@ -159,6 +165,8 @@ namespace RBMAI
                     agent.SetScriptedCombatFlags(agent.GetScriptedCombatFlags() | Agent.AISpecialCombatModeFlags.IgnoreAmmoLimitForRangeCalculation);
                     //agent.ResetAiWaitBeforeShootFactor();
                 }
+                agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, 1f);
+                //agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, 0f);
             }
         }
     }
@@ -222,8 +230,6 @@ namespace RBMAI
                     stat2.AddFactor(value);
                     stat3.AddFactor(value);
 
-                    agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.7f;
-                    agentDrivenProperties.WeaponMaxUnsteadyAccuracyPenalty *= 0.7f;
                 }
                 agentDrivenProperties.SwingSpeedMultiplier = stat.ResultNumber;
                 agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier = stat2.ResultNumber;
@@ -240,39 +246,154 @@ namespace RBMAI
     {
         static void Postfix(ref Agent.UsageDirection __result, Formation formation, Agent unit, ArrangementOrderEnum orderEnum)
         {
-            if (!formation.QuerySystem.IsCavalryFormation && !formation.QuerySystem.IsRangedCavalryFormation)
+            //if (!formation.QuerySystem.IsCavalryFormation && !formation.QuerySystem.IsRangedCavalryFormation)
+            //{
+            //    if(Mission.Current != null)
+            //    {
+            //        float currentTime = Mission.Current.CurrentTime;
+            //        if (currentTime - unit.LastRangedAttackTime < 7f)
+            //        {
+            //            __result = Agent.UsageDirection.None;
+            //            return;
+            //        }
+            //        switch (orderEnum)
+            //        {
+            //            case ArrangementOrderEnum.Line:
+            //            case ArrangementOrderEnum.Loose:
+            //                {
+            //                    float lastMeleeAttackTime = unit.LastMeleeAttackTime;
+            //                    float lastMeleeHitTime = unit.LastMeleeHitTime;
+            //                    float lastRangedHit = unit.LastRangedHitTime;
+            //                    if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
+            //                    {
+            //                        __result = Agent.UsageDirection.None;
+            //                        return;
+            //                    }
+            //                    if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && formation.QuerySystem.IsInfantryFormation && (((currentTime - lastRangedHit < 2f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.08f)))
+            //                    {
+            //                        __result = Agent.UsageDirection.DefendDown;
+            //                        return;
+            //                    }
+            //                    break;
+            //                }
+            //        }
+            //    }
+            //}
+            if (unit.IsDetachedFromFormation)
             {
-                if(Mission.Current != null)
-                {
-                    float currentTime = Mission.Current.CurrentTime;
-                    if (currentTime - unit.LastRangedAttackTime < 7f)
+                __result = Agent.UsageDirection.None;
+                return;
+            }
+            bool test = true;
+            switch (orderEnum)
+            {
+                case ArrangementOrderEnum.ShieldWall:
+                    if (unit.Formation.FiringOrder.OrderEnum != FiringOrder.RangedWeaponUsageOrderEnum.HoldYourFire)
                     {
-                        __result = Agent.UsageDirection.None;
+                        bool hasRanged = unit.Equipment.HasAnyWeaponWithFlags(WeaponFlags.HasString);
+                        bool hasTwoHanded = unit.Equipment.HasAnyWeaponWithFlags(WeaponFlags.NotUsableWithOneHand);
+                        if (hasRanged || hasTwoHanded)
+                        {
+                            test = false;
+                        }
+                    }
+                    if (test)
+                    {
+                        if (((IFormationUnit)unit).FormationRankIndex == 0)
+                        {
+                            __result = Agent.UsageDirection.DefendDown;
+                            return;
+                        }
+                        if (formation.Arrangement.GetNeighborUnitOfLeftSide(unit) == null)
+                        {
+                            __result = Agent.UsageDirection.DefendLeft;
+                            return;
+                        }
+                        if (formation.Arrangement.GetNeighborUnitOfRightSide(unit) == null)
+                        {
+                            __result = Agent.UsageDirection.DefendRight;
+                            return;
+                        }
+                        __result = Agent.UsageDirection.AttackEnd;
                         return;
                     }
-                    switch (orderEnum)
+                    __result = Agent.UsageDirection.None;
+                    return;
+                case ArrangementOrderEnum.Circle:
+                case ArrangementOrderEnum.Square:
+                    if (unit.Formation.FiringOrder.OrderEnum != FiringOrder.RangedWeaponUsageOrderEnum.HoldYourFire)
                     {
-                        case ArrangementOrderEnum.Line:
-                        case ArrangementOrderEnum.Loose:
-                            {
-                                float lastMeleeAttackTime = unit.LastMeleeAttackTime;
-                                float lastMeleeHitTime = unit.LastMeleeHitTime;
-                                float lastRangedHit = unit.LastRangedHitTime;
-                                if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
-                                {
-                                    __result = Agent.UsageDirection.None;
-                                    return;
-                                }
-                                if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && formation.QuerySystem.IsInfantryFormation && (((currentTime - lastRangedHit < 2f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.08f)))
-                                {
-                                    __result = Agent.UsageDirection.DefendDown;
-                                    return;
-                                }
-                                break;
-                            }
+                        bool hasRanged = unit.Equipment.HasAnyWeaponWithFlags(WeaponFlags.HasString);
+                        bool hasTwoHanded = unit.Equipment.HasAnyWeaponWithFlags(WeaponFlags.NotUsableWithOneHand);
+                        if (hasRanged || hasTwoHanded)
+                        {
+                            test = false;
+                        }
                     }
+                    if (test)
+                    {
+                        if (((IFormationUnit)unit).FormationRankIndex == 0)
+                        {
+                            __result = Agent.UsageDirection.DefendDown;
+                            return;
+                        }
+                        __result = Agent.UsageDirection.AttackEnd;
+                        return;
+                    }
+                    __result = Agent.UsageDirection.None;
+                    return;
+                default:
+                    __result = Agent.UsageDirection.None;
+                    return;
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Agent))]
+    [HarmonyPatch("UpdateLastAttackAndHitTimes")]
+    class UpdateLastAttackAndHitTimesFix
+    {
+
+        static bool Prefix(ref Agent __instance, Agent attackerAgent, bool isMissile)
+        {
+            PropertyInfo LastRangedHitTime = typeof(Agent).GetProperty("LastRangedHitTime");
+            LastRangedHitTime.DeclaringType.GetProperty("LastRangedHitTime");
+
+            PropertyInfo LastRangedAttackTime = typeof(Agent).GetProperty("LastRangedAttackTime");
+            LastRangedAttackTime.DeclaringType.GetProperty("LastRangedAttackTime");
+
+            PropertyInfo LastMeleeHitTime = typeof(Agent).GetProperty("LastMeleeHitTime");
+            LastMeleeHitTime.DeclaringType.GetProperty("LastMeleeHitTime");
+
+            PropertyInfo LastMeleeAttackTime = typeof(Agent).GetProperty("LastMeleeAttackTime");
+            LastMeleeAttackTime.DeclaringType.GetProperty("LastMeleeAttackTime");
+
+            float currentTime = MBCommon.GetTotalMissionTime();
+            if (isMissile)
+            {
+                //__instance.LastRangedHitTime = currentTime;
+                LastRangedHitTime.SetValue(__instance, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+            }
+            else
+            {
+                //LastMeleeHitTime = currentTime;
+                LastMeleeHitTime.SetValue(__instance, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+
+            }
+            if (attackerAgent != __instance && attackerAgent != null)
+            {
+                if (isMissile)
+                {
+                    //attackerAgent.LastRangedAttackTime = currentTime;
+                    LastRangedAttackTime.SetValue(attackerAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                }
+                else
+                {
+                    //attackerAgent.LastMeleeAttackTime = currentTime;
+                    LastMeleeAttackTime.SetValue(attackerAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                 }
             }
+            return false;
         }
     }
 

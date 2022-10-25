@@ -3,17 +3,14 @@ using Helpers;
 using SandBox.GameComponents;
 using StoryMode.GameComponents;
 using StoryMode.Missions;
-using System;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
-using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
@@ -109,7 +106,7 @@ namespace RBMCombat
                 {
                     shotDifficulty = 14.4f;
                 }
-                __result = MBMath.Lerp(0.5f, 2.5f, (shotDifficulty - 1f) / 13.4f);
+                __result = MBMath.Lerp(1.25f, 3.0f, (shotDifficulty - 1f) / 13.4f);
                 return false;
             }
         }
@@ -127,23 +124,18 @@ namespace RBMCombat
                     float attackerTroopPower = 0f;
                     if (party?.MapEvent != null)
                     {
-                        victimTroopPower = OverrideDefaultMilitaryPowerModel.GetTroopPowerBasedOnContextForXP(attackedTroop, party.MapEvent?.EventType ?? MapEvent.BattleTypes.None, party.Side, missionType == MissionTypeEnum.SimulationBattle);
-                        attackerTroopPower = OverrideDefaultMilitaryPowerModel.GetTroopPowerBasedOnContextForXP(attackerTroop, party.MapEvent?.EventType ?? MapEvent.BattleTypes.None, party.Side, missionType == MissionTypeEnum.SimulationBattle);
+                        victimTroopPower = OverrideDefaultMilitaryPowerModel.GetTroopPowerBasedOnContextForXPVictim(attackedTroop, party.MapEvent?.EventType ?? MapEvent.BattleTypes.None, party.Side, missionType == MissionTypeEnum.SimulationBattle);
+                        attackerTroopPower = OverrideDefaultMilitaryPowerModel.GetTroopPowerBasedOnContextForXPAttacker(attackerTroop, party.MapEvent?.EventType ?? MapEvent.BattleTypes.None, party.Side, missionType == MissionTypeEnum.SimulationBattle);
                     }
                     else
                     {
-                        victimTroopPower = OverrideDefaultMilitaryPowerModel.GetTroopPowerBasedOnContextForXP(attackedTroop);
-                        attackerTroopPower = OverrideDefaultMilitaryPowerModel.GetTroopPowerBasedOnContextForXP(attackerTroop);
+                        victimTroopPower = OverrideDefaultMilitaryPowerModel.GetTroopPowerBasedOnContextForXPVictim(attackedTroop);
+                        attackerTroopPower = OverrideDefaultMilitaryPowerModel.GetTroopPowerBasedOnContextForXPAttacker(attackerTroop);
                     }
                     float rawXpNum = 0;
-                    //if (damage < 30)
-                    //{
-                        rawXpNum = 0.4f * (victimTroopPower + 0.5f) * (attackerTroopPower + 0.5f) * (float)(30);
-                    //}
-                    //else
-                    //{
-                    //    rawXpNum = 0.4f * ((troopPower + 0.5f) * (float)(Math.Min(damage, attackedTroopMaxHP) + (isFatal ? attackedTroopMaxHP : 0)));
-                    //}
+                    
+                    rawXpNum = 0.4f * (victimTroopPower + 0.5f) * (attackerTroopPower + 0.5f) * (float)(30);
+
                     float xpModifier;
                     switch (missionType)
                     {
@@ -766,7 +758,20 @@ namespace RBMCombat
                 return false;
             }
 
-            public static float GetTroopPowerBasedOnContextForXP(CharacterObject troop, MapEvent.BattleTypes battleType = MapEvent.BattleTypes.None, BattleSideEnum battleSideEnum = BattleSideEnum.None, bool isSimulation = false)
+            public static float GetTroopPowerBasedOnContextForXPAttacker(CharacterObject troop, MapEvent.BattleTypes battleType = MapEvent.BattleTypes.None, BattleSideEnum battleSideEnum = BattleSideEnum.None, bool isSimulation = false)
+            {
+                PowerCalculationContext context = DetermineContext(battleType, battleSideEnum, isSimulation);
+
+                int tier = (troop.IsHero ? (troop.HeroObject.Level / 4 + 1) : troop.Tier);
+                var modifiedTier = tier * 1f;
+                if ((uint)(context - 6) <= 1u)
+                {
+                    return (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * (troop.IsHero ? 1.25f : 1f);
+                }
+                return (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * 1f;
+            }
+
+            public static float GetTroopPowerBasedOnContextForXPVictim(CharacterObject troop, MapEvent.BattleTypes battleType = MapEvent.BattleTypes.None, BattleSideEnum battleSideEnum = BattleSideEnum.None, bool isSimulation = false)
             {
                 PowerCalculationContext context = DetermineContext(battleType, battleSideEnum, isSimulation);
 

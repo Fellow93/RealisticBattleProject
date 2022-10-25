@@ -1517,7 +1517,7 @@ namespace RBMCombat
                             localInflictedDamage *= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.ShieldCorrectSideBlockDamageMultiplier);
                         }
 
-                        localInflictedDamage = MissionGameModels.Current.AgentApplyDamageModel.CalculateShieldDamage(localInflictedDamage);
+                        localInflictedDamage = MissionGameModels.Current.AgentApplyDamageModel.CalculateShieldDamage(attackInformation, localInflictedDamage);
                     }
                 }
                 attackCollisionData.InflictedDamage = (int)localInflictedDamage;
