@@ -165,6 +165,8 @@ namespace RBMAI
                     agent.SetScriptedCombatFlags(agent.GetScriptedCombatFlags() | Agent.AISpecialCombatModeFlags.IgnoreAmmoLimitForRangeCalculation);
                     //agent.ResetAiWaitBeforeShootFactor();
                 }
+                agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, 1f);
+                //agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, 0f);
             }
         }
     }
