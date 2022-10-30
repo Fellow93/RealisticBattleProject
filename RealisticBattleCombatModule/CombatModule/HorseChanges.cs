@@ -1,7 +1,9 @@
 ﻿using HarmonyLib;
 using SandBox.GameComponents;
+using System;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
+using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
@@ -39,6 +41,66 @@ namespace RBMCombat
                             sceneModifier *= 0.9f;
                         }
                         if (CampaignTime.Now.IsNightTime)
+                        {
+                            sceneModifier *= 0.9f;
+                        }
+                    }
+
+                    int mountMastery = effectiveRidingSkill - mountDifficulty;
+                    if (mountMastery < 0)
+                    {
+                        mountMastery = 0;
+                    }
+                    else if (mountMastery > mountSkillDifficultyTreshold)
+                    {
+                        mountMastery = mountSkillDifficultyTreshold;
+                    }
+
+                    float mountMasteryModifier = MathF.Lerp(minSkillModifier, maxSkillModifier, (float)mountMastery / (float)mountSkillDifficultyTreshold);
+
+                    int mountStatSpeed = mountElement.GetModifiedMountSpeed(in harness) + 1;
+                    ExplainedNumber mountStatSpeedEN = new ExplainedNumber(mountStatSpeed);
+
+                    if (harness.Item == null)
+                    {
+                        mountStatSpeedEN.AddFactor(-0.1f);
+                    }
+
+                    agentDrivenProperties.MountSpeed = sceneModifier * 0.22f * (1f + mountStatSpeedEN.ResultNumber) * mountMasteryModifier;
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(CustomBattleAgentStatCalculateModel))]
+        [HarmonyPatch("UpdateAgentStats")]
+        class CustomBattleAgentStatCalculateModelUpdateHorseStatsPatch
+        {
+            static void Postfix(ref SandboxAgentStatCalculateModel __instance, ref Agent agent, ref AgentDrivenProperties agentDrivenProperties)
+            {
+                if (!agent.IsHuman && agent.RiderAgent != null)
+                {
+                    int effectiveRidingSkill = 0;
+                    effectiveRidingSkill = __instance.GetEffectiveSkill(agent.RiderAgent.Character, agent.RiderAgent.Origin, agent.RiderAgent.Formation, DefaultSkills.Riding);
+
+                    Equipment spawnEquipment = agent.SpawnEquipment;
+                    EquipmentElement mountElement = spawnEquipment[EquipmentIndex.ArmorItemEndSlot];
+                    ItemObject item = mountElement.Item;
+                    EquipmentElement harness = spawnEquipment[EquipmentIndex.HorseHarness];
+
+                    int mountDifficulty = mountElement.Item.Difficulty;
+
+                    int mountSkillDifficultyTreshold = 75;
+                    float minSkillModifier = 0.8f;
+                    float maxSkillModifier = 1.1f;
+
+                    float sceneModifier = 1f;
+                    if (!agent.Mission.Scene.IsAtmosphereIndoor)
+                    {
+                        if (agent.Mission.Scene.GetRainDensity() > 0f)
+                        {
+                            sceneModifier *= 0.9f;
+                        }
+                        if (!MBMath.IsBetween(agent.Mission.Scene.TimeOfDay, 4f, 20.01f))
                         {
                             sceneModifier *= 0.9f;
                         }
