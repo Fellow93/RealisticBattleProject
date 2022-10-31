@@ -53,7 +53,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 		CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
 		_chargeState = ChargeState.Charging;
 		base.BehaviorCoherence = 0.5f;
-		_desiredChargeStopDistance = 120f;
+		_desiredChargeStopDistance = 110f;
 	}
 
 	public override void TickOccasionally()
@@ -75,7 +75,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
         if (_currentTacticField.GetValue(base.Formation?.Team?.TeamAI).ToString().Contains("Embolon"))
 		{
-			_desiredChargeStopDistance = 60f;
+			_desiredChargeStopDistance = 50f;
 			base.BehaviorCoherence = 0.85f;
 		}
 		ChargeState result = _chargeState;
@@ -146,9 +146,9 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 				case ChargeState.ChargingPast:
 					{
 						float formationCoherence = (base.Formation.QuerySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents + 1f) / (base.Formation.QuerySystem.IdealAverageDisplacement + 1f);
-						if (_chargingPastTimer.Check(Mission.Current.CurrentTime) || base.Formation.QuerySystem.AveragePosition.Distance(_lastTarget.MedianPosition.AsVec2) >= _desiredChargeStopDistance)
+						if (_chargingPastTimer.Check(Mission.Current.CurrentTime) || base.Formation.QuerySystem.AveragePosition.Distance(_lastTarget.MedianPosition.AsVec2) >= (_desiredChargeStopDistance + _lastTarget.Formation.Depth))
 						{
-							if (base.Formation.QuerySystem.AveragePosition.Distance(_lastTarget.MedianPosition.AsVec2) >= _desiredChargeStopDistance)
+							if (base.Formation.QuerySystem.AveragePosition.Distance(_lastTarget.MedianPosition.AsVec2) >= (_desiredChargeStopDistance + _lastTarget.Formation.Depth))
 							{
 								_lastReformDestination = base.Formation.QuerySystem.MedianPosition;
 							}
@@ -249,7 +249,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         {
 			Vec2 vec4 = (_lastTarget.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition).Normalized();
 			WorldPosition medianPosition3 = _lastTarget.MedianPosition;
-			Vec2 vec5 = medianPosition3.AsVec2 + vec4 * _desiredChargeStopDistance;
+			Vec2 vec5 = medianPosition3.AsVec2 + vec4 * (_desiredChargeStopDistance + _lastTarget.Formation.Depth);
 			medianPosition3.SetVec2(vec5);
 			_lastReformDestination = medianPosition3;
 			base.CurrentOrder = MovementOrder.MovementOrderMove(medianPosition3);
@@ -315,7 +315,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 					{
 						Vec2 vec4 = (_lastTarget.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition).Normalized();
 						WorldPosition medianPosition3 = _lastTarget.MedianPosition;
-						Vec2 vec5 = medianPosition3.AsVec2 + vec4 * _desiredChargeStopDistance;
+						Vec2 vec5 = medianPosition3.AsVec2 + vec4 * (_desiredChargeStopDistance + _lastTarget.Formation.Depth);
 						medianPosition3.SetVec2(vec5);
 						_lastReformDestination = medianPosition3;
 						base.CurrentOrder = MovementOrder.MovementOrderMove(medianPosition3);
@@ -324,11 +324,11 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 					}
 				case ChargeState.ChargingPast:
 					{
-						//Vec2 vec2 = (base.Formation.QuerySystem.AveragePosition - _lastTarget.MedianPosition.AsVec2).Normalized();
-						//_lastReformDestination = _lastTarget.MedianPosition;
-						//Vec2 vec3 = _lastTarget.MedianPosition.AsVec2 + vec2 * _desiredChargeStopDistance;
-						//_lastReformDestination.SetVec2(vec3);
-						base.CurrentOrder = MovementOrder.MovementOrderMove(_lastReformDestination);
+                        //Vec2 vec2 = (base.Formation.QuerySystem.AveragePosition - _lastTarget.MedianPosition.AsVec2).Normalized();
+                        //_lastReformDestination = _lastTarget.MedianPosition;
+                        //Vec2 vec3 = _lastTarget.MedianPosition.AsVec2 + vec2 * (_desiredChargeStopDistance + _lastTarget.Formation.Depth);
+                        //_lastReformDestination.SetVec2(vec3);
+                        base.CurrentOrder = MovementOrder.MovementOrderMove(_lastReformDestination);
 						//CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(_initialChargeDirection);
 						CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
 						break;

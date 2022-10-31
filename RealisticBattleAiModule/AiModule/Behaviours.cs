@@ -1070,7 +1070,7 @@ namespace RBMAI
                             else
                             {
                                 float storedPositonDistance = (storedPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2).Normalize();
-                                if(storedPositonDistance > 10f)
+                                if(storedPositonDistance > (__instance.Formation.Depth / 2f) + 10f)
                                 {
                                     positionsStorage.Remove(__instance.Formation);
                                     positionsStorage.Add(__instance.Formation, positionNew);
@@ -1120,7 +1120,7 @@ namespace RBMAI
                                 else
                                 {
                                     float storedPositonDistance = (storedPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2).Normalize();
-                                    if (storedPositonDistance > 10f)
+                                    if (storedPositonDistance > (__instance.Formation.Depth / 2f) + 10f)
                                     {
                                         positionsStorage.Remove(__instance.Formation);
                                         positionsStorage.Add(__instance.Formation, positionNew);
