@@ -118,7 +118,7 @@ namespace RBMCombat
             [HarmonyPatch("GetXpFromHit")]
             static bool PrefixGetXpFromHit(ref DefaultCombatXpModel __instance, CharacterObject attackerTroop, CharacterObject captain, CharacterObject attackedTroop, PartyBase party, int damage, bool isFatal, MissionTypeEnum missionType, out int xpAmount)
             {
-                if (missionType == MissionTypeEnum.Battle || missionType == MissionTypeEnum.PracticeFight || missionType == MissionTypeEnum.Tournament)
+                if (missionType == MissionTypeEnum.Battle || missionType == MissionTypeEnum.PracticeFight || missionType == MissionTypeEnum.Tournament || missionType == MissionTypeEnum.SimulationBattle)
                 {
                     float victimTroopPower = 0f;
                     float attackerTroopPower = 0f;
