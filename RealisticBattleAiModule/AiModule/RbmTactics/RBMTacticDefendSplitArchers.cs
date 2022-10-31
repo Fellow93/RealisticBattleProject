@@ -27,10 +27,6 @@ public class RBMTacticDefendSplitArchers : TacticComponent
 		_mainInfantry = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsInfantryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
 		if (_mainInfantry != null)
 		{
-			if (Formations.Count() > 0)
-			{
-				_mainInfantry = Formations.ToList()[0];
-			}
 			_mainInfantry.AI.IsMainFormation = true;
 			_mainInfantry.AI.Side = FormationAI.BehaviorSide.Middle;
 

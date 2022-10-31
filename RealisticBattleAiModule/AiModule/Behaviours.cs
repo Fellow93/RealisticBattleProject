@@ -1961,11 +1961,11 @@ namespace RBMAI
                 {
                     Vec2 vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                     WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
-                    positionNew.SetVec2(positionNew.AsVec2 + vec.Normalized() * (10f + __instance.Formation.Depth));
-                    if (!Mission.Current.IsPositionInsideBoundaries(positionNew.AsVec2) || positionNew.GetNavMesh() == UIntPtr.Zero)
-                    {
+                    //positionNew.SetVec2(positionNew.AsVec2 + vec.Normalized() * (10f + __instance.Formation.Depth));
+                    //if (!Mission.Current.IsPositionInsideBoundaries(positionNew.AsVec2) || positionNew.GetNavMesh() == UIntPtr.Zero)
+                    //{
                         positionNew.SetVec2(significantEnemy.CurrentPosition);
-                    }
+                    //}
                     ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
                     return false;
