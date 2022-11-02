@@ -7,6 +7,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
+using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
@@ -858,20 +859,23 @@ namespace RBMAI
             //    }
             //    return true;
             //}
-            if(agent != null && agent.Formation != null)
-            {
-                float currentTime = MBCommon.GetTotalMissionTime();
-                if (agent.Formation.QuerySystem.IsInfantryFormation)
-                {
-                    float lastMeleeAttackTime = agent.LastMeleeAttackTime;
-                    float lastMeleeHitTime = agent.LastMeleeHitTime;
-                    if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
-                    {
-                        desiredSpeed = 0.75f;
-                        return true;
-                    }
-                }
-            }
+            //if(agent != null && agent.Formation != null)
+            //{
+            //    float currentTime = MBCommon.GetTotalMissionTime();
+            //    if (agent.Formation.QuerySystem.IsInfantryFormation)
+            //    {
+            //        float lastMeleeAttackTime = agent.LastMeleeAttackTime;
+            //        float lastMeleeHitTime = agent.LastMeleeHitTime;
+            //        if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
+            //        {
+            //            if(desiredSpeed > 0.65f)
+            //            {
+            //                desiredSpeed = 0.65f;
+            //            }
+            //            return true;
+            //        }
+            //    }
+            //}
             if(agent.Formation != null && (agent.Formation.QuerySystem.IsRangedCavalryFormation || agent.Formation.QuerySystem.IsCavalryFormation))
             {
                 if(agent.MountAgent != null)
@@ -893,6 +897,16 @@ namespace RBMAI
                 //___Agent.SetMaximumSpeedLimit(100f, false);
             }
             if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
+                (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorAdvance)))
+            {
+                if(desiredSpeed < 0f)
+                {
+                    limitIsMultiplier = true;
+                    desiredSpeed = 0.55f;
+                }
+                //___Agent.SetMaximumSpeedLimit(100f, false);
+            }
+            if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
                 (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorRegroup)))
             {
                 if (limitIsMultiplier && desiredSpeed < 0.95f)
@@ -904,9 +918,9 @@ namespace RBMAI
             if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
                 (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorCharge)))
             {
-                if (limitIsMultiplier && desiredSpeed < 0.8f)
+                if (limitIsMultiplier && desiredSpeed < 0.85f)
                 {
-                    desiredSpeed = 0.8f;
+                    desiredSpeed = 0.85f;
                 }
             }
             if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
@@ -1855,8 +1869,8 @@ namespace RBMAI
     [HarmonyPatch(typeof(BehaviorAdvance))]
     class OverrideBehaviorAdvance
     {
-
         public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
+        public static Dictionary<Formation, int> waitCountStorage = new Dictionary<Formation, int> { };
 
         [HarmonyPrefix]
         [HarmonyPatch("CalculateCurrentOrder")]
@@ -1864,11 +1878,11 @@ namespace RBMAI
         {
             if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
-
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
 
                 if (__instance.Formation.QuerySystem.IsInfantryFormation && !RBMAI.Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
                 {
+                   
                     Formation enemyCav = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
 
                     if (enemyCav != null && !enemyCav.QuerySystem.IsCavalryFormation)
@@ -1959,6 +1973,28 @@ namespace RBMAI
 
                 if (significantEnemy != null)
                 {
+                    //int storedWaitCount;
+                    //if (Mission.Current.AllowAiTicking)
+                    //{
+                    //    if (waitCountStorage.TryGetValue(__instance.Formation, out storedWaitCount))
+                    //    {
+                    //        if (storedWaitCount < 100)
+                    //        {
+                    //            storedWaitCount++;
+                    //            Vec2 direction = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
+                    //            WorldPosition pos = __instance.Formation.QuerySystem.MedianPosition;
+                    //            ____currentOrder = MovementOrder.MovementOrderMove(pos);
+                    //            ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(direction.Normalized());
+                    //            waitCountStorage[__instance.Formation] = storedWaitCount;
+                    //            return false;
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        waitCountStorage.Add(__instance.Formation, 0);
+                    //    }
+                    //}
+
                     Vec2 vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                     WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
                     //positionNew.SetVec2(positionNew.AsVec2 + vec.Normalized() * (10f + __instance.Formation.Depth));

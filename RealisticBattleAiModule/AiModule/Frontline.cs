@@ -99,19 +99,19 @@ namespace RBMAI
                     int enemyAgentsCountTreshold = 3;
                     int enemyAgentsCountDangerousTreshold = 4;
                     int enemyAgentsCountCriticalTreshold = 6;
-                    int hasShieldBonusNumber = 30;
+                    int hasShieldBonusNumber = 40;
                     int isAttackingArcherNumber = -60;
-                    int aggresivnesModifier = 0;
-                    float backStepDistance = 1.15f;
+                    int aggresivnesModifier = 30;
+                    float backStepDistance = 0.35f;
                     if (isAgentInDefensiveOrder)
                     {
                         allyAgentsCountTreshold = 3;
                         enemyAgentsCountTreshold = 3;
                         enemyAgentsCountDangerousTreshold = 4;
                         enemyAgentsCountCriticalTreshold = 6;
-                        backStepDistance = 1f;
+                        backStepDistance = 0.35f;
                         hasShieldBonusNumber = 40;
-                        aggresivnesModifier = 0;
+                        aggresivnesModifier = 30;
                     }
 
                     if (targetAgent != null && vanillaTargetAgent != null)
@@ -231,10 +231,12 @@ namespace RBMAI
                                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 4.9f, 1.5f, 1.1f, 10f, 0.01f);
                                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
 
-                                    Vec2 leftVec = direction.LeftVec() + direction * 1f;
-                                    Vec2 rightVec = direction.RightVec() + direction * 1f;
-                                    IEnumerable<Agent> agentsLeft = mission.GetNearbyAllyAgents(unitPosition + leftVec * 1.1f, 1.1f, unit.Team);
-                                    IEnumerable<Agent> agentsRight = mission.GetNearbyAllyAgents(unitPosition + rightVec * 1.1f, 1.1f, unit.Team);
+                                    //Vec2 leftVec = unit.Formation.Direction.LeftVec().Normalized();
+                                    //Vec2 rightVec = unit.Formation.Direction.RightVec().Normalized();
+                                    Vec2 leftVec = direction.LeftVec();
+                                    Vec2 rightVec = direction.RightVec();
+                                    IEnumerable<Agent> agentsLeft = mission.GetNearbyAllyAgents(unitPosition + leftVec * 1.35f, 1.35f, unit.Team);
+                                    IEnumerable<Agent> agentsRight = mission.GetNearbyAllyAgents(unitPosition + rightVec * 1.35f, 1.35f, unit.Team);
                                     IEnumerable<Agent> furtherAllyAgents = mission.GetNearbyAllyAgents(unitPosition + direction * 3f, 2f, unit.Team);
 
                                     int agentsLeftCount = agentsLeft.Count();
@@ -248,7 +250,7 @@ namespace RBMAI
                                             if (agentsLeftCount <= allyAgentsCountTreshold)
                                             {
                                                 WorldPosition leftPosition = unit.GetWorldPosition();
-                                                leftPosition.SetVec2(unitPosition + leftVec * 5f);
+                                                leftPosition.SetVec2(unitPosition + leftVec * 4.5f);
                                                 __result = leftPosition;
                                                 aiDecisionCooldownDict[unit].customMaxCoolDown = 10;
                                                 aiDecisionCooldownDict[unit].position = __result; return false;
@@ -259,7 +261,7 @@ namespace RBMAI
                                             if (agentsRightCount <= allyAgentsCountTreshold)
                                             {
                                                 WorldPosition rightPosition = unit.GetWorldPosition();
-                                                rightPosition.SetVec2(unitPosition + rightVec * 5f);
+                                                rightPosition.SetVec2(unitPosition + rightVec * 4.5f);
                                                 __result = rightPosition;
                                                 aiDecisionCooldownDict[unit].customMaxCoolDown = 10;
                                                 aiDecisionCooldownDict[unit].position = __result; return false;
@@ -276,7 +278,7 @@ namespace RBMAI
                                         if (agentsLeftCount < agentsRightCount)
                                         {
                                             WorldPosition leftPosition = unit.GetWorldPosition();
-                                            leftPosition.SetVec2(unitPosition + leftVec * 3f);
+                                            leftPosition.SetVec2(unitPosition + leftVec * 2.5f);
                                             __result = leftPosition;
                                             aiDecisionCooldownDict[unit].customMaxCoolDown = 8;
                                             aiDecisionCooldownDict[unit].position = __result; return false;
@@ -284,7 +286,7 @@ namespace RBMAI
                                         else if (agentsLeftCount > agentsRightCount)
                                         {
                                             WorldPosition rightPosition = unit.GetWorldPosition();
-                                            rightPosition.SetVec2(unitPosition + rightVec * 3f);
+                                            rightPosition.SetVec2(unitPosition + rightVec * 2.5f);
                                             __result = rightPosition;
                                             aiDecisionCooldownDict[unit].customMaxCoolDown = 8;
                                             aiDecisionCooldownDict[unit].position = __result; return false;
@@ -292,7 +294,7 @@ namespace RBMAI
                                     }
                                     if (isFieldBattle)
                                     {
-                                        int unitPower = MBMath.ClampInt((int)Math.Floor(unit.Character.GetPower() * 65), 65, 125);
+                                        int unitPower = MBMath.ClampInt((int)Math.Floor(unit.Character.GetPower() * 65), 75, 180);
                                         int randInt = MBRandom.RandomInt(unitPower + aggresivnesModifier);
                                         int defensivnesModifier = 0;
                                         if (unit.WieldedOffhandWeapon.IsShield())
@@ -306,7 +308,7 @@ namespace RBMAI
                                         }
                                         else
                                         {
-                                            if (MBRandom.RandomInt(unitPower / 2) == 0)
+                                            if (MBRandom.RandomInt(unitPower ) == 0)
                                             {
                                                 aiDecisionCooldownDict[unit].position = WorldPosition.Invalid;
                                                 aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
@@ -315,7 +317,7 @@ namespace RBMAI
                                             else
                                             {
                                                 WorldPosition backPosition = unit.GetWorldPosition();
-                                                backPosition.SetVec2(unitPosition - unit.Formation.Direction * backStepDistance);
+                                                backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * (backStepDistance + 0.5f));
                                                 __result = backPosition;
                                                 aiDecisionCooldownDict[unit].customMaxCoolDown = 2;
                                                 aiDecisionCooldownDict[unit].position = __result; return false;
@@ -375,7 +377,7 @@ namespace RBMAI
                             if (enemyAgentsImmidiateCount > enemyAgentsCountTreshold || enemyAgents10fCount > enemyAgentsCountTreshold)
                             {
                                 unit.LookDirection = direction.ToVec3();
-                                int unitPower = MBMath.ClampInt((int)Math.Floor(unit.Character.GetPower() * 65), 65, 125);
+                                int unitPower = MBMath.ClampInt((int)Math.Floor(unit.Character.GetPower() * 65), 75, 180);
                                 int randInt = MBRandom.RandomInt((int)unitPower + aggresivnesModifier);
                                 int defensivnesModifier = 0;
 
@@ -399,7 +401,7 @@ namespace RBMAI
                                     if (unitPower * 2 < randImmidiate)
                                     {
                                         WorldPosition backPosition = unit.GetWorldPosition();
-                                        backPosition.SetVec2(unitPosition - unit.Formation.Direction * backStepDistance);
+                                        backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
                                         __result = backPosition;
                                         //aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
                                         aiDecisionCooldownDict[unit].position = __result; return false;
@@ -411,15 +413,15 @@ namespace RBMAI
                                     //if(unitPower / 2 < randImmidiate)
                                     //{
                                     WorldPosition backPosition = unit.GetWorldPosition();
-                                    backPosition.SetVec2(unitPosition - unit.Formation.Direction * backStepDistance);
+                                    backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
                                     __result = backPosition;
                                     //aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
                                     aiDecisionCooldownDict[unit].position = __result; return false;
                                     //}
                                 }
-                                else if (randInt < (unitPower / 2.25f + defensivnesModifier))
+                                else if (randInt < (unitPower / 2f + defensivnesModifier))
                                 {
-                                    if (randInt < (unitPower / 2.25f + defensivnesModifier))
+                                    if (randInt < (unitPower / 2f + defensivnesModifier))
                                     {
                                         if (enemyAgentsImmidiateCount > enemyAgentsCountDangerousTreshold)
                                         {
@@ -427,7 +429,7 @@ namespace RBMAI
                                             //if (unitPower / 2 < randImmidiate)
                                             //{
                                             WorldPosition backPosition = unit.GetWorldPosition();
-                                            backPosition.SetVec2(unitPosition - unit.Formation.Direction * backStepDistance);
+                                            backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
                                             __result = backPosition;
                                             //aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
                                             aiDecisionCooldownDict[unit].position = __result; return false;
@@ -447,7 +449,7 @@ namespace RBMAI
                                         else
                                         {
                                             WorldPosition backPosition = unit.GetWorldPosition();
-                                            backPosition.SetVec2(unitPosition - unit.Formation.Direction * backStepDistance);
+                                            backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
                                             __result = backPosition;
                                             //aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
                                             aiDecisionCooldownDict[unit].position = __result; return false;
