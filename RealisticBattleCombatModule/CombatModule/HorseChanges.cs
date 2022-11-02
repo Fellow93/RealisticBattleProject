@@ -56,7 +56,11 @@ namespace RBMCombat
                         mountMastery = mountSkillDifficultyTreshold;
                     }
 
-                    float addedWeight = harness.Weight + agent.RiderAgent.SpawnEquipment.GetTotalWeightOfArmor(true) + agent.RiderAgent.SpawnEquipment.GetTotalWeightOfWeapons() + agent.RiderAgent.Monster.Weight;
+                    float addedWeight = agent.RiderAgent.SpawnEquipment.GetTotalWeightOfArmor(true) + agent.RiderAgent.SpawnEquipment.GetTotalWeightOfWeapons() + agent.RiderAgent.Monster.Weight;
+                    if (harness.Item != null)
+                    {
+                        addedWeight += harness.Weight;
+                    }
 
                     float weightModifier = MathF.Pow(475f, 2) / MathF.Pow(mountElement.Weight + addedWeight, 2);
 
