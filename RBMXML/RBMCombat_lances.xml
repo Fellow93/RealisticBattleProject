@@ -985,9 +985,6 @@
       <Piece id="spear_blade_4"
              Type="Blade"
              scale_factor="100" />
-      <Piece id="spear_banner_10"
-             Type="Guard"
-             scale_factor="100" />
       <Piece id="spear_handle_27"
              Type="Handle"
              scale_factor="90" />
@@ -1005,9 +1002,6 @@
       <Piece id="spear_blade_4"
              Type="Blade"
              scale_factor="100" />
-      <Piece id="spear_banner_10"
-             Type="Guard"
-             scale_factor="100" />
       <Piece id="spear_handle_27"
              Type="Handle"
              scale_factor="90" />
@@ -1024,9 +1018,6 @@
     <Pieces>
       <Piece id="spear_blade_39"
              Type="Blade"
-             scale_factor="100" />
-      <Piece id="spear_banner_2"
-             Type="Guard"
              scale_factor="100" />
       <Piece id="spear_handle_27"
              Type="Handle"
