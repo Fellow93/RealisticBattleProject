@@ -162,7 +162,7 @@
         name="{=Yh7Dorsr}Striped Leather Harness"
         mesh="horse_harness_imperial_a_clotest"
         subtype="body_armor"
-        weight="17"
+        weight="8"
         difficulty="0"
         appearance="1"
         Type="HorseHarness">
@@ -606,5 +606,104 @@
              material_type="Chainmail" />
     </ItemComponent>
     <Flags Civilian="true" />
+  </Item>
+  
+  <Item id="mule_load_a"
+        name="{=7S6BjECG}Mule Harness with Pack"
+        mesh="mule_load_a"
+        is_merchandise="false"
+        weight="120"
+        appearance="1"
+        Type="HorseHarness">
+    <ItemComponent>
+      <Armor body_armor="10"
+             mane_cover_type="all"
+             family_type="1"
+             material_type="Cloth" />
+    </ItemComponent>
+    <Flags Civilian="true" />
+    <Flags />
+  </Item>
+  <Item id="mule_load_b"
+        name="{=2SUb8jNP}Mule Harness with Baskets"
+        mesh="mule_load_b"
+        is_merchandise="false"
+        weight="120"
+        appearance="1"
+        Type="HorseHarness">
+    <ItemComponent>
+      <Armor body_armor="10"
+             mane_cover_type="all"
+             family_type="1"
+             material_type="Cloth" />
+    </ItemComponent>
+    <Flags Civilian="true" />
+    <Flags />
+  </Item>
+  <Item id="mule_load_c"
+        name="{=JHef9oad}Mule Harness with Bags"
+        mesh="mule_load_c"
+        is_merchandise="false"
+        weight="120"
+        appearance="1"
+        Type="HorseHarness">
+    <ItemComponent>
+      <Armor body_armor="10"
+             mane_cover_type="all"
+             family_type="1"
+             material_type="Cloth" />
+    </ItemComponent>
+    <Flags Civilian="true" />
+    <Flags />
+  </Item>
+  <Item id="camel_saddle"
+        name="{=q1z4FQub}Camel Saddle"
+        mesh="camel_saddle1"
+        culture="Culture.aserai"
+        weight="8"
+        appearance="1"
+        Type="HorseHarness">
+    <ItemComponent>
+      <Armor body_armor="10"
+             mane_cover_type="none"
+             family_type="2"
+             material_type="Leather" />
+    </ItemComponent>
+    <Flags Civilian="true" />
+    <Flags />
+  </Item>
+  <Item id="camel_saddle_a"
+        name="{=ZJYVpjuR}Camel Saddle with Heavy Load"
+        is_merchandise="false"
+        mesh="camel_saddle_a"
+        culture="Culture.aserai"
+        weight="130"
+        appearance="1"
+        Type="HorseHarness">
+    <ItemComponent>
+      <Armor body_armor="10"
+             mane_cover_type="none"
+             family_type="2"
+             material_type="Leather" />
+    </ItemComponent>
+    <Flags Civilian="true" />
+    <Flags />
+  </Item>
+  <Item id="camel_saddle_b"
+        name="{=OflbQCw6}Camel Saddle with Light Load"
+        is_merchandise="false"
+        mesh="camel_saddle_b"
+        culture="Culture.aserai"
+        weight="70"
+        appearance="1"
+        Type="HorseHarness">
+    <ItemComponent>
+      <Armor body_armor="10"
+             mane_cover_type="none"
+             family_type="2"
+             material_type="Leather" />
+    </ItemComponent>
+    <Flags Civilian="true" />
+    <Flags />
   </Item>
 </Items>
