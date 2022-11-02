@@ -30,7 +30,7 @@ namespace RBMCombat
                     int mountDifficulty = mountElement.Item.Difficulty;
 
                     int mountSkillDifficultyTreshold = 75;
-                    float minSkillModifier = 0.8f;
+                    float minSkillModifier = 0.9f;
                     float maxSkillModifier = 1.1f;
 
                     float sceneModifier = 1f;
@@ -56,7 +56,9 @@ namespace RBMCombat
                         mountMastery = mountSkillDifficultyTreshold;
                     }
 
-                    float addedWeight = harness.Weight + agent.RiderAgent.SpawnEquipment.GetTotalWeightOfArmor(true) + agent.RiderAgent.SpawnEquipment.GetTotalWeightOfWeapons();
+                    float addedWeight = harness.Weight + agent.RiderAgent.SpawnEquipment.GetTotalWeightOfArmor(true) + agent.RiderAgent.SpawnEquipment.GetTotalWeightOfWeapons() + agent.RiderAgent.Monster.Weight;
+
+                    float weightModifier = MathF.Pow(475f, 2) / MathF.Pow(mountElement.Weight + addedWeight, 2);
 
                     float mountMasteryModifier = MathF.Lerp(minSkillModifier, maxSkillModifier, (float)mountMastery / (float)mountSkillDifficultyTreshold);
 
@@ -67,8 +69,17 @@ namespace RBMCombat
                     {
                         mountStatSpeedEN.AddFactor(-0.1f);
                     }
-
                     agentDrivenProperties.MountSpeed = sceneModifier * 0.22f * (1f + mountStatSpeedEN.ResultNumber) * mountMasteryModifier;
+
+                    float baseSpeed = 10f;
+                    if (mountElement.Weight > 500f)
+                    {
+                        baseSpeed = 8f;
+                    }
+                    if (agentDrivenProperties.MountSpeed > baseSpeed)
+                    {
+                        agentDrivenProperties.MountSpeed = MBMath.Lerp(baseSpeed, agentDrivenProperties.MountSpeed, weightModifier);
+                    }
                 }
             }
         }
@@ -92,7 +103,7 @@ namespace RBMCombat
                     int mountDifficulty = mountElement.Item.Difficulty;
 
                     int mountSkillDifficultyTreshold = 75;
-                    float minSkillModifier = 0.8f;
+                    float minSkillModifier = 0.9f;
                     float maxSkillModifier = 1.1f;
 
                     float sceneModifier = 1f;
