@@ -859,20 +859,23 @@ namespace RBMAI
             //    }
             //    return true;
             //}
-            if(agent != null && agent.Formation != null)
-            {
-                float currentTime = MBCommon.GetTotalMissionTime();
-                if (agent.Formation.QuerySystem.IsInfantryFormation)
-                {
-                    float lastMeleeAttackTime = agent.LastMeleeAttackTime;
-                    float lastMeleeHitTime = agent.LastMeleeHitTime;
-                    if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
-                    {
-                        desiredSpeed = 0.75f;
-                        return true;
-                    }
-                }
-            }
+            //if(agent != null && agent.Formation != null)
+            //{
+            //    float currentTime = MBCommon.GetTotalMissionTime();
+            //    if (agent.Formation.QuerySystem.IsInfantryFormation)
+            //    {
+            //        float lastMeleeAttackTime = agent.LastMeleeAttackTime;
+            //        float lastMeleeHitTime = agent.LastMeleeHitTime;
+            //        if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
+            //        {
+            //            if(desiredSpeed > 0.65f)
+            //            {
+            //                desiredSpeed = 0.65f;
+            //            }
+            //            return true;
+            //        }
+            //    }
+            //}
             if(agent.Formation != null && (agent.Formation.QuerySystem.IsRangedCavalryFormation || agent.Formation.QuerySystem.IsCavalryFormation))
             {
                 if(agent.MountAgent != null)
@@ -915,9 +918,9 @@ namespace RBMAI
             if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
                 (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorCharge)))
             {
-                if (limitIsMultiplier && desiredSpeed < 0.8f)
+                if (limitIsMultiplier && desiredSpeed < 0.85f)
                 {
-                    desiredSpeed = 0.8f;
+                    desiredSpeed = 0.85f;
                 }
             }
             if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
