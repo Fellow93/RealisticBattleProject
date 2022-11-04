@@ -112,8 +112,9 @@ namespace RBMAI
 
                 agentDrivenProperties.AiShooterError = 0.001f;
 
-                agentDrivenProperties.AiRangerLeadErrorMin = 0.2f;
-                agentDrivenProperties.AiRangerLeadErrorMax = 0.3f;
+                float num4 = 1f - effectiveSkillLevel;
+                agentDrivenProperties.AiRangerLeadErrorMin = (float)((0.0 - (double)num4) * 0.349999994039536) + 0.3f;
+                agentDrivenProperties.AiRangerLeadErrorMax = num4 * 0.2f + 0.3f;
 
                 if (equippedItem != null && equippedItem.RelevantSkill == DefaultSkills.Bow)
                 {

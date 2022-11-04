@@ -40,8 +40,9 @@
                 loot_drop_score="7"
                 production_drop_score="10"
                 damage="0"
+				hit_points="20"
                 speed="10"
-                missile_speed="20"
+                missile_speed="0"
                 price_factor="2.5" />
   <ItemModifier modifier_group="ItemModifierGroup.bow"
                 id="balanced_bow"
@@ -49,8 +50,9 @@
                 loot_drop_score="10"
                 production_drop_score="15"
                 damage="0"
+				hit_points="10"
                 speed="5"
-                missile_speed="10"
+                missile_speed="0"
                 price_factor="1.5" />
   <ItemModifier modifier_group="ItemModifierGroup.bow"
                 id="cracked_bow"
@@ -58,8 +60,9 @@
                 loot_drop_score="13"
                 production_drop_score="5"
                 damage="0"
+				hit_points="-15"
                 speed="-5"
-                missile_speed="-15"
+                missile_speed="0"
                 price_factor="0.6" />
   <ItemModifier modifier_group="ItemModifierGroup.bow"
                 id="splintered_bow"
@@ -67,8 +70,9 @@
                 loot_drop_score="15"
                 production_drop_score="5"
                 damage="0"
+				hit_points="-10"
                 speed="-10"
-                missile_speed="-20"
+                missile_speed="0"
                 price_factor="0.3" />
   <!-- Crossbows -->
   <ItemModifier modifier_group="ItemModifierGroup.crossbow"
@@ -77,8 +81,9 @@
                 loot_drop_score="7"
                 production_drop_score="10"
                 damage="0"
+				hit_points="50"
                 speed="10"
-                missile_speed="50"
+                missile_speed="0"
                 price_factor="2.5" />
   <ItemModifier modifier_group="ItemModifierGroup.crossbow"
                 id="tuned_crossbow"
@@ -86,8 +91,9 @@
                 loot_drop_score="10"
                 production_drop_score="15"
                 damage="0"
+				hit_points="30"
                 speed="5"
-                missile_speed="30"
+                missile_speed="0"
                 price_factor="1.5" />
   <ItemModifier modifier_group="ItemModifierGroup.crossbow"
                 id="bent_crossbow"
@@ -95,8 +101,9 @@
                 loot_drop_score="13"
                 production_drop_score="5"
                 damage="0"
+				hit_points="-30"
                 speed="-10"
-                missile_speed="-30"
+                missile_speed="0"
                 price_factor="0.6" />
   <ItemModifier modifier_group="ItemModifierGroup.crossbow"
                 id="cracked_crossbow"
@@ -104,8 +111,9 @@
                 loot_drop_score="15"
                 production_drop_score="5"
                 damage="0"
+				hit_points="-40"
                 speed="-15"
-                missile_speed="-40"
+                missile_speed="0"
                 price_factor="0.3" />
   <!-- Arrows -->
   <ItemModifier modifier_group="ItemModifierGroup.arrow"

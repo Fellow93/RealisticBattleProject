@@ -136,7 +136,12 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 							}
 							//result = ChargeState.ChargingPast;
 						}
-						if (_chargeTimer != null && _chargeTimer.Check(Mission.Current.CurrentTime))
+						if(base.Formation.QuerySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents < 5f)
+						{
+                            result = ChargeState.ChargingPast;
+                            _chargeTimer = null;
+                        }
+                            if (_chargeTimer != null && _chargeTimer.Check(Mission.Current.CurrentTime))
 						{
 							result = ChargeState.ChargingPast;
 							_chargeTimer = null;
