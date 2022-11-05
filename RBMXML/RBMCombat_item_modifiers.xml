@@ -466,21 +466,21 @@
                 name="{=xeb1b5PQ}Fine {ITEMNAME}"
                 loot_drop_score="10"
                 production_drop_score="15"
-                armor="15"
+                armor="10"
                 price_factor="1.5" />
   <ItemModifier modifier_group="ItemModifierGroup.plate"
                 id="dented_plate"
                 name="{=PobRGG9S}Dented {ITEMNAME}"
                 loot_drop_score="13"
                 production_drop_score="5"
-                armor="-5"
+                armor="-10"
                 price_factor="0.6" />
   <ItemModifier modifier_group="ItemModifierGroup.plate"
                 id="rusty_plate"
                 name="{=l7QEpVwU}Rusty {ITEMNAME}"
                 loot_drop_score="15"
                 production_drop_score="5"
-                armor="-10"
+                armor="-20"
                 price_factor="0.3" />
   <!-- Chain Armors -->
   <ItemModifier modifier_group="ItemModifierGroup.chain"
@@ -488,7 +488,7 @@
                 name="{=w3jn7Ahz}Lordly {ITEMNAME}"
                 loot_drop_score="7"
                 production_drop_score="10"
-                armor="15"
+                armor="20"
                 price_factor="2.5" />
   <ItemModifier modifier_group="ItemModifierGroup.chain"
                 id="fine_chain"
@@ -502,14 +502,14 @@
                 name="{=bWhJwHA1}Loose {ITEMNAME}"
                 loot_drop_score="13"
                 production_drop_score="5"
-                armor="-5"
+                armor="-10"
                 price_factor="0.6" />
   <ItemModifier modifier_group="ItemModifierGroup.chain"
                 id="rusty_chain"
                 name="{=l7QEpVwU}Rusty {ITEMNAME}"
                 loot_drop_score="15"
                 production_drop_score="5"
-                armor="-7"
+                armor="-20"
                 price_factor="0.3" />
   <!-- Leather Armors -->
   <ItemModifier modifier_group="ItemModifierGroup.leather"
@@ -517,28 +517,28 @@
                 name="{=xeb1b5PQ}Fine {ITEMNAME}"
                 loot_drop_score="7"
                 production_drop_score="10"
-                armor="8"
+                armor="20"
                 price_factor="2.5" />
   <ItemModifier modifier_group="ItemModifierGroup.leather"
                 id="waxed_leather"
                 name="{=zPqPvf0o}Waxed {ITEMNAME}"
                 loot_drop_score="10"
                 production_drop_score="15"
-                armor="5"
+                armor="10"
                 price_factor="1.5" />
   <ItemModifier modifier_group="ItemModifierGroup.leather"
                 id="worn_leather"
                 name="{=5yVgXqQr}Worn {ITEMNAME}"
                 loot_drop_score="13"
                 production_drop_score="5"
-                armor="-3"
+                armor="-10"
                 price_factor="0.6" />
   <ItemModifier modifier_group="ItemModifierGroup.leather"
                 id="battered_leather"
                 name="{=TePk4BSJ}Battered {ITEMNAME}"
                 loot_drop_score="15"
                 production_drop_score="5"
-                armor="-5"
+                armor="-20"
                 price_factor="0.3" />
   <!-- Cloth Armors -->
   <ItemModifier modifier_group="ItemModifierGroup.cloth"
@@ -546,28 +546,28 @@
                 name="{=xeb1b5PQ}Fine {ITEMNAME}"
                 loot_drop_score="7"
                 production_drop_score="10"
-                armor="5"
+                armor="20"
                 price_factor="2.5" />
   <ItemModifier modifier_group="ItemModifierGroup.cloth"
                 id="tailored_cloth"
                 name="{=Q5HVyNWJ}Tailored {ITEMNAME}"
                 loot_drop_score="10"
                 production_drop_score="15"
-                armor="3"
+                armor="10"
                 price_factor="1.5" />
   <ItemModifier modifier_group="ItemModifierGroup.cloth"
                 id="worn_cloth"
                 name="{=5yVgXqQr}Worn {ITEMNAME}"
                 loot_drop_score="13"
                 production_drop_score="5"
-                armor="-2"
+                armor="-10"
                 price_factor="0.6" />
   <ItemModifier modifier_group="ItemModifierGroup.cloth"
                 id="ripped_cloth"
                 name="{=Pbb94NdW}Ripped {ITEMNAME}"
                 loot_drop_score="15"
                 production_drop_score="5"
-                armor="-4"
+                armor="-20"
                 price_factor="0.3" />
   <!-- Clothing -->
   <ItemModifier modifier_group="ItemModifierGroup.cloth_unarmoured"
@@ -575,28 +575,28 @@
                 name="{=xeb1b5PQ}Fine {ITEMNAME}"
                 loot_drop_score="10"
                 production_drop_score="5"
-                armor="2"
+                armor="20"
                 price_factor="2.5" />
   <ItemModifier modifier_group="ItemModifierGroup.cloth_unarmoured"
                 id="tailored_cloth_unarmoured"
                 name="{=Q5HVyNWJ}Tailored {ITEMNAME}"
                 loot_drop_score="10"
                 production_drop_score="15"
-                armor="1"
+                armor="10"
                 price_factor="1.5" />
   <ItemModifier modifier_group="ItemModifierGroup.cloth_unarmoured"
                 id="worn_cloth_unarmoured"
                 name="{=5yVgXqQr}Worn {ITEMNAME}"
                 loot_drop_score="13"
                 production_drop_score="5"
-                armor="-1"
+                armor="-10"
                 price_factor="0.6" />
   <ItemModifier modifier_group="ItemModifierGroup.cloth_unarmoured"
                 id="ripped_cloth_unarmoured"
                 name="{=Pbb94NdW}Ripped {ITEMNAME}"
                 loot_drop_score="15"
                 production_drop_score="5"
-                armor="-2"
+                armor="-20"
                 price_factor="0.3" />
   <!-- Horses -->
   <!--

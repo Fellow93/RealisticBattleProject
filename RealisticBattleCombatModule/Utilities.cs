@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using TaleWorlds.Core;
+using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
 namespace  RBMCombat
@@ -88,6 +91,78 @@ namespace  RBMCombat
             //property.SetValue(throwable.CurrentUsageItem, 25, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
             //throwable.CurrentUsageIndex = 0;
             return 25;
+        }
+
+        static public void lowerArmorQualityCheck(ref Agent agent, EquipmentIndex equipmentIndex, ItemObject.ItemTypeEnum itemType)
+        {
+            EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == itemType)
+            {
+                float probability = 0.1f;
+                if (equipmentElement.ItemModifier != null)
+                {
+                    probability = equipmentElement.ItemModifier.LootDropScore / 100f;
+                }
+                float randomF = MBRandom.RandomFloat;
+                if (randomF <= probability)
+                {
+                    lowerArmorQuality(ref agent, equipmentIndex, itemType);
+                }
+            }
+        }
+
+        static public void lowerArmorQuality(ref Agent agent, EquipmentIndex equipmentIndex, ItemObject.ItemTypeEnum itemType)
+        {
+            string oldItemModifier = " ";
+            EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == itemType)
+            {
+                if (equipmentElement.Item != null)
+                {
+                    int currentModifier = 0;
+                    if (equipmentElement.ItemModifier != null)
+                    {
+                        oldItemModifier = equipmentElement.ItemModifier.StringId;
+                        currentModifier = equipmentElement.ItemModifier.ModifyArmor(100) - 100;
+                    }
+                    ItemModifier newIM = equipmentElement.ItemModifier;
+                    IReadOnlyList<ItemModifier> itemModifiers = equipmentElement.Item?.ItemComponent?.ItemModifierGroup?.ItemModifiers;
+                    if (itemModifiers != null && itemModifiers.Count > 0)
+                    {
+                        foreach (ItemModifier im in itemModifiers)
+                        {
+                            int tempIm = im.ModifyArmor(100) - 100;
+                            if (equipmentElement.ItemModifier == null)
+                            {
+                                if (tempIm < 0)
+                                {
+                                    newIM = im;
+                                    break;
+                                }
+                            }
+                            if (!currentModifier.Equals(im))
+                            {
+                                if (currentModifier > tempIm)
+                                {
+                                    newIM = im;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (currentModifier > 0 && newIM != null && ((newIM.ModifyArmor(100) - 100) < 0))
+                    {
+                        equipmentElement.SetModifier(null);
+                        agent.SpawnEquipment[equipmentIndex] = equipmentElement;
+                    }
+                    else if (newIM != null || equipmentElement.ItemModifier == null)
+                    {
+                        equipmentElement.SetModifier(newIM);
+                        agent.SpawnEquipment[equipmentIndex] = equipmentElement;
+                    }
+                    InformationManager.DisplayMessage(new InformationMessage(agent.Name + ": " + itemType.ToString() + " " + oldItemModifier + " -> " + newIM.StringId));
+                }
+            }
         }
 
         public static string GetConfigFilePath()

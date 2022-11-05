@@ -33,7 +33,7 @@ namespace RBMCombat
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionJavelin, 0.0025f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionAxe, 0.01f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionKnife, 0.01f);
-                //ManagedParameters.SetParameter(ManagedParametersEnum.MissileMinimumDamageToStick, 25f);
+                ManagedParameters.SetParameter(ManagedParametersEnum.MissileMinimumDamageToStick, 35f);
             }
         }
 

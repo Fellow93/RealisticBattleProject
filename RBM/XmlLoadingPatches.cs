@@ -33,6 +33,21 @@ namespace RBM
                 {
                     foreach (XElement origNode in originalXml.Root.Elements())
                     {
+
+                        if (origNode.Name == "ItemModifier" && xmlDocument2.BaseURI.Contains("RBM"))
+                        {
+                            foreach (XElement mergedNode in mergedXml.Root.Elements())
+                            {
+                                if (mergedNode.Name == "ItemModifier")
+                                {
+                                    if (origNode.Attribute("id").Value.Equals(mergedNode.Attribute("id").Value) && origNode.Attribute("name").Value.Equals(mergedNode.Attribute("name").Value))
+                                    {
+                                        nodesToRemoveArray.Add(origNode);
+                                    }
+                                }
+                            }
+                        }
+
                         if (origNode.Name == "CraftedItem" && xmlDocument2.BaseURI.Contains("RBM"))
                         {
                             foreach (XElement mergedNode in mergedXml.Root.Elements())

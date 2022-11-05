@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
 namespace RBMCombat
@@ -75,12 +76,14 @@ namespace RBMCombat
                             }
                         case BoneBodyPartType.Head:
                             {
-                                __result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead);
+                                //__result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead);
+                                __result = getHeadArmor(__instance);
                                 break;
                             }
                         case BoneBodyPartType.Neck:
                             {
-                                __result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead) * 0.66f;
+                                //__result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead) * 0.66f;
+                                __result = getNeckArmor(__instance);
                                 break;
                             }
                         case BoneBodyPartType.Legs:
@@ -122,69 +125,98 @@ namespace RBMCombat
                 return false;
             }
 
+            static public float getHeadArmor(Agent agent)
+            {
+                float num = 0f;
+                EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.Head];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
+                {
+                    num += (float)equipmentElement.GetModifiedHeadArmor();
+                }
+                Utilities.lowerArmorQualityCheck(ref agent, EquipmentIndex.Head, ItemObject.ItemTypeEnum.HeadArmor);
+                return num;
+            }
+
             static public float getNeckArmor(Agent agent)
             {
                 float num = 0f;
-                for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+                EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.Head];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
                 {
-                    EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
-                    if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.Cape)
-                    {
-                        num += (float)equipmentElement.Item.ArmorComponent.BodyArmor;
-                    }
-                    if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
-                    {
-                        num += (float)equipmentElement.Item.ArmorComponent.ArmArmor;
-                    }
+                    num += (float)equipmentElement.GetModifiedHeadArmor();
                 }
+                num *= 0.66f;
+                Utilities.lowerArmorQualityCheck(ref agent, EquipmentIndex.Head, ItemObject.ItemTypeEnum.HeadArmor);
                 return num;
             }
+
+            //static public float getNeckArmor(Agent agent)
+            //{
+            //    float num = 0f;
+            //    for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            //    {
+            //        EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+            //        if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.Cape)
+            //        {
+            //            num += (float)equipmentElement.GetModifiedBodyArmor();
+            //        }
+            //        if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
+            //        {
+            //            num += (float)equipmentElement.GetModifiedArmArmor();
+            //        }
+            //    }
+            //    return num;
+            //}
 
             static public float getHorseHeadArmor(Agent agent)
             {
                 float num = 0f;
-                EquipmentElement equipmentElement = agent.SpawnEquipment[11];
+                EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
                 if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
                 {
-                    num += (float)equipmentElement.Item.ArmorComponent.HeadArmor;
+                    num += (float)equipmentElement.GetModifiedHeadArmor();
                     num += 10f;
                 }
+                Utilities.lowerArmorQualityCheck(ref agent, EquipmentIndex.HorseHarness, ItemObject.ItemTypeEnum.HorseHarness);
                 return num;
             }
 
             static public float getHorseLegArmor(Agent agent)
             {
                 float num = 0f;
-                EquipmentElement equipmentElement = agent.SpawnEquipment[11];
+                EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
                 if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
                 {
-                    num += (float)equipmentElement.Item.ArmorComponent.LegArmor;
+                    num += (float)equipmentElement.GetModifiedLegArmor();
                     num += 10f;
                 }
+                Utilities.lowerArmorQualityCheck(ref agent, EquipmentIndex.HorseHarness, ItemObject.ItemTypeEnum.HorseHarness);
                 return num;
             }
 
             static public float getHorseArmArmor(Agent agent)
             {
                 float num = 0f;
-                EquipmentElement equipmentElement = agent.SpawnEquipment[11];
+                EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
                 if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
                 {
-                    num += (float)equipmentElement.Item.ArmorComponent.ArmArmor;
+                    num += (float)equipmentElement.GetModifiedArmArmor();
                     num += 10f;
                 }
+                Utilities.lowerArmorQualityCheck(ref agent, EquipmentIndex.HorseHarness, ItemObject.ItemTypeEnum.HorseHarness);
                 return num;
             }
 
             static public float getHorseBodyArmor(Agent agent)
             {
                 float num = 0f;
-                 EquipmentElement equipmentElement = agent.SpawnEquipment[11];
+                EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
                 if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
                 {
-                    num += (float)equipmentElement.Item.ArmorComponent.BodyArmor;
+                    num += (float)equipmentElement.GetModifiedBodyArmor();
                     num += 10f;
                 }
+                Utilities.lowerArmorQualityCheck(ref agent, EquipmentIndex.HorseHarness, ItemObject.ItemTypeEnum.HorseHarness);
                 return num;
             }
 
@@ -194,15 +226,18 @@ namespace RBMCombat
                 for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
                 {
                     EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+
                     if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.Cape)
                     {
-                        num += (float)equipmentElement.Item.ArmorComponent.BodyArmor;
-                        num += (float)equipmentElement.Item.ArmorComponent.ArmArmor;
+                        num += (float)equipmentElement.GetModifiedBodyArmor();
+                        num += (float)equipmentElement.GetModifiedArmArmor();
+
                     }
                     if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
                     {
-                        num += (float)equipmentElement.Item.ArmorComponent.ArmArmor;
+                        num += (float)equipmentElement.GetModifiedArmArmor();
                     }
+                    Utilities.lowerArmorQualityCheck(ref agent, equipmentIndex, ItemObject.ItemTypeEnum.Cape);
                 }
                 return num;
             }
@@ -215,8 +250,9 @@ namespace RBMCombat
                     EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
                     if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
                     {
-                        num += (float)equipmentElement.Item.ArmorComponent.BodyArmor;
+                        num += (float)equipmentElement.GetModifiedBodyArmor();
                     }
+                    Utilities.lowerArmorQualityCheck(ref agent, equipmentIndex, ItemObject.ItemTypeEnum.BodyArmor);
                 }
                 return num;
             }
@@ -229,8 +265,9 @@ namespace RBMCombat
                     EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
                     if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
                     {
-                        num += (float)equipmentElement.Item.ArmorComponent.BodyArmor;
+                        num += (float)equipmentElement.GetModifiedBodyArmor();
                     }
+                    Utilities.lowerArmorQualityCheck(ref agent, equipmentIndex, ItemObject.ItemTypeEnum.BodyArmor);
                 }
                 return num;
             }
@@ -242,8 +279,9 @@ namespace RBMCombat
                     EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
                     if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
                     {
-                        return (float)equipmentElement.Item.ArmorComponent.ArmArmor;
+                        return (float)equipmentElement.GetModifiedArmArmor();
                     }
+                    Utilities.lowerArmorQualityCheck(ref agent, equipmentIndex, ItemObject.ItemTypeEnum.HandArmor);
                 }
                 return 0f;
             }
@@ -256,15 +294,43 @@ namespace RBMCombat
                     EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
                     if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.LegArmor)
                     {
-                        num += ((float)equipmentElement.Item.ArmorComponent.LegArmor) * 0.5f;
+                        num += ((float)equipmentElement.GetModifiedLegArmor()) * 0.5f;
                     }
                     if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
                     {
-                        num += ((float)equipmentElement.Item.ArmorComponent.LegArmor) * 0.5f;
+                        num += ((float)equipmentElement.GetModifiedLegArmor()) * 0.5f;
                     }
+                    Utilities.lowerArmorQualityCheck(ref agent, equipmentIndex, ItemObject.ItemTypeEnum.LegArmor);
                 }
                 return num;
             }
+
+        }
+    }
+    [HarmonyPatch(typeof(ItemModifier))]
+    [HarmonyPatch("ModifyArmor")]
+    class ModifyArmorPatch
+    {
+
+        private static int ModifyFactor(int baseValue, float factor)
+        {
+            if (baseValue == 0)
+            {
+                return 0;
+            }
+            if (!MBMath.ApproximatelyEquals(factor, 0f))
+            {
+                baseValue = ((factor < 1f) ? MathF.Ceiling(factor * (float)baseValue) : MathF.Floor(factor * (float)baseValue));
+            }
+            return baseValue;
+        }
+
+        static bool Prefix(ref int armorValue, ref int __result ,ref int ____armor)
+        {
+            float calculatedModifier = 1f + (____armor / 100f);
+            int result = ModifyFactor(armorValue, calculatedModifier);
+            __result = MBMath.ClampInt(result, 1, result);
+            return false;
         }
     }
 }
