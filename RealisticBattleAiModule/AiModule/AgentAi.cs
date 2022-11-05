@@ -5,6 +5,7 @@ using SandBox.GameComponents;
 using System.Collections.Generic;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Extensions;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -465,4 +466,61 @@ namespace RBMAI
         }
     }
 
+    //[HarmonyPatch(typeof(Mission))]
+    //[HarmonyPatch("OnAgentDismount")]
+    //class OnAgentDismountPatch
+    //{
+
+    //    //private static int _oldMissileSpeed;
+    //    static void Postfix(Agent agent, Mission __instance)
+    //    {
+    //        if (!agent.IsPlayerControlled && agent.Formation != null)
+    //        {
+    //            if (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) || agent.Equipment.HasRangedWeapon(WeaponClass.Bolt))
+    //            {
+    //                agent.Formation = agent.Team.GetFormation(FormationClass.Ranged);
+    //            }
+    //            else
+    //            {
+    //                agent.Formation = agent.Team.GetFormation(FormationClass.Infantry);
+    //            }
+    //            agent.DisableScriptedMovement();
+    //        }
+    //    }
+    //}
+
+    //[MBCallback]
+    //[HarmonyPatch(typeof(Agent))]
+    //class OverrideOnWeaponAmmoReload
+    //{
+    //    [HarmonyPostfix]
+    //    [HarmonyPatch("OnWeaponAmmoReload")]
+    //    static void PrefixOnWeaponAmmoReload(ref Agent __instance, EquipmentIndex slotIndex, EquipmentIndex ammoSlotIndex, short totalAmmo)
+    //    {
+    //        if (__instance.IsMount || __instance.IsPlayerControlled || __instance.Formation == null || __instance.Formation.FormationIndex == FormationClass.Infantry || __instance.Formation.FormationIndex == FormationClass.Cavalry)
+    //        {
+    //            return;
+    //        }
+    //        bool flag = false;
+    //        if (__instance.Formation != null && __instance.Equipment.HasRangedWeapon(WeaponClass.Arrow) && __instance.Equipment.GetAmmoAmount(WeaponClass.Arrow) <= 1)
+    //        {
+    //            flag = true;
+    //        }
+    //        else if (__instance.Formation != null && __instance.Equipment.HasRangedWeapon(WeaponClass.Bolt) && __instance.Equipment.GetAmmoAmount(WeaponClass.Bolt) <= 1)
+    //        {
+    //            flag = true;
+    //        }
+    //        if (flag)
+    //        {
+    //            if (__instance.Formation != null && __instance.HasMount)
+    //            {
+    //                __instance.Formation = __instance.Team.GetFormation(FormationClass.Cavalry);
+    //            }
+    //            else
+    //            {
+    //                __instance.Formation = __instance.Team.GetFormation(FormationClass.Infantry);
+    //            }
+    //        }
+    //    }
+    }
 }
