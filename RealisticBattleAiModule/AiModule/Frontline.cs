@@ -10,6 +10,7 @@ using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using static RBMAI.Tactics;
 using static TaleWorlds.MountAndBlade.HumanAIComponent;
+using static TaleWorlds.MountAndBlade.Source.Objects.Siege.AgentPathNavMeshChecker;
 
 namespace RBMAI
 {
@@ -527,6 +528,21 @@ namespace RBMAI
             [HarmonyPatch("GetOrderPositionOfUnitAux")]
             static bool PrefixGetOrderPositionOfUnitAux(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ____detachedUnits, ref WorldPosition __result)
             {
+                if (Mission.Current.IsFieldBattle && unit != null && (__instance.QuerySystem.IsInfantryFormation) && (__instance.AI != null || __instance.IsAIControlled == false) && __instance.AI.ActiveBehavior != null)
+                {
+                    bool isAdvance =  (__instance.AI.ActiveBehavior.GetType().Name.Contains("Advance"));
+                    if (isAdvance)
+                    {
+                        float distance = unit.GetWorldPosition().AsVec2.Distance(__instance.QuerySystem.AveragePosition);
+                        if (__instance.OrderPositionIsValid && distance > 60f)
+                        {
+                            WorldPosition pos = unit.GetWorldPosition();
+                            pos.SetVec2(__instance.QuerySystem.AveragePosition);
+                            __result = pos;
+                            return false;
+                        }
+                    }
+                }
                 //if (__instance.IsCavalry())
                 //{
                 //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0.01f, 7f, 0.01f, 110f, 1f);
@@ -598,68 +614,89 @@ namespace RBMAI
                 return true;
             }
         }
+        
+    }
 
-        [HarmonyPatch(typeof(HumanAIComponent))]
-        class OverrideFormationMovementComponent
+    [HarmonyPatch(typeof(HumanAIComponent))]
+    class OverrideFormation
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch("UpdateFormationMovement")]
+        static void PostfixUpdateFormationMovement(ref HumanAIComponent __instance, ref Agent ___Agent)
         {
-            internal enum MovementOrderEnum
+            if (___Agent.Controller == Agent.ControllerType.AI && ___Agent.Formation != null && ___Agent.Formation.GetReadonlyMovementOrderReference().OrderEnum == MovementOrder.MovementOrderEnum.Move)
             {
-                Invalid,
-                Attach,
-                AttackEntity,
-                Charge,
-                ChargeToTarget,
-                Follow,
-                FollowEntity,
-                Guard,
-                Move,
-                Retreat,
-                Stop,
-                Advance,
-                FallBack
-            }
-            internal enum MovementStateEnum
-            {
-                Charge,
-                Hold,
-                Retreat,
-                StandGround
-            }
+                PropertyInfo propertyShouldCatchUpWithFormation = typeof(HumanAIComponent).GetProperty("ShouldCatchUpWithFormation");
+                propertyShouldCatchUpWithFormation.DeclaringType.GetProperty("ShouldCatchUpWithFormation");
+                propertyShouldCatchUpWithFormation.SetValue(__instance, true, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
 
-            private static readonly MethodInfo IsUnitDetachedForDebug =
-                typeof(Formation).GetMethod("IsUnitDetachedForDebug", BindingFlags.Instance | BindingFlags.NonPublic);
+                Vec2 currentGlobalPositionOfUnit = ___Agent.Formation.GetCurrentGlobalPositionOfUnit(___Agent, false);
+                FormationQuerySystem.FormationIntegrityDataGroup formationIntegrityData = ___Agent.Formation.QuerySystem.FormationIntegrityData;
+                ___Agent.SetFormationIntegrityData(currentGlobalPositionOfUnit, ___Agent.Formation.CurrentDirection, formationIntegrityData.AverageVelocityExcludeFarAgents, formationIntegrityData.AverageMaxUnlimitedSpeedExcludeFarAgents, formationIntegrityData.DeviationOfPositionsExcludeFarAgents);
+            }
+        }
+    }
 
-            [HarmonyPrefix]
-            [HarmonyPatch("GetFormationFrame")]
-            static bool PrefixGetFormationFrame(ref bool __result, ref Agent ___Agent, ref HumanAIComponent __instance, ref WorldPosition formationPosition, ref Vec2 formationDirection, ref float speedLimit, ref bool isSettingDestinationSpeed, ref bool limitIsMultiplier)
+    [HarmonyPatch(typeof(HumanAIComponent))]
+    class OverrideFormationMovementComponent
+    {
+        internal enum MovementOrderEnum
+        {
+            Invalid,
+            Attach,
+            AttackEntity,
+            Charge,
+            ChargeToTarget,
+            Follow,
+            FollowEntity,
+            Guard,
+            Move,
+            Retreat,
+            Stop,
+            Advance,
+            FallBack
+        }
+        internal enum MovementStateEnum
+        {
+            Charge,
+            Hold,
+            Retreat,
+            StandGround
+        }
+
+        private static readonly MethodInfo IsUnitDetachedForDebug =
+            typeof(Formation).GetMethod("IsUnitDetachedForDebug", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        [HarmonyPrefix]
+        [HarmonyPatch("GetFormationFrame")]
+        static bool PrefixGetFormationFrame(ref bool __result, ref Agent ___Agent, ref HumanAIComponent __instance, ref WorldPosition formationPosition, ref Vec2 formationDirection, ref float speedLimit, ref bool isSettingDestinationSpeed, ref bool limitIsMultiplier)
+        {
+            if (___Agent != null)
             {
-                if (___Agent != null)
+                var formation = ___Agent.Formation;
+                if (!___Agent.IsMount && formation != null && (formation.QuerySystem.IsCavalryFormation || formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && !(bool)IsUnitDetachedForDebug.Invoke(formation, new object[] { ___Agent }))
                 {
-                    var formation = ___Agent.Formation;
-                    if (!___Agent.IsMount && formation != null && (formation.QuerySystem.IsCavalryFormation || formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && !(bool)IsUnitDetachedForDebug.Invoke(formation, new object[] { ___Agent }))
+                    if (formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget)
                     {
-                        if (formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget)
+                        if (___Agent != null && formation != null)
                         {
-                            if (___Agent != null && formation != null)
-                            {
-                                isSettingDestinationSpeed = false;
-                                formationPosition = formation.GetOrderPositionOfUnit(___Agent);
-                                formationDirection = formation.GetDirectionOfUnit(___Agent);
-                                limitIsMultiplier = true;
-                                speedLimit = __instance != null && HumanAIComponent.FormationSpeedAdjustmentEnabled ? __instance.GetDesiredSpeedInFormation(false) : -1f;
-                                __result = true;
-                                return false;
-                            }
-                            else
-                            {
-                                return true;
-                            }
+                            isSettingDestinationSpeed = false;
+                            formationPosition = formation.GetOrderPositionOfUnit(___Agent);
+                            formationDirection = formation.GetDirectionOfUnit(___Agent);
+                            limitIsMultiplier = true;
+                            speedLimit = __instance != null && HumanAIComponent.FormationSpeedAdjustmentEnabled ? __instance.GetDesiredSpeedInFormation(false) : -1f;
+                            __result = true;
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
                         }
                     }
                 }
-
-                return true;
             }
+
+            return true;
         }
     }
 }

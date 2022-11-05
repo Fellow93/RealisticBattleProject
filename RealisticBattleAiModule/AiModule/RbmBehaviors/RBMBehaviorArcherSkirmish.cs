@@ -9,7 +9,7 @@ namespace RBMAI
 	{
 
 		private int flankCooldownMax = 40;
-		public float customWidth = 90f;
+		public float customWidth = 110f;
         public Timer repositionTimer = null;
 		public int side = MBRandom.RandomInt(2);
 		public int cooldown = 0;

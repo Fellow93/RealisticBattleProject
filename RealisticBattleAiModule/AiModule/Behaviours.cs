@@ -899,10 +899,10 @@ namespace RBMAI
             if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
                 (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorAdvance)))
             {
-                if(desiredSpeed < 0f)
+                if (desiredSpeed < 0.3f)
                 {
                     limitIsMultiplier = true;
-                    desiredSpeed = 0.55f;
+                    desiredSpeed = 0.3f;
                 }
                 //___Agent.SetMaximumSpeedLimit(100f, false);
             }
@@ -1823,12 +1823,16 @@ namespace RBMAI
             if (__instance.Formation != null)
             {
                 FormationQuerySystem querySystem = __instance.Formation.QuerySystem;
-                if (__instance.Formation.AI.ActiveBehavior == null)
+                if (__instance.Formation.AI.ActiveBehavior == null || querySystem.IsRangedFormation)
                 {
                     __result = 0f;
                     return false;
                 }
-
+                //if(__instance.Formation.QuerySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents > 15f)
+                //{
+                    //__result = 10f;
+                    //return false;
+                //}
                 //__result =  MBMath.Lerp(0.1f, 1.2f, MBMath.ClampFloat(behaviorCoherence * (querySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents + 1f) / (querySystem.IdealAverageDisplacement + 1f), 0f, 3f) / 3f);
                 __result = MBMath.Lerp(0.1f, 1.2f, MBMath.ClampFloat(__instance.BehaviorCoherence * (querySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents + 1f) / (querySystem.IdealAverageDisplacement + 1f), 0f, 3f) / 3f);
                 return false;
@@ -1882,7 +1886,27 @@ namespace RBMAI
 
                 if (__instance.Formation.QuerySystem.IsInfantryFormation && !RBMAI.Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
                 {
-                   
+
+                    FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
+                    _currentTacticField.DeclaringType.GetField("_currentTactic");
+                    //TacticComponent _currentTactic = (TacticComponent);
+                    if(__instance.Formation?.Team?.TeamAI != null)
+                    {
+                        if (_currentTacticField.GetValue(__instance.Formation?.Team?.TeamAI) != null && _currentTacticField.GetValue(__instance.Formation?.Team?.TeamAI).ToString().Contains("SplitArchers"))
+                        {
+                            Formation allyArchers = Utilities.FindSignificantAlly(__instance.Formation, false, true, false, false, false);
+                            if (allyArchers != null)
+                            {
+                                Vec2 dir = allyArchers.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
+                                float allyArchersDist = dir.Normalize();
+                                if (allyArchersDist > 100f)
+                                {
+                                    ____currentOrder = MovementOrder.MovementOrderMove(__instance.Formation.QuerySystem.MedianPosition);
+                                    return false;
+                                }
+                            }
+                        }
+                    }
                     Formation enemyCav = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
 
                     if (enemyCav != null && !enemyCav.QuerySystem.IsCavalryFormation)
