@@ -37,7 +37,7 @@
   <Scene id="aserai_castle_002"
          name="{=OLrhkKUo}Ain Baliq Castle"
          terrain="Plain"
-         is_siege_map="true"></Scene>
+         is_siege_map="true"></Scene> lvl 1, 2 and 3 done
 		 
   <Scene id="aserai_castle_a"
          name="{=Sk1x6LZK}Barihal Castle"
