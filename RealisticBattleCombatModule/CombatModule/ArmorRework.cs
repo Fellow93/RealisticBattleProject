@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using System;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -133,7 +134,6 @@ namespace RBMCombat
                 {
                     num += (float)equipmentElement.GetModifiedHeadArmor();
                 }
-                Utilities.lowerArmorQualityCheck(ref agent, EquipmentIndex.Head, ItemObject.ItemTypeEnum.HeadArmor);
                 return num;
             }
 
@@ -146,7 +146,6 @@ namespace RBMCombat
                     num += (float)equipmentElement.GetModifiedHeadArmor();
                 }
                 num *= 0.66f;
-                Utilities.lowerArmorQualityCheck(ref agent, EquipmentIndex.Head, ItemObject.ItemTypeEnum.HeadArmor);
                 return num;
             }
 
@@ -177,7 +176,6 @@ namespace RBMCombat
                     num += (float)equipmentElement.GetModifiedHeadArmor();
                     num += 10f;
                 }
-                Utilities.lowerArmorQualityCheck(ref agent, EquipmentIndex.HorseHarness, ItemObject.ItemTypeEnum.HorseHarness);
                 return num;
             }
 
@@ -190,7 +188,6 @@ namespace RBMCombat
                     num += (float)equipmentElement.GetModifiedLegArmor();
                     num += 10f;
                 }
-                Utilities.lowerArmorQualityCheck(ref agent, EquipmentIndex.HorseHarness, ItemObject.ItemTypeEnum.HorseHarness);
                 return num;
             }
 
@@ -203,7 +200,6 @@ namespace RBMCombat
                     num += (float)equipmentElement.GetModifiedArmArmor();
                     num += 10f;
                 }
-                Utilities.lowerArmorQualityCheck(ref agent, EquipmentIndex.HorseHarness, ItemObject.ItemTypeEnum.HorseHarness);
                 return num;
             }
 
@@ -216,7 +212,6 @@ namespace RBMCombat
                     num += (float)equipmentElement.GetModifiedBodyArmor();
                     num += 10f;
                 }
-                Utilities.lowerArmorQualityCheck(ref agent, EquipmentIndex.HorseHarness, ItemObject.ItemTypeEnum.HorseHarness);
                 return num;
             }
 
@@ -237,7 +232,6 @@ namespace RBMCombat
                     {
                         num += (float)equipmentElement.GetModifiedArmArmor();
                     }
-                    Utilities.lowerArmorQualityCheck(ref agent, equipmentIndex, ItemObject.ItemTypeEnum.Cape);
                 }
                 return num;
             }
@@ -252,7 +246,6 @@ namespace RBMCombat
                     {
                         num += (float)equipmentElement.GetModifiedBodyArmor();
                     }
-                    Utilities.lowerArmorQualityCheck(ref agent, equipmentIndex, ItemObject.ItemTypeEnum.BodyArmor);
                 }
                 return num;
             }
@@ -267,23 +260,22 @@ namespace RBMCombat
                     {
                         num += (float)equipmentElement.GetModifiedBodyArmor();
                     }
-                    Utilities.lowerArmorQualityCheck(ref agent, equipmentIndex, ItemObject.ItemTypeEnum.BodyArmor);
                 }
                 return num;
             }
 
             static public float getArmArmor(Agent agent)
             {
+                float num = 0f;
                 for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
                 {
                     EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
                     if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
                     {
-                        return (float)equipmentElement.GetModifiedArmArmor();
+                        num += (float)equipmentElement.GetModifiedArmArmor();
                     }
-                    Utilities.lowerArmorQualityCheck(ref agent, equipmentIndex, ItemObject.ItemTypeEnum.HandArmor);
                 }
-                return 0f;
+                return num;
             }
 
             static public float getLegArmor(Agent agent)
@@ -300,7 +292,6 @@ namespace RBMCombat
                     {
                         num += ((float)equipmentElement.GetModifiedLegArmor()) * 0.5f;
                     }
-                    Utilities.lowerArmorQualityCheck(ref agent, equipmentIndex, ItemObject.ItemTypeEnum.LegArmor);
                 }
                 return num;
             }

@@ -1172,6 +1172,12 @@ namespace RBMCombat
             //InformationManager.DisplayMessage(new InformationMessage("dmgWithPerksSkills: " + dmgWithPerksSkills + " inflictedDamage: " + inflictedDamage +
             //    " HP: " + attackInformation.VictimAgentHealth));
 
+            //if (victim != null)
+            //{
+            //    Utilities.initiateCheckForArmor(ref victim, ref attackInformation, ref attackCollisionData);
+            //    Utilities.numOfHits++;
+            //}
+
             int absoluteDamage = MBMath.ClampInt((int)(MyComputeDamage(weaponType, damageType, magnitude, 0f, victimAgentAbsorbedDamageRatio) * dmgMultiplier), 0, 2000);
             absorbedByArmor = absoluteDamage - inflictedDamage;
 
@@ -1912,7 +1918,7 @@ namespace RBMCombat
                                 __result.DamageType = ((!attackerWeapon.IsEmpty && true && !collisionData.IsAlternativeAttack) ? ((DamageTypes)collisionData.DamageType) : DamageTypes.Blunt);
                                 __result.NoIgnore = collisionData.IsAlternativeAttack;
                                 __result.AttackerStunPeriod = collisionData.AttackerStunPeriod;
-                                __result.DefenderStunPeriod = collisionData.DefenderStunPeriod;
+                                __result.DefenderStunPeriod = collisionData.DefenderStunPeriod * 0.5f;
                                 __result.BlowFlag = BlowFlags.None;
                                 __result.Position = collisionData.CollisionGlobalPosition;
                                 __result.BoneIndex = collisionData.CollisionBoneIndex;
@@ -2123,6 +2129,13 @@ namespace RBMCombat
             {
                 isBlocked = true;
             }
+
+            if (__instance != null && damagedHp > 1)
+            {
+                Utilities.initiateCheckForArmor(ref __instance, collisionData);
+                Utilities.numOfHits++;
+            }
+
             method3.Invoke(__instance.Mission, new object[] { __instance, agent, b, collisionData, isBlocked, damagedHp });
             if (__instance.Health < 1f)
             {
