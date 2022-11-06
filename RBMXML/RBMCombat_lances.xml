@@ -278,9 +278,6 @@
   <CraftedItem id="southern_spear_3_t4" name="{=vXYlLH6L}Long Thamaskene Tipped Spear" crafting_template="TwoHandedPolearm" culture="Culture.aserai">
     <Pieces>
       <Piece id="spear_blade_11" Type="Blade" scale_factor="100" />
-      <Piece id="spear_banner_3"
-             Type="Guard"
-             scale_factor="100" />
       <Piece id="spear_handle_5" Type="Handle" scale_factor="110" />
       <Piece id="spear_pommel_11" Type="Pommel" scale_factor="100" />
     </Pieces>
@@ -336,9 +333,6 @@
       <Piece id="spear_blade_36"
              Type="Blade"
              scale_factor="100" />
-      <Piece id="spear_banner_6"
-             Type="Guard"
-             scale_factor="100" />
       <Piece id="spear_handle_16"
              Type="Handle"
              scale_factor="150" />
@@ -375,9 +369,6 @@
     <Pieces>
       <Piece id="spear_blade_42"
              Type="Blade"
-             scale_factor="100" />
-      <Piece id="spear_banner_10"
-             Type="Guard"
              scale_factor="100" />
       <Piece id="spear_handle_16"
              Type="Handle"
@@ -907,9 +898,6 @@
       <Piece id="spear_blade_8"
              Type="Blade"
              scale_factor="90" />
-      <Piece id="spear_banner_12"
-             Type="Guard"
-             scale_factor="90" />
       <Piece id="spear_handle_25"
              Type="Handle"
              scale_factor="90" />
@@ -1060,9 +1048,6 @@
     <Pieces>
       <Piece id="spear_blade_24"
              Type="Blade"
-             scale_factor="100" />
-      <Piece id="spear_banner_17"
-             Type="Guard"
              scale_factor="100" />
       <Piece id="spear_handle_8"
              Type="Handle"
