@@ -99,10 +99,10 @@ namespace  RBMCombat
             if (equipmentElement.Item != null && equipmentElement.Item.ItemType == itemType)
             {
                 float probability = 0.1f;
-                if (equipmentElement.ItemModifier != null)
-                {
-                    probability = equipmentElement.ItemModifier.LootDropScore / 100f;
-                }
+                //if (equipmentElement.ItemModifier != null)
+                //{
+                //    probability = equipmentElement.ItemModifier.LootDropScore / 100f;
+                //}
                 float randomF = MBRandom.RandomFloat;
                 if (randomF <= probability)
                 {

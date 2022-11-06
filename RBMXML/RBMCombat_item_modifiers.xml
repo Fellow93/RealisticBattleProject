@@ -512,7 +512,7 @@
                 production_drop_score="10"
                 armor="20"
                 price_factor="2.5" />
-				
+
   <ItemModifier modifier_group="ItemModifierGroup.chain"
                 id="chain_damage_115"
                 name="Scratched Lordly"
@@ -538,7 +538,7 @@
                 price_factor="0.1" />
 				
   <ItemModifier modifier_group="ItemModifierGroup.chain"
-                id="chain_damage_85"
+                id="chain_damage_95"
                 name="Scratched"
                 loot_drop_score="0"
                 production_drop_score="0"
