@@ -482,6 +482,28 @@
                 production_drop_score="5"
                 armor="-20"
                 price_factor="0.3" />
+				
+  <ItemModifier modifier_group="ItemModifierGroup.plate"
+                id="plate_damage_70"
+                name="Damaged"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-30"
+                price_factor="0.1" />
+  <ItemModifier modifier_group="ItemModifierGroup.plate"
+                id="plate_damage_60"
+                name="Highly Damaged"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-40"
+                price_factor="0.1" />
+  <ItemModifier modifier_group="ItemModifierGroup.plate"
+                id="plate_damage_50"
+                name="Ruined"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-50"
+                price_factor="0.1" />
   <!-- Chain Armors -->
   <ItemModifier modifier_group="ItemModifierGroup.chain"
                 id="lordly_chain"
@@ -490,6 +512,15 @@
                 production_drop_score="10"
                 armor="20"
                 price_factor="2.5" />
+				
+  <ItemModifier modifier_group="ItemModifierGroup.chain"
+                id="chain_damage_115"
+                name="Scratched Lordly"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="15"
+                price_factor="0.1" />
+				
   <ItemModifier modifier_group="ItemModifierGroup.chain"
                 id="fine_chain"
                 name="{=xeb1b5PQ}Fine {ITEMNAME}"
@@ -497,6 +528,23 @@
                 production_drop_score="15"
                 armor="10"
                 price_factor="1.5" />
+				
+  <ItemModifier modifier_group="ItemModifierGroup.chain"
+                id="chain_damage_105"
+                name="Scratched Fine"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="5"
+                price_factor="0.1" />
+				
+  <ItemModifier modifier_group="ItemModifierGroup.chain"
+                id="chain_damage_85"
+                name="Scratched"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-5"
+                price_factor="0.1" />
+				
   <ItemModifier modifier_group="ItemModifierGroup.chain"
                 id="loose_chain"
                 name="{=bWhJwHA1}Loose {ITEMNAME}"
@@ -504,6 +552,15 @@
                 production_drop_score="5"
                 armor="-10"
                 price_factor="0.6" />
+				
+  <ItemModifier modifier_group="ItemModifierGroup.chain"
+                id="chain_damage_85"
+                name="Scratched Loose"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-15"
+                price_factor="0.1" />
+				
   <ItemModifier modifier_group="ItemModifierGroup.chain"
                 id="rusty_chain"
                 name="{=l7QEpVwU}Rusty {ITEMNAME}"
@@ -511,6 +568,54 @@
                 production_drop_score="5"
                 armor="-20"
                 price_factor="0.3" />
+				
+  <ItemModifier modifier_group="ItemModifierGroup.chain"
+                id="chain_damage_75"
+                name="Scratched Rusty"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-25"
+                price_factor="0.1" />
+				
+  <ItemModifier modifier_group="ItemModifierGroup.chain"
+                id="chain_damage_70"
+                name="Slightly Damaged"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-30"
+                price_factor="0.1" />
+				
+  <ItemModifier modifier_group="ItemModifierGroup.chain"
+                id="chain_damage_65"
+                name="Damaged"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-35"
+                price_factor="0.1" />
+				
+  <ItemModifier modifier_group="ItemModifierGroup.chain"
+                id="chain_damage_60"
+                name="Highly Damaged"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-40"
+                price_factor="0.1" />
+				
+  <ItemModifier modifier_group="ItemModifierGroup.chain"
+                id="chain_damage_55"
+                name="Very Highly Damaged"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-45"
+                price_factor="0.1" />
+				
+  <ItemModifier modifier_group="ItemModifierGroup.chain"
+                id="chain_damage_50"
+                name="Ruined"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-50"
+                price_factor="0.1" />
   <!-- Leather Armors -->
   <ItemModifier modifier_group="ItemModifierGroup.leather"
                 id="fine_leather"
@@ -540,6 +645,28 @@
                 production_drop_score="5"
                 armor="-20"
                 price_factor="0.3" />
+				
+  <ItemModifier modifier_group="ItemModifierGroup.leather"
+                id="leather_damage_70"
+                name="Damaged"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-30"
+                price_factor="0.1" />
+  <ItemModifier modifier_group="ItemModifierGroup.leather"
+                id="leather_damage_60"
+                name="Highly Damaged"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-40"
+                price_factor="0.1" />
+  <ItemModifier modifier_group="ItemModifierGroup.leather"
+                id="leather_damage_50"
+                name="Ruined"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-50"
+                price_factor="0.1" />
   <!-- Cloth Armors -->
   <ItemModifier modifier_group="ItemModifierGroup.cloth"
                 id="fine_cloth"
@@ -569,6 +696,28 @@
                 production_drop_score="5"
                 armor="-20"
                 price_factor="0.3" />
+
+  <ItemModifier modifier_group="ItemModifierGroup.cloth"
+                id="cloth_damage_70"
+                name="Damaged"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-30"
+                price_factor="0.1" />
+  <ItemModifier modifier_group="ItemModifierGroup.cloth"
+                id="cloth_damage_60"
+                name="Highly Damaged"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-40"
+                price_factor="0.1" />
+  <ItemModifier modifier_group="ItemModifierGroup.cloth"
+                id="cloth_damage_50"
+                name="Ruined"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-50"
+                price_factor="0.1" />
   <!-- Clothing -->
   <ItemModifier modifier_group="ItemModifierGroup.cloth_unarmoured"
                 id="fine_cloth_unarmoured"
@@ -598,6 +747,28 @@
                 production_drop_score="5"
                 armor="-20"
                 price_factor="0.3" />
+				
+  <ItemModifier modifier_group="ItemModifierGroup.cloth_unarmoured"
+                id="cloth_unarmoured_damage_70"
+                name="Damaged"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-30"
+                price_factor="0.1" />
+  <ItemModifier modifier_group="ItemModifierGroup.cloth_unarmoured"
+                id="cloth_unarmoured_damage_60"
+                name="Highly Damaged"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-40"
+                price_factor="0.1" />
+  <ItemModifier modifier_group="ItemModifierGroup.cloth_unarmoured"
+                id="cloth_unarmoured_damage_50"
+                name="Ruined"
+                loot_drop_score="0"
+                production_drop_score="0"
+                armor="-50"
+                price_factor="0.1" />
   <!-- Horses -->
   <!--
 	<ItemModifier modifier_group="ItemModifierGroup.horse" id="purebred_horse" name="{=*}Purebred {ITEMNAME}" loot_drop_score="7" production_drop_score="5"  horse_speed="5" maneuver="4" charge_damage="2"  hit_points="5" price_factor="4"loot_drop_score="7" production_drop_score="5"/>
