@@ -624,15 +624,15 @@ namespace RBMAI
             WorldPosition position = __instance.Formation.QuerySystem.MedianPosition;
             Vec2 averagePosition = __instance.Formation.QuerySystem.AveragePosition;
 
-            float distanceFromMainFormation = 80f;
+            float distanceFromMainFormation = 90f;
             float closerDistanceFromMainFormation = 30f;
-            float distanceOffsetFromMainFormation = 80f;
+            float distanceOffsetFromMainFormation = 55f;
 
             if (__instance.Formation != null && __instance.Formation.QuerySystem.IsInfantryFormation)
             {
-                distanceFromMainFormation = 10f;
-                closerDistanceFromMainFormation = 5f;
-                distanceOffsetFromMainFormation = 10f;
+                distanceFromMainFormation = 30f;
+                closerDistanceFromMainFormation = 10f;
+                distanceOffsetFromMainFormation = 30f;
             }
 
             if (____mainFormation == null || __instance.Formation == null || __instance.Formation.QuerySystem.ClosestEnemyFormation == null)
@@ -647,13 +647,13 @@ namespace RBMAI
                 Vec2 vec;
                 if (___behaviorSide == FormationAI.BehaviorSide.Right || ___FlankSide == FormationAI.BehaviorSide.Right)
                 {
-                    vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + distanceFromMainFormation);
+                    vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized() * (____mainFormation.Width / 2f + __instance.Formation.Width / 2f + distanceFromMainFormation);
                     vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
-                    vec += ____mainFormation.Direction * distanceOffsetFromMainFormation;
+                    vec += ____mainFormation.Direction * (____mainFormation.Depth / 2f + __instance.Formation.Depth / 2f + distanceOffsetFromMainFormation);
                     position.SetVec2(vec);
                     if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(vec) || __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.1f)
                     {
-                        vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + closerDistanceFromMainFormation);
+                        vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized() * (____mainFormation.Width / 2f + __instance.Formation.Width / 2f + closerDistanceFromMainFormation);
                         vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
                         vec += ____mainFormation.Direction;
                         position.SetVec2(vec);
@@ -667,13 +667,13 @@ namespace RBMAI
                 }
                 else if (___behaviorSide == FormationAI.BehaviorSide.Left || ___FlankSide == FormationAI.BehaviorSide.Left)
                 {
-                    vec = ____mainFormation.CurrentPosition + v.LeftVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + distanceFromMainFormation);
+                    vec = ____mainFormation.CurrentPosition + v.LeftVec().Normalized() * (____mainFormation.Width / 2f + __instance.Formation.Width / 2f + distanceFromMainFormation);
                     vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
-                    vec += ____mainFormation.Direction * distanceOffsetFromMainFormation;
+                    vec += ____mainFormation.Direction * (____mainFormation.Depth / 2f + __instance.Formation.Depth / 2f + distanceOffsetFromMainFormation);
                     position.SetVec2(vec);
                     if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(vec) || __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.1f)
                     {
-                        vec = ____mainFormation.CurrentPosition + v.LeftVec().Normalized() * (____mainFormation.Width + __instance.Formation.Width + closerDistanceFromMainFormation);
+                        vec = ____mainFormation.CurrentPosition + v.LeftVec().Normalized() * (____mainFormation.Width / 2f + __instance.Formation.Width / 2f + closerDistanceFromMainFormation);
                         vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
                         vec += ____mainFormation.Direction;
                         position.SetVec2(vec);
@@ -897,13 +897,13 @@ namespace RBMAI
                 //___Agent.SetMaximumSpeedLimit(100f, false);
             }
             if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
-                (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorAdvance)))
+                (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorProtectFlank)))
             {
-                //if (desiredSpeed < 0.3f)
-                //{
-                //    limitIsMultiplier = true;
-                //    desiredSpeed = 0.3f;
-                //}
+                if (desiredSpeed < 0.85f)
+                {
+                    limitIsMultiplier = true;
+                    desiredSpeed = 0.85f;
+                }
                 //___Agent.SetMaximumSpeedLimit(100f, false);
             }
             if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&

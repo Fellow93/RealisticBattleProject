@@ -31,7 +31,7 @@ namespace RBMAI
                     Formation enemyForamtion = RBMAI.Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false, true);
                     if (enemyForamtion != null)
                     {
-                        float distance = mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(enemyForamtion.QuerySystem.MedianPosition.AsVec2);
+                        float distance = mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(enemyForamtion.QuerySystem.MedianPosition.AsVec2) + mainInfantry.Depth/2f + enemyForamtion.Depth / 2f;
                         return (distance <= (battleJoinRange + (hasBattleBeenJoined ? 5f : 0f)));
                     }
                 }

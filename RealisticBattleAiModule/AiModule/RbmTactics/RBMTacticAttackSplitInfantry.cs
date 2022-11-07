@@ -339,10 +339,11 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 		{
 
 			_leftFlankingInfantry.AI.ResetBehaviorWeights();
-			//TacticComponent.SetDefaultBehaviorWeights(_flankingInfantry);
-			//_skirmishers.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
-			_leftFlankingInfantry.AI.SetBehaviorWeight<RBMBehaviorInfantryAttackFlank>(1f).FlankSide = FormationAI.BehaviorSide.Left;
-			_leftFlankingInfantry.AI.Side = FormationAI.BehaviorSide.Left;
+            //TacticComponent.SetDefaultBehaviorWeights(_flankingInfantry);
+            //_skirmishers.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
+            //_leftFlankingInfantry.AI.SetBehaviorWeight<RBMBehaviorInfantryAttackFlank>(1f).FlankSide = FormationAI.BehaviorSide.Left;
+            _leftFlankingInfantry.AI.SetBehaviorWeight<BehaviorProtectFlank>(5f).FlankSide = FormationAI.BehaviorSide.Left;
+            _leftFlankingInfantry.AI.Side = FormationAI.BehaviorSide.Left;
 		}
 		if (_rightFlankingInfantry != null)
 		{
@@ -350,8 +351,9 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 			_rightFlankingInfantry.AI.ResetBehaviorWeights();
 			//TacticComponent.SetDefaultBehaviorWeights(_flankingInfantry);
 			//_skirmishers.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
-			_rightFlankingInfantry.AI.SetBehaviorWeight<RBMBehaviorInfantryAttackFlank>(1f).FlankSide = FormationAI.BehaviorSide.Right;
-			_rightFlankingInfantry.AI.Side = FormationAI.BehaviorSide.Right;
+			//_rightFlankingInfantry.AI.SetBehaviorWeight<RBMBehaviorInfantryAttackFlank>(1f).FlankSide = FormationAI.BehaviorSide.Right;
+            _rightFlankingInfantry.AI.SetBehaviorWeight<BehaviorProtectFlank>(5f).FlankSide = FormationAI.BehaviorSide.Right;
+            _rightFlankingInfantry.AI.Side = FormationAI.BehaviorSide.Right;
 		}
 		if (_mainInfantry != null)
 		{
