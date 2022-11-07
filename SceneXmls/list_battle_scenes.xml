@@ -27,7 +27,7 @@
   <Scene id="vlandia_castle_005a"
          name="{=txX7q3OL}Talivel Castle"
          terrain="Plain"
-         is_siege_map="true"></Scene>
+         is_siege_map="true"></Scene> lvl 1, 2 and 3 complete
 		 
   <Scene id="empire_siege_001"
          name="{=snbaIFOU}Veron Castle"
