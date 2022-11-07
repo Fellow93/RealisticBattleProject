@@ -899,11 +899,11 @@ namespace RBMAI
             if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
                 (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorAdvance)))
             {
-                if (desiredSpeed < 0.3f)
-                {
-                    limitIsMultiplier = true;
-                    desiredSpeed = 0.3f;
-                }
+                //if (desiredSpeed < 0.3f)
+                //{
+                //    limitIsMultiplier = true;
+                //    desiredSpeed = 0.3f;
+                //}
                 //___Agent.SetMaximumSpeedLimit(100f, false);
             }
             if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
@@ -1880,6 +1880,7 @@ namespace RBMAI
         [HarmonyPatch("CalculateCurrentOrder")]
         static bool PrefixCalculateCurrentOrder(ref BehaviorAdvance __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
         {
+            
             if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
@@ -1899,7 +1900,7 @@ namespace RBMAI
                             {
                                 Vec2 dir = allyArchers.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                                 float allyArchersDist = dir.Normalize();
-                                if (allyArchersDist > 100f)
+                                if (allyArchersDist - (allyArchers.Width/2f) - (__instance.Formation.Width /2f) > 60f)
                                 {
                                     ____currentOrder = MovementOrder.MovementOrderMove(__instance.Formation.QuerySystem.MedianPosition);
                                     return false;
@@ -2021,11 +2022,23 @@ namespace RBMAI
 
                     Vec2 vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                     WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
-                    //positionNew.SetVec2(positionNew.AsVec2 + vec.Normalized() * (10f + __instance.Formation.Depth));
+                    
                     //if (!Mission.Current.IsPositionInsideBoundaries(positionNew.AsVec2) || positionNew.GetNavMesh() == UIntPtr.Zero)
                     //{
-                        positionNew.SetVec2(significantEnemy.CurrentPosition);
                     //}
+                    float disper = __instance.Formation.QuerySystem.FormationDispersedness;
+                    if (disper > 10f)
+                    {
+                        positionNew.SetVec2(positionNew.AsVec2 + vec.Normalized() * (20f + __instance.Formation.Depth));
+                        if (!Mission.Current.IsPositionInsideBoundaries(positionNew.AsVec2) || positionNew.GetNavMesh() == UIntPtr.Zero)
+                        {
+                            positionNew.SetVec2(significantEnemy.CurrentPosition);
+                        }
+                    }
+                    else
+                    {
+                        positionNew.SetVec2(significantEnemy.CurrentPosition);
+                    }
                     ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
                     return false;

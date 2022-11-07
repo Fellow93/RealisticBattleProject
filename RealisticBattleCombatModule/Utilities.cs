@@ -8,6 +8,8 @@ namespace  RBMCombat
 {
     public static class Utilities
     {
+        public static int numOfHits = 0;
+        public static int numOfDurabilityDowngrade = 0;
         public static int calculateMissileSpeed(float ammoWeight, MissionWeapon rangedWeapon, int drawWeight)
         {
             int calculatedMissileSpeed = 10;
@@ -93,9 +95,69 @@ namespace  RBMCombat
             return 25;
         }
 
+        static public void initiateCheckForArmor(ref Agent victim, AttackCollisionData attackCollisionData)
+        {
+            BoneBodyPartType bodyPartHit = attackCollisionData.VictimHitBodyPart;
+
+            EquipmentIndex equipmentIndex = EquipmentIndex.None;
+            ItemObject.ItemTypeEnum itemType = ItemObject.ItemTypeEnum.Invalid;
+
+            if (!victim.IsHuman)
+            {
+                equipmentIndex = EquipmentIndex.HorseHarness;
+                itemType = ItemObject.ItemTypeEnum.HorseHarness;
+            }
+            else
+            {
+                switch (bodyPartHit)
+                {
+                    case BoneBodyPartType.Head:
+                    case BoneBodyPartType.Neck:
+                        {
+                            equipmentIndex = EquipmentIndex.Head;
+                            itemType = ItemObject.ItemTypeEnum.HeadArmor;
+                            break;
+                        }
+                    case BoneBodyPartType.Legs:
+                        {
+                            equipmentIndex = EquipmentIndex.Leg;
+                            itemType = ItemObject.ItemTypeEnum.LegArmor;
+                            break;
+                        }
+                    case BoneBodyPartType.ArmLeft:
+                    case BoneBodyPartType.ArmRight:
+                        {
+                            equipmentIndex = EquipmentIndex.Gloves;
+                            itemType = ItemObject.ItemTypeEnum.HandArmor;
+                            break;
+                        }
+                    case BoneBodyPartType.Abdomen:
+                    case BoneBodyPartType.Chest:
+                        {
+                            equipmentIndex = EquipmentIndex.Body;
+                            itemType = ItemObject.ItemTypeEnum.BodyArmor;
+                            break;
+                        }
+                    case BoneBodyPartType.ShoulderLeft:
+                    case BoneBodyPartType.ShoulderRight:
+                        {
+                            equipmentIndex = EquipmentIndex.Cape;
+                            itemType = ItemObject.ItemTypeEnum.Cape;
+                            break;
+                        }
+                }
+            }
+            if(equipmentIndex != EquipmentIndex.None && itemType != ItemObject.ItemTypeEnum.Invalid)
+            {
+                lowerArmorQualityCheck(ref victim, equipmentIndex, itemType);
+            }
+        }
+
         static public void lowerArmorQualityCheck(ref Agent agent, EquipmentIndex equipmentIndex, ItemObject.ItemTypeEnum itemType)
         {
+            //InformationManager.DisplayMessage(new InformationMessage( (float)numOfHits + ""));
             EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+            //numOfHits++;
             if (equipmentElement.Item != null && equipmentElement.Item.ItemType == itemType)
             {
                 float probability = 0.1f;
@@ -106,6 +168,7 @@ namespace  RBMCombat
                 float randomF = MBRandom.RandomFloat;
                 if (randomF <= probability)
                 {
+                    //numOfDurabilityDowngrade++;
                     lowerArmorQuality(ref agent, equipmentIndex, itemType);
                 }
             }
@@ -161,6 +224,7 @@ namespace  RBMCombat
                         agent.SpawnEquipment[equipmentIndex] = equipmentElement;
                     }
                     //InformationManager.DisplayMessage(new InformationMessage(agent.Name + ": " + itemType.ToString() + " " + oldItemModifier + " -> " + newIM?.StringId));
+                    //InformationManager.DisplayMessage(new InformationMessage(((float)numOfDurabilityDowngrade / (float)numOfHits) + ""));
                 }
             }
         }

@@ -238,7 +238,7 @@ namespace RBMAI
                                     Vec2 rightVec = direction.RightVec();
                                     IEnumerable<Agent> agentsLeft = mission.GetNearbyAllyAgents(unitPosition + leftVec * 1.35f, 1.35f, unit.Team);
                                     IEnumerable<Agent> agentsRight = mission.GetNearbyAllyAgents(unitPosition + rightVec * 1.35f, 1.35f, unit.Team);
-                                    IEnumerable<Agent> furtherAllyAgents = mission.GetNearbyAllyAgents(unitPosition + direction * 3f, 2f, unit.Team);
+                                    IEnumerable<Agent> furtherAllyAgents = mission.GetNearbyAllyAgents(unitPosition + direction * 2.2f, 1.1f, unit.Team);
 
                                     int agentsLeftCount = agentsLeft.Count();
                                     int agentsRightCount = agentsRight.Count();
@@ -295,7 +295,7 @@ namespace RBMAI
                                     }
                                     if (isFieldBattle)
                                     {
-                                        int unitPower = MBMath.ClampInt((int)Math.Floor(unit.Character.GetPower() * 65), 75, 180);
+                                        int unitPower = MBMath.ClampInt((int)Math.Floor(unit.Character.GetPower() * 65), 75, 200);
                                         int randInt = MBRandom.RandomInt(unitPower + aggresivnesModifier);
                                         int defensivnesModifier = 0;
                                         if (unit.WieldedOffhandWeapon.IsShield())
@@ -378,7 +378,7 @@ namespace RBMAI
                             if (enemyAgentsImmidiateCount > enemyAgentsCountTreshold || enemyAgents10fCount > enemyAgentsCountTreshold)
                             {
                                 unit.LookDirection = direction.ToVec3();
-                                int unitPower = MBMath.ClampInt((int)Math.Floor(unit.Character.GetPower() * 65), 75, 180);
+                                int unitPower = MBMath.ClampInt((int)Math.Floor(unit.Character.GetPower() * 65), 75, 200);
                                 int randInt = MBRandom.RandomInt((int)unitPower + aggresivnesModifier);
                                 int defensivnesModifier = 0;
 
@@ -528,21 +528,21 @@ namespace RBMAI
             [HarmonyPatch("GetOrderPositionOfUnitAux")]
             static bool PrefixGetOrderPositionOfUnitAux(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ____detachedUnits, ref WorldPosition __result)
             {
-                if (Mission.Current.IsFieldBattle && unit != null && (__instance.QuerySystem.IsInfantryFormation) && (__instance.AI != null || __instance.IsAIControlled == false) && __instance.AI.ActiveBehavior != null)
-                {
-                    bool isAdvance =  (__instance.AI.ActiveBehavior.GetType().Name.Contains("Advance"));
-                    if (isAdvance)
-                    {
-                        float distance = unit.GetWorldPosition().AsVec2.Distance(__instance.QuerySystem.AveragePosition);
-                        if (__instance.OrderPositionIsValid && distance > 60f)
-                        {
-                            WorldPosition pos = unit.GetWorldPosition();
-                            pos.SetVec2(__instance.QuerySystem.AveragePosition);
-                            __result = pos;
-                            return false;
-                        }
-                    }
-                }
+                //if (Mission.Current.IsFieldBattle && unit != null && (__instance.QuerySystem.IsInfantryFormation) && (__instance.AI != null || __instance.IsAIControlled == false) && __instance.AI.ActiveBehavior != null)
+                //{
+                //    bool isAdvance =  (__instance.AI.ActiveBehavior.GetType().Name.Contains("Advance"));
+                //    if (isAdvance)
+                //    {
+                //        float distance = unit.GetWorldPosition().AsVec2.Distance(__instance.QuerySystem.AveragePosition);
+                //        if (__instance.OrderPositionIsValid && distance > 60f)
+                //        {
+                //            WorldPosition pos = unit.GetWorldPosition();
+                //            pos.SetVec2(__instance.QuerySystem.AveragePosition);
+                //            __result = pos;
+                //            return false;
+                //        }
+                //    }
+                //}
                 //if (__instance.IsCavalry())
                 //{
                 //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0.01f, 7f, 0.01f, 110f, 1f);

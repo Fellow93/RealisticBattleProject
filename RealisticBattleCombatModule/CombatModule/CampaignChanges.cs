@@ -3,6 +3,9 @@ using Helpers;
 using SandBox.GameComponents;
 using StoryMode.GameComponents;
 using StoryMode.Missions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
@@ -11,8 +14,10 @@ using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
+using TaleWorlds.CampaignSystem.ViewModelCollection.CharacterDeveloper;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.LinQuick;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.CampaignSystem.ComponentInterfaces.CombatXpModel;
@@ -756,6 +761,106 @@ namespace RBMCombat
                 }
                 __result = (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * (troop.IsHero ? 1.5f : (troop.IsMounted ? 1.5f : 1f));
                 return false;
+            }
+
+            //[HarmonyPatch(typeof(Equipment))]
+            //[HarmonyPatch("GetRandomEquipmentElements")]
+            //class GetRandomEquipmentElementsPatch
+            //{
+            //    static bool Prefix(ref Equipment __result, BasicCharacterObject character, bool randomEquipmentModifier, bool isCivilianEquipment = false, int seed = -1)
+            //    {
+            //        if(seed == -1)
+            //        {
+            //            return true;
+            //        }
+            //        Equipment equipment = new Equipment(isCivilianEquipment);
+            //        List<Equipment> list = character.AllEquipments.Where((Equipment eq) => eq.IsCivilian == isCivilianEquipment && !eq.IsEmpty()).ToList();
+            //        if (list.IsEmpty())
+            //        {
+            //            __result = equipment;
+            //            return false;
+            //        }
+            //        int count = list.Count;
+            //        //Random random = new Random(seed);
+            //        int weaponSetNo = MBRandom.RandomInt(count);
+            //        for (int i = 0; i < 12; i++)
+            //        {
+            //            equipment[i] = list[weaponSetNo].GetEquipmentFromSlot((EquipmentIndex)i);
+            //        }
+            //        __result = equipment;
+            //        return false;
+            //    }
+            //}
+
+            [HarmonyPatch(typeof(Agent))]
+            [HarmonyPatch("InitializeSpawnEquipment")]
+            class InitializeSpawnEquipmentPatch
+            {
+                static bool Prefix(Equipment spawnEquipment, ref Agent __instance)
+                {
+                    
+                    if (Campaign.Current != null && __instance.IsHuman && __instance.IsHero && !__instance.Character.IsPlayerCharacter)
+                    {
+                        Equipment spawnEquipment2 = spawnEquipment.Clone();
+                        bool shoudReceiveUpgradedGear = false;
+                        Hero hero = ((CharacterObject)__instance.Character).HeroObject;
+                        foreach(Kingdom kingdom in Kingdom.All)
+                        {
+                            if(kingdom.Leader != null && kingdom.Leader == hero)
+                            {
+                                shoudReceiveUpgradedGear = true;
+                                break;
+                            }
+                            foreach(Hero lord in kingdom.Lords)
+                            {
+                                if (lord != null && lord == hero)
+                                {
+                                    shoudReceiveUpgradedGear = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (shoudReceiveUpgradedGear)
+                        {
+                            for (int i = 0; i < 12; i++)
+                            {
+                                if (spawnEquipment2[(EquipmentIndex)i].Item != null)
+                                {
+                                    IReadOnlyList<ItemModifier> itemModifiers = spawnEquipment2[(EquipmentIndex)i].Item?.ItemComponent?.ItemModifierGroup?.ItemModifiers;
+                                    if (itemModifiers != null)
+                                    {
+                                        EquipmentElement equipmentFromSlot = spawnEquipment2[(EquipmentIndex)i];
+                                        equipmentFromSlot.SetModifier(itemModifiers[0]);
+                                        spawnEquipment2[(EquipmentIndex)i] = equipmentFromSlot;
+                                    }
+                                }
+                            }
+                        }
+                        PropertyInfo propertySpawnEquipment = typeof(Agent).GetProperty("SpawnEquipment");
+                        propertySpawnEquipment.DeclaringType.GetProperty("SpawnEquipment");
+                        propertySpawnEquipment.SetValue(__instance, spawnEquipment2, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                        return false;
+
+                    }
+                    return true;
+                }
+            }
+
+
+            [HarmonyPatch(typeof(Equipment))]
+            [HarmonyPatch("GetRandomizedEquipment")]
+            class GetRandomizedEquipmentPatch
+            {
+                static bool Prefix(ref List<Equipment> equipmentSets, ref EquipmentIndex weaponSlot, ref int weaponSetNo, ref bool randomEquipmentModifier, ref EquipmentElement __result)
+                {
+                    EquipmentElement equipmentFromSlot = equipmentSets[weaponSetNo].GetEquipmentFromSlot(weaponSlot);
+                    //if(equipmentSets.Count > 1)
+                    //{
+                    //    bool testik = false;
+                    //}
+                    __result =  equipmentFromSlot;
+                    return false;
+                }
             }
 
             public static float GetTroopPowerBasedOnContextForXPAttacker(CharacterObject troop, MapEvent.BattleTypes battleType = MapEvent.BattleTypes.None, BattleSideEnum battleSideEnum = BattleSideEnum.None, bool isSimulation = false)
