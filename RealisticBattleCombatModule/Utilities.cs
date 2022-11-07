@@ -223,7 +223,7 @@ namespace  RBMCombat
                         equipmentElement.SetModifier(newIM);
                         agent.SpawnEquipment[equipmentIndex] = equipmentElement;
                     }
-                    InformationManager.DisplayMessage(new InformationMessage(agent.Name + ": " + itemType.ToString() + " " + oldItemModifier + " -> " + newIM?.StringId));
+                    //InformationManager.DisplayMessage(new InformationMessage(agent.Name + ": " + itemType.ToString() + " " + oldItemModifier + " -> " + newIM?.StringId));
                     //InformationManager.DisplayMessage(new InformationMessage(((float)numOfDurabilityDowngrade / (float)numOfHits) + ""));
                 }
             }
