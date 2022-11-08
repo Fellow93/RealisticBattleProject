@@ -1,9 +1,6 @@
 ﻿using RBMAI;
 using System.Linq;
-using TaleWorlds.CampaignSystem;
-using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
-using static TaleWorlds.MountAndBlade.HumanAIComponent;
 
 public class RBMTacticEmbolon : TacticComponent
 {
@@ -92,7 +89,7 @@ public class RBMTacticEmbolon : TacticComponent
 
 	private bool HasBattleBeenJoined()
 	{
-		return RBMAI.Utilities.HasBattleBeenJoined(_mainInfantry, _hasBattleBeenJoined, 60f);
+		return RBMAI.Utilities.HasBattleBeenJoined(_mainInfantry, _hasBattleBeenJoined, 70f);
 	}
 
 	protected override bool CheckAndSetAvailableFormationsChanged()
