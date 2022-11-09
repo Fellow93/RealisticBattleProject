@@ -29,7 +29,7 @@ namespace RBMCombat
         {
             static void Postfix()
             {
-                ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionArrow, 0.0020f);
+                ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionArrow, 0.0015f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionJavelin, 0.0025f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionAxe, 0.01f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionKnife, 0.01f);
