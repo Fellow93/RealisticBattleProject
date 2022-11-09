@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using SandBox.Missions.MissionLogics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.Core;
@@ -756,7 +757,40 @@ namespace RBMAI
                 return false;
             }
         }
+        [HarmonyPatch(typeof(TacticComponent))]
+        class ManageFormationCountsPatch
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch("ManageFormationCounts", new Type[] { typeof(int), typeof(int), typeof(int), typeof(int) })]
+            static bool PrefixSetDefaultBehaviorWeights(ref TacticComponent __instance, ref Team ___team, ref int infantryCount, ref int rangedCount, ref int cavalryCount, ref int rangedCavalryCount)
+            {
+                foreach(Agent agent in ___team.ActiveAgents)
+                {
+                    if(agent != null && agent.IsHuman && !agent.IsRunningAway)
+                    {
+                        bool isRanged = (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) && agent.Equipment.GetAmmoAmount(WeaponClass.Arrow) > 5) || (agent.Equipment.HasRangedWeapon(WeaponClass.Bolt) && agent.Equipment.GetAmmoAmount(WeaponClass.Bolt) > 5);
+                        if (agent.HasMount && isRanged)
+                        {
+                            agent.Formation = ___team.GetFormation(FormationClass.HorseArcher);
+                        }
+                        if (agent.HasMount && !isRanged)
+                        {
+                            agent.Formation = ___team.GetFormation(FormationClass.Cavalry);
+                        }
+                        if (!agent.HasMount && isRanged)
+                        {
+                            agent.Formation = ___team.GetFormation(FormationClass.Ranged);
+                        }
+                        if (!agent.HasMount && !isRanged)
+                        {
+                            agent.Formation = ___team.GetFormation(FormationClass.Infantry);
+                        }
+                    }
+                }
+                return true;
+            }
+        }
 
-        
+
     }
 }
