@@ -2,7 +2,7 @@
   <Scene id="battania_castle_b"
          name="{=eeSLHoF6}Llanoc Hen Castle"
          terrain="Plain"
-         is_siege_map="true"></Scene>
+         is_siege_map="true"></Scene> lvl 1 done
 		 
   <Scene id="battania_castle_a"
          name="{=SDoABuDm}Ab Comer Castle"
