@@ -696,11 +696,11 @@ namespace RBMTournament
                                 viableEM.Add(im);
                             }
                         }
-                        float randomFloat = MBRandom.RandomFloat;
                         if(viableEM != null && viableEM.Count > 0)
                         {
                             foreach (ItemModifier im in viableEM)
                             {
+                                float randomFloat = MBRandom.RandomFloat;
                                 if (randomFloat <= (im.ProductionDropScore / 100f))
                                 {
                                     eePrize.SetModifier(im);
