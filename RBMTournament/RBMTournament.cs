@@ -14,6 +14,9 @@ using TaleWorlds.CampaignSystem.Roster;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.Party;
+using static SandBox.CampaignBehaviors.LordConversationsCampaignBehavior;
 
 namespace RBMTournament
 {
@@ -665,6 +668,55 @@ namespace RBMTournament
                 {
                     return true;
                 }
+            }
+        }
+
+        [HarmonyPatch(typeof(TournamentManager))]
+        class GivePrizeToWinnerPatch
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch("GivePrizeToWinner")]
+            static bool UpdateTournamentPrizePrefix(ref TournamentManager __instance,ref TournamentGame tournament, ref Hero winner, ref bool isPlayerParticipated)
+            {
+                if (!isPlayerParticipated)
+                {
+                    tournament.UpdateTournamentPrize(isPlayerParticipated);
+                }
+                if (winner.PartyBelongedTo == MobileParty.MainParty)
+                {
+                    EquipmentElement eePrize = new EquipmentElement(tournament.Prize);
+                    IReadOnlyList<ItemModifier> itemModifiers = eePrize.Item?.ItemComponent?.ItemModifierGroup?.ItemModifiers;
+                    List<ItemModifier> viableEM = new List<ItemModifier>();
+                    if (itemModifiers != null && itemModifiers.Count > 0)
+                    {
+                        foreach(ItemModifier im in itemModifiers)
+                        {
+                            if(im.ProductionDropScore > 0 && im.PriceMultiplier >= 1f)
+                            {
+                                viableEM.Add(im);
+                            }
+                        }
+                        float randomFloat = MBRandom.RandomFloat;
+                        if(viableEM != null && viableEM.Count > 0)
+                        {
+                            foreach (ItemModifier im in viableEM)
+                            {
+                                if (randomFloat <= (im.ProductionDropScore / 100f))
+                                {
+                                    eePrize.SetModifier(im);
+                                    break;
+                                }
+                            }
+                        }
+                        
+                    }
+                    winner.PartyBelongedTo.ItemRoster.AddToCounts(eePrize, 1);
+                }
+                else if (winner.Clan != null)
+                {
+                    GiveGoldAction.ApplyBetweenCharacters(null, winner.Clan.Leader, tournament.Town.MarketData.GetPrice(tournament.Prize));
+                }
+                return false;
             }
         }
 

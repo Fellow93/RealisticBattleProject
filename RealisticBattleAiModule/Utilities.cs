@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
@@ -762,37 +763,43 @@ namespace RBMAI
             }
             return significantEnemy;
         }
-        
+
+        [HandleProcessCorruptedStateExceptions]
         public static bool CheckIfOnlyCavRemaining(Formation formation)
         {
             List<Formation> allEnemyFormations = new List<Formation>();
             bool result = true;
-            if (formation != null)
+            try
             {
-                if (formation.QuerySystem.ClosestEnemyFormation != null)
+                if (formation != null)
                 {
-                    foreach (Team team in Mission.Current.Teams.ToList())
+                    if (formation.QuerySystem.ClosestEnemyFormation != null)
                     {
-                        if (team.IsEnemyOf(formation.Team))
+                        foreach (Team team in Mission.Current.Teams.ToList())
                         {
-                            foreach (Formation enemyFormation in team.Formations.ToList())
+                            if (team.IsEnemyOf(formation.Team))
                             {
-                                allEnemyFormations.Add(enemyFormation);
+                                foreach (Formation enemyFormation in team.Formations.ToList())
+                                {
+                                    allEnemyFormations.Add(enemyFormation);
+                                }
                             }
                         }
-                    }
 
-                    foreach (Formation enemyFormation in allEnemyFormations.ToList())
-                    {
-                        if(!enemyFormation.QuerySystem.IsCavalryFormation && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
+                        foreach (Formation enemyFormation in allEnemyFormations.ToList())
                         {
-                            result = false;
+                            if (!enemyFormation.QuerySystem.IsCavalryFormation && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
+                            {
+                                result = false;
+                            }
                         }
+
                     }
-
                 }
+            }catch(Exception e)
+            {
+                result = false;
             }
-
             return result;
         }
 
