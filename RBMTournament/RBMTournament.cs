@@ -676,7 +676,7 @@ namespace RBMTournament
         {
             [HarmonyPrefix]
             [HarmonyPatch("GivePrizeToWinner")]
-            static bool UpdateTournamentPrizePrefix(ref TournamentManager __instance,ref TournamentGame tournament, ref Hero winner, ref bool isPlayerParticipated)
+            static bool GivePrizeToWinnerPrefix(ref TournamentManager __instance,ref TournamentGame tournament, ref Hero winner, ref bool isPlayerParticipated)
             {
                 if (!isPlayerParticipated)
                 {
