@@ -148,7 +148,7 @@ namespace RBMAI
 
                     WorldPosition medianPosition = ____mainFormation.QuerySystem.MedianPosition;
                     //medianPosition.SetVec2(medianPosition.AsVec2 - ____mainFormation.Direction * ((____mainFormation.Depth + __instance.Formation.Depth) * 1.5f));
-                    medianPosition.SetVec2(medianPosition.AsVec2 - ____mainFormation.Direction * ((____mainFormation.Depth + __instance.Formation.Depth) * 0.25f + 0.0f));
+                    medianPosition.SetVec2(medianPosition.AsVec2 - ____mainFormation.Direction.Normalized() * (____mainFormation.Depth / 2f + __instance.Formation.Depth / 2f + 5f) );
                     ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
 
                 }

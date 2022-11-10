@@ -30,7 +30,7 @@ namespace RBMCombat
             static void Postfix()
             {
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionArrow, 0.0015f);
-                ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionJavelin, 0.0025f);
+                ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionJavelin, 0.00225f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionAxe, 0.01f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionKnife, 0.01f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.MissileMinimumDamageToStick, 35f);
@@ -504,10 +504,21 @@ namespace RBMCombat
                 return true;
             }
 
-            static void Postfix(Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
+            static void Postfix(ref Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
             {
                 MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
                 WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
+
+                if (shooterAgent != null && Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.Siege && !shooterAgent.IsMainAgent && (wsd[0].WeaponClass == (int)WeaponClass.Javelin || wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe) && shooterAgent.Team?.Side == BattleSideEnum.Defender)
+                {
+                    for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                    {
+                        if (shooterAgent.Equipment[equipmentIndex].IsAnyConsumable() && shooterAgent.Equipment[equipmentIndex].Amount <= 2)
+                        {
+                            shooterAgent.SetWeaponAmountInSlot(equipmentIndex, shooterAgent.Equipment[equipmentIndex].ModifiedMaxAmount, enforcePrimaryItem: true);
+                        }
+                    }
+                }
                 if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
                 {
                     PropertyInfo property2 = typeof(WeaponComponentData).GetProperty("MissileSpeed");
