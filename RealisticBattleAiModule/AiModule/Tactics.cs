@@ -764,6 +764,7 @@ namespace RBMAI
             [HarmonyPatch("ManageFormationCounts", new Type[] { typeof(int), typeof(int), typeof(int), typeof(int) })]
             static bool PrefixSetDefaultBehaviorWeights(ref TacticComponent __instance, ref Team ___team, ref int infantryCount, ref int rangedCount, ref int cavalryCount, ref int rangedCavalryCount)
             {
+                
                 foreach(Agent agent in ___team.ActiveAgents)
                 {
                     if(agent != null && agent.IsHuman && !agent.IsRunningAway)
@@ -771,19 +772,31 @@ namespace RBMAI
                         bool isRanged = (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) && agent.Equipment.GetAmmoAmount(WeaponClass.Arrow) > 5) || (agent.Equipment.HasRangedWeapon(WeaponClass.Bolt) && agent.Equipment.GetAmmoAmount(WeaponClass.Bolt) > 5);
                         if (agent.HasMount && isRanged)
                         {
-                            agent.Formation = ___team.GetFormation(FormationClass.HorseArcher);
+                            if (___team.GetFormation(FormationClass.HorseArcher) != null && ___team.GetFormation(FormationClass.HorseArcher).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
+                            {
+                                agent.Formation = ___team.GetFormation(FormationClass.HorseArcher);
+                            }
                         }
                         if (agent.HasMount && !isRanged)
                         {
-                            agent.Formation = ___team.GetFormation(FormationClass.Cavalry);
+                            if (___team.GetFormation(FormationClass.Cavalry) != null && ___team.GetFormation(FormationClass.Cavalry).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
+                            {
+                                agent.Formation = ___team.GetFormation(FormationClass.Cavalry);
+                            }
                         }
                         if (!agent.HasMount && isRanged)
                         {
-                            agent.Formation = ___team.GetFormation(FormationClass.Ranged);
+                            if (___team.GetFormation(FormationClass.Ranged) != null && ___team.GetFormation(FormationClass.Ranged).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
+                            {
+                                agent.Formation = ___team.GetFormation(FormationClass.Ranged);
+                            }
                         }
                         if (!agent.HasMount && !isRanged)
                         {
-                            agent.Formation = ___team.GetFormation(FormationClass.Infantry);
+                            if (___team.GetFormation(FormationClass.Infantry) != null && ___team.GetFormation(FormationClass.Infantry).IsAIControlled && agent.Formation!= null && agent.Formation.IsAIControlled)
+                            {
+                                agent.Formation = ___team.GetFormation(FormationClass.Infantry);
+                            }
                         }
                     }
                 }
