@@ -44,9 +44,17 @@ namespace RBMCombat
             {
                 return PlayerArmorStatusVM.grey;
             }
-            else if (num >= 70)
+            else if (num >= 90)
+            {
+                return PlayerArmorStatusVM.lightOrange;
+            }
+            else if (num >= 80)
             {
                 return PlayerArmorStatusVM.orange;
+            }
+            else if (num >= 70)
+            {
+                return PlayerArmorStatusVM.darkOrange;
             }
             else
             {

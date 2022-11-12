@@ -11,9 +11,11 @@
         //private string legs = "Legs: 100%";
         //private string harness = "Harness: 100%"; 
 
-        public const string green = "#8FCE00FF";
+        public const string green = "#90EE90FF";
         public const string grey = "#EEEEEEFF";
-        public const string orange = "#E69138FF";
+        public const string lightOrange = "#FFD580FF";
+        public const string orange = "#FFA500FF";
+        public const string darkOrange = "#FF7518FF";
         public const string red = "#CC0000FF";
 
         private string helmet = grey;
