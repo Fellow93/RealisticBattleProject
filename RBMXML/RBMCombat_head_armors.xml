@@ -992,7 +992,7 @@
 	</Item>
 	<Item id="nordic_helmet" name="{=FHu0bGub}Northern Visored Cap" mesh="sturgia_masked_helm_a" culture="Culture.sturgia" weight="4.1" appearance="1" Type="HeadArmor">
 		<ItemComponent>
-			<Armor head_armor="86" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail"/>
+			<Armor head_armor="86" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>

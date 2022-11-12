@@ -17582,7 +17582,8 @@
                 level="26"
                 name="{=ifL3F7E2}Gallant Glaive Sister"
                 occupation="Mercenary"
-                culture="Culture.empire">
+                culture="Culture.empire"
+				upgrade_requires="ItemCategory.war_horse">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -18060,7 +18061,8 @@
                 level="21"
                 name="{=xl6QstMW}Mercenary Horse Archer"
                 occupation="Mercenary"
-                culture="Culture.neutral_culture">
+                culture="Culture.neutral_culture"
+				upgrade_requires="ItemCategory.war_horse">
     <face>
       <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
@@ -18149,7 +18151,7 @@
       <EquipmentSet id="sturgia_troop_civilian_template_t3"
                     civilian="true" />
       <equipment slot="Horse"
-                 id="Item.noble_horse_eastern" />
+                 id="Item.t2_khuzait_horse" />
       <equipment slot="HorseHarness"
                  id="Item.studded_steppe_barding" />
     </Equipments>
@@ -18160,7 +18162,8 @@
                 level="26"
                 name="{=kyt087eN}Veteran Mercenary Horse Archer"
                 occupation="Mercenary"
-                culture="Culture.neutral_culture">
+                culture="Culture.neutral_culture"
+				upgrade_requires="ItemCategory.war_horse">
     <face>
       <face_key_template value="BodyProperty.fighter_sturgia" />
     </face>
