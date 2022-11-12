@@ -8,24 +8,14 @@ namespace RBMConfig
 {
 	internal class RBMConfigViewModel : ViewModel
 	{
-
 		private string _doneText;
 
 		private string _cancelText;
 
-		private string _tab1Text;
+        public TextViewModel ArmorStatusUIEnabledText { get; }
+        public SelectorVM<SelectorItemVM> ArmorStatusUIEnabled { get; }
 
-		private string _tab2Text;
-
-		private string _sliderText;
-
-		private float _sliderValue;
-
-		private string _sliderValueText;
-
-		private bool _booleanValue;
-
-		public TextViewModel PostureSystemEnabledText { get; }
+        public TextViewModel PostureSystemEnabledText { get; }
 		public SelectorVM<SelectorItemVM> PostureSystemEnabled { get; }
 
 		public TextViewModel PlayerPostureMultiplierText { get; }
@@ -62,29 +52,10 @@ namespace RBMConfig
 		[DataSourceProperty]
 		public string DoneText => _doneText;
 
-		[DataSourceProperty]
-		public bool BooleanValue
-		{
-			get
-			{
-				return _booleanValue;
-			}
-			set
-			{
-				_booleanValue = !BooleanValue;
-			}
-		}
-
 		public RBMConfigViewModel()
 		{
 			_doneText = new TextObject("{=ATDone}Done").ToString();
 			_cancelText = new TextObject("{=ATCancel}Cancel").ToString();
-			_tab1Text = new TextObject("{=ATTab1Text}Main Interface").ToString();
-			_tab2Text = new TextObject("{=ATTab2Text}Sub Interface").ToString();
-			_sliderText = new TextObject("{=ATSlideText}Slider Example").ToString();
-			_sliderValue = 10f;
-			_sliderValueText = _sliderValue.ToString();
-			_booleanValue = true;
 			RefreshValues();
 			//RbmConfigData data;
 			List<string> troopOverhaulOnOff = new List<string> { "Inactive", "Active (Recommended)", };
@@ -103,7 +74,11 @@ namespace RBMConfig
 			BetterArrowVisualsText = new TextViewModel(new TextObject("Better Arrow Visuals"));
 			BetterArrowVisuals = new SelectorVM<SelectorItemVM>(betterArrowVisuals, 0, null);
 
-			if (RBMConfig.troopOverhaulActive)
+            List<string> armorStatusUIEnabled = new List<string> { "Disabled", "Enabled (Default)", };
+            ArmorStatusUIEnabledText = new TextViewModel(new TextObject("Armor Status GUI"));
+            ArmorStatusUIEnabled = new SelectorVM<SelectorItemVM>(armorStatusUIEnabled, 0, null);
+
+            if (RBMConfig.troopOverhaulActive)
 			{
 				ActiveTroopOverhaul.SelectedIndex = 1;
 			}
@@ -143,7 +118,16 @@ namespace RBMConfig
 				BetterArrowVisuals.SelectedIndex = 0;
 			}
 
-			List<string> postureOptions = new List<string> { "Disabled", "Enabled (Default)" };
+            if (RBMConfig.armorStatusUIEnabled)
+            {
+                ArmorStatusUIEnabled.SelectedIndex = 1;
+            }
+            else
+            {
+                ArmorStatusUIEnabled.SelectedIndex = 0;
+            }
+
+            List<string> postureOptions = new List<string> { "Disabled", "Enabled (Default)" };
 			PostureSystemEnabledText = new TextViewModel(new TextObject("Posture System"));
 			PostureSystemEnabled = new SelectorVM<SelectorItemVM>(postureOptions, 0, null);
 
@@ -285,7 +269,16 @@ namespace RBMConfig
 				RBMConfig.betterArrowVisuals = true;
 			}
 
-			if (PostureSystemEnabled.SelectedIndex == 0)
+            if (ArmorStatusUIEnabled.SelectedIndex == 0)
+            {
+                RBMConfig.armorStatusUIEnabled = false;
+            }
+            if (ArmorStatusUIEnabled.SelectedIndex == 1)
+            {
+                RBMConfig.armorStatusUIEnabled = true;
+            }
+
+            if (PostureSystemEnabled.SelectedIndex == 0)
 			{
 				RBMConfig.postureEnabled = false;
 			}

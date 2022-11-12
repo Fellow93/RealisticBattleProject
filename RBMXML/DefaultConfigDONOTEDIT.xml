@@ -28,6 +28,7 @@
       <MaceBluntModifier>1</MaceBluntModifier>
       <ArmorThresholdModifier>1</ArmorThresholdModifier>
       <BluntTraumaBonus>0</BluntTraumaBonus>
+	  <ArmorStatusUIEnabled>1</ArmorStatusUIEnabled>
     </Global>
     <WeaponTypes>
       <Dagger>

@@ -21,6 +21,7 @@ namespace RBMConfig
         public static bool postureGUIEnabled = true;
         public static bool vanillaCombatAi = false;
         //RBMCombat
+        public static bool armorStatusUIEnabled = true;
         public static float armorMultiplier = 2f;
         public static bool armorPenetrationMessage = false;
         public static bool betterArrowVisuals = true;
@@ -93,6 +94,16 @@ namespace RBMConfig
                 }
             }
             //RBMCombat
+            if (xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorStatusUIEnabled") != null)
+            {
+                armorStatusUIEnabled = xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorStatusUIEnabled").InnerText.Equals("1");
+            }
+            else
+            {
+                XmlNode ArmorStatusUIEnabled = xmlConfig.CreateNode(XmlNodeType.Element, "ArmorStatusUIEnabled", null);
+                ArmorStatusUIEnabled.InnerText = "1";
+                xmlConfig.SelectSingleNode("/Config/RBMCombat/Global").AppendChild(ArmorStatusUIEnabled);
+            }
             armorMultiplier = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorMultiplier").InnerText);
             armorPenetrationMessage = xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorPenetrationMessage").InnerText.Equals("1");
             betterArrowVisuals = xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BetterArrowVisuals").InnerText.Equals("1");
@@ -118,6 +129,8 @@ namespace RBMConfig
             priceMultipliers.WeaponPriceModifier = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/WeaponPriceModifier").InnerText);
             priceMultipliers.HorsePriceModifier = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/HorsePriceModifier").InnerText);
             priceMultipliers.TradePriceModifier = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/TradePriceModifier").InnerText);
+
+            saveXmlConfig();
         }
 
         public static void setInnerTextBoolean(XmlNode xmlConfig, bool value)
@@ -167,6 +180,7 @@ namespace RBMConfig
                     }
             }
             //RBMCombat
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorStatusUIEnabled"), armorStatusUIEnabled);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorMultiplier"), armorMultiplier.ToString());
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorPenetrationMessage"), armorPenetrationMessage);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BetterArrowVisuals"), betterArrowVisuals);
