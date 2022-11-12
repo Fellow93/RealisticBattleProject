@@ -512,30 +512,14 @@
                 production_drop_score="10"
                 armor="10"
                 price_factor="2.5" />
-
-  <ItemModifier modifier_group="ItemModifierGroup.chain"
-                id="chain_damage_115"
-                name="Scratched Lordly"
-                loot_drop_score="0"
-                production_drop_score="0"
-                armor="5"
-                price_factor="0.1" />
-				
+			
   <ItemModifier modifier_group="ItemModifierGroup.chain"
                 id="fine_chain"
                 name="{=xeb1b5PQ}Fine {ITEMNAME}"
                 loot_drop_score="10"
                 production_drop_score="15"
                 armor="5"
-                price_factor="1.5" />
-				
-  <ItemModifier modifier_group="ItemModifierGroup.chain"
-                id="chain_damage_105"
-                name="Scratched Fine"
-                loot_drop_score="0"
-                production_drop_score="0"
-                armor="5"
-                price_factor="0.1" />
+                price_factor="1.5" />				
 				
   <ItemModifier modifier_group="ItemModifierGroup.chain"
                 id="chain_damage_95"
@@ -644,8 +628,7 @@
                 loot_drop_score="15"
                 production_drop_score="5"
                 armor="-20"
-                price_factor="0.3" />
-				
+                price_factor="0.3" />				
   <ItemModifier modifier_group="ItemModifierGroup.leather"
                 id="leather_damage_70"
                 name="Damaged"
