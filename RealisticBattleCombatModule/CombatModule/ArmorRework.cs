@@ -209,7 +209,12 @@ namespace RBMCombat
                 EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
                 if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
                 {
-                    num += (float)equipmentElement.GetModifiedBodyArmor();
+                    num += equipmentElement.Item.ArmorComponent.BodyArmor;
+                    if (num > 0 && equipmentElement.ItemModifier != null)
+                    {
+                        num = equipmentElement.ItemModifier.ModifyArmor((int)num);
+                    }
+                    //num += (float)equipmentElement.GetModifiedBodyArmor();
                     num += 10f;
                 }
                 return num;

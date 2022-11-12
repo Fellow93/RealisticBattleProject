@@ -1,7 +1,5 @@
 ﻿namespace RBMAI
 {
-	using TaleWorlds.GauntletUI.BaseTypes;
-	// MBTargetEnemyStatus.TargetEnemyStatusVM
 	using TaleWorlds.Library;
 
 	public class BattleStatsVM : ViewModel

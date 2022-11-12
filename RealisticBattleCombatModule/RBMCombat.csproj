@@ -187,6 +187,8 @@
   <!-- Files & Classes -->
   <ItemGroup>
     <Compile Include="CombatModule\ArmorRework.cs" />
+    <Compile Include="CombatModule\PlayerArmorStatusLogic.cs" />
+    <Compile Include="CombatModule\PlayerArmorStatusVM.cs" />
     <Compile Include="CombatModule\CampaignChanges.cs" />
     <Compile Include="CombatModule\HorseChanges.cs" />
     <Compile Include="CombatModule\ItemValuesTiers.cs" />

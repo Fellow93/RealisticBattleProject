@@ -565,13 +565,22 @@ namespace RBMAI
     }
 
     [HarmonyPatch(typeof(Formation))]
-    [HarmonyPatch("ApplyActionOnEachUnit", new Type[] { typeof(Action<Agent>)})]
+    [HarmonyPatch("ApplyActionOnEachUnit", new Type[] { typeof(Action<Agent>) })]
     class ApplyActionOnEachUnitPatch
     {
-        static bool Prefix(ref Action<Agent> action,ref Formation __instance)
+        static bool Prefix(ref Action<Agent> action, ref Formation __instance)
         {
-            __instance.ApplyActionOnEachUnitViaBackupList(action);
-            return false;
+            try
+            {
+                __instance.ApplyActionOnEachUnitViaBackupList(action);
+                return false;
+            }
+            catch (Exception e)
+            {
+                {
+                    return true;
+                }
+            }
         }
     }
 

@@ -131,6 +131,10 @@ namespace RBM
             if (RBMConfig.RBMConfig.developerMode)
             {
                 mission.AddMissionBehavior((MissionBehavior)(object)new BattleStatsLogic());
+                if (RBMConfig.RBMConfig.rbmCombatEnabled)
+                {
+                    mission.AddMissionBehavior((MissionBehavior)(object)new PlayerArmorStatus());
+                }
             }
             if (RBMConfig.RBMConfig.rbmAiEnabled)
             {

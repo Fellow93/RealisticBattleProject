@@ -1,0 +1,20 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy = "StretchToParent" HeightSizePolicy = "StretchToParent" IsVisible="true">
+      <Children>
+        <!-- <TextWidget Brush="EnemyName"  HorizontalAlignment="Right" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="530"  Text="@Helmet" /> -->
+        <!-- <TextWidget Brush="EnemyName"  HorizontalAlignment="Right" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="520"  Text="@Shoulders" /> -->
+		<!-- <TextWidget Brush="EnemyName"  HorizontalAlignment="Right" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="505"  Text="@Body" /> -->
+		<!-- <TextWidget Brush="EnemyName"  HorizontalAlignment="Right" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="490"  Text="@Gloves" /> -->
+		<!-- <TextWidget Brush="EnemyName"  HorizontalAlignment="Right" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="475"  Text="@Legs" /> -->
+		<!-- <TextWidget Brush="EnemyName"  HorizontalAlignment="Right" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="460"  Text="@Harness" /> -->
+		<Widget HorizontalAlignment="Right" VerticalAlignment="Bottom" SuggestedWidth="30" SuggestedHeight="30" MarginBottom="160" Sprite="General\EquipmentIcons\equipment_type_head_armor" Color="@Helmet"/>
+		<Widget HorizontalAlignment="Right" VerticalAlignment="Bottom" SuggestedWidth="30" SuggestedHeight="60" MarginBottom="112" Sprite="General\EquipmentIcons\equipment_type_cape" Color="@Shoulders"/>
+		<Widget HorizontalAlignment="Right" VerticalAlignment="Bottom" SuggestedWidth="30" SuggestedHeight="30" MarginBottom="96" Sprite="General\EquipmentIcons\equipment_type_body_armor" Color="@Body"/>
+		<Widget HorizontalAlignment="Right" VerticalAlignment="Bottom" SuggestedWidth="30" SuggestedHeight="30" MarginBottom="64" Sprite="General\EquipmentIcons\equipment_type_hand_armor" Color="@Gloves"/>
+		<Widget HorizontalAlignment="Right" VerticalAlignment="Bottom" SuggestedWidth="30" SuggestedHeight="30" MarginBottom="32" Sprite="General\EquipmentIcons\equipment_type_leg_armor" Color="@Legs"/>
+		<Widget HorizontalAlignment="Right" VerticalAlignment="Bottom" SuggestedWidth="30" SuggestedHeight="30" MarginBottom="0" Sprite="General\EquipmentIcons\equipment_type_mount" Color="@Harness"/>
+	  </Children>
+    </Widget>
+  </Window>
+</Prefab>
