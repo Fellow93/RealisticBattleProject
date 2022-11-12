@@ -1436,7 +1436,7 @@
 	</Item>
 	<Item id="full_helm_over_laced_coif" name="{=wEfZyccm}Full Helm Over Laced Coif" mesh="vlandia_helmet_s_c" culture="Culture.vlandia" weight="3.5" appearance="2" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
-			<Armor head_armor="121" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate"/>
+			<Armor head_armor="121" has_gender_variations="false" hair_cover_type="type3" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -1490,7 +1490,7 @@
 	</Item>
 	<Item id="full_helm_over_padded_cap" name="{=qVj5NqrL}Full Helm Over Padded Cap" mesh="vlandia_helmet_s_e" culture="Culture.vlandia" weight="3.1" appearance="2" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
-			<Armor head_armor="128" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate"/>
+			<Armor head_armor="128" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -1520,7 +1520,7 @@
 	</Item>
 	<Item id="full_helm_over_mail_coif" name="{=FsDZC8Yl}Full Helm Over Mail Coif" mesh="vlandia_helmet_s_a" culture="Culture.vlandia" weight="4.5" appearance="2" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
-			<Armor head_armor="150" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate"/>
+			<Armor head_armor="150" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
