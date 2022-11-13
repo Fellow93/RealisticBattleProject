@@ -166,6 +166,10 @@ namespace RBMConfig
         public static void saveXmlConfig()
         {
             //modules
+            if (xmlConfig.SelectSingleNode("/Config/DeveloperMode") != null && developerMode)
+            {
+                setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/DeveloperMode"), developerMode);
+            }
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMTournament/Enabled"), rbmTournamentEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/Enabled"), rbmAiEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Enabled"), rbmCombatEnabled);
