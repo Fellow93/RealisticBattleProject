@@ -21,6 +21,7 @@ namespace RBMConfig
         public static bool postureGUIEnabled = true;
         public static bool vanillaCombatAi = false;
         //RBMCombat
+        public static bool realisticArrowArc = false;
         public static bool armorStatusUIEnabled = true;
         public static float armorMultiplier = 2f;
         public static bool armorPenetrationMessage = false;
@@ -104,6 +105,18 @@ namespace RBMConfig
                 ArmorStatusUIEnabled.InnerText = "1";
                 xmlConfig.SelectSingleNode("/Config/RBMCombat/Global").AppendChild(ArmorStatusUIEnabled);
             }
+
+            if (xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/RealisticArrowArc") != null)
+            {
+                realisticArrowArc = xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/RealisticArrowArc").InnerText.Equals("1");
+            }
+            else
+            {
+                XmlNode RealisticArrowArc = xmlConfig.CreateNode(XmlNodeType.Element, "RealisticArrowArc", null);
+                RealisticArrowArc.InnerText = "0";
+                xmlConfig.SelectSingleNode("/Config/RBMCombat/Global").AppendChild(RealisticArrowArc);
+            }
+
             armorMultiplier = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorMultiplier").InnerText);
             armorPenetrationMessage = xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorPenetrationMessage").InnerText.Equals("1");
             betterArrowVisuals = xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BetterArrowVisuals").InnerText.Equals("1");
@@ -181,6 +194,7 @@ namespace RBMConfig
             }
             //RBMCombat
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorStatusUIEnabled"), armorStatusUIEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/RealisticArrowArc"), realisticArrowArc);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorMultiplier"), armorMultiplier.ToString());
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorPenetrationMessage"), armorPenetrationMessage);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BetterArrowVisuals"), betterArrowVisuals);

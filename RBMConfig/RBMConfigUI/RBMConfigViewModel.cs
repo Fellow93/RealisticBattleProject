@@ -15,6 +15,9 @@ namespace RBMConfig
         public TextViewModel ArmorStatusUIEnabledText { get; }
         public SelectorVM<SelectorItemVM> ArmorStatusUIEnabled { get; }
 
+        public TextViewModel RealisticArrowArcText { get; }
+        public SelectorVM<SelectorItemVM> RealisticArrowArc { get; }
+
         public TextViewModel PostureSystemEnabledText { get; }
 		public SelectorVM<SelectorItemVM> PostureSystemEnabled { get; }
 
@@ -78,6 +81,10 @@ namespace RBMConfig
             ArmorStatusUIEnabledText = new TextViewModel(new TextObject("Armor Status GUI"));
             ArmorStatusUIEnabled = new SelectorVM<SelectorItemVM>(armorStatusUIEnabled, 0, null);
 
+            List<string> realisticArrowArc = new List<string> { "Disabled (Default)", "Enabled", };
+            RealisticArrowArcText = new TextViewModel(new TextObject("Realistic Arrow Arc"));
+            RealisticArrowArc = new SelectorVM<SelectorItemVM>(realisticArrowArc, 0, null);
+
             if (RBMConfig.troopOverhaulActive)
 			{
 				ActiveTroopOverhaul.SelectedIndex = 1;
@@ -125,6 +132,15 @@ namespace RBMConfig
             else
             {
                 ArmorStatusUIEnabled.SelectedIndex = 0;
+            }
+
+            if (RBMConfig.realisticArrowArc)
+            {
+                RealisticArrowArc.SelectedIndex = 1;
+            }
+            else
+            {
+                RealisticArrowArc.SelectedIndex = 0;
             }
 
             List<string> postureOptions = new List<string> { "Disabled", "Enabled (Default)" };
@@ -276,6 +292,15 @@ namespace RBMConfig
             if (ArmorStatusUIEnabled.SelectedIndex == 1)
             {
                 RBMConfig.armorStatusUIEnabled = true;
+            }
+
+            if (RealisticArrowArc.SelectedIndex == 0)
+            {
+                RBMConfig.realisticArrowArc = false;
+            }
+            if (RealisticArrowArc.SelectedIndex == 1)
+            {
+                RBMConfig.realisticArrowArc = true;
             }
 
             if (PostureSystemEnabled.SelectedIndex == 0)
