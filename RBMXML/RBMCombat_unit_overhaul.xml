@@ -1295,7 +1295,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.vlandia_2hsword_2_t5" />
       </EquipmentRoster>
       <EquipmentSet id="npc_wanderer_equipment_template_vlandia_civilian"
                     civilian="true" />
@@ -1323,7 +1323,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.vlandia_2hsword_2_t5" />
       </EquipmentRoster>
       <EquipmentSet id="npc_wanderer_equipment_template_vlandia_civilian"
                     civilian="true" />
@@ -1425,7 +1425,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.vlandia_2hsword_2_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -1467,7 +1467,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.vlandia_2hsword_2_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -1475,7 +1475,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.vlandia_2hsword_2_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -1511,7 +1511,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.vlandia_2hsword_2_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -1519,7 +1519,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.vlandia_2hsword_2_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -1567,7 +1567,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.vlandia_2hsword_2_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -1575,7 +1575,7 @@
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.vlandia_2hsword_2_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -1629,7 +1629,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.khuzait_polearm_1_t4" />
+                 id="Item.sturgia_2haxe_2_t5" />
       </EquipmentRoster>
       <EquipmentSet id="npc_wanderer_equipment_template_sturgia_civilian"
                     civilian="true" />
@@ -1659,7 +1659,7 @@
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item2"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.sturgia_2haxe_2_t5" />
       </EquipmentRoster>
       <EquipmentSet id="npc_wanderer_equipment_template_sturgia_civilian"
                     civilian="true" />
@@ -1685,7 +1685,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.khuzait_polearm_1_t4" />
+                 id="Item.sturgia_2haxe_2_t5" />
       <equipment slot="Item1"
                  id="Item.northern_round_sparring_shield" />
       </EquipmentRoster>
@@ -1707,7 +1707,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.khuzait_polearm_1_t4" />
+                 id="Item.sturgia_2haxe_2_t5" />
       <equipment slot="Item1"
                  id="Item.northern_round_sparring_shield" />
       </EquipmentRoster>
@@ -1745,7 +1745,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.khuzait_polearm_1_t4" />
+                 id="Item.sturgia_2haxe_2_t5" />
       <equipment slot="Item1"
                  id="Item.northern_round_sparring_shield" />
       </EquipmentRoster>
@@ -1755,7 +1755,7 @@
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item2"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.sturgia_2haxe_2_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -1801,7 +1801,7 @@
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item2"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.sturgia_2haxe_2_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -1841,7 +1841,7 @@
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item2"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.sturgia_2haxe_2_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -1849,7 +1849,7 @@
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_a" />
       <equipment slot="Item2"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.sturgia_2haxe_2_t5" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
