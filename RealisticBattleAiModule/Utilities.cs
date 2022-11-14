@@ -1165,7 +1165,7 @@ namespace RBMAI
             float result = 0f;
             foreach(Agent agent in agents)
             {
-                result += agent.CharacterPowerCached;
+                result += MBMath.ClampInt((int)Math.Floor(agent.CharacterPowerCached * 65), 75, 200);
             }
             return result;
         }

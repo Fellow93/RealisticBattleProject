@@ -3,10 +3,10 @@ using Helpers;
 using SandBox.GameComponents;
 using StoryMode.GameComponents;
 using StoryMode.Missions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
@@ -14,10 +14,8 @@ using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
-using TaleWorlds.CampaignSystem.ViewModelCollection.CharacterDeveloper;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
-using TaleWorlds.LinQuick;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.CampaignSystem.ComponentInterfaces.CombatXpModel;
@@ -27,6 +25,30 @@ namespace RBMCombat
 {
     class CampaignChanges
     {
+        public static List<CharacterObject> FillTroopListUntilTier(CharacterObject starterTroop, int tier)
+        {
+            List<CharacterObject> troops = new List<CharacterObject>();
+            List<CharacterObject> lastUpgradeTargets = new List<CharacterObject>();
+
+            troops.Add(starterTroop);
+
+            lastUpgradeTargets.Clear();
+            lastUpgradeTargets.Add(starterTroop);
+
+            for (int i = 1; i < tier; i++)
+            {
+                List<CharacterObject> newUpgradeTargets = new List<CharacterObject>();
+                foreach (CharacterObject co in lastUpgradeTargets)
+                {
+                    troops.AddRange(co.UpgradeTargets);
+                    newUpgradeTargets.AddRange(co.UpgradeTargets);
+                }
+                lastUpgradeTargets = newUpgradeTargets;
+            }
+
+            return troops;
+        }
+
         [HarmonyPatch(typeof(DefaultPartyHealingModel))]
         class OverrideDefaultPartyHealingModel
         {
@@ -711,9 +733,81 @@ namespace RBMCombat
             [HarmonyPatch("GetPowerImp")]
             static bool PrefixGetPowerImp(ref float __result, int tier, bool isHero = false, bool isMounted = false)
             {
-                //__result = (float)((2 + tier) * (8 + tier)) * 0.02f * (isHero ? 1.5f : (isMounted ? 1.2f : 1f));
-                var modifiedTier = tier * 3f;
-                __result = (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * (isHero ? 1.5f : (isMounted ? 1.5f : 1f));
+                bool isNoble = false;
+                float origPower = (float)((2 + tier) * (8 + tier)) * 0.02f * (isHero ? 1.5f : (isMounted ? 1.2f : 1f));
+                float modifiedTier = (tier - 1) * 3f;
+                modifiedTier = MathF.Clamp(modifiedTier, 1f, modifiedTier);
+                __result = (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * (isHero ? 1.5f : 1f) * (isMounted ? 1.5f : 1f) * (isNoble ? 1.5f : 1f);
+                return false;
+            }
+            public static float CustomGetPowerImp(int tier, bool isHero = false, bool isMounted = false, bool isNoble = false)
+            {
+                return (float)((2f + tier) * (8f + tier)) * 0.02f * (isHero ? 1.5f : 1f) * (isMounted ? 1.5f : 1f) * (isNoble ? 1.5f : 1f);
+            }
+
+            [HarmonyPrefix]
+            [HarmonyPatch("GetPower")]
+            static bool PrefixGetPower(ref CharacterObject __instance, ref float __result)
+            {
+                //return GetPowerImp(IsHero ? (HeroObject.Level / 4 + 1) : Tier, IsHero, IsMounted);
+                int tier = __instance.IsHero ? (__instance.HeroObject.Level / 4 + 1) : __instance.Tier;
+                bool isNoble = false;
+                if (__instance != null && __instance.Culture != null)
+                {
+                    CharacterObject EliteBasicTroop = __instance.Culture.EliteBasicTroop;
+                    if (__instance == EliteBasicTroop)
+                    {
+                        isNoble = true;
+                    }
+                    else
+                    {
+                        List<CharacterObject> cultureNobleTroopList = FillTroopListUntilTier(__instance.Culture.EliteBasicTroop, 10);
+                        foreach (CharacterObject co in cultureNobleTroopList)
+                        {
+                            if (co == __instance)
+                            {
+                                isNoble = true;
+                            }
+                        }
+                    }
+                }
+                //float origPower = (float)((2 + tier) * (8 + tier)) * 0.02f * (__instance.IsHero ? 1.5f : (__instance.IsMounted ? 1.2f : 1f));
+                float modifiedTier = (tier - 1) * 3f;
+                modifiedTier = MathF.Clamp(modifiedTier, 1f, modifiedTier);
+                __result = (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * (__instance.IsHero ? 1.5f : 1f) * (__instance.IsMounted ? 1.5f : 1f) * (isNoble ? 1.5f : 1f);
+                return false;
+            }
+
+            [HarmonyPrefix]
+            [HarmonyPatch("GetBattlePower")]
+            static bool PrefixGetBattlePower(ref CharacterObject __instance, ref float __result)
+            {
+                int tier = __instance.IsHero ? (__instance.HeroObject.Level / 4 + 1) : __instance.Tier;
+                bool isNoble = false;
+                if (__instance != null && __instance.Culture != null)
+                {
+                    CharacterObject EliteBasicTroop = __instance.Culture.EliteBasicTroop;
+                    if (__instance == EliteBasicTroop)
+                    {
+                        isNoble = true;
+                    }
+                    else
+                    {
+                        List<CharacterObject> cultureNobleTroopList = FillTroopListUntilTier(__instance.Culture.EliteBasicTroop, 10);
+                        foreach (CharacterObject co in cultureNobleTroopList)
+                        {
+                            if (co == __instance)
+                            {
+                                isNoble = true;
+                            }
+                        }
+                    }
+                }
+                float modifiedTier = (tier - 1) * 3f;
+                modifiedTier = MathF.Clamp(modifiedTier, 1f, modifiedTier);
+                //__result = (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * (__instance.IsHero ? 1.5f : 1f) * (__instance.IsMounted ? 1.5f : 1f) * (isNoble ? 1.5f : 1f);
+
+                __result = MathF.Max(1f + 0.5f * (__instance.GetPower() - CustomGetPowerImp(0, __instance.IsHero, __instance.IsMounted, isNoble)), 1f);
                 return false;
             }
         }
@@ -753,14 +847,54 @@ namespace RBMCombat
                 PowerCalculationContext context = DetermineContext(battleType, battleSideEnum, isSimulation);
 
                 int tier = (troop.IsHero ? (troop.HeroObject.Level / 4 + 1) : troop.Tier);
-                var modifiedTier = tier * 3f;
+                bool isNoble = false;
+                if(troop.Culture != null)
+                {
+                    CharacterObject EliteBasicTroop = troop.Culture.EliteBasicTroop;
+                    if(troop == EliteBasicTroop)
+                    {
+                        isNoble = true;
+                    }
+                    else
+                    {
+                        List<CharacterObject> cultureNobleTroopList = FillTroopListUntilTier(troop.Culture.EliteBasicTroop, 10);
+                        foreach(CharacterObject co in cultureNobleTroopList)
+                        {
+                            if(co == troop)
+                            {
+                                isNoble = true;
+                            }
+                        }
+                    }
+                }
+                float origPower = (float)((2f + tier) * (8f + tier)) * 0.02f * (troop.IsHero ? 1.5f : (troop.IsMounted ? 1.2f : 1f));
+                float modifiedTier = (tier-1) * 3f;
+                modifiedTier = MathF.Clamp(modifiedTier, 1f, modifiedTier);
                 if ((uint)(context - 6) <= 1u)
                 {
                     __result = (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * (troop.IsHero ? 1.5f : 1f);
                     return false;
                 }
-                __result = (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * (troop.IsHero ? 1.5f : (troop.IsMounted ? 1.5f : 1f));
+                __result = (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * (troop.IsHero ? 1.5f : 1f) * (troop.IsMounted ? 1.5f : 1f) * (isNoble ? 1.5f : 1f);
                 return false;
+            }
+
+            [HarmonyPatch(typeof(CommonAIComponent))]
+            [HarmonyPatch("InitializeMorale")]
+            class InitializeMoralePatch
+            {
+                static bool Prefix(ref CommonAIComponent __instance, ref Agent ___Agent, ref float ____initialMorale, ref float ____recoveryMorale)
+                {
+                    //int num = MBRandom.RandomInt(30);
+                    int num = 30;
+                    float num2 = ___Agent.Components.Sum((AgentComponent c) => c.GetMoraleAddition());
+                    float baseMorale = 35f + (float)num + num2;
+                    baseMorale = MissionGameModels.Current.BattleMoraleModel.GetEffectiveInitialMorale(___Agent, baseMorale);
+                    baseMorale = (____initialMorale = MBMath.ClampFloat(baseMorale, 15f, 100f));
+                    ____recoveryMorale = ____initialMorale * 0.5f;
+                    __instance.Morale = ____initialMorale;
+                    return false;
+                }
             }
 
             //[HarmonyPatch(typeof(Equipment))]
