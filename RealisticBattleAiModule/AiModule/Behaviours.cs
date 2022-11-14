@@ -140,9 +140,13 @@ namespace RBMAI
 
             [HarmonyPostfix]
             [HarmonyPatch("CalculateCurrentOrder")]
-            static void PostfixCalculateCurrentOrder(Formation ____mainFormation, ref BehaviorScreenedSkirmish __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
+            static void PostfixCalculateCurrentOrder(ref Formation ____mainFormation, ref BehaviorScreenedSkirmish __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
             {
-                if (____mainFormation != null && __instance.Formation != null)
+                if(____mainFormation != null && (____mainFormation.CountOfUnits == 0 || !____mainFormation.IsInfantry()))
+                {
+                    ____mainFormation = __instance.Formation.Team.Formations.FirstOrDefault((Formation f) => f.AI.IsMainFormation);
+                }
+                if (____mainFormation != null && __instance.Formation != null && ____mainFormation.CountOfUnits > 0 && ____mainFormation.IsInfantry())
                 {
                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(____mainFormation.Direction);
 

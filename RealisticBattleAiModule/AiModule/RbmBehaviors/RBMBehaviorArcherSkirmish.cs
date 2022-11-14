@@ -33,6 +33,8 @@ namespace RBMAI
 
 		private bool switchedToSkirmish = true;
 
+        private bool firstTime = true;
+
 		public RBMBehaviorArcherSkirmish(Formation formation)
 			: base(formation)
 		{
@@ -205,7 +207,7 @@ namespace RBMAI
                     _behaviorState = BehaviorState.Shooting;
                     _cantShoot = false;
                 }
-                if (previousBehavior != _behaviorState)
+                if (firstTime || previousBehavior != _behaviorState)
                 {
                     switch (_behaviorState)
                     {
@@ -237,6 +239,7 @@ namespace RBMAI
                         WorldPosition medianTargetFormationPosition = base.Formation.QuerySystem.Team.MedianTargetFormationPosition;
                         CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection((medianTargetFormationPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition).Normalized());
                     }
+                    firstTime = false;
                 }
             }
         }
