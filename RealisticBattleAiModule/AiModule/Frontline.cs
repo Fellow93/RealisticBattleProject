@@ -231,7 +231,7 @@ namespace RBMAI
                             if (true)
                             {
                                 if (unit != null)
-                                {unit.SetDirectionChangeTendency(10f);
+                                {
                                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 5f, 2f, 4f, 10f, 6f);
                                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 4.9f, 1.5f, 1.1f, 10f, 0.01f);
                                     unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
