@@ -409,7 +409,6 @@ namespace RBMAI
                                     {
                                         WorldPosition backPosition = unit.GetWorldPosition();
                                         backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
-                                        unit.EnforceShieldUsage(Agent.UsageDirection.DefendUp);
                                         __result = backPosition;
                                         //aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
                                         aiDecisionCooldownDict[unit].position = __result; return false;
@@ -422,7 +421,6 @@ namespace RBMAI
                                     //{
                                     WorldPosition backPosition = unit.GetWorldPosition();
                                     backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
-                                    unit.EnforceShieldUsage(Agent.UsageDirection.DefendUp);
                                     __result = backPosition;
                                     //aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
                                     aiDecisionCooldownDict[unit].position = __result; return false;
@@ -439,7 +437,6 @@ namespace RBMAI
                                             //{
                                             WorldPosition backPosition = unit.GetWorldPosition();
                                             backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
-                                            unit.EnforceShieldUsage(Agent.UsageDirection.DefendUp);
                                             __result = backPosition;
                                             //aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
                                             aiDecisionCooldownDict[unit].position = __result; return false;
@@ -460,7 +457,6 @@ namespace RBMAI
                                         {
                                             WorldPosition backPosition = unit.GetWorldPosition();
                                             backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
-                                            unit.EnforceShieldUsage(Agent.UsageDirection.DefendUp);
                                             __result = backPosition;
                                             //aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
                                             aiDecisionCooldownDict[unit].position = __result; return false;

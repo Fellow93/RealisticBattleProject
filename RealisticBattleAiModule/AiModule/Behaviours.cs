@@ -1679,9 +1679,30 @@ namespace RBMAI
         [HarmonyPatch("UpdateFormationOrders")]
         static bool PrefixUpdateFormationOrders(ref Agent __instance)
         {
-            if (__instance.Formation != null && __instance.Formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget)
+            if (__instance.Formation != null && __instance.IsAIControlled && __instance.Formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget)
             {
-                __instance.EnforceShieldUsage(ArrangementOrder.GetShieldDirectionOfUnit(__instance.Formation, __instance, __instance.Formation.ArrangementOrder.OrderEnum));
+                if(__instance.Formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.Square || 
+                    __instance.Formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.Circle || 
+                    __instance.Formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.ShieldWall)
+                {
+                    __instance.EnforceShieldUsage(ArrangementOrder.GetShieldDirectionOfUnit(__instance.Formation, __instance, __instance.Formation.ArrangementOrder.OrderEnum));
+                }
+                else
+                {
+                    if (!__instance.WieldedOffhandWeapon.IsEmpty)
+                    {
+                        bool hasnotusableonehand = __instance.Equipment.HasAnyWeaponWithFlags(WeaponFlags.NotUsableWithOneHand);
+                        bool hasranged = __instance.Equipment.HasAnyWeaponWithFlags(WeaponFlags.RangedWeapon);
+                        if (!hasnotusableonehand && !hasranged && __instance.GetTargetAgent() != null && __instance.Position.Distance(__instance.GetTargetAgent().Position) < 6f)
+                        {
+                            __instance.EnforceShieldUsage(Agent.UsageDirection.DefendDown);
+                        }
+                        else
+                        {
+                            __instance.EnforceShieldUsage(Agent.UsageDirection.None);
+                        }
+                    }
+                }
                 return false;
             }
             return true;
