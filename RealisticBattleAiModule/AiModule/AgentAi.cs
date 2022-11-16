@@ -474,7 +474,7 @@ namespace RBMAI
     {
         static void Postfix(Agent agent, Mission __instance)
         {
-            if (!agent.IsPlayerControlled && agent.Formation != null)
+            if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle)
             {
                 bool isInfFormationActive = agent.Team.GetFormation(FormationClass.Infantry) != null && agent.Team.GetFormation(FormationClass.Infantry).CountOfUnits > 0;
                 bool isArcFormationActive = agent.Team.GetFormation(FormationClass.Ranged) != null && agent.Team.GetFormation(FormationClass.Ranged).CountOfUnits > 0;
@@ -538,7 +538,7 @@ namespace RBMAI
     {
         static void Postfix(Agent agent, Mission __instance)
         {
-            if (!agent.IsPlayerControlled && agent.Formation != null)
+            if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle)
             {
                 bool isCavFormationActive = agent.Team.GetFormation(FormationClass.Cavalry) != null && agent.Team.GetFormation(FormationClass.Cavalry).CountOfUnits > 0;
                 bool isHaFormationActive = agent.Team.GetFormation(FormationClass.HorseArcher) != null && agent.Team.GetFormation(FormationClass.HorseArcher).CountOfUnits > 0;
