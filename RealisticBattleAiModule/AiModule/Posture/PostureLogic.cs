@@ -968,6 +968,45 @@ namespace RBMAI
             }
         }
 
+        [HarmonyPatch(typeof(Agent))]
+        [HarmonyPatch("OnShieldDamaged")]
+        class OnShieldDamagedPatch
+        {
+            static bool Prefix(ref Agent __instance, ref EquipmentIndex slotIndex, ref int inflictedDamage)
+            {
+                //__instance.HandleDropWeapon(false, slotIndex);
+                //float sumWeight = 0f;
+                //for(int i = 0; i < __instance.Equipment[slotIndex].GetAttachedWeaponsCount(); i++)
+                //{
+                //    sumWeight += __instance.Equipment[slotIndex].GetAttachedWeapon(i).Item.Weight;
+                //}
+                int num = MathF.Max(0, __instance.Equipment[slotIndex].HitPoints - inflictedDamage);
+                __instance.ChangeWeaponHitPoints(slotIndex, (short)num);
+                if (num == 0)
+                {
+                    __instance.RemoveEquippedWeapon(slotIndex);
+                }
+                //else
+                //{
+                //    if (sumWeight > 1f)
+                //    {
+                        
+                //        Vec3 velocity = new Vec3(0, 0, 0);
+                //        Vec3 velocity2 = __instance.Velocity;
+                //        if ((velocity - velocity2).LengthSquared > 100f)
+                //        {
+                //            Vec3 vec = (velocity - velocity2).NormalizedCopy() * 10f;
+                //            velocity = velocity2 + vec;
+                //        }
+                //        Vec3 angularVelocity = new Vec3(0, 0, 0);
+                //        Mission.Current.SpawnWeaponAsDropFromAgentAux(__instance, slotIndex, ref velocity, ref angularVelocity, Mission.WeaponSpawnFlags.CannotBePickedUp, -1);
+                //        //__instance.RemoveEquippedWeapon(slotIndex);
+                //    }
+                //}
+                return false;
+            }
+        }
+
         [HarmonyPatch(typeof(TournamentRound))]
         [HarmonyPatch("EndMatch")]
         class EndMatchPatch

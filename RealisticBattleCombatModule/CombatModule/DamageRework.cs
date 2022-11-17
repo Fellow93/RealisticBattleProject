@@ -4,11 +4,13 @@ using SandBox.GameComponents;
 using SandBox.Missions.MissionLogics;
 using System;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using TaleWorlds.Core;
 using TaleWorlds.DotNet;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
+using static TaleWorlds.Core.ItemObject;
 using static TaleWorlds.MountAndBlade.Agent;
 
 namespace RBMCombat
@@ -587,10 +589,10 @@ namespace RBMCombat
                 armorAmount = adjustedArmor;
             }
             //float num2 = (float)armorAmount;
-            if (collidedWithShieldOnBack && shieldOnBack != null)
-            {
-                armorAmount += 20f;
-            }
+            //if (collidedWithShieldOnBack && shieldOnBack != null)
+            //{
+            //    armorAmount += 20f;
+            //}
 
             Agent attacker = null;
             Agent victim = null;
@@ -603,6 +605,23 @@ namespace RBMCombat
                 if (attackInformation.AttackerAgentOrigin == agent.Origin)
                 {
                     attacker = agent;
+                }
+            }
+
+            if (collidedWithShieldOnBack && shieldOnBack != null && victim != null)
+            {
+                for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                {
+                    if (victim.Equipment != null && !victim.Equipment[equipmentIndex].IsEmpty)
+                    {
+                        if (victim.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield)
+                        {
+                            attackInformation.VictimShield = victim.Equipment[equipmentIndex];
+                            RBMComputeBlowDamageOnShield(ref attackInformation, ref attackCollisionData, attackerWeapon, magnitude, out inflictedDamage);
+                            absorbedByArmor = 0;
+                            return false;
+                        }
+                    }
                 }
             }
 
@@ -1184,350 +1203,377 @@ namespace RBMCombat
             return false;
         }
 
+        public static void RBMComputeBlowDamageOnShield(ref AttackInformation attackInformation, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, float blowMagnitude, out int inflictedDamage)
+        {
+            float localInflictedDamage = 0;
+            attackCollisionData.InflictedDamage = 0;
+                
+            MissionWeapon victimShield = attackInformation.VictimShield;
+            if (victimShield.IsEmpty)
+            {
+                Agent victim = null;
+                foreach (Agent agent in Mission.Current.Agents)
+                {
+                    if (attackInformation.VictimAgentOrigin == agent.Origin)
+                    {
+                        victim = agent;
+                    }
+                }
+                for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                {
+                    if (victim != null && victim.Equipment != null && !victim.Equipment[equipmentIndex].IsEmpty)
+                    {
+                        if (victim.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield)
+                        {
+                            attackInformation.VictimShield = victim.Equipment[equipmentIndex];
+                        }
+                    }
+                }
+            }
+            victimShield = attackInformation.VictimShield;
+            if (!victimShield.IsEmpty && victimShield.CurrentUsageItem.WeaponFlags.HasAnyFlag(WeaponFlags.CanBlockRanged) & attackInformation.CanGiveDamageToAgentShield)
+            {
+                DamageTypes damageType = (DamageTypes)attackCollisionData.DamageType;
+                int shieldArmorForCurrentUsage = victimShield.GetGetModifiedArmorForCurrentUsage();
+                float absorbedDamageRatio = 1f;
+
+                string weaponType = "otherDamage";
+                if (attackerWeapon != null)
+                {
+                    weaponType = attackerWeapon.WeaponClass.ToString();
+                }
+
+                bool isPassiveUsage = attackInformation.IsAttackerAgentDoingPassiveAttack;
+
+                float skillBasedDamage = 0f;
+                const float ashBreakTreshold = 430f;
+                float BraceBonus = 0f;
+                float BraceModifier = 0.34f;
+
+                switch (weaponType)
+                {
+                    case "Dagger":
+                    case "OneHandedSword":
+                    case "ThrowingKnife":
+                        {
+                            if (blowMagnitude > 1f)
+                            {
+                                if (damageType == DamageTypes.Cut)
+                                {
+                                    blowMagnitude = blowMagnitude + 40f;
+                                }
+                                else
+                                {
+                                    blowMagnitude = blowMagnitude * 0.2f + 50f * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                                }
+                            }
+                            break;
+                        }
+                    case "TwoHandedSword":
+                        {
+                            if (blowMagnitude > 1f)
+                            {
+                                if (damageType == DamageTypes.Cut)
+                                {
+                                    blowMagnitude = blowMagnitude + 40f * 1.3f;
+                                }
+                                else
+                                {
+                                    blowMagnitude = (blowMagnitude * 0.2f + 50f * RBMConfig.RBMConfig.ThrustMagnitudeModifier) * 1.3f;
+                                }
+                            }
+                            break;
+                        }
+                    case "OneHandedAxe":
+                    case "ThrowingAxe":
+                        {
+                            if (blowMagnitude > 1f)
+                            {
+                                blowMagnitude = blowMagnitude + 60f;
+                            }
+                            break;
+                        }
+                    case "OneHandedBastardAxe":
+                        {
+                            if (blowMagnitude > 1f)
+                            {
+                                blowMagnitude = blowMagnitude + 60f * 1.15f;
+                            }
+                            break;
+                        }
+                    case "TwoHandedAxe":
+                        {
+                            if (blowMagnitude > 1f)
+                            {
+                                blowMagnitude = blowMagnitude + 60f * 1.3f;
+                            }
+                            break;
+                        }
+                    case "Mace":
+                        {
+                            if (blowMagnitude > 1f)
+                            {
+                                if (damageType == DamageTypes.Pierce)
+                                {
+                                    blowMagnitude = blowMagnitude * 0.2f + 40f * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                                }
+                                else
+                                {
+                                    blowMagnitude = blowMagnitude + 30f;
+                                }
+                            }
+                            break;
+                        }
+                    case "TwoHandedMace":
+                        {
+                            if (blowMagnitude > 1f)
+                            {
+                                if (damageType == DamageTypes.Pierce)
+                                {
+                                    blowMagnitude = (blowMagnitude * 0.2f + 40f * RBMConfig.RBMConfig.ThrustMagnitudeModifier) * 1.3f;
+                                }
+                                else
+                                {
+                                    blowMagnitude = blowMagnitude + 45f * 1.3f;
+                                }
+                            }
+                            break;
+                        }
+                    case "OneHandedPolearm":
+                        {
+                            if (blowMagnitude > 1f)
+                            {
+                                if (damageType == DamageTypes.Cut)
+                                {
+                                    blowMagnitude = blowMagnitude + 50f;
+                                }
+                                else if (damageType == DamageTypes.Blunt)
+                                {
+                                    blowMagnitude = blowMagnitude + 30f;
+                                }
+                                else
+                                {
+                                    if (isPassiveUsage)
+                                    {
+                                        float couchedSkill = 2f;
+                                        float skillCap = 230f;
+
+                                        float weaponWeight = 1.5f;
+
+                                        if (weaponWeight < 2.1f)
+                                        {
+                                            BraceBonus += 0.5f;
+                                            BraceModifier *= 3f;
+                                        }
+                                        float lanceBalistics = (blowMagnitude * BraceModifier) / weaponWeight;
+                                        float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
+                                        blowMagnitude = CouchedMagnitude;
+                                        if (CouchedMagnitude > (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) //skill based damage
+                                        {
+                                            blowMagnitude = skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                                        }
+
+                                        if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) //ballistics
+                                        {
+                                            blowMagnitude = (lanceBalistics * (weaponWeight + BraceBonus));
+                                        }
+
+                                        if (blowMagnitude > (ashBreakTreshold * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) // damage cap - lance break threshold
+                                        {
+                                            blowMagnitude = ashBreakTreshold * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //float weaponWeight = attackerWeapon.Item.Weight;
+
+                                        //if (weaponWeight > 2.1f)
+                                        //{
+                                        //    blowMagnitude *= 0.34f;
+                                        //}
+                                        blowMagnitude = blowMagnitude * 0.4f + 60f * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                                        if (blowMagnitude > 260f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
+                                        {
+                                            blowMagnitude = 260f * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    case "TwoHandedPolearm":
+                        {
+                            if (blowMagnitude > 1f)
+                            {
+                                if (damageType == DamageTypes.Cut)
+                                {
+                                    blowMagnitude = blowMagnitude + 50f * 1.3f;
+                                }
+                                else if (damageType == DamageTypes.Blunt)
+                                {
+                                    blowMagnitude = blowMagnitude + 30f * 1.3f;
+                                }
+                                else
+                                {
+                                    if (isPassiveUsage)
+                                    {
+                                        float couchedSkill = 2f;
+                                        float skillCap = 230f;
+
+                                        float weaponWeight = 1.5f;
+
+                                        if (weaponWeight < 2.1f)
+                                        {
+                                            BraceBonus += 0.5f;
+                                            BraceModifier *= 3f;
+                                        }
+                                        float lanceBalistics = (blowMagnitude * BraceModifier) / weaponWeight;
+                                        float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
+                                        blowMagnitude = CouchedMagnitude;
+                                        if (CouchedMagnitude > (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier))
+                                        {
+                                            blowMagnitude = skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                                        }
+
+                                        if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier))
+                                        {
+                                            blowMagnitude = (lanceBalistics * (weaponWeight + BraceBonus));
+                                        }
+
+                                        if (blowMagnitude > (ashBreakTreshold * RBMConfig.RBMConfig.ThrustMagnitudeModifier))
+                                        {
+                                            blowMagnitude = ashBreakTreshold * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        float weaponWeight = 1.5f;
+
+                                        if (weaponWeight > 2.1f)
+                                        {
+                                            blowMagnitude *= 0.34f;
+                                        }
+                                        skillBasedDamage = (blowMagnitude * 0.4f + 60f * RBMConfig.RBMConfig.ThrustMagnitudeModifier) * 1.3f;
+                                        if (skillBasedDamage > 360f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
+                                        {
+                                            skillBasedDamage = 360f * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                }
+
+                localInflictedDamage = MyComputeDamage(weaponType, damageType, blowMagnitude, (float)shieldArmorForCurrentUsage * 10f, absorbedDamageRatio);
+
+                if (attackCollisionData.IsMissile)
+                {
+                    switch (weaponType)
+                    {
+                        case "Arrow":
+                            {
+                                localInflictedDamage *= 1.5f;
+                                break;
+                            }
+                        case "Bolt":
+                            {
+                                localInflictedDamage *= 1.5f;
+                                break;
+                            }
+                        case "Javelin":
+                            {
+                                localInflictedDamage *= 20f;
+                                break;
+                            }
+                        case "ThrowingAxe":
+                            {
+                                localInflictedDamage *= 3f;
+                                break;
+                            }
+                        case "OneHandedPolearm":
+                            {
+                                localInflictedDamage *= 5f;
+                                break;
+                            }
+                        case "LowGripPolearm":
+                            {
+                                localInflictedDamage *= 5f;
+                                break;
+                            }
+                        default:
+                            {
+                                localInflictedDamage *= 0.1f;
+                                break;
+                            }
+                    }
+                }
+                else if (!attackCollisionData.IsMissile)
+                {
+                    switch (weaponType)
+                    {
+                        case "OneHandedAxe":
+                        case "TwoHandedAxe":
+                        case "OneHandedBastardAxe":
+                        case "TwoHandedPolearm":
+                            {
+                                if (attackCollisionData.DamageType == 1)//pierce
+                                {
+                                    localInflictedDamage *= 0.09f;
+                                    break;
+                                }
+                                localInflictedDamage *= 1.5f;
+
+                                break;
+                            }
+                        default:
+                            {
+                                if (attackCollisionData.DamageType == 0) //cut
+                                {
+                                    localInflictedDamage *= 1f;
+                                }
+                                else if (attackCollisionData.DamageType == 1)//pierce
+                                {
+                                    localInflictedDamage *= 0.09f;
+                                }
+                                else if (attackCollisionData.DamageType == 2)//blunt
+                                {
+                                    localInflictedDamage *= 0.75f;
+                                }
+                                break;
+                            }
+                    }
+                }
+
+                if (attackerWeapon != null && attackerWeapon.WeaponFlags.HasAnyFlag(WeaponFlags.BonusAgainstShield))
+                {
+                    localInflictedDamage *= 2f;
+                }
+
+                if (localInflictedDamage > 0f)
+                {
+                    if (!attackInformation.IsVictimAgentLeftStance)
+                    {
+                        localInflictedDamage *= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.ShieldRightStanceBlockDamageMultiplier);
+                    }
+                    if (attackCollisionData.CorrectSideShieldBlock)
+                    {
+                        localInflictedDamage *= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.ShieldCorrectSideBlockDamageMultiplier);
+                    }
+                    localInflictedDamage = MissionGameModels.Current.AgentApplyDamageModel.CalculateShieldDamage(attackInformation, localInflictedDamage);
+                }
+            }
+            attackCollisionData.InflictedDamage = (int)localInflictedDamage;
+            inflictedDamage = MathF.Floor(localInflictedDamage);
+        }
+
         [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
         [HarmonyPatch("ComputeBlowDamageOnShield")]
         class OverrideDamageCalcShield
         {
             static bool Prefix(ref AttackInformation attackInformation, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, float blowMagnitude, out int inflictedDamage)
             {
-                float localInflictedDamage = 0;
-                attackCollisionData.InflictedDamage = 0;
-                MissionWeapon victimShield = attackInformation.VictimShield;
-                if (victimShield.CurrentUsageItem.WeaponFlags.HasAnyFlag(WeaponFlags.CanBlockRanged) & attackInformation.CanGiveDamageToAgentShield)
-                {
-                    DamageTypes damageType = (DamageTypes)attackCollisionData.DamageType;
-                    int shieldArmorForCurrentUsage = victimShield.GetGetModifiedArmorForCurrentUsage();
-                    float absorbedDamageRatio = 1f;
-
-                    string weaponType = "otherDamage";
-                    if (attackerWeapon != null)
-                    {
-                        weaponType = attackerWeapon.WeaponClass.ToString();
-                    }
-
-                    bool isPassiveUsage = attackInformation.IsAttackerAgentDoingPassiveAttack;
-
-                    float skillBasedDamage = 0f;
-                    const float ashBreakTreshold = 430f;
-                    float BraceBonus = 0f;
-                    float BraceModifier = 0.34f;
-
-                    switch (weaponType)
-                    {
-                        case "Dagger":
-                        case "OneHandedSword":
-                        case "ThrowingKnife":
-                            {
-                                if (blowMagnitude > 1f)
-                                {
-                                    if (damageType == DamageTypes.Cut)
-                                    {
-                                        blowMagnitude = blowMagnitude + 40f;
-                                    }
-                                    else
-                                    {
-                                        blowMagnitude = blowMagnitude * 0.2f + 50f * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
-                                    }
-                                }
-                                break;
-                            }
-                        case "TwoHandedSword":
-                            {
-                                if (blowMagnitude > 1f)
-                                {
-                                    if (damageType == DamageTypes.Cut)
-                                    {
-                                        blowMagnitude = blowMagnitude + 40f * 1.3f;
-                                    }
-                                    else
-                                    {
-                                        blowMagnitude = (blowMagnitude * 0.2f + 50f * RBMConfig.RBMConfig.ThrustMagnitudeModifier) * 1.3f;
-                                    }
-                                }
-                                break;
-                            }
-                        case "OneHandedAxe":
-                        case "ThrowingAxe":
-                            {
-                                if (blowMagnitude > 1f)
-                                {
-                                    blowMagnitude = blowMagnitude + 60f;
-                                }
-                                break;
-                            }
-                        case "OneHandedBastardAxe":
-                            {
-                                if (blowMagnitude > 1f)
-                                {
-                                    blowMagnitude = blowMagnitude + 60f * 1.15f;
-                                }
-                                break;
-                            }
-                        case "TwoHandedAxe":
-                            {
-                                if (blowMagnitude > 1f)
-                                {
-                                    blowMagnitude = blowMagnitude + 60f * 1.3f;
-                                }
-                                break;
-                            }
-                        case "Mace":
-                            {
-                                if (blowMagnitude > 1f)
-                                {
-                                    if (damageType == DamageTypes.Pierce)
-                                    {
-                                        blowMagnitude = blowMagnitude * 0.2f + 40f * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
-                                    }
-                                    else
-                                    {
-                                        blowMagnitude = blowMagnitude + 30f;
-                                    }
-                                }
-                                break;
-                            }
-                        case "TwoHandedMace":
-                            {
-                                if (blowMagnitude > 1f)
-                                {
-                                    if (damageType == DamageTypes.Pierce)
-                                    {
-                                        blowMagnitude = (blowMagnitude * 0.2f + 40f * RBMConfig.RBMConfig.ThrustMagnitudeModifier) * 1.3f;
-                                    }
-                                    else
-                                    {
-                                        blowMagnitude = blowMagnitude + 45f * 1.3f;
-                                    }
-                                }
-                                break;
-                            }
-                        case "OneHandedPolearm":
-                            {
-                                if (blowMagnitude > 1f)
-                                {
-                                    if (damageType == DamageTypes.Cut)
-                                    {
-                                        blowMagnitude = blowMagnitude + 50f;
-                                    }
-                                    else if (damageType == DamageTypes.Blunt)
-                                    {
-                                        blowMagnitude = blowMagnitude + 30f;
-                                    }
-                                    else
-                                    {
-                                        if (isPassiveUsage)
-                                        {
-                                            float couchedSkill = 2f;
-                                            float skillCap = 230f;
-
-                                            float weaponWeight = 1.5f;
-
-                                            if (weaponWeight < 2.1f)
-                                            {
-                                                BraceBonus += 0.5f;
-                                                BraceModifier *= 3f;
-                                            }
-                                            float lanceBalistics = (blowMagnitude * BraceModifier) / weaponWeight;
-                                            float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
-                                            blowMagnitude = CouchedMagnitude;
-                                            if (CouchedMagnitude > (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) //skill based damage
-                                            {
-                                                blowMagnitude = skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
-                                            }
-
-                                            if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) //ballistics
-                                            {
-                                                blowMagnitude = (lanceBalistics * (weaponWeight + BraceBonus));
-                                            }
-
-                                            if (blowMagnitude > (ashBreakTreshold * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) // damage cap - lance break threshold
-                                            {
-                                                blowMagnitude = ashBreakTreshold * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            //float weaponWeight = attackerWeapon.Item.Weight;
-
-                                            //if (weaponWeight > 2.1f)
-                                            //{
-                                            //    blowMagnitude *= 0.34f;
-                                            //}
-                                            blowMagnitude = blowMagnitude * 0.4f + 60f * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
-                                            if (blowMagnitude > 260f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
-                                            {
-                                                blowMagnitude = 260f * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
-                                            }
-                                        }
-                                    }
-                                }
-                                break;
-                            }
-                        case "TwoHandedPolearm":
-                            {
-                                if (blowMagnitude > 1f)
-                                {
-                                    if (damageType == DamageTypes.Cut)
-                                    {
-                                        blowMagnitude = blowMagnitude + 50f * 1.3f;
-                                    }
-                                    else if (damageType == DamageTypes.Blunt)
-                                    {
-                                        blowMagnitude = blowMagnitude + 30f * 1.3f;
-                                    }
-                                    else
-                                    {
-                                        if (isPassiveUsage)
-                                        {
-                                            float couchedSkill = 2f;
-                                            float skillCap = 230f;
-
-                                            float weaponWeight = 1.5f;
-
-                                            if (weaponWeight < 2.1f)
-                                            {
-                                                BraceBonus += 0.5f;
-                                                BraceModifier *= 3f;
-                                            }
-                                            float lanceBalistics = (blowMagnitude * BraceModifier) / weaponWeight;
-                                            float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
-                                            blowMagnitude = CouchedMagnitude;
-                                            if (CouchedMagnitude > (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier))
-                                            {
-                                                blowMagnitude = skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
-                                            }
-
-                                            if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier))
-                                            {
-                                                blowMagnitude = (lanceBalistics * (weaponWeight + BraceBonus));
-                                            }
-
-                                            if (blowMagnitude > (ashBreakTreshold * RBMConfig.RBMConfig.ThrustMagnitudeModifier))
-                                            {
-                                                blowMagnitude = ashBreakTreshold * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            float weaponWeight = 1.5f;
-
-                                            if (weaponWeight > 2.1f)
-                                            {
-                                                blowMagnitude *= 0.34f;
-                                            }
-                                            skillBasedDamage = (blowMagnitude * 0.4f + 60f * RBMConfig.RBMConfig.ThrustMagnitudeModifier) * 1.3f;
-                                            if (skillBasedDamage > 360f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
-                                            {
-                                                skillBasedDamage = 360f * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
-                                            }
-                                        }
-                                    }
-                                }
-                                break;
-                            }
-                    }
-
-                    localInflictedDamage = MyComputeDamage(weaponType, damageType, blowMagnitude, (float)shieldArmorForCurrentUsage * 10f, absorbedDamageRatio);
-
-                    if (attackCollisionData.IsMissile)
-                    {
-                        switch (weaponType)
-                        {
-                            case "Arrow":
-                                {
-                                    localInflictedDamage *= 1.5f;
-                                    break;
-                                }
-                            case "Bolt":
-                                {
-                                    localInflictedDamage *= 1.5f;
-                                    break;
-                                }
-                            case "Javelin":
-                                {
-                                    localInflictedDamage *= 20f;
-                                    break;
-                                }
-                            case "ThrowingAxe":
-                                {
-                                    localInflictedDamage *= 3f;
-                                    break;
-                                }
-                            case "OneHandedPolearm":
-                                {
-                                    localInflictedDamage *= 5f;
-                                    break;
-                                }
-                            case "LowGripPolearm":
-                                {
-                                    localInflictedDamage *= 5f;
-                                    break;
-                                }
-                            default:
-                                {
-                                    localInflictedDamage *= 0.1f;
-                                    break;
-                                }
-                        }
-                    }
-                    else if (!attackCollisionData.IsMissile)
-                    {
-                        switch (weaponType)
-                        {
-                            case "OneHandedAxe":
-                            case "TwoHandedAxe":
-                            case "OneHandedBastardAxe":
-                            case "TwoHandedPolearm":
-                                {
-                                    if (attackCollisionData.DamageType == 1)//pierce
-                                    {
-                                        localInflictedDamage *= 0.09f;
-                                        break;
-                                    }
-                                    localInflictedDamage *= 1.5f;
-
-                                    break;
-                                }
-                            default:
-                                {
-                                    if (attackCollisionData.DamageType == 0) //cut
-                                    {
-                                        localInflictedDamage *= 1f;
-                                    }
-                                    else if (attackCollisionData.DamageType == 1)//pierce
-                                    {
-                                        localInflictedDamage *= 0.09f;
-                                    }
-                                    else if (attackCollisionData.DamageType == 2)//blunt
-                                    {
-                                        localInflictedDamage *= 0.75f;
-                                    }
-                                    break;
-                                }
-                        }
-                    }
-
-                    if (attackerWeapon != null && attackerWeapon.WeaponFlags.HasAnyFlag(WeaponFlags.BonusAgainstShield))
-                    {
-                        localInflictedDamage *= 2f;
-                    }
-
-                    if (localInflictedDamage > 0f)
-                    {
-                        if (!attackInformation.IsVictimAgentLeftStance)
-                        {
-                            localInflictedDamage *= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.ShieldRightStanceBlockDamageMultiplier);
-                        }
-                        if (attackCollisionData.CorrectSideShieldBlock)
-                        {
-                            localInflictedDamage *= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.ShieldCorrectSideBlockDamageMultiplier);
-                        }
-
-                        localInflictedDamage = MissionGameModels.Current.AgentApplyDamageModel.CalculateShieldDamage(attackInformation, localInflictedDamage);
-                    }
-                }
-                attackCollisionData.InflictedDamage = (int)localInflictedDamage;
-                inflictedDamage = MathF.Floor(localInflictedDamage);
+                RBMComputeBlowDamageOnShield(ref attackInformation, ref attackCollisionData, attackerWeapon, blowMagnitude, out inflictedDamage);
                 return false;
             }
         }
@@ -1968,6 +2014,25 @@ namespace RBMCombat
                 attacker.CreateBlowFromBlowAsReflection(in b, in collisionData, out var outBlow, out var outCollisionData);
                 attacker.RegisterBlow(outBlow, in outCollisionData);
             }
+            //if(victim != null && collisionData.CollidedWithShieldOnBack && collisionData.IsMissile)
+            //{
+            //    for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+            //    {
+            //        if (victim.Equipment != null && !victim.Equipment[equipmentIndex].IsEmpty)
+            //        {
+            //            if (victim.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield)
+            //            {
+            //                int num = MathF.Max(0, victim.Equipment[equipmentIndex].HitPoints - b.InflictedDamage);
+            //                victim.ChangeWeaponHitPoints(equipmentIndex, (short)num);
+            //                if (num == 0)
+            //                {
+            //                    victim.RemoveEquippedWeapon(equipmentIndex);
+            //                }
+            //                break;
+            //            }
+            //        }
+            //    }
+            //}
             if (!collisionData.AttackBlockedWithShield && !collisionData.CollidedWithShieldOnBack)
             {
                 return true;

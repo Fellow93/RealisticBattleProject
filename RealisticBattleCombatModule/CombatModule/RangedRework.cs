@@ -11,6 +11,8 @@ using System;
 using TaleWorlds.Engine;
 using static TaleWorlds.MountAndBlade.Agent;
 using static TaleWorlds.MountAndBlade.Mission;
+using static TaleWorlds.Core.ItemObject;
+using NetworkMessages.FromServer;
 
 namespace RBMCombat
 {
@@ -490,7 +492,7 @@ namespace RBMCombat
                 }
 
                 //if (shooterAgent != null && !shooterAgent.IsAIControlled && !BannerlordConfig.DisplayTargetingReticule && (wsd[0].WeaponClass == (int)WeaponClass.Bow || wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
-                if (shooterAgent != null && !shooterAgent.IsAIControlled && RBMConfig.RBMConfig.realisticArrowArc && (wsd[0].WeaponClass == (int)WeaponClass.Bow || wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
+                if (shooterAgent != null && !shooterAgent.IsAIControlled && RBMConfig.RBMConfig.rbmCombatEnabled && RBMConfig.RBMConfig.realisticArrowArc && (wsd[0].WeaponClass == (int)WeaponClass.Bow || wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
                 {
                     //radians = degrees * (pi / 180)
                     //degrees = radians * (180 / pi)
@@ -1009,50 +1011,145 @@ namespace RBMCombat
         }
     }
 
-    //[HarmonyPatch(typeof(Mission))]
-    //class HandleMissileCollisionReaction
-    //{
-    //    [HarmonyPrefix]
-    //    [HarmonyPatch("HandleMissileCollisionReaction")]
-    //    static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, int missileIndex,ref MissileCollisionReaction collisionReaction, MatrixFrame attachLocalFrame, Agent attackerAgent, Agent attachedAgent, bool attachedToShield, sbyte attachedBoneIndex, MissionObject attachedMissionObject, Vec3 bounceBackVelocity, Vec3 bounceBackAngularVelocity, int forcedSpawnIndex)
-    //    {
-    //        if(!attachedToShield && collisionReaction == MissileCollisionReaction.Stick && attachedAgent != null && forcedSpawnIndex == -1)
-    //        {
-    //            return false;
-    //        }
-    //        return true;
-    //    }
-    //}
+    [HarmonyPatch(typeof(Mission))]
+    class HandleMissileCollisionReactionPatch
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch("HandleMissileCollisionReaction")]
+        static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, int missileIndex, ref MissileCollisionReaction collisionReaction, MatrixFrame attachLocalFrame, Agent attackerAgent, Agent attachedAgent, bool attachedToShield, sbyte attachedBoneIndex, MissionObject attachedMissionObject, Vec3 bounceBackVelocity, Vec3 bounceBackAngularVelocity, int forcedSpawnIndex)
+        {
+            Missile missile = ____missiles[missileIndex];
+            MissionObjectId missionObjectId = new MissionObjectId(-1, createdAtRuntime: true);
+            switch (collisionReaction)
+            {
+                case MissileCollisionReaction.BecomeInvisible:
+                    missile.Entity.Remove(81);
+                    break;
+                case MissileCollisionReaction.Stick:
+                    missile.Entity.SetVisibilityExcludeParents(visible: true);
+                    if (attachedAgent != null)
+                    {
+                        __instance.PrepareMissileWeaponForDrop(missileIndex);
+                        if (attachedToShield)
+                        {
+                            EquipmentIndex wieldedItemIndex;
 
-    //[UsedImplicitly]
-    //[MBCallback]
-    //[HarmonyPatch(typeof(Mission))]
-    //class HandleMissileCollisionReactionPatch
-    //{
+                            if (attachedAgent.WieldedOffhandWeapon.IsEmpty)
+                            {
+                                for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                                {
+                                    if (attachedAgent.Equipment != null && !attachedAgent.Equipment[equipmentIndex].IsEmpty)
+                                    {
+                                        if (attachedAgent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield)
+                                        {
+                                            attachedAgent.AttachWeaponToWeapon(equipmentIndex, missile.Weapon, missile.Entity, ref attachLocalFrame);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                wieldedItemIndex = attachedAgent.GetWieldedItemIndex(Agent.HandIndex.OffHand);
+                                attachedAgent.AttachWeaponToWeapon(wieldedItemIndex, missile.Weapon, missile.Entity, ref attachLocalFrame);
+                            }
+                        }
+                        else
+                        {
+                            attachedAgent.AttachWeaponToBone(missile.Weapon, missile.Entity, attachedBoneIndex, ref attachLocalFrame);
+                        }
+                    }
+                    else
+                    {
+                        Vec3 velocity = Vec3.Zero;
+                        missionObjectId = __instance.SpawnWeaponAsDropFromMissile(missileIndex, attachedMissionObject, in attachLocalFrame, WeaponSpawnFlags.AsMissile | WeaponSpawnFlags.WithStaticPhysics, in velocity, in velocity, forcedSpawnIndex);
+                    }
+                    break;
+                case MissileCollisionReaction.BounceBack:
+                    missile.Entity.SetVisibilityExcludeParents(visible: true);
+                    missionObjectId = __instance.SpawnWeaponAsDropFromMissile(missileIndex, null, in attachLocalFrame, WeaponSpawnFlags.AsMissile | WeaponSpawnFlags.WithPhysics, in bounceBackVelocity, in bounceBackAngularVelocity, forcedSpawnIndex);
+                    break;
+            }
+            bool flag = collisionReaction != MissileCollisionReaction.PassThrough;
+            if (GameNetwork.IsServerOrRecorder)
+            {
+                GameNetwork.BeginBroadcastModuleEvent();
+                GameNetwork.WriteMessage(new HandleMissileCollisionReaction(missileIndex, collisionReaction, attachLocalFrame, attackerAgent, attachedAgent, attachedToShield, attachedBoneIndex, attachedMissionObject, bounceBackVelocity, bounceBackAngularVelocity, missionObjectId.Id));
+                GameNetwork.EndBroadcastModuleEvent(GameNetwork.EventBroadcastFlags.AddToMissionRecord);
+            }
+            else if (GameNetwork.IsClientOrReplay && flag)
+            {
+                __instance.RemoveMissileAsClient(missileIndex);
+            }
+            foreach (MissionBehavior missionBehavior in __instance.MissionBehaviors)
+            {
+                missionBehavior.OnMissileCollisionReaction(collisionReaction, attackerAgent, attachedAgent, attachedBoneIndex);
+            }
+            return false;
+        }
+    }
 
-    //    [HarmonyPostfix]
-    //    [HarmonyPatch("MissileHitCallback")]
-    //    static void Postfix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
-    //    {
-    //        if(collisionData.IsColliderAgent && !collisionData.AttackBlockedWithShield )
-    //        {
-    //            if(collisionData.InflictedDamage >= 20)
-    //            {
-    //                if (!collisionData.MissileHasPhysics)
-    //                {
-    //                    Missile missile = ____missiles[collisionData.AffectorWeaponSlotOrMissileIndex];
-    //                    MatrixFrame attachLocalFrame;
+    [UsedImplicitly]
+    [MBCallback]
+    [HarmonyPatch(typeof(Mission))]
+    class MissileHitCallbackPatch
+    {
 
-    //                    MethodInfo method = typeof(Mission).GetMethod("CalculateAttachedLocalFrame", BindingFlags.NonPublic | BindingFlags.Instance);
-    //                    method.DeclaringType.GetMethod("CalculateAttachedLocalFrame");
-    //                    attachLocalFrame = (MatrixFrame)method.Invoke(__instance, new object[] { attachGlobalFrame, collisionData, missile.Weapon.CurrentUsageItem, victim, hitEntity, movementVelocity, missileAngularVelocity, affectedShieldGlobalFrame, true });
+        [HarmonyPrefix]
+        [HarmonyPatch("MissileHitCallback")]
+        static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
+        {
+            if (collisionData.AttackBlockedWithShield)
+            {
+                bool testik = true;
+            }
+            if (collisionData.CollidedWithShieldOnBack)
+            {
+                //FieldInfo _attackBlockedWithShield = typeof(AttackCollisionData).GetField("_attackBlockedWithShield", BindingFlags.NonPublic | BindingFlags.Instance);
+                //_attackBlockedWithShield.DeclaringType.GetField("_attackBlockedWithShield");
+                //_attackBlockedWithShield.SetValue(collisionData, true);
+                AttackCollisionData acd = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(true, collisionData.CorrectSideShieldBlock, collisionData.IsAlternativeAttack, collisionData.IsColliderAgent, collisionData.CollidedWithShieldOnBack,
+                    collisionData.IsMissile, collisionData.MissileBlockedWithWeapon, collisionData.MissileHasPhysics, collisionData.EntityExists, collisionData.ThrustTipHit, collisionData.MissileGoneUnderWater, collisionData.MissileGoneOutOfBorder,
+                    CombatCollisionResult.Blocked, collisionData.AffectorWeaponSlotOrMissileIndex, collisionData.StrikeType, collisionData.DamageType, collisionData.CollisionBoneIndex,
+                    collisionData.VictimHitBodyPart, collisionData.AttackBoneIndex, collisionData.AttackDirection, collisionData.PhysicsMaterialIndex, collisionData.CollisionHitResultFlags, collisionData.AttackProgress, collisionData.CollisionDistanceOnWeapon,
+                    collisionData.AttackerStunPeriod, collisionData.DefenderStunPeriod, collisionData.MissileTotalDamage, collisionData.MissileStartingBaseSpeed, collisionData.ChargeVelocity, collisionData.FallSpeed, collisionData.WeaponRotUp,
+                    collisionData.WeaponBlowDir, collisionData.CollisionGlobalPosition, collisionData.MissileVelocity, collisionData.MissileStartingPosition, collisionData.VictimAgentCurVelocity, collisionData.CollisionGlobalNormal);
+                acd.BaseMagnitude = collisionData.BaseMagnitude;
+                acd.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
+                acd.SelfInflictedDamage = collisionData.SelfInflictedDamage;
+                acd.InflictedDamage = collisionData.InflictedDamage;
+                acd.AbsorbedByArmor = collisionData.AbsorbedByArmor;
+                collisionData = acd;
+            }
+            return true;
+        }
 
-    //                    Vec3 velocity = Vec3.Zero;
-    //                    Vec3 angularVelocity = Vec3.Zero;
-    //                    __instance.HandleMissileCollisionReaction(collisionData.AffectorWeaponSlotOrMissileIndex, MissileCollisionReaction.Stick, attachLocalFrame, attacker, victim, collisionData.AttackBlockedWithShield, collisionData.CollisionBoneIndex, null, velocity, angularVelocity, 99);
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
+        [HarmonyPostfix]
+        [HarmonyPatch("MissileHitCallback")]
+        static void Postfix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
+        {
+            if (collisionData.AttackBlockedWithShield && collisionData.CollidedWithShieldOnBack)
+            {
+                if (victim != null && collisionData.CollidedWithShieldOnBack && collisionData.IsMissile)
+                {
+                    for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                    {
+                        if (victim.Equipment != null && !victim.Equipment[equipmentIndex].IsEmpty)
+                        {
+                            if (victim.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield)
+                            {
+                                int num = MathF.Max(0, victim.Equipment[equipmentIndex].HitPoints - collisionData.InflictedDamage);
+                                victim.ChangeWeaponHitPoints(equipmentIndex, (short)num);
+                                if (num == 0)
+                                {
+                                    victim.RemoveEquippedWeapon(equipmentIndex);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
