@@ -1092,6 +1092,66 @@ namespace RBMCombat
     [UsedImplicitly]
     [MBCallback]
     [HarmonyPatch(typeof(Mission))]
+    class MeleeHitCallbackPatch
+    {
+
+        [HarmonyPrefix]
+        [HarmonyPatch("MeleeHitCallback")]
+        static bool Prefix(ref Mission __instance, ref AttackCollisionData collisionData, Agent attacker, Agent victim, GameEntity realHitEntity, ref float inOutMomentumRemaining, ref MeleeCollisionReaction colReaction, CrushThroughState crushThroughState, Vec3 blowDir, Vec3 swingDir, ref HitParticleResultData hitParticleResultData, bool crushedThroughWithoutAgentCollision)
+        {
+            if (collisionData.CollidedWithShieldOnBack)
+            {
+                //FieldInfo _attackBlockedWithShield = typeof(AttackCollisionData).GetField("_attackBlockedWithShield", BindingFlags.NonPublic | BindingFlags.Instance);
+                //_attackBlockedWithShield.DeclaringType.GetField("_attackBlockedWithShield");
+                //_attackBlockedWithShield.SetValue(collisionData, true);
+                AttackCollisionData acd = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(true, collisionData.CorrectSideShieldBlock, collisionData.IsAlternativeAttack, collisionData.IsColliderAgent, collisionData.CollidedWithShieldOnBack,
+                    collisionData.IsMissile, collisionData.MissileBlockedWithWeapon, collisionData.MissileHasPhysics, collisionData.EntityExists, collisionData.ThrustTipHit, collisionData.MissileGoneUnderWater, collisionData.MissileGoneOutOfBorder,
+                    CombatCollisionResult.Blocked, collisionData.AffectorWeaponSlotOrMissileIndex, collisionData.StrikeType, collisionData.DamageType, collisionData.CollisionBoneIndex,
+                    collisionData.VictimHitBodyPart, collisionData.AttackBoneIndex, collisionData.AttackDirection, collisionData.PhysicsMaterialIndex, collisionData.CollisionHitResultFlags, collisionData.AttackProgress, collisionData.CollisionDistanceOnWeapon,
+                    collisionData.AttackerStunPeriod, collisionData.DefenderStunPeriod, collisionData.MissileTotalDamage, collisionData.MissileStartingBaseSpeed, collisionData.ChargeVelocity, collisionData.FallSpeed, collisionData.WeaponRotUp,
+                    collisionData.WeaponBlowDir, collisionData.CollisionGlobalPosition, collisionData.MissileVelocity, collisionData.MissileStartingPosition, collisionData.VictimAgentCurVelocity, collisionData.CollisionGlobalNormal);
+                acd.BaseMagnitude = collisionData.BaseMagnitude;
+                acd.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
+                acd.SelfInflictedDamage = collisionData.SelfInflictedDamage;
+                acd.InflictedDamage = collisionData.InflictedDamage;
+                acd.AbsorbedByArmor = collisionData.AbsorbedByArmor;
+                collisionData = acd;
+            }
+            return true;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch("MeleeHitCallback")]
+        static void Postfix(ref Mission __instance, ref AttackCollisionData collisionData, Agent attacker, Agent victim, GameEntity realHitEntity, ref float inOutMomentumRemaining, ref MeleeCollisionReaction colReaction, CrushThroughState crushThroughState, Vec3 blowDir, Vec3 swingDir, ref HitParticleResultData hitParticleResultData, bool crushedThroughWithoutAgentCollision)
+        {
+            //if (collisionData.AttackBlockedWithShield && collisionData.CollidedWithShieldOnBack)
+            //{
+            //    if (victim != null && collisionData.CollidedWithShieldOnBack && collisionData.IsMissile)
+            //    {
+            //        for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+            //        {
+            //            if (victim.Equipment != null && !victim.Equipment[equipmentIndex].IsEmpty)
+            //            {
+            //                if (victim.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield)
+            //                {
+            //                    int num = MathF.Max(0, victim.Equipment[equipmentIndex].HitPoints - collisionData.InflictedDamage);
+            //                    victim.ChangeWeaponHitPoints(equipmentIndex, (short)num);
+            //                    if (num == 0)
+            //                    {
+            //                        victim.RemoveEquippedWeapon(equipmentIndex);
+            //                    }
+            //                    break;
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+        }
+    }
+
+    [UsedImplicitly]
+    [MBCallback]
+    [HarmonyPatch(typeof(Mission))]
     class MissileHitCallbackPatch
     {
 
@@ -1099,10 +1159,6 @@ namespace RBMCombat
         [HarmonyPatch("MissileHitCallback")]
         static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
         {
-            if (collisionData.AttackBlockedWithShield)
-            {
-                bool testik = true;
-            }
             if (collisionData.CollidedWithShieldOnBack)
             {
                 //FieldInfo _attackBlockedWithShield = typeof(AttackCollisionData).GetField("_attackBlockedWithShield", BindingFlags.NonPublic | BindingFlags.Instance);
