@@ -22,7 +22,7 @@
       <Equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <Equipment slot="Horse"
-                id="Item.noble_horse_imperial" />
+                id="Item.t3_empire_horse" />
       <Equipment slot="HorseHarness"
                  id="Item.imperial_scale_barding"/>
     </EquipmentSet>
@@ -51,7 +51,7 @@
       <Equipment slot="Leg"
                  id="Item.lamellar_plate_boots" />
       <Equipment slot="Horse"
-                id="Item.noble_horse_imperial" />
+                id="Item.t3_empire_horse" />
       <Equipment slot="HorseHarness"
                  id="Item.imperial_scale_barding"/>
     </EquipmentSet>
@@ -81,7 +81,7 @@
       <Equipment slot="Leg"
                  id="Item.decorated_imperial_boots" />
       <Equipment slot="Horse"
-                id="Item.noble_horse_imperial" />
+                id="Item.t3_empire_horse" />
       <Equipment slot="HorseHarness"
                  id="Item.imperial_scale_barding"/>
     </EquipmentSet>
@@ -107,7 +107,7 @@
       <Equipment slot="Leg"
                  id="Item.lamellar_plate_boots" />
       <Equipment slot="Horse"
-                id="Item.noble_horse_imperial" />
+                id="Item.t3_empire_horse" />
       <Equipment slot="HorseHarness"
                  id="Item.imperial_scale_barding"/>
     </EquipmentSet>
@@ -137,7 +137,7 @@
       <Equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <Equipment slot="Horse"
-                id="Item.noble_horse_imperial" />
+                id="Item.t3_empire_horse" />
       <Equipment slot="HorseHarness"
                  id="Item.mail_and_plate_barding"/>
     </EquipmentSet>
@@ -165,7 +165,7 @@
       <Equipment slot="Leg"
                  id="Item.lamellar_plate_boots" />
       <Equipment slot="Horse"
-                id="Item.noble_horse_imperial" />
+                id="Item.t3_empire_horse" />
       <Equipment slot="HorseHarness"
                  id="Item.imperial_scale_barding"/>
     </EquipmentSet>
@@ -195,7 +195,7 @@
       <Equipment slot="Leg"
                  id="Item.decorated_imperial_boots" />
       <Equipment slot="Horse"
-                id="Item.noble_horse_imperial" />
+                id="Item.t3_empire_horse" />
       <Equipment slot="HorseHarness"
                  id="Item.imperial_scale_barding"/>
     </EquipmentSet>
@@ -226,7 +226,7 @@
       <Equipment slot="Head"
                  id="Item.lendman_helmet_over_full_mail" />
       <Equipment slot="Horse"
-                 id="Item.noble_horse_northern" />
+                 id="Item.t3_sturgia_horse" />
       <Equipment slot="HorseHarness"
                  id="Item.chain_barding" />
     </EquipmentSet>
@@ -254,7 +254,7 @@
       <Equipment slot="Head"
                  id="Item.lendman_helmet_over_full_mail" />
       <Equipment slot="Horse"
-                 id="Item.noble_horse_northern" />
+                 id="Item.t3_sturgia_horse" />
       <Equipment slot="HorseHarness"
                  id="Item.chain_barding" />
     </EquipmentSet>
@@ -282,7 +282,7 @@
       <Equipment slot="Head"
                  id="Item.sturgian_lord_helmet_c" />
       <Equipment slot="Horse"
-                 id="Item.noble_horse_northern" />
+                 id="Item.t3_sturgia_horse" />
       <Equipment slot="HorseHarness"
                  id="Item.imperial_scale_barding" />
     </EquipmentSet>
@@ -310,7 +310,7 @@
       <Equipment slot="Gloves"
                  id="Item.northern_brass_bracers" />
       <Equipment slot="Horse"
-                 id="Item.noble_horse_northern" />
+                 id="Item.t3_sturgia_horse" />
       <Equipment slot="HorseHarness"
                  id="Item.chain_barding" />
     </EquipmentSet>
@@ -322,138 +322,26 @@
   <EquipmentRoster id="ase_bat_template_medium"
                    culture="Culture.aserai">
     <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_noble_sword_1_t5" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.emirs_oval_shield" />
-      <Equipment slot="Head"
-                 id="Item.aserai_lord_helmet_a" />
-      <Equipment slot="Body"
-                 id="Item.stitched_leather_over_mail" />
-      <Equipment slot="Cape"
-                 id="Item.stitched_leather_shoulders" />
-      <Equipment slot="Leg"
-                 id="Item.plated_strip_boots" />
-      <Equipment slot="Gloves"
-                 id="Item.plated_strip_gauntlets" />
-      <Equipment slot="Cape"
-                 id="Item.a_aserai_scale_b_shoulder_a" />
-      <Equipment slot="Horse"
-                 id="Item.t2_aserai_horse" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_noble_sword_4_t5" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.noble_bow" />
-      <Equipment slot="Item3"
-                 id="Item.default_arrows" />
-      <Equipment slot="Head"
-                 id="Item.southern_noble_helmet" />
-      <Equipment slot="Body"
-                 id="Item.desert_scale_armor" />
-      <Equipment slot="Cape"
-                 id="Item.desert_scale_shoulders" />
-      <Equipment slot="Leg"
-                 id="Item.decorated_imperial_boots" />
-      <Equipment slot="Gloves"
-                 id="Item.plated_strip_gauntlets" />
-      <Equipment slot="Horse"
-                 id="Item.t2_aserai_horse" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_noble_sword_2_t5" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.noble_bow" />
-      <Equipment slot="Item3"
-                 id="Item.default_arrows" />
-      <Equipment slot="Head"
-                 id="Item.emirs_helmet" />
-      <Equipment slot="Body"
-                 id="Item.brass_lamellar_over_mail" />
-      <Equipment slot="Cape"
-                 id="Item.a_aserai_scale_b_shoulder_a" />
-      <Equipment slot="Leg"
-                 id="Item.plated_strip_boots" />
-      <Equipment slot="Gloves"
-                 id="Item.plated_strip_gauntlets" />
-      <Equipment slot="Horse"
-                 id="Item.noble_horse_southern" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_noble_sword_3_t5" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.emirs_oval_shield" />
-      <Equipment slot="Head"
-                 id="Item.southern_lord_helmet" />
-      <Equipment slot="Body"
-                 id="Item.brass_lamellar_over_mail" />
-      <Equipment slot="Leg"
-                 id="Item.plated_strip_boots" />
-      <Equipment slot="Gloves"
-                 id="Item.plated_strip_gauntlets" />
-      <Equipment slot="Horse"
-                 id="Item.noble_horse_southern" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
+      <equipment slot="Item0"
+                 id="Item.steppe_heavy_bow" />
+      <equipment slot="Item1"
+                 id="Item.hardened_125_gr_arrows" />
+      <equipment slot="Item2"
                  id="Item.aserai_mace_4_t4" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.studded_round_shield" />
-      <Equipment slot="Head"
-                 id="Item.southern_noble_helmet" />
-      <Equipment slot="Body"
-                 id="Item.desert_scale_armor" />
-      <Equipment slot="Cape"
-                 id="Item.a_aserai_scale_b_shoulder_e" />
-      <Equipment slot="Leg"
-                 id="Item.decorated_imperial_boots" />
-      <Equipment slot="Gloves"
-                 id="Item.plated_strip_gauntlets" />
+      <equipment slot="Item3"
+                 id="Item.battania_targe_b" />
+      <equipment slot="Head"
+                 id="Item.aserai_lord_helmet_a" />
+      <equipment slot="Cape"
+                 id="Item.aserai_scale_shoulder_a" />
+      <equipment slot="Body"
+                 id="Item.aserai_scale_armor_on_chain" />
+      <equipment slot="Leg"
+                 id="Item.plated_strip_boots" />
+      <equipment slot="Gloves"
+                 id="Item.lordly_mail_mitten" />
       <Equipment slot="Horse"
-                 id="Item.noble_horse_southern" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_2haxe_3_t5" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.studded_round_shield" />
-      <Equipment slot="Head"
-                 id="Item.southern_noble_helmet" />
-      <Equipment slot="Body"
-                 id="Item.desert_scale_armor" />
-      <Equipment slot="Cape"
-                 id="Item.a_aserai_scale_b_shoulder_a" />
-      <Equipment slot="Leg"
-                 id="Item.decorated_imperial_boots" />
-      <Equipment slot="Gloves"
-                 id="Item.plated_strip_gauntlets" />
-      <Equipment slot="Horse"
-                 id="Item.noble_horse_southern" />
+                 id="Item.t3_aserai_horse" />
       <Equipment slot="HorseHarness"
                  id="Item.mail_and_plate_barding" />
     </EquipmentSet>
@@ -464,132 +352,26 @@
   <EquipmentRoster id="ase_bat_template_flamboyant"
                    culture="Culture.aserai">
     <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_noble_sword_1_t5" />
-      <Equipment slot="Item1"
+      <equipment slot="Item0"
                  id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.emirs_oval_shield" />
-      <Equipment slot="Head"
-                 id="Item.southern_lord_helmet" />
-      <Equipment slot="Body"
-                 id="Item.aserai_archer_armor" />
-      <Equipment slot="Leg"
-                 id="Item.decorated_imperial_boots" />
-      <Equipment slot="Gloves"
-                 id="Item.decorated_imperial_gauntlets" />
-      <Equipment slot="Horse"
-                 id="Item.t2_aserai_horse" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_noble_sword_4_t5" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.noble_bow" />
-      <Equipment slot="Item3"
-                 id="Item.default_arrows" />
-      <Equipment slot="Head"
-                 id="Item.southern_noble_helmet" />
-      <Equipment slot="Body"
-                 id="Item.desert_scale_armor" />
-      <Equipment slot="Cape"
-                 id="Item.leopard_pelt" />
-      <Equipment slot="Leg"
-                 id="Item.decorated_imperial_boots" />
-      <Equipment slot="Gloves"
-                 id="Item.decorated_imperial_gauntlets" />
-      <Equipment slot="Horse"
-                 id="Item.t2_aserai_horse" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_noble_sword_2_t5" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.noble_bow" />
-      <Equipment slot="Item3"
-                 id="Item.default_arrows" />
-      <Equipment slot="Head"
-                 id="Item.aserai_lord_helmet_a" />
-      <Equipment slot="Body"
-                 id="Item.aserai_archer_armor" />
-      <Equipment slot="Cape"
-                 id="Item.leopard_pelt" />
-      <Equipment slot="Leg"
-                 id="Item.decorated_imperial_boots" />
-      <Equipment slot="Gloves"
-                 id="Item.decorated_imperial_gauntlets" />
-      <Equipment slot="Horse"
-                 id="Item.noble_horse_southern" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_noble_sword_3_t5" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.emirs_oval_shield" />
-      <Equipment slot="Head"
-                 id="Item.southern_lord_helmet" />
-      <Equipment slot="Body"
-                 id="Item.aserai_archer_armor" />
-      <Equipment slot="Leg"
-                 id="Item.decorated_imperial_boots" />
-      <Equipment slot="Gloves"
-                 id="Item.decorated_imperial_gauntlets" />
-      <Equipment slot="Horse"
-                 id="Item.noble_horse_southern" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
+      <equipment slot="Item1"
+                 id="Item.ornate_adarga" />
+      <equipment slot="Item2"
+                 id="Item.aserai_sword_7_t5" />
+      <equipment slot="Item3"
                  id="Item.aserai_mace_4_t4" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.studded_round_shield" />
-      <Equipment slot="Head"
-                 id="Item.southern_lord_helmet" />
-      <Equipment slot="Body"
-                 id="Item.aserai_archer_armor" />
-      <Equipment slot="Leg"
-                 id="Item.decorated_imperial_boots" />
-      <Equipment slot="Gloves"
-                 id="Item.decorated_imperial_gauntlets" />
+      <equipment slot="Head"
+                 id="Item.emirs_helmet" />
+      <equipment slot="Cape"
+                 id="Item.aserai_scale_shoulder_e" />
+      <equipment slot="Body"
+                 id="Item.aserai_full_scale_armor_on_chain" />
+      <equipment slot="Leg"
+                 id="Item.plated_strip_boots" />
+      <equipment slot="Gloves"
+                 id="Item.lordly_mail_mitten" />
       <Equipment slot="Horse"
-                 id="Item.noble_horse_southern" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_2haxe_3_t5" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.studded_round_shield" />
-      <Equipment slot="Head"
-                 id="Item.aserai_lord_helmet_a" />
-      <Equipment slot="Body"
-                 id="Item.aserai_archer_armor" />
-      <Equipment slot="Cape"
-                 id="Item.leopard_pelt" />
-      <Equipment slot="Leg"
-                 id="Item.decorated_imperial_boots" />
-      <Equipment slot="Gloves"
-                 id="Item.decorated_imperial_gauntlets" />
-      <Equipment slot="Horse"
-                 id="Item.noble_horse_southern" />
+                 id="Item.t3_aserai_horse" />
       <Equipment slot="HorseHarness"
                  id="Item.mail_and_plate_barding" />
     </EquipmentSet>
@@ -600,146 +382,26 @@
   <EquipmentRoster id="ase_bat_template_heavy"
                    culture="Culture.aserai">
     <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_noble_sword_1_t5" />
-      <Equipment slot="Item1"
+      <equipment slot="Item0"
                  id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.emirs_oval_shield" />
-      <Equipment slot="Head"
-                 id="Item.aserai_lord_helmet_a" />
-      <Equipment slot="Body"
-                 id="Item.stitched_leather_over_mail" />
-      <Equipment slot="Cape"
-                 id="Item.brass_lamellar_shoulder" />
-      <Equipment slot="Leg"
-                 id="Item.plated_strip_boots" />
-      <Equipment slot="Gloves"
-                 id="Item.plated_strip_gauntlets" />
-      <Equipment slot="Cape"
-                 id="Item.stitched_leather_shoulders" />
-      <Equipment slot="Horse"
-                 id="Item.t2_aserai_horse" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_noble_sword_4_t5" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.noble_bow" />
-      <Equipment slot="Item3"
-                 id="Item.default_arrows" />
-      <Equipment slot="Head"
-                 id="Item.southern_noble_helmet" />
-      <Equipment slot="Body"
-                 id="Item.desert_scale_armor" />
-      <Equipment slot="Cape"
-                 id="Item.a_brass_lamellar_shoulder_a" />
-      <Equipment slot="Leg"
-                 id="Item.decorated_imperial_boots" />
-      <Equipment slot="Gloves"
-                 id="Item.plated_strip_gauntlets" />
-      <Equipment slot="Horse"
-                 id="Item.t2_aserai_horse" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_noble_sword_2_t5" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.noble_bow" />
-      <Equipment slot="Item3"
-                 id="Item.default_arrows" />
-      <Equipment slot="Head"
-                 id="Item.emirs_helmet" />
-      <Equipment slot="Body"
-                 id="Item.aserai_archer_armor" />
-      <Equipment slot="Cape"
-                 id="Item.brass_lamellar_shoulder" />
-      <Equipment slot="Leg"
-                 id="Item.plated_strip_boots" />
-      <Equipment slot="Cape"
-                 id="Item.scarf" />
-      <Equipment slot="Gloves"
-                 id="Item.plated_strip_gauntlets" />
-      <Equipment slot="Horse"
-                 id="Item.noble_horse_southern" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_noble_sword_3_t5" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.emirs_oval_shield" />
-      <Equipment slot="Head"
-                 id="Item.aserai_lord_helmet_a" />
-      <Equipment slot="Body"
-                 id="Item.stitched_leather_over_mail" />
-      <Equipment slot="Cape"
-                 id="Item.brass_lamellar_shoulder" />
-      <Equipment slot="Leg"
-                 id="Item.plated_strip_boots" />
-      <Equipment slot="Gloves"
-                 id="Item.plated_strip_gauntlets" />
-      <Equipment slot="Cape"
-                 id="Item.stitched_leather_shoulders" />
-      <Equipment slot="Horse"
-                 id="Item.noble_horse_southern" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
+      <equipment slot="Item1"
+                 id="Item.ornate_adarga" />
+      <equipment slot="Item2"
+                 id="Item.eastern_javelin_3_t4" />
+      <equipment slot="Item3"
                  id="Item.aserai_mace_4_t4" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.studded_round_shield" />
-      <Equipment slot="Head"
-                 id="Item.southern_noble_helmet" />
-      <Equipment slot="Body"
+      <equipment slot="Head"
+                 id="Item.southern_lord_helmet" />
+      <equipment slot="Cape"
+                 id="Item.desert_scale_shoulders" />
+      <equipment slot="Body"
                  id="Item.desert_scale_armor" />
-      <Equipment slot="Cape"
-                 id="Item.brass_lamellar_shoulder_white" />
-      <Equipment slot="Leg"
-                 id="Item.decorated_imperial_boots" />
-      <Equipment slot="Gloves"
-                 id="Item.plated_strip_gauntlets" />
-      <Equipment slot="Horse"
-                 id="Item.noble_horse_southern" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_2haxe_3_t5" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.studded_round_shield" />
-      <Equipment slot="Head"
-                 id="Item.aserai_lord_helmet_a" />
-      <Equipment slot="Body"
-                 id="Item.stitched_leather_over_mail" />
-      <Equipment slot="Cape"
-                 id="Item.a_brass_lamellar_shoulder_white_b" />
-      <Equipment slot="Leg"
+      <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
-      <Equipment slot="Gloves"
-                 id="Item.plated_strip_gauntlets" />
-      <Equipment slot="Cape"
-                 id="Item.stitched_leather_shoulders" />
+      <equipment slot="Gloves"
+                 id="Item.lordly_mail_mitten" />
       <Equipment slot="Horse"
-                 id="Item.noble_horse_southern" />
+                 id="Item.t3_aserai_horse" />
       <Equipment slot="HorseHarness"
                  id="Item.mail_and_plate_barding" />
     </EquipmentSet>
@@ -750,136 +412,26 @@
   <EquipmentRoster id="ase_bat_template_bedouin"
                    culture="Culture.aserai">
     <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_noble_sword_1_t5" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.emirs_oval_shield" />
-      <Equipment slot="Head"
-                 id="Item.closed_desert_helmet" />
-      <Equipment slot="Body"
-                 id="Item.stitched_leather_over_mail" />
-      <Equipment slot="Cape"
-                 id="Item.brass_lamellar_shoulder" />
-      <Equipment slot="Leg"
-                 id="Item.khuzait_curved_boots" />
-      <Equipment slot="Cape"
-                 id="Item.leopard_pelt" />
-      <Equipment slot="Horse"
-                 id="Item.t2_aserai_horse" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_noble_sword_4_t5" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.noble_bow" />
-      <Equipment slot="Item3"
-                 id="Item.default_arrows" />
-      <Equipment slot="Head"
+      <equipment slot="Item0"
+                 id="Item.steppe_war_bow" />
+      <equipment slot="Item1"
+                 id="Item.hardened_125_gr_arrows" />
+      <equipment slot="Item2"
+                 id="Item.hardened_125_gr_arrows" />
+      <equipment slot="Item3"
+                 id="Item.easter_polesword_t4" />
+      <equipment slot="Head"
                  id="Item.emirs_helmet" />
-      <Equipment slot="Body"
-                 id="Item.desert_robe_over_mail" />
-      <Equipment slot="Cape"
-                 id="Item.scarf" />
-      <Equipment slot="Leg"
-                 id="Item.khuzait_curved_boots" />
+      <equipment slot="Cape"
+                 id="Item.aserai_scale_shoulder_a" />
+      <equipment slot="Body"
+                 id="Item.aserai_scale_armor_on_cloth" />
+      <equipment slot="Leg"
+                 id="Item.plated_strip_boots" />
+      <equipment slot="Gloves"
+                 id="Item.lordly_mail_mitten" />
       <Equipment slot="Horse"
-                 id="Item.t2_aserai_horse" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_noble_sword_2_t5" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.noble_bow" />
-      <Equipment slot="Item3"
-                 id="Item.default_arrows" />
-      <Equipment slot="Head"
-                 id="Item.closed_desert_helmet" />
-      <Equipment slot="Body"
-                 id="Item.desert_robe_over_mail" />
-      <Equipment slot="Cape"
-                 id="Item.brass_lamellar_shoulder" />
-      <Equipment slot="Leg"
-                 id="Item.khuzait_curved_boots" />
-      <Equipment slot="Cape"
-                 id="Item.leopard_pelt" />
-      <Equipment slot="Horse"
-                 id="Item.noble_horse_southern" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_noble_sword_3_t5" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.emirs_oval_shield" />
-      <Equipment slot="Head"
-                 id="Item.closed_desert_helmet" />
-      <Equipment slot="Body"
-                 id="Item.stitched_leather_over_mail" />
-      <Equipment slot="Cape"
-                 id="Item.brass_lamellar_shoulder" />
-      <Equipment slot="Leg"
-                 id="Item.khuzait_curved_boots" />
-      <Equipment slot="Cape"
-                 id="Item.leopard_pelt" />
-      <Equipment slot="Horse"
-                 id="Item.noble_horse_southern" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_mace_4_t4" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.studded_round_shield" />
-      <Equipment slot="Head"
-                 id="Item.emirs_helmet" />
-      <Equipment slot="Body"
-                 id="Item.desert_robe_over_mail" />
-      <Equipment slot="Cape"
-                 id="Item.scarf" />
-      <Equipment slot="Leg"
-                 id="Item.khuzait_curved_boots" />
-      <Equipment slot="Horse"
-                 id="Item.noble_horse_southern" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_2haxe_3_t5" />
-      <Equipment slot="Item1"
-                 id="Item.aserai_lance_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.studded_round_shield" />
-      <Equipment slot="Head"
-                 id="Item.closed_desert_helmet" />
-      <Equipment slot="Body"
-                 id="Item.desert_robe_over_mail" />
-      <Equipment slot="Cape"
-                 id="Item.brass_lamellar_shoulder" />
-      <Equipment slot="Leg"
-                 id="Item.khuzait_curved_boots" />
-      <Equipment slot="Cape"
-                 id="Item.leopard_pelt" />
-      <Equipment slot="Cape"
-                 id="Item.stitched_leather_shoulders" />
-      <Equipment slot="Horse"
-                 id="Item.noble_horse_southern" />
+                 id="Item.t3_aserai_horse" />
       <Equipment slot="HorseHarness"
                  id="Item.mail_and_plate_barding" />
     </EquipmentSet>
@@ -890,52 +442,24 @@
   <EquipmentRoster id="ase_bat_template_lady"
                    culture="Culture.aserai">
     <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_noble_sword_1_t5" />
-      <Equipment slot="Item2"
-                 id="Item.emirs_oval_shield" />
-      <Equipment slot="Body"
-                 id="Item.stitched_leather_over_mail" />
-      <Equipment slot="Cape"
-                 id="Item.stitched_leather_shoulders" />
-      <Equipment slot="Leg"
+      <equipment slot="Item0"
+                 id="Item.aserai_lance_1_t5" />
+      <equipment slot="Item1"
+                 id="Item.ornate_adarga" />
+      <equipment slot="Item3"
+                 id="Item.aserai_mace_4_t4" />
+      <equipment slot="Head"
+                 id="Item.southern_noble_helmet" />
+      <equipment slot="Cape"
+                 id="Item.aserai_scale_shoulder_b" />
+      <equipment slot="Body"
+                 id="Item.aserai_full_scale_armor_on_chain" />
+      <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
-      <Equipment slot="Gloves"
-                 id="Item.plated_strip_gauntlets" />
+      <equipment slot="Gloves"
+                 id="Item.lordly_mail_mitten" />
       <Equipment slot="Horse"
-                 id="Item.t2_aserai_horse" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_noble_sword_4_t5" />
-      <Equipment slot="Body"
-                 id="Item.desert_scale_armor" />
-      <Equipment slot="Leg"
-                 id="Item.decorated_imperial_boots" />
-      <Equipment slot="Gloves"
-                 id="Item.plated_strip_gauntlets" />
-      <Equipment slot="Horse"
-                 id="Item.t2_aserai_horse" />
-      <Equipment slot="HorseHarness"
-                 id="Item.mail_and_plate_barding" />
-    </EquipmentSet>
-    <EquipmentSet>
-      <Equipment slot="Item0"
-                 id="Item.aserai_noble_sword_2_t5" />
-      <Equipment slot="Body"
-                 id="Item.brass_lamellar_over_mail" />
-      <Equipment slot="Cape"
-                 id="Item.scarf" />
-      <Equipment slot="Leg"
-                 id="Item.plated_strip_boots" />
-      <Equipment slot="Cape"
-                 id="Item.scarf" />
-      <Equipment slot="Gloves"
-                 id="Item.plated_strip_gauntlets" />
-      <Equipment slot="Horse"
-                 id="Item.noble_horse_southern" />
+                 id="Item.t3_aserai_horse" />
       <Equipment slot="HorseHarness"
                  id="Item.mail_and_plate_barding" />
     </EquipmentSet>
