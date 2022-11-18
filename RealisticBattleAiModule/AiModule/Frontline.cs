@@ -22,7 +22,7 @@ namespace RBMAI
             Agent.ActionCodeType currentActionType = agent.GetCurrentActionType(1);
             if (
                 currentActionType == Agent.ActionCodeType.ReadyMelee ||
-                currentActionType == Agent.ActionCodeType.ReadyRanged ||
+                //currentActionType == Agent.ActionCodeType.ReadyRanged ||
                 currentActionType == Agent.ActionCodeType.ReleaseMelee ||
                 currentActionType == Agent.ActionCodeType.ReleaseRanged ||
                 currentActionType == Agent.ActionCodeType.ReleaseThrowing)
@@ -122,7 +122,7 @@ namespace RBMAI
                     int enemyAgentsCountCriticalTreshold = 6;
                     int hasShieldBonusNumber = 40;
                     int isAttackingArcherNumber = -60;
-                    int aggresivnesModifier = 25;
+                    int aggresivnesModifier = 20;
                     float backStepDistance = 0.35f;
                     if (isAgentInDefensiveOrder)
                     {
