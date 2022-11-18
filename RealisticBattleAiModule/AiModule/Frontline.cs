@@ -22,7 +22,7 @@ namespace RBMAI
             Agent.ActionCodeType currentActionType = agent.GetCurrentActionType(1);
             if (
                 currentActionType == Agent.ActionCodeType.ReadyMelee ||
-                //currentActionType == Agent.ActionCodeType.ReadyRanged || 
+                currentActionType == Agent.ActionCodeType.ReadyRanged ||
                 currentActionType == Agent.ActionCodeType.ReleaseMelee ||
                 currentActionType == Agent.ActionCodeType.ReleaseRanged ||
                 currentActionType == Agent.ActionCodeType.ReleaseThrowing)

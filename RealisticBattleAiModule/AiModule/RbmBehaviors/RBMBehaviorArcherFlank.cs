@@ -53,7 +53,7 @@ namespace RBMAI
 
 			Vec2 averageAllyFormationPosition = base.Formation.QuerySystem.Team.AveragePosition;
 			WorldPosition medianTargetFormationPosition = base.Formation.QuerySystem.Team.MedianTargetFormationPosition;
-			Vec2 enemyDirection = (medianTargetFormationPosition.AsVec2 - averageAllyFormationPosition).Normalized();
+			Vec2 enemyDirection = (medianTargetFormationPosition.AsVec2 - averagePosition).Normalized();
 
 			if (behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
 			{

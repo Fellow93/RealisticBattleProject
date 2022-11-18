@@ -1,4 +1,6 @@
-﻿using TaleWorlds.Core;
+﻿using System.Linq;
+using System.Reflection;
+using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -69,8 +71,23 @@ namespace RBMAI
 
                 vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - base.Formation.QuerySystem.MedianPosition.AsVec2;
                 float distance = vec.Normalize();
+                
                 bool isFormationShooting = Utilities.IsFormationShooting(base.Formation);
                 float effectiveShootingRange = base.Formation.QuerySystem.MissileRange / 1.8f;
+
+                FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
+                _currentTacticField.DeclaringType.GetField("_currentTactic");
+                if (base.Formation?.Team?.TeamAI != null)
+                {
+                    if (_currentTacticField.GetValue(base.Formation?.Team?.TeamAI) != null && _currentTacticField.GetValue(base.Formation?.Team?.TeamAI).ToString().Contains("SplitArchers"))
+                    {
+                        if (significantEnemy != null && base.Formation?.Team?.Formations.Count((Formation f) => f.QuerySystem.IsRangedFormation) > 1)
+                        {
+                            effectiveShootingRange += significantEnemy.Width / 3f;
+                        }
+                    }
+                }
+
                 if (significantAlly != null && (significantAlly == base.Formation || !significantAlly.QuerySystem.IsInfantryFormation))
                 {
                     effectiveShootingRange *= 1.9f;
