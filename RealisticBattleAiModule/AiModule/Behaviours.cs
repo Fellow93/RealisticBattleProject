@@ -1693,7 +1693,8 @@ namespace RBMAI
                     {
                         bool hasnotusableonehand = __instance.Equipment.HasAnyWeaponWithFlags(WeaponFlags.NotUsableWithOneHand);
                         bool hasranged = __instance.Equipment.HasAnyWeaponWithFlags(WeaponFlags.RangedWeapon);
-                        if (!hasnotusableonehand && !hasranged && __instance.GetTargetAgent() != null && __instance.Position.Distance(__instance.GetTargetAgent().Position) < 6f)
+                        float distance = __instance.GetTargetAgent() != null ? __instance.Position.Distance(__instance.GetTargetAgent().Position) : 100f;
+                        if (!hasnotusableonehand && !hasranged && __instance.GetTargetAgent() != null && distance < 7f)
                         {
                             __instance.EnforceShieldUsage(Agent.UsageDirection.DefendDown);
                         }

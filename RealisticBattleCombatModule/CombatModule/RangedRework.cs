@@ -602,46 +602,9 @@ namespace RBMCombat
         //    {
         //        if (__instance.Equipment[slotIndex].CurrentUsageItem.IsRangedWeapon)
         //        {
-        //            if(__instance.Equipment[slotIndex].CurrentUsageItem.WeaponClass == WeaponClass.Bow || __instance.Equipment[slotIndex].CurrentUsageItem.WeaponClass == WeaponClass.Crossbow)
+        //            if (__instance.Equipment[slotIndex].CurrentUsageItem.WeaponClass == WeaponClass.Bow || __instance.Equipment[slotIndex].CurrentUsageItem.WeaponClass == WeaponClass.Crossbow)
         //            {
-        //                WeaponData weaponData = WeaponData.InvalidWeaponData;
-        //                WeaponStatsData[] weaponStatsData = null;
-        //                WeaponData ammoWeaponData = WeaponData.InvalidWeaponData;
-        //                WeaponStatsData[] ammoWeaponStatsData = null;
-
-        //                if (!__instance.Equipment[slotIndex].IsEmpty && !__instance.Equipment[ammoSlotIndex].IsEmpty)
-        //                {
-        //                    float ammoWeight = __instance.Equipment[ammoSlotIndex].GetWeight() / __instance.Equipment[ammoSlotIndex].Amount;
-        //                    RangedWeaponStats rws;
-        //                    if (!rangedWeaponStats.TryGetValue(__instance.Equipment[slotIndex].GetModifiedItemName().ToString(), out rws))
-        //                    {
-        //                        rangedWeaponMW[__instance.Equipment[slotIndex].GetModifiedItemName().ToString()] = __instance.Equipment[slotIndex];
-        //                        rangedWeaponStats[__instance.Equipment[slotIndex].GetModifiedItemName().ToString()] = new RangedWeaponStats(__instance.Equipment[slotIndex].GetModifiedMissileSpeedForCurrentUsage());
-        //                    }
-        //                    int calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, __instance.Equipment[slotIndex], rangedWeaponStats[__instance.Equipment[slotIndex].GetModifiedItemName().ToString()].getDrawWeight());
-
-        //                    if (calculatedMissileSpeed != __instance.Equipment[slotIndex].CurrentUsageItem.MissileSpeed)
-        //                    {
-        //                        PropertyInfo propertyMissileSpeed = typeof(WeaponComponentData).GetProperty("MissileSpeed");
-        //                        propertyMissileSpeed.DeclaringType.GetProperty("MissileSpeed");
-        //                        propertyMissileSpeed.SetValue(__instance.Equipment[slotIndex].CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-
-        //                        weaponData = __instance.Equipment[slotIndex].GetWeaponData(needBatchedVersionForMeshes: true);
-        //                        weaponStatsData = __instance.Equipment[slotIndex].GetWeaponStatsData();
-
-        //                        MethodInfo method = typeof(Agent).GetMethod("WeaponEquipped", BindingFlags.NonPublic | BindingFlags.Instance);
-        //                        method.DeclaringType.GetMethod("WeaponEquipped");
-        //                        method.Invoke(__instance, new object[] { slotIndex, weaponData, weaponStatsData, ammoWeaponData, ammoWeaponStatsData, null, true, true });
-
-        //                       __instance.Equipment[slotIndex].ReloadAmmo(__instance.Equipment[ammoSlotIndex], 2);
-
-        //                        __instance.TryToWieldWeaponInSlot(slotIndex, Agent.WeaponWieldActionType.WithAnimation, false);
-
-        //                        //__instance.Equipment.SetReloadPhaseOfSlot(slotIndex, 2);
-        //                    }
-        //                }
-        //                weaponData.DeinitializeManagedPointers();
-        //                ammoWeaponData.DeinitializeManagedPointers();
+        //                bool testik = true;
         //            }
         //        }
         //        return true;
@@ -725,15 +688,30 @@ namespace RBMCombat
                                     int ammoInHandCount = mwa.Amount;
                                     if(mwa.Amount > 0)
                                     {
-                                        __instance.Equipment.GetAmmoCountAndIndexOfType(mw.Item.Type, out var _, out var eIndex);
+                                        __instance.Equipment.GetAmmoCountAndIndexOfType(mw.Item.Type, out var ammouCount, out var eIndex);
                                         if(eIndex != EquipmentIndex.None)
                                         {
-                                            __instance.SetReloadAmmoInSlot(equipmentIndex, eIndex, (short)-ammoInHandCount);
+                                            __instance.SetReloadAmmoInSlot(equipmentIndex, eIndex, Convert.ToInt16(-ammoInHandCount));
                                             __instance.SetWeaponReloadPhaseAsClient(equipmentIndex, 0);
-                                            MissionWeapon mwdsa = __instance.Equipment[eIndex];
-                                            __instance.Equipment.SetAmountOfSlot(eIndex, (short)(mwdsa.Amount + ammoInHandCount), true);
+                                            if (__instance.Equipment[eIndex].Amount == __instance.Equipment[eIndex].ModifiedMaxAmount)
+                                            {
+                                                for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                                                {
+                                                    if(i != eIndex)
+                                                    {
+                                                        if (__instance.Equipment[i].IsSameType(__instance.Equipment[eIndex]))
+                                                        {
+                                                            __instance.SetWeaponAmountInSlot(i, Convert.ToInt16(__instance.Equipment[i].Amount + ammoInHandCount), enforcePrimaryItem: true);
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                __instance.SetWeaponAmountInSlot(eIndex, Convert.ToInt16(__instance.Equipment[eIndex].Amount + ammoInHandCount), enforcePrimaryItem: true);
+                                            }
                                         }
-                                        //__instance.Equipment[equipmentIndex].AmmoWeapon.Ammo;
                                     }
                                     
                                 }

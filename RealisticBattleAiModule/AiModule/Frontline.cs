@@ -16,6 +16,25 @@ namespace RBMAI
 {
     class Frontline
     {
+
+        public static bool IsInImportantFrontlineAction(Agent agent)
+        {
+            Agent.ActionCodeType currentActionType = agent.GetCurrentActionType(1);
+            if (
+                currentActionType == Agent.ActionCodeType.ReadyMelee ||
+                //currentActionType == Agent.ActionCodeType.ReadyRanged || 
+                currentActionType == Agent.ActionCodeType.ReleaseMelee ||
+                currentActionType == Agent.ActionCodeType.ReleaseRanged ||
+                currentActionType == Agent.ActionCodeType.ReleaseThrowing)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         [HarmonyPatch(typeof(Formation))]
         class OverrideFormation
         {
@@ -30,7 +49,7 @@ namespace RBMAI
                 //if (__instance.MovementOrder.OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
                 if (unit != null && (__instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation) && !____detachedUnits.Contains(unit))
                 {
-                    int aiDecisionCooldownTime = 2;
+                    int aiDecisionCooldownTime = 1;
                     bool isFieldBattle = Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle;
                     AIDecision aiDecision;
 
@@ -103,7 +122,7 @@ namespace RBMAI
                     int enemyAgentsCountCriticalTreshold = 6;
                     int hasShieldBonusNumber = 40;
                     int isAttackingArcherNumber = -60;
-                    int aggresivnesModifier = 30;
+                    int aggresivnesModifier = 25;
                     float backStepDistance = 0.35f;
                     if (isAgentInDefensiveOrder)
                     {
@@ -113,7 +132,7 @@ namespace RBMAI
                         enemyAgentsCountCriticalTreshold = 6;
                         backStepDistance = 0.35f;
                         hasShieldBonusNumber = 40;
-                        aggresivnesModifier = 30;
+                        aggresivnesModifier = 25;
                     }
 
                     if (targetAgent != null && vanillaTargetAgent != null)
@@ -176,6 +195,12 @@ namespace RBMAI
                                 unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
                                 unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1.1f, 10f, 0.01f);
                                 unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
+                            }
+                            if (IsInImportantFrontlineAction(unit))
+                            {
+                                __result = aiDecisionCooldownDict[unit].position;
+                                aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
+                                return false;
                             }
                         }
                         //}
@@ -299,7 +324,7 @@ namespace RBMAI
                                     }
                                     if (isFieldBattle)
                                     {
-                                        int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * (unit.Health / unit.HealthLimit) * 65), 75, 200);
+                                        int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * (unit.Health / unit.HealthLimit) * 65), 70, 200);
                                         int randInt = MBRandom.RandomInt(unitPower + aggresivnesModifier);
                                         int defensivnesModifier = 0;
                                         if (unit.WieldedOffhandWeapon.IsShield())
@@ -384,7 +409,7 @@ namespace RBMAI
                             {
                                 //unit.LookDirection = direction.ToVec3();
                                 //unit.SetDirectionChangeTendency(10f);
-                                int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * (unit.Health / unit.HealthLimit) * 65), 75, 200);
+                                int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * (unit.Health / unit.HealthLimit) * 65), 70, 200);
                                 int randInt = MBRandom.RandomInt((int)unitPower + aggresivnesModifier);
                                 int defensivnesModifier = 0;
 
@@ -407,6 +432,11 @@ namespace RBMAI
                                     int randImmidiate = MBRandom.RandomInt(powerSumImmidiate);
                                     if (unitPower * 2 < randImmidiate)
                                     {
+                                        if (IsInImportantFrontlineAction(unit))
+                                        {
+                                            aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
+                                            return false;
+                                        }
                                         WorldPosition backPosition = unit.GetWorldPosition();
                                         backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
                                         __result = backPosition;
@@ -419,6 +449,11 @@ namespace RBMAI
                                     //int randImmidiate = MBRandom.RandomInt(powerSumImmidiate);
                                     //if(unitPower / 2 < randImmidiate)
                                     //{
+                                    if (IsInImportantFrontlineAction(unit))
+                                    {
+                                        aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
+                                        return false;
+                                    }
                                     WorldPosition backPosition = unit.GetWorldPosition();
                                     backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
                                     __result = backPosition;
@@ -435,12 +470,22 @@ namespace RBMAI
                                             //int randImmidiate = MBRandom.RandomInt(powerSumImmidiate);
                                             //if (unitPower / 2 < randImmidiate)
                                             //{
+                                            if (IsInImportantFrontlineAction(unit))
+                                            {
+                                                aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
+                                                return false;
+                                            }
                                             WorldPosition backPosition = unit.GetWorldPosition();
                                             backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
                                             __result = backPosition;
                                             //aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
                                             aiDecisionCooldownDict[unit].position = __result; return false;
                                             //}
+                                        }
+                                        if (IsInImportantFrontlineAction(unit))
+                                        {
+                                            aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
+                                            return false;
                                         }
                                         __result = getNearbyAllyWorldPosition(mission, unitPosition, unit);
                                         aiDecisionCooldownDict[unit].position = __result; return false;
@@ -449,12 +494,22 @@ namespace RBMAI
                                     {
                                         if (MBRandom.RandomInt((int)(unitPower / 4)) == 0)
                                         {
+                                            if (IsInImportantFrontlineAction(unit))
+                                            {
+                                                aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
+                                                return false;
+                                            }
                                             __result = unit.GetWorldPosition();
                                             //__result = WorldPosition.Invalid;
                                             aiDecisionCooldownDict[unit].position = __result; return false;
                                         }
                                         else
                                         {
+                                            if (IsInImportantFrontlineAction(unit))
+                                            {
+                                                aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
+                                                return false;
+                                            }
                                             WorldPosition backPosition = unit.GetWorldPosition();
                                             backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
                                             __result = backPosition;
@@ -689,7 +744,14 @@ namespace RBMAI
                         {
                             isSettingDestinationSpeed = false;
                             formationPosition = formation.GetOrderPositionOfUnit(___Agent);
-                            formationDirection = formation.GetDirectionOfUnit(___Agent);
+                            if(___Agent.GetTargetAgent() != null)
+                            {
+                                formationDirection = ___Agent.GetTargetAgent().Position.AsVec2 - ___Agent.Position.AsVec2;
+                            }
+                            else
+                            {
+                                formationDirection = formation.GetDirectionOfUnit(___Agent);
+                            }
                             limitIsMultiplier = true;
                             speedLimit = __instance != null && HumanAIComponent.FormationSpeedAdjustmentEnabled ? __instance.GetDesiredSpeedInFormation(false) : -1f;
                             __result = true;
