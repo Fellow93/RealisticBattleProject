@@ -521,7 +521,7 @@ namespace RBMAI
                             //}
                             //else
                             //{
-                            Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, enemyFormation.Width * 0.5f , enemyFormation.Direction);
+                            Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, (enemyFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose)?enemyFormation.Width * 0.2f: enemyFormation.Width * 0.5f, enemyFormation.Direction);
                             position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f));
                             //position2.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f));
                             //}
