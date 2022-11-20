@@ -11,7 +11,7 @@ namespace RBMAI
 	{
 
 		private int flankCooldownMax = 40;
-		public float customWidth = 110f;
+		//public float customWidth = 110f;
         public Timer repositionTimer = null;
 		public int side = MBRandom.RandomInt(2);
 		public int cooldown = 0;
@@ -264,10 +264,10 @@ namespace RBMAI
         public override void TickOccasionally()
 		{
 			CalculateCurrentOrder();
-            if(base.Formation.Width > customWidth)
-            {
-                base.Formation.FormOrder = FormOrder.FormOrderCustom(customWidth);
-            }
+            //if(base.Formation.Width > customWidth)
+            //{
+            //    base.Formation.FormOrder = FormOrder.FormOrderCustom(customWidth);
+            //}
             base.Formation.SetMovementOrder(base.CurrentOrder);
 			base.Formation.FacingOrder = CurrentFacingOrder;
 		}

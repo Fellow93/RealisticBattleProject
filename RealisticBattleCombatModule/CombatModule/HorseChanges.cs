@@ -166,19 +166,30 @@ namespace RBMCombat
             static bool Prefix(ref Mission __instance, Agent attackerAgent, Agent victimAgent, in AttackCollisionData collisionData, WeaponComponentData attackerWeapon, in Blow blow, ref bool __result)
             {
                 float damageMultiplierOfCombatDifficulty = Mission.Current.GetDamageMultiplierOfCombatDifficulty(victimAgent, attackerAgent);
-                if (collisionData.IsMissile && victimAgent.IsMount && attackerAgent != null && victimAgent.GetAgentFlags().HasAnyFlag(AgentFlag.CanRear) && Vec3.DotProduct(blow.Direction, victimAgent.Frame.rotation.f) < -0.35f)
+                if (collisionData.IsMissile)
                 {
-                    __result = (float)collisionData.InflictedDamage >= 25f * damageMultiplierOfCombatDifficulty;
-                    return false;
+                    if (victimAgent.IsMount && attackerAgent != null && victimAgent.GetAgentFlags().HasAnyFlag(AgentFlag.CanRear) && Vec3.DotProduct(blow.Direction, victimAgent.Frame.rotation.f) < -0.35f)
+                    {
+                        __result = (float)collisionData.InflictedDamage >= 25f * damageMultiplierOfCombatDifficulty;
+                        return false;
+                    }
+                    else
+                    {
+                        __result = false;
+                        return false;
+                    }
                 }
-                if (attackerWeapon != null && (attackerWeapon.WeaponFlags.HasFlag(WeaponFlags.WideGrip) || attackerWeapon.WeaponClass == WeaponClass.OneHandedPolearm || attackerWeapon.WeaponClass == WeaponClass.TwoHandedPolearm || attackerWeapon.WeaponClass == WeaponClass.LowGripPolearm)
+                else
+                {
+                    if (attackerWeapon != null && (attackerWeapon.WeaponFlags.HasFlag(WeaponFlags.WideGrip) || attackerWeapon.WeaponClass == WeaponClass.OneHandedPolearm || attackerWeapon.WeaponClass == WeaponClass.TwoHandedPolearm || attackerWeapon.WeaponClass == WeaponClass.LowGripPolearm)
                     && blow.StrikeType == StrikeType.Thrust && attackerAgent != null && victimAgent.GetAgentFlags().HasAnyFlag(AgentFlag.CanRear) && Vec3.DotProduct(blow.Direction, victimAgent.Frame.rotation.f) < -0.35f)
-                {
-                    //__result = (float)collisionData.InflictedDamage >= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.MakesRearAttackDamageThreshold) * damageMultiplierOfCombatDifficulty;
-                    __result = (float)collisionData.InflictedDamage >= 13f * damageMultiplierOfCombatDifficulty;
-                    return false;
+                    {
+                        //__result = (float)collisionData.InflictedDamage >= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.MakesRearAttackDamageThreshold) * damageMultiplierOfCombatDifficulty;
+                        __result = (float)collisionData.InflictedDamage >= 13f * damageMultiplierOfCombatDifficulty;
+                        return false;
+                    }
+                    __result = false;
                 }
-                __result = false;
                 return false;
             }
         }

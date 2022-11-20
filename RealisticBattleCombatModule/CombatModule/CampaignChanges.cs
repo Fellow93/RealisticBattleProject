@@ -6,7 +6,6 @@ using StoryMode.Missions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
@@ -28,22 +27,28 @@ namespace RBMCombat
         public static List<CharacterObject> FillTroopListUntilTier(CharacterObject starterTroop, int tier)
         {
             List<CharacterObject> troops = new List<CharacterObject>();
-            List<CharacterObject> lastUpgradeTargets = new List<CharacterObject>();
-
-            troops.Add(starterTroop);
-
-            lastUpgradeTargets.Clear();
-            lastUpgradeTargets.Add(starterTroop);
-
-            for (int i = 1; i < tier; i++)
+            if (starterTroop != null)
             {
-                List<CharacterObject> newUpgradeTargets = new List<CharacterObject>();
-                foreach (CharacterObject co in lastUpgradeTargets)
+                List<CharacterObject> lastUpgradeTargets = new List<CharacterObject>();
+
+                troops.Add(starterTroop);
+
+                lastUpgradeTargets.Clear();
+                lastUpgradeTargets.Add(starterTroop);
+
+                for (int i = 1; i < tier; i++)
                 {
-                    troops.AddRange(co.UpgradeTargets);
-                    newUpgradeTargets.AddRange(co.UpgradeTargets);
+                    List<CharacterObject> newUpgradeTargets = new List<CharacterObject>();
+                    foreach (CharacterObject co in lastUpgradeTargets)
+                    {
+                        if (co != null && co.UpgradeTargets != null)
+                        {
+                            troops.AddRange(co.UpgradeTargets);
+                            newUpgradeTargets.AddRange(co.UpgradeTargets);
+                        }
+                    }
+                    lastUpgradeTargets = newUpgradeTargets;
                 }
-                lastUpgradeTargets = newUpgradeTargets;
             }
 
             return troops;

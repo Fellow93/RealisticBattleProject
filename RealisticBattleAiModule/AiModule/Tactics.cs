@@ -399,11 +399,11 @@ namespace RBMAI
                                 {
                                     //team.AddTacticOption(new TacticFrontalCavalryCharge(team));
                                 }
-                                if (____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Aserai)
+                                if (____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Aserai || ____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Darshi)
                                 {
                                     team.AddTacticOption(new RBMTacticAttackSplitSkirmishers(team));
                                 }
-                                if (____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Sturgia)
+                                if (____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Sturgia || ____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Nord)
                                 {
                                     team.AddTacticOption(new RBMTacticAttackSplitInfantry(team));
                                 }
