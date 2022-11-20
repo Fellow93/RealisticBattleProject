@@ -62,7 +62,7 @@ namespace RBMCombat
                     }
                     else if (item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
                     {
-                        price = 100f + (item.ArmorComponent.HeadArmor * materialPriceModifier * 1.2f);
+                        price = 100f + ((item.ArmorComponent.HeadArmor * materialPriceModifier * 1.2f) + (item.ArmorComponent.BodyArmor * materialPriceModifier * 0.6f));
                     }
                     else if (item.ItemType == ItemObject.ItemTypeEnum.Cape)
                     {
