@@ -31,7 +31,7 @@
     <managed_core_parameter id="DamageInterruptAttackthresholdPierce" value="5.0"/>
     <managed_core_parameter id="DamageInterruptAttackthresholdCut" value="5.0"/>
     <managed_core_parameter id="DamageInterruptAttackthresholdBlunt" value="5.0"/>
-    <managed_core_parameter id="MakesRearAttackDamageThreshold" value="15.0"/>
+    <managed_core_parameter id="MakesRearAttackDamageThreshold" value="13.0"/>
     <managed_core_parameter id="MissileMinimumDamageToStick" value="3.0"/>
     <managed_core_parameter id="BreakableProjectileMinimumBreakSpeed" value="60.0"/>
     <managed_core_parameter id="FallDamageMultiplier" value="0.575"/>

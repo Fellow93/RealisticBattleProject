@@ -16,5 +16,21 @@
     <native_parameter id="guard_reset_time" value="10.0"/>
 	
 	<native_parameter id="mounted_passive_action_minimum_speed" value="7"/>
+	
+	<native_parameter id="on_weapon_hit_speed_regain_acceleration" value="0.7"/>
+    <native_parameter id="on_weapon_hit_slow_down_factor_swing" value="0.01"/>
+    <native_parameter id="on_weapon_hit_slow_down_factor_thrust" value="0.0"/>
+    <native_parameter id="impact_ik_max_distance_shrug_off" value="0.40"/>
+    <native_parameter id="impact_ik_max_distance_light" value="0.05"/>
+    <native_parameter id="impact_ik_max_distance_medium" value="0.10"/>
+    <native_parameter id="impact_ik_max_distance_heavy" value="0.25"/>
+    <native_parameter id="impact_ik_duration_light" value="0.05"/>
+    <native_parameter id="impact_ik_duration_medium" value="0.10"/>
+    <native_parameter id="impact_ik_duration_heavy" value="0.25"/>
+    <native_parameter id="impact_ik_duration_shrug_off" value="0.15"/>
+    <native_parameter id="thrust_tip_collision_distance" value="9.0" />
+    <native_parameter id="thrust_tip_collision_distance_mounted" value="5.0" />
+    <native_parameter id="thrust_tip_collision_capsule_radius_multiplier" value="1.6" />
+    <native_parameter id="passive_usage_start_damage_animation_strength" value="0.1" />
   </native_parameters>
 </base>

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using TaleWorlds.Core;
-using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
 namespace  RBMCombat
@@ -10,6 +9,21 @@ namespace  RBMCombat
     {
         public static int numOfHits = 0;
         public static int numOfDurabilityDowngrade = 0;
+        public static bool HitWithWeaponBlade(in AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
+        {
+            WeaponComponentData currentUsageItem = attackerWeapon.CurrentUsageItem;
+            if (currentUsageItem != null)
+            {
+                WeaponClass weaponClass = attackerWeapon.CurrentUsageItem.WeaponClass;
+                if (collisionData.CollisionDistanceOnWeapon < currentUsageItem.GetRealWeaponLength() - attackerWeapon.Item.WeaponDesign.UsedPieces[0].ScaledBladeLength)
+                {
+                    return false;
+                }
+                return true;
+            }
+            return true;
+        }
+
         public static int calculateMissileSpeed(float ammoWeight, MissionWeapon rangedWeapon, int drawWeight)
         {
             int calculatedMissileSpeed = 10;

@@ -4,9 +4,7 @@ using SandBox.GameComponents;
 using SandBox.Missions.MissionLogics;
 using System;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using TaleWorlds.Core;
-using TaleWorlds.DotNet;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -31,6 +29,8 @@ namespace RBMCombat
 
                 //Vec3 resultVec = gcn + wbd;
                 //float angleModifier = 1f - Math.Abs((resultVec.x + resultVec.y + resultVec.z) / 3);
+                //Agent attacker = null;
+                
 
                 float missileTotalDamage = acd.MissileTotalDamage;
 
@@ -506,6 +506,36 @@ namespace RBMCombat
         }
     }
 
+    [HarmonyPatch(typeof(Mission))]
+    [HarmonyPatch("GetAttackCollisionResults")]
+    class GetAttackCollisionResultsPatch
+    {
+        static void Postfix(Agent attackerAgent, Agent victimAgent, ref AttackCollisionData attackCollisionData, out CombatLogData combatLog, ref CombatLogData __result)
+        {
+            if (attackerAgent != null && attackCollisionData.StrikeType == (int)StrikeType.Swing && !attackCollisionData.AttackBlockedWithShield && !attackerAgent.WieldedWeapon.IsEmpty && !Utilities.HitWithWeaponBlade(in attackCollisionData, attackerAgent.WieldedWeapon))
+            {
+                string typeOfHandle = "Handle";
+                if (attackerAgent.WieldedWeapon.CurrentUsageItem != null && 
+                    (attackerAgent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Dagger ||
+                    attackerAgent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.OneHandedSword ||
+                    attackerAgent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.TwoHandedSword))
+                {
+                    typeOfHandle = "Pommel";
+                }
+                if (attackerAgent != null && attackerAgent.IsPlayerControlled)
+                {
+                    InformationManager.DisplayMessage(new InformationMessage(typeOfHandle + " hit", Color.FromUint(4289612505u)));
+                }
+                if (victimAgent != null && victimAgent.IsPlayerControlled)
+                {
+                    InformationManager.DisplayMessage(new InformationMessage(typeOfHandle + " hit", Color.FromUint(4289612505u)));
+                }
+                __result.DamageType = DamageTypes.Blunt;
+            }
+            combatLog = __result;
+        }
+    }
+
     [HarmonyPatch(typeof(CombatStatCalculator))]
     [HarmonyPatch("CalculateStrikeMagnitudeForThrust")]
     class CalculateStrikeMagnitudeForThrustPatch
@@ -564,7 +594,7 @@ namespace RBMCombat
     [HarmonyPatch("ComputeBlowDamage")]
     public class OverrideDamageCalc
     {
-        static bool Prefix(ref AttackInformation attackInformation, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, DamageTypes damageType, float magnitude, int speedBonus, bool cancelDamage, out int inflictedDamage, out int absorbedByArmor)
+        static bool Prefix(ref AttackInformation attackInformation, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, ref DamageTypes damageType, float magnitude, int speedBonus, bool cancelDamage, out int inflictedDamage, out int absorbedByArmor)
         {
             float armorAmountFloat = attackInformation.ArmorAmountFloat;
             WeaponComponentData shieldOnBack = attackInformation.ShieldOnBack;
@@ -605,6 +635,54 @@ namespace RBMCombat
                 if (attackInformation.AttackerAgentOrigin == agent.Origin)
                 {
                     attacker = agent;
+                }
+            }
+
+            bool isBash = false;
+            if(attacker != null && attackCollisionData.StrikeType == (int)StrikeType.Swing && damageType != DamageTypes.Blunt && !attacker.WieldedWeapon.IsEmpty && !Utilities.HitWithWeaponBlade(in attackCollisionData, attacker.WieldedWeapon))
+            {
+                isBash = true;
+                damageType = DamageTypes.Blunt;
+            }
+
+            //Agent victim = null;
+            //foreach (Agent agent in Mission.Current.Agents)
+            //{
+            //    if (attackInformation.VictimAgentOrigin == agent.Origin)
+            //    {
+            //        victim = agent;
+            //    }
+            //}
+            bool faceshot = false;
+            if (victim != null && victim.IsHuman && attackCollisionData.VictimHitBodyPart == BoneBodyPartType.Head)
+            {
+                float dotProduct = Vec3.DotProduct(attackCollisionData.WeaponBlowDir, victim.LookFrame.rotation.f);
+                //float dotProduct2 = Vec3.DotProduct(attackCollisionData.WeaponBlowDir, attackCollisionData.CollisionGlobalNormal);
+                if (dotProduct < -0.7f && attackCollisionData.CollisionGlobalNormal.z < 0f)
+                //if (dotProduct < -0.85f && dotProduct2 < -0.75f)
+                {
+                    if(attacker != null && attacker.IsPlayerControlled)
+                    {
+                        InformationManager.DisplayMessage(new InformationMessage("Face hit!", Color.FromUint(4289612505u)));
+                    }
+                    if (victim != null && victim.IsPlayerControlled)
+                    {
+                        InformationManager.DisplayMessage(new InformationMessage("Face hit!", Color.FromUint(4289612505u)));
+                    }
+                    faceshot = true;
+                }
+            }
+
+            if (faceshot)
+            {
+                if (!victim.SpawnEquipment[EquipmentIndex.Head].IsEmpty)
+                {
+                    armorAmount = victim.SpawnEquipment[EquipmentIndex.Head].GetModifiedBodyArmor();
+                    //armorAmount = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateAdjustedArmorForBlow(armorAmountFloat, attackerAgentCharacter, attackerCaptainCharacter, victimAgentCharacter, victimCaptainCharacter, attackerWeapon);
+                }
+                else
+                {
+                    armorAmount *= 0.25f;
                 }
             }
 
@@ -2216,44 +2294,44 @@ namespace RBMCombat
         }
     }
 
-    [HarmonyPatch(typeof(Mission))]
-    [HarmonyPatch("DecideAgentHitParticles")]
-    class DecideAgentHitParticlesPatch
-    {
-        [EngineStruct("Hit_particle_result_data")]
-        internal struct HitParticleResultData
-        {
-            public int StartHitParticleIndex;
+    //[HarmonyPatch(typeof(Mission))]
+    //[HarmonyPatch("DecideAgentHitParticles")]
+    //class DecideAgentHitParticlesPatch
+    //{
+    //    [EngineStruct("Hit_particle_result_data")]
+    //    internal struct HitParticleResultData
+    //    {
+    //        public int StartHitParticleIndex;
 
-            public int ContinueHitParticleIndex;
+    //        public int ContinueHitParticleIndex;
 
-            public int EndHitParticleIndex;
+    //        public int EndHitParticleIndex;
 
-            public void Reset()
-            {
-                StartHitParticleIndex = -1;
-                ContinueHitParticleIndex = -1;
-                EndHitParticleIndex = -1;
-            }
-        }
-        static void Postfix(Blow blow, Agent victim, ref AttackCollisionData collisionData, ref HitParticleResultData hprd)
-        {
-            if (victim != null && (blow.InflictedDamage > 0 || victim.Health <= 0f))
-            {
-                if (!blow.WeaponRecord.HasWeapon() || blow.WeaponRecord.WeaponFlags.HasAnyFlag(WeaponFlags.NoBlood) || collisionData.IsAlternativeAttack || blow.InflictedDamage <= 20)
-                {
-                    hprd.StartHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_sweat_sword_enter");
-                    hprd.ContinueHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_sweat_sword_enter");
-                    hprd.EndHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_sweat_sword_enter");
-                }
-                else
-                {
-                    hprd.StartHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_blood_sword_enter");
-                    hprd.ContinueHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_blood_sword_inside");
-                    hprd.EndHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_blood_sword_exit");
-                }
-            }
-        }
-    }
+    //        public void Reset()
+    //        {
+    //            StartHitParticleIndex = -1;
+    //            ContinueHitParticleIndex = -1;
+    //            EndHitParticleIndex = -1;
+    //        }
+    //    }
+    //    static void Postfix(Blow blow, Agent victim, ref AttackCollisionData collisionData, ref HitParticleResultData hprd)
+    //    {
+    //        if (victim != null && (blow.InflictedDamage > 0 || victim.Health <= 0f))
+    //        {
+    //            if (!blow.WeaponRecord.HasWeapon() || blow.WeaponRecord.WeaponFlags.HasAnyFlag(WeaponFlags.NoBlood) || collisionData.IsAlternativeAttack || blow.InflictedDamage <= 20)
+    //            {
+    //                hprd.StartHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_sweat_sword_enter");
+    //                hprd.ContinueHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_sweat_sword_enter");
+    //                hprd.EndHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_sweat_sword_enter");
+    //            }
+    //            else
+    //            {
+    //                hprd.StartHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_blood_sword_enter");
+    //                hprd.ContinueHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_blood_sword_inside");
+    //                hprd.EndHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_blood_sword_exit");
+    //            }
+    //        }
+    //    }
+    //}
 }
 

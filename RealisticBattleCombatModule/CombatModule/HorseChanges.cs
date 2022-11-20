@@ -165,12 +165,16 @@ namespace RBMCombat
         {
             static bool Prefix(ref Mission __instance, Agent attackerAgent, Agent victimAgent, in AttackCollisionData collisionData, WeaponComponentData attackerWeapon, in Blow blow, ref bool __result)
             {
-                float damageMultiplierOfCombatDifficulty = Mission.Current.GetDamageMultiplierOfCombatDifficulty(victimAgent, attackerAgent);
+                //if(collisionData.InflictedDamage < 0)
+                //{
+                //    return true;
+                //}
+                //float damageMultiplierOfCombatDifficulty = Mission.Current.GetDamageMultiplierOfCombatDifficulty(victimAgent, attackerAgent);
                 if (collisionData.IsMissile)
                 {
                     if (victimAgent.IsMount && attackerAgent != null && victimAgent.GetAgentFlags().HasAnyFlag(AgentFlag.CanRear) && Vec3.DotProduct(blow.Direction, victimAgent.Frame.rotation.f) < -0.35f)
                     {
-                        __result = (float)collisionData.InflictedDamage >= 25f * damageMultiplierOfCombatDifficulty;
+                        __result = (float)collisionData.InflictedDamage >= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.MakesRearAttackDamageThreshold) * 2f; /// damageMultiplierOfCombatDifficulty;
                         return false;
                     }
                     else
@@ -185,7 +189,7 @@ namespace RBMCombat
                     && blow.StrikeType == StrikeType.Thrust && attackerAgent != null && victimAgent.GetAgentFlags().HasAnyFlag(AgentFlag.CanRear) && Vec3.DotProduct(blow.Direction, victimAgent.Frame.rotation.f) < -0.35f)
                     {
                         //__result = (float)collisionData.InflictedDamage >= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.MakesRearAttackDamageThreshold) * damageMultiplierOfCombatDifficulty;
-                        __result = (float)collisionData.InflictedDamage >= 13f * damageMultiplierOfCombatDifficulty;
+                        __result = (float)collisionData.InflictedDamage >= TaleWorlds.Core.ManagedParameters.Instance.GetManagedParameter(TaleWorlds.Core.ManagedParametersEnum.MakesRearAttackDamageThreshold); // * damageMultiplierOfCombatDifficulty;
                         return false;
                     }
                     __result = false;
