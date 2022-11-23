@@ -197,6 +197,7 @@
     <Compile Include="CombatModule\RangedRework.cs" />
     <Compile Include="CombatModule\RBMCombatPatcher.cs" />
     <Compile Include="CombatModule\RealisticWeaponCollision.cs" />
+    <Compile Include="CombatModule\SaveFixer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>

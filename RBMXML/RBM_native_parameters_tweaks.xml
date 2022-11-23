@@ -19,7 +19,6 @@
 	
 	<native_parameter id="humanoid_physics_capsule_radius_multiplier_for_friend" value="1.1"/>
 	
-	<native_parameter id="on_weapon_hit_speed_regain_acceleration" value="1.0"/>
     <native_parameter id="on_weapon_hit_slow_down_factor_swing" value="0.7"/>
     <native_parameter id="on_weapon_hit_slow_down_factor_thrust" value="0.7"/>
 
