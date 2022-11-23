@@ -18,7 +18,6 @@ namespace RBMCombat
 {
     public class RangedRework
     {
-
         public static Dictionary<TextObject, int> originalItemSwingSpeed = new Dictionary<TextObject, int> { };
         public static Dictionary<TextObject, int> originalItemThrustSpeed = new Dictionary<TextObject, int> { };
         public static Dictionary<TextObject, int> originalItemHandling = new Dictionary<TextObject, int> { };
@@ -1137,29 +1136,32 @@ namespace RBMCombat
         [HarmonyPatch("MissileHitCallback")]
         static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
         {
-            Missile missile = ____missiles[collisionData.AffectorWeaponSlotOrMissileIndex];
-            if (collisionData.CollidedWithShieldOnBack)
+            Missile missile;
+            if (____missiles.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out missile))
             {
-                if (missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.MultiplePenetration) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.CanPenetrateShield) || 
-                    missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsArea) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsAreaBig))
+                if (collisionData.CollidedWithShieldOnBack)
                 {
-                    return true;
+                    if (missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.MultiplePenetration) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.CanPenetrateShield) || 
+                        missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsArea) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsAreaBig))
+                    {
+                        return true;
+                    }
+                        //FieldInfo _attackBlockedWithShield = typeof(AttackCollisionData).GetField("_attackBlockedWithShield", BindingFlags.NonPublic | BindingFlags.Instance);
+                        //_attackBlockedWithShield.DeclaringType.GetField("_attackBlockedWithShield");
+                        //_attackBlockedWithShield.SetValue(collisionData, true);
+                        AttackCollisionData acd = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(true, collisionData.CorrectSideShieldBlock, collisionData.IsAlternativeAttack, collisionData.IsColliderAgent, collisionData.CollidedWithShieldOnBack,
+                        collisionData.IsMissile, collisionData.MissileBlockedWithWeapon, collisionData.MissileHasPhysics, collisionData.EntityExists, collisionData.ThrustTipHit, collisionData.MissileGoneUnderWater, collisionData.MissileGoneOutOfBorder,
+                        CombatCollisionResult.Blocked, collisionData.AffectorWeaponSlotOrMissileIndex, collisionData.StrikeType, collisionData.DamageType, collisionData.CollisionBoneIndex,
+                        collisionData.VictimHitBodyPart, collisionData.AttackBoneIndex, collisionData.AttackDirection, collisionData.PhysicsMaterialIndex, collisionData.CollisionHitResultFlags, collisionData.AttackProgress, collisionData.CollisionDistanceOnWeapon,
+                        collisionData.AttackerStunPeriod, collisionData.DefenderStunPeriod, collisionData.MissileTotalDamage, collisionData.MissileStartingBaseSpeed, collisionData.ChargeVelocity, collisionData.FallSpeed, collisionData.WeaponRotUp,
+                        collisionData.WeaponBlowDir, collisionData.CollisionGlobalPosition, collisionData.MissileVelocity, collisionData.MissileStartingPosition, collisionData.VictimAgentCurVelocity, collisionData.CollisionGlobalNormal);
+                    acd.BaseMagnitude = collisionData.BaseMagnitude;
+                    acd.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
+                    acd.SelfInflictedDamage = collisionData.SelfInflictedDamage;
+                    acd.InflictedDamage = collisionData.InflictedDamage;
+                    acd.AbsorbedByArmor = collisionData.AbsorbedByArmor;
+                    collisionData = acd;
                 }
-                    //FieldInfo _attackBlockedWithShield = typeof(AttackCollisionData).GetField("_attackBlockedWithShield", BindingFlags.NonPublic | BindingFlags.Instance);
-                    //_attackBlockedWithShield.DeclaringType.GetField("_attackBlockedWithShield");
-                    //_attackBlockedWithShield.SetValue(collisionData, true);
-                    AttackCollisionData acd = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(true, collisionData.CorrectSideShieldBlock, collisionData.IsAlternativeAttack, collisionData.IsColliderAgent, collisionData.CollidedWithShieldOnBack,
-                    collisionData.IsMissile, collisionData.MissileBlockedWithWeapon, collisionData.MissileHasPhysics, collisionData.EntityExists, collisionData.ThrustTipHit, collisionData.MissileGoneUnderWater, collisionData.MissileGoneOutOfBorder,
-                    CombatCollisionResult.Blocked, collisionData.AffectorWeaponSlotOrMissileIndex, collisionData.StrikeType, collisionData.DamageType, collisionData.CollisionBoneIndex,
-                    collisionData.VictimHitBodyPart, collisionData.AttackBoneIndex, collisionData.AttackDirection, collisionData.PhysicsMaterialIndex, collisionData.CollisionHitResultFlags, collisionData.AttackProgress, collisionData.CollisionDistanceOnWeapon,
-                    collisionData.AttackerStunPeriod, collisionData.DefenderStunPeriod, collisionData.MissileTotalDamage, collisionData.MissileStartingBaseSpeed, collisionData.ChargeVelocity, collisionData.FallSpeed, collisionData.WeaponRotUp,
-                    collisionData.WeaponBlowDir, collisionData.CollisionGlobalPosition, collisionData.MissileVelocity, collisionData.MissileStartingPosition, collisionData.VictimAgentCurVelocity, collisionData.CollisionGlobalNormal);
-                acd.BaseMagnitude = collisionData.BaseMagnitude;
-                acd.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
-                acd.SelfInflictedDamage = collisionData.SelfInflictedDamage;
-                acd.InflictedDamage = collisionData.InflictedDamage;
-                acd.AbsorbedByArmor = collisionData.AbsorbedByArmor;
-                collisionData = acd;
             }
             return true;
         }
@@ -1168,33 +1170,36 @@ namespace RBMCombat
         [HarmonyPatch("MissileHitCallback")]
         static void Postfix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
         {
-            Missile missile = ____missiles[collisionData.AffectorWeaponSlotOrMissileIndex];
-            if (missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.MultiplePenetration) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.CanPenetrateShield) ||
-                    missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsArea) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsAreaBig))
+            Missile missile;
+            if (____missiles.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out missile))
             {
-                if (collisionData.CollidedWithShieldOnBack)
+                if (missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.MultiplePenetration) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.CanPenetrateShield) ||
+                        missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsArea) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsAreaBig))
                 {
-                    if (victim != null && collisionData.IsMissile)
+                    if (collisionData.CollidedWithShieldOnBack)
                     {
-                        for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                        if (victim != null && collisionData.IsMissile)
                         {
-                            if (victim.Equipment != null && !victim.Equipment[equipmentIndex].IsEmpty)
+                            for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                             {
-                                if (victim.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield)
+                                if (victim.Equipment != null && !victim.Equipment[equipmentIndex].IsEmpty)
                                 {
-                                    int num = MathF.Max(0, victim.Equipment[equipmentIndex].HitPoints - collisionData.InflictedDamage);
-                                    victim.ChangeWeaponHitPoints(equipmentIndex, (short)num);
-                                    if (num == 0)
+                                    if (victim.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield)
                                     {
-                                        victim.RemoveEquippedWeapon(equipmentIndex);
+                                        int num = MathF.Max(0, victim.Equipment[equipmentIndex].HitPoints - collisionData.InflictedDamage);
+                                        victim.ChangeWeaponHitPoints(equipmentIndex, (short)num);
+                                        if (num == 0)
+                                        {
+                                            victim.RemoveEquippedWeapon(equipmentIndex);
+                                        }
+                                        break;
                                     }
-                                    break;
                                 }
                             }
                         }
                     }
+                    return;
                 }
-                return;
             }
             if (collisionData.AttackBlockedWithShield && collisionData.CollidedWithShieldOnBack)
             {

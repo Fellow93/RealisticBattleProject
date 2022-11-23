@@ -654,10 +654,10 @@ namespace RBMCombat
             //    }
             //}
             bool faceshot = false;
+            bool lowerShoulderHit = false;
             if (victim != null && victim.IsHuman && attackCollisionData.VictimHitBodyPart == BoneBodyPartType.Head)
             {
                 float dotProduct = Vec3.DotProduct(attackCollisionData.WeaponBlowDir, victim.LookFrame.rotation.f);
-                //float dotProduct2 = Vec3.DotProduct(attackCollisionData.WeaponBlowDir, attackCollisionData.CollisionGlobalNormal);
                 if (dotProduct < -0.7f && attackCollisionData.CollisionGlobalNormal.z < 0f)
                 //if (dotProduct < -0.85f && dotProduct2 < -0.75f)
                 {
@@ -673,6 +673,69 @@ namespace RBMCombat
                 }
             }
 
+            //if (victim != null && victim.IsHuman && (attackCollisionData.VictimHitBodyPart == BoneBodyPartType.Chest))
+            //{
+            //    float dotProduct = Vec3.DotProduct(attackCollisionData.WeaponBlowDir, victim.LookFrame.rotation.f);
+            //    if (attacker != null && attacker.IsPlayerControlled)
+            //    {
+            //        InformationManager.DisplayMessage(new InformationMessage(attackCollisionData.CollisionBoneIndex + " " + dotProduct + " " + attackCollisionData.CollisionGlobalNormal, Color.FromUint(4289612505u)));
+            //    }
+            //    if ((attackCollisionData.CollisionGlobalNormal.z > 0f) &&
+            //        (dotProduct > -0.2f && dotProduct < 0.2f))
+            //    {
+            //        if (attacker != null && attacker.IsPlayerControlled)
+            //        {
+            //            InformationManager.DisplayMessage(new InformationMessage("Chest weak point hit! " + attackCollisionData.CollisionBoneIndex, Color.FromUint(4289612505u)));
+            //        }
+            //        if (victim != null && victim.IsPlayerControlled)
+            //        {
+            //            InformationManager.DisplayMessage(new InformationMessage("Chest weak point hit! " + attackCollisionData.CollisionBoneIndex, Color.FromUint(4289612505u)));
+            //        }
+            //        underArmHit = true;
+            //    }
+            //}
+
+            //if (victim != null && victim.IsHuman && (attackCollisionData.VictimHitBodyPart == BoneBodyPartType.ShoulderLeft || attackCollisionData.VictimHitBodyPart == BoneBodyPartType.ShoulderRight))
+            //{
+            //    //shoulder bones 14,15,21,22
+            //    float dotProduct = Vec3.DotProduct(attackCollisionData.WeaponBlowDir, victim.LookFrame.rotation.f);
+
+            //    if (attacker != null && attacker.IsPlayerControlled)
+            //    {
+            //        InformationManager.DisplayMessage(new InformationMessage(attackCollisionData.CollisionBoneIndex + " " + dotProduct + " " + attackCollisionData.CollisionGlobalNormal, Color.FromUint(4289612505u)));
+            //    }
+            //    if ((attackCollisionData.CollisionGlobalNormal.y < -0.7f || attackCollisionData.CollisionGlobalNormal.y > 0.7f ) &&
+            //        (dotProduct < -0.7f || dotProduct > 0.7f) &&
+            //        (attackCollisionData.CollisionBoneIndex == 15 || attackCollisionData.CollisionBoneIndex == 22))
+            //    {
+            //        if (attacker != null && attacker.IsPlayerControlled)
+            //        {
+            //            InformationManager.DisplayMessage(new InformationMessage("Shoulder weak point hit! " + attackCollisionData.CollisionBoneIndex, Color.FromUint(4289612505u)));
+            //        }
+            //        if (victim != null && victim.IsPlayerControlled)
+            //        {
+            //            InformationManager.DisplayMessage(new InformationMessage("Shoulder weak point hit! " + attackCollisionData.CollisionBoneIndex, Color.FromUint(4289612505u)));
+            //        }
+            //        underArmHit = true;
+            //    }
+            //}
+
+            if (victim != null && victim.IsHuman && (attackCollisionData.VictimHitBodyPart == BoneBodyPartType.ShoulderLeft || attackCollisionData.VictimHitBodyPart == BoneBodyPartType.ShoulderRight))
+            {
+                if((attackCollisionData.CollisionBoneIndex == 15 || attackCollisionData.CollisionBoneIndex == 22) && attackCollisionData.CollisionGlobalNormal.z < 0.2f)
+                {
+                    if (attacker != null && attacker.IsPlayerControlled)
+                    {
+                        InformationManager.DisplayMessage(new InformationMessage("Lower shoulder hit! " + attackCollisionData.CollisionGlobalNormal.z, Color.FromUint(4289612505u)));
+                    }
+                    if (victim != null && victim.IsPlayerControlled)
+                    {
+                        InformationManager.DisplayMessage(new InformationMessage("Lower shoulder hit! " + attackCollisionData.CollisionGlobalNormal.z, Color.FromUint(4289612505u)));
+                    }
+                    lowerShoulderHit = true;
+                }
+            }
+
             if (faceshot)
             {
                 if (!victim.SpawnEquipment[EquipmentIndex.Head].IsEmpty)
@@ -682,7 +745,20 @@ namespace RBMCombat
                 }
                 else
                 {
-                    armorAmount *= 0.25f;
+                    armorAmount *= 0.15f;
+                }
+            }
+
+            if (lowerShoulderHit)
+            {
+                armorAmount = 0f;
+                if (!victim.SpawnEquipment[EquipmentIndex.Body].IsEmpty)
+                {
+                    armorAmount = (victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedArmArmor() * 2f) - victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedBodyArmor();
+                }
+                if (!victim.SpawnEquipment[EquipmentIndex.Cape].IsEmpty)
+                {
+                    armorAmount+= victim.SpawnEquipment[EquipmentIndex.Cape].GetModifiedArmArmor();
                 }
             }
 

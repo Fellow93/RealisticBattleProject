@@ -84,7 +84,7 @@ namespace RBMCombat
                 return;
             }
             ArmorComponent.ArmorMaterialTypes mateirialTypeofHitBodyPart = GetMateirialTypeofHitBodyPart(victim, collisionData.VictimHitBodyPart);
-            if ((mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Chainmail || mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Plate) && ((sbyte)collisionData.DamageType == 0 || (sbyte)collisionData.DamageType == 2))
+            if ((mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Chainmail || mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Plate) && ((sbyte)collisionData.DamageType == 0 || (sbyte)collisionData.DamageType == 2) || blow.InflictedDamage <= 20)
             {
                 hprd.StartHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_sweat_sword_enter");
                 hprd.ContinueHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_blood_sword_inside");

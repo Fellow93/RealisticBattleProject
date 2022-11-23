@@ -49,10 +49,10 @@ namespace RBMAI
                 //if (__instance.MovementOrder.OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
                 if (unit != null && (__instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation) && !____detachedUnits.Contains(unit))
                 {
-                    int aiDecisionCooldownTime = 1;
+                    int aiDecisionCooldownTime = 3;
                     bool isFieldBattle = Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle;
                     AIDecision aiDecision;
-
+                    //unit.ClearTargetFrame();
                     if (aiDecisionCooldownDict.TryGetValue(unit, out aiDecision))
                     {
                         if (isFieldBattle)
@@ -108,6 +108,7 @@ namespace RBMAI
                     {
                         aiDecisionCooldownDict[unit] = new AIDecision();
                     }
+                    
                     bool isTargetArcher = false;
                     bool isAgentInDefensiveOrder = __instance.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall ||
                         __instance.ArrangementOrder == ArrangementOrder.ArrangementOrderCircle ||
@@ -122,7 +123,7 @@ namespace RBMAI
                     int enemyAgentsCountCriticalTreshold = 6;
                     int hasShieldBonusNumber = 40;
                     int isAttackingArcherNumber = -60;
-                    int aggresivnesModifier = 20;
+                    int aggresivnesModifier = 15;
                     float backStepDistance = 0.35f;
                     if (isAgentInDefensiveOrder)
                     {
@@ -132,7 +133,7 @@ namespace RBMAI
                         enemyAgentsCountCriticalTreshold = 6;
                         backStepDistance = 0.35f;
                         hasShieldBonusNumber = 40;
-                        aggresivnesModifier = 25;
+                        aggresivnesModifier = 15;
                     }
 
                     if (targetAgent != null && vanillaTargetAgent != null)
@@ -324,7 +325,7 @@ namespace RBMAI
                                     }
                                     if (isFieldBattle)
                                     {
-                                        int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * (unit.Health / unit.HealthLimit) * 65), 70, 200);
+                                        int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * (unit.Health / unit.HealthLimit) * 65), 70, 180);
                                         int randInt = MBRandom.RandomInt(unitPower + aggresivnesModifier);
                                         int defensivnesModifier = 0;
                                         if (unit.WieldedOffhandWeapon.IsShield())
@@ -341,7 +342,7 @@ namespace RBMAI
                                             if (MBRandom.RandomInt(unitPower ) == 0)
                                             {
                                                 aiDecisionCooldownDict[unit].position = WorldPosition.Invalid;
-                                                aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
+                                                aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
                                                 return true;
                                             }
                                             else
@@ -363,7 +364,7 @@ namespace RBMAI
                                 else
                                 {
                                     aiDecisionCooldownDict[unit].position = WorldPosition.Invalid;
-                                    aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
+                                    aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
                                     return true;
                                 }
                                 
@@ -409,7 +410,7 @@ namespace RBMAI
                             {
                                 //unit.LookDirection = direction.ToVec3();
                                 //unit.SetDirectionChangeTendency(10f);
-                                int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * (unit.Health / unit.HealthLimit) * 65), 70, 200);
+                                int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * (unit.Health / unit.HealthLimit) * 65), 70, 180);
                                 int randInt = MBRandom.RandomInt((int)unitPower + aggresivnesModifier);
                                 int defensivnesModifier = 0;
 
@@ -440,7 +441,7 @@ namespace RBMAI
                                         WorldPosition backPosition = unit.GetWorldPosition();
                                         backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
                                         __result = backPosition;
-                                        //aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
+                                        aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
                                         aiDecisionCooldownDict[unit].position = __result; return false;
                                     }
                                 }
@@ -457,7 +458,7 @@ namespace RBMAI
                                     WorldPosition backPosition = unit.GetWorldPosition();
                                     backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
                                     __result = backPosition;
-                                    //aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
+                                    aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
                                     aiDecisionCooldownDict[unit].position = __result; return false;
                                     //}
                                 }
@@ -478,7 +479,7 @@ namespace RBMAI
                                             WorldPosition backPosition = unit.GetWorldPosition();
                                             backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
                                             __result = backPosition;
-                                            //aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
+                                            aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
                                             aiDecisionCooldownDict[unit].position = __result; return false;
                                             //}
                                         }
@@ -513,7 +514,7 @@ namespace RBMAI
                                             WorldPosition backPosition = unit.GetWorldPosition();
                                             backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
                                             __result = backPosition;
-                                            //aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
+                                            aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
                                             aiDecisionCooldownDict[unit].position = __result; return false;
                                         }
                                     }
@@ -522,7 +523,7 @@ namespace RBMAI
                                 else if (randInt < unitPower)
                                 {
                                     aiDecisionCooldownDict[unit].position = WorldPosition.Invalid;
-                                    aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
+                                    aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
                                     return true;
                                 }
                             }
@@ -537,7 +538,7 @@ namespace RBMAI
                     }
                     aiDecisionCooldownDict[unit].position = __result; return false;
                 }
-                //aiDecisionCooldownDict[unit].customMaxCoolDown = 3;
+                //aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
                 return true;
             }
 

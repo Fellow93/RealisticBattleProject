@@ -296,6 +296,10 @@ namespace RBMAI
                     {
                         countOfShooting++;
                     }
+                    else
+                    {
+                        agent.ClearTargetFrame();
+                    }
                     ratio = (float)countOfShooting / (float)formation.CountOfUnits;
 
                 });
@@ -324,7 +328,7 @@ namespace RBMAI
                     float countedUnits = 0f;
                     //float currentTime = Mission.Current.CurrentTime;
                     float currentTime = MBCommon.GetTotalMissionTime();
-                    if (agent.LastRangedAttackTime > 0f && currentTime - agent.LastRangedAttackTime < 7f && currentTime > agent.LastRangedAttackTime && ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
+                    if (agent.LastRangedAttackTime > 0f && currentTime - agent.LastRangedAttackTime < 6f && currentTime > agent.LastRangedAttackTime && ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
                     {
                         for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                         {

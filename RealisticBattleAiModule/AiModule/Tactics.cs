@@ -764,7 +764,7 @@ namespace RBMAI
             [HarmonyPatch("ManageFormationCounts", new Type[] { typeof(int), typeof(int), typeof(int), typeof(int) })]
             static bool PrefixSetDefaultBehaviorWeights(ref TacticComponent __instance, ref Team ___team, ref int infantryCount, ref int rangedCount, ref int cavalryCount, ref int rangedCavalryCount)
             {
-                if(Mission.Current != null && Mission.Current.IsFieldBattle)
+                if (Mission.Current != null && Mission.Current.IsFieldBattle)
                 {
                     foreach (Agent agent in ___team.ActiveAgents)
                     {
@@ -804,8 +804,17 @@ namespace RBMAI
                 }
                 return true;
             }
-        }
 
+            //[HarmonyPostfix]
+            //[HarmonyPatch("ManageFormationCounts", new Type[] { typeof(int), typeof(int), typeof(int), typeof(int) })]
+            //static void PostfixSetDefaultBehaviorWeights(ref TacticComponent __instance, ref Team ___team, ref int infantryCount, ref int rangedCount, ref int cavalryCount, ref int rangedCavalryCount)
+            //{
+            //    if (Mission.Current != null && Mission.Current.IsSiegeBattle && Mission.Current.PlayerTeam != null)
+            //    {
+            //        Mission.Current.PlayerTeam.DelegateCommandToAI();
+            //    }
+            //}
+        }
 
     }
 }
