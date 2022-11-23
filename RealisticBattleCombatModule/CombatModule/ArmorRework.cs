@@ -140,12 +140,17 @@ namespace RBMCombat
             static public float getNeckArmor(Agent agent)
             {
                 float num = 0f;
-                EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.Head];
-                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
+                //EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.Head];
+                //if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
+                //{
+                //    num += (float)equipmentElement.GetModifiedHeadArmor();
+                //}
+                //num *= 0.66f;
+                EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.Body];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
                 {
-                    num += (float)equipmentElement.GetModifiedHeadArmor();
+                    num += (float)equipmentElement.GetModifiedArmArmor();
                 }
-                num *= 0.66f;
                 return num;
             }
 

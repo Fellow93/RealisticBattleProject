@@ -83,7 +83,7 @@ namespace RBMAI
                     {
                         if (significantEnemy != null && base.Formation?.Team?.Formations.Count((Formation f) => f.QuerySystem.IsRangedFormation) > 1)
                         {
-                            effectiveShootingRange += significantEnemy.Width / 3f;
+                            effectiveShootingRange += significantEnemy.Width / 3.5f;
                         }
                     }
                 }
