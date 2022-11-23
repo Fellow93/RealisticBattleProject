@@ -726,11 +726,11 @@ namespace RBMCombat
                 {
                     if (attacker != null && attacker.IsPlayerControlled)
                     {
-                        InformationManager.DisplayMessage(new InformationMessage("Lower shoulder hit! " + attackCollisionData.CollisionGlobalNormal.z, Color.FromUint(4289612505u)));
+                        InformationManager.DisplayMessage(new InformationMessage("Under shoulder hit!", Color.FromUint(4289612505u)));
                     }
                     if (victim != null && victim.IsPlayerControlled)
                     {
-                        InformationManager.DisplayMessage(new InformationMessage("Lower shoulder hit! " + attackCollisionData.CollisionGlobalNormal.z, Color.FromUint(4289612505u)));
+                        InformationManager.DisplayMessage(new InformationMessage("Under shoulder hit!", Color.FromUint(4289612505u)));
                     }
                     lowerShoulderHit = true;
                 }
