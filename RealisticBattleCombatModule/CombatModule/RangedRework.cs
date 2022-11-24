@@ -694,7 +694,7 @@ namespace RBMCombat
                                             __instance.SetWeaponReloadPhaseAsClient(equipmentIndex, 0);
                                             if (__instance.Equipment[eIndex].Amount == __instance.Equipment[eIndex].ModifiedMaxAmount)
                                             {
-                                                for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                                                for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.NumAllWeaponSlots; i++)
                                                 {
                                                     if(i != eIndex)
                                                     {
