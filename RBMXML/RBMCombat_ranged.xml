@@ -27,7 +27,7 @@
 	<Item id="crossbow_e" name="370 Pound Doubler Belt Crossbow" body_name="bo_composite_crossbows" mesh="crossbow_e" weight="2.2" difficulty="0" appearance="1" Type="Crossbow" value="6000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.empire" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
 			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="70" missile_speed="370" weapon_length="95" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce" reload_phase_count="2" modifier_group="crossbow">
-				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" CantReloadOnHorseback="true"/>
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags/>

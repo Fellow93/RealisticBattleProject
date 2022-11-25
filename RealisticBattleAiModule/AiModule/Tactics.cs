@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
-using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.ViewModelCollection.HUD.FormationMarker;
 using static TaleWorlds.Core.ItemObject;
@@ -20,6 +19,14 @@ namespace RBMAI
             public int cooldown = 0;
             public WorldPosition position = WorldPosition.Invalid;
             public int customMaxCoolDown = -1;
+            public AIDecisionType decisionType = AIDecisionType.None;
+            public enum AIDecisionType
+            {
+                None,
+                FrontlineBackStep,
+                FlankAllyLeft,
+                FlankAllyRight,
+            }
         }
 
         public class AgentDamageDone

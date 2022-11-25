@@ -105,8 +105,12 @@ namespace RBMAI
 				}
 			}
 			base.CurrentOrder = MovementOrder.MovementOrderMove(position);
-			base.CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
-		}
+			float angle = CurrentFacingOrder.GetDirection(Formation).AngleBetween(enemyDirection);
+            if (angle > 0.2f || angle < -0.2f)
+			{
+                base.CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
+            }
+        }
 
 		public override void TickOccasionally()
 		{

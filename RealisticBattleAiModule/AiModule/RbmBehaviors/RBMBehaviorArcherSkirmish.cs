@@ -13,6 +13,7 @@ namespace RBMAI
 		private int flankCooldownMax = 40;
 		//public float customWidth = 110f;
         public Timer repositionTimer = null;
+        public Timer refreshPositionTimer = null;
 		public int side = MBRandom.RandomInt(2);
 		public int cooldown = 0;
         public bool nudgeFormation;
@@ -27,9 +28,9 @@ namespace RBMAI
 
 		private bool _cantShoot;
 
-		private float _cantShootDistance = float.MaxValue;
+        private float _cantShootDistance = float.MaxValue;
 
-		private BehaviorState _behaviorState = BehaviorState.PullingBack;
+        private BehaviorState _behaviorState = BehaviorState.PullingBack;
 
 		private Timer _cantShootTimer;
 
@@ -50,6 +51,7 @@ namespace RBMAI
 			WorldPosition medianPosition = base.Formation.QuerySystem.MedianPosition;
 			bool flag = false;
 			Vec2 vec;
+			Vec2 vec2;
             if (base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation == null)
             {
                 vec = base.Formation.Direction;
@@ -69,12 +71,12 @@ namespace RBMAI
                 Formation significantAlly = null;
                 significantAlly = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false, true);
 
-                vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - base.Formation.QuerySystem.MedianPosition.AsVec2;
+                //vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - base.Formation.QuerySystem.MedianPosition.AsVec2;
+                vec = significantEnemy.SmoothedAverageUnitPosition- base.Formation.SmoothedAverageUnitPosition;
                 float distance = vec.Normalize();
-                
-                bool isFormationShooting = Utilities.IsFormationShooting(base.Formation);
-                float effectiveShootingRange = base.Formation.QuerySystem.MissileRange / 1.8f;
 
+                bool isFormationShooting = Utilities.IsFormationShooting(base.Formation);
+                float effectiveShootingRange = (Formation.Depth / 2f) + (Formation.QuerySystem.MissileRange / 1.7f);
                 FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
                 _currentTacticField.DeclaringType.GetField("_currentTactic");
                 if (base.Formation?.Team?.TeamAI != null)
@@ -86,6 +88,11 @@ namespace RBMAI
                             effectiveShootingRange += significantEnemy.Width / 3.5f;
                         }
                     }
+                }
+
+                if(significantEnemy != null)
+                {
+                    effectiveShootingRange += (significantEnemy.Depth / 2f);
                 }
 
                 if (significantAlly != null && (significantAlly == base.Formation || !significantAlly.QuerySystem.IsInfantryFormation))
@@ -101,7 +108,7 @@ namespace RBMAI
                             if (distance > effectiveShootingRange * 1.1f)
                             {
                                 _behaviorState = BehaviorState.Approaching;
-                                _cantShootDistance = MathF.Min(_cantShootDistance, effectiveShootingRange);
+                                //_cantShootDistance = MathF.Min(_cantShootDistance, effectiveShootingRange);
                                 break;
                             }
                             if (isFormationShooting)
@@ -109,7 +116,7 @@ namespace RBMAI
                                 if (distance > effectiveShootingRange)
                                 {
                                     _behaviorState = BehaviorState.Approaching;
-                                    _cantShootDistance = MathF.Min(_cantShootDistance, effectiveShootingRange);
+                                    //_cantShootDistance = MathF.Min(_cantShootDistance, effectiveShootingRange);
                                     break;
                                 }
 
@@ -128,8 +135,8 @@ namespace RBMAI
                             }
                             else
                             {
-                                _cantShootDistance = distance;
-                                if (base.Formation.QuerySystem.IsRangedFormation && distance < MathF.Min(effectiveShootingRange * 0.4f, _cantShootDistance * 0.666f))
+                                //_cantShootDistance = distance;
+                                if (base.Formation.QuerySystem.IsRangedFormation && distance < effectiveShootingRange * 0.4f)
                                 {
                                     Formation meleeFormation = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
                                     if (meleeFormation != null && meleeFormation.QuerySystem.IsInfantryFormation && meleeFormation.QuerySystem.MedianPosition.AsVec2.Distance(base.Formation.QuerySystem.MedianPosition.AsVec2) <= base.Formation.QuerySystem.MissileRange)
@@ -142,16 +149,16 @@ namespace RBMAI
                                 }
                                 else
                                 {
-                                    if(repositionTimer == null)
+                                    if(refreshPositionTimer == null)
                                     {
-                                        repositionTimer = new Timer(Mission.Current.CurrentTime, 30f);
+                                        refreshPositionTimer = new Timer(Mission.Current.CurrentTime, 30f);
                                         _cantShoot = true;
                                         _behaviorState = BehaviorState.Approaching;
                                     }
                                     else
                                     {
-                                        if(repositionTimer.Check(Mission.Current.CurrentTime)){
-                                            repositionTimer = null;
+                                        if(refreshPositionTimer.Check(Mission.Current.CurrentTime)){
+                                            refreshPositionTimer = null;
                                         }
                                     }
                                 }
@@ -167,7 +174,7 @@ namespace RBMAI
                                 _cantShoot = false;
                                 flag = true;
                             }
-                            else if (distance < _cantShootDistance * 0.8f && distance < effectiveShootingRange * 0.9f)
+                            else if (distance < effectiveShootingRange * 0.9f)
                             {
                                 _behaviorState = BehaviorState.Shooting;
                                 _cantShoot = false;
@@ -203,13 +210,13 @@ namespace RBMAI
                                 _cantShoot = false;
                                 flag = true;
                             }
-                            if (distance > MathF.Min(_cantShootDistance, effectiveShootingRange) * 0.9f)
+                            if (distance > effectiveShootingRange * 0.9f)
                             {
                                 _behaviorState = BehaviorState.Shooting;
                                 _cantShoot = false;
                                 flag = true;
                             }
-                            if (isFormationShooting && distance > effectiveShootingRange * 0.4f)
+                            if (isFormationShooting && distance > effectiveShootingRange * 0.5f)
                             {
                                 _behaviorState = BehaviorState.Shooting;
                                 _cantShoot = false;
@@ -224,7 +231,24 @@ namespace RBMAI
                     _behaviorState = BehaviorState.Shooting;
                     _cantShoot = false;
                 }
-                if (firstTime || previousBehavior != _behaviorState)
+
+                bool shouldReposition = false;
+                if(_behaviorState == BehaviorState.PullingBack)
+                {
+                    if (repositionTimer == null)
+                    {
+                        repositionTimer = new Timer(Mission.Current.CurrentTime, 5f);
+                    }
+                    else
+                    {
+                        if (repositionTimer.Check(Mission.Current.CurrentTime))
+                        {
+                            shouldReposition = true;
+                            repositionTimer = null;
+                        }
+                    }
+                }
+                if (firstTime || previousBehavior != _behaviorState || shouldReposition)
                 {
                     switch (_behaviorState)
                     {
@@ -236,13 +260,14 @@ namespace RBMAI
                             break;
                         case BehaviorState.PullingBack:
                             medianPosition = significantEnemy.QuerySystem.MedianPosition;
+                            rollPullBackAngle = MBRandom.RandomFloat;
                             if (side == 0)
                             {
-                                medianPosition.SetVec2((medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f)) + medianPosition.AsVec2.LeftVec().Normalized() * rollPullBackAngle * 30f);
+                                medianPosition.SetVec2((medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f)) + significantEnemy.QuerySystem.MedianPosition.AsVec2.LeftVec().Normalized() * rollPullBackAngle * 30f);
                             }
                             else if (side == 1)
                             {
-                                medianPosition.SetVec2((medianPosition.AsVec2 - vec * (effectiveShootingRange - base.Formation.Depth * 0.5f)) + medianPosition.AsVec2.RightVec().Normalized() * rollPullBackAngle * 30f);
+                                medianPosition.SetVec2((medianPosition.AsVec2 - (vec * (effectiveShootingRange - base.Formation.Depth * 0.5f)) + (significantEnemy.QuerySystem.MedianPosition.AsVec2.RightVec().Normalized() * (rollPullBackAngle * 30f))));
                             }
                             break;
                     }
@@ -276,7 +301,7 @@ namespace RBMAI
 		{
 			switchedToSkirmish = true;
 			_cantShoot = false;
-			_cantShootDistance = float.MaxValue;
+			//_cantShootDistance = float.MaxValue;
 			_behaviorState = BehaviorState.PullingBack;
 			_cantShootTimer.Reset(Mission.Current.CurrentTime, MBMath.Lerp(5f, 10f, (MBMath.ClampFloat(base.Formation.CountOfUnits, 10f, 60f) - 10f) * 0.02f));
 			CalculateCurrentOrder();

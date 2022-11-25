@@ -9,6 +9,7 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using static RBMAI.Tactics;
+using static RBMAI.Tactics.AIDecision;
 using static TaleWorlds.MountAndBlade.HumanAIComponent;
 using static TaleWorlds.MountAndBlade.Source.Objects.Siege.AgentPathNavMeshChecker;
 
@@ -53,61 +54,6 @@ namespace RBMAI
                     bool isFieldBattle = Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle;
                     AIDecision aiDecision;
                     //unit.ClearTargetFrame();
-                    if (aiDecisionCooldownDict.TryGetValue(unit, out aiDecision))
-                    {
-                        if (isFieldBattle)
-                        {
-                            if (aiDecision.customMaxCoolDown != -1)
-                            {
-                                if (aiDecision.cooldown < aiDecision.customMaxCoolDown)
-                                {
-                                    aiDecisionCooldownDict[unit].cooldown += 1;
-                                    if (!aiDecision.position.IsValid)
-                                    {
-                                        return true;
-                                    }
-                                    __result = aiDecision.position;
-                                    return false;
-                                }
-                                else
-                                {
-                                    aiDecision.customMaxCoolDown = -1;
-                                    aiDecisionCooldownDict[unit].cooldown = 0;
-                                }
-                            }
-                            if (aiDecision.cooldown < aiDecisionCooldownTime)
-                            {
-                                aiDecisionCooldownDict[unit].cooldown += 1;
-                                if (!aiDecision.position.IsValid)
-                                {
-                                    return true;
-                                }
-                                __result = aiDecision.position;
-                                return false;
-                            }
-                            else
-                            {
-                                aiDecisionCooldownDict[unit].cooldown = 0;
-                            }
-                        }
-                        //else
-                        //{
-                        //    if (aiDecision.cooldown < aiDecisionCooldownTimeSiege)
-                        //    {
-                        //        __result = aiDecision.position;
-                        //        aiDecisionCooldownDict[unit].cooldown += 1;
-                        //        return false;
-                        //    }
-                        //    else
-                        //    {
-                        //        aiDecisionCooldownDict[unit].cooldown = 0;
-                        //    }
-                        //}
-                    }
-                    else
-                    {
-                        aiDecisionCooldownDict[unit] = new AIDecision();
-                    }
                     
                     bool isTargetArcher = false;
                     bool isAgentInDefensiveOrder = __instance.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall ||
@@ -135,7 +81,7 @@ namespace RBMAI
                         hasShieldBonusNumber = 40;
                         aggresivnesModifier = 15;
                     }
-
+                    
                     if (targetAgent != null && vanillaTargetAgent != null)
                     {
                         if (vanillaTargetAgent.Formation != null && vanillaTargetAgent.Formation == targetAgent.Formation)
@@ -145,34 +91,88 @@ namespace RBMAI
 
                         Vec2 lookDirection = unit.LookDirection.AsVec2;
                         Vec2 unitPosition = unit.GetWorldPosition().AsVec2;
-                        //float distance = unitPosition.Distance(targetAgent.GetWorldPosition().AsVec2);
                         Vec2 direction = (targetAgent.GetWorldPosition().AsVec2 - unitPosition).Normalized();
-                        //float distance = targetAgent.GetWorldPosition().GetGroundVec3().Distance(unit.GetWorldPosition().GetGroundVec3());
-                        //if (unit.WieldedWeapon.CurrentUsageItem != null)
-                        //{
-                        //    float rwl = unit.WieldedWeapon.CurrentUsageItem.GetRealWeaponLength();
-                        //    if (distance < 1.15f)
-                        //    {
-                        //        WorldPosition pos = unit.GetWorldPosition();
-                        //        __result = pos;
-                        //        aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
-                        //        aiDecisionCooldownDict[unit].position = __result; return false;
-                        //    }
-                        //    if (rwl * 0.9f > distance)
-                        //    {
-                        //        WorldPosition pos = unit.GetWorldPosition();
-                        //        pos.SetVec2(pos.AsVec2 - direction * (rwl * 0.9f - distance));
-                        //        __result = pos;
-                        //        aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
-                        //        aiDecisionCooldownDict[unit].position = __result; return false;
-                        //    }
-                        //}
-                        //var dot = __instance.Direction.x * direction.x + __instance.Direction.y * direction.y;
+                        Vec2 leftVec = direction.LeftVec();
+                        Vec2 rightVec = direction.RightVec();
+
+                        if (aiDecisionCooldownDict.TryGetValue(unit, out aiDecision))
+                        {
+                            if (isFieldBattle)
+                            {
+                                if (aiDecision.customMaxCoolDown != -1)
+                                {
+                                    if (aiDecision.cooldown < aiDecision.customMaxCoolDown)
+                                    {
+                                        aiDecision.cooldown += 1;
+                                        if (!aiDecision.position.IsValid)
+                                        {
+                                            return true;
+                                        }
+                                        if (aiDecision.decisionType == AIDecisionType.FlankAllyLeft)
+                                        {
+                                            aiDecision.decisionType = AIDecisionType.None;
+                                            WorldPosition leftPosition = unit.GetWorldPosition();
+                                            leftPosition.SetVec2(unitPosition + leftVec * 2f);
+                                            __result = leftPosition;
+                                            aiDecision.decisionType = AIDecisionType.FlankAllyLeft;
+                                            aiDecision.position = __result; 
+                                            return false;
+                                        }
+                                        if(aiDecision.decisionType == AIDecisionType.FlankAllyRight)
+                                        {
+                                            WorldPosition leftPosition = unit.GetWorldPosition();
+                                            leftPosition.SetVec2(unitPosition + rightVec * 2f);
+                                            __result = leftPosition;
+                                            aiDecision.decisionType = AIDecisionType.FlankAllyRight;
+                                            aiDecision.position = __result;
+                                            return false;
+                                        }
+                                        if (aiDecision.decisionType == AIDecisionType.FrontlineBackStep)
+                                        {
+                                            aiDecision.decisionType = AIDecisionType.FrontlineBackStep;
+                                            WorldPosition backPosition = unit.GetWorldPosition();
+                                            backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
+                                            __result = backPosition;
+                                            aiDecision.position = __result; 
+                                            return false;
+                                        }
+                                        __result = aiDecision.position;
+                                        return false;
+                                    }
+                                    else
+                                    {
+                                        aiDecision.decisionType = AIDecisionType.None;
+                                        aiDecision.customMaxCoolDown = -1;
+                                        aiDecision.cooldown = 0;
+                                    }
+                                }
+                                if (aiDecision.cooldown < aiDecisionCooldownTime)
+                                {
+                                    aiDecision.cooldown += 1;
+                                    if (!aiDecision.position.IsValid)
+                                    {
+                                        return true;
+                                    }
+                                    __result = aiDecision.position;
+                                    return false;
+                                }
+                                else
+                                {
+                                    aiDecision.decisionType = AIDecisionType.None;
+                                    aiDecision.cooldown = 0;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            aiDecisionCooldownDict[unit] = new AIDecision();
+                            aiDecisionCooldownDict.TryGetValue(unit, out aiDecision);
+                        }
 
                         if (targetAgent != vanillaTargetAgent && vanillaTargetAgent.HasMount || vanillaTargetAgent.IsRunningAway)
                         {
                             __result = targetAgent.GetWorldPosition();
-                            aiDecisionCooldownDict[unit].position = __result;
+                            aiDecision.position = __result;
                             unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 10f, 2f, 10f, 20f, 10f);
                             unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 0f, 2f, 0f, 20f, 0f);
                             unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
@@ -199,8 +199,8 @@ namespace RBMAI
                             }
                             if (IsInImportantFrontlineAction(unit))
                             {
-                                __result = aiDecisionCooldownDict[unit].position;
-                                aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
+                                __result = aiDecision.position;
+                                aiDecision.customMaxCoolDown = 0;
                                 return false;
                             }
                         }
@@ -219,32 +219,6 @@ namespace RBMAI
                         agents = agents.Where(a => a != tempAgent).ToList();
                         int agentsCount = agents.Count();
 
-                        //if (!isFieldBattle)
-                        //{
-                        //    allyAgentsCountTreshold = 2;
-                        //    if (agentsCount > allyAgentsCountTreshold)
-                        //    {
-                        //        int relevantAgentCount = 0;
-                        //        foreach (Agent agent in agents)
-                        //        {
-                        //            if (Math.Abs(unit.VisualPosition.Z - agent.VisualPosition.Z) < 0.1f)
-                        //            {
-                        //                relevantAgentCount++;
-                        //            }
-                        //        }
-                        //        if (relevantAgentCount > allyAgentsCountTreshold)
-                        //        {
-                        //            __result = unit.GetWorldPosition();
-                        //            aiDecisionCooldownDict[unit].position = __result; return false;
-                        //        }
-                        //        else
-                        //        {
-                        //            return true;
-                        //        }
-                        //    }
-                            
-                        //    return true;
-                        //}
                         if (agentsCount > allyAgentsCountTreshold && !unit.IsDoingPassiveAttack)
                         {
                             //if (MBRandom.RandomInt(100) == 0)
@@ -264,8 +238,7 @@ namespace RBMAI
 
                                     //Vec2 leftVec = unit.Formation.Direction.LeftVec().Normalized();
                                     //Vec2 rightVec = unit.Formation.Direction.RightVec().Normalized();
-                                    Vec2 leftVec = direction.LeftVec();
-                                    Vec2 rightVec = direction.RightVec();
+                                    
                                     IEnumerable<Agent> agentsLeft = mission.GetNearbyAllyAgents(unitPosition + leftVec * 1.35f, 1.35f, unit.Team);
                                     IEnumerable<Agent> agentsRight = mission.GetNearbyAllyAgents(unitPosition + rightVec * 1.35f, 1.35f, unit.Team);
                                     IEnumerable<Agent> furtherAllyAgents = mission.GetNearbyAllyAgents(unitPosition + direction * 2.2f, 1.1f, unit.Team);
@@ -281,10 +254,11 @@ namespace RBMAI
                                             if (agentsLeftCount <= allyAgentsCountTreshold)
                                             {
                                                 WorldPosition leftPosition = unit.GetWorldPosition();
-                                                leftPosition.SetVec2(unitPosition + leftVec * 4f);
+                                                leftPosition.SetVec2(unitPosition + leftVec * 2f);
                                                 __result = leftPosition;
-                                                aiDecisionCooldownDict[unit].customMaxCoolDown = 3;
-                                                aiDecisionCooldownDict[unit].position = __result; return false;
+                                                aiDecision.customMaxCoolDown = 4;
+                                                aiDecision.decisionType = AIDecisionType.FlankAllyLeft;
+                                                aiDecision.position = __result; return false;
                                             }
                                         }
                                         else if (agentsLeftCount > agentsRightCount)
@@ -292,17 +266,18 @@ namespace RBMAI
                                             if (agentsRightCount <= allyAgentsCountTreshold)
                                             {
                                                 WorldPosition rightPosition = unit.GetWorldPosition();
-                                                rightPosition.SetVec2(unitPosition + rightVec * 4f);
+                                                rightPosition.SetVec2(unitPosition + rightVec * 2f);
                                                 __result = rightPosition;
-                                                aiDecisionCooldownDict[unit].customMaxCoolDown = 3;
-                                                aiDecisionCooldownDict[unit].position = __result; return false;
+                                                aiDecision.customMaxCoolDown = 4;
+                                                aiDecision.decisionType = AIDecisionType.FlankAllyRight;
+                                                aiDecision.position = __result; return false;
                                             }
                                         }
                                     }
                                     //if (agentsLeftCount > 4 && agentsRightCount > 4)
                                     //{
                                     //    __result = unit.GetWorldPosition();
-                                    //    aiDecisionCooldownDict[unit].position = __result; return false;
+                                    //    aiDecision.position = __result; return false;
                                     //}
                                     else if (agentsLeftCount <= allyAgentsCountTreshold && agentsRightCount <= allyAgentsCountTreshold)
                                     {
@@ -311,21 +286,23 @@ namespace RBMAI
                                             WorldPosition leftPosition = unit.GetWorldPosition();
                                             leftPosition.SetVec2(unitPosition + leftVec * 2f);
                                             __result = leftPosition;
-                                            aiDecisionCooldownDict[unit].customMaxCoolDown = 2;
-                                            aiDecisionCooldownDict[unit].position = __result; return false;
+                                            aiDecision.customMaxCoolDown = 3;
+                                            aiDecision.decisionType = AIDecisionType.FlankAllyLeft;
+                                            aiDecision.position = __result; return false;
                                         }
                                         else if (agentsLeftCount > agentsRightCount)
                                         {
                                             WorldPosition rightPosition = unit.GetWorldPosition();
                                             rightPosition.SetVec2(unitPosition + rightVec * 2f);
                                             __result = rightPosition;
-                                            aiDecisionCooldownDict[unit].customMaxCoolDown = 2;
-                                            aiDecisionCooldownDict[unit].position = __result; return false;
+                                            aiDecision.customMaxCoolDown = 3;
+                                            aiDecision.decisionType = AIDecisionType.FlankAllyRight;
+                                            aiDecision.position = __result; return false;
                                         }
                                     }
                                     if (isFieldBattle)
                                     {
-                                        int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * (unit.Health / unit.HealthLimit) * 65), 70, 180);
+                                        int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * (unit.Health / unit.HealthLimit) * 65), 70, 170);
                                         int randInt = MBRandom.RandomInt(unitPower + aggresivnesModifier);
                                         int defensivnesModifier = 0;
                                         if (unit.WieldedOffhandWeapon.IsShield())
@@ -335,14 +312,14 @@ namespace RBMAI
                                         if (randInt < (unitPower / 3f + defensivnesModifier))
                                         {
                                             __result = getNearbyAllyWorldPosition(mission, unitPosition, unit);
-                                            aiDecisionCooldownDict[unit].position = __result; return false;
+                                            aiDecision.position = __result; return false;
                                         }
                                         else
                                         {
                                             if (MBRandom.RandomInt(unitPower ) == 0)
                                             {
-                                                aiDecisionCooldownDict[unit].position = WorldPosition.Invalid;
-                                                aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
+                                                aiDecision.position = WorldPosition.Invalid;
+                                                aiDecision.customMaxCoolDown = 0;
                                                 return true;
                                             }
                                             else
@@ -350,21 +327,22 @@ namespace RBMAI
                                                 WorldPosition backPosition = unit.GetWorldPosition();
                                                 backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * (backStepDistance + 0.5f));
                                                 __result = backPosition;
-                                                aiDecisionCooldownDict[unit].customMaxCoolDown = 2;
-                                                aiDecisionCooldownDict[unit].position = __result; return false;
+                                                aiDecision.customMaxCoolDown = 2;
+                                                aiDecision.decisionType = AIDecisionType.FrontlineBackStep;
+                                                aiDecision.position = __result; return false;
                                             }
                                         }
                                     }
                                     //else
                                     //{
                                     //    __result = unit.GetWorldPosition();
-                                    //    aiDecisionCooldownDict[unit].position = __result; return false;
+                                    //    aiDecision.position = __result; return false;
                                     //}
                                 }
                                 else
                                 {
-                                    aiDecisionCooldownDict[unit].position = WorldPosition.Invalid;
-                                    aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
+                                    aiDecision.position = WorldPosition.Invalid;
+                                    aiDecision.customMaxCoolDown = 0;
                                     return true;
                                 }
                                 
@@ -425,7 +403,7 @@ namespace RBMAI
                                 if (randInt < 0)
                                 {
                                     __result = unit.GetWorldPosition();
-                                    aiDecisionCooldownDict[unit].position = __result; return false;
+                                    aiDecision.position = __result; return false;
                                 }
 
                                 if (!isTargetArcher)
@@ -435,14 +413,15 @@ namespace RBMAI
                                     {
                                         if (IsInImportantFrontlineAction(unit))
                                         {
-                                            aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
+                                            aiDecision.customMaxCoolDown = 0;
                                             return false;
                                         }
                                         WorldPosition backPosition = unit.GetWorldPosition();
                                         backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
                                         __result = backPosition;
-                                        aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
-                                        aiDecisionCooldownDict[unit].position = __result; return false;
+                                        aiDecision.customMaxCoolDown = 1;
+                                        aiDecision.decisionType = AIDecisionType.FrontlineBackStep;
+                                        aiDecision.position = __result; return false;
                                     }
                                 }
                                 if (enemyAgentsImmidiateCount > enemyAgentsCountCriticalTreshold)
@@ -452,14 +431,15 @@ namespace RBMAI
                                     //{
                                     if (IsInImportantFrontlineAction(unit))
                                     {
-                                        aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
+                                        aiDecision.customMaxCoolDown = 0;
                                         return false;
                                     }
                                     WorldPosition backPosition = unit.GetWorldPosition();
                                     backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
                                     __result = backPosition;
-                                    aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
-                                    aiDecisionCooldownDict[unit].position = __result; return false;
+                                    aiDecision.customMaxCoolDown = 2;
+                                    aiDecision.decisionType = AIDecisionType.FrontlineBackStep;
+                                    aiDecision.position = __result; return false;
                                     //}
                                 }
                                 else if (randInt < (unitPower / 2f + defensivnesModifier))
@@ -473,23 +453,24 @@ namespace RBMAI
                                             //{
                                             if (IsInImportantFrontlineAction(unit))
                                             {
-                                                aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
+                                                aiDecision.customMaxCoolDown = 0;
                                                 return false;
                                             }
                                             WorldPosition backPosition = unit.GetWorldPosition();
                                             backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
                                             __result = backPosition;
-                                            aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
-                                            aiDecisionCooldownDict[unit].position = __result; return false;
+                                            aiDecision.customMaxCoolDown = 1;
+                                            aiDecision.decisionType = AIDecisionType.FrontlineBackStep;
+                                            aiDecision.position = __result; return false;
                                             //}
                                         }
                                         if (IsInImportantFrontlineAction(unit))
                                         {
-                                            aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
+                                            aiDecision.customMaxCoolDown = 0;
                                             return false;
                                         }
                                         __result = getNearbyAllyWorldPosition(mission, unitPosition, unit);
-                                        aiDecisionCooldownDict[unit].position = __result; return false;
+                                        aiDecision.position = __result; return false;
                                     }
                                     else
                                     {
@@ -497,46 +478,52 @@ namespace RBMAI
                                         {
                                             if (IsInImportantFrontlineAction(unit))
                                             {
-                                                aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
+                                                aiDecision.customMaxCoolDown = 0;
                                                 return false;
                                             }
                                             __result = unit.GetWorldPosition();
                                             //__result = WorldPosition.Invalid;
-                                            aiDecisionCooldownDict[unit].position = __result; return false;
+                                            aiDecision.position = __result; return false;
                                         }
                                         else
                                         {
                                             if (IsInImportantFrontlineAction(unit))
                                             {
-                                                aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
+                                                aiDecision.customMaxCoolDown = 0;
                                                 return false;
                                             }
                                             WorldPosition backPosition = unit.GetWorldPosition();
                                             backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
                                             __result = backPosition;
-                                            aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
-                                            aiDecisionCooldownDict[unit].position = __result; return false;
+                                            aiDecision.customMaxCoolDown = 1;
+                                            aiDecision.decisionType = AIDecisionType.FrontlineBackStep;
+                                            aiDecision.position = __result; return false;
                                         }
                                     }
 
                                 }
                                 else if (randInt < unitPower)
                                 {
-                                    aiDecisionCooldownDict[unit].position = WorldPosition.Invalid;
-                                    aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
+                                    aiDecision.position = WorldPosition.Invalid;
+                                    aiDecision.customMaxCoolDown = 0;
                                     return true;
                                 }
                             }
                         }
                         //else
                         //{
-                        //    aiDecisionCooldownDict[unit].position = WorldPosition.Invalid;
-                        //    aiDecisionCooldownDict[unit].customMaxCoolDown = 1;
+                        //    aiDecision.position = WorldPosition.Invalid;
+                        //    aiDecision.customMaxCoolDown = 1;
                         //    return true;
                         //}
                         //}
                     }
-                    aiDecisionCooldownDict[unit].position = __result; return false;
+                    if (!aiDecisionCooldownDict.TryGetValue(unit, out aiDecision))
+                    {
+                        aiDecisionCooldownDict[unit] = new AIDecision();
+                        aiDecisionCooldownDict.TryGetValue(unit, out aiDecision);
+                    }
+                    aiDecision.position = __result; return false;
                 }
                 //aiDecisionCooldownDict[unit].customMaxCoolDown = 0;
                 return true;
