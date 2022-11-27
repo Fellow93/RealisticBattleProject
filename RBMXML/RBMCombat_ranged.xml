@@ -3,7 +3,7 @@
 	<Item id="crossbow_f" name="500 Pound Doubler Belt Crossbow" body_name="bo_cross_bow_heavy" mesh="crossbow_f" weight="2" difficulty="90" appearance="1" Type="Crossbow" value="20000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
 			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="70" missile_speed="500" weapon_length="90" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce" reload_phase_count="2" modifier_group="crossbow">
-				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" CantReloadOnHorseback="true"/>
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags Civilian="true"/>
@@ -11,7 +11,7 @@
 	<Item id="crossbow_g" name="450 Pound Doubler Belt Crossbow" body_name="bo_composite_crossbows" mesh="crossbow_g" weight="2.2" difficulty="60" appearance="1" Type="Crossbow" value="10000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
 			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="70" missile_speed="450" weapon_length="95" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce" reload_phase_count="2" modifier_group="crossbow">
-				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" CantReloadOnHorseback="true"/>
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags/>
@@ -19,7 +19,7 @@
 	<Item id="crossbow_d" name="410 Pound Doubler Belt Crossbow" body_name="bo_composite_crossbows" mesh="crossbow_d" weight="2.2" difficulty="30" appearance="1" Type="Crossbow" value="8000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.empire" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
 			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="70" missile_speed="410" weapon_length="95" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce" reload_phase_count="2" modifier_group="crossbow">
-				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" CantReloadOnHorseback="true"/>
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags/>
@@ -35,7 +35,7 @@
 	<Item id="crossbow_c" name="330 Pound Spanning Belt Crossbow" body_name="bo_cross_bow_heavy" mesh="crossbow_c" weight="3" difficulty="45" appearance="1" Type="Crossbow" value="5000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.24675" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
 			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="80" missile_speed="330" weapon_length="95" thrust_damage="100" item_usage="crossbow_fast" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce" reload_phase_count="2" modifier_group="crossbow">
-				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" CantReloadOnHorseback="true"/>
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
@@ -43,7 +43,7 @@
 	<Item id="crossbow_b" name="290 Pound Spanning Belt Crossbow" body_name="bo_cross_bow_heavy" mesh="crossbow_b" weight="2.7" difficulty="30" appearance="1" Type="Crossbow" value="4000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.24975" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
 			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="80" missile_speed="290" weapon_length="95" thrust_damage="100" item_usage="crossbow_fast" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce" reload_phase_count="2" modifier_group="crossbow">
-				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" CantReloadOnHorseback="true"/>
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
