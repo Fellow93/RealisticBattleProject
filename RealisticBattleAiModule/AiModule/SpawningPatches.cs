@@ -44,9 +44,9 @@ namespace RBMAI.AiModule
                             {
                                 return true;
                             }
-                            Vec2 tempPos = Mission.Current.GetClosestFleePositionForFormation(formation).AsVec2;
-                            tempPos.x = tempPos.x + MBRandom.RandomInt(40);
-                            tempPos.y = tempPos.y + MBRandom.RandomInt(40);
+                            Vec2 tempPos = Mission.Current.GetClosestBoundaryPosition(formation.SmoothedAverageUnitPosition);
+                            tempPos.x = tempPos.x + MBRandom.RandomInt(20);
+                            tempPos.y = tempPos.y + MBRandom.RandomInt(20);
 
                             initialPosition = Mission.Current.DeploymentPlan?.GetClosestDeploymentBoundaryPosition(agentTeam.Side, tempPos, DeploymentPlanType.Reinforcement).ToVec3();
                             initialDirection = tempPos - formation.CurrentPosition;
@@ -283,7 +283,7 @@ namespace RBMAI.AiModule
 
                         float num4 = (float)(____phases[0][0].InitialSpawnedNumber - __instance.NumberOfActiveDefenderTroops) / (float)____phases[0][0].InitialSpawnedNumber;
                         float num5 = (float)(____phases[1][0].InitialSpawnedNumber - __instance.NumberOfActiveAttackerTroops) / (float)____phases[1][0].InitialSpawnedNumber;
-                        if ((____battleSize * 0.5f > __instance.NumberOfActiveDefenderTroops + __instance.NumberOfActiveAttackerTroops) || num4 >= 0.5f || num5 >= 0.5f)
+                        if ((____battleSize * 0.4f > __instance.NumberOfActiveDefenderTroops + __instance.NumberOfActiveAttackerTroops) || num4 >= 0.6f || num5 >= 0.6f)
                         {
                             ____reinforcementSpawnEnabled = true;
                             numOfDefWhenSpawning = __instance.NumberOfActiveDefenderTroops;

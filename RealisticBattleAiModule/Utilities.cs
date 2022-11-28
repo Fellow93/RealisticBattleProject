@@ -296,10 +296,10 @@ namespace RBMAI
                     {
                         countOfShooting++;
                     }
-                    else
-                    {
-                        agent.ClearTargetFrame();
-                    }
+                    //else
+                    //{
+                    //    agent.ClearTargetFrame();
+                    //}
                     ratio = (float)countOfShooting / (float)formation.CountOfUnits;
 
                 });

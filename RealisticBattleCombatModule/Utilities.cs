@@ -9,6 +9,7 @@ namespace  RBMCombat
     {
         public static int numOfHits = 0;
         public static int numOfDurabilityDowngrade = 0;
+        public static float throwableCorrectionSpeed = 5f;
         public static bool HitWithWeaponBlade(in AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
         {
             WeaponComponentData currentUsageItem = attackerWeapon.CurrentUsageItem;
@@ -22,6 +23,21 @@ namespace  RBMCombat
                 return true;
             }
             return true;
+        }
+
+        public static bool HitWithWeaponBladeTip(in AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
+        {
+            WeaponComponentData currentUsageItem = attackerWeapon.CurrentUsageItem;
+            if (currentUsageItem != null)
+            {
+                WeaponClass weaponClass = attackerWeapon.CurrentUsageItem.WeaponClass;
+                if (collisionData.CollisionDistanceOnWeapon > currentUsageItem.GetRealWeaponLength() * 0.95f)
+                {
+                    return true;
+                }
+                return false;
+            }
+            return false;
         }
 
         public static int calculateMissileSpeed(float ammoWeight, MissionWeapon rangedWeapon, int drawWeight)

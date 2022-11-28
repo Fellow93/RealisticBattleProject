@@ -185,6 +185,7 @@ namespace RBMAI.AiModule
             static void PostfixCalculateCurrentOrder(ref BehaviorAssaultWalls __instance, ref MovementOrder ____wallSegmentMoveOrder, ref MovementOrder ____attackEntityOrderOuterGate, ref ArrangementOrder ___CurrentArrangementOrder, ref MovementOrder ____chargeOrder, ref TeamAISiegeComponent ____teamAISiegeComponent, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState, ref MovementOrder ____attackEntityOrderInnerGate)
             {
                 //____attackEntityOrderInnerGate = MovementOrder.MovementOrderAttackEntity(____teamAISiegeComponent.InnerGate.GameEntity, surroundEntity: false);
+                //___CurrentArrangementOrder = ArrangementOrder.ArrangementOrderLine;
                 switch (____behaviorState)
                 {
                     case BehaviorState.ClimbWall:
@@ -322,6 +323,16 @@ namespace RBMAI.AiModule
                 __result = result;
                 return false;
             }
+
+            [HarmonyPostfix]
+            [HarmonyPatch("TickOccasionally")]
+            static void PrefixTickOccasionally(ref BehaviorUseSiegeMachines __instance)
+            {
+                if (__instance.Formation.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall)
+                {
+                    __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+                }
+            }
         }
 
         [HarmonyPatch(typeof(BehaviorWaitForLadders))]
@@ -341,17 +352,27 @@ namespace RBMAI.AiModule
                     //        return false;
                     //    }
                     //}
-                    if (____followTacticalPosition.Position.AsVec2.Distance(__instance.Formation.QuerySystem.AveragePosition) > 7f)
+                    //if (____followTacticalPosition.Position.AsVec2.Distance(__instance.Formation.QuerySystem.AveragePosition) > 7f)
+                    if (____followTacticalPosition.Position.AsVec2.Distance(__instance.Formation.QuerySystem.AveragePosition) > 10f)
                     {
                         if (____followOrder.OrderEnum != 0 && !____teamAISiegeComponent.AreLaddersReady)
                         {
-
                             __result = ((!____teamAISiegeComponent.IsCastleBreached()) ? 2f : 1f);
                             return false;
                         }
                     }
                 }
                 return true;
+            }
+
+            [HarmonyPostfix]
+            [HarmonyPatch("TickOccasionally")]
+            static void PrefixTickOccasionally(ref BehaviorWaitForLadders __instance)
+            {
+                if (__instance.Formation.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall)
+                {
+                    __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+                }
             }
         }
 
@@ -502,8 +523,9 @@ namespace RBMAI.AiModule
                         {
                             if (____outerGate != null)
                             {
-                                float distance = __instance.Formation.QuerySystem.AveragePosition.Distance(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.AveragePosition);
-                                if ((____outerGate.IsDestroyed || ____outerGate.IsGateOpen) && TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation, includeOnlyPositionedUnits: false, 0.25f) && distance < 35f)
+                                float distance = __instance.Formation.SmoothedAverageUnitPosition.Distance(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.SmoothedAverageUnitPosition);
+                                if ((____outerGate.IsDestroyed || ____outerGate.IsGateOpen) && (TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation, includeOnlyPositionedUnits: false, 0.25f) && distance < 35f ||
+                                TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation, includeOnlyPositionedUnits: false, 0.2f)))
                                 {
                                     ____readyOrder = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
                                     ____currentOrder = ____readyOrder;
@@ -512,8 +534,9 @@ namespace RBMAI.AiModule
                         }
                         else
                         {
-                            float distance = __instance.Formation.QuerySystem.AveragePosition.Distance(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.AveragePosition);
-                            if ((____innerGate.IsDestroyed || ____innerGate.IsGateOpen) && TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation, includeOnlyPositionedUnits: false, 0.25f) && distance < 35f)
+                            float distance = __instance.Formation.SmoothedAverageUnitPosition.Distance(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.SmoothedAverageUnitPosition);
+                            if ((____innerGate.IsDestroyed || ____innerGate.IsGateOpen) && (TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation, includeOnlyPositionedUnits: false, 0.25f) && distance < 35f || 
+                                TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation, includeOnlyPositionedUnits: false, 0.2f)))
                             {
                                 ____readyOrder = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
                                 ____currentOrder = ____readyOrder;
@@ -543,7 +566,7 @@ namespace RBMAI.AiModule
                     if (correctEnemy != null)
                     {
                         float distance = __instance.Formation.QuerySystem.MedianPosition.AsVec2.Distance(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.MedianPosition.AsVec2);
-                        if (TeamAISiegeComponent.IsFormationInsideCastle(correctEnemy, includeOnlyPositionedUnits: false, 0.4f) || (TeamAISiegeComponent.IsFormationInsideCastle(correctEnemy, includeOnlyPositionedUnits: false, 0.05f) && TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation, includeOnlyPositionedUnits: false, 0.25f) && distance < 35f))
+                        if (TeamAISiegeComponent.IsFormationInsideCastle(correctEnemy, includeOnlyPositionedUnits: false, 0.2f) || (TeamAISiegeComponent.IsFormationInsideCastle(correctEnemy, includeOnlyPositionedUnits: false, 0.05f) && TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation, includeOnlyPositionedUnits: false, 0.25f) && distance < 35f))
                         {
                             ____readyOrder = MovementOrder.MovementOrderChargeToTarget(correctEnemy);
                             ____waitOrder = MovementOrder.MovementOrderChargeToTarget(correctEnemy);
@@ -556,7 +579,8 @@ namespace RBMAI.AiModule
                 if (__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && ____tacticalWaitPos != null && ____tacticalMiddlePos == null)
                 {
                     float distance = __instance.Formation.QuerySystem.MedianPosition.AsVec2.Distance(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.AveragePosition);
-                    if (TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation, includeOnlyPositionedUnits: false, 0.25f) && distance < 35f)
+                    if ((____innerGate.IsDestroyed || ____innerGate.IsGateOpen) && (TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation, includeOnlyPositionedUnits: false, 0.25f) && distance < 35f ||
+                                TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation, includeOnlyPositionedUnits: false, 0.2f)))
                     {
                         ____readyOrder = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
                         ____currentOrder = ____readyOrder;
@@ -640,9 +664,9 @@ namespace RBMAI.AiModule
             {
                 if (____maxUserCount == 3)
                 {
-                    ____arcAngle = (float)Math.PI * 1f / 4f;
+                    ____arcAngle = (float)Math.PI * 1f / 2f;
                     ____agentSpacing = 1f;
-                    ____queueBeginDistance = 2.5f;
+                    ____queueBeginDistance = 3f;
                     ____queueRowSize = 1f;
                     ____maxUserCount = 15;
                 }

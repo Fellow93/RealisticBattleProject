@@ -84,7 +84,7 @@ namespace RBMCombat
                             }
                         case "Javelin":
                             {
-                                length -= 10f;
+                                length -= Utilities.throwableCorrectionSpeed;
                                 if (length < 5.0f)
                                 {
                                     length = 5f;
@@ -96,7 +96,7 @@ namespace RBMCombat
                             }
                         case "OneHandedPolearm":
                             {
-                                length -= 10f;
+                                length -= Utilities.throwableCorrectionSpeed;
                                 if (length < 5.0f)
                                 {
                                     length = 5f;
@@ -107,7 +107,7 @@ namespace RBMCombat
                             }
                         case "LowGripPolearm":
                             {
-                                length -= 10f;
+                                length -= Utilities.throwableCorrectionSpeed;
                                 if (length < 5.0f)
                                 {
                                     length = 5f;
@@ -637,7 +637,11 @@ namespace RBMCombat
                     attacker = agent;
                 }
             }
-
+            //if(!attacker.WieldedWeapon.IsEmpty && attackCollisionData.StrikeType == (int)StrikeType.Swing && attacker.WieldedWeapon.GetModifiedItemName().Contains("Falx") && Utilities.HitWithWeaponBladeTip(in attackCollisionData, attacker.WieldedWeapon))
+            //{
+            //    damageType = DamageTypes.Pierce;
+            //    //InformationManager.DisplayMessage(new InformationMessage("Falx pierce hit!", Color.FromUint(4289612505u)));
+            //}
             bool isBash = false;
             if(attacker != null && attackCollisionData.StrikeType == (int)StrikeType.Swing && damageType != DamageTypes.Blunt && !attacker.WieldedWeapon.IsEmpty && !Utilities.HitWithWeaponBlade(in attackCollisionData, attacker.WieldedWeapon))
             {
@@ -654,11 +658,39 @@ namespace RBMCombat
             //    }
             //}
             bool faceshot = false;
+            //bool backLegHit = false;
             bool lowerShoulderHit = false;
+
+            //if (victim != null && victim.IsHuman && attackCollisionData.VictimHitBodyPart == BoneBodyPartType.Legs)
+            //{
+            //    //lower leg 2,3,5,6
+            //    float dotProduct = Vec3.DotProduct(attackCollisionData.WeaponBlowDir, victim.LookFrame.rotation.f);
+            //    float dotProductTrehsold = 0.8f;
+            //    InformationManager.DisplayMessage(new InformationMessage(""+ dotProduct+ " " + attackCollisionData.CollisionBoneIndex, Color.FromUint(4289612505u)));
+            //    if (dotProduct > dotProductTrehsold)
+            //    //if (dotProduct < -0.85f && dotProduct2 < -0.75f)
+            //    {
+            //        if (attacker != null && attacker.IsPlayerControlled)
+            //        {
+            //            InformationManager.DisplayMessage(new InformationMessage("Back leg hit!", Color.FromUint(4289612505u)));
+            //        }
+            //        if (victim != null && victim.IsPlayerControlled)
+            //        {
+            //            InformationManager.DisplayMessage(new InformationMessage("Back leg hit!", Color.FromUint(4289612505u)));
+            //        }
+            //        backLegHit = true;
+            //    }
+            //}
+
             if (victim != null && victim.IsHuman && attackCollisionData.VictimHitBodyPart == BoneBodyPartType.Head)
             {
                 float dotProduct = Vec3.DotProduct(attackCollisionData.WeaponBlowDir, victim.LookFrame.rotation.f);
-                if (dotProduct < -0.7f && attackCollisionData.CollisionGlobalNormal.z < 0f)
+                float dotProductTrehsold = -0.7f;
+                if(attackCollisionData.StrikeType == (int)StrikeType.Swing)
+                {
+                    dotProductTrehsold = -0.8f;
+                }
+                if (dotProduct < dotProductTrehsold && attackCollisionData.CollisionGlobalNormal.z < 0f)
                 //if (dotProduct < -0.85f && dotProduct2 < -0.75f)
                 {
                     if(attacker != null && attacker.IsPlayerControlled)
@@ -826,7 +858,14 @@ namespace RBMCombat
                                 }
                                 else
                                 {
-                                    skillBasedDamage = magnitude * 0.2f + 50f * RBMConfig.RBMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.46f * RBMConfig.RBMConfig.ThrustMagnitudeModifier);
+                                    if (attackCollisionData.StrikeType == (int)StrikeType.Swing)
+                                    {
+                                        skillBasedDamage = magnitude * RBMConfig.RBMConfig.ThrustMagnitudeModifier + (40f * RBMConfig.RBMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.53f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) * 1.3f;
+                                    }
+                                    else
+                                    {
+                                        skillBasedDamage = magnitude * 0.2f + 50f * RBMConfig.RBMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.46f * RBMConfig.RBMConfig.ThrustMagnitudeModifier);
+                                    }
                                 }
                                 if (magnitude > 1f)
                                 {
@@ -847,7 +886,14 @@ namespace RBMCombat
                                 }
                                 else
                                 {
-                                    skillBasedDamage = (magnitude * 0.2f + 50f * RBMConfig.RBMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.46f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) * 1.3f;
+                                    if(attackCollisionData.StrikeType == (int)StrikeType.Swing)
+                                    {
+                                        skillBasedDamage = magnitude * RBMConfig.RBMConfig.ThrustMagnitudeModifier + (40f* RBMConfig.RBMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.53f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) * 1.3f;
+                                    }
+                                    else
+                                    {
+                                        skillBasedDamage = (magnitude * 0.2f + 50f * RBMConfig.RBMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.46f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) * 1.3f;
+                                    }
                                 }
                                 if (magnitude > 1f)
                                 {

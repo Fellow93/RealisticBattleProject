@@ -110,9 +110,17 @@ namespace RBMAI
                 agentDrivenProperties.AiUseShieldAgainstEnemyMissileProbability = 0.95f;
                 //agentDrivenProperties.AiFlyingMissileCheckRadius = 250f;
 
-                agentDrivenProperties.AiShooterError = 0.001f;
-
                 float num4 = 1f - effectiveSkillLevel;
+                if(!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Crossbow)
+                {
+                    agentDrivenProperties.AiShooterError = 0.045f - (0.005f * effectiveSkillLevel);
+                }
+                else
+                {
+                    agentDrivenProperties.AiShooterError = 0.040f - (0.015f * effectiveSkillLevel);
+
+                }
+
                 agentDrivenProperties.AiRangerLeadErrorMin = (float)((0.0 - (double)num4) * 0.349999994039536) + 0.3f;
                 agentDrivenProperties.AiRangerLeadErrorMax = num4 * 0.2f + 0.3f;
 

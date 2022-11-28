@@ -13,6 +13,7 @@ using static TaleWorlds.MountAndBlade.Agent;
 using static TaleWorlds.MountAndBlade.Mission;
 using static TaleWorlds.Core.ItemObject;
 using NetworkMessages.FromServer;
+using static TaleWorlds.MountAndBlade.CompressionInfo;
 
 namespace RBMCombat
 {
@@ -31,30 +32,91 @@ namespace RBMCombat
             static void Postfix()
             {
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionArrow, 0.0015f);
-                ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionJavelin, 0.00225f);
+                ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionJavelin, 0.00215f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionAxe, 0.01f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionKnife, 0.01f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.MissileMinimumDamageToStick, 12.5f);
+
+                ManagedParameters.SetParameter(ManagedParametersEnum.MakesRearAttackDamageThreshold, 13f);
+
+                //ManagedParameters.SetParameter(ManagedParametersEnum.SwingHitWithArmDamageMultiplier, 1.0f);
+                //ManagedParameters.SetParameter(ManagedParametersEnum.ThrustHitWithArmDamageMultiplier, 0.02f);
+                //ManagedParameters.SetParameter(ManagedParametersEnum.NonTipThrustHitDamageMultiplier, 1.0f);
+
+                //ManagedParameters.SetParameter(ManagedParametersEnum.OverSwingCombatSpeedGraphSecondMaximumPoint, 0.7f);
+
+                //ManagedParameters.SetParameter(ManagedParametersEnum.ThrustCombatSpeedGraphZeroProgressValue, 0.3f);
+                //ManagedParameters.SetParameter(ManagedParametersEnum.ThrustCombatSpeedGraphFirstMaximumPoint, 0.05f);
+                //ManagedParameters.SetParameter(ManagedParametersEnum.ThrustCombatSpeedGraphSecondMaximumPoint, 0.95f);
+
             }
         }
 
-        //[HarmonyPatch(typeof(Agent))]
-        //[HarmonyPatch("OnWeaponAmmoConsume")]
-        //public class OnWeaponAmmoConsumePatch
+        [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
+        [HarmonyPatch("CalculateBaseMeleeBlowMagnitude")]
+        public class CalculateBaseMeleeBlowMagnitudePatch
+        {
+            public static bool Prefix(ref float __result, in AttackInformation attackInformation, in MissionWeapon weapon, StrikeType strikeType, float progressEffect, float impactPointAsPercent, float exraLinearSpeed, bool doesAttackerHaveMount)
+            {
+                WeaponComponentData currentUsageItem = weapon.CurrentUsageItem;
+                BasicCharacterObject attackerAgentCharacter = attackInformation.AttackerAgentCharacter;
+                BasicCharacterObject attackerCaptainCharacter = attackInformation.AttackerCaptainCharacter;
+                float num = MathF.Sqrt(progressEffect);
+                if (strikeType == StrikeType.Thrust)
+                {
+                    exraLinearSpeed *= 0.5f;
+                    float thrustWeaponSpeed = (float)weapon.GetModifiedThrustSpeedForCurrentUsage() / 11.7647057f * num;
+                    __result = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(attackerAgentCharacter, attackerCaptainCharacter, thrustWeaponSpeed, weapon.Item.Weight, currentUsageItem, exraLinearSpeed, doesAttackerHaveMount);
+                    return false;
+                }
+                exraLinearSpeed *= 0.7f;
+                float swingSpeed = (float)weapon.GetModifiedSwingSpeedForCurrentUsage() / 4.5454545f * num;
+                float num2 = MBMath.ClampFloat(0.4f / currentUsageItem.GetRealWeaponLength(), 0f, 1f);
+                float num3 = MathF.Min(0.93f, impactPointAsPercent);
+                float num4 = MathF.Min(0.93f, impactPointAsPercent + num2);
+                //float originalValue = 0f;
+                float newValue = 0f;
+                int j = 0;
+                //for (int i = 0; i < 5; i++)
+                //{
+                //    //float bladeLength = weapon.Item.WeaponDesign.UsedPieces[0].ScaledBladeLength;
+                //    float impactPointAsPercent2 = num3 + (float)i / 4f * (num4 - num3);
+                //    float num6 = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(attackerAgentCharacter, attackerCaptainCharacter, swingSpeed, impactPointAsPercent2, weapon.Item.Weight, currentUsageItem, currentUsageItem.GetRealWeaponLength(), currentUsageItem.Inertia, currentUsageItem.CenterOfMass, exraLinearSpeed, doesAttackerHaveMount);
+                //    if (originalValue < num6)
+                //    {
+                //        originalValue = num6;
+                //    }
+                //}
+
+                float impactPointAsPercent3 = num3 + (float)0 / 4f * (num4 - num3);
+                newValue = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(attackerAgentCharacter, attackerCaptainCharacter, swingSpeed, impactPointAsPercent3, weapon.Item.Weight, currentUsageItem, currentUsageItem.GetRealWeaponLength(), currentUsageItem.Inertia, currentUsageItem.CenterOfMass, exraLinearSpeed, doesAttackerHaveMount);
+               
+                __result = newValue;
+                return false;
+            }
+        }
+
+        //[HarmonyPatch(typeof(CombatStatCalculator))]
+        //[HarmonyPatch("CalculateStrikeMagnitudeForSwing")]
+        //public class CalculateStrikeMagnitudeForSwingPatch
         //{
-        //    public static void Postfix(ref Agent __instance, EquipmentIndex slotIndex, short totalAmmo)
+        //    public static bool Prefix(ref float __result, float swingSpeed, float impactPointAsPercent, float weaponWeight, float weaponLength, float weaponInertia, float weaponCoM, float extraLinearSpeed)
         //    {
-        //        if (!__instance.IsPlayerControlled && slotIndex != EquipmentIndex.None)
-        //        {
-        //            __instance.Equipment.GetAmmoCountAndIndexOfType(__instance.Equipment[slotIndex].Item.Type, out var ammouCount, out var eIndex);
-        //            bool isBowTripleFire = !(__instance.Equipment[slotIndex].GetWeaponComponentDataForUsage(0).WeaponFlags.HasFlag(WeaponFlags.UnloadWhenSheathed));
-        //            if ((ammouCount <= 1 && __instance.Equipment[slotIndex].Item.Type == ItemObject.ItemTypeEnum.Crossbow) || (ammouCount <= 3 && __instance.Equipment[slotIndex].Item.Type == ItemObject.ItemTypeEnum.Bow && isBowTripleFire && totalAmmo <= 0))
-        //            {
-        //                __instance.SetAlwaysAttackInMelee(true);
-        //                __instance.WieldNextWeapon(HandIndex.MainHand, WeaponWieldActionType.WithAnimationUninterruptible);
-        //            }
-        //        }
-        //        //return true;
+        //        float distanceFromCoM = weaponLength * impactPointAsPercent - weaponCoM;
+        //        float num2 = swingSpeed * (0.5f + weaponCoM) + extraLinearSpeed;
+        //        float kineticEnergy = 0.5f * weaponWeight * num2 * num2;
+        //        float inertiaEnergy = 0.5f * weaponInertia * swingSpeed * swingSpeed;
+        //        float num5 = kineticEnergy + inertiaEnergy;
+        //        float num6 = (num2 + swingSpeed * distanceFromCoM) / (1f / weaponWeight + distanceFromCoM * distanceFromCoM / weaponInertia);
+        //        float num7 = num2 - num6 / weaponWeight;
+        //        float num8 = swingSpeed - num6 * distanceFromCoM / weaponInertia;
+        //        float num9 = 0.5f * weaponWeight * num7 * num7;
+        //        float num10 = 0.5f * weaponInertia * num8 * num8;
+        //        float num11 = num9 + num10;
+        //        float num12 = num5 - num11 + 0.5f;
+        //        __result =  0.067f * num12;
+        //        //InformationManager.DisplayMessage(new InformationMessage("energy " + num12, Color.FromUint(4289612505u)));
+        //        return false;
         //    }
         //}
 
@@ -159,12 +221,12 @@ namespace RBMCombat
                                 case (int)WeaponClass.OneHandedPolearm:
                                 case (int)WeaponClass.LowGripPolearm:
                                     {
-                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot], 10, effectiveSkill);
+                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot], (int)Utilities.throwableCorrectionSpeed, effectiveSkill);
                                         break;
                                     }
                                 case (int)WeaponClass.Javelin:
                                     {
-                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot], 10, effectiveSkill);
+                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot], (int)Utilities.throwableCorrectionSpeed, effectiveSkill);
                                         break;
                                     }
                                 case (int)WeaponClass.ThrowingAxe:
