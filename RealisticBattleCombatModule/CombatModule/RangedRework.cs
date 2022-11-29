@@ -758,12 +758,15 @@ namespace RBMCombat
                                             {
                                                 for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.NumAllWeaponSlots; i++)
                                                 {
-                                                    if(i != eIndex)
+                                                    if (!__instance.Equipment[i].IsEmpty)
                                                     {
-                                                        if (__instance.Equipment[i].IsSameType(__instance.Equipment[eIndex]))
+                                                        if (i != eIndex)
                                                         {
-                                                            __instance.SetWeaponAmountInSlot(i, Convert.ToInt16(__instance.Equipment[i].Amount + ammoInHandCount), enforcePrimaryItem: true);
-                                                            break;
+                                                            if (__instance.Equipment[i].IsSameType(__instance.Equipment[eIndex]))
+                                                            {
+                                                                __instance.SetWeaponAmountInSlot(i, Convert.ToInt16(__instance.Equipment[i].Amount + ammoInHandCount), enforcePrimaryItem: true);
+                                                                break;
+                                                            }
                                                         }
                                                     }
                                                 }
