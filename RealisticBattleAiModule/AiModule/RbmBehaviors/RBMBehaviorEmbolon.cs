@@ -16,7 +16,7 @@ namespace RBMAI
 		public RBMBehaviorEmbolon(Formation formation)
 			: base(formation)
 		{
-			behaviorSide = formation.AI.Side;
+            _behaviorSide = formation.AI.Side;
 			_mainFormation = formation.Team.Formations.FirstOrDefault((Formation f) => f.AI.IsMainFormation);
 			CalculateCurrentOrder();
 		}

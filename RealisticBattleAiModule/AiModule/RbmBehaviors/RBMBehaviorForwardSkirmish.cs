@@ -30,7 +30,7 @@ namespace RBMAI
 			: base(formation)
 		{
 			_skirmishMode = SkirmishMode.Reform;
-			behaviorSide = formation.AI.Side;
+            _behaviorSide = formation.AI.Side;
 			CalculateCurrentOrder();
 			base.BehaviorCoherence = 0.5f;
 		}
@@ -135,7 +135,7 @@ namespace RBMAI
 									_skirmishMode = SkirmishMode.Attack;
 								}
 
-								if (behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
+								if (_behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
 								{
 									if (allyFormation != null)
 									{
@@ -147,7 +147,7 @@ namespace RBMAI
 										position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
 									}
 								}
-								else if (behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
+								else if (_behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
 								{
 									if (allyFormation != null)
 									{
@@ -189,7 +189,7 @@ namespace RBMAI
 									_skirmishMode = SkirmishMode.Reform;
 							}
 
-							if (behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
+							if (_behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
 							{
 								if (allyFormation != null)
 								{
@@ -201,7 +201,7 @@ namespace RBMAI
 									position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
 								}
 							}
-							else if (behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
+							else if (_behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
 							{
 								if (allyFormation != null)
 								{
@@ -245,14 +245,14 @@ namespace RBMAI
 									_skirmishMode = SkirmishMode.Returning;
 								}
 
-								if (behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
+								if (_behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
 								{
 									position = medianTargetFormationPosition;
 									Vec2 calcPosition = position.AsVec2 - enemyDirection * (skirmishRange - (10f + base.Formation.Depth * 0.5f));
 									calcPosition = calcPosition + enemyFormation.Direction.LeftVec().Normalized() * (enemyFormation.Width / 2f) * mobilityModifier;
 									position.SetVec2(calcPosition);
 								}
-								else if (behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
+								else if (_behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
 								{
 									position = medianTargetFormationPosition;
 									Vec2 calcPosition = position.AsVec2 - enemyDirection * (skirmishRange - (10f + base.Formation.Depth * 0.5f));

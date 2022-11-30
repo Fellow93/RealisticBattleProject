@@ -20,7 +20,7 @@ namespace RBMAI
 		public RBMBehaviorArcherFlank(Formation formation)
 			: base(formation)
 		{
-			behaviorSide = formation.AI.Side;
+            _behaviorSide = formation.AI.Side;
 			CalculateCurrentOrder();
 			base.BehaviorCoherence = 0.5f;
 			base.NavmeshlessTargetPositionPenalty = 1f;
@@ -55,7 +55,7 @@ namespace RBMAI
 			WorldPosition medianTargetFormationPosition = base.Formation.QuerySystem.Team.MedianTargetFormationPosition;
 			Vec2 enemyDirection = (medianTargetFormationPosition.AsVec2 - averagePosition).Normalized();
 
-			if (behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
+			if (_behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
 			{
 				if (allyFormation != null)
 				{
@@ -74,7 +74,7 @@ namespace RBMAI
 					position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
 				}
 			}
-			else if (behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
+			else if (_behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
 			{
 				if (allyFormation != null)
 				{
