@@ -758,7 +758,9 @@ namespace RBMCombat
                                             {
                                                 for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.NumAllWeaponSlots; i++)
                                                 {
-                                                    if (!__instance.Equipment[i].IsEmpty)
+                                                    if (!__instance.Equipment[i].IsEmpty && !__instance.Equipment[eIndex].IsEmpty && 
+                                                        __instance.Equipment[i].Item != null && __instance.Equipment[eIndex].Item != null &&
+                                                        __instance.Equipment[i].Item.PrimaryWeapon != null && __instance.Equipment[eIndex].Item.PrimaryWeapon != null)
                                                     {
                                                         if (i != eIndex)
                                                         {
