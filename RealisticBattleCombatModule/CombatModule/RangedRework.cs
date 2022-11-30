@@ -120,6 +120,11 @@ namespace RBMCombat
         //    }
         //}
 
+        public static float CalculateSkillModifier(int relevantSkillLevel)
+        {
+            return MBMath.ClampFloat((float)relevantSkillLevel / 250f , 0f, 1f);
+        }
+
         [HarmonyPatch(typeof(Agent))]
         [HarmonyPatch("WeaponEquipped")]
         class OverrideWeaponEquipped
@@ -131,8 +136,9 @@ namespace RBMCombat
                     for (int i = 0; i < weaponStatsData.Length; i++)
                     {
                         SkillObject skill = (weaponData.GetItemObject() == null) ? DefaultSkills.Athletics : weaponData.GetItemObject().RelevantSkill;
-                        if(skill != null) { 
+                        if(skill != null) {
                             int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance.Character, __instance.Origin, __instance.Formation, skill);
+                            float skillModifier = CalculateSkillModifier(effectiveSkill);
 
                             switch (weaponStatsData[i].WeaponClass)
                             {
