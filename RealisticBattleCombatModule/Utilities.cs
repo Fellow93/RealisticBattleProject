@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
 namespace  RBMCombat
@@ -23,6 +24,11 @@ namespace  RBMCombat
                 return true;
             }
             return true;
+        }
+
+        public static float CalculateSkillModifier(int relevantSkillLevel)
+        {
+            return MBMath.ClampFloat((float)relevantSkillLevel / 250f, 0f, 1f);
         }
 
         public static bool HitWithWeaponBladeTip(in AttackCollisionData collisionData, in MissionWeapon attackerWeapon)

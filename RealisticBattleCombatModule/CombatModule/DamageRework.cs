@@ -834,6 +834,17 @@ namespace RBMCombat
                 if (skill != null)
                 {
                     int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgentCharacter, attackerAgentOrigin, attackerFormation, skill);
+                    float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill);
+
+                    if (attacker != null && attacker.IsPlayerControlled)
+                    {
+                        InformationManager.DisplayMessage(new InformationMessage("magnitude: " + magnitude));
+                    }
+                    if (victim != null && victim.IsPlayerControlled)
+                    {
+                        InformationManager.DisplayMessage(new InformationMessage("magnitude: " + magnitude));
+                    }
+                    
                     bool isPassiveUsage = attackInformation.IsAttackerAgentDoingPassiveAttack;
                     float skillBasedDamage = 0f;
                     const float ashBreakTreshold = 430f;
