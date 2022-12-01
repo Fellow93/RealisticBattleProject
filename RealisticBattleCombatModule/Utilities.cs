@@ -14,9 +14,10 @@ namespace  RBMCombat
         public static bool HitWithWeaponBlade(in AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
         {
             WeaponComponentData currentUsageItem = attackerWeapon.CurrentUsageItem;
-            if (currentUsageItem != null)
+            if (attackerWeapon.Item != null && currentUsageItem != null && attackerWeapon.Item.WeaponDesign != null &&
+                attackerWeapon.Item.WeaponDesign.UsedPieces != null && attackerWeapon.Item.WeaponDesign.UsedPieces.Length > 0 )
             {
-                WeaponClass weaponClass = attackerWeapon.CurrentUsageItem.WeaponClass;
+                //WeaponClass weaponClass = attackerWeapon.CurrentUsageItem.WeaponClass;
                 if (collisionData.CollisionDistanceOnWeapon < currentUsageItem.GetRealWeaponLength() - attackerWeapon.Item.WeaponDesign.UsedPieces[0].ScaledBladeLength)
                 {
                     return false;

@@ -113,11 +113,17 @@ namespace RBMAI
                 float num4 = 1f - effectiveSkillLevel;
                 if(!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Crossbow)
                 {
-                    agentDrivenProperties.AiShooterError = 0.045f - (0.005f * effectiveSkillLevel);
+                    agentDrivenProperties.AiShooterError = 0.030f - (0.007f * effectiveSkillLevel);
                 }
                 else
                 {
-                    agentDrivenProperties.AiShooterError = 0.040f - (0.015f * effectiveSkillLevel);
+                    agentDrivenProperties.AiShooterError = 0.025f - (0.020f * effectiveSkillLevel);
+                }
+
+                if(agent.IsAIControlled)
+                {
+                    agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
+                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 1.33f;
 
                 }
 
@@ -130,30 +136,30 @@ namespace RBMAI
                     {
                         //agentDrivenProperties.AiRangerVerticalErrorMultiplier = 0f;//horse archers
                         //agentDrivenProperties.AiRangerHorizontalErrorMultiplier = 0f;//horse archers
-                        agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.025f - effectiveSkill * 0.0001f, 0.01f, 0.025f);//bow
-                        agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.025f - effectiveSkill * 0.0001f, 0.01f, 0.025f);//bow
+                        agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.020f - effectiveSkill * 0.0001f, 0.01f, 0.020f);//bow
+                        agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.020f - effectiveSkill * 0.0001f, 0.01f, 0.020f);//bow
                         agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
                         agentDrivenProperties.WeaponMaxUnsteadyAccuracyPenalty *= 0.5f;
                         agentDrivenProperties.WeaponRotationalAccuracyPenaltyInRadians = 0.02f;
                     }
                     else
                     {
-                        agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.025f - effectiveSkill * 0.0001f, 0.01f, 0.025f);//bow
-                        agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.025f - effectiveSkill * 0.0001f, 0.01f, 0.025f);//bow
+                        agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.020f - effectiveSkill * 0.0001f, 0.01f, 0.020f);//bow
+                        agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.020f - effectiveSkill * 0.0001f, 0.01f, 0.020f);//bow
                     }
                 }
                 else if(equippedItem != null && equippedItem.RelevantSkill == DefaultSkills.Crossbow)
                 {
                     agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.015f - effectiveSkill * 0.0001f, 0.005f, 0.015f);//crossbow
-                    agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.015f - effectiveSkill * 0.0001f, 0.005f, 0.015f);//crossbow
+                    agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.010f - effectiveSkill * 0.0001f, 0.005f, 0.010f);//crossbow
                 }
                 else
                 {
-                    agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.030f - effectiveSkill * 0.0001f, 0.01f, 0.030f);// javelins and axes etc
-                    agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.030f - effectiveSkill * 0.0001f, 0.01f, 0.030f);// javelins and axes etc
+                    agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.025f - effectiveSkill * 0.0001f, 0.01f, 0.025f);// javelins and axes etc
+                    agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.025f - effectiveSkill * 0.0001f, 0.01f, 0.025f);// javelins and axes etc
                 }
 
-                agentDrivenProperties.AiShootFreq = MBMath.ClampFloat(effectiveSkill * 1.5f, 0.1f, 0.9f); // when set to 0 AI never shoots
+                agentDrivenProperties.AiShootFreq = MBMath.ClampFloat(effectiveSkillLevel * 1.5f, 0.1f, 0.9f); // when set to 0 AI never shoots
                                                                                                           //agentDrivenProperties.AiWaitBeforeShootFactor = 0f;
                 //agentDrivenProperties.AiMinimumDistanceToContinueFactor = 5f; //2f + 0.3f * (3f - meleeSkill);
                 //agentDrivenProperties.AIHoldingReadyMaxDuration = 0.1f; //MBMath.Lerp(0.25f, 0f, MBMath.Min(1f, num * 1.2f));
@@ -163,9 +169,9 @@ namespace RBMAI
 
                 //                GetEffectiveSkill
 
-                if(agent.Formation != null && agent.Formation.QuerySystem.IsInfantryFormation)
+                if (agent.Formation != null && agent.Formation.QuerySystem.IsInfantryFormation && !agent.IsRangedCached)
                 {
-                    agentDrivenProperties.ReloadMovementPenaltyFactor = 0.33f;
+                    agentDrivenProperties.ReloadMovementPenaltyFactor = 0.1f;
                 }
 
                 if (agent.IsRangedCached)
