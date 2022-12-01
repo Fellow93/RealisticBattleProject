@@ -860,12 +860,13 @@ namespace RBMCombat
                             {
                                 if (damageType == DamageTypes.Cut)
                                 {
-                                    skillBasedDamage = magnitude + 40f + (effectiveSkill * 0.53f);
+                                    skillBasedDamage = (MBMath.ClampFloat(magnitude, 5f, 30f) * 4f) + (effectiveSkill * 0.53f);
+                                    //skillBasedDamage = magnitude + 40f + (effectiveSkill * 0.53f);
                                 }
                                 else if (damageType == DamageTypes.Blunt)
                                 {
                                     //skillBasedDamage = magnitude + 0.50f * (40f + (effectiveSkill * 0.53f));
-                                    skillBasedDamage = magnitude + (50f + (effectiveSkill * 0.3f)) * 0.5f;
+                                    skillBasedDamage = ((MBMath.ClampFloat(magnitude, 5f, 30f) * 4f) + (effectiveSkill * 0.3f)) * 0.5f;
                                 }
                                 else
                                 {
@@ -888,12 +889,12 @@ namespace RBMCombat
                             {
                                 if (damageType == DamageTypes.Cut)
                                 {
-                                    skillBasedDamage = magnitude + (40f + (effectiveSkill * 0.53f)) * 1.3f;
+                                    skillBasedDamage = (MBMath.ClampFloat(magnitude, 5f, 40f) * 4f) + (effectiveSkill * 0.53f) * 1.3f;
                                 }
                                 else if (damageType == DamageTypes.Blunt)
                                 {
                                     //skillBasedDamage = magnitude * 1.3f + 0.5f * ((40f + (effectiveSkill * 0.53f)) * 1.3f);
-                                    skillBasedDamage = magnitude + ((50f + (effectiveSkill * 0.3f)) * 1.3f) * 0.5f;
+                                    skillBasedDamage = ((MBMath.ClampFloat(magnitude, 5f, 40f) * 4f) + (effectiveSkill * 0.3f)) * 0.5f;
                                 }
                                 else
                                 {
@@ -915,11 +916,11 @@ namespace RBMCombat
                         case "OneHandedAxe":
                         case "ThrowingAxe":
                             {
-                                skillBasedDamage = magnitude + 60f + (effectiveSkill * 0.4f);
+                                skillBasedDamage = (MBMath.ClampFloat(magnitude, 5f, 30f) * 4f) + (effectiveSkill * 0.4f);
                                 if (damageType == DamageTypes.Blunt)
                                 {
                                     //skillBasedDamage = magnitude + 0.5f * (60f + (effectiveSkill * 0.4f));
-                                    skillBasedDamage = magnitude + (50f + (effectiveSkill * 0.3f)) * 0.4f;
+                                    skillBasedDamage = ((MBMath.ClampFloat(magnitude, 5f, 30f) * 4f) + (effectiveSkill * 0.3f)) * 0.4f;
                                 }
                                 if (magnitude > 1f)
                                 {
@@ -929,11 +930,11 @@ namespace RBMCombat
                             }
                         case "OneHandedBastardAxe":
                             {
-                                skillBasedDamage = magnitude + (60f + (effectiveSkill * 0.4f)) * 1.15f;
+                                skillBasedDamage = (MBMath.ClampFloat(magnitude, 5f, 35f) * 4f) + (effectiveSkill * 0.4f) * 1.15f;
                                 if (damageType == DamageTypes.Blunt)
                                 {
                                     //skillBasedDamage = magnitude * 1.15f + 0.5f * ((60f + (effectiveSkill * 0.4f)) * 1.15f);
-                                    skillBasedDamage = magnitude + ((50f + (effectiveSkill * 0.3f)) * 1.15f) * 0.4f;
+                                    skillBasedDamage = ((MBMath.ClampFloat(magnitude, 5f, 35f) * 4f) + (effectiveSkill * 0.3f)) * 0.4f;
                                 }
                                 if (magnitude > 1f)
                                 {
@@ -943,11 +944,11 @@ namespace RBMCombat
                             }
                         case "TwoHandedAxe":
                             {
-                                skillBasedDamage = magnitude + (60f + (effectiveSkill * 0.4f)) * 1.3f;
+                                skillBasedDamage = (MBMath.ClampFloat(magnitude, 5f, 45f) * 4f) + (effectiveSkill * 0.4f) * 1.3f;
                                 if (damageType == DamageTypes.Blunt)
                                 {
                                     //skillBasedDamage = magnitude * 1.3f + 0.5f * ((60f + (effectiveSkill * 0.4f)) * 1.30f);
-                                    skillBasedDamage = magnitude + ((50f + (effectiveSkill * 0.3f)) * 1.3f) * 0.4f;
+                                    skillBasedDamage = ((MBMath.ClampFloat(magnitude, 5f, 40f) * 4f) + (effectiveSkill * 0.3f)) * 0.4f;
                                 }
                                 if (magnitude > 1f)
                                 {
@@ -963,7 +964,7 @@ namespace RBMCombat
                                 }
                                 else
                                 {
-                                    skillBasedDamage = magnitude + 50f + (effectiveSkill * 0.3f);
+                                    skillBasedDamage = (MBMath.ClampFloat(magnitude, 5f, 30f) * 4f) + (effectiveSkill * 0.3f);
                                 }
                                 if (magnitude > 1f)
                                 {
@@ -979,7 +980,7 @@ namespace RBMCombat
                                 }
                                 else
                                 {
-                                    skillBasedDamage = magnitude + ((50f + (effectiveSkill * 0.3f)) * 1.3f);
+                                    skillBasedDamage = (MBMath.ClampFloat(magnitude, 5f, 40f) * 4f) + (effectiveSkill * 0.3f) * 1.3f;
                                 }
                                 if (magnitude > 1f)
                                 {
@@ -991,12 +992,12 @@ namespace RBMCombat
                             {
                                 if (damageType == DamageTypes.Cut)
                                 {
-                                    skillBasedDamage = magnitude + 50f + (effectiveSkill * 0.46f);
+                                    skillBasedDamage = (MBMath.ClampFloat(magnitude, 5f, 30f) * 4f) + (effectiveSkill * 0.4f);
                                 }
                                 else if (damageType == DamageTypes.Blunt && !isPassiveUsage)
                                 {
                                     //skillBasedDamage = magnitude + 30f + (effectiveSkill * 0.26f);
-                                    skillBasedDamage = magnitude + (50f + (effectiveSkill * 0.3f)) * 0.35f;
+                                    skillBasedDamage = ((MBMath.ClampFloat(magnitude, 5f, 30f) * 4f) + (effectiveSkill * 0.3f)) * 0.4f;
                                 }
                                 else
                                 {
@@ -1086,12 +1087,12 @@ namespace RBMCombat
                             {
                                 if (damageType == DamageTypes.Cut)
                                 {
-                                    skillBasedDamage = magnitude + (50f + (effectiveSkill * 0.46f)) * 1.3f;
+                                    skillBasedDamage = (MBMath.ClampFloat(magnitude, 5f, 50f) * 4f) + (effectiveSkill * 0.46f) * 1.3f;
                                 }
                                 else if (damageType == DamageTypes.Blunt && !isPassiveUsage)
                                 {
                                     //skillBasedDamage = magnitude + (30f + (effectiveSkill * 0.26f) * 1.3f);
-                                    skillBasedDamage = magnitude + ((50f + (effectiveSkill * 0.3f)) * 1.3f) * 0.4f;
+                                    skillBasedDamage = ((MBMath.ClampFloat(magnitude, 5f, 40f) * 4f) + (effectiveSkill * 0.3f)) * 0.4f * 1.3f;
                                 }
                                 else
                                 {
