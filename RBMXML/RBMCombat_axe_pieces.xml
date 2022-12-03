@@ -768,20 +768,20 @@
   <!-- #endregion -->
   <!-- #region Used 2h Axe Handle Pieces -->
   <CraftingPiece id="axe_craft_8_handle" name="{=XxhFx0yw}Short Leather Wrapped Great Axe Handle" tier="3" piece_type="Handle" mesh="axe_craft_8_handle" length="116" weight="0.503" excluded_item_usage_features="widegrip">
-    <BuildData piece_offset="23.86" next_piece_offset="1" />
+    <BuildData piece_offset="8" next_piece_offset="1" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="axe_craft_10_handle" name="{=l13RibeF}Steel Reinforced Great Axe Handle" tier="4" piece_type="Handle" mesh="axe_craft_10_handle" length="132" weight="0.793" excluded_item_usage_features="widegrip">
-    <BuildData piece_offset="28.87" next_piece_offset="2.5" />
+    <BuildData piece_offset="10" next_piece_offset="2.5" />
     <Materials>
       <Material id="Wood" count="1" />
       <Material id="Iron4" count="1" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="axe_craft_1_handle" name="{=1T0XBYlc}Hardened Oaken Two Handed Axe Handle" tier="5" piece_type="Handle" mesh="axe_craft_1_handle" length="157.6" weight="0.590" item_holster_pos_shift="0,0,-0.1" CraftingCost="75">
-    <BuildData piece_offset="37.408" next_piece_offset="1.42" />
+    <BuildData piece_offset="24" next_piece_offset="1.42" />
     <Materials>
       <Material id="Wood" count="1" />
       <Material id="Iron5" count="1" />
@@ -792,14 +792,14 @@
     </Flags>
   </CraftingPiece>
   <CraftingPiece id="axe_craft_6_handle" name="{=OJ7iPw5M}Reinforced Hardened Ash Great Axe Handle" tier="4" piece_type="Handle" mesh="axe_craft_6_handle" length="157.3" weight="0.644" item_holster_pos_shift="0,0,-0.1">
-    <BuildData piece_offset="36.87" next_piece_offset="1.122" />
+    <BuildData piece_offset="24" next_piece_offset="1.122" />
     <Materials>
       <Material id="Wood" count="1" />
       <Material id="Iron4" count="1" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="axe_craft_4_handle" name="{=bfueDx6s}Heavily Reinforced Oaken Great Axe Handle" tier="5" piece_type="Handle" mesh="axe_craft_4_handle" length="157.5" weight="0.677" item_holster_pos_shift="0,0,-0.1">
-    <BuildData piece_offset="36.879" next_piece_offset="1.6" />
+    <BuildData piece_offset="24" next_piece_offset="1.6" />
     <Materials>
       <Material id="Wood" count="1" />
       <Material id="Iron5" count="1" />
