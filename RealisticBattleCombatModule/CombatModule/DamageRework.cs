@@ -1403,11 +1403,12 @@ namespace RBMCombat
                 isPlayerVictim = true;
             }
 
+            float weaponDamageFactor = 1f;
             if (attackerWeapon != null)
             {
-                magnitude = (float)Math.Sqrt(MathF.Floor(magnitude * ((attackCollisionData.StrikeType == (int)StrikeType.Thrust) ? attackerWeapon.ThrustDamageFactor : attackerWeapon.SwingDamageFactor)));
+                weaponDamageFactor = (float)Math.Sqrt((attackCollisionData.StrikeType == (int)StrikeType.Thrust) ? attackerWeapon.ThrustDamageFactor : attackerWeapon.SwingDamageFactor);
             }
-            inflictedDamage = MBMath.ClampInt(MathF.Floor(MyComputeDamage(weaponType, damageType, magnitude, armorAmount, victimAgentAbsorbedDamageRatio, player, isPlayerVictim)), 0, 2000);
+            inflictedDamage = MBMath.ClampInt(MathF.Floor(MyComputeDamage(weaponType, damageType, magnitude, armorAmount, victimAgentAbsorbedDamageRatio, weaponDamageFactor, player, isPlayerVictim)), 0, 2000);
             inflictedDamage = MathF.Floor(inflictedDamage * dmgMultiplier);
 
             //float dmgWithPerksSkills = MissionGameModels.Current.AgentApplyDamageModel.CalculateDamage(ref attackInformation, ref attackCollisionData, in attackerWeapon, inflictedDamage, out float bonusFromSkills);
@@ -1421,7 +1422,7 @@ namespace RBMCombat
             //    Utilities.numOfHits++;
             //}
 
-            int absoluteDamage = MBMath.ClampInt(MathF.Floor((MyComputeDamage(weaponType, damageType, magnitude, 0f, victimAgentAbsorbedDamageRatio) * dmgMultiplier)), 0, 2000);
+            int absoluteDamage = MBMath.ClampInt(MathF.Floor(MyComputeDamage(weaponType, damageType, magnitude, 0f, victimAgentAbsorbedDamageRatio, weaponDamageFactor) * dmgMultiplier), 0, 2000);
             absorbedByArmor = absoluteDamage - inflictedDamage;
 
             return false;
@@ -1802,7 +1803,7 @@ namespace RBMCombat
             }
         }
 
-        public static float MyComputeDamage(string weaponType, DamageTypes damageType, float magnitude, float armorEffectiveness, float absorbedDamageRatio, BasicCharacterObject player = null, bool isPlayerVictim = false)
+        public static float MyComputeDamage(string weaponType, DamageTypes damageType, float magnitude, float armorEffectiveness, float absorbedDamageRatio, float weaponDamageFactor = 1f, BasicCharacterObject player = null, bool isPlayerVictim = false)
         {
 
             float damage = 0f;
@@ -1838,93 +1839,94 @@ namespace RBMCombat
             {
                 case "Dagger":
                     {
-                        damage = weaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_sword_thrust, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim);
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_sword_thrust, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim, weaponDamageFactor);
                         break;
                     }
                 case "ThrowingKnife":
                     {
-                        damage = weaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_sword_thrust, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim);
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_sword_thrust, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim, weaponDamageFactor);
                         break;
                     }
                 case "OneHandedSword":
                     {
-                        damage = weaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_sword_thrust, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim);
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_sword_thrust, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim, weaponDamageFactor);
                         break;
                     }
                 case "TwoHandedSword":
                     {
-                        damage = weaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_2h_sword_thrust, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim);
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_2h_sword_thrust, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim, weaponDamageFactor);
                         break;
                     }
                 case "OneHandedAxe":
                     {
-                        damage = weaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim);
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim, weaponDamageFactor);
                         break;
                     }
                 case "OneHandedBastardAxe":
                     {
-                        damage = weaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim);
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim, weaponDamageFactor);
                         break;
                     }
                 case "TwoHandedAxe":
                     {
-                        damage = weaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim);
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim, weaponDamageFactor);
                         break;
                     }
                 case "OneHandedPolearm":
                     {
-                        damage = weaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_thrust, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim);
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_thrust, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim, weaponDamageFactor);
                         break;
                     }
                 case "TwoHandedPolearm":
                     {
-                        damage = weaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_2h_thrust, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim);
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_2h_thrust, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim, weaponDamageFactor);
                         break;
                     }
                 case "Mace":
                     {
-                        damage = weaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_thrust, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim, 0f);
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_thrust, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim, weaponDamageFactor, 0f);
                         break;
                     }
                 case "TwoHandedMace":
                     {
-                        damage = weaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_2h_thrust, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim);
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_2h_thrust, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim, weaponDamageFactor);
                         break;
                     }
                 case "Arrow":
                     {
-                        damage = weaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim, 0f);
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim, weaponDamageFactor, 0f);
                         break;
                     }
                 case "Bolt":
                     {
-                        damage = weaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim, 0f);
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim, weaponDamageFactor, 0f);
                         break;
                     }
                 case "Javelin":
                     {
-                        damage = weaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_thrust, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim);
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_thrust, armorReduction, damageType, armorEffectiveness,player, isPlayerVictim, weaponDamageFactor);
                         break;
                     }
                 case "ThrowingAxe":
                     {
-                        damage = weaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_thrust, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim);
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_thrust, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor);
                         break;
                     }
                 default:
                     {
                         //InformationManager.DisplayMessage(new InformationMessage("POZOR DEFAULT !!!!"));
                         RBMCombatConfigWeaponType defaultwct = new RBMCombatConfigWeaponType("default", 1f, 1f, 1f, 1f, 1f, 1f);
-                        damage = weaponTypeDamage(defaultwct, magnitude, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim);
+                        damage = WeaponTypeDamage(defaultwct, magnitude, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor);
                         break;
                     }
             }
             return damage * absorbedDamageRatio;
         }
 
-        private static float weaponTypeDamage(RBMCombatConfigWeaponType weaponTypeFactors, float magnitude, float armorReduction, DamageTypes damageType, float armorEffectiveness, BasicCharacterObject player, bool isPlayerVictim, float partialPenetrationThreshold = 2f)
+        private static float WeaponTypeDamage(RBMCombatConfigWeaponType weaponTypeFactors, float magnitude, float armorReduction, DamageTypes damageType, float armorEffectiveness, BasicCharacterObject player, bool isPlayerVictim, float weaponDamageFactor, float partialPenetrationThreshold = 2f)
         {
             float damage = 0f;
+            float armorThresholdModifier = RBMConfig.RBMConfig.armorThresholdModifier / weaponDamageFactor;
             switch (damageType)
             {
                 case DamageTypes.Blunt:
@@ -1932,7 +1934,7 @@ namespace RBMCombat
                         //float armorReductionBlunt = 100f / ((100f + armorEffectiveness) * RBMConfig.RBMConfig.dict["Global.ArmorMultiplier"]);
                         //damage += magnitude * armorReductionBlunt * RBMConfig.RBMConfig.dict["Global.MaceBluntModifier"];
 
-                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * 5f * RBMConfig.RBMConfig.armorThresholdModifier);
+                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * 5f * armorThresholdModifier);
                         float bluntFraction = 0f;
                         if (magnitude > 0f)
                         {
@@ -1948,7 +1950,7 @@ namespace RBMCombat
                     }
                 case DamageTypes.Cut:
                     {
-                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * weaponTypeFactors.ExtraArmorThresholdFactorCut * RBMConfig.RBMConfig.armorThresholdModifier);
+                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * weaponTypeFactors.ExtraArmorThresholdFactorCut * armorThresholdModifier);
                         float bluntFraction = 0f;
                         if (magnitude > 0f)
                         {
@@ -1983,12 +1985,12 @@ namespace RBMCombat
                     }
                 case DamageTypes.Pierce:
                     {
-                        float partialPenetration = Math.Max(0f, magnitude - armorEffectiveness * partialPenetrationThreshold * RBMConfig.RBMConfig.armorThresholdModifier);
+                        float partialPenetration = Math.Max(0f, magnitude - armorEffectiveness * partialPenetrationThreshold * armorThresholdModifier);
                         if (partialPenetration > 15f)
                         {
                             partialPenetration = 15f;
                         }
-                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * weaponTypeFactors.ExtraArmorThresholdFactorPierce * RBMConfig.RBMConfig.armorThresholdModifier) - partialPenetration;
+                        float penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * weaponTypeFactors.ExtraArmorThresholdFactorPierce * armorThresholdModifier) - partialPenetration;
                         float bluntFraction = 0f;
                         if (magnitude > 0f)
                         {
