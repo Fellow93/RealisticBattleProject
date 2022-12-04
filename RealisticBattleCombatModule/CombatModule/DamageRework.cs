@@ -545,10 +545,7 @@ namespace RBMCombat
             float combinedSpeed = thrustWeaponSpeed + extraLinearSpeed;
             if (combinedSpeed > 0f)
             {
-                if (!isThrown && weaponWeight < 2.1f)
-                {
-                    weaponWeight += 0.5f;
-                }
+
                 float kineticEnergy = 0.5f * weaponWeight * combinedSpeed * combinedSpeed;
                 float mixedEnergy = 0.5f * (weaponWeight + 1.5f) * combinedSpeed * combinedSpeed;
                 //float basedamage = 0.5f * (weaponWeight + 4.5f) * combinedSpeed * combinedSpeed;
@@ -852,7 +849,7 @@ namespace RBMCombat
                     const float ashBreakTreshold = 430f;
                     const float poplarBreakTreshold = 260f;
                     float BraceBonus = 0f;
-                    float BraceModifier = 0.34f; // because lances have 3 times more damage
+                    float BraceModifier = 1f; // because lances have 3 times more damage
 
                     switch (weaponType)
                     {
@@ -1014,7 +1011,7 @@ namespace RBMCombat
                                         if (weaponWeight < 2.1f)
                                         {
                                             BraceBonus += 0.5f;
-                                            BraceModifier *= 3f;
+                                            BraceModifier *= 1f;
                                         }
                                         float lanceBalistics = (magnitude * BraceModifier) / weaponWeight;
                                         float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
@@ -1108,7 +1105,7 @@ namespace RBMCombat
                                         if (weaponWeight < 2.1f)
                                         {
                                             BraceBonus += 0.5f;
-                                            BraceModifier *= 3f;
+                                            BraceModifier *= 1f;
                                         }
                                         float lanceBalistics = (magnitude * BraceModifier) / weaponWeight;
                                         float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);

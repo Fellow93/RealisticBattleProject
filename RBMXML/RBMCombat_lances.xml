@@ -383,14 +383,13 @@
 <!-- #region Used Javelins -->
   <!-- #Pine -->
   <CraftedItem id="western_javelin_1_t2"
-				value="500"
                name="Pine Throwing Dart"
                crafting_template="Javelin"
 			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_15"
              Type="Blade"
-             scale_factor="130" />
+             scale_factor="50" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -404,7 +403,6 @@
   </CraftedItem>
   
   <CraftedItem id="northern_javelin_1_t2"
-				value="600"
                name="Pine Javelin"
                crafting_template="Javelin"
                culture="Culture.sturgia"
@@ -412,7 +410,7 @@
     <Pieces>
       <Piece id="spear_blade_16"
              Type="Blade"
-             scale_factor="130" />
+             scale_factor="50" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -429,13 +427,12 @@
   <CraftedItem id="western_javelin_2_t3"
                name="Pine Throwing Lance"
                crafting_template="Javelin"
-			   value="5200"
                culture="Culture.vlandia"
 			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_42"
              Type="Blade"
-             scale_factor="200" />
+             scale_factor="80" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -450,13 +447,12 @@
   
   <CraftedItem id="generic_javelin_1_t3"
                name="Ash Throwing Lance"
-			   value="8500"
                crafting_template="Javelin"
 			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_42"
              Type="Blade"
-             scale_factor="200" />
+             scale_factor="80" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -471,13 +467,12 @@
     <CraftedItem id="northern_javelin_2_t3"
                name="Ash Javelin"
                crafting_template="Javelin"
-			   value="5400"
                culture="Culture.battania"
 			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_16"
              Type="Blade"
-             scale_factor="120" />
+             scale_factor="50" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -494,13 +489,12 @@
   <CraftedItem id="western_javelin_3_t4"
                name="Oaken Throwing Lance"
                crafting_template="Javelin"
-			   value="10000"
                culture="Culture.vlandia"
 			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_42"
              Type="Blade"
-             scale_factor="200" />
+             scale_factor="80" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -515,13 +509,12 @@
   <CraftedItem id="northern_javelin_3_t4"
                name="Oaken Angon"
                crafting_template="Javelin"
-			   value="8000"
                culture="Culture.sturgia"
 			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_27"
              Type="Blade"
-             scale_factor="110" />
+             scale_factor="50" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -538,13 +531,12 @@
   <CraftedItem id="eastern_javelin_1_t2"
                name="Mahagony Throwing Dart"
                crafting_template="Javelin"
-			   value ="2200"
                culture="Culture.khuzait"
 			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_15"
              Type="Blade"
-             scale_factor="100" />
+             scale_factor="40" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -560,13 +552,12 @@
   <CraftedItem id="eastern_javelin_2_t3"
                name="Mahagony Javelin"
                crafting_template="Javelin"
-			   value="4500"
                culture="Culture.khuzait"
 			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_16"
              Type="Blade"
-             scale_factor="100" />
+             scale_factor="60" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
@@ -581,14 +572,13 @@
   
   <CraftedItem id="eastern_javelin_3_t4"
                name="Mahagony Throwing Lance"
-			   value="11500"
                crafting_template="Javelin"
                culture="Culture.aserai"
 			   modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_42"
              Type="Blade"
-             scale_factor="200" />
+             scale_factor="80" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
