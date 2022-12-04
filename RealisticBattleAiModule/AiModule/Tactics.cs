@@ -1,12 +1,16 @@
 ﻿using HarmonyLib;
+using SandBox.GameComponents;
 using SandBox.Missions.MissionLogics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TaleWorlds.CampaignSystem.Extensions;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.MountAndBlade.GauntletUI.Mission.Singleplayer;
 using TaleWorlds.MountAndBlade.ViewModelCollection.HUD.FormationMarker;
+using TaleWorlds.MountAndBlade.ViewModelCollection.Order;
 using static TaleWorlds.Core.ItemObject;
 
 namespace RBMAI
@@ -763,6 +767,7 @@ namespace RBMAI
                 return false;
             }
         }
+
         [HarmonyPatch(typeof(TacticComponent))]
         class ManageFormationCountsPatch
         {
@@ -772,17 +777,17 @@ namespace RBMAI
             {
                 if (Mission.Current != null && Mission.Current.IsSiegeBattle && ___team.IsPlayerTeam)
                 {
-                    foreach (Formation f in ___team.Formations)
-                    {
-                        f.SetControlledByAI(false, true);
-                    }
-
-                    foreach (Formation f in ___team.Formations)
-                    {
-                        f.SetControlledByAI(true, true);
-                    }
+                    //Mission.Current.TryRemakeInitialDeploymentPlanForBattleSide(Mission.Current.PlayerTeam.Side);
+                    //if (Mission.Current.IsSiegeBattle)
+                    //{
+                    //    Mission.Current.AutoDeployTeamUsingDeploymentPlan(Mission.Current.PlayerTeam);
+                    //}
+                    //else
+                    //{
+                    //    Mission.Current.AutoDeployTeamUsingDeploymentPlan(Mission.Current.PlayerTeam);
+                    //}
                 }
-                if (Mission.Current != null && Mission.Current.IsFieldBattle || (Mission.Current.IsSiegeBattle && ___team.Side == BattleSideEnum.Defender && ___team.IsPlayerTeam ))
+                if (Mission.Current != null && Mission.Current.IsFieldBattle)
                 {
                     foreach (Agent agent in ___team.ActiveAgents)
                     {
@@ -819,7 +824,16 @@ namespace RBMAI
                             }
                         }
                     }
+
                 }
+                if (Mission.Current.MainAgent != null && Mission.Current.PlayerTeam != null && Mission.Current.IsSiegeBattle)
+                {
+                    Mission.Current.MainAgent.Formation = Mission.Current.PlayerTeam.GetFormation(FormationClass.Infantry);
+                }
+                //foreach (Formation f in ___team.Formations.ToList())
+                //{
+                //    f.SetControlledByAI(true, true);
+                //}
                 return true;
             }
 
@@ -827,19 +841,151 @@ namespace RBMAI
             [HarmonyPatch("ManageFormationCounts", new Type[] { typeof(int), typeof(int), typeof(int), typeof(int) })]
             static void PostfixSetDefaultBehaviorWeights(ref TacticComponent __instance, ref Team ___team, ref int infantryCount, ref int rangedCount, ref int cavalryCount, ref int rangedCavalryCount)
             {
-                if (Mission.Current != null && Mission.Current.IsSiegeBattle && ___team.IsPlayerTeam)
-                {
-                    foreach(Formation f in ___team.Formations.ToList())
-                    {
-                        f.SetControlledByAI(false, true);
-                    }
+                //if (Mission.Current != null && Mission.Current.IsSiegeBattle && ___team.IsPlayerTeam)
+                //{
+                //    foreach (Formation f in ___team.Formations)
+                //    {
+                //        f.SetControlledByAI(false, true);
+                //    }
 
-                    foreach (Formation f in ___team.Formations.ToList())
+                //    foreach (Formation f in ___team.Formations)
+                //    {
+                //        f.SetControlledByAI(true, true);
+                //    }
+                //}
+            }
+
+            [HarmonyPatch(typeof(MissionGauntletOrderOfBattleUIHandler))]
+            class MissionGauntletOrderOfBattleUIHandlerPatch
+            {
+
+                [HarmonyPostfix]
+                [HarmonyPatch("OnDeploymentFinish")]
+                static void PostfixOnDeploymentFinish()
+                {
+                    if (Mission.Current != null)
                     {
-                        f.SetControlledByAI(true, true);
+                        Team ___team = Mission.Current.PlayerTeam;
+                        if (Mission.Current != null && Mission.Current.IsSiegeBattle && ___team != null && ___team.IsPlayerTeam)
+                        {
+                            //foreach (Agent agent in ___team.ActiveAgents)
+                            //{
+                            //    if (agent != null && agent.IsHuman && !agent.IsRunningAway)
+                            //    {
+                            //        bool isRanged = (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) && agent.Equipment.GetAmmoAmount(WeaponClass.Arrow) > 5) || (agent.Equipment.HasRangedWeapon(WeaponClass.Bolt) && agent.Equipment.GetAmmoAmount(WeaponClass.Bolt) > 5);
+                            //        if (agent.HasMount && isRanged)
+                            //        {
+                            //            if (___team.GetFormation(FormationClass.HorseArcher) != null && ___team.GetFormation(FormationClass.HorseArcher).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
+                            //            {
+                            //                agent.Formation = ___team.GetFormation(FormationClass.HorseArcher);
+                            //            }
+                            //        }
+                            //        if (agent.HasMount && !isRanged)
+                            //        {
+                            //            if (___team.GetFormation(FormationClass.Cavalry) != null && ___team.GetFormation(FormationClass.Cavalry).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
+                            //            {
+                            //                agent.Formation = ___team.GetFormation(FormationClass.Cavalry);
+                            //            }
+                            //        }
+                            //        if (!agent.HasMount && isRanged)
+                            //        {
+                            //            if (___team.GetFormation(FormationClass.Ranged) != null && ___team.GetFormation(FormationClass.Ranged).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
+                            //            {
+                            //                agent.Formation = ___team.GetFormation(FormationClass.Ranged);
+                            //            }
+                            //        }
+                            //        if (!agent.HasMount && !isRanged)
+                            //        {
+                            //            if (___team.GetFormation(FormationClass.Infantry) != null && ___team.GetFormation(FormationClass.Infantry).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
+                            //            {
+                            //                agent.Formation = ___team.GetFormation(FormationClass.Infantry);
+                            //            }
+                            //        }
+                            //    }
+                            //}
+
+                        }
+                        if (Mission.Current.MainAgent != null && Mission.Current.PlayerTeam != null && Mission.Current.IsSiegeBattle)
+                        {
+                            Mission.Current.MainAgent.Formation = Mission.Current.PlayerTeam.GetFormation(FormationClass.Infantry);
+
+                            foreach (Formation f in ___team.FormationsIncludingSpecialAndEmpty)
+                            {
+                                f.SetControlledByAI(isControlledByAI: false);
+                            }
+                            foreach (Formation f in ___team.FormationsIncludingSpecialAndEmpty)
+                            {
+                                f.SetControlledByAI(isControlledByAI: true);
+                            }
+                            //___team.PlayerOrderController.SetOrder(OrderType.AIControlOn);
+                            //___team.Reset();
+                            //___team.ResetTactic();
+                            //___team.DelegateCommandToAI();
+                        }
                     }
                 }
             }
+
+            //[HarmonyPatch(typeof(Mission))]
+            //class MissionPatch {
+
+            //    [HarmonyPrefix]
+            //    [HarmonyPatch("TryRemakeInitialDeploymentPlanForBattleSide")]
+            //    static bool PostfixTryRemakeInitialDeploymentPlanForBattleSide(ref Mission __instance, BattleSideEnum battleSide, ref MissionDeploymentPlan ____deploymentPlan, ref bool __result, ref List<Agent> ____allAgents)
+            //    {
+            //        if (__instance.IsSiegeBattle)
+            //        {
+            //            if (____deploymentPlan.IsPlanMadeForBattleSide(battleSide, DeploymentPlanType.Initial))
+            //            {
+            //                float spawnPathOffsetForSide = ____deploymentPlan.GetSpawnPathOffsetForSide(battleSide, DeploymentPlanType.Initial);
+            //                (int, int)[] array = new (int, int)[11];
+            //                foreach (Agent item in ____allAgents.Where((Agent agent) => agent.IsHuman && agent.Team != null && agent.Team.Side == battleSide && agent.Formation != null))
+            //                {
+            //                    int formationIndex = (int)item.Formation.FormationIndex;
+            //                    if (item.IsRangedCached)
+            //                    {
+            //                        formationIndex = (int)FormationClass.Ranged;
+            //                    }
+            //                    else
+            //                    {
+            //                        formationIndex = (int)FormationClass.Infantry;
+            //                    }
+            //                    if (item.IsRangedCached)
+            //                    {
+            //                        item.Formation = item.Team.GetFormation(FormationClass.Ranged);
+            //                    }
+            //                    else
+            //                    {
+            //                        item.Formation = item.Team.GetFormation(FormationClass.Infantry);
+            //                    }
+            //                    (int, int) tuple = array[formationIndex];
+            //                    array[formationIndex] = (item.HasMount ? (tuple.Item1, tuple.Item2 + 1) : (tuple.Item1 + 1, tuple.Item2));
+            //                }
+            //                //if (!____deploymentPlan.IsInitialPlanSuitableForFormations(battleSide, array))
+            //                //{
+            //                ____deploymentPlan.ClearAddedTroopsForBattleSide(battleSide, DeploymentPlanType.Initial);
+            //                ____deploymentPlan.ClearDeploymentPlanForSide(battleSide, DeploymentPlanType.Initial);
+            //                for (int i = 0; i < 11; i++)
+            //                {
+            //                    var (num, num2) = array[i];
+            //                    if (num + num2 > 0)
+            //                    {
+            //                        ____deploymentPlan.AddTroopsForBattleSide(battleSide, DeploymentPlanType.Initial, (FormationClass)i, num, num2);
+            //                    }
+            //                }
+            //                __instance.MakeDeploymentPlanForSide(battleSide, DeploymentPlanType.Initial, spawnPathOffsetForSide);
+            //                __result = ____deploymentPlan.IsPlanMadeForBattleSide(battleSide, DeploymentPlanType.Initial);
+            //                __instance.AutoDeployTeamUsingDeploymentPlan(__instance.PlayerTeam);
+            //                return false;
+            //                //}
+            //            }
+            //            __result = false;
+            //            return false;
+            //        }
+            //        return true;
+                    
+            //    }
+            //}
         }
 
     }

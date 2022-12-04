@@ -597,6 +597,8 @@ namespace RBMCombat
         static bool Prefix(ref AttackInformation attackInformation, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, ref DamageTypes damageType, float magnitude, int speedBonus, bool cancelDamage, out int inflictedDamage, out int absorbedByArmor)
         {
             float armorAmountFloat = attackInformation.ArmorAmountFloat;
+            float wdm = MissionGameModels.Current.AgentStatCalculateModel.GetWeaponDamageMultiplier(attackInformation.AttackerAgentCharacter, attackInformation.AttackerAgentOrigin, attackInformation.AttackerFormation, attackerWeapon);
+            magnitude = attackCollisionData.BaseMagnitude / wdm;
             WeaponComponentData shieldOnBack = attackInformation.ShieldOnBack;
             AgentFlag victimAgentFlag = attackInformation.VictimAgentFlag;
             float victimAgentAbsorbedDamageRatio = attackInformation.VictimAgentAbsorbedDamageRatio;
@@ -754,7 +756,7 @@ namespace RBMCombat
 
             if (victim != null && victim.IsHuman && (attackCollisionData.VictimHitBodyPart == BoneBodyPartType.ShoulderLeft || attackCollisionData.VictimHitBodyPart == BoneBodyPartType.ShoulderRight))
             {
-                if((attackCollisionData.CollisionBoneIndex == 15 || attackCollisionData.CollisionBoneIndex == 22) && attackCollisionData.CollisionGlobalNormal.z < 0.2f)
+                if((attackCollisionData.CollisionBoneIndex == 15 || attackCollisionData.CollisionBoneIndex == 22) && attackCollisionData.CollisionGlobalNormal.z < 0.15f)
                 {
                     if (attacker != null && attacker.IsPlayerControlled)
                     {
@@ -1401,9 +1403,12 @@ namespace RBMCombat
                 isPlayerVictim = true;
             }
 
-            inflictedDamage = MBMath.ClampInt((int)MyComputeDamage(weaponType, damageType, magnitude, armorAmount, victimAgentAbsorbedDamageRatio, player, isPlayerVictim), 0, 2000);
-
-            inflictedDamage = (int)(inflictedDamage * dmgMultiplier);
+            inflictedDamage = MBMath.ClampInt(MathF.Floor(MyComputeDamage(weaponType, damageType, magnitude, armorAmount, victimAgentAbsorbedDamageRatio, player, isPlayerVictim)), 0, 2000);
+            if(attackerWeapon != null)
+            {
+                inflictedDamage = MathF.Floor(inflictedDamage * ((attackCollisionData.StrikeType == (int)StrikeType.Thrust) ? attackerWeapon.ThrustDamageFactor : attackerWeapon.SwingDamageFactor));
+            }
+            inflictedDamage = MathF.Floor(inflictedDamage * dmgMultiplier);
 
             //float dmgWithPerksSkills = MissionGameModels.Current.AgentApplyDamageModel.CalculateDamage(ref attackInformation, ref attackCollisionData, in attackerWeapon, inflictedDamage, out float bonusFromSkills);
 
@@ -1416,7 +1421,7 @@ namespace RBMCombat
             //    Utilities.numOfHits++;
             //}
 
-            int absoluteDamage = MBMath.ClampInt((int)(MyComputeDamage(weaponType, damageType, magnitude, 0f, victimAgentAbsorbedDamageRatio) * dmgMultiplier), 0, 2000);
+            int absoluteDamage = MBMath.ClampInt(MathF.Floor((MyComputeDamage(weaponType, damageType, magnitude, 0f, victimAgentAbsorbedDamageRatio) * dmgMultiplier)), 0, 2000);
             absorbedByArmor = absoluteDamage - inflictedDamage;
 
             return false;
@@ -1914,7 +1919,6 @@ namespace RBMCombat
                         break;
                     }
             }
-
             return damage * absorbedDamageRatio;
         }
 

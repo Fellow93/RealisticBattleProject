@@ -10,6 +10,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.MountAndBlade.View.MissionViews;
 using static TaleWorlds.MountAndBlade.ArrangementOrder;
 
 namespace RBMAI
@@ -592,6 +593,71 @@ namespace RBMAI
                     return true;
                 }
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(MissionAgentLabelView))]
+    [HarmonyPatch("SetHighlightForAgents")]
+    class SetHighlightForAgentsPatch
+    {
+        static bool Prefix( bool highlight, ref bool useSiegeMachineUsers, ref bool useAllTeamAgents, Dictionary<Agent, MetaMesh> ____agentMeshes, MissionAgentLabelView __instance)
+        {
+            
+            if (__instance.Mission.PlayerTeam?.PlayerOrderController == null)
+            {
+                bool flag = __instance.Mission.PlayerTeam == null;
+                Debug.Print($"PlayerOrderController is null and playerTeamIsNull: {flag}", 0, Debug.DebugColor.White, 17179869184uL);
+            }
+            if (useSiegeMachineUsers)
+            {
+                foreach (TaleWorlds.MountAndBlade.SiegeWeapon selectedWeapon in __instance.Mission.PlayerTeam?.PlayerOrderController.SiegeWeaponController.SelectedWeapons)
+                {
+                    foreach (Agent user in selectedWeapon.Users)
+                    {
+                        MetaMesh agentMesh;
+                        if (____agentMeshes.TryGetValue(user, out agentMesh))
+                        {
+                            MethodInfo method = typeof(MissionAgentLabelView).GetMethod("UpdateSelectionVisibility", BindingFlags.NonPublic | BindingFlags.Instance);
+                            method.DeclaringType.GetMethod("UpdateSelectionVisibility");
+                            method.Invoke(__instance, new object[] { user, agentMesh, highlight });
+                        }
+                        
+                    }
+                }
+                return false;
+            }
+            if (useAllTeamAgents)
+            {
+                if (__instance.Mission.PlayerTeam?.PlayerOrderController.Owner == null)
+                {
+                    return false;
+                }
+                foreach (Agent activeAgent in __instance.Mission.PlayerTeam?.PlayerOrderController.Owner.Team.ActiveAgents)
+                {
+                    MetaMesh agentMesh;
+                    if (____agentMeshes.TryGetValue(activeAgent, out agentMesh))
+                    {
+                        MethodInfo method = typeof(MissionAgentLabelView).GetMethod("UpdateSelectionVisibility", BindingFlags.NonPublic | BindingFlags.Instance);
+                        method.DeclaringType.GetMethod("UpdateSelectionVisibility");
+                        method.Invoke(__instance, new object[] { activeAgent, agentMesh, highlight });
+                    }
+                }
+                return false;
+            }
+            foreach (Formation selectedFormation in __instance.Mission.PlayerTeam?.PlayerOrderController.SelectedFormations)
+            {
+                selectedFormation.ApplyActionOnEachUnit(delegate (Agent agent)
+                {
+                    MetaMesh agentMesh;
+                    if(____agentMeshes.TryGetValue(agent, out agentMesh))
+                    {
+                        MethodInfo method = typeof(MissionAgentLabelView).GetMethod("UpdateSelectionVisibility", BindingFlags.NonPublic | BindingFlags.Instance);
+                        method.DeclaringType.GetMethod("UpdateSelectionVisibility");
+                        method.Invoke(__instance, new object[] { agent, agentMesh, highlight });
+                    }
+                });
+            }
+            return false;
         }
     }
 
