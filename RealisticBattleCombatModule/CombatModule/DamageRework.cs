@@ -1403,11 +1403,11 @@ namespace RBMCombat
                 isPlayerVictim = true;
             }
 
-            inflictedDamage = MBMath.ClampInt(MathF.Floor(MyComputeDamage(weaponType, damageType, magnitude, armorAmount, victimAgentAbsorbedDamageRatio, player, isPlayerVictim)), 0, 2000);
-            if(attackerWeapon != null)
+            if (attackerWeapon != null)
             {
-                inflictedDamage = MathF.Floor(inflictedDamage * ((attackCollisionData.StrikeType == (int)StrikeType.Thrust) ? attackerWeapon.ThrustDamageFactor : attackerWeapon.SwingDamageFactor));
+                magnitude = (float)Math.Sqrt(MathF.Floor(magnitude * ((attackCollisionData.StrikeType == (int)StrikeType.Thrust) ? attackerWeapon.ThrustDamageFactor : attackerWeapon.SwingDamageFactor)));
             }
+            inflictedDamage = MBMath.ClampInt(MathF.Floor(MyComputeDamage(weaponType, damageType, magnitude, armorAmount, victimAgentAbsorbedDamageRatio, player, isPlayerVictim)), 0, 2000);
             inflictedDamage = MathF.Floor(inflictedDamage * dmgMultiplier);
 
             //float dmgWithPerksSkills = MissionGameModels.Current.AgentApplyDamageModel.CalculateDamage(ref attackInformation, ref attackCollisionData, in attackerWeapon, inflictedDamage, out float bonusFromSkills);
