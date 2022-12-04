@@ -252,7 +252,7 @@
     </Materials>
   </CraftingPiece>
 
-<CraftingPiece id="axe_craft_10_head" name="{=LNDbMUK0}Voulge Head" tier="5" piece_type="Blade" mesh="axe_craft_10_head" distance_to_next_piece="23" distance_to_previous_piece="4" weight="1.40">
+<CraftingPiece id="axe_craft_10_head" name="{=LNDbMUK0}Voulge Head" tier="5" piece_type="Blade" mesh="axe_craft_10_head" distance_to_next_piece="23" distance_to_previous_piece="4" weight="1.2">
     <BuildData piece_offset="-8" />
     <BladeData stack_amount="3" blade_length="23.118" blade_width="18.371" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Thrust damage_type="Pierce" damage_factor="0.9" />
