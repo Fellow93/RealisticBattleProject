@@ -594,8 +594,11 @@ namespace RBMCombat
         static bool Prefix(ref AttackInformation attackInformation, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, ref DamageTypes damageType, float magnitude, int speedBonus, bool cancelDamage, out int inflictedDamage, out int absorbedByArmor)
         {
             float armorAmountFloat = attackInformation.ArmorAmountFloat;
-            float wdm = MissionGameModels.Current.AgentStatCalculateModel.GetWeaponDamageMultiplier(attackInformation.AttackerAgentCharacter, attackInformation.AttackerAgentOrigin, attackInformation.AttackerFormation, attackerWeapon);
-            magnitude = attackCollisionData.BaseMagnitude / wdm;
+            if (!attackCollisionData.IsMissile)
+            {
+                float wdm = MissionGameModels.Current.AgentStatCalculateModel.GetWeaponDamageMultiplier(attackInformation.AttackerAgentCharacter, attackInformation.AttackerAgentOrigin, attackInformation.AttackerFormation, attackerWeapon);
+                magnitude = attackCollisionData.BaseMagnitude / wdm;
+            }
             WeaponComponentData shieldOnBack = attackInformation.ShieldOnBack;
             AgentFlag victimAgentFlag = attackInformation.VictimAgentFlag;
             float victimAgentAbsorbedDamageRatio = attackInformation.VictimAgentAbsorbedDamageRatio;
@@ -888,7 +891,10 @@ namespace RBMCombat
                             {
                                 if (damageType == DamageTypes.Cut)
                                 {
-                                    skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.173f), 12f * (1 + skillModifier), 20f * (1 + (2 * skillModifier))) * 4f) * 1.3f;
+                                    float value = magnitude + (effectiveSkill * 0.173f);
+                                    float min = 12f * (1 + skillModifier);
+                                    float max = 20f * (1 + (2 * skillModifier));
+                                    skillBasedDamage = MBMath.ClampFloat(value, min, max) * 4f;
                                 }
                                 else if (damageType == DamageTypes.Blunt)
                                 {
@@ -1401,7 +1407,7 @@ namespace RBMCombat
             }
 
             float weaponDamageFactor = 1f;
-            if (attackerWeapon != null)
+            if (!attackCollisionData.IsMissile && attackerWeapon != null)
             {
                 weaponDamageFactor = (float)Math.Sqrt((attackCollisionData.StrikeType == (int)StrikeType.Thrust) ? attackerWeapon.ThrustDamageFactor : attackerWeapon.SwingDamageFactor);
             }

@@ -596,24 +596,36 @@ namespace RBMCombat
                 {
                     //float shooterSpeed = shooterAgent.MovementVelocity.Normalize();
                     Agent targetAgent = shooterAgent.GetTargetAgent();
-                    if(targetAgent != null)
+                    if (targetAgent != null)
                     {
-                        float relativeSpeed = (targetAgent.Velocity - shooterAgent.Velocity).Length;
-                        float relativeModifier = Vec3.DotProduct(shooterAgent.Velocity.NormalizedCopy(), targetAgent.Velocity.NormalizedCopy());
-                        float shooterSpeed = shooterAgent.Velocity.Length;
-                        if(shooterSpeed > 0)
+                        if (wsd[0].WeaponClass == (int)WeaponClass.Javelin)
                         {
-                            float shooterRelativeSpeed =  shooterSpeed * relativeModifier;
+                            float relativeSpeed = (targetAgent.Velocity - shooterAgent.Velocity).Length;
+                            float relativeModifier = Vec3.DotProduct(shooterAgent.Velocity.NormalizedCopy(), targetAgent.Velocity.NormalizedCopy());
+                            float shooterSpeed = shooterAgent.Velocity.Length;
+                            if (shooterSpeed > 0)
+                            {
+                                float shooterRelativeSpeed = shooterSpeed * relativeModifier;
+                                double rotRad;
+                                rotRad = +(0.0174533 * shooterRelativeSpeed) * 3f;
+                                if (wsd[0].WeaponClass == (int)WeaponClass.Javelin)
+                                {
+                                    rotRad = +(0.0174533 * shooterRelativeSpeed) / 1.1f;
+                                }
+                                if (shooterRelativeSpeed > 0)
+                                {
+                                    rotRad = 0;
+                                }
+                                float vecLength = velocity.Length;
+                                double currentRad = (double)Math.Acos(velocity.z / vecLength);
+                                float newZ = velocity.Length * ((float)Math.Cos(currentRad - rotRad));
+                                velocity.z = newZ;
+                            }
+                        }
+                        if (wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe)
+                        {
                             double rotRad;
-                            rotRad = +(0.0174533 * shooterRelativeSpeed) * 3f;
-                            if (wsd[0].WeaponClass == (int)WeaponClass.Javelin)
-                            {
-                                rotRad = +(0.0174533 * shooterRelativeSpeed) / 1.1f;
-                            }
-                            if (shooterRelativeSpeed > 0)
-                            {
-                                rotRad = 0;
-                            }
+                            rotRad = 0.0174533 * -5f;
                             float vecLength = velocity.Length;
                             double currentRad = (double)Math.Acos(velocity.z / vecLength);
                             float newZ = velocity.Length * ((float)Math.Cos(currentRad - rotRad));
