@@ -22,7 +22,7 @@ namespace RBMAI
         {
             Agent.ActionCodeType currentActionType = agent.GetCurrentActionType(1);
             if (
-                currentActionType == Agent.ActionCodeType.ReadyMelee ||
+                //currentActionType == Agent.ActionCodeType.ReadyMelee ||
                 //currentActionType == Agent.ActionCodeType.ReadyRanged ||
                 currentActionType == Agent.ActionCodeType.ReleaseMelee ||
                 currentActionType == Agent.ActionCodeType.ReleaseRanged ||
@@ -108,34 +108,34 @@ namespace RBMAI
                                         {
                                             return true;
                                         }
-                                        if (aiDecision.decisionType == AIDecisionType.FlankAllyLeft)
-                                        {
-                                            aiDecision.decisionType = AIDecisionType.None;
-                                            WorldPosition leftPosition = unit.GetWorldPosition();
-                                            leftPosition.SetVec2(unitPosition + leftVec * 2f);
-                                            __result = leftPosition;
-                                            aiDecision.decisionType = AIDecisionType.FlankAllyLeft;
-                                            aiDecision.position = __result; 
-                                            return false;
-                                        }
-                                        if(aiDecision.decisionType == AIDecisionType.FlankAllyRight)
-                                        {
-                                            WorldPosition leftPosition = unit.GetWorldPosition();
-                                            leftPosition.SetVec2(unitPosition + rightVec * 2f);
-                                            __result = leftPosition;
-                                            aiDecision.decisionType = AIDecisionType.FlankAllyRight;
-                                            aiDecision.position = __result;
-                                            return false;
-                                        }
-                                        if (aiDecision.decisionType == AIDecisionType.FrontlineBackStep)
-                                        {
-                                            aiDecision.decisionType = AIDecisionType.FrontlineBackStep;
-                                            WorldPosition backPosition = unit.GetWorldPosition();
-                                            backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
-                                            __result = backPosition;
-                                            aiDecision.position = __result; 
-                                            return false;
-                                        }
+                                        //if (aiDecision.decisionType == AIDecisionType.FlankAllyLeft)
+                                        //{
+                                        //    aiDecision.decisionType = AIDecisionType.None;
+                                        //    WorldPosition leftPosition = unit.GetWorldPosition();
+                                        //    leftPosition.SetVec2(unitPosition + leftVec * 2f);
+                                        //    __result = leftPosition;
+                                        //    aiDecision.decisionType = AIDecisionType.FlankAllyLeft;
+                                        //    aiDecision.position = __result; 
+                                        //    return false;
+                                        //}
+                                        //if(aiDecision.decisionType == AIDecisionType.FlankAllyRight)
+                                        //{
+                                        //    WorldPosition leftPosition = unit.GetWorldPosition();
+                                        //    leftPosition.SetVec2(unitPosition + rightVec * 2f);
+                                        //    __result = leftPosition;
+                                        //    aiDecision.decisionType = AIDecisionType.FlankAllyRight;
+                                        //    aiDecision.position = __result;
+                                        //    return false;
+                                        //}
+                                        //if (aiDecision.decisionType == AIDecisionType.FrontlineBackStep)
+                                        //{
+                                        //    aiDecision.decisionType = AIDecisionType.FrontlineBackStep;
+                                        //    WorldPosition backPosition = unit.GetWorldPosition();
+                                        //    backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
+                                        //    __result = backPosition;
+                                        //    aiDecision.position = __result; 
+                                        //    return false;
+                                        //}
                                         __result = aiDecision.position;
                                         return false;
                                     }
@@ -254,7 +254,7 @@ namespace RBMAI
                                             if (agentsLeftCount <= allyAgentsCountTreshold)
                                             {
                                                 WorldPosition leftPosition = unit.GetWorldPosition();
-                                                leftPosition.SetVec2(unitPosition + leftVec * 2f);
+                                                leftPosition.SetVec2(unitPosition + leftVec * 3f);
                                                 __result = leftPosition;
                                                 aiDecision.customMaxCoolDown = 4;
                                                 aiDecision.decisionType = AIDecisionType.FlankAllyLeft;
@@ -266,7 +266,7 @@ namespace RBMAI
                                             if (agentsRightCount <= allyAgentsCountTreshold)
                                             {
                                                 WorldPosition rightPosition = unit.GetWorldPosition();
-                                                rightPosition.SetVec2(unitPosition + rightVec * 2f);
+                                                rightPosition.SetVec2(unitPosition + rightVec * 3f);
                                                 __result = rightPosition;
                                                 aiDecision.customMaxCoolDown = 4;
                                                 aiDecision.decisionType = AIDecisionType.FlankAllyRight;
