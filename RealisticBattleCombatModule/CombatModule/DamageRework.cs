@@ -542,18 +542,23 @@ namespace RBMCombat
     {
         static bool Prefix(float thrustWeaponSpeed, float weaponWeight, float extraLinearSpeed, bool isThrown, ref float __result)
         {
-            float combinedSpeed = thrustWeaponSpeed + extraLinearSpeed;
+            float combinedSpeed = MBMath.ClampFloat(thrustWeaponSpeed, 4f, 6f) + extraLinearSpeed;
             if (combinedSpeed > 0f)
             {
 
                 float kineticEnergy = 0.5f * weaponWeight * combinedSpeed * combinedSpeed;
                 float mixedEnergy = 0.5f * (weaponWeight + 1.5f) * combinedSpeed * combinedSpeed;
+                float baselineEnergy = 0.5f * 8f * combinedSpeed * combinedSpeed;
+
                 //float basedamage = 0.5f * (weaponWeight + 4.5f) * combinedSpeed * combinedSpeed;
-                float basedamage = 120f;
-                if (mixedEnergy > 120f)
-                {
-                    basedamage = mixedEnergy;
-                }
+
+                //float basedamage = 120f;
+                //if (mixedEnergy > 120f)
+                //{
+                //    basedamage = mixedEnergy;
+                //}
+
+
                 //float handBonus = 0.5f * (weaponWeight + 1.5f) * combinedSpeed * combinedSpeed;
                 //float handLimit = 120f;
                 //if (handBonus > handLimit)
@@ -565,20 +570,21 @@ namespace RBMCombat
                 //{
                 //    thrust = kineticEnergy;
                 //}
-                else if (basedamage > 180f)
-                {
-                    basedamage = 180f;
-                }
-                float thrust = basedamage;
-                if (kineticEnergy > basedamage)
-                {
-                    thrust = kineticEnergy;
-                }
+                //else if (basedamage > 180f)
+                //{
+                //    basedamage = 180f;
+                //}
+                //float thrust = basedamage;
+                //if (kineticEnergy > basedamage)
+                //{
+                //    thrust = kineticEnergy;
+                //}
 
                 //if (thrust > 200f)
                 //{
                 //    thrust = 200f;
                 //}
+                float thrust = baselineEnergy;
                 __result = thrust * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
                 return false;
             }
@@ -1066,15 +1072,16 @@ namespace RBMCombat
                                     else
                                     {
                                         float weaponWeight = attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight();
+                                        float totalSpeed = (float)Math.Sqrt((magnitude * 2) / 8f);
+                                        totalSpeed += 3f;
+                                        skillBasedDamage = 0.5f * 8f * totalSpeed * totalSpeed * (1 + (skillModifier * 0.4f));
 
-                                        if (weaponWeight > 2.1f)
+                                        //skillBasedDamage = magnitude * 0.4f + 60f * RBMConfig.RBMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.26f * RBMConfig.RBMConfig.ThrustMagnitudeModifier);
+                                        if (skillBasedDamage > 170f * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
+
+                                        
                                         {
-                                            magnitude *= 0.34f;
-                                        }
-                                        skillBasedDamage = magnitude * 0.4f + 60f * RBMConfig.RBMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.26f * RBMConfig.RBMConfig.ThrustMagnitudeModifier);
-                                        if (skillBasedDamage > 260f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
-                                        {
-                                            skillBasedDamage = 260f * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                                            skillBasedDamage = 170f * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
                                         }
                                     }
                                 }
@@ -1160,15 +1167,13 @@ namespace RBMCombat
                                     else
                                     {
                                         float weaponWeight = attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight();
+                                        float totalSpeed = (float)Math.Sqrt((magnitude * 2) / 8f);
+                                        skillBasedDamage = 0.5f * 15f * totalSpeed * totalSpeed * (1 + (skillModifier * 0.4f));
+                                        //skillBasedDamage = (magnitude * 0.4f + 60f * RBMConfig.RBMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.26f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) * 1.3f;
 
-                                        if (weaponWeight > 2.1f)
+                                        if (skillBasedDamage > 240f * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
                                         {
-                                            magnitude *= 0.34f;
-                                        }
-                                        skillBasedDamage = (magnitude * 0.4f + 60f * RBMConfig.RBMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.26f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) * 1.3f;
-                                        if (skillBasedDamage > 360f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
-                                        {
-                                            skillBasedDamage = 360f * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                                            skillBasedDamage = 240 * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
                                         }
                                     }
                                 }

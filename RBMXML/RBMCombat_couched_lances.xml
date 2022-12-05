@@ -284,9 +284,9 @@
     </Materials>
   </CraftingPiece>
   
-  <CraftingPiece id="battania_blade_7" name="{=1Ia3Wxbf}Fine Steel Falx Blade" tier="5" piece_type="Blade" mesh="battania_blade_7" culture="Culture.battania" length="75" weight="0.8" excluded_item_usage_features="shield:thrust">
+  <CraftingPiece id="battania_blade_7" name="{=1Ia3Wxbf}Fine Steel Falx Blade" tier="5" piece_type="Blade" mesh="battania_blade_7" culture="Culture.battania" length="75" weight="0.6" excluded_item_usage_features="shield:thrust">
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed">
-      <Swing damage_type="Cut" damage_factor="1.5" />
+      <Swing damage_type="Cut" damage_factor="1.2" />
     </BladeData>
     <Flags>
       <Flag name="BonusAgainstShield" />
@@ -591,9 +591,9 @@
 <!-- Pike -->   
 <!-- #endregion cut polearms -->
 <!-- #falx sword --> 
-   <CraftingPiece id="battania_blade_6" name="{=IUlApNGp}Long Falx Blade" tier="4" piece_type="Blade" mesh="battania_blade_6" culture="Culture.battania" length="95.6" weight="1.0" excluded_item_usage_features="thrust:TwoHandedPolearm_Bracing">
+   <CraftingPiece id="battania_blade_6" name="{=IUlApNGp}Long Falx Blade" tier="5" piece_type="Blade" mesh="battania_blade_6" culture="Culture.battania" length="95.6" weight="0.8" excluded_item_usage_features="thrust:TwoHandedPolearm_Bracing">
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed">
-      <Swing damage_type="Cut" damage_factor="1.4" />
+      <Swing damage_type="Cut" damage_factor="1.2" />
     </BladeData>
     <Flags>
       <Flag name="BonusAgainstShield" />
