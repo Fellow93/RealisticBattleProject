@@ -212,7 +212,7 @@
     <Pieces>
       <Piece id="axe_craft_10_head"
              Type="Blade"
-             scale_factor="175" />
+             scale_factor="130" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
