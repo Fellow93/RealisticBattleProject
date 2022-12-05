@@ -884,7 +884,15 @@ namespace RBMCombat
                                     }
                                     else
                                     {
-                                        skillBasedDamage = magnitude * 0.2f + 50f * RBMConfig.RBMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.46f * RBMConfig.RBMConfig.ThrustMagnitudeModifier);
+                                        float weaponWeight = attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight();
+                                        float totalSpeed = (float)Math.Sqrt((magnitude * 2) / 8f);
+                                        totalSpeed += 3f;
+                                        skillBasedDamage = 0.5f * 8f * totalSpeed * totalSpeed * (1 + (skillModifier * 0.4f));
+
+                                        if (skillBasedDamage > 170f * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
+                                        {
+                                            skillBasedDamage = 170f * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                                        }
                                     }
                                 }
                                 if (magnitude > 1f)
@@ -915,7 +923,14 @@ namespace RBMCombat
                                     }
                                     else
                                     {
-                                        skillBasedDamage = (magnitude * 0.2f + 50f * RBMConfig.RBMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.46f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) * 1.3f;
+                                        float weaponWeight = attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight();
+                                        float totalSpeed = (float)Math.Sqrt((magnitude * 2) / 8f);
+                                        skillBasedDamage = 0.5f * 15f * totalSpeed * totalSpeed * (1 + (skillModifier * 0.4f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+
+                                        if (skillBasedDamage > 240f * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
+                                        {
+                                            skillBasedDamage = 240 * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                                        }
                                     }
                                 }
                                 if (magnitude > 1f)
@@ -971,7 +986,15 @@ namespace RBMCombat
                             {
                                 if (damageType == DamageTypes.Pierce)
                                 {
-                                    skillBasedDamage = magnitude * 0.2f + 40f * RBMConfig.RBMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.4f * RBMConfig.RBMConfig.ThrustMagnitudeModifier);
+                                    float weaponWeight = attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight();
+                                    float totalSpeed = (float)Math.Sqrt((magnitude * 2) / 8f);
+                                    totalSpeed += 3f;
+                                    skillBasedDamage = 0.5f * 8f * totalSpeed * totalSpeed * (1 + (skillModifier * 0.4f));
+
+                                    if (skillBasedDamage > 170f * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
+                                    {
+                                        skillBasedDamage = 170f * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                                    }
                                 }
                                 else
                                 {
@@ -1168,7 +1191,7 @@ namespace RBMCombat
                                     {
                                         float weaponWeight = attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight();
                                         float totalSpeed = (float)Math.Sqrt((magnitude * 2) / 8f);
-                                        skillBasedDamage = 0.5f * 15f * totalSpeed * totalSpeed * (1 + (skillModifier * 0.4f));
+                                        skillBasedDamage = 0.5f * 15f * totalSpeed * totalSpeed * (1 + (skillModifier * 0.4f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
                                         //skillBasedDamage = (magnitude * 0.4f + 60f * RBMConfig.RBMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.26f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) * 1.3f;
 
                                         if (skillBasedDamage > 240f * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
