@@ -37,7 +37,7 @@ namespace RBMCombat
                 ManagedParameters.SetParameter(ManagedParametersEnum.MissileMinimumDamageToStick, 12.5f);
 
                 ManagedParameters.SetParameter(ManagedParametersEnum.MakesRearAttackDamageThreshold, 13f);
-                ManagedParameters.SetParameter(ManagedParametersEnum.NonTipThrustHitDamageMultiplier, 0.5f);
+                ManagedParameters.SetParameter(ManagedParametersEnum.NonTipThrustHitDamageMultiplier, 1f);
                 //ManagedParameters.SetParameter(ManagedParametersEnum.SwingHitWithArmDamageMultiplier, 1.0f);
                 //ManagedParameters.SetParameter(ManagedParametersEnum.ThrustHitWithArmDamageMultiplier, 0.02f);
                 //ManagedParameters.SetParameter(ManagedParametersEnum.NonTipThrustHitDamageMultiplier, 1.0f);
@@ -103,7 +103,7 @@ namespace RBMCombat
 
                                         weaponStatsData[i].SwingSpeed = MathF.Ceiling((weaponStatsData[i].SwingSpeed * 0.83f) * swingskillModifier);
                                         weaponStatsData[i].ThrustSpeed = MathF.Floor(Utilities.CalculateThrustSpeed(weaponData.BaseWeight, weaponData.Inertia, weaponData.CenterOfMass) * 11.7647057f);
-                                        weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 1f) * thrustskillModifier);
+                                        weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.85f) * thrustskillModifier);
                                         weaponStatsData[i].DefendSpeed = MathF.Ceiling((weaponStatsData[i].DefendSpeed * 0.83f) * handlingskillModifier);
                                         break;
                                     }
@@ -115,7 +115,7 @@ namespace RBMCombat
 
                                         weaponStatsData[i].SwingSpeed = MathF.Ceiling((weaponStatsData[i].SwingSpeed * 0.83f) * swingskillModifier);
                                         weaponStatsData[i].ThrustSpeed = MathF.Floor(Utilities.CalculateThrustSpeed(weaponData.BaseWeight, weaponData.Inertia, weaponData.CenterOfMass) * 11.7647057f);
-                                        weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.7f) * thrustskillModifier);
+                                        weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.8f) * thrustskillModifier);
                                         weaponStatsData[i].DefendSpeed = MathF.Ceiling((weaponStatsData[i].DefendSpeed * 5f) * handlingskillModifier);
                                         break;
                                     }

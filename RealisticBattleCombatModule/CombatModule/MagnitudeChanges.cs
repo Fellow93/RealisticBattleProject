@@ -11,6 +11,81 @@ namespace RBMCombat
         [HarmonyPatch("CalculateBaseMeleeBlowMagnitude")]
         public class CalculateBaseMeleeBlowMagnitudePatch
         {
+            const float oneHandedPolearmThrustStrength = 2.5f;
+            const float twoHandedPolearmThrustStrength = 5f;
+
+            public static float CalculateThrustMagnitudeForOneHandedPolearm(float weaponWeight, int effectiveSkill, float thrustSpeed, float exraLinearSpeed , Agent attackerAgent)
+            {
+                float magnitude = 0f;
+
+                bool isOverheadAttack = attackerAgent.AttackDirection == Agent.UsageDirection.AttackUp;
+                thrustSpeed = (isOverheadAttack ? thrustSpeed + 3f : thrustSpeed);
+                float combinedSpeed = thrustSpeed + exraLinearSpeed;
+                float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill) * 2f;
+
+                float spearKineticEnergy = 0.5f * weaponWeight * (combinedSpeed * combinedSpeed);
+
+                float thrustStrength = weaponWeight + (oneHandedPolearmThrustStrength * (1f + skillModifier));
+                float thrustStrengthWithWeaponWeight = weaponWeight + (oneHandedPolearmThrustStrength * (1f + skillModifier));
+
+                float thrustEnergyCap = 0.5f * thrustStrength * (thrustSpeed * thrustSpeed) * 1.5f;
+                float thrustEnergy = 0.5f * thrustStrengthWithWeaponWeight * (combinedSpeed * combinedSpeed);
+                if(thrustEnergy > thrustEnergyCap)
+                {
+                    thrustEnergy = thrustEnergyCap;
+                }
+
+                magnitude = thrustEnergy;
+
+                if (spearKineticEnergy > magnitude)
+                {
+                    magnitude = spearKineticEnergy;
+                }
+
+                if (magnitude > thrustEnergyCap)
+                {
+                    magnitude = thrustEnergyCap;
+                }
+
+                return magnitude * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+            }
+
+            public static float CalculateThrustMagnitudeForTwoHandedPolearm(float weaponWeight, int effectiveSkill, float thrustSpeed, float exraLinearSpeed, Agent attackerAgent)
+            {
+                float magnitude = 0f;
+
+                bool isOverheadAttack = attackerAgent.AttackDirection == Agent.UsageDirection.AttackUp;
+                thrustSpeed = (isOverheadAttack ? thrustSpeed + 1f : thrustSpeed);
+                float combinedSpeed = thrustSpeed + exraLinearSpeed;
+                float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill) * 2f;
+
+                float spearKineticEnergy = 0.5f * weaponWeight * (combinedSpeed * combinedSpeed);
+
+                float thrustStrength = twoHandedPolearmThrustStrength * (1f + skillModifier);
+                float thrustStrengthWithWeaponWeight = weaponWeight + (twoHandedPolearmThrustStrength * (1f + skillModifier));
+
+                float thrustEnergyCap = 0.5f * thrustStrength * (thrustSpeed * thrustSpeed) * 1.5f;
+                float thrustEnergy = 0.5f * thrustStrengthWithWeaponWeight * (combinedSpeed * combinedSpeed);
+                if (thrustEnergy > thrustEnergyCap)
+                {
+                    thrustEnergy = thrustEnergyCap;
+                }
+
+                magnitude = thrustEnergy;
+
+                if (spearKineticEnergy > magnitude)
+                {
+                    magnitude = spearKineticEnergy;
+                }
+
+                if (magnitude > thrustEnergyCap)
+                {
+                    magnitude = thrustEnergyCap;
+                }
+
+                return magnitude * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+            }
+
             public static bool Prefix(ref float __result, in AttackInformation attackInformation, in MissionWeapon weapon, StrikeType strikeType, float progressEffect, float impactPointAsPercent, float exraLinearSpeed, bool doesAttackerHaveMount)
             {
                 WeaponComponentData currentUsageItem = weapon.CurrentUsageItem;
@@ -53,7 +128,7 @@ namespace RBMCombat
                                         float handlingskillModifier = 1f + (effectiveSkill / 700f);
 
                                         thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.Inertia, weapon.CurrentUsageItem.CenterOfMass);
-                                        thrustWeaponSpeed = thrustWeaponSpeed * 1f * thrustskillModifier * num;
+                                        thrustWeaponSpeed = thrustWeaponSpeed * 0.75f * thrustskillModifier * num;
                                         break;
                                     }
                                 case WeaponClass.TwoHandedPolearm:
@@ -89,6 +164,29 @@ namespace RBMCombat
                                         break;
                                     }
                             }
+
+                            float thrustMagnitude = 0f;
+                            switch (weapon.CurrentUsageItem.WeaponClass)
+                            {
+                                case WeaponClass.OneHandedPolearm:
+                                    {
+                                        thrustMagnitude = CalculateThrustMagnitudeForOneHandedPolearm(weapon.Item.Weight, effectiveSkill, thrustWeaponSpeed, exraLinearSpeed, attacker);
+                                        break;
+                                    }
+                                case WeaponClass.TwoHandedPolearm:
+                                    {
+                                        thrustMagnitude = CalculateThrustMagnitudeForTwoHandedPolearm(weapon.Item.Weight, effectiveSkill, thrustWeaponSpeed, exraLinearSpeed, attacker);
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        thrustMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(attackerAgentCharacter, attackerCaptainCharacter, thrustWeaponSpeed, weapon.Item.Weight, currentUsageItem, exraLinearSpeed, doesAttackerHaveMount);
+                                        break;
+                                    }
+                            }
+
+                            __result = thrustMagnitude;
+                            return false;
                         }
                     }
 
@@ -403,7 +501,7 @@ namespace RBMCombat
                 return num2;
 
             }
-        }
+        }    
 
         [HarmonyPatch(typeof(CombatStatCalculator))]
         [HarmonyPatch("CalculateStrikeMagnitudeForThrust")]

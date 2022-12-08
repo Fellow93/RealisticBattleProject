@@ -909,14 +909,14 @@ namespace RBMAI
                         {
                             Mission.Current.MainAgent.Formation = Mission.Current.PlayerTeam.GetFormation(FormationClass.Infantry);
 
-                            foreach (Formation f in ___team.FormationsIncludingSpecialAndEmpty)
-                            {
-                                f.SetControlledByAI(isControlledByAI: false);
-                            }
-                            foreach (Formation f in ___team.FormationsIncludingSpecialAndEmpty)
-                            {
-                                f.SetControlledByAI(isControlledByAI: true);
-                            }
+                            //foreach (Formation f in ___team.FormationsIncludingSpecialAndEmpty)
+                            //{
+                            //    f.SetControlledByAI(isControlledByAI: false);
+                            //}
+                            //foreach (Formation f in ___team.FormationsIncludingSpecialAndEmpty)
+                            //{
+                            //    f.SetControlledByAI(isControlledByAI: true);
+                            //}
                             //___team.PlayerOrderController.SetOrder(OrderType.AIControlOn);
                             //___team.Reset();
                             //___team.ResetTactic();

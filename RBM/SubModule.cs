@@ -3,8 +3,6 @@ using RBMAI;
 using RBMCombat;
 using RBMTournament;
 using System;
-using System.IO;
-using System.Reflection;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.Core;
 using TaleWorlds.InputSystem;
