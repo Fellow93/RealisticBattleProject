@@ -100,9 +100,16 @@ public class SiegeArcherPoints : MissionView
 					BeerMark.SetVisibilityExcludeParents(visible: false);
 					BeerMark.GetGlobalScale().Normalize();
 					BeerMark.SetMobility(GameEntity.Mobility.dynamic);
-                    Mission.Current.Teams.Defender.TeamAI.AddStrategicArea(firstScriptOfType);
-				}
-			}
+					foreach(Team team in Mission.Current.Teams)
+					{
+						if (team.IsDefender)
+						{
+                            team.TeamAI.AddStrategicArea(firstScriptOfType);
+                        }
+					}
+                    
+                }
+            }
 
 			isFirstTimeLoading = false;
 			return;
