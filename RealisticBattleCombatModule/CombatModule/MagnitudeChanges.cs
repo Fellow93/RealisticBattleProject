@@ -412,9 +412,9 @@ namespace RBMCombat
 
                 float physicalDamage = ((length * length) * (weaponItem.Weight)) / 2;
                 float momentumDamage = (length * weaponItem.Weight);
-                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin") && physicalDamage > 300f)
+                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin") && physicalDamage > (weaponItem.Weight) * 300f)
                 {
-                    physicalDamage = 300f;
+                    physicalDamage = (weaponItem.Weight) * 300f;
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") && physicalDamage > (weaponItem.Weight) * 300f)
@@ -442,36 +442,37 @@ namespace RBMCombat
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
                 {
+                    missileTotalDamage = 0f;
                     //baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
                     if ((DamageTypes)acd.DamageType == DamageTypes.Pierce)
                     {
-                        baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                        baseMagnitude = (physicalDamage * momentumRemaining) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
                     }
                     else if ((DamageTypes)acd.DamageType == DamageTypes.Cut)
                     {
-                        baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f));
+                        baseMagnitude = (physicalDamage * momentumRemaining);
                     }
                     else
                     {
-                        baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f)) * 0.5f;
+                        baseMagnitude = (physicalDamage * momentumRemaining) * 0.5f;
                     }
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingAxe"))
                 {
-                    baseMagnitude = physicalDamage * momentumRemaining + (missileTotalDamage * 1f);
+                    baseMagnitude = physicalDamage * momentumRemaining;
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingKnife") ||
                     weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Dagger"))
                 {
-                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier * 0.6f;
+                    baseMagnitude = (physicalDamage * momentumRemaining) * RBMConfig.RBMConfig.ThrustMagnitudeModifier * 0.6f;
                 }
 
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") ||
                     weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("LowGripPolearm"))
                 {
-                    baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 1f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                    baseMagnitude = (physicalDamage * momentumRemaining) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
                 }
                 if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") ||
                     weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt"))
