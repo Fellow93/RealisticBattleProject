@@ -15,7 +15,7 @@ namespace  RBMCombat
         {
             WeaponComponentData currentUsageItem = attackerWeapon.CurrentUsageItem;
             if (attackerWeapon.Item != null && currentUsageItem != null && attackerWeapon.Item.WeaponDesign != null &&
-                attackerWeapon.Item.WeaponDesign.UsedPieces != null && attackerWeapon.Item.WeaponDesign.UsedPieces.Length > 0 )
+                attackerWeapon.Item.WeaponDesign.UsedPieces != null && attackerWeapon.Item.WeaponDesign.UsedPieces.Length > 0)
             {
                 //WeaponClass weaponClass = attackerWeapon.CurrentUsageItem.WeaponClass;
                 if (collisionData.CollisionDistanceOnWeapon < currentUsageItem.GetRealWeaponLength() - attackerWeapon.Item.WeaponDesign.UsedPieces[0].ScaledBladeLength)
@@ -82,6 +82,24 @@ namespace  RBMCombat
         public static float CalculateSkillModifier(int relevantSkillLevel)
         {
             return MBMath.ClampFloat((float)relevantSkillLevel / 250f, 0f, 1f);
+        }
+
+        public static float CalculateSkillModifier(float relevantSkillLevel)
+        {
+            return MBMath.ClampFloat(relevantSkillLevel / 250f, 0f, 1f);
+        }
+
+        public static float GetEffectiveSkillWithDR(int effectiveSkill){
+            float effectiveSkillWithDR = 0f;
+            effectiveSkillWithDR = (600f / (600f + effectiveSkill)) * (float)effectiveSkill;
+
+            //float oneskillStep = 25f;
+            //int skillSteps = MathF.Floor(effectiveSkill / 25f);
+            //for(int i = 1; i <= skillSteps; i++)
+            //{
+            //    effectiveSkillWithDR = MathF.Pow(i * oneskillStep, 1f - ((i-1)/100f));
+            //}
+            return effectiveSkillWithDR;
         }
 
         public static bool HitWithWeaponBladeTip(in AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
@@ -151,7 +169,7 @@ namespace  RBMCombat
             return calculatedMissileSpeed;
         }
 
-        public static int calculateThrowableSpeed(float ammoWeight, int effectiveSkill)
+        public static int calculateThrowableSpeed(float ammoWeight, float effectiveSkill)
         {
             int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt((60f + effectiveSkill * 0.8f) * 2f / ammoWeight));
             if (calculatedThrowingSpeed > 25)
@@ -161,7 +179,7 @@ namespace  RBMCombat
             return calculatedThrowingSpeed;
         }
 
-        public static int assignThrowableMissileSpeed(MissionWeapon throwable, int correctiveMissileSpeed, int effectiveSkill)
+        public static int assignThrowableMissileSpeed(MissionWeapon throwable, int correctiveMissileSpeed, float effectiveSkill)
         {
             float ammoWeight = throwable.GetWeight() / throwable.Amount;
             int calculatedThrowingSpeed = calculateThrowableSpeed(ammoWeight,effectiveSkill);

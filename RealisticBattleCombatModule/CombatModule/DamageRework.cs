@@ -344,17 +344,18 @@ namespace RBMCombat
                     SkillObject skill = (attackerWeapon == null) ? DefaultSkills.Athletics : attackerWeapon.RelevantSkill;
                     if (skill != null)
                     {
-                        int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgentCharacter, attackerAgentOrigin, attackerFormation, skill);
-                        float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill);
+                        int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgentCharacter, attackerAgentOrigin, attackerFormation, skill);
+                        float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
+                        float skillModifier = Utilities.CalculateSkillModifier(ef);
 
-                        if (attacker != null && attacker.IsPlayerControlled)
-                        {
-                            InformationManager.DisplayMessage(new InformationMessage("magnitude: " + magnitude));
-                        }
-                        if (victim != null && victim.IsPlayerControlled)
-                        {
-                            InformationManager.DisplayMessage(new InformationMessage("magnitude: " + magnitude));
-                        }
+                        //if (attacker != null && attacker.IsPlayerControlled)
+                        //{
+                        //    InformationManager.DisplayMessage(new InformationMessage("magnitude: " + magnitude));
+                        //}
+                        //if (victim != null && victim.IsPlayerControlled)
+                        //{
+                        //    InformationManager.DisplayMessage(new InformationMessage("magnitude: " + magnitude));
+                        //}
                     
                         bool isPassiveUsage = attackInformation.IsAttackerAgentDoingPassiveAttack;
                         float skillBasedDamage = 0f;

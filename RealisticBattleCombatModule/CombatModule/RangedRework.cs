@@ -87,8 +87,8 @@ namespace RBMCombat
                     {
                         SkillObject skill = (weaponData.GetItemObject() == null) ? DefaultSkills.Athletics : weaponData.GetItemObject().RelevantSkill;
                         if(skill != null) {
-                            int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance.Character, __instance.Origin, __instance.Formation, skill);
-
+                            int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance.Character, __instance.Origin, __instance.Formation, skill);
+                            float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
                             switch (weaponStatsData[i].WeaponClass)
                             {
                                 case (int)WeaponClass.LowGripPolearm:
@@ -890,8 +890,8 @@ namespace RBMCombat
                         SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
                         if (skill != null)
                         {
-                            int effectiveSkill = __instance.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
-
+                            int ef = __instance.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
+                            float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
                             if (equippedItem != null)
                             {
                                 switch (equippedItem.ItemUsage)
@@ -922,7 +922,8 @@ namespace RBMCombat
                         SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
                         if (skill != null)
                         {
-                            int effectiveSkill = __instance.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
+                            int ef = __instance.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
+                            float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
                             if (equippedItem != null)
                             {
                                 switch (equippedItem.ItemUsage)
@@ -953,7 +954,8 @@ namespace RBMCombat
                     SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
                     if (skill != null)
                     {
-                        int effectiveSkill = __instance.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
+                        int ef = __instance.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
+                        float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
 
                         if (equippedItem != null)
                         {
