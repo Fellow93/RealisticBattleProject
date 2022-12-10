@@ -387,15 +387,15 @@ namespace RBMCombat
                                         }
                                         else
                                         {
-                                            float weaponWeight = attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight();
-                                            float totalSpeed = (float)Math.Sqrt((magnitude * 2) / 8f);
-                                            totalSpeed += 3f;
-                                            skillBasedDamage = 0.5f * 8f * totalSpeed * totalSpeed * (1 + (skillModifier * 0.4f));
-
-                                            if (skillBasedDamage > 170f * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
-                                            {
-                                                skillBasedDamage = 170f * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
-                                            }
+                                            //float weaponWeight = attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight();
+                                            //float totalSpeed = (float)Math.Sqrt((magnitude * 2) / 8f);
+                                            //totalSpeed += 3f;
+                                            //skillBasedDamage = 0.5f * 8f * totalSpeed * totalSpeed * (1 + (skillModifier * 0.4f));
+                                            //if (skillBasedDamage > 170f * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
+                                            //{
+                                            //    skillBasedDamage = 170f * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                                            //}
+                                            skillBasedDamage = magnitude;
                                         }
                                     }
                                     if (magnitude > 1f)
@@ -426,14 +426,14 @@ namespace RBMCombat
                                         }
                                         else
                                         {
-                                            float weaponWeight = attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight();
-                                            float totalSpeed = (float)Math.Sqrt((magnitude * 2) / 8f);
-                                            skillBasedDamage = 0.5f * 15f * totalSpeed * totalSpeed * (1 + (skillModifier * 0.4f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
-
-                                            if (skillBasedDamage > 240f * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
-                                            {
-                                                skillBasedDamage = 240 * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
-                                            }
+                                            //float weaponWeight = attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight();
+                                            //float totalSpeed = (float)Math.Sqrt((magnitude * 2) / 8f);
+                                            //skillBasedDamage = 0.5f * 15f * totalSpeed * totalSpeed * (1 + (skillModifier * 0.4f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                                            //if (skillBasedDamage > 240f * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
+                                            //{
+                                            //    skillBasedDamage = 240 * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                                            //}
+                                            skillBasedDamage = magnitude;
                                         }
                                     }
                                     if (magnitude > 1f)
