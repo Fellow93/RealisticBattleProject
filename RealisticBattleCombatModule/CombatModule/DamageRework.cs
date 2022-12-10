@@ -939,7 +939,7 @@ namespace RBMCombat
                 }
 
                 float weaponDamageFactor = 1f;
-                if (!attackCollisionData.IsMissile && attackerWeapon != null)
+                if (attackerWeapon != null)
                 {
                     weaponDamageFactor = (float)Math.Sqrt((attackCollisionData.StrikeType == (int)StrikeType.Thrust) ? attackerWeapon.ThrustDamageFactor : attackerWeapon.SwingDamageFactor);
                 }
