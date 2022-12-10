@@ -4,7 +4,6 @@ using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.Engine;
 using System.Reflection;
-using System.Linq;
 
 public class RBMBehaviorCavalryCharge : BehaviorComponent
 {
@@ -171,7 +170,6 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 							if(_lastTarget != null && _lastTarget.Formation != null)
                             {
 								base.Formation.FormOrder = FormOrder.FormOrderCustom(_lastTarget.Formation.Width);
-
 							}
 						}
 						break;
@@ -264,49 +262,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
 		if (chargeState != _chargeState || newTarget)
 		{
-			newTarget = false;
 			_chargeState = chargeState;
-			switch (_chargeState)
-			{
-				case ChargeState.Undetermined:
-					base.CurrentOrder = MovementOrder.MovementOrderCharge;
-					break;
-				case ChargeState.Charging:
-                    {
-						Formation correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, true, true, false, false, false);
-						if (correctEnemy != null)
-						{
-							_lastTarget = correctEnemy.QuerySystem;
-						}
-						else
-						{
-							_lastTarget = base.Formation.QuerySystem.ClosestEnemyFormation;
-						}
-						_initialChargeDirection = _lastTarget.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition;
-						float value = _initialChargeDirection.Normalize();
-						break;
-					}
-				case ChargeState.ChargingPast:
-					_chargingPastTimer = new Timer(Mission.Current.CurrentTime, 19f);
-					break;
-				case ChargeState.Reforming:
-     //               if (isFirstCharge)
-     //               {
-					//	_reformTimer = new Timer(Mission.Current.CurrentTime, 0.1f);
-					//	isFirstCharge = false;
-					//}
-					//else
-                    //{
-						_reformTimer = new Timer(Mission.Current.CurrentTime, 10f);
-					//}
-					break;
-				case ChargeState.Bracing:
-					{
-						Vec2 vec = (base.Formation.QuerySystem.Team.MedianTargetFormationPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition).Normalized();
-						_bracePosition = base.Formation.QuerySystem.AveragePosition + vec * 5f;
-						break;
-					}
-			}
 
 			switch (_chargeState)
 			{
@@ -318,6 +274,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 					}
 				case ChargeState.Charging:
 					{
+						CheckForNewChargeTarget();
 						Vec2 vec4 = (_lastTarget.MedianPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition).Normalized();
 						WorldPosition medianPosition3 = _lastTarget.MedianPosition;
 						Vec2 vec5 = medianPosition3.AsVec2 + vec4 * (_desiredChargeStopDistance + _lastTarget.Formation.Depth);
@@ -329,6 +286,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 					}
 				case ChargeState.ChargingPast:
 					{
+                        _chargingPastTimer = new Timer(Mission.Current.CurrentTime, 19f);
                         //Vec2 vec2 = (base.Formation.QuerySystem.AveragePosition - _lastTarget.MedianPosition.AsVec2).Normalized();
                         //_lastReformDestination = _lastTarget.MedianPosition;
                         //Vec2 vec3 = _lastTarget.MedianPosition.AsVec2 + vec2 * (_desiredChargeStopDistance + _lastTarget.Formation.Depth);
@@ -339,7 +297,8 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 						break;
 					}
 				case ChargeState.Reforming:
-					base.CurrentOrder = MovementOrder.MovementOrderMove(_lastReformDestination);
+                    _reformTimer = new Timer(Mission.Current.CurrentTime, 10f);
+                    base.CurrentOrder = MovementOrder.MovementOrderMove(_lastReformDestination);
 					CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
 					break;
 				case ChargeState.Bracing:
@@ -350,10 +309,9 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 						break;
 					}
 			}
-		}
-
-		
-	}
+            newTarget = false;
+        }
+    }
 
 	protected override void OnBehaviorActivatedAux()
 	{

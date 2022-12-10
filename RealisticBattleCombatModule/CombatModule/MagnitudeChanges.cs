@@ -19,14 +19,17 @@ namespace RBMCombat
                 float magnitude = 0f;
 
                 bool isOverheadAttack = attackerAgent.AttackDirection == Agent.UsageDirection.AttackUp;
-                thrustSpeed = (isOverheadAttack ? thrustSpeed + 3f : thrustSpeed);
+                
+                thrustSpeed = (isOverheadAttack ? thrustSpeed * 1.33f : thrustSpeed);
                 float combinedSpeed = thrustSpeed + exraLinearSpeed;
                 float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill) * 2f;
 
                 float spearKineticEnergy = 0.5f * weaponWeight * (combinedSpeed * combinedSpeed);
 
-                float thrustStrength = weaponWeight + (oneHandedPolearmThrustStrength * (1f + skillModifier));
-                float thrustStrengthWithWeaponWeight = weaponWeight + (oneHandedPolearmThrustStrength * (1f + skillModifier));
+                float armStrength = isOverheadAttack ? oneHandedPolearmThrustStrength - 1f : oneHandedPolearmThrustStrength;
+
+                float thrustStrength = weaponWeight + (armStrength * (1f + skillModifier));
+                float thrustStrengthWithWeaponWeight = weaponWeight + (armStrength * (1f + skillModifier));
 
                 float thrustEnergyCap = 0.5f * thrustStrength * (thrustSpeed * thrustSpeed) * 1.5f;
                 float thrustEnergy = 0.5f * thrustStrengthWithWeaponWeight * (combinedSpeed * combinedSpeed);
@@ -61,8 +64,10 @@ namespace RBMCombat
 
                 float spearKineticEnergy = 0.5f * weaponWeight * (combinedSpeed * combinedSpeed);
 
-                float thrustStrength = twoHandedPolearmThrustStrength * (1f + skillModifier);
-                float thrustStrengthWithWeaponWeight = weaponWeight + (twoHandedPolearmThrustStrength * (1f + skillModifier));
+                float armStrength = isOverheadAttack ? twoHandedPolearmThrustStrength - 1f : twoHandedPolearmThrustStrength;
+
+                float thrustStrength = armStrength * (1f + skillModifier);
+                float thrustStrengthWithWeaponWeight = weaponWeight + (armStrength * (1f + skillModifier));
 
                 float thrustEnergyCap = 0.5f * thrustStrength * (thrustSpeed * thrustSpeed) * 1.5f;
                 float thrustEnergy = 0.5f * thrustStrengthWithWeaponWeight * (combinedSpeed * combinedSpeed);
@@ -169,11 +174,13 @@ namespace RBMCombat
                             switch (weapon.CurrentUsageItem.WeaponClass)
                             {
                                 case WeaponClass.OneHandedPolearm:
-                                    {
+                                case WeaponClass.OneHandedSword:
+                                {
                                         thrustMagnitude = CalculateThrustMagnitudeForOneHandedPolearm(weapon.Item.Weight, effectiveSkill, thrustWeaponSpeed, exraLinearSpeed, attacker);
                                         break;
                                     }
                                 case WeaponClass.TwoHandedPolearm:
+                                case WeaponClass.TwoHandedSword:
                                     {
                                         thrustMagnitude = CalculateThrustMagnitudeForTwoHandedPolearm(weapon.Item.Weight, effectiveSkill, thrustWeaponSpeed, exraLinearSpeed, attacker);
                                         break;
