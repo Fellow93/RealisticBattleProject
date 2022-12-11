@@ -139,7 +139,7 @@ namespace RBMCombat
                                         float handlingskillModifier = 1f + (effectiveSkill / 800f);
 
                                         weaponStatsData[i].SwingSpeed = MathF.Ceiling((weaponStatsData[i].SwingSpeed * 0.9f) * swingskillModifier);
-                                        weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.9f) * thrustskillModifier);
+                                        weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 1.15f) * thrustskillModifier);
                                         weaponStatsData[i].DefendSpeed = MathF.Ceiling((weaponStatsData[i].DefendSpeed * 0.9f) * handlingskillModifier);
                                         break;
                                     }
@@ -159,7 +159,7 @@ namespace RBMCombat
                                         RangedWeaponStats rws;
                                         if (rangedWeaponStats.TryGetValue(mw.GetModifiedItemName().ToString(), out rws))
                                         {
-                                            if ((effectiveSkill) < rws.getDrawWeight() + 9f) // 70 more skill needed to unlock speed shooting
+                                            if ((ef) < rws.getDrawWeight() + 9f) // 70 more skill needed to unlock speed shooting
                                             {
                                                 __instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags |= WeaponFlags.UnloadWhenSheathed;
                                                 weaponStatsData[i].WeaponFlags = (ulong)__instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags;
