@@ -103,7 +103,7 @@ namespace RBMCombat
 
                                         weaponStatsData[i].SwingSpeed = MathF.Ceiling((weaponStatsData[i].SwingSpeed * 0.83f) * swingskillModifier);
                                         weaponStatsData[i].ThrustSpeed = MathF.Floor(Utilities.CalculateThrustSpeed(weaponData.BaseWeight, weaponData.Inertia, weaponData.CenterOfMass) * 11.7647057f);
-                                        weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.85f) * thrustskillModifier);
+                                        weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 1.1f) * thrustskillModifier);
                                         weaponStatsData[i].DefendSpeed = MathF.Ceiling((weaponStatsData[i].DefendSpeed * 0.83f) * handlingskillModifier);
                                         break;
                                     }
@@ -115,7 +115,7 @@ namespace RBMCombat
 
                                         weaponStatsData[i].SwingSpeed = MathF.Ceiling((weaponStatsData[i].SwingSpeed * 0.83f) * swingskillModifier);
                                         weaponStatsData[i].ThrustSpeed = MathF.Floor(Utilities.CalculateThrustSpeed(weaponData.BaseWeight, weaponData.Inertia, weaponData.CenterOfMass) * 11.7647057f);
-                                        weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.8f) * thrustskillModifier);
+                                        weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 1.05f) * thrustskillModifier);
                                         weaponStatsData[i].DefendSpeed = MathF.Ceiling((weaponStatsData[i].DefendSpeed * 5f) * handlingskillModifier);
                                         break;
                                     }
