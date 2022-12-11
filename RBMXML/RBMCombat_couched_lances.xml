@@ -616,7 +616,7 @@
                physics_material="wood_weapon"
                body_name="bo_spear_b">
       <Swing damage_type="Cut"
-             damage_factor="0.3" />
+             damage_factor="0.2" />
     </BladeData>
     <Materials>
       <Material id="Iron1"
@@ -637,7 +637,7 @@
                physics_material="wood_weapon"
                body_name="bo_mace_a">
       <Swing damage_type="Cut"
-             damage_factor="0.3" />
+             damage_factor="0.2" />
     </BladeData>
     <Materials>
       <Material id="Iron2"
@@ -657,7 +657,7 @@
                physics_material="wood_weapon"
                body_name="bo_spear_b">
       <Swing damage_type="Cut"
-             damage_factor="0.5" />
+             damage_factor="0.2" />
     </BladeData>
   </CraftingPiece>
   <CraftingPiece id="spear_blade_21"
@@ -673,7 +673,7 @@
                physics_material="wood_weapon"
                body_name="bo_spear_b">
       <Swing damage_type="Cut"
-             damage_factor="0.3" />
+             damage_factor="0.2" />
     </BladeData>
   </CraftingPiece>
   <CraftingPiece id="spear_blade_28"
@@ -689,7 +689,7 @@
                physics_material="wood_weapon"
                body_name="bo_spear_b">
       <Swing damage_type="Cut"
-             damage_factor="0.3" />
+             damage_factor="0.2" />
     </BladeData>
   </CraftingPiece>
   <CraftingPiece id="spear_blade_30"
@@ -715,7 +715,7 @@
                  piece_type="Blade"
                  mesh="spear_blade_32"
                  length="32.7"
-                 weight="0.4"
+                 weight="0.2"
                  excluded_item_usage_features="swing">
 
     <BladeData stack_amount="3"
@@ -747,7 +747,7 @@
                physics_material="wood_weapon"
                body_name="bo_spear_b">
       <Thrust damage_type="Pierce"
-              damage_factor="0.3" />
+              damage_factor="0.2" />
     </BladeData>
     <Flags>
       <Flag name="Civilian"
