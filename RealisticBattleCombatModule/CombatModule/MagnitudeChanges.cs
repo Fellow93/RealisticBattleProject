@@ -736,8 +736,8 @@ namespace RBMCombat
                         {
                             methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "RBM Stats", "", 1, null });
 
-                            methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Ideal Ammo Weight in grams: "), MathF.Round(ammoWeightIdeal * 1000f), MathF.Round(ammoWeightIdeal * 1000f) });
-                            methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Initial Missile Speed: "), calculatedMissileSpeed, calculatedMissileSpeed });
+                            methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Ideal Ammo Weight, grams: "), MathF.Round(ammoWeightIdeal * 1000f), MathF.Round(ammoWeightIdeal * 1000f) });
+                            methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Initial Missile Speed, m/s: "), calculatedMissileSpeed, calculatedMissileSpeed });
 
                             //pierceArrows
                             bool shouldBreakNextTime = false;
@@ -808,8 +808,8 @@ namespace RBMCombat
 
                         methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Relevant Skill: "), effectiveSkill, effectiveSkill });
 
-                        methodAddFloatProperty.Invoke(__instance, new object[] { new TextObject("Swing Speed m/s:"), swingSpeedReal, swingSpeedRealCompred, false });
-                        methodAddFloatProperty.Invoke(__instance, new object[] { new TextObject("Thrust Speed m/s: "), thrustSpeedReal, thrustSpeedRealCompared, false });
+                        methodAddFloatProperty.Invoke(__instance, new object[] { new TextObject("Swing Speed, m/s:"), swingSpeedReal, swingSpeedRealCompred, false });
+                        methodAddFloatProperty.Invoke(__instance, new object[] { new TextObject("Thrust Speed, m/s: "), thrustSpeedReal, thrustSpeedRealCompared, false });
 
                         if (targetWeapon.GetModifiedSwingDamageForUsage(targetWeaponUsageIndex) > 0f)
                         {
