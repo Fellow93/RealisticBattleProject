@@ -498,10 +498,11 @@ namespace RBMCombat
             }
         }
 
-        public static float CalculateSweetSpotSwingMagnitude(EquipmentElement weapon, int weaponUsageIndex, int relevantSkill)
+        public static float CalculateSweetSpotSwingMagnitude(EquipmentElement weapon, int weaponUsageIndex, int relevantSkill, out float sweetSpot)
         {
             float progressEffect = 1f;
             float sweetSpotMagnitude = -1f;
+            sweetSpot = -1f;
 
             if (weapon.Item != null && weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex) != null)
             {
@@ -545,7 +546,7 @@ namespace RBMCombat
                         }
                 }
 
-                for (float currentSpot = 0.93f; currentSpot > 0.35f; currentSpot -= 0.05f)
+                for (float currentSpot = 0.93f; currentSpot > 0.35f; currentSpot -= 0.01f)
                 {
                     float weaponWeight = weapon.Item.Weight;
                     float weaponInertia = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia;
@@ -556,6 +557,7 @@ namespace RBMCombat
                     if (currentSpotMagnitude > sweetSpotMagnitude)
                     {
                         sweetSpotMagnitude = currentSpotMagnitude;
+                        sweetSpot = currentSpot;
                     }
                 }
             }
@@ -972,8 +974,8 @@ namespace RBMCombat
 
                         if (targetWeapon.GetModifiedSwingDamageForUsage(targetWeaponUsageIndex) > 0f)
                         {
-                            float sweetSpotMagnitude = CalculateSweetSpotSwingMagnitude(targetWeapon, targetWeaponUsageIndex, effectiveSkill);
-                            float sweetSpotMagnitudeCompared = CalculateSweetSpotSwingMagnitude(comparedWeapon, comparedWeaponUsageIndex, effectiveSkill);
+                            float sweetSpotMagnitude = CalculateSweetSpotSwingMagnitude(targetWeapon, targetWeaponUsageIndex, effectiveSkill, out float sweetSpot);
+                            float sweetSpotMagnitudeCompared = CalculateSweetSpotSwingMagnitude(comparedWeapon, comparedWeaponUsageIndex, effectiveSkill, out float sweetSpotCompared);
 
                             float skillBasedDamage = Utilities.GetSkillBasedDamage(sweetSpotMagnitude, false, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
                                 targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, effectiveSkillDR, skillModifier, StrikeType.Swing, targetWeapon.Item.Weight);
@@ -985,6 +987,9 @@ namespace RBMCombat
                             float weaponDamageFactorCompared = sweetSpotMagnitudeCompared > 0f ? (float)Math.Sqrt(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).SwingDamageFactor) : -1f;
 
                             bool shouldBreakNextTime = false;
+
+                            methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Swing Sweet Spot, %: "), MathF.Floor(sweetSpot*100f), MathF.Floor(sweetSpotCompared * 100f) });
+
                             methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Swing Damage", 1, null });
 
                             string combinedDamageString = "A-Armor\nD-Damage Inflicted\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
