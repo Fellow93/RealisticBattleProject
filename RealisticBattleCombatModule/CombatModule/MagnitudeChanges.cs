@@ -719,30 +719,42 @@ namespace RBMCombat
 
                 MethodInfo methodCreateProperty = typeof(ItemMenuVM).GetMethod("CreateProperty", BindingFlags.NonPublic | BindingFlags.Instance);
                 methodCreateProperty.DeclaringType.GetMethod("CreateProperty");
+
                 if (!targetWeapon.IsEmpty && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex) != null && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).IsRangedWeapon)
                 {
                     if (Hero.MainHero != null)
                     {
+
                         Hero mainAgent = Hero.MainHero;
                         SkillObject skill = targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).RelevantSkill;
                         int effectiveSkill = mainAgent.GetSkillValue(skill);
                         float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(effectiveSkill);
                         float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill);
-                        int drawWeight = targetWeapon.GetModifiedMissileSpeedForUsage(targetWeaponUsageIndex);
-                        float ammoWeightIdeal = MathF.Clamp(drawWeight / 1000f, 0f, 0.125f);
-
-                        int calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeightIdeal, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ItemUsage, drawWeight);
-                        if(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.Bow)
+                        if (targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.Bow)
                         {
+                            int drawWeight = targetWeapon.GetModifiedMissileSpeedForUsage(targetWeaponUsageIndex);
+                            float ammoWeightIdealModifier;
+                            if (targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ItemUsage.Equals("bow")){
+                                ammoWeightIdealModifier = 1600f;
+                            }
+                            else
+                            {
+                                ammoWeightIdealModifier = 1400f;
+                            }
+
+                            float ammoWeightIdeal = drawWeight / ammoWeightIdealModifier;
+
+                            int calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeightIdeal, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ItemUsage, drawWeight);
+                        
                             methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "RBM Stats", "", 1, null });
 
-                            methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Ideal Ammo Weight, grams: "), MathF.Round(ammoWeightIdeal * 1000f), MathF.Round(ammoWeightIdeal * 1000f) });
+                            methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Ideal Ammo Weight Range/Damage, grams: "), MathF.Round(ammoWeightIdeal * 1000f), MathF.Round(ammoWeightIdeal * 1000f) });
                             methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Initial Missile Speed, m/s: "), calculatedMissileSpeed, calculatedMissileSpeed });
 
                             //pierceArrows
                             bool shouldBreakNextTime = false;
                             float missileMagnitude = CalculateMissileMagnitude(WeaponClass.Arrow, ammoWeightIdeal, calculatedMissileSpeed, targetWeapon.GetModifiedThrustDamageForUsage(targetWeaponUsageIndex) + 100f, 1f, DamageTypes.Pierce);
-                            string combinedDamageString = "A-Armor\nD-Full Damage\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
+                            string combinedDamageString = "A-Armor\nD-Damage Inflicted\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
                             methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Missile Damage Pierce", 1, null });
                             for (float i = 0; i <= 100; i += 10)
                             {
@@ -766,7 +778,7 @@ namespace RBMCombat
                             //cut arrows
                             shouldBreakNextTime = false;
                             missileMagnitude = CalculateMissileMagnitude(WeaponClass.Arrow, ammoWeightIdeal, calculatedMissileSpeed, targetWeapon.GetModifiedThrustDamageForUsage(targetWeaponUsageIndex) + 115f, 1f, DamageTypes.Cut);
-                            combinedDamageString = "A-Armor\nD-Full Damage\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
+                            combinedDamageString = "A-Armor\nD-Damage Inflicted\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
                             methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Missile Damage Cut", 1, null });
                             for (float i = 0; i <= 100; i += 10)
                             {
@@ -786,9 +798,156 @@ namespace RBMCombat
                                 //methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Thrust Damage " + i + " Armor: "), realDamage, realDamage });
                             }
                             __instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(combinedDamageString));
-
                         }
+                        if (targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.Crossbow)
+                        {
+                            int drawWeight = targetWeapon.GetModifiedMissileSpeedForUsage(targetWeaponUsageIndex);
+                            float ammoWeightIdealModifier = 4000f;
 
+                            float ammoWeightIdeal = MathF.Clamp(drawWeight / ammoWeightIdealModifier, 0f, 0.150f);
+
+                            int calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeightIdeal, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ItemUsage, drawWeight);
+
+                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "RBM Stats", "", 1, null });
+
+                            methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Ideal Ammo Weight Range/Damage, grams: "), MathF.Round(ammoWeightIdeal * 1000f), MathF.Round(ammoWeightIdeal * 1000f) });
+                            methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Initial Missile Speed, m/s: "), calculatedMissileSpeed, calculatedMissileSpeed });
+
+                            //pierce bolts
+                            bool shouldBreakNextTime = false;
+                            float missileMagnitude = CalculateMissileMagnitude(WeaponClass.Bolt, ammoWeightIdeal, calculatedMissileSpeed, targetWeapon.GetModifiedThrustDamageForUsage(targetWeaponUsageIndex) + 100f, 1f, DamageTypes.Pierce);
+                            string combinedDamageString = "A-Armor\nD-Damage Inflicted\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
+                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Missile Damage Pierce", 1, null });
+                            for (float i = 0; i <= 100; i += 10)
+                            {
+                                if (shouldBreakNextTime)
+                                {
+                                    //break;
+                                }
+                                int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(WeaponClass.Bolt.ToString(),
+                                DamageTypes.Pierce, missileMagnitude, i, 1f, out float penetratedDamage, out float bluntForce, 1f, null, false)), 0, 2000);
+                                realDamage = MathF.Floor(realDamage * 1f);
+
+                                if (penetratedDamage == 0f)
+                                {
+                                    shouldBreakNextTime = true;
+                                }
+                                combinedDamageString += "A: " + String.Format("{0,3}", i) + " D: " + String.Format("{0,-5}", realDamage) + " P: " + String.Format("{0,-5}", MathF.Floor(penetratedDamage)) + " B: " + MathF.Floor(bluntForce) + "\n";
+                                //methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Thrust Damage " + i + " Armor: "), realDamage, realDamage });
+                            }
+                            __instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(combinedDamageString));
+
+                            //cut bolts
+                            shouldBreakNextTime = false;
+                            missileMagnitude = CalculateMissileMagnitude(WeaponClass.Bolt, ammoWeightIdeal, calculatedMissileSpeed, targetWeapon.GetModifiedThrustDamageForUsage(targetWeaponUsageIndex) + 115f, 1f, DamageTypes.Cut);
+                            combinedDamageString = "A-Armor\nD-Damage Inflicted\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
+                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Missile Damage Cut", 1, null });
+                            for (float i = 0; i <= 100; i += 10)
+                            {
+                                if (shouldBreakNextTime)
+                                {
+                                    //break;
+                                }
+                                int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(WeaponClass.Bolt.ToString(),
+                                DamageTypes.Cut, missileMagnitude, i, 1f, out float penetratedDamage, out float bluntForce, 1f, null, false)), 0, 2000);
+                                realDamage = MathF.Floor(realDamage * 1f);
+
+                                if (penetratedDamage == 0f)
+                                {
+                                    shouldBreakNextTime = true;
+                                }
+                                combinedDamageString += "A: " + String.Format("{0,3}", i) + " D: " + String.Format("{0,-5}", realDamage) + " P: " + String.Format("{0,-5}", MathF.Floor(penetratedDamage)) + " B: " + MathF.Floor(bluntForce) + "\n";
+                                //methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Thrust Damage " + i + " Armor: "), realDamage, realDamage });
+                            }
+                            __instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(combinedDamageString));
+                        }
+                        if (targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.Javelin)
+                        {
+                            int calculatedMissileSpeed = Utilities.assignThrowableMissileSpeed(targetWeapon.Weight, (int)Utilities.throwableCorrectionSpeed, effectiveSkill);
+
+                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "RBM Stats", "", 1, null });
+
+                            methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Initial Missile Speed, m/s: "), calculatedMissileSpeed, calculatedMissileSpeed });
+
+                            //pierceArrows
+                            bool shouldBreakNextTime = false;
+                            float missileMagnitude = CalculateMissileMagnitude(WeaponClass.Javelin, targetWeapon.Weight, calculatedMissileSpeed, targetWeapon.GetModifiedThrustDamageForUsage(targetWeaponUsageIndex), 1f, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType);
+                            string combinedDamageString = "A-Armor\nD-Damage Inflicted\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
+                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Missile Damage", 1, null });
+                            float weaponDamageFactor = (float)Math.Sqrt(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageFactor);
+                            for (float i = 0; i <= 100; i += 10)
+                            {
+                                if (shouldBreakNextTime)
+                                {
+                                    //break;
+                                }
+                                int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(WeaponClass.Javelin.ToString(),
+                                DamageTypes.Pierce, missileMagnitude, i, 1f, out float penetratedDamage, out float bluntForce, weaponDamageFactor, null, false)), 0, 2000);
+                                realDamage = MathF.Floor(realDamage * 1f);
+
+                                if (penetratedDamage == 0f)
+                                {
+                                    shouldBreakNextTime = true;
+                                }
+                                combinedDamageString += "A: " + String.Format("{0,3}", i) + " D: " + String.Format("{0,-5}", realDamage) + " P: " + String.Format("{0,-5}", MathF.Floor(penetratedDamage)) + " B: " + MathF.Floor(bluntForce) + "\n";
+                                //methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Thrust Damage " + i + " Armor: "), realDamage, realDamage });
+                            }
+                            __instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(combinedDamageString));
+                        }
+                        if (targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.ThrowingAxe ||
+                            targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.ThrowingKnife ||
+                            targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.Dagger)
+                        {
+                            int calculatedMissileSpeed = Utilities.assignThrowableMissileSpeed(targetWeapon.Weight, 0, effectiveSkill);
+
+                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "RBM Stats", "", 1, null });
+
+                            methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Initial Missile Speed, m/s: "), calculatedMissileSpeed, calculatedMissileSpeed });
+
+                            //pierceArrows
+                            bool shouldBreakNextTime = false;
+                            float missileMagnitude = CalculateMissileMagnitude(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass, targetWeapon.Weight, calculatedMissileSpeed, targetWeapon.GetModifiedThrustDamageForUsage(targetWeaponUsageIndex), 1f, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType);
+                            if (targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.ThrowingAxe)
+                            {
+                                missileMagnitude = CalculateMissileMagnitude(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass, targetWeapon.Weight, calculatedMissileSpeed, targetWeapon.GetModifiedThrustDamageForUsage(targetWeaponUsageIndex), 1f, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType);
+                            }
+                            string combinedDamageString = "A-Armor\nD-Damage Inflicted\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
+                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Missile Damage", 1, null });
+                            float weaponDamageFactor = (float)Math.Sqrt(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageFactor);
+                            if(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.ThrowingAxe)
+                            {
+                                weaponDamageFactor = (float)Math.Sqrt(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageFactor);
+                            }
+                            for (float i = 0; i <= 100; i += 10)
+                            {
+                                if (shouldBreakNextTime)
+                                {
+                                    //break;
+                                }
+                                int realDamage;
+                                float penetratedDamage;
+                                float bluntForce;
+                                if (targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.ThrowingAxe)
+                                {
+                                    realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
+                                    targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, missileMagnitude, i, 1f, out penetratedDamage, out bluntForce, weaponDamageFactor, null, false)), 0, 2000);
+                                }
+                                else
+                                {
+                                     realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
+                                targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, missileMagnitude, i, 1f, out penetratedDamage, out bluntForce, weaponDamageFactor, null, false)), 0, 2000);
+                                }
+                                realDamage = MathF.Floor(realDamage * 1f);
+
+                                if (penetratedDamage == 0f)
+                                {
+                                    shouldBreakNextTime = true;
+                                }
+                                combinedDamageString += "A: " + String.Format("{0,3}", i) + " D: " + String.Format("{0,-5}", realDamage) + " P: " + String.Format("{0,-5}", MathF.Floor(penetratedDamage)) + " B: " + MathF.Floor(bluntForce) + "\n";
+                                //methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Thrust Damage " + i + " Armor: "), realDamage, realDamage });
+                            }
+                            __instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(combinedDamageString));
+                        }
                     }
                 }
                 if (!targetWeapon.IsEmpty && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex) != null && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).IsMeleeWeapon)
@@ -828,8 +987,8 @@ namespace RBMCombat
                             bool shouldBreakNextTime = false;
                             methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Swing Damage", 1, null });
 
-                            string combinedDamageString = "A-Armor\nD-Full Damage\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
-                            string combinedDamageComparedString = "A-Armor\nD-Full Damage\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
+                            string combinedDamageString = "A-Armor\nD-Damage Inflicted\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
+                            string combinedDamageComparedString = "A-Armor\nD-Damage Inflicted\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
                             for (float i = 0; i <= 100; i += 10)
                             {
                                 if (shouldBreakNextTime)
@@ -895,8 +1054,8 @@ namespace RBMCombat
                             bool shouldBreakNextTime = false;
                             methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Thrust Damage", 1, null });
 
-                            string combinedDamageString = "A-Armor\nD-Full Damage\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
-                            string combinedDamageComparedString = "A-Armor\nD-Full Damage\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
+                            string combinedDamageString = "A-Armor\nD-Damage Inflicted\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
+                            string combinedDamageComparedString = "A-Armor\nD-Damage Inflicted\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
                             for (float i = 0; i <= 100; i += 10)
                             {
                                 if (shouldBreakNextTime)

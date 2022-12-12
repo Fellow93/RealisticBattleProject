@@ -183,19 +183,19 @@ namespace RBMCombat
                                 case (int)WeaponClass.OneHandedPolearm:
                                 case (int)WeaponClass.LowGripPolearm:
                                     {
-                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot], (int)Utilities.throwableCorrectionSpeed, effectiveSkill);
+                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount, (int)Utilities.throwableCorrectionSpeed, effectiveSkill);
                                         break;
                                     }
                                 case (int)WeaponClass.Javelin:
                                     {
-                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot], (int)Utilities.throwableCorrectionSpeed, effectiveSkill);
+                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount, (int)Utilities.throwableCorrectionSpeed, effectiveSkill);
                                         break;
                                     }
                                 case (int)WeaponClass.ThrowingAxe:
                                 case (int)WeaponClass.ThrowingKnife:
                                 case (int)WeaponClass.Dagger:
                                     {
-                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot], 0, effectiveSkill);
+                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount, 0, effectiveSkill);
                                         break;
                                     }
                                 case (int)WeaponClass.Stone:

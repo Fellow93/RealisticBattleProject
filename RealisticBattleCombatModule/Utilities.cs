@@ -181,9 +181,9 @@ namespace  RBMCombat
             return calculatedThrowingSpeed;
         }
 
-        public static int assignThrowableMissileSpeed(MissionWeapon throwable, int correctiveMissileSpeed, float effectiveSkill)
+        public static int assignThrowableMissileSpeed(float ammoWeight, int correctiveMissileSpeed, float effectiveSkill)
         {
-            float ammoWeight = throwable.GetWeight() / throwable.Amount;
+            //float ammoWeight = throwable.GetWeight() / throwable.Amount;
             int calculatedThrowingSpeed = calculateThrowableSpeed(ammoWeight,effectiveSkill);
             //PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
             //property.DeclaringType.GetProperty("MissileSpeed");
