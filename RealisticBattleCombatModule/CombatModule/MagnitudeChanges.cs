@@ -7,7 +7,6 @@ using System;
 using TaleWorlds.CampaignSystem;
 using System.Reflection;
 using TaleWorlds.Localization;
-using TaleWorlds.Core.ViewModelCollection.Generic;
 using TaleWorlds.Core.ViewModelCollection.Information;
 
 namespace RBMCombat
@@ -104,6 +103,7 @@ namespace RBMCombat
                                 case WeaponClass.OneHandedSword:
                                 case WeaponClass.Dagger:
                                 case WeaponClass.Mace:
+                                case WeaponClass.LowGripPolearm:
                                     {
                                         thrustMagnitude = Utilities.CalculateThrustMagnitudeForOneHandedWeapon(weapon.Item.Weight, effectiveSkillDR, thrustWeaponSpeed, exraLinearSpeed, attacker.AttackDirection);
                                         break;
@@ -232,6 +232,160 @@ namespace RBMCombat
         //    }
         //}
 
+        public static float CalculateMissileMagnitude(WeaponClass weaponClass, float weaponWeight, float missileSpeed, float missileTotalDamage, float momentumRemaining, DamageTypes damageType)
+        {
+            float baseMagnitude = 0f;
+            switch (weaponClass)
+            {
+                case WeaponClass.Boulder:
+                case WeaponClass.Stone:
+                    {
+                        missileTotalDamage *= 0.01f;
+                        break;
+                    }
+                case WeaponClass.ThrowingAxe:
+                case WeaponClass.ThrowingKnife:
+                case WeaponClass.Dagger:
+                    {
+                        missileSpeed -= 0f; //5f
+                        break;
+                    }
+                case WeaponClass.Javelin:
+                    {
+                        missileSpeed -= Utilities.throwableCorrectionSpeed;
+                        if (missileSpeed < 5.0f)
+                        {
+                            missileSpeed = 5f;
+                        }
+                        break;
+                    }
+                case WeaponClass.OneHandedPolearm:
+                    {
+                        missileSpeed -= Utilities.throwableCorrectionSpeed;
+                        if (missileSpeed < 5.0f)
+                        {
+                            missileSpeed = 5f;
+                        }
+                        break;
+                    }
+                case WeaponClass.LowGripPolearm:
+                    {
+                        missileSpeed -= Utilities.throwableCorrectionSpeed;
+                        if (missileSpeed < 5.0f)
+                        {
+                            missileSpeed = 5f;
+                        }
+                        break;
+                    }
+                case WeaponClass.Arrow:
+                    {
+                        missileTotalDamage -= 100f;
+                        missileTotalDamage *= 0.01f;
+                        break;
+                    }
+                case WeaponClass.Bolt:
+                    {
+                        missileTotalDamage -= 100f;
+                        missileTotalDamage *= 0.01f;
+                        break;
+                    }
+            }
+
+            float physicalDamage = ((missileSpeed * missileSpeed) * (weaponWeight)) / 2;
+            float momentumDamage = (missileSpeed * weaponWeight);
+            switch (weaponClass)
+            {
+                case WeaponClass.Boulder:
+                case WeaponClass.Stone:
+                    {
+                        physicalDamage = (missileSpeed * missileSpeed * (weaponWeight) * 0.5f);
+                        break;
+                    }
+                case WeaponClass.ThrowingAxe:
+                case WeaponClass.ThrowingKnife:
+                case WeaponClass.Dagger:
+                    {
+                        missileSpeed -= 0f; //5f
+                        break;
+                    }
+                case WeaponClass.Javelin:
+                case WeaponClass.OneHandedPolearm:
+                case WeaponClass.LowGripPolearm:
+                    {
+                        if (physicalDamage > (weaponWeight) * 300f)
+                        {
+                            physicalDamage = (weaponWeight) * 300f;
+                        }
+                        break;
+                    }
+                case WeaponClass.Arrow:
+                    {
+                        if (physicalDamage > (weaponWeight) * 2250f)
+                        {
+                            physicalDamage = (weaponWeight) * 2250f;
+                        }
+                        break;
+                    }
+                case WeaponClass.Bolt:
+                    {
+                        if (physicalDamage > (weaponWeight) * 2500f)
+                        {
+                            physicalDamage = (weaponWeight) * 2500f;
+                        }
+                        break;
+                    }
+            }
+            
+            baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining;
+
+            if (weaponClass == WeaponClass.Javelin)
+            {
+                missileTotalDamage = 0f;
+                //baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                if (damageType == DamageTypes.Pierce)
+                {
+                    baseMagnitude = (physicalDamage * momentumRemaining) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                }
+                else if (damageType == DamageTypes.Cut)
+                {
+                    baseMagnitude = (physicalDamage * momentumRemaining);
+                }
+                else
+                {
+                    baseMagnitude = (physicalDamage * momentumRemaining) * 0.5f;
+                }
+            }
+
+            if (weaponClass == WeaponClass.ThrowingAxe)
+            {
+                baseMagnitude = physicalDamage * momentumRemaining;
+            }
+            if (weaponClass == WeaponClass.ThrowingKnife ||
+                weaponClass == WeaponClass.Dagger)
+            {
+                baseMagnitude = (physicalDamage * momentumRemaining) * RBMConfig.RBMConfig.ThrustMagnitudeModifier * 0.6f;
+            }
+
+            if (weaponClass == WeaponClass.OneHandedPolearm ||
+                weaponClass == WeaponClass.LowGripPolearm)
+            {
+                baseMagnitude = (physicalDamage * momentumRemaining) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+            }
+            if (weaponClass == WeaponClass.Arrow ||
+                weaponClass == WeaponClass.Bolt)
+            {
+                if (damageType == DamageTypes.Cut || damageType == DamageTypes.Pierce)
+                {
+                    baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining;
+                }
+                else
+                {
+                    baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining; // momentum makes more sense for blunt attacks, maybe 500 damage is needed for sling projectiles
+                }
+            }
+            return baseMagnitude;
+        }
+
         [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
         [HarmonyPatch("ComputeBlowMagnitudeMissile")]
         class ComputeBlowMagnitudeMissilePacth
@@ -262,160 +416,7 @@ namespace RBMCombat
                 {
                     length = missileVelocity.Length;
                 }
-                //float expr_32 = length / acd.MissileStartingBaseSpeed;
-                //float num = expr_32 * expr_32;
-                if (weaponItem != null && weaponItem.PrimaryWeapon != null)
-                {
-                    switch (weaponItem.PrimaryWeapon.WeaponClass.ToString())
-                    {
-                        case "Boulder":
-                        case "Stone":
-                            {
-                                missileTotalDamage *= 0.01f;
-                                break;
-                            }
-                        case "ThrowingAxe":
-                        case "ThrowingKnife":
-                        case "Dagger":
-                            {
-                                length -= 0f; //5f
-                                //if (length < 5.0f)
-                                //{
-                                //    length = 5f;
-                                //}
-                                //length += -(7.0f);
-                                //if (length < 5.0f)
-                                //{
-                                //    length = 5.0f;
-                                //} 
-                                break;
-                            }
-                        case "Javelin":
-                            {
-                                length -= Utilities.throwableCorrectionSpeed;
-                                if (length < 5.0f)
-                                {
-                                    length = 5f;
-                                }
-                                //missileTotalDamage += 168.0f;
-                                //missileTotalDamage *= 0.01f;
-                                //missileTotalDamage = 1f;
-                                break;
-                            }
-                        case "OneHandedPolearm":
-                            {
-                                length -= Utilities.throwableCorrectionSpeed;
-                                if (length < 5.0f)
-                                {
-                                    length = 5f;
-                                }
-                                //missileTotalDamage -= 25f;
-                                //missileTotalDamage = 1f;
-                                break;
-                            }
-                        case "LowGripPolearm":
-                            {
-                                length -= Utilities.throwableCorrectionSpeed;
-                                if (length < 5.0f)
-                                {
-                                    length = 5f;
-                                }
-                                //missileTotalDamage -= 25f;
-                                //missileTotalDamage *= 0.01f;
-                                //missileTotalDamage = 1f;
-                                break;
-                            }
-                        case "Arrow":
-                            {
-                                missileTotalDamage -= 100f;
-                                missileTotalDamage *= 0.01f;
-                                break;
-                            }
-                        case "Bolt":
-                            {
-                                missileTotalDamage -= 100f;
-                                missileTotalDamage *= 0.01f;
-                                break;
-                            }
-                    }
-                }
-
-                float physicalDamage = ((length * length) * (weaponItem.Weight)) / 2;
-                float momentumDamage = (length * weaponItem.Weight);
-                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin") && physicalDamage > (weaponItem.Weight) * 300f)
-                {
-                    physicalDamage = (weaponItem.Weight) * 300f;
-                }
-
-                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") && physicalDamage > (weaponItem.Weight) * 300f)
-                {
-                    physicalDamage = (weaponItem.Weight) * 300f;
-                }
-
-                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") && physicalDamage > (weaponItem.Weight) * 2250f)
-                {
-                    physicalDamage = (weaponItem.Weight) * 2250f;
-                }
-
-                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt") && physicalDamage > (weaponItem.Weight) * 2500f)
-                {
-                    physicalDamage = (weaponItem.Weight) * 2500f;
-                }
-
-                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Stone") ||
-                    weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Boulder"))
-                {
-                    physicalDamage = (length * length * (weaponItem.Weight) * 0.5f);
-                }
-
-                baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining;
-
-                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Javelin"))
-                {
-                    missileTotalDamage = 0f;
-                    //baseMagnitude = (physicalDamage * momentumRemaining + (missileTotalDamage * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
-                    if ((DamageTypes)acd.DamageType == DamageTypes.Pierce)
-                    {
-                        baseMagnitude = (physicalDamage * momentumRemaining) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
-                    }
-                    else if ((DamageTypes)acd.DamageType == DamageTypes.Cut)
-                    {
-                        baseMagnitude = (physicalDamage * momentumRemaining);
-                    }
-                    else
-                    {
-                        baseMagnitude = (physicalDamage * momentumRemaining) * 0.5f;
-                    }
-                }
-
-                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingAxe"))
-                {
-                    baseMagnitude = physicalDamage * momentumRemaining;
-                }
-
-                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("ThrowingKnife") ||
-                    weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Dagger"))
-                {
-                    baseMagnitude = (physicalDamage * momentumRemaining) * RBMConfig.RBMConfig.ThrustMagnitudeModifier * 0.6f;
-                }
-
-                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("OneHandedPolearm") ||
-                    weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("LowGripPolearm"))
-                {
-                    baseMagnitude = (physicalDamage * momentumRemaining) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
-                }
-                if (weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Arrow") ||
-                    weaponItem.PrimaryWeapon.WeaponClass.ToString().Equals("Bolt"))
-                {
-                    if ((DamageTypes)acd.DamageType == DamageTypes.Cut || (DamageTypes)acd.DamageType == DamageTypes.Pierce)
-                    {
-                        baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining;
-                    }
-                    else
-                    {
-                        baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining; // momentum makes more sense for blunt attacks, maybe 500 damage is needed for sling projectiles
-                    }
-                }
+                baseMagnitude = CalculateMissileMagnitude(weapon.CurrentUsageItem.WeaponClass, weaponItem.Weight, length, missileTotalDamage, momentumRemaining, (DamageTypes) acd.DamageType);
                 specialMagnitude = baseMagnitude;
 
                 return false;
@@ -710,6 +711,86 @@ namespace RBMCombat
         {
             static void Postfix(ref ItemMenuVM __instance, in EquipmentElement targetWeapon, int targetWeaponUsageIndex, EquipmentElement comparedWeapon, int comparedWeaponUsageIndex, bool isInit)
             {
+                MethodInfo methodAddFloatProperty = typeof(ItemMenuVM).GetMethod("AddFloatProperty", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(TextObject), typeof(float), typeof(float?), typeof(bool) }, null);
+                methodAddFloatProperty.DeclaringType.GetMethod("AddFloatProperty", new[] { typeof(TextObject), typeof(float), typeof(float?), typeof(bool) });
+
+                MethodInfo methodAddIntProperty = typeof(ItemMenuVM).GetMethod("AddIntProperty", BindingFlags.NonPublic | BindingFlags.Instance);
+                methodAddIntProperty.DeclaringType.GetMethod("AddIntProperty");
+
+                MethodInfo methodCreateProperty = typeof(ItemMenuVM).GetMethod("CreateProperty", BindingFlags.NonPublic | BindingFlags.Instance);
+                methodCreateProperty.DeclaringType.GetMethod("CreateProperty");
+                if (!targetWeapon.IsEmpty && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex) != null && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).IsRangedWeapon)
+                {
+                    if (Hero.MainHero != null)
+                    {
+                        Hero mainAgent = Hero.MainHero;
+                        SkillObject skill = targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).RelevantSkill;
+                        int effectiveSkill = mainAgent.GetSkillValue(skill);
+                        float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(effectiveSkill);
+                        float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill);
+                        int drawWeight = targetWeapon.GetModifiedMissileSpeedForUsage(targetWeaponUsageIndex);
+                        float ammoWeightIdeal = MathF.Clamp(drawWeight / 1000f, 0f, 0.125f);
+
+                        int calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeightIdeal, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ItemUsage, drawWeight);
+                        if(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.Bow)
+                        {
+                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "RBM Stats", "", 1, null });
+
+                            methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Ideal Ammo Weight in grams: "), MathF.Round(ammoWeightIdeal * 1000f), MathF.Round(ammoWeightIdeal * 1000f) });
+                            methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Initial Missile Speed: "), calculatedMissileSpeed, calculatedMissileSpeed });
+
+                            //pierceArrows
+                            bool shouldBreakNextTime = false;
+                            float missileMagnitude = CalculateMissileMagnitude(WeaponClass.Arrow, ammoWeightIdeal, calculatedMissileSpeed, targetWeapon.GetModifiedThrustDamageForUsage(targetWeaponUsageIndex) + 100f, 1f, DamageTypes.Pierce);
+                            string combinedDamageString = "A-Armor\nD-Full Damage\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
+                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Missile Damage Pierce", 1, null });
+                            for (float i = 0; i <= 100; i += 10)
+                            {
+                                if (shouldBreakNextTime)
+                                {
+                                    //break;
+                                }
+                                int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(WeaponClass.Arrow.ToString(),
+                                DamageTypes.Pierce, missileMagnitude, i, 1f, out float penetratedDamage, out float bluntForce, 1f, null, false)), 0, 2000);
+                                realDamage = MathF.Floor(realDamage * 1f);
+
+                                if (penetratedDamage == 0f)
+                                {
+                                    shouldBreakNextTime = true;
+                                }
+                                combinedDamageString += "A: " + String.Format("{0,3}", i) + " D: " + String.Format("{0,-5}", realDamage) + " P: " + String.Format("{0,-5}", MathF.Floor(penetratedDamage)) + " B: " + MathF.Floor(bluntForce) + "\n";
+                                //methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Thrust Damage " + i + " Armor: "), realDamage, realDamage });
+                            }
+                            __instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(combinedDamageString));
+
+                            //cut arrows
+                            shouldBreakNextTime = false;
+                            missileMagnitude = CalculateMissileMagnitude(WeaponClass.Arrow, ammoWeightIdeal, calculatedMissileSpeed, targetWeapon.GetModifiedThrustDamageForUsage(targetWeaponUsageIndex) + 115f, 1f, DamageTypes.Cut);
+                            combinedDamageString = "A-Armor\nD-Full Damage\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
+                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Missile Damage Cut", 1, null });
+                            for (float i = 0; i <= 100; i += 10)
+                            {
+                                if (shouldBreakNextTime)
+                                {
+                                    //break;
+                                }
+                                int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(WeaponClass.Arrow.ToString(),
+                                DamageTypes.Cut, missileMagnitude, i, 1f, out float penetratedDamage, out float bluntForce, 1f, null, false)), 0, 2000);
+                                realDamage = MathF.Floor(realDamage * 1f);
+
+                                if (penetratedDamage == 0f)
+                                {
+                                    shouldBreakNextTime = true;
+                                }
+                                combinedDamageString += "A: " + String.Format("{0,3}", i) + " D: " + String.Format("{0,-5}", realDamage) + " P: " + String.Format("{0,-5}", MathF.Floor(penetratedDamage)) + " B: " + MathF.Floor(bluntForce) + "\n";
+                                //methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Thrust Damage " + i + " Armor: "), realDamage, realDamage });
+                            }
+                            __instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(combinedDamageString));
+
+                        }
+
+                    }
+                }
                 if (!targetWeapon.IsEmpty && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex) != null && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).IsMeleeWeapon)
                 {
                     if (Hero.MainHero != null)
@@ -722,15 +803,7 @@ namespace RBMCombat
 
                         CalculateVisualSpeeds(targetWeapon, targetWeaponUsageIndex, effectiveSkill, out float swingSpeedReal, out float thrustSpeedReal);
                         CalculateVisualSpeeds(comparedWeapon, comparedWeaponUsageIndex, effectiveSkill, out float swingSpeedRealCompred, out float thrustSpeedRealCompared);
-
-                        MethodInfo methodAddFloatProperty = typeof(ItemMenuVM).GetMethod("AddFloatProperty", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(TextObject), typeof(float), typeof(float?), typeof(bool) }, null);
-                        methodAddFloatProperty.DeclaringType.GetMethod("AddFloatProperty", new[] { typeof(TextObject), typeof(float), typeof(float?), typeof(bool) });
-
-                        MethodInfo methodAddIntProperty = typeof(ItemMenuVM).GetMethod("AddIntProperty", BindingFlags.NonPublic | BindingFlags.Instance);
-                        methodAddIntProperty.DeclaringType.GetMethod("AddIntProperty");
-
-                        MethodInfo methodCreateProperty = typeof(ItemMenuVM).GetMethod("CreateProperty", BindingFlags.NonPublic | BindingFlags.Instance);
-                        methodCreateProperty.DeclaringType.GetMethod("CreateProperty");
+                        
                         methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "RBM Stats", "", 1, null });
 
                         methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Relevant Skill: "), effectiveSkill, effectiveSkill });
@@ -753,7 +826,7 @@ namespace RBMCombat
                             float weaponDamageFactorCompared = sweetSpotMagnitudeCompared > 0f ? (float)Math.Sqrt(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).SwingDamageFactor) : -1f;
 
                             bool shouldBreakNextTime = false;
-                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "Swing Damage", "", 1, null });
+                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Swing Damage", 1, null });
 
                             string combinedDamageString = "A-Armor\nD-Full Damage\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
                             string combinedDamageComparedString = "A-Armor\nD-Full Damage\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
@@ -799,7 +872,7 @@ namespace RBMCombat
                             __instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(combinedDamageString));
                             if (!comparedWeapon.IsEmpty)
                             {
-                                methodCreateProperty.Invoke(__instance, new object[] { __instance.ComparedItemProperties, "Swing Damage", "", 1, null });
+                                methodCreateProperty.Invoke(__instance, new object[] { __instance.ComparedItemProperties, "", "Swing Damage", 1, null });
                                 __instance.ComparedItemProperties[__instance.ComparedItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(combinedDamageComparedString));
                             }
                         }
@@ -820,7 +893,7 @@ namespace RBMCombat
                             float weaponDamageFactorCompared = thrustMagnitudeCompared > 0f ? (float)Math.Sqrt(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).ThrustDamageFactor) : -1f;
 
                             bool shouldBreakNextTime = false;
-                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "Thrust Damage", "", 1, null });
+                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Thrust Damage", 1, null });
 
                             string combinedDamageString = "A-Armor\nD-Full Damage\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
                             string combinedDamageComparedString = "A-Armor\nD-Full Damage\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
@@ -866,7 +939,7 @@ namespace RBMCombat
                             __instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(combinedDamageString));
                             if (!comparedWeapon.IsEmpty)
                             {
-                                methodCreateProperty.Invoke(__instance, new object[] { __instance.ComparedItemProperties, "Thrust Damage", "", 1, null });
+                                methodCreateProperty.Invoke(__instance, new object[] { __instance.ComparedItemProperties, "", "Thrust Damage", 1, null });
                                 __instance.ComparedItemProperties[__instance.ComparedItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(combinedDamageComparedString));
                             }
                         }

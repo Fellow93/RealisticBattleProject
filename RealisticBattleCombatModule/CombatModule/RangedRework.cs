@@ -354,7 +354,7 @@ namespace RBMCombat
                             msModifier = missionWeapon.ItemModifier.ModifyHitPoints(50) - 50;
                         }
 
-                        calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon, missionWeapon.CurrentUsageItem.MissileSpeed + msModifier); //rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight());
+                        calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon.CurrentUsageItem.ItemUsage, missionWeapon.CurrentUsageItem.MissileSpeed + msModifier); //rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight());
                         rangedWeaponMW[missionWeapon.GetModifiedItemName().ToString()] = missionWeapon;
                         
                         propertyMissileSpeed.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
@@ -505,7 +505,7 @@ namespace RBMCombat
                     {
                         msModifier = missionWeapon.ItemModifier.ModifyHitPoints(50) - 50;
                     }
-                    int calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon, rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight() + msModifier);// rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight());
+                    int calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon.CurrentUsageItem.ItemUsage, rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight() + msModifier);// rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight());
 
                     Vec3 shooterAgentVelocity = new Vec3(shooterAgent.Velocity, -1);
                     Vec3 myVelocity = new Vec3(velocity, -1);

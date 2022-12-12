@@ -119,10 +119,10 @@ namespace  RBMCombat
             return false;
         }
 
-        public static int calculateMissileSpeed(float ammoWeight, MissionWeapon rangedWeapon, int drawWeight)
+        public static int calculateMissileSpeed(float ammoWeight, string rangedWeaponType, int drawWeight)
         {
             int calculatedMissileSpeed = 10;
-            switch (rangedWeapon.CurrentUsageItem.ItemUsage)
+            switch (rangedWeaponType)
             {
                 case "bow":
                     {
