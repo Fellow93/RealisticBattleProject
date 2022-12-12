@@ -864,7 +864,6 @@ namespace RBMCombat
                                 }
                             }
                             __instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(combinedDamageString));
-                            __instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(combinedDamageString));
                             if (!comparedWeapon.IsEmpty)
                             {
                                 methodCreateProperty.Invoke(__instance, new object[] { __instance.ComparedItemProperties, "Thrust Damage", "", 1, null });
