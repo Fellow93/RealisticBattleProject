@@ -7,6 +7,8 @@ using System;
 using TaleWorlds.CampaignSystem;
 using System.Reflection;
 using TaleWorlds.Localization;
+using TaleWorlds.Core.ViewModelCollection.Generic;
+using TaleWorlds.Core.ViewModelCollection.Information;
 
 namespace RBMCombat
 {
@@ -495,8 +497,212 @@ namespace RBMCombat
             }
         }
 
+        public static float CalculateSweetSpotSwingMagnitude(EquipmentElement weapon, int weaponUsageIndex, int relevantSkill)
+        {
+            float progressEffect = 1f;
+            float sweetSpotMagnitude = -1f;
 
-        //public void GetRealSwingDamage()
+            if (weapon.Item != null && weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex) != null)
+            {
+                float swingSpeed = (float)weapon.GetModifiedSwingSpeedForUsage(weaponUsageIndex) / 4.5454545f * progressEffect;
+
+                int ef = relevantSkill;
+                float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
+                switch (weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).WeaponClass)
+                {
+                    case WeaponClass.LowGripPolearm:
+                    case WeaponClass.Mace:
+                    case WeaponClass.OneHandedAxe:
+                    case WeaponClass.OneHandedPolearm:
+                    case WeaponClass.TwoHandedMace:
+                        {
+                            float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
+                            swingSpeed = swingSpeed * 0.83f * swingskillModifier * progressEffect;
+                            break;
+                        }
+                    case WeaponClass.TwoHandedPolearm:
+                        {
+                            float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
+                            swingSpeed = swingSpeed * 0.83f * swingskillModifier * progressEffect;
+                            break;
+                        }
+                    case WeaponClass.TwoHandedAxe:
+                        {
+                            float swingskillModifier = 1f + (effectiveSkillDR / 800f);
+
+                            swingSpeed = swingSpeed * 0.75f * swingskillModifier * progressEffect;
+                            break;
+                        }
+                    case WeaponClass.OneHandedSword:
+                    case WeaponClass.Dagger:
+                    case WeaponClass.TwoHandedSword:
+                        {
+                            float swingskillModifier = 1f + (effectiveSkillDR / 800f);
+
+                            swingSpeed = swingSpeed * 0.9f * swingskillModifier * progressEffect;
+                            break;
+                        }
+                }
+
+                for (float currentSpot = 0.93f; currentSpot > 0.35f; currentSpot -= 0.05f)
+                {
+                    float weaponWeight = weapon.Item.Weight;
+                    float weaponInertia = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia;
+                    float weaponCOM = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass;
+                    float currentSpotMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(Hero.MainHero.CharacterObject, null, swingSpeed, currentSpot, weaponWeight,
+                        weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex),
+                        weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).GetRealWeaponLength(), weaponInertia, weaponCOM, 0f, false);
+                    if (currentSpotMagnitude > sweetSpotMagnitude)
+                    {
+                        sweetSpotMagnitude = currentSpotMagnitude;
+                    }
+                }
+            }
+            return sweetSpotMagnitude;
+        }
+
+        public static float CalculateThrustMagnitude(EquipmentElement weapon, int weaponUsageIndex, int relevantSkill)
+        {
+            float progressEffect = 1f;
+            float thrustMagnitude = -1f;
+
+            if (weapon.Item != null && weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex) != null)
+            {
+                float thrustWeaponSpeed = (float)weapon.GetModifiedThrustSpeedForUsage(weaponUsageIndex) / 11.7647057f * progressEffect;
+
+                int ef = relevantSkill;
+                float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
+
+                float weaponWeight = weapon.Item.Weight;
+                float weaponInertia = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia;
+                float weaponCOM = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass;
+
+                switch (weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).WeaponClass)
+                {
+                    case WeaponClass.LowGripPolearm:
+                    case WeaponClass.Mace:
+                    case WeaponClass.OneHandedAxe:
+                    case WeaponClass.OneHandedPolearm:
+                    case WeaponClass.TwoHandedMace:
+                        {
+                            float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
+
+                            thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weaponWeight, weaponInertia, weaponCOM);
+                            thrustWeaponSpeed = thrustWeaponSpeed * 0.75f * thrustskillModifier * progressEffect;
+                            break;
+                        }
+                    case WeaponClass.TwoHandedPolearm:
+                        {
+                            float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
+
+                            thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weaponWeight, weaponInertia, weaponCOM);
+                            thrustWeaponSpeed = thrustWeaponSpeed * 0.7f * thrustskillModifier * progressEffect;
+                            break;
+                        }
+                    case WeaponClass.TwoHandedAxe:
+                        {
+                            float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
+
+                            thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weaponWeight, weaponInertia, weaponCOM);
+                            thrustWeaponSpeed = thrustWeaponSpeed * 0.9f * thrustskillModifier * progressEffect;
+                            break;
+                        }
+                    case WeaponClass.OneHandedSword:
+                    case WeaponClass.Dagger:
+                    case WeaponClass.TwoHandedSword:
+                        {
+                            float thrustskillModifier = 1f + (effectiveSkillDR / 800f);
+
+                            thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weaponWeight, weaponInertia, weaponCOM);
+                            thrustWeaponSpeed = thrustWeaponSpeed * 0.7f * thrustskillModifier * progressEffect;
+                            break;
+                        }
+                }
+
+                switch (weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).WeaponClass)
+                {
+                    case WeaponClass.OneHandedPolearm:
+                    case WeaponClass.OneHandedSword:
+                    case WeaponClass.Dagger:
+                    case WeaponClass.Mace:
+                        {
+                            thrustMagnitude = Utilities.CalculateThrustMagnitudeForOneHandedWeapon(weaponWeight, effectiveSkillDR, thrustWeaponSpeed, 0f, Agent.UsageDirection.AttackDown);
+                            break;
+                        }
+                    case WeaponClass.TwoHandedPolearm:
+                    case WeaponClass.TwoHandedSword:
+                        {
+                            thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weaponWeight, effectiveSkillDR, thrustWeaponSpeed, 0f, Agent.UsageDirection.AttackDown);
+                            break;
+                        }
+                    default:
+                        {
+                            thrustMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(Hero.MainHero.CharacterObject, null, thrustWeaponSpeed, weaponWeight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex), 0f, false);
+                            break;
+                        }
+                }
+            }
+            return thrustMagnitude;
+        }
+
+        public static void CalculateVisualSpeeds(EquipmentElement weapon, int weaponUsageIndex, float effectiveSkillDR, out float swingSpeedReal, out float thrustSpeedReal)
+        {
+            swingSpeedReal = 0f;
+            thrustSpeedReal = 0f;
+            if(!weapon.IsEmpty && weapon.Item != null && weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex) != null)
+            {
+                switch (weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).WeaponClass)
+                {
+                    case WeaponClass.LowGripPolearm:
+                    case WeaponClass.Mace:
+                    case WeaponClass.OneHandedAxe:
+                    case WeaponClass.OneHandedPolearm:
+                    case WeaponClass.TwoHandedMace:
+                        {
+                            float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
+                            float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
+
+                            swingSpeedReal = MathF.Ceiling((weapon.GetModifiedSwingSpeedForUsage(weaponUsageIndex) * 0.83f) * swingskillModifier);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * 11.7647057f);
+                            thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.1f) * thrustskillModifier);
+                            break;
+                        }
+                    case WeaponClass.TwoHandedPolearm:
+                        {
+                            float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
+                            float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
+
+                            swingSpeedReal = MathF.Ceiling((weapon.GetModifiedSwingSpeedForUsage(weaponUsageIndex) * swingskillModifier));
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * 11.7647057f);
+                            thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.05f) * thrustskillModifier);
+                            break;
+                        }
+                    case WeaponClass.TwoHandedAxe:
+                        {
+                            float swingskillModifier = 1f + (effectiveSkillDR / 800f);
+                            float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
+
+                            swingSpeedReal = MathF.Ceiling((weapon.GetModifiedSwingSpeedForUsage(weaponUsageIndex) * 0.75f) * swingskillModifier);
+                            thrustSpeedReal = MathF.Ceiling((weapon.GetModifiedThrustSpeedForUsage(weaponUsageIndex) * 0.9f) * thrustskillModifier);
+                            break;
+                        }
+                    case WeaponClass.OneHandedSword:
+                    case WeaponClass.Dagger:
+                    case WeaponClass.TwoHandedSword:
+                        {
+                            float swingskillModifier = 1f + (effectiveSkillDR / 800f);
+                            float thrustskillModifier = 1f + (effectiveSkillDR / 800f);
+
+                            swingSpeedReal = MathF.Ceiling((weapon.GetModifiedSwingSpeedForUsage(weaponUsageIndex) * 0.9f) * swingskillModifier);
+                            thrustSpeedReal = MathF.Ceiling((weapon.GetModifiedThrustSpeedForUsage(weaponUsageIndex) * 1.15f) * thrustskillModifier);
+                            break;
+                        }
+                }
+            }
+
+            swingSpeedReal /= 4.5454545f;
+            thrustSpeedReal /= 11.7647057f;
+        }
 
         [HarmonyPatch(typeof(ItemMenuVM))]
         [HarmonyPatch("SetWeaponComponentTooltip")]
@@ -504,275 +710,166 @@ namespace RBMCombat
         {
             static void Postfix(ref ItemMenuVM __instance, in EquipmentElement targetWeapon, int targetWeaponUsageIndex, EquipmentElement comparedWeapon, int comparedWeaponUsageIndex, bool isInit)
             {
-                if(targetWeapon.GetModifiedSwingDamageForUsage(targetWeaponUsageIndex) > 0f)
+                if (!targetWeapon.IsEmpty && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex) != null && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).IsMeleeWeapon)
                 {
-                    float progressEffect = 1f;
-                    float sweetSpotMagnitude = 0f;
-                    float sweetSpotMagnitudeCompared = -1f;
-
-                    if (!comparedWeapon.IsEmpty)
-                    {
-                        float swingSpeedCompared = (float)comparedWeapon.GetModifiedSwingSpeedForUsage(comparedWeaponUsageIndex) / 4.5454545f * progressEffect;
-
-                        if (Hero.MainHero != null && comparedWeapon.Item != null && comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex) != null)
-                        {
-                            Hero mainAgent = Hero.MainHero;
-                            SkillObject skill = comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).RelevantSkill;
-                            int ef = mainAgent.GetSkillValue(skill);
-                            float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
-                            switch (comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).WeaponClass)
-                            {
-                                case WeaponClass.LowGripPolearm:
-                                case WeaponClass.Mace:
-                                case WeaponClass.OneHandedAxe:
-                                case WeaponClass.OneHandedPolearm:
-                                case WeaponClass.TwoHandedMace:
-                                    {
-                                        float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
-                                        swingSpeedCompared = swingSpeedCompared * 0.83f * swingskillModifier * progressEffect;
-                                        break;
-                                    }
-                                case WeaponClass.TwoHandedPolearm:
-                                    {
-                                        float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
-                                        swingSpeedCompared = swingSpeedCompared * 0.83f * swingskillModifier * progressEffect;
-                                        break;
-                                    }
-                                case WeaponClass.TwoHandedAxe:
-                                    {
-                                        float swingskillModifier = 1f + (effectiveSkillDR / 800f);
-
-                                        swingSpeedCompared = swingSpeedCompared * 0.75f * swingskillModifier * progressEffect;
-                                        break;
-                                    }
-                                case WeaponClass.OneHandedSword:
-                                case WeaponClass.Dagger:
-                                case WeaponClass.TwoHandedSword:
-                                    {
-                                        float swingskillModifier = 1f + (effectiveSkillDR / 800f);
-
-                                        swingSpeedCompared = swingSpeedCompared * 0.9f * swingskillModifier * progressEffect;
-                                        break;
-                                    }
-                            }
-
-                            for (float currentSpot = 0.93f; currentSpot > 0.4f; currentSpot -= 0.05f)
-                            {
-                                float weaponLength = comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).WeaponLength;
-                                float weaponWeight = comparedWeapon.Item.Weight;
-                                float weaponInertia = comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).Inertia;
-                                float weaponCOM = comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).CenterOfMass;
-                                float currentSpotMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(Hero.MainHero.CharacterObject, null, swingSpeedCompared, currentSpot, weaponWeight,
-                                    comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex),
-                                    comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).GetRealWeaponLength(), weaponInertia, weaponCOM, 0f, false);
-                                if (currentSpotMagnitude > sweetSpotMagnitudeCompared)
-                                {
-                                    sweetSpotMagnitudeCompared = currentSpotMagnitude;
-                                }
-                            }
-                        }
-                    }
-
-                    float swingSpeed = (float)targetWeapon.GetModifiedSwingSpeedForUsage(targetWeaponUsageIndex) / 4.5454545f * progressEffect;
-
-                    if (Hero.MainHero != null && targetWeapon.Item != null && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex) != null)
+                    if (Hero.MainHero != null)
                     {
                         Hero mainAgent = Hero.MainHero;
                         SkillObject skill = targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).RelevantSkill;
-                        int ef = mainAgent.GetSkillValue(skill);
-                        float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
-                        switch (targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass)
+                        int effectiveSkill = mainAgent.GetSkillValue(skill);
+                        float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(effectiveSkill);
+                        float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill);
+
+                        CalculateVisualSpeeds(targetWeapon, targetWeaponUsageIndex, effectiveSkill, out float swingSpeedReal, out float thrustSpeedReal);
+                        CalculateVisualSpeeds(comparedWeapon, comparedWeaponUsageIndex, effectiveSkill, out float swingSpeedRealCompred, out float thrustSpeedRealCompared);
+
+                        MethodInfo methodAddFloatProperty = typeof(ItemMenuVM).GetMethod("AddFloatProperty", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(TextObject), typeof(float), typeof(float?), typeof(bool) }, null);
+                        methodAddFloatProperty.DeclaringType.GetMethod("AddFloatProperty", new[] { typeof(TextObject), typeof(float), typeof(float?), typeof(bool) });
+
+                        MethodInfo methodAddIntProperty = typeof(ItemMenuVM).GetMethod("AddIntProperty", BindingFlags.NonPublic | BindingFlags.Instance);
+                        methodAddIntProperty.DeclaringType.GetMethod("AddIntProperty");
+
+                        MethodInfo methodCreateProperty = typeof(ItemMenuVM).GetMethod("CreateProperty", BindingFlags.NonPublic | BindingFlags.Instance);
+                        methodCreateProperty.DeclaringType.GetMethod("CreateProperty");
+                        methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "RBM Stats", "", 1, null });
+
+                        methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Relevant Skill: "), effectiveSkill, effectiveSkill });
+
+                        methodAddFloatProperty.Invoke(__instance, new object[] { new TextObject("Swing Speed m/s:"), swingSpeedReal, swingSpeedRealCompred, false });
+                        methodAddFloatProperty.Invoke(__instance, new object[] { new TextObject("Thrust Speed m/s: "), thrustSpeedReal, thrustSpeedRealCompared, false });
+
+                        if (targetWeapon.GetModifiedSwingDamageForUsage(targetWeaponUsageIndex) > 0f)
                         {
-                            case WeaponClass.LowGripPolearm:
-                            case WeaponClass.Mace:
-                            case WeaponClass.OneHandedAxe:
-                            case WeaponClass.OneHandedPolearm:
-                            case WeaponClass.TwoHandedMace:
-                                {
-                                    float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
-                                    swingSpeed = swingSpeed * 0.83f * swingskillModifier * progressEffect;
-                                    break;
-                                }
-                            case WeaponClass.TwoHandedPolearm:
-                                {
-                                    float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
-                                    swingSpeed = swingSpeed * 0.83f * swingskillModifier * progressEffect;
-                                    break;
-                                }
-                            case WeaponClass.TwoHandedAxe:
-                                {
-                                    float swingskillModifier = 1f + (effectiveSkillDR / 800f);
+                            float sweetSpotMagnitude = CalculateSweetSpotSwingMagnitude(targetWeapon, targetWeaponUsageIndex, effectiveSkill);
+                            float sweetSpotMagnitudeCompared = CalculateSweetSpotSwingMagnitude(comparedWeapon, comparedWeaponUsageIndex, effectiveSkill);
 
-                                    swingSpeed = swingSpeed * 0.75f * swingskillModifier * progressEffect;
-                                    break;
-                                }
-                            case WeaponClass.OneHandedSword:
-                            case WeaponClass.Dagger:
-                            case WeaponClass.TwoHandedSword:
-                                {
-                                    float swingskillModifier = 1f + (effectiveSkillDR / 800f);
+                            float skillBasedDamage = Utilities.GetSkillBasedDamage(sweetSpotMagnitude, false, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
+                                targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, effectiveSkillDR, skillModifier, StrikeType.Swing, targetWeapon.Item.Weight);
 
-                                    swingSpeed = swingSpeed * 0.9f * swingskillModifier * progressEffect;
-                                    break;
-                                }
-                        }
+                            float skillBasedDamageCompared = sweetSpotMagnitudeCompared > 0f ? Utilities.GetSkillBasedDamage(sweetSpotMagnitudeCompared, false, comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).WeaponClass.ToString(),
+                                comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).SwingDamageType, effectiveSkillDR, skillModifier, StrikeType.Swing, comparedWeapon.Item.Weight) : -1f;
 
-                        for (float currentSpot = 0.93f; currentSpot > 0.4f; currentSpot -= 0.05f)
-                        {
-                            float weaponLength = targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponLength;
-                            float weaponWeight = targetWeapon.Item.Weight;
-                            float weaponInertia = targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).Inertia;
-                            float weaponCOM = targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).CenterOfMass;
-                            float currentSpotMagnitude =  Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(Hero.MainHero.CharacterObject, null, swingSpeed, currentSpot, weaponWeight,
-                                targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex),
-                                targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).GetRealWeaponLength(), weaponInertia, weaponCOM, 0f, false);
-                            if (currentSpotMagnitude > sweetSpotMagnitude)
+                            float weaponDamageFactor = (float)Math.Sqrt(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageFactor);
+                            float weaponDamageFactorCompared = sweetSpotMagnitudeCompared > 0f ? (float)Math.Sqrt(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).SwingDamageFactor) : -1f;
+
+                            bool shouldBreakNextTime = false;
+                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "Swing Damage", "", 1, null });
+
+                            string combinedDamageString = "A-Armor\nD-Full Damage\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
+                            string combinedDamageComparedString = "A-Armor\nD-Full Damage\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
+                            for (float i = 0; i <= 100; i += 10)
                             {
-                                sweetSpotMagnitude = currentSpotMagnitude;
+                                if (shouldBreakNextTime)
+                                {
+                                    //break;
+                                }
+                                if (sweetSpotMagnitudeCompared > 0f)
+                                {
+                                    int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
+                                        targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, skillBasedDamage, i, 1f, out float penetratedDamage, out float bluntForce, weaponDamageFactor, null, false)), 0, 2000);
+                                    realDamage = MathF.Floor(realDamage * 1f);
+
+                                    int realDamageCompared = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).WeaponClass.ToString(),
+                                        comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).SwingDamageType, skillBasedDamageCompared, i, 1f, out float penetratedDamageCompared, out float bluntForceCompared, weaponDamageFactorCompared, null, false)), 0, 2000);
+                                    realDamageCompared = MathF.Floor(realDamageCompared * 1f);
+
+                                    if (penetratedDamage == 0f && penetratedDamageCompared == 0f)
+                                    {
+                                        shouldBreakNextTime = true;
+                                    }
+                                    combinedDamageString += "A: " + String.Format("{0,3}", i) + " D: " + String.Format("{0,-5}", realDamage) + " P: " + String.Format("{0,-5}", MathF.Floor(penetratedDamage)) + " B: " + MathF.Floor(bluntForce) + "\n";
+                                    combinedDamageComparedString += "A: " + String.Format("{0,3}", i) + " D: " + String.Format("{0,-5}", realDamageCompared) + " P: " + String.Format("{0,-5}", MathF.Floor(penetratedDamageCompared)) + " B: " + MathF.Floor(bluntForceCompared) + "\n";
+                                    //methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Swing Damage " + i + " Armor: "), realDamage, realDamageCompared });
+                                    //__instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject("Penetrated: "+ MathF.Round(penetratedDamage, 1) + " Blunt Force: " + MathF.Round(bluntForce, 1)));
+                                }
+                                else
+                                {
+                                    int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(), targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, skillBasedDamage, i, 1f, out float penetratedDamage, out float bluntForce, weaponDamageFactor, null, false)), 0, 2000);
+                                    realDamage = MathF.Floor(realDamage * 1f);
+
+                                    if (penetratedDamage == 0f)
+                                    {
+                                        shouldBreakNextTime = true;
+                                    }
+                                    combinedDamageString += "A: " + String.Format("{0,3}", i) + " D: " + String.Format("{0,-5}", realDamage) + " P: " + String.Format("{0,-5}", MathF.Floor(penetratedDamage)) + " B: " + MathF.Floor(bluntForce) + "\n";
+                                    //methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Swing Damage " + i + " Armor: "), realDamage, realDamage });
+                                    //__instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject("Penetrated: " + MathF.Round(penetratedDamage, 1) + " Blunt Force: " + MathF.Round(bluntForce, 1)));
+                                }
+                            }
+                            __instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(combinedDamageString));
+                            if (!comparedWeapon.IsEmpty)
+                            {
+                                methodCreateProperty.Invoke(__instance, new object[] { __instance.ComparedItemProperties, "Swing Damage", "", 1, null });
+                                __instance.ComparedItemProperties[__instance.ComparedItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(combinedDamageComparedString));
                             }
                         }
 
-                        float skillModifier = Utilities.CalculateSkillModifier(ef);
-                        float skillBasedDamage = Utilities.GetSkillBasedDamage(sweetSpotMagnitude, false, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
-                           targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, effectiveSkillDR, skillModifier, StrikeType.Swing, targetWeapon.Item.Weight);
-
-                        float skillBasedDamageCompared = sweetSpotMagnitudeCompared>0f?Utilities.GetSkillBasedDamage(sweetSpotMagnitudeCompared, false, comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).WeaponClass.ToString(),
-                           comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).SwingDamageType, effectiveSkillDR, skillModifier, StrikeType.Swing, comparedWeapon.Item.Weight):-1f;
-
-                        float weaponDamageFactor = 1f;
-                        float weaponDamageFactorCompared = 1f;
-                        weaponDamageFactor = (float)Math.Sqrt(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageFactor);
-                        weaponDamageFactorCompared = sweetSpotMagnitudeCompared > 0f ? (float)Math.Sqrt(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).SwingDamageFactor):-1f;
-                        for(float i = 0; i <=100; i+=10)
+                        if (targetWeapon.GetModifiedThrustDamageForUsage(targetWeaponUsageIndex) > 0f)
                         {
-                            if(sweetSpotMagnitudeCompared > 0f)
+
+                            float thrustMagnitude = CalculateThrustMagnitude(targetWeapon, targetWeaponUsageIndex, effectiveSkill);
+                            float thrustMagnitudeCompared = CalculateThrustMagnitude(comparedWeapon, comparedWeaponUsageIndex, effectiveSkill);
+
+                            float skillBasedDamage = Utilities.GetSkillBasedDamage(thrustMagnitude, false, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
+                                targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, effectiveSkillDR, skillModifier, StrikeType.Thrust, targetWeapon.Item.Weight);
+
+                            float skillBasedDamageCompared = thrustMagnitudeCompared > 0f ? Utilities.GetSkillBasedDamage(thrustMagnitudeCompared, false, comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).WeaponClass.ToString(),
+                                comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).ThrustDamageType, effectiveSkillDR, skillModifier, StrikeType.Thrust, comparedWeapon.Item.Weight) : -1f;
+
+                            float weaponDamageFactor = (float)Math.Sqrt(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageFactor);
+                            float weaponDamageFactorCompared = thrustMagnitudeCompared > 0f ? (float)Math.Sqrt(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).ThrustDamageFactor) : -1f;
+
+                            bool shouldBreakNextTime = false;
+                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "Thrust Damage", "", 1, null });
+
+                            string combinedDamageString = "A-Armor\nD-Full Damage\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
+                            string combinedDamageComparedString = "A-Armor\nD-Full Damage\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
+                            for (float i = 0; i <= 100; i += 10)
                             {
-                                int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
-                                    targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, skillBasedDamage, i, 1f, weaponDamageFactor, null, false)), 0, 2000);
-                                realDamage = MathF.Floor(realDamage * 1f);
-                                int realDamageCompared = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).WeaponClass.ToString(),
-                                    comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).SwingDamageType, skillBasedDamageCompared, i, 1f, weaponDamageFactorCompared, null, false)), 0, 2000);
-                                realDamageCompared = MathF.Floor(realDamageCompared * 1f);
-                                MethodInfo method = typeof(ItemMenuVM).GetMethod("AddIntProperty", BindingFlags.NonPublic | BindingFlags.Instance);
-                                method.DeclaringType.GetMethod("AddIntProperty");
-                                method.Invoke(__instance, new object[] { new TextObject("Swing Damage " + i + " Armor: "), realDamage, realDamageCompared });
+                                if (shouldBreakNextTime)
+                                {
+                                    //break;
+                                }
+                                if (thrustMagnitudeCompared > 0f)
+                                {
+                                    int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
+                                    targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, skillBasedDamage, i, 1f, out float penetratedDamage, out float bluntForce, weaponDamageFactor, null, false)), 0, 2000);
+                                    realDamage = MathF.Floor(realDamage * 1f);
+
+                                    int realDamageCompared = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).WeaponClass.ToString(),
+                                    comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).ThrustDamageType, skillBasedDamageCompared, i, 1f, out float penetratedDamageCompared, out float bluntForceCompared, weaponDamageFactorCompared, null, false)), 0, 2000);
+                                    realDamageCompared = MathF.Floor(realDamageCompared * 1f);
+
+                                    if (penetratedDamage == 0f && penetratedDamageCompared == 0f)
+                                    {
+                                        shouldBreakNextTime = true;
+                                    }
+
+                                    //methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Thrust Damage " + i + " Armor: "), realDamage, realDamageCompared });
+                                    combinedDamageString += "A: " + String.Format("{0,3}", i) + " D: " + String.Format("{0,-5}", realDamage) + " P: " + String.Format("{0,-5}", MathF.Floor(penetratedDamage)) + " B: " + MathF.Floor(bluntForce) + "\n";
+                                    combinedDamageComparedString += "A: " + String.Format("{0,3}", i) + " D: " + String.Format("{0,-5}", realDamageCompared) + " P: " + String.Format("{0,-5}", MathF.Floor(penetratedDamageCompared)) + " B: " + MathF.Floor(bluntForceCompared) + "\n";
+                                }
+                                else
+                                {
+                                    int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
+                                    targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, skillBasedDamage, i, 1f, out float penetratedDamage, out float bluntForce, weaponDamageFactor, null, false)), 0, 2000);
+                                    realDamage = MathF.Floor(realDamage * 1f);
+
+                                    if (penetratedDamage == 0f)
+                                    {
+                                        shouldBreakNextTime = true;
+                                    }
+                                    combinedDamageString += "A: " + String.Format("{0,3}", i) + " D: " + String.Format("{0,-5}", realDamage) + " P: " + String.Format("{0,-5}", MathF.Floor(penetratedDamage)) + " B: " + MathF.Floor(bluntForce) + "\n";
+                                    //methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Thrust Damage " + i + " Armor: "), realDamage, realDamage });
+                                }
                             }
-                            else
+                            __instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(combinedDamageString));
+                            __instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(combinedDamageString));
+                            if (!comparedWeapon.IsEmpty)
                             {
-                                int realDamage0Armor = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(), targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, skillBasedDamage, i, 1f, weaponDamageFactor, null, false)), 0, 2000);
-                                realDamage0Armor = MathF.Floor(realDamage0Armor * 1f);
-                                MethodInfo method = typeof(ItemMenuVM).GetMethod("AddIntProperty", BindingFlags.NonPublic | BindingFlags.Instance);
-                                method.DeclaringType.GetMethod("AddIntProperty");
-                                method.Invoke(__instance, new object[] { new TextObject("Swing Damage " + i + " Armor: "), realDamage0Armor, realDamage0Armor });
+                                methodCreateProperty.Invoke(__instance, new object[] { __instance.ComparedItemProperties, "Thrust Damage", "", 1, null });
+                                __instance.ComparedItemProperties[__instance.ComparedItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(combinedDamageComparedString));
                             }
-                        }
-                    }
-                }
-
-                if (targetWeapon.GetModifiedThrustDamageForUsage(targetWeaponUsageIndex) > 0f)
-                {
-                    float progressEffect = 1f;
-                    float thrustWeaponSpeed = (float)targetWeapon.GetModifiedThrustSpeedForUsage(targetWeaponUsageIndex) / 11.7647057f * progressEffect;
-
-                    if (Hero.MainHero != null && targetWeapon.Item != null && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex) != null)
-                    {
-                        Hero mainAgent = Hero.MainHero;
-                        SkillObject skill = targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).RelevantSkill;
-                        int ef = mainAgent.GetSkillValue(skill);
-                        float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
-
-                        float weaponLength = targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponLength;
-                        float weaponWeight = targetWeapon.Item.Weight;
-                        float weaponInertia = targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).Inertia;
-                        float weaponCOM = targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).CenterOfMass;
-
-                        switch (targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass)
-                        {
-                            case WeaponClass.LowGripPolearm:
-                            case WeaponClass.Mace:
-                            case WeaponClass.OneHandedAxe:
-                            case WeaponClass.OneHandedPolearm:
-                            case WeaponClass.TwoHandedMace:
-                                {
-                                    float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
-                                    float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
-                                    float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
-
-                                    thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weaponWeight, weaponInertia, weaponCOM);
-                                    thrustWeaponSpeed = thrustWeaponSpeed * 0.75f * thrustskillModifier * progressEffect;
-                                    break;
-                                }
-                            case WeaponClass.TwoHandedPolearm:
-                                {
-                                    float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
-                                    float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
-                                    float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
-
-                                    thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weaponWeight, weaponInertia, weaponCOM);
-                                    thrustWeaponSpeed = thrustWeaponSpeed * 0.7f * thrustskillModifier * progressEffect;
-                                    break;
-                                }
-                            case WeaponClass.TwoHandedAxe:
-                                {
-                                    float swingskillModifier = 1f + (effectiveSkillDR / 800f);
-                                    float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
-                                    float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
-
-                                    thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weaponWeight, weaponInertia, weaponCOM);
-                                    thrustWeaponSpeed = thrustWeaponSpeed * 0.9f * thrustskillModifier * progressEffect;
-                                    break;
-                                }
-                            case WeaponClass.OneHandedSword:
-                            case WeaponClass.Dagger:
-                            case WeaponClass.TwoHandedSword:
-                                {
-                                    float swingskillModifier = 1f + (effectiveSkillDR / 800f);
-                                    float thrustskillModifier = 1f + (effectiveSkillDR / 800f);
-                                    float handlingskillModifier = 1f + (effectiveSkillDR / 800f);
-
-                                    thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weaponWeight, weaponInertia, weaponCOM);
-                                    thrustWeaponSpeed = thrustWeaponSpeed * 0.7f * thrustskillModifier * progressEffect;
-                                    break;
-                                }
-                        }
-
-                        float thrustMagnitude = 0f;
-                        switch (targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass)
-                        {
-                            case WeaponClass.OneHandedPolearm:
-                            case WeaponClass.OneHandedSword:
-                            case WeaponClass.Dagger:
-                            case WeaponClass.Mace:
-                                {
-                                    thrustMagnitude = Utilities.CalculateThrustMagnitudeForOneHandedWeapon(weaponWeight, effectiveSkillDR, thrustWeaponSpeed, 0f, Agent.UsageDirection.AttackDown);
-                                    break;
-                                }
-                            case WeaponClass.TwoHandedPolearm:
-                            case WeaponClass.TwoHandedSword:
-                                {
-                                    thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weaponWeight, effectiveSkillDR, thrustWeaponSpeed, 0f, Agent.UsageDirection.AttackDown);
-                                    break;
-                                }
-                            default:
-                                {
-                                    thrustMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(Hero.MainHero.CharacterObject, null, thrustWeaponSpeed, weaponWeight, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex), 0f, false);
-                                    break;
-                                }
-                        }
-
-                        float skillModifier = Utilities.CalculateSkillModifier(ef);
-                        float skillBasedDamage = Utilities.GetSkillBasedDamage(thrustMagnitude, false, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
-                           targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, effectiveSkillDR, skillModifier, StrikeType.Thrust, targetWeapon.Item.Weight);
-
-                        float weaponDamageFactor = 1f;
-                        weaponDamageFactor = (float)Math.Sqrt(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageFactor);
-                        for (float i = 0; i <= 100; i += 10)
-                        {
-                            int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(), targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, skillBasedDamage, i, 1f, weaponDamageFactor, null, false)), 0, 2000);
-                            realDamage = MathF.Floor(realDamage * 1f);
-                            MethodInfo method = typeof(ItemMenuVM).GetMethod("AddIntProperty", BindingFlags.NonPublic | BindingFlags.Instance);
-                            method.DeclaringType.GetMethod("AddIntProperty");
-                            method.Invoke(__instance, new object[] { new TextObject("Thrust Damage " + i + " Armor: "), realDamage, realDamage });
                         }
                     }
                 }

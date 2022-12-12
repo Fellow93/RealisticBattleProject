@@ -577,7 +577,7 @@ namespace RBMCombat
                 {
                     weaponDamageFactor = (float)Math.Sqrt((attackCollisionData.StrikeType == (int)StrikeType.Thrust) ? attackerWeapon.ThrustDamageFactor : attackerWeapon.SwingDamageFactor);
                 }
-                inflictedDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(weaponType, damageType, magnitude, armorAmount, victimAgentAbsorbedDamageRatio, weaponDamageFactor, player, isPlayerVictim)), 0, 2000);
+                inflictedDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(weaponType, damageType, magnitude, armorAmount, victimAgentAbsorbedDamageRatio, out _, out _, weaponDamageFactor, player, isPlayerVictim)), 0, 2000);
                 inflictedDamage = MathF.Floor(inflictedDamage * dmgMultiplier);
 
                 //float dmgWithPerksSkills = MissionGameModels.Current.AgentApplyDamageModel.CalculateDamage(ref attackInformation, ref attackCollisionData, in attackerWeapon, inflictedDamage, out float bonusFromSkills);
@@ -591,7 +591,7 @@ namespace RBMCombat
                 //    Utilities.numOfHits++;
                 //}
 
-                int absoluteDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(weaponType, damageType, magnitude, 0f, victimAgentAbsorbedDamageRatio, weaponDamageFactor) * dmgMultiplier), 0, 2000);
+                int absoluteDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(weaponType, damageType, magnitude, 0f, victimAgentAbsorbedDamageRatio, out _, out _, weaponDamageFactor) * dmgMultiplier), 0, 2000);
                 absorbedByArmor = absoluteDamage - inflictedDamage;
 
                 return false;
@@ -859,7 +859,7 @@ namespace RBMCombat
                             }
                     }
 
-                    localInflictedDamage = Utilities.RBMComputeDamage(weaponType, damageType, blowMagnitude, (float)shieldArmorForCurrentUsage * 10f, absorbedDamageRatio);
+                    localInflictedDamage = Utilities.RBMComputeDamage(weaponType, damageType, blowMagnitude, (float)shieldArmorForCurrentUsage * 10f, absorbedDamageRatio, out _, out _);
 
                     if (attackCollisionData.IsMissile)
                     {

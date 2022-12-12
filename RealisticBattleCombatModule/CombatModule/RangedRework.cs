@@ -89,6 +89,10 @@ namespace RBMCombat
                         if(skill != null) {
                             int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance.Character, __instance.Origin, __instance.Formation, skill);
                             float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
+
+                            int swingSpeed = __instance.Equipment[equipmentSlot].GetModifiedSwingSpeedForCurrentUsage();
+                            int thrustSpeed = __instance.Equipment[equipmentSlot].GetModifiedThrustSpeedForCurrentUsage();
+                            int handling = __instance.Equipment[equipmentSlot].GetModifiedHandlingForCurrentUsage();
                             switch (weaponStatsData[i].WeaponClass)
                             {
                                 case (int)WeaponClass.LowGripPolearm:
@@ -101,10 +105,10 @@ namespace RBMCombat
                                         float thrustskillModifier = 1f + (effectiveSkill / 1000f);
                                         float handlingskillModifier = 1f + (effectiveSkill / 700f);
 
-                                        weaponStatsData[i].SwingSpeed = MathF.Ceiling((weaponStatsData[i].SwingSpeed * 0.83f) * swingskillModifier);
+                                        weaponStatsData[i].SwingSpeed = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
                                         weaponStatsData[i].ThrustSpeed = MathF.Floor(Utilities.CalculateThrustSpeed(weaponData.BaseWeight, weaponData.Inertia, weaponData.CenterOfMass) * 11.7647057f);
                                         weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 1.1f) * thrustskillModifier);
-                                        weaponStatsData[i].DefendSpeed = MathF.Ceiling((weaponStatsData[i].DefendSpeed * 0.83f) * handlingskillModifier);
+                                        weaponStatsData[i].DefendSpeed = MathF.Ceiling((handling * 0.83f) * handlingskillModifier);
                                         break;
                                     }
                                 case (int)WeaponClass.TwoHandedPolearm:
@@ -113,10 +117,10 @@ namespace RBMCombat
                                         float thrustskillModifier = 1f + (effectiveSkill / 1000f);
                                         float handlingskillModifier = 1f + (effectiveSkill / 700f);
 
-                                        weaponStatsData[i].SwingSpeed = MathF.Ceiling((weaponStatsData[i].SwingSpeed * 0.83f) * swingskillModifier);
+                                        weaponStatsData[i].SwingSpeed = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
                                         weaponStatsData[i].ThrustSpeed = MathF.Floor(Utilities.CalculateThrustSpeed(weaponData.BaseWeight, weaponData.Inertia, weaponData.CenterOfMass) * 11.7647057f);
                                         weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 1.05f) * thrustskillModifier);
-                                        weaponStatsData[i].DefendSpeed = MathF.Ceiling((weaponStatsData[i].DefendSpeed * 5f) * handlingskillModifier);
+                                        weaponStatsData[i].DefendSpeed = MathF.Ceiling((handling * 5f) * handlingskillModifier);
                                         break;
                                     }
                                 case (int)WeaponClass.TwoHandedAxe:
@@ -125,9 +129,9 @@ namespace RBMCombat
                                         float thrustskillModifier = 1f + (effectiveSkill / 1000f);
                                         float handlingskillModifier = 1f + (effectiveSkill / 700f);
 
-                                        weaponStatsData[i].SwingSpeed = MathF.Ceiling((weaponStatsData[i].SwingSpeed * 0.75f) * swingskillModifier);
+                                        weaponStatsData[i].SwingSpeed = MathF.Ceiling((swingSpeed * 0.75f) * swingskillModifier);
                                         weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.9f) * thrustskillModifier);
-                                        weaponStatsData[i].DefendSpeed = MathF.Ceiling((weaponStatsData[i].DefendSpeed * 0.83f) * handlingskillModifier);
+                                        weaponStatsData[i].DefendSpeed = MathF.Ceiling((handling * 0.83f) * handlingskillModifier);
                                         break;
                                     }
                                 case (int)WeaponClass.OneHandedSword:
@@ -138,9 +142,10 @@ namespace RBMCombat
                                         float thrustskillModifier = 1f + (effectiveSkill / 800f);
                                         float handlingskillModifier = 1f + (effectiveSkill / 800f);
 
-                                        weaponStatsData[i].SwingSpeed = MathF.Ceiling((weaponStatsData[i].SwingSpeed * 0.9f) * swingskillModifier);
-                                        weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 1.15f) * thrustskillModifier);
-                                        weaponStatsData[i].DefendSpeed = MathF.Ceiling((weaponStatsData[i].DefendSpeed * 0.9f) * handlingskillModifier);
+                                        weaponStatsData[i].SwingSpeed = MathF.Ceiling((swingSpeed * 0.9f) * swingskillModifier);
+                                        weaponStatsData[i].ThrustSpeed = MathF.Floor(Utilities.CalculateThrustSpeed(weaponData.BaseWeight, weaponData.Inertia, weaponData.CenterOfMass) * 11.7647057f);
+                                        weaponStatsData[i].ThrustSpeed = MathF.Ceiling((thrustSpeed * 1.15f) * thrustskillModifier);
+                                        weaponStatsData[i].DefendSpeed = MathF.Ceiling((handling * 0.9f) * handlingskillModifier);
                                         break;
                                     }
                                 case (int)WeaponClass.Bow:
@@ -148,11 +153,11 @@ namespace RBMCombat
                                         if (RBMConfig.RBMConfig.realisticRangedReload.Equals("1") || RBMConfig.RBMConfig.realisticRangedReload.Equals("2"))
                                         {
                                             float DrawSpeedskillModifier = 1 + (effectiveSkill * 0.01f);
-                                            weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.1f) * DrawSpeedskillModifier);
+                                            weaponStatsData[i].ThrustSpeed = MathF.Ceiling((thrustSpeed * 0.1f) * DrawSpeedskillModifier);
                                         }
                                         if (RBMConfig.RBMConfig.realisticRangedReload.Equals("0"))
                                         {
-                                            weaponStatsData[i].ThrustSpeed = MathF.Ceiling(weaponStatsData[i].ThrustSpeed * 0.45f);
+                                            weaponStatsData[i].ThrustSpeed = MathF.Ceiling(thrustSpeed * 0.45f);
                                         }
 
                                         MissionWeapon mw = __instance.Equipment[equipmentSlot];
