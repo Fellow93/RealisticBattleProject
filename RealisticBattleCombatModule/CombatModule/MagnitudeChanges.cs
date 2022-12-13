@@ -790,8 +790,6 @@ namespace RBMCombat
                                 }
                                 combinedDamageString += "A: " + String.Format("{0,3}", i) + " D: " + String.Format("{0,-5}", realDamage) + " P: " + String.Format("{0,-5}", MathF.Floor(penetratedDamage)) + " B: " + MathF.Floor(bluntForce) + "\n";
                                 combinedDamageComparedString += "A: " + String.Format("{0,3}", i) + " D: " + String.Format("{0,-5}", realDamageCompared) + " P: " + String.Format("{0,-5}", MathF.Floor(penetratedDamageCompared)) + " B: " + MathF.Floor(bluntForceCompared) + "\n";
-                                //methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Swing Damage " + i + " Armor: "), realDamage, realDamageCompared });
-                                //__instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject("Penetrated: "+ MathF.Round(penetratedDamage, 1) + " Blunt Force: " + MathF.Round(bluntForce, 1)));
                             }
                             else
                             {
@@ -803,8 +801,6 @@ namespace RBMCombat
                                     shouldBreakNextTime = true;
                                 }
                                 combinedDamageString += "A: " + String.Format("{0,3}", i) + " D: " + String.Format("{0,-5}", realDamage) + " P: " + String.Format("{0,-5}", MathF.Floor(penetratedDamage)) + " B: " + MathF.Floor(bluntForce) + "\n";
-                                //methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Swing Damage " + i + " Armor: "), realDamage, realDamage });
-                                //__instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject("Penetrated: " + MathF.Round(penetratedDamage, 1) + " Blunt Force: " + MathF.Round(bluntForce, 1)));
                             }
                         }
                         swingCombinedStringOut = combinedDamageString;
@@ -1154,12 +1150,12 @@ namespace RBMCombat
                         {
                             methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Swing Sweet Spot, %: "), MathF.Floor(sweetSpotOut * 100f), MathF.Floor(sweetSpotComparedOut * 100f) });
 
-                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Swing Damage", 1, null });
+                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Swing Damage (Hover)", 1, null });
 
                             __instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(swingCombinedStringOut));
                             if (!comparedWeapon.IsEmpty)
                             {
-                                methodCreateProperty.Invoke(__instance, new object[] { __instance.ComparedItemProperties, "", "Swing Damage", 1, null });
+                                methodCreateProperty.Invoke(__instance, new object[] { __instance.ComparedItemProperties, "", "Swing Damage (Hover)", 1, null });
                                 __instance.ComparedItemProperties[__instance.ComparedItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(swingCombinedStringComparedOut));
                             }
                         }
@@ -1167,12 +1163,12 @@ namespace RBMCombat
                         if (targetWeapon.GetModifiedThrustDamageForUsage(targetWeaponUsageIndex) > 0f)
                         {
 
-                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Thrust Damage", 1, null });
+                            methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Thrust Damage (Hover)", 1, null });
 
                             __instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(thrustCombinedStringOut));
                             if (!comparedWeapon.IsEmpty)
                             {
-                                methodCreateProperty.Invoke(__instance, new object[] { __instance.ComparedItemProperties, "", "Thrust Damage", 1, null });
+                                methodCreateProperty.Invoke(__instance, new object[] { __instance.ComparedItemProperties, "", "Thrust Damage (Hover)", 1, null });
                                 __instance.ComparedItemProperties[__instance.ComparedItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(thrustCombinedStringComparedOut));
                             }
                         }
