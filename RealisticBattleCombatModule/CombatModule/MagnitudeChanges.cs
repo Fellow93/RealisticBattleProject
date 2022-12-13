@@ -724,6 +724,17 @@ namespace RBMCombat
                 MethodInfo methodCreateProperty = typeof(ItemMenuVM).GetMethod("CreateProperty", BindingFlags.NonPublic | BindingFlags.Instance);
                 methodCreateProperty.DeclaringType.GetMethod("CreateProperty");
 
+                if (!targetWeapon.IsEmpty && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex) != null && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).IsShield)
+                {
+                    if (comparedWeapon.IsEmpty)
+                    {
+                        methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Shield Armor: "), targetWeapon.GetModifiedBodyArmor(), targetWeapon.GetModifiedBodyArmor() });
+                    }
+                    else
+                    {
+                        methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Shield Armor: "), targetWeapon.GetModifiedBodyArmor(), comparedWeapon.GetModifiedBodyArmor() });
+                    }
+                }
                 if (!targetWeapon.IsEmpty && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex) != null && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).IsRangedWeapon)
                 {
                     if (currentSelectedChar != null)
@@ -868,7 +879,7 @@ namespace RBMCombat
                             int calculatedMissileSpeed = Utilities.assignThrowableMissileSpeed(targetWeapon.Weight, (int)Utilities.throwableCorrectionSpeed, effectiveSkill);
 
                             methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "RBM Stats", "", 1, null });
-
+                            methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Relevant Skill: "), effectiveSkill, effectiveSkill });
                             methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Initial Missile Speed, m/s: "), calculatedMissileSpeed, calculatedMissileSpeed });
 
                             //pierceArrows
@@ -903,7 +914,7 @@ namespace RBMCombat
                             int calculatedMissileSpeed = Utilities.assignThrowableMissileSpeed(targetWeapon.Weight, 0, effectiveSkill);
 
                             methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "RBM Stats", "", 1, null });
-
+                            methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Relevant Skill: "), effectiveSkill, effectiveSkill });
                             methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Initial Missile Speed, m/s: "), calculatedMissileSpeed, calculatedMissileSpeed });
 
                             //pierceArrows
@@ -1124,8 +1135,17 @@ namespace RBMCombat
                     if (equipment != null)
                     {
                         string combinedHeadString = "";
+                        string combinedBodyString = "";
+                        string combinedArmString = "";
+                        string combinedLegString = "";
                         float headArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Head);
                         float neckArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Neck);
+                        float shoulderArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.ShoulderLeft);
+                        float armArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.ArmLeft);
+                        float chestArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Chest);
+                        float abdomenArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Abdomen);
+                        float legsArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Legs);
+
                         combinedHeadString += "Head Armor: " + headArmor + "\n";
                         if (!equipment[EquipmentIndex.Head].IsEmpty)
                         {
@@ -1135,11 +1155,22 @@ namespace RBMCombat
                         }
                         combinedHeadString += "Neck Armor: " + neckArmor;
 
-                        __instance.HeadArmorHint = new HintViewModel(new TextObject(combinedHeadString));
+                        combinedBodyString += "Shoulder Armor: " + shoulderArmor + "\n";
+                        combinedBodyString += "Chest Armor: " + chestArmor + "\n";
+                        combinedBodyString += "Abdomen Armor: " + abdomenArmor;
 
-                        __instance.ArmArmorHint = new HintViewModel(GameTexts.FindText("str_inventory_arm_armor"));
-                        __instance.BodyArmorHint = new HintViewModel(GameTexts.FindText("str_inventory_body_armor"));
-                        __instance.LegArmorHint = new HintViewModel(GameTexts.FindText("str_inventory_leg_armor"));
+                        combinedArmString += "Arm Armor: " + armArmor + "\n";
+                        if (!equipment[EquipmentIndex.Body].IsEmpty)
+                        {
+                            float underShoulderArmor = (equipment[EquipmentIndex.Body].GetModifiedArmArmor() * 2f) - equipment[EquipmentIndex.Body].GetModifiedBodyArmor();
+                            combinedArmString += "Lower Shoulder Armor: " + underShoulderArmor;
+                        }
+
+                        combinedLegString += "Legs Armor: " + legsArmor;
+                        __instance.HeadArmorHint = new HintViewModel(new TextObject(combinedHeadString));
+                        __instance.BodyArmorHint = new HintViewModel(new TextObject(combinedBodyString));
+                        __instance.ArmArmorHint = new HintViewModel(new TextObject(combinedArmString));
+                        __instance.LegArmorHint = new HintViewModel(new TextObject(combinedLegString));
                     }
                 }
             }
@@ -1151,14 +1182,23 @@ namespace RBMCombat
         {
             static void Postfix(ref SPInventoryVM __instance, CharacterObject ____currentCharacter)
             {
-                if(____currentCharacter != null)
+                if (____currentCharacter != null)
                 {
                     Equipment equipment = ____currentCharacter.Equipment;
                     if (equipment != null)
                     {
                         string combinedHeadString = "";
+                        string combinedBodyString = "";
+                        string combinedArmString = "";
+                        string combinedLegString = "";
                         float headArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Head);
                         float neckArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Neck);
+                        float shoulderArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.ShoulderLeft);
+                        float armArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.ArmLeft);
+                        float chestArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Chest);
+                        float abdomenArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Abdomen);
+                        float legsArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Legs);
+
                         combinedHeadString += "Head Armor: " + headArmor + "\n";
                         if (!equipment[EquipmentIndex.Head].IsEmpty)
                         {
@@ -1168,11 +1208,22 @@ namespace RBMCombat
                         }
                         combinedHeadString += "Neck Armor: " + neckArmor;
 
-                        __instance.HeadArmorHint = new HintViewModel(new TextObject(combinedHeadString));
+                        combinedBodyString += "Shoulder Armor: " + shoulderArmor + "\n";
+                        combinedBodyString += "Chest Armor: " + chestArmor + "\n";
+                        combinedBodyString += "Abdomen Armor: " + abdomenArmor;
 
-                        __instance.ArmArmorHint = new HintViewModel(GameTexts.FindText("str_inventory_arm_armor"));
-                        __instance.BodyArmorHint = new HintViewModel(GameTexts.FindText("str_inventory_body_armor"));
-                        __instance.LegArmorHint = new HintViewModel(GameTexts.FindText("str_inventory_leg_armor"));
+                        combinedArmString += "Arm Armor: " + armArmor + "\n";
+                        if (!equipment[EquipmentIndex.Body].IsEmpty)
+                        {
+                            float underShoulderArmor = (equipment[EquipmentIndex.Body].GetModifiedArmArmor() * 2f) - equipment[EquipmentIndex.Body].GetModifiedBodyArmor();
+                            combinedArmString += "Lower Shoulder Armor: " + underShoulderArmor;
+                        }
+
+                        combinedLegString += "Legs Armor: " + legsArmor;
+                        __instance.HeadArmorHint = new HintViewModel(new TextObject(combinedHeadString));
+                        __instance.BodyArmorHint = new HintViewModel(new TextObject(combinedBodyString));
+                        __instance.ArmArmorHint = new HintViewModel(new TextObject(combinedArmString));
+                        __instance.LegArmorHint = new HintViewModel(new TextObject(combinedLegString));
                     }
                 }
             }
