@@ -151,8 +151,9 @@ namespace RBMAI
                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(____mainFormation.Direction);
 
                     WorldPosition medianPosition = ____mainFormation.QuerySystem.MedianPosition;
-                    medianPosition.SetVec2(medianPosition.AsVec2 - ____mainFormation.Direction.Normalized() * (____mainFormation.Depth / 2f + __instance.Formation.Depth / 2f + 5f) );
-                    if (!Mission.Current.IsPositionInsideBoundaries(medianPosition.AsVec2) || medianPosition.GetNavMesh() == UIntPtr.Zero)
+                    Vec2 calcPosition = medianPosition.AsVec2 - ____mainFormation.Direction.Normalized() * (____mainFormation.Depth / 2f + __instance.Formation.Depth / 2f + 5f);
+                    medianPosition.SetVec2(calcPosition);
+                    if (!Mission.Current.IsPositionInsideBoundaries(calcPosition) || medianPosition.GetNavMesh() == UIntPtr.Zero)
                     {
                         medianPosition = ____mainFormation.QuerySystem.MedianPosition;
                     }
