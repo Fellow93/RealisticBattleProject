@@ -347,8 +347,14 @@ namespace RBMCombat
                         int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgentCharacter, attackerAgentOrigin, attackerFormation, skill);
                         float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
                         float skillModifier = Utilities.CalculateSkillModifier(ef);
-
-                        magnitude = Utilities.GetSkillBasedDamage(magnitude, attackInformation.IsAttackerAgentDoingPassiveAttack, weaponType, damageType, effectiveSkill, skillModifier, (StrikeType)attackCollisionData.StrikeType, attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight());
+                        if(attacker != null && attacker.Equipment != null && attacker.GetWieldedItemIndex(HandIndex.MainHand) != EquipmentIndex.None)
+                        {
+                            magnitude = Utilities.GetSkillBasedDamage(magnitude, attackInformation.IsAttackerAgentDoingPassiveAttack, weaponType, damageType, effectiveSkill, skillModifier, (StrikeType)attackCollisionData.StrikeType, attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight());
+                        }
+                        else
+                        {
+                            //float lel = 0;
+                        }
                     }
                 }
 
