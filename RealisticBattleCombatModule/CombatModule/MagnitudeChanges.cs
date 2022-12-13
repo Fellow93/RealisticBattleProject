@@ -1204,27 +1204,27 @@ namespace RBMCombat
                     float abdomenArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Abdomen);
                     float legsArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Legs);
 
-                    combinedHeadString += "Head Armor: " + headArmor + "\n";
+                    combinedHeadString += String.Format("{0,-32}", "Head Armor: ")  + headArmor + "\n";
                     if (!equipment[EquipmentIndex.Head].IsEmpty)
                     {
                         float faceArmor = equipment[EquipmentIndex.Head].GetModifiedBodyArmor();
 
-                        combinedHeadString += "Face Armor: " + faceArmor + "\n";
+                        combinedHeadString += String.Format("{0,-33}", "Face Armor: ") + faceArmor + "\n";
                     }
-                    combinedHeadString += "Neck Armor: " + neckArmor;
+                    combinedHeadString += String.Format("{0,-32}", "Neck Armor: ") + neckArmor;
 
-                    combinedBodyString += "Shoulder Armor: " + shoulderArmor + "\n";
-                    combinedBodyString += "Chest Armor: " + chestArmor + "\n";
-                    combinedBodyString += "Abdomen Armor: " + abdomenArmor;
+                    combinedBodyString += String.Format("{0,-28}", "Shoulder Armor: ") + shoulderArmor + "\n";
+                    combinedBodyString += String.Format("{0,-32}", "Chest Armor: ") + chestArmor + "\n";
+                    combinedBodyString += String.Format("{0,-27}", "Abdomen Armor: ") + abdomenArmor;
 
-                    combinedArmString += "Arm Armor: " + armArmor + "\n";
+                    combinedArmString += String.Format("{0,-33}", "Arm Armor: ") + armArmor + "\n";
                     if (!equipment[EquipmentIndex.Body].IsEmpty)
                     {
                         float underShoulderArmor = (equipment[EquipmentIndex.Body].GetModifiedArmArmor() * 2f) - equipment[EquipmentIndex.Body].GetModifiedBodyArmor();
-                        combinedArmString += "Lower Shoulder Armor: " + underShoulderArmor;
+                        combinedArmString += String.Format("{0,-0}", "Lower Shoulder Armor: ") + underShoulderArmor;
                     }
 
-                    combinedLegString += "Legs Armor: " + legsArmor;
+                    combinedLegString += String.Format("{0,-33}", "Legs Armor: ") + legsArmor;
                 }
             }
         }
@@ -1271,7 +1271,7 @@ namespace RBMCombat
                     __instance.BodyArmorHint = new HintViewModel(new TextObject(combinedBodyString));
                     __instance.ArmArmorHint = new HintViewModel(new TextObject(combinedArmString));
                     __instance.LegArmorHint = new HintViewModel(new TextObject(combinedLegString));
-            }
+                }
             }
         }
 
@@ -1333,7 +1333,7 @@ namespace RBMCombat
 
                                 if (eq.GetModifiedSwingDamageForUsage(usageindex) > 0f)
                                 {
-                                    hintText += "Swing Sweet Spot, %:" + sweetSpotOut + "\n";
+                                    hintText += "Swing Sweet Spot, %:" + MathF.Floor(sweetSpotOut * 100f) + "\n";
 
                                     hintText += "Swing Damage:\n";
                                     hintText += swingCombinedStringOut + "\n";
@@ -1348,6 +1348,28 @@ namespace RBMCombat
                             }
                         }
                     }
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(PropertyBasedTooltipVMExtensions))]
+        [HarmonyPatch("UpdateTooltip", new[] { typeof(PropertyBasedTooltipVM), typeof(CharacterObject) })]
+        class UpdateTooltipCharacterObjectPatch
+        {
+            static void Postfix(ref PropertyBasedTooltipVM propertyBasedTooltipVM, CharacterObject character)
+            {
+                if (character != null)
+                {
+                    Equipment equipment = character.Equipment;
+                    getRBMArmorStatsStrings(equipment,
+                       out string combinedHeadString,
+                       out string combinedBodyString,
+                       out string combinedArmString,
+                       out string combinedLegString);
+                    propertyBasedTooltipVM.AddProperty("", combinedHeadString);
+                    propertyBasedTooltipVM.AddProperty("", combinedBodyString);
+                    propertyBasedTooltipVM.AddProperty("", combinedArmString);
+                    propertyBasedTooltipVM.AddProperty("", combinedLegString);
                 }
             }
         }
