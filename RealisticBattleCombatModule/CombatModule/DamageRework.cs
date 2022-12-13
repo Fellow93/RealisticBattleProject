@@ -339,7 +339,7 @@ namespace RBMCombat
                 IAgentOriginBase attackerAgentOrigin = attackInformation.AttackerAgentOrigin;
                 Formation attackerFormation = attackInformation.AttackerFormation;
 
-                if (!attackCollisionData.IsAlternativeAttack && !attackInformation.IsAttackerAgentMount && attackerAgentOrigin != null && attackInformation.AttackerAgentCharacter != null && !attackCollisionData.IsMissile)
+                if (!attackCollisionData.IsAlternativeAttack && !attackInformation.IsAttackerAgentMount && !attackCollisionData.IsFallDamage && attackerAgentOrigin != null && attackInformation.AttackerAgentCharacter != null && !attackCollisionData.IsMissile)
                 {
                     SkillObject skill = (attackerWeapon == null) ? DefaultSkills.Athletics : attackerWeapon.RelevantSkill;
                     if (skill != null)
