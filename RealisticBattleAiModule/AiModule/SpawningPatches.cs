@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.Core;
+using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.MissionSpawnHandlers;
@@ -44,7 +45,8 @@ namespace RBMAI.AiModule
                             {
                                 return true;
                             }
-                            Vec2 tempPos = Mission.Current.GetClosestBoundaryPosition(formation.SmoothedAverageUnitPosition);
+                            WorldPosition tempWorldPosition = Mission.Current.GetClosestFleePositionForFormation(formation);
+                            Vec2 tempPos = tempWorldPosition.AsVec2;
                             tempPos.x = tempPos.x + MBRandom.RandomInt(20);
                             tempPos.y = tempPos.y + MBRandom.RandomInt(20);
 
