@@ -1,309 +1,502 @@
 ﻿using HarmonyLib;
-using System;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
 namespace RBMCombat
 {
-    class ArmorRework
+    public class ArmorRework
     {
-        [HarmonyPatch(typeof(Agent))]
-        [HarmonyPatch("GetBaseArmorEffectivenessForBodyPart")]
-        class ChangeBodyPartArmor
+        static public float getHeadArmor(Agent agent)
         {
-            static bool Prefix(Agent __instance, BoneBodyPartType bodyPart, ref float __result)
+            float num = 0f;
+            EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.Head];
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
             {
-
-                if (!__instance.IsHuman)
-                {
-                    switch (bodyPart)
-                    {
-                        case BoneBodyPartType.None:
-                            {
-                                __result = 10f;
-                                break;
-                            }
-                        case BoneBodyPartType.Head:
-                            {
-                                __result = getHorseHeadArmor(__instance);
-                                break;
-                            }
-                        case BoneBodyPartType.Neck:
-                            {
-                                __result = getHorseArmArmor(__instance);
-                                break;
-                            }
-                        case BoneBodyPartType.Legs:
-                        case BoneBodyPartType.ArmLeft:
-                        case BoneBodyPartType.ArmRight:
-                            {
-                                __result = (getHorseLegArmor(__instance) * 2f + getHorseBodyArmor(__instance)) / 3f;
-                                break;
-                            }
-                        case BoneBodyPartType.Chest:
-                            {
-                                __result = (getHorseLegArmor(__instance) + getHorseBodyArmor(__instance)) / 2f;
-                                break;
-                            }
-                        case BoneBodyPartType.ShoulderLeft:
-                        case BoneBodyPartType.ShoulderRight:
-                            {
-                                __result = getHorseBodyArmor(__instance);
-                                break;
-                            }
-                        case BoneBodyPartType.Abdomen:
-                            {
-                                __result = getHorseLegArmor(__instance);
-                                break;
-                            }
-                        default:
-                            {
-                                _ = 10;
-                                __result = 10f;
-                                break;
-                            }
-                    }
-                }
-
-                else
-                {
-                    switch (bodyPart)
-                    {
-                        case BoneBodyPartType.None:
-                            {
-                                __result = 0f;
-                                break;
-                            }
-                        case BoneBodyPartType.Head:
-                            {
-                                //__result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead);
-                                __result = getHeadArmor(__instance);
-                                break;
-                            }
-                        case BoneBodyPartType.Neck:
-                            {
-                                //__result = __instance.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead) * 0.66f;
-                                __result = getNeckArmor(__instance);
-                                break;
-                            }
-                        case BoneBodyPartType.Legs:
-                            {
-                                __result = getLegArmor(__instance);
-                                break;
-                            }
-                        case BoneBodyPartType.ArmLeft:
-                        case BoneBodyPartType.ArmRight:
-                            {
-                                __result = getArmArmor(__instance);
-                                break;
-                            }
-                        case BoneBodyPartType.Chest:
-                            {
-                                __result = getMyChestArmor(__instance);
-                                break;
-                            }
-                        case BoneBodyPartType.ShoulderLeft:
-                        case BoneBodyPartType.ShoulderRight:
-                            {
-                                __result = getShoulderArmor(__instance);
-                                break;
-                            }
-                        case BoneBodyPartType.Abdomen:
-                            {
-                                __result = getAbdomenArmor(__instance);
-                                break;
-                            }
-                        default:
-                            {
-                                _ = 3;
-                                __result = 3f;
-                                break;
-                            }
-                    }
-                }
-
-                return false;
+                num += (float)equipmentElement.GetModifiedHeadArmor();
             }
+            return num;
+        }
 
-            static public float getHeadArmor(Agent agent)
+        static public float getNeckArmor(Agent agent)
+        {
+            float num = 0f;
+            EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.Body];
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
             {
-                float num = 0f;
-                EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.Head];
-                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
-                {
-                    num += (float)equipmentElement.GetModifiedHeadArmor();
-                }
-                return num;
+                num += (float)equipmentElement.GetModifiedArmArmor();
             }
+            return num;
+        }
 
-            static public float getNeckArmor(Agent agent)
+        static public float getHorseHeadArmor(Agent agent)
+        {
+            float num = 0f;
+            EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
             {
-                float num = 0f;
-                //EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.Head];
-                //if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
-                //{
-                //    num += (float)equipmentElement.GetModifiedHeadArmor();
-                //}
-                //num *= 0.66f;
-                EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.Body];
+                num += (float)equipmentElement.GetModifiedHeadArmor();
+                num += 10f;
+            }
+            return num;
+        }
+
+        static public float getHorseLegArmor(Agent agent)
+        {
+            float num = 0f;
+            EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+            {
+                num += (float)equipmentElement.GetModifiedLegArmor();
+                num += 10f;
+            }
+            return num;
+        }
+
+        static public float getHorseArmArmor(Agent agent)
+        {
+            float num = 0f;
+            EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+            {
+                num += (float)equipmentElement.GetModifiedArmArmor();
+                num += 10f;
+            }
+            return num;
+        }
+
+        static public float getHorseBodyArmor(Agent agent)
+        {
+            float num = 0f;
+            EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+            {
+                num += equipmentElement.Item.ArmorComponent.BodyArmor;
+                if (num > 0 && equipmentElement.ItemModifier != null)
+                {
+                    num = equipmentElement.ItemModifier.ModifyArmor((int)num);
+                }
+                //num += (float)equipmentElement.GetModifiedBodyArmor();
+                num += 10f;
+            }
+            return num;
+        }
+
+        static public float getShoulderArmor(Agent agent)
+        {
+            float num = 0f;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            {
+                EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.Cape)
+                {
+                    num += (float)equipmentElement.GetModifiedBodyArmor();
+                    num += (float)equipmentElement.GetModifiedArmArmor();
+
+                }
                 if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
                 {
                     num += (float)equipmentElement.GetModifiedArmArmor();
                 }
-                return num;
             }
+            return num;
+        }
 
-            //static public float getNeckArmor(Agent agent)
-            //{
-            //    float num = 0f;
-            //    for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
-            //    {
-            //        EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
-            //        if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.Cape)
-            //        {
-            //            num += (float)equipmentElement.GetModifiedBodyArmor();
-            //        }
-            //        if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
-            //        {
-            //            num += (float)equipmentElement.GetModifiedArmArmor();
-            //        }
-            //    }
-            //    return num;
-            //}
-
-            static public float getHorseHeadArmor(Agent agent)
+        static public float getAbdomenArmor(Agent agent)
+        {
+            float num = 0f;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
             {
-                float num = 0f;
-                EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
-                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+                EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
                 {
-                    num += (float)equipmentElement.GetModifiedHeadArmor();
-                    num += 10f;
+                    num += (float)equipmentElement.GetModifiedBodyArmor();
                 }
-                return num;
             }
+            return num;
+        }
 
-            static public float getHorseLegArmor(Agent agent)
+        static public float getMyChestArmor(Agent agent)
+        {
+            float num = 0f;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
             {
-                float num = 0f;
-                EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
-                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+                EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
                 {
-                    num += (float)equipmentElement.GetModifiedLegArmor();
-                    num += 10f;
+                    num += (float)equipmentElement.GetModifiedBodyArmor();
                 }
-                return num;
             }
+            return num;
+        }
 
-            static public float getHorseArmArmor(Agent agent)
+        static public float getArmArmor(Agent agent)
+        {
+            float num = 0f;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
             {
-                float num = 0f;
-                EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
-                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+                EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
                 {
                     num += (float)equipmentElement.GetModifiedArmArmor();
-                    num += 10f;
                 }
-                return num;
+            }
+            return num;
+        }
+
+        static public float getLegArmor(Agent agent)
+        {
+            float num = 0f;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            {
+                EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.LegArmor)
+                {
+                    num += ((float)equipmentElement.GetModifiedLegArmor()) * 0.5f;
+                }
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
+                {
+                    num += ((float)equipmentElement.GetModifiedLegArmor()) * 0.5f;
+                }
+            }
+            return num;
+        }
+
+        static public float getHeadArmor(Equipment equipment)
+        {
+            float num = 0f;
+            EquipmentElement equipmentElement = equipment[EquipmentIndex.Head];
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
+            {
+                num += (float)equipmentElement.GetModifiedHeadArmor();
+            }
+            return num;
+        }
+
+        static public float getNeckArmor(Equipment equipment)
+        {
+            float num = 0f;
+            EquipmentElement equipmentElement = equipment[EquipmentIndex.Body];
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
+            {
+                num += (float)equipmentElement.GetModifiedArmArmor();
+            }
+            return num;
+        }
+
+        static public float getHorseHeadArmor(Equipment equipment)
+        {
+            float num = 0f;
+            EquipmentElement equipmentElement = equipment[EquipmentIndex.HorseHarness];
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+            {
+                num += (float)equipmentElement.GetModifiedHeadArmor();
+                num += 10f;
+            }
+            return num;
+        }
+
+        static public float getHorseLegArmor(Equipment equipment)
+        {
+            float num = 0f;
+            EquipmentElement equipmentElement = equipment[EquipmentIndex.HorseHarness];
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+            {
+                num += (float)equipmentElement.GetModifiedLegArmor();
+                num += 10f;
+            }
+            return num;
+        }
+
+        static public float getHorseArmArmor(Equipment equipment)
+        {
+            float num = 0f;
+            EquipmentElement equipmentElement = equipment[EquipmentIndex.HorseHarness];
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+            {
+                num += (float)equipmentElement.GetModifiedArmArmor();
+                num += 10f;
+            }
+            return num;
+        }
+
+        static public float getHorseBodyArmor(Equipment equipment)
+        {
+            float num = 0f;
+            EquipmentElement equipmentElement = equipment[EquipmentIndex.HorseHarness];
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+            {
+                num += equipmentElement.Item.ArmorComponent.BodyArmor;
+                if (num > 0 && equipmentElement.ItemModifier != null)
+                {
+                    num = equipmentElement.ItemModifier.ModifyArmor((int)num);
+                }
+                //num += (float)equipmentElement.GetModifiedBodyArmor();
+                num += 10f;
+            }
+            return num;
+        }
+
+        static public float getShoulderArmor(Equipment equipment)
+        {
+            float num = 0f;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            {
+                EquipmentElement equipmentElement = equipment[equipmentIndex];
+
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.Cape)
+                {
+                    num += (float)equipmentElement.GetModifiedBodyArmor();
+                    num += (float)equipmentElement.GetModifiedArmArmor();
+
+                }
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
+                {
+                    num += (float)equipmentElement.GetModifiedArmArmor();
+                }
+            }
+            return num;
+        }
+
+        static public float getAbdomenArmor(Equipment equipment)
+        {
+            float num = 0f;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            {
+                EquipmentElement equipmentElement = equipment[equipmentIndex];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
+                {
+                    num += (float)equipmentElement.GetModifiedBodyArmor();
+                }
+            }
+            return num;
+        }
+
+        static public float getMyChestArmor(Equipment equipment)
+        {
+            float num = 0f;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            {
+                EquipmentElement equipmentElement = equipment[equipmentIndex];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
+                {
+                    num += (float)equipmentElement.GetModifiedBodyArmor();
+                }
+            }
+            return num;
+        }
+
+        static public float getArmArmor(Equipment equipment)
+        {
+            float num = 0f;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            {
+                EquipmentElement equipmentElement = equipment[equipmentIndex];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
+                {
+                    num += (float)equipmentElement.GetModifiedArmArmor();
+                }
+            }
+            return num;
+        }
+
+        static public float getLegArmor(Equipment equipment)
+        {
+            float num = 0f;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            {
+                EquipmentElement equipmentElement = equipment[equipmentIndex];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.LegArmor)
+                {
+                    num += ((float)equipmentElement.GetModifiedLegArmor()) * 0.5f;
+                }
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
+                {
+                    num += ((float)equipmentElement.GetModifiedLegArmor()) * 0.5f;
+                }
+            }
+            return num;
+        }
+
+        public static float GetBaseArmorEffectivenessForBodyPartRBM(Agent agent, BoneBodyPartType bodyPart)
+        {
+            float result;
+            if (!agent.IsHuman)
+            {
+                switch (bodyPart)
+                {
+                    case BoneBodyPartType.None:
+                        {
+                            result = 10f;
+                            break;
+                        }
+                    case BoneBodyPartType.Head:
+                        {
+                            result = getHorseHeadArmor(agent);
+                            break;
+                        }
+                    case BoneBodyPartType.Neck:
+                        {
+                            result = getHorseArmArmor(agent);
+                            break;
+                        }
+                    case BoneBodyPartType.Legs:
+                    case BoneBodyPartType.ArmLeft:
+                    case BoneBodyPartType.ArmRight:
+                        {
+                            result = (getHorseLegArmor(agent) * 2f + getHorseBodyArmor(agent)) / 3f;
+                            break;
+                        }
+                    case BoneBodyPartType.Chest:
+                        {
+                            result = (getHorseLegArmor(agent) + getHorseBodyArmor(agent)) / 2f;
+                            break;
+                        }
+                    case BoneBodyPartType.ShoulderLeft:
+                    case BoneBodyPartType.ShoulderRight:
+                        {
+                            result = getHorseBodyArmor(agent);
+                            break;
+                        }
+                    case BoneBodyPartType.Abdomen:
+                        {
+                            result = getHorseLegArmor(agent);
+                            break;
+                        }
+                    default:
+                        {
+                            _ = 10;
+                            result = 10f;
+                            break;
+                        }
+                }
             }
 
-            static public float getHorseBodyArmor(Agent agent)
+            else
             {
-                float num = 0f;
-                EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
-                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+                switch (bodyPart)
                 {
-                    num += equipmentElement.Item.ArmorComponent.BodyArmor;
-                    if (num > 0 && equipmentElement.ItemModifier != null)
-                    {
-                        num = equipmentElement.ItemModifier.ModifyArmor((int)num);
-                    }
-                    //num += (float)equipmentElement.GetModifiedBodyArmor();
-                    num += 10f;
+                    case BoneBodyPartType.None:
+                        {
+                            result = 0f;
+                            break;
+                        }
+                    case BoneBodyPartType.Head:
+                        {
+                            //__result = agent.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead);
+                            result = getHeadArmor(agent);
+                            break;
+                        }
+                    case BoneBodyPartType.Neck:
+                        {
+                            //__result = agent.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead) * 0.66f;
+                            result = getNeckArmor(agent);
+                            break;
+                        }
+                    case BoneBodyPartType.Legs:
+                        {
+                            result = getLegArmor(agent);
+                            break;
+                        }
+                    case BoneBodyPartType.ArmLeft:
+                    case BoneBodyPartType.ArmRight:
+                        {
+                            result = getArmArmor(agent);
+                            break;
+                        }
+                    case BoneBodyPartType.Chest:
+                        {
+                            result = getMyChestArmor(agent);
+                            break;
+                        }
+                    case BoneBodyPartType.ShoulderLeft:
+                    case BoneBodyPartType.ShoulderRight:
+                        {
+                            result = getShoulderArmor(agent);
+                            break;
+                        }
+                    case BoneBodyPartType.Abdomen:
+                        {
+                            result = getAbdomenArmor(agent);
+                            break;
+                        }
+                    default:
+                        {
+                            _ = 3;
+                            result = 3f;
+                            break;
+                        }
                 }
-                return num;
             }
-
-            static public float getShoulderArmor(Agent agent)
-            {
-                float num = 0f;
-                for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            return result;
+        }
+        public static float GetBaseArmorEffectivenessForBodyPartRBMHuman(Equipment equipment, BoneBodyPartType bodyPart)
+        {
+            float result;
+                switch (bodyPart)
                 {
-                    EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
-
-                    if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.Cape)
+                case BoneBodyPartType.None:
                     {
-                        num += (float)equipmentElement.GetModifiedBodyArmor();
-                        num += (float)equipmentElement.GetModifiedArmArmor();
-
+                        result = 0f;
+                        break;
                     }
-                    if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
+                case BoneBodyPartType.Head:
                     {
-                        num += (float)equipmentElement.GetModifiedArmArmor();
+                        result = getHeadArmor(equipment);
+                        break;
                     }
-                }
-                return num;
+                case BoneBodyPartType.Neck:
+                    {
+                        result = getNeckArmor(equipment);
+                        break;
+                    }
+                case BoneBodyPartType.Legs:
+                    {
+                        result = getLegArmor(equipment);
+                        break;
+                    }
+                case BoneBodyPartType.ArmLeft:
+                case BoneBodyPartType.ArmRight:
+                    {
+                        result = getArmArmor(equipment);
+                        break;
+                    }
+                case BoneBodyPartType.Chest:
+                    {
+                        result = getMyChestArmor(equipment);
+                        break;
+                    }
+                case BoneBodyPartType.ShoulderLeft:
+                case BoneBodyPartType.ShoulderRight:
+                    {
+                        result = getShoulderArmor(equipment);
+                        break;
+                    }
+                case BoneBodyPartType.Abdomen:
+                    {
+                        result = getAbdomenArmor(equipment);
+                        break;
+                    }
+                default:
+                    {
+                        _ = 3;
+                        result = 3f;
+                        break;
+                    }
             }
+            return result;
+        }
 
-            static public float getAbdomenArmor(Agent agent)
-            {
-                float num = 0f;
-                for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
-                {
-                    EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
-                    if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
-                    {
-                        num += (float)equipmentElement.GetModifiedBodyArmor();
-                    }
-                }
-                return num;
-            }
+        [HarmonyPatch(typeof(Agent))]
+        [HarmonyPatch("GetBaseArmorEffectivenessForBodyPart")]
+        public class ChangeBodyPartArmor
+        {
 
-            static public float getMyChestArmor(Agent agent)
+            public static bool Prefix(Agent __instance, BoneBodyPartType bodyPart, ref float __result)
             {
-                float num = 0f;
-                for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
-                {
-                    EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
-                    if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
-                    {
-                        num += (float)equipmentElement.GetModifiedBodyArmor();
-                    }
-                }
-                return num;
-            }
-
-            static public float getArmArmor(Agent agent)
-            {
-                float num = 0f;
-                for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
-                {
-                    EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
-                    if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
-                    {
-                        num += (float)equipmentElement.GetModifiedArmArmor();
-                    }
-                }
-                return num;
-            }
-
-            static public float getLegArmor(Agent agent)
-            {
-                float num = 0f;
-                for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
-                {
-                    EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
-                    if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.LegArmor)
-                    {
-                        num += ((float)equipmentElement.GetModifiedLegArmor()) * 0.5f;
-                    }
-                    if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
-                    {
-                        num += ((float)equipmentElement.GetModifiedLegArmor()) * 0.5f;
-                    }
-                }
-                return num;
+                __result = GetBaseArmorEffectivenessForBodyPartRBM(__instance, bodyPart);
+                return false;
             }
 
         }

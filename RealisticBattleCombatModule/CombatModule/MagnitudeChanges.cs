@@ -11,8 +11,10 @@ using TaleWorlds.Core.ViewModelCollection.Information;
 
 namespace RBMCombat
 {
-    public class MagnitudeChanges
+    public static class MagnitudeChanges
     {
+        public static CharacterObject currentSelectedChar = null;
+
         [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
         [HarmonyPatch("CalculateBaseMeleeBlowMagnitude")]
         public class CalculateBaseMeleeBlowMagnitudePatch
@@ -551,7 +553,7 @@ namespace RBMCombat
                     float weaponWeight = weapon.Item.Weight;
                     float weaponInertia = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia;
                     float weaponCOM = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass;
-                    float currentSpotMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(Hero.MainHero.CharacterObject, null, swingSpeed, currentSpot, weaponWeight,
+                    float currentSpotMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(currentSelectedChar, null, swingSpeed, currentSpot, weaponWeight,
                         weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex),
                         weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).GetRealWeaponLength(), weaponInertia, weaponCOM, 0f, false);
                     if (currentSpotMagnitude > sweetSpotMagnitude)
@@ -640,7 +642,7 @@ namespace RBMCombat
                         }
                     default:
                         {
-                            thrustMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(Hero.MainHero.CharacterObject, null, thrustWeaponSpeed, weaponWeight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex), 0f, false);
+                            thrustMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(currentSelectedChar, null, thrustWeaponSpeed, weaponWeight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex), 0f, false);
                             break;
                         }
                 }
@@ -724,12 +726,10 @@ namespace RBMCombat
 
                 if (!targetWeapon.IsEmpty && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex) != null && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).IsRangedWeapon)
                 {
-                    if (Hero.MainHero != null)
+                    if (currentSelectedChar != null)
                     {
-
-                        Hero mainAgent = Hero.MainHero;
                         SkillObject skill = targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).RelevantSkill;
-                        int effectiveSkill = mainAgent.GetSkillValue(skill);
+                        int effectiveSkill = currentSelectedChar.GetSkillValue(skill);
                         float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(effectiveSkill);
                         float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill);
                         if (targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.Bow)
@@ -954,11 +954,10 @@ namespace RBMCombat
                 }
                 if (!targetWeapon.IsEmpty && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex) != null && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).IsMeleeWeapon)
                 {
-                    if (Hero.MainHero != null)
+                    if (currentSelectedChar != null)
                     {
-                        Hero mainAgent = Hero.MainHero;
                         SkillObject skill = targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).RelevantSkill;
-                        int effectiveSkill = mainAgent.GetSkillValue(skill);
+                        int effectiveSkill = currentSelectedChar.GetSkillValue(skill);
                         float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(effectiveSkill);
                         float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill);
 
@@ -1107,6 +1106,73 @@ namespace RBMCombat
                                 __instance.ComparedItemProperties[__instance.ComparedItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(combinedDamageComparedString));
                             }
                         }
+                    }
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(SPInventoryVM))]
+        [HarmonyPatch("UpdateCharacterArmorValues")]
+        class UpdateCharacterArmorValuesPatch
+        {
+            static void Postfix(ref SPInventoryVM __instance, CharacterObject ____currentCharacter)
+            {
+                if (____currentCharacter != null)
+                {
+                    currentSelectedChar = ____currentCharacter;
+                    Equipment equipment = ____currentCharacter.Equipment;
+                    if (equipment != null)
+                    {
+                        string combinedHeadString = "";
+                        float headArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Head);
+                        float neckArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Neck);
+                        combinedHeadString += "Head Armor: " + headArmor + "\n";
+                        if (!equipment[EquipmentIndex.Head].IsEmpty)
+                        {
+                            float faceArmor = equipment[EquipmentIndex.Head].GetModifiedBodyArmor();
+
+                            combinedHeadString += "Face Armor: " + faceArmor + "\n";
+                        }
+                        combinedHeadString += "Neck Armor: " + neckArmor;
+
+                        __instance.HeadArmorHint = new HintViewModel(new TextObject(combinedHeadString));
+
+                        __instance.ArmArmorHint = new HintViewModel(GameTexts.FindText("str_inventory_arm_armor"));
+                        __instance.BodyArmorHint = new HintViewModel(GameTexts.FindText("str_inventory_body_armor"));
+                        __instance.LegArmorHint = new HintViewModel(GameTexts.FindText("str_inventory_leg_armor"));
+                    }
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(SPInventoryVM))]
+        [HarmonyPatch("RefreshValues")]
+        class RefreshValuesPatch
+        {
+            static void Postfix(ref SPInventoryVM __instance, CharacterObject ____currentCharacter)
+            {
+                if(____currentCharacter != null)
+                {
+                    Equipment equipment = ____currentCharacter.Equipment;
+                    if (equipment != null)
+                    {
+                        string combinedHeadString = "";
+                        float headArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Head);
+                        float neckArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Neck);
+                        combinedHeadString += "Head Armor: " + headArmor + "\n";
+                        if (!equipment[EquipmentIndex.Head].IsEmpty)
+                        {
+                            float faceArmor = equipment[EquipmentIndex.Head].GetModifiedBodyArmor();
+
+                            combinedHeadString += "Face Armor: " + faceArmor + "\n";
+                        }
+                        combinedHeadString += "Neck Armor: " + neckArmor;
+
+                        __instance.HeadArmorHint = new HintViewModel(new TextObject(combinedHeadString));
+
+                        __instance.ArmArmorHint = new HintViewModel(GameTexts.FindText("str_inventory_arm_armor"));
+                        __instance.BodyArmorHint = new HintViewModel(GameTexts.FindText("str_inventory_body_armor"));
+                        __instance.LegArmorHint = new HintViewModel(GameTexts.FindText("str_inventory_leg_armor"));
                     }
                 }
             }
