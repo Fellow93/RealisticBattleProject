@@ -11,6 +11,7 @@ using TaleWorlds.Core.ViewModelCollection.Information;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Encyclopedia.Pages;
 using TaleWorlds.CampaignSystem.ViewModelCollection;
 using TaleWorlds.CampaignSystem.Extensions;
+using System.Linq;
 
 namespace RBMCombat
 {
@@ -1217,6 +1218,10 @@ namespace RBMCombat
                     if (!equipment[EquipmentIndex.Body].IsEmpty)
                     {
                         float underShoulderArmor = (equipment[EquipmentIndex.Body].GetModifiedArmArmor() * 2f) - equipment[EquipmentIndex.Body].GetModifiedBodyArmor();
+                        if (!equipment[EquipmentIndex.Cape].IsEmpty)
+                        {
+                            underShoulderArmor += equipment[EquipmentIndex.Cape].GetModifiedArmArmor();
+                        }
                         combinedArmString += String.Format("{0,-0}", "Lower Shoulder Armor: ") + underShoulderArmor;
                     }
 
@@ -1356,7 +1361,15 @@ namespace RBMCombat
             {
                 if (character != null)
                 {
-                    Equipment equipment = character.Equipment;
+                    Equipment equipment;
+                    if (character.BattleEquipments.ToArray().Length > equipmentSetindex)
+                    {
+                        equipment = character.BattleEquipments.ElementAt(equipmentSetindex);
+                    }
+                    else
+                    {
+                        equipment = character.Equipment;
+                    }
                     getRBMArmorStatsStrings(equipment,
                        out string combinedHeadString,
                        out string combinedBodyString,
