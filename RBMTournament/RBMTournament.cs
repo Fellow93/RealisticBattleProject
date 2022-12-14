@@ -700,11 +700,18 @@ namespace RBMTournament
                         {
                             foreach (ItemModifier im in viableEM)
                             {
-                                float randomFloat = MBRandom.RandomFloat;
-                                if (randomFloat <= (im.ProductionDropScore / 100f))
+                                float randomFloat = MBRandom.RandomFloat * 100f;
+                                int roll = 100 - MathF.Round(randomFloat);
+                                int rollNeeded = 100 - MathF.Round(im.ProductionDropScore);
+                                if (roll >= rollNeeded)
                                 {
+                                    InformationManager.DisplayMessage(new InformationMessage("Congratulations, you successfully rolled for " + im.Name + " item modifier, rolled:" + roll + " needed: " + rollNeeded));
                                     eePrize.SetModifier(im);
                                     break;
+                                }
+                                else
+                                {
+                                    InformationManager.DisplayMessage(new InformationMessage("You missed roll for " +im.Name+ " item modifier, rolled:" + roll + " needed: " + rollNeeded));
                                 }
                             }
                         }
