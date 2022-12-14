@@ -10,7 +10,6 @@ using TaleWorlds.Localization;
 using TaleWorlds.Core.ViewModelCollection.Information;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Encyclopedia.Pages;
 using TaleWorlds.CampaignSystem.ViewModelCollection;
-using TaleWorlds.CampaignSystem.Extensions;
 using System.Linq;
 
 namespace RBMCombat
