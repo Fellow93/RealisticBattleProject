@@ -1217,7 +1217,7 @@ namespace RBMCombat
                     combinedArmString += String.Format("{0,-33}", "Arm Armor: ") + armArmor + "\n";
                     if (!equipment[EquipmentIndex.Body].IsEmpty)
                     {
-                        float underShoulderArmor = (equipment[EquipmentIndex.Body].GetModifiedArmArmor() * 2f) - equipment[EquipmentIndex.Body].GetModifiedBodyArmor();
+                        float underShoulderArmor = (equipment[EquipmentIndex.Body].GetModifiedArmArmor());
                         if (!equipment[EquipmentIndex.Cape].IsEmpty)
                         {
                             underShoulderArmor += equipment[EquipmentIndex.Cape].GetModifiedArmArmor();

@@ -297,7 +297,7 @@ namespace RBMCombat
                     armorAmount = 0f;
                     if (!victim.SpawnEquipment[EquipmentIndex.Body].IsEmpty)
                     {
-                        armorAmount = (victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedArmArmor() * 2f) - victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedBodyArmor();
+                        armorAmount = (victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedArmArmor());
                     }
                     if (!victim.SpawnEquipment[EquipmentIndex.Cape].IsEmpty)
                     {
