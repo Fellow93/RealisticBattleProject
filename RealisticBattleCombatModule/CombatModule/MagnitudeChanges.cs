@@ -28,8 +28,11 @@ namespace RBMCombat
                 WeaponComponentData currentUsageItem = weapon.CurrentUsageItem;
                 BasicCharacterObject attackerAgentCharacter = attackInformation.AttackerAgentCharacter;
                 BasicCharacterObject attackerCaptainCharacter = attackInformation.AttackerCaptainCharacter;
+                if (progressEffect < 0.5f)
+                {
+                    progressEffect = 0.5f;
+                }
                 float num = MathF.Sqrt(progressEffect);
-
                 if (strikeType == StrikeType.Thrust)
                 {
                     exraLinearSpeed *= 1f;
