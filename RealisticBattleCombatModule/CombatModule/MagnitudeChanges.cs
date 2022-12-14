@@ -738,8 +738,8 @@ namespace RBMCombat
                     float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(effectiveSkill);
                     float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill);
 
-                    CalculateVisualSpeeds(targetWeapon, targetWeaponUsageIndex, effectiveSkill, out float swingSpeedReal, out float thrustSpeedReal);
-                    CalculateVisualSpeeds(comparedWeapon, comparedWeaponUsageIndex, effectiveSkill, out float swingSpeedRealCompred, out float thrustSpeedRealCompared);
+                    CalculateVisualSpeeds(targetWeapon, targetWeaponUsageIndex, effectiveSkillDR, out float swingSpeedReal, out float thrustSpeedReal);
+                    CalculateVisualSpeeds(comparedWeapon, comparedWeaponUsageIndex, effectiveSkillDR, out float swingSpeedRealCompred, out float thrustSpeedRealCompared);
 
                     relevantSkill = effectiveSkill;
 
