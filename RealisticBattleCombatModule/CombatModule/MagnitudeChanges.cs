@@ -743,7 +743,7 @@ namespace RBMCombat
                     relevantSkill = effectiveSkill;
 
                     swingSpeed = swingSpeedReal;
-                    swingSpeedCompred = thrustSpeedRealCompared;
+                    swingSpeedCompred = swingSpeedRealCompred;
                     thrustSpeed = thrustSpeedReal;
                     thrustSpeedCompred = thrustSpeedRealCompared;
 
