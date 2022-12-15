@@ -74,11 +74,11 @@ namespace RBMCombat
                                 case WeaponClass.TwoHandedPolearm:
                                     {
                                         float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
-                                        float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
+                                        float thrustskillModifier = 1f + (effectiveSkillDR / 800f);
                                         float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
 
                                         thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.Inertia, weapon.CurrentUsageItem.CenterOfMass);
-                                        thrustWeaponSpeed = thrustWeaponSpeed * 0.7f * thrustskillModifier * num;
+                                        thrustWeaponSpeed = thrustWeaponSpeed * 0.65f * thrustskillModifier * num;
                                         break;
                                     }
                                 case WeaponClass.TwoHandedAxe:
@@ -657,65 +657,6 @@ namespace RBMCombat
             return thrustMagnitude;
         }
 
-        public static void CalculateVisualSpeeds(EquipmentElement weapon, int weaponUsageIndex, float effectiveSkillDR, out float swingSpeedReal, out float thrustSpeedReal)
-        {
-            swingSpeedReal = 0f;
-            thrustSpeedReal = 0f;
-            if(!weapon.IsEmpty && weapon.Item != null && weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex) != null)
-            {
-                switch (weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).WeaponClass)
-                {
-                    case WeaponClass.LowGripPolearm:
-                    case WeaponClass.Mace:
-                    case WeaponClass.OneHandedAxe:
-                    case WeaponClass.OneHandedPolearm:
-                    case WeaponClass.TwoHandedMace:
-                        {
-                            float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
-                            float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
-
-                            swingSpeedReal = MathF.Ceiling((weapon.GetModifiedSwingSpeedForUsage(weaponUsageIndex) * 0.83f) * swingskillModifier);
-                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * 11.7647057f);
-                            thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.1f) * thrustskillModifier);
-                            break;
-                        }
-                    case WeaponClass.TwoHandedPolearm:
-                        {
-                            float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
-                            float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
-
-                            swingSpeedReal = MathF.Ceiling((weapon.GetModifiedSwingSpeedForUsage(weaponUsageIndex) * swingskillModifier));
-                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * 11.7647057f);
-                            thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.05f) * thrustskillModifier);
-                            break;
-                        }
-                    case WeaponClass.TwoHandedAxe:
-                        {
-                            float swingskillModifier = 1f + (effectiveSkillDR / 800f);
-                            float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
-
-                            swingSpeedReal = MathF.Ceiling((weapon.GetModifiedSwingSpeedForUsage(weaponUsageIndex) * 0.75f) * swingskillModifier);
-                            thrustSpeedReal = MathF.Ceiling((weapon.GetModifiedThrustSpeedForUsage(weaponUsageIndex) * 0.9f) * thrustskillModifier);
-                            break;
-                        }
-                    case WeaponClass.OneHandedSword:
-                    case WeaponClass.Dagger:
-                    case WeaponClass.TwoHandedSword:
-                        {
-                            float swingskillModifier = 1f + (effectiveSkillDR / 800f);
-                            float thrustskillModifier = 1f + (effectiveSkillDR / 800f);
-
-                            swingSpeedReal = MathF.Ceiling((weapon.GetModifiedSwingSpeedForUsage(weaponUsageIndex) * 0.9f) * swingskillModifier);
-                            thrustSpeedReal = MathF.Ceiling((weapon.GetModifiedThrustSpeedForUsage(weaponUsageIndex) * 1.15f) * thrustskillModifier);
-                            break;
-                        }
-                }
-            }
-
-            swingSpeedReal /= 4.5454545f;
-            thrustSpeedReal /= 11.7647057f;
-        }
-
         public static void GetRBMMeleeWeaponStats(in EquipmentElement targetWeapon, int targetWeaponUsageIndex, EquipmentElement comparedWeapon, int comparedWeaponUsageIndex,
             out int relevantSkill, out float swingSpeed, out float swingSpeedCompred, out float thrustSpeed, out float thrustSpeedCompred, out float sweetSpotOut, out float sweetSpotComparedOut,
             out string swingCombinedStringOut, out string swingCombinedStringComparedOut, out string thrustCombinedStringOut, out string thrustCombinedStringComparedOut , 
@@ -745,15 +686,20 @@ namespace RBMCombat
                     float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(effectiveSkill);
                     float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill);
 
-                    CalculateVisualSpeeds(targetWeapon, targetWeaponUsageIndex, effectiveSkillDR, out float swingSpeedReal, out float thrustSpeedReal);
-                    CalculateVisualSpeeds(comparedWeapon, comparedWeaponUsageIndex, effectiveSkillDR, out float swingSpeedRealCompred, out float thrustSpeedRealCompared);
+                    Utilities.CalculateVisualSpeeds(targetWeapon, targetWeaponUsageIndex, effectiveSkillDR, out int swingSpeedReal, out int thrustSpeedReal, out int handlingReal);
+                    Utilities.CalculateVisualSpeeds(comparedWeapon, comparedWeaponUsageIndex, effectiveSkillDR, out int swingSpeedRealCompred, out int thrustSpeedRealCompared, out int handlingRealCompared);
+
+                    float swingSpeedRealF = swingSpeedReal / Utilities.swingSpeedTransfer;
+                    float thrustSpeedRealF = thrustSpeedReal / Utilities.thrustSpeedTransfer;
+                    float swingSpeedRealComparedF = swingSpeedRealCompred / Utilities.swingSpeedTransfer;
+                    float thrustSpeedRealComparedF = thrustSpeedRealCompared / Utilities.thrustSpeedTransfer;
 
                     relevantSkill = effectiveSkill;
 
-                    swingSpeed = swingSpeedReal;
-                    swingSpeedCompred = swingSpeedRealCompred;
-                    thrustSpeed = thrustSpeedReal;
-                    thrustSpeedCompred = thrustSpeedRealCompared;
+                    swingSpeed = swingSpeedRealF;
+                    swingSpeedCompred = swingSpeedRealComparedF;
+                    thrustSpeed = thrustSpeedRealF;
+                    thrustSpeedCompred = thrustSpeedRealComparedF;
 
                     if (targetWeapon.GetModifiedSwingDamageForUsage(targetWeaponUsageIndex) > 0f)
                     {

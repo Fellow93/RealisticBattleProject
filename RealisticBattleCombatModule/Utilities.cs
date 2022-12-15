@@ -13,6 +13,10 @@ namespace  RBMCombat
         public static int numOfHits = 0;
         public static int numOfDurabilityDowngrade = 0;
         public static float throwableCorrectionSpeed = 5f;
+
+        public static float swingSpeedTransfer = 4.5454545f;
+        public static float thrustSpeedTransfer = 11.7647057f;
+
         public static bool HitWithWeaponBlade(in AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
         {
             WeaponComponentData currentUsageItem = attackerWeapon.CurrentUsageItem;
@@ -1003,6 +1007,145 @@ namespace  RBMCombat
             }
 
             return magnitude * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+        }
+
+        public static void CalculateVisualSpeeds(MissionWeapon weapon, WeaponData weaponData, WeaponClass weaponClass, float effectiveSkillDR, out int swingSpeedReal, out int thrustSpeedReal, out int handlingReal)
+        {
+            swingSpeedReal = -1;
+            thrustSpeedReal = -1;
+            handlingReal = -1;
+            if (!weapon.IsEmpty && weapon.Item != null)
+            {
+                int swingSpeed = weapon.GetModifiedSwingSpeedForCurrentUsage();
+                int handling = weapon.GetModifiedHandlingForCurrentUsage();
+
+                switch (weaponClass)
+                {
+                    case WeaponClass.LowGripPolearm:
+                    case WeaponClass.Mace:
+                    case WeaponClass.OneHandedAxe:
+                    case WeaponClass.OneHandedPolearm:
+                    case WeaponClass.TwoHandedMace:
+                        {
+                            float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
+                            float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
+                            float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
+
+                            swingSpeedReal = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Item.Weight, weaponData.Inertia, weaponData.CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.1f) * thrustskillModifier);
+                            handlingReal = MathF.Ceiling((handling * 0.83f) * handlingskillModifier);
+                            break;
+                        }
+                    case WeaponClass.TwoHandedPolearm:
+                        {
+                            float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
+                            float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
+                            float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
+
+                            swingSpeedReal = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Item.Weight, weaponData.Inertia, weaponData.CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.05f) * thrustskillModifier);
+                            handlingReal = MathF.Ceiling((handling * 5f) * handlingskillModifier);
+                            break;
+                        }
+                    case WeaponClass.TwoHandedAxe:
+                        {
+                            float swingskillModifier = 1f + (effectiveSkillDR / 800f);
+                            float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
+                            float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
+
+                            swingSpeedReal = MathF.Ceiling((swingSpeed * 0.75f) * swingskillModifier);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Item.Weight, weaponData.Inertia, weaponData.CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 0.9f) * thrustskillModifier);
+                            handlingReal = MathF.Ceiling((handling * 0.83f) * handlingskillModifier);
+                            break;
+                        }
+                    case WeaponClass.OneHandedSword:
+                    case WeaponClass.Dagger:
+                    case WeaponClass.TwoHandedSword:
+                        {
+                            float swingskillModifier = 1f + (effectiveSkillDR / 800f);
+                            float thrustskillModifier = 1f + (effectiveSkillDR / 800f);
+                            float handlingskillModifier = 1f + (effectiveSkillDR / 800f);
+
+                            swingSpeedReal = MathF.Ceiling((swingSpeed * 0.9f) * swingskillModifier);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Item.Weight, weaponData.Inertia, weaponData.CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.15f) * thrustskillModifier);
+                            handlingReal = MathF.Ceiling((handling * 0.9f) * handlingskillModifier);
+                            break;
+                        }
+                }
+            }
+        }
+
+        public static void CalculateVisualSpeeds(EquipmentElement weapon, int weaponUsageIndex, float effectiveSkillDR, out int swingSpeedReal, out int thrustSpeedReal, out int handlingReal)
+        {
+            swingSpeedReal = -1;
+            thrustSpeedReal = -1;
+            handlingReal = -1;
+            if (!weapon.IsEmpty && weapon.Item != null && weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex) != null)
+            {
+                int swingSpeed = weapon.GetModifiedSwingSpeedForUsage(weaponUsageIndex);
+                int handling = weapon.GetModifiedHandlingForUsage(weaponUsageIndex);
+
+                switch (weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).WeaponClass)
+                {
+                    case WeaponClass.LowGripPolearm:
+                    case WeaponClass.Mace:
+                    case WeaponClass.OneHandedAxe:
+                    case WeaponClass.OneHandedPolearm:
+                    case WeaponClass.TwoHandedMace:
+                        {
+                            float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
+                            float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
+                            float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
+
+                            swingSpeedReal = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.1f) * thrustskillModifier);
+                            handlingReal = MathF.Ceiling((handling * 0.83f) * handlingskillModifier);
+                            break;
+                        }
+                    case WeaponClass.TwoHandedPolearm:
+                        {
+                            float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
+                            float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
+                            float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
+
+                            swingSpeedReal = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.05f) * thrustskillModifier);
+                            handlingReal = MathF.Ceiling((handling * 5f) * handlingskillModifier);
+                            break;
+                        }
+                    case WeaponClass.TwoHandedAxe:
+                        {
+                            float swingskillModifier = 1f + (effectiveSkillDR / 800f);
+                            float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
+                            float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
+
+                            swingSpeedReal = MathF.Ceiling((swingSpeed * 0.75f) * swingskillModifier);
+                            thrustSpeedReal = MathF.Ceiling((weapon.GetModifiedThrustSpeedForUsage(weaponUsageIndex) * 0.9f) * thrustskillModifier);
+                            handlingReal = MathF.Ceiling((handling * 0.83f) * handlingskillModifier);
+                            break;
+                        }
+                    case WeaponClass.OneHandedSword:
+                    case WeaponClass.Dagger:
+                    case WeaponClass.TwoHandedSword:
+                        {
+                            float swingskillModifier = 1f + (effectiveSkillDR / 800f);
+                            float thrustskillModifier = 1f + (effectiveSkillDR / 800f);
+                            float handlingskillModifier = 1f + (effectiveSkillDR / 800f);
+
+                            swingSpeedReal = MathF.Ceiling((swingSpeed * 0.9f) * swingskillModifier);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.15f) * thrustskillModifier);
+                            handlingReal = MathF.Ceiling((handling * 0.9f) * handlingskillModifier);
+                            break;
+                        }
+                }
+            }
         }
 
         public static string GetConfigFilePath()

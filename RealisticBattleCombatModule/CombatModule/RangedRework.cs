@@ -79,7 +79,7 @@ namespace RBMCombat
         [HarmonyPatch("WeaponEquipped")]
         class OverrideWeaponEquipped
         {
-            static bool Prefix(ref Agent __instance, EquipmentIndex equipmentSlot, in WeaponData weaponData,ref WeaponStatsData[] weaponStatsData, in WeaponData ammoWeaponData,ref WeaponStatsData[] ammoWeaponStatsData, GameEntity weaponEntity, bool removeOldWeaponFromScene, bool isWieldedOnSpawn)
+            static bool Prefix(ref Agent __instance, EquipmentIndex equipmentSlot, in WeaponData weaponData, ref WeaponStatsData[] weaponStatsData, in WeaponData ammoWeaponData,ref WeaponStatsData[] ammoWeaponStatsData, GameEntity weaponEntity, bool removeOldWeaponFromScene, bool isWieldedOnSpawn)
             {
                 if(weaponStatsData != null)
                 {
@@ -88,114 +88,67 @@ namespace RBMCombat
                         SkillObject skill = (weaponData.GetItemObject() == null) ? DefaultSkills.Athletics : weaponData.GetItemObject().RelevantSkill;
                         if(skill != null) {
                             int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance.Character, __instance.Origin, __instance.Formation, skill);
-                            float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
+                            float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
 
-                            int swingSpeed = __instance.Equipment[equipmentSlot].GetModifiedSwingSpeedForCurrentUsage();
-                            int thrustSpeed = __instance.Equipment[equipmentSlot].GetModifiedThrustSpeedForCurrentUsage();
-                            int handling = __instance.Equipment[equipmentSlot].GetModifiedHandlingForCurrentUsage();
-                            switch (weaponStatsData[i].WeaponClass)
+                            MissionWeapon missionWeapon = __instance.Equipment[equipmentSlot];
+                            EquipmentElement ee = new EquipmentElement(missionWeapon.Item);
+                            Utilities.CalculateVisualSpeeds(ee, i, effectiveSkillDR, out int swingSpeedReal, out int thrustSpeedReal, out int handlingReal);
+
+                            if(swingSpeedReal >= 0 && thrustSpeedReal >= 0 && handlingReal >= 0)
                             {
-                                case (int)WeaponClass.LowGripPolearm:
-                                case (int)WeaponClass.Mace:
-                                case (int)WeaponClass.OneHandedAxe:
-                                case (int)WeaponClass.OneHandedPolearm:
-                                case (int)WeaponClass.TwoHandedMace:
-                                    {
-                                        float swingskillModifier = 1f + (effectiveSkill / 1000f);
-                                        float thrustskillModifier = 1f + (effectiveSkill / 1000f);
-                                        float handlingskillModifier = 1f + (effectiveSkill / 700f);
-
-                                        weaponStatsData[i].SwingSpeed = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
-                                        weaponStatsData[i].ThrustSpeed = MathF.Floor(Utilities.CalculateThrustSpeed(weaponData.BaseWeight, weaponData.Inertia, weaponData.CenterOfMass) * 11.7647057f);
-                                        weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 1.1f) * thrustskillModifier);
-                                        weaponStatsData[i].DefendSpeed = MathF.Ceiling((handling * 0.83f) * handlingskillModifier);
-                                        break;
-                                    }
-                                case (int)WeaponClass.TwoHandedPolearm:
-                                    {
-                                        float swingskillModifier = 1f + (effectiveSkill / 1000f);
-                                        float thrustskillModifier = 1f + (effectiveSkill / 1000f);
-                                        float handlingskillModifier = 1f + (effectiveSkill / 700f);
-
-                                        weaponStatsData[i].SwingSpeed = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
-                                        weaponStatsData[i].ThrustSpeed = MathF.Floor(Utilities.CalculateThrustSpeed(weaponData.BaseWeight, weaponData.Inertia, weaponData.CenterOfMass) * 11.7647057f);
-                                        weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 1.05f) * thrustskillModifier);
-                                        weaponStatsData[i].DefendSpeed = MathF.Ceiling((handling * 5f) * handlingskillModifier);
-                                        break;
-                                    }
-                                case (int)WeaponClass.TwoHandedAxe:
-                                    {
-                                        float swingskillModifier = 1f + (effectiveSkill / 800f);
-                                        float thrustskillModifier = 1f + (effectiveSkill / 1000f);
-                                        float handlingskillModifier = 1f + (effectiveSkill / 700f);
-
-                                        weaponStatsData[i].SwingSpeed = MathF.Ceiling((swingSpeed * 0.75f) * swingskillModifier);
-                                        weaponStatsData[i].ThrustSpeed = MathF.Ceiling((weaponStatsData[i].ThrustSpeed * 0.9f) * thrustskillModifier);
-                                        weaponStatsData[i].DefendSpeed = MathF.Ceiling((handling * 0.83f) * handlingskillModifier);
-                                        break;
-                                    }
-                                case (int)WeaponClass.OneHandedSword:
-                                case (int)WeaponClass.Dagger:
-                                case (int)WeaponClass.TwoHandedSword:
-                                    {
-                                        float swingskillModifier = 1f + (effectiveSkill / 800f);
-                                        float thrustskillModifier = 1f + (effectiveSkill / 800f);
-                                        float handlingskillModifier = 1f + (effectiveSkill / 800f);
-
-                                        weaponStatsData[i].SwingSpeed = MathF.Ceiling((swingSpeed * 0.9f) * swingskillModifier);
-                                        weaponStatsData[i].ThrustSpeed = MathF.Floor(Utilities.CalculateThrustSpeed(weaponData.BaseWeight, weaponData.Inertia, weaponData.CenterOfMass) * 11.7647057f);
-                                        weaponStatsData[i].ThrustSpeed = MathF.Ceiling((thrustSpeed * 1.15f) * thrustskillModifier);
-                                        weaponStatsData[i].DefendSpeed = MathF.Ceiling((handling * 0.9f) * handlingskillModifier);
-                                        break;
-                                    }
-                                case (int)WeaponClass.Bow:
-                                    {
-                                        if (RBMConfig.RBMConfig.realisticRangedReload.Equals("1") || RBMConfig.RBMConfig.realisticRangedReload.Equals("2"))
-                                        {
-                                            float DrawSpeedskillModifier = 1 + (effectiveSkill * 0.01f);
-                                            weaponStatsData[i].ThrustSpeed = MathF.Ceiling((thrustSpeed * 0.1f) * DrawSpeedskillModifier);
-                                        }
-                                        if (RBMConfig.RBMConfig.realisticRangedReload.Equals("0"))
-                                        {
-                                            weaponStatsData[i].ThrustSpeed = MathF.Ceiling(thrustSpeed * 0.45f);
-                                        }
-
-                                        MissionWeapon mw = __instance.Equipment[equipmentSlot];
-                                        RangedWeaponStats rws;
-                                        if (rangedWeaponStats.TryGetValue(mw.GetModifiedItemName().ToString(), out rws))
-                                        {
-                                            if ((ef) < rws.getDrawWeight() + 9f) // 70 more skill needed to unlock speed shooting
-                                            {
-                                                __instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags |= WeaponFlags.UnloadWhenSheathed;
-                                                weaponStatsData[i].WeaponFlags = (ulong)__instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags;
-                                            }
-                                            else
-                                            {
-                                                __instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags &= ~WeaponFlags.UnloadWhenSheathed;
-                                                weaponStatsData[i].WeaponFlags = (ulong)__instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags;
-                                            }
-                                        }
-                                        break;
-                                    }
+                                weaponStatsData[i].SwingSpeed = swingSpeedReal;
+                                weaponStatsData[i].ThrustSpeed = thrustSpeedReal;
+                                weaponStatsData[i].DefendSpeed = handlingReal;
                             }
+
+                            if((WeaponClass)weaponStatsData[i].WeaponClass == WeaponClass.Bow)
+                            {
+                                int thrustSpeed = missionWeapon.GetModifiedThrustSpeedForCurrentUsage();
+                                if (RBMConfig.RBMConfig.realisticRangedReload.Equals("1") || RBMConfig.RBMConfig.realisticRangedReload.Equals("2"))
+                                {
+                                    float DrawSpeedskillModifier = 1 + (ef * 0.01f);
+                                    weaponStatsData[i].ThrustSpeed = MathF.Ceiling((thrustSpeed * 0.1f) * DrawSpeedskillModifier);
+                                }
+                                if (RBMConfig.RBMConfig.realisticRangedReload.Equals("0"))
+                                {
+                                    weaponStatsData[i].ThrustSpeed = MathF.Ceiling(thrustSpeed * 0.45f);
+                                }
+
+                                MissionWeapon mw = __instance.Equipment[equipmentSlot];
+                                RangedWeaponStats rws;
+                                if (rangedWeaponStats.TryGetValue(mw.GetModifiedItemName().ToString(), out rws))
+                                {
+                                    if ((ef) < rws.getDrawWeight() + 9f) // 70 more skill needed to unlock speed shooting
+                                    {
+                                        __instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags |= WeaponFlags.UnloadWhenSheathed;
+                                        weaponStatsData[i].WeaponFlags = (ulong)__instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags;
+                                    }
+                                    else
+                                    {
+                                        __instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags &= ~WeaponFlags.UnloadWhenSheathed;
+                                        weaponStatsData[i].WeaponFlags = (ulong)__instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags;
+                                    }
+                                }
+                            }
+
                             switch (weaponStatsData[i].WeaponClass)
                             {
                                 case (int)WeaponClass.OneHandedPolearm:
                                 case (int)WeaponClass.LowGripPolearm:
                                     {
-                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount, (int)Utilities.throwableCorrectionSpeed, effectiveSkill);
+                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount, (int)Utilities.throwableCorrectionSpeed, effectiveSkillDR);
                                         break;
                                     }
                                 case (int)WeaponClass.Javelin:
                                     {
-                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount, (int)Utilities.throwableCorrectionSpeed, effectiveSkill);
+                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount, (int)Utilities.throwableCorrectionSpeed, effectiveSkillDR);
                                         break;
                                     }
                                 case (int)WeaponClass.ThrowingAxe:
                                 case (int)WeaponClass.ThrowingKnife:
                                 case (int)WeaponClass.Dagger:
                                     {
-                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount, 0, effectiveSkill);
+                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount, 0, effectiveSkillDR);
                                         break;
                                     }
                                 case (int)WeaponClass.Stone:
