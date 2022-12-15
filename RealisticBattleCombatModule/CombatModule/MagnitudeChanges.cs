@@ -718,13 +718,18 @@ namespace RBMCombat
 
         public static void GetRBMMeleeWeaponStats(in EquipmentElement targetWeapon, int targetWeaponUsageIndex, EquipmentElement comparedWeapon, int comparedWeaponUsageIndex,
             out int relevantSkill, out float swingSpeed, out float swingSpeedCompred, out float thrustSpeed, out float thrustSpeedCompred, out float sweetSpotOut, out float sweetSpotComparedOut,
-            out string swingCombinedStringOut, out string swingCombinedStringComparedOut, out string thrustCombinedStringOut, out string thrustCombinedStringComparedOut)
+            out string swingCombinedStringOut, out string swingCombinedStringComparedOut, out string thrustCombinedStringOut, out string thrustCombinedStringComparedOut , 
+            out float swingDamageFactor, out float swingDamageFactorCompared, out float thrustDamageFactor, out float thrustDamageFactorCompared)
         {
             relevantSkill = 0;
             swingSpeed = 0f;
             swingSpeedCompred = 0f;
             thrustSpeed = 0f;
             thrustSpeedCompred = 0f;
+            swingDamageFactor = 0f;
+            swingDamageFactorCompared = 0f;
+            thrustDamageFactor = 0f;
+            thrustDamageFactorCompared = 0f;
             sweetSpotOut = 0f;
             sweetSpotComparedOut = 0f;
             swingCombinedStringOut = "";
@@ -761,8 +766,8 @@ namespace RBMCombat
                         float skillBasedDamageCompared = sweetSpotMagnitudeCompared > 0f ? Utilities.GetSkillBasedDamage(sweetSpotMagnitudeCompared, false, comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).WeaponClass.ToString(),
                             comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).SwingDamageType, effectiveSkillDR, skillModifier, StrikeType.Swing, comparedWeapon.Item.Weight) : -1f;
 
-                        float weaponDamageFactor = (float)Math.Sqrt(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageFactor);
-                        float weaponDamageFactorCompared = sweetSpotMagnitudeCompared > 0f ? (float)Math.Sqrt(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).SwingDamageFactor) : -1f;
+                        swingDamageFactor = (float)Math.Sqrt(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageFactor);
+                        swingDamageFactorCompared = sweetSpotMagnitudeCompared > 0f ? (float)Math.Sqrt(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).SwingDamageFactor) : -1f;
 
                         bool shouldBreakNextTime = false;
 
@@ -780,11 +785,11 @@ namespace RBMCombat
                             if (sweetSpotMagnitudeCompared > 0f)
                             {
                                 int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
-                                    targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, skillBasedDamage, i, 1f, out float penetratedDamage, out float bluntForce, weaponDamageFactor, null, false)), 0, 2000);
+                                    targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, skillBasedDamage, i, 1f, out float penetratedDamage, out float bluntForce, swingDamageFactor, null, false)), 0, 2000);
                                 realDamage = MathF.Floor(realDamage * 1f);
 
                                 int realDamageCompared = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).WeaponClass.ToString(),
-                                    comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).SwingDamageType, skillBasedDamageCompared, i, 1f, out float penetratedDamageCompared, out float bluntForceCompared, weaponDamageFactorCompared, null, false)), 0, 2000);
+                                    comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).SwingDamageType, skillBasedDamageCompared, i, 1f, out float penetratedDamageCompared, out float bluntForceCompared, swingDamageFactorCompared, null, false)), 0, 2000);
                                 realDamageCompared = MathF.Floor(realDamageCompared * 1f);
 
                                 if (penetratedDamage == 0f && penetratedDamageCompared == 0f)
@@ -796,7 +801,7 @@ namespace RBMCombat
                             }
                             else
                             {
-                                int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(), targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, skillBasedDamage, i, 1f, out float penetratedDamage, out float bluntForce, weaponDamageFactor, null, false)), 0, 2000);
+                                int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(), targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, skillBasedDamage, i, 1f, out float penetratedDamage, out float bluntForce, swingDamageFactor, null, false)), 0, 2000);
                                 realDamage = MathF.Floor(realDamage * 1f);
 
                                 if (penetratedDamage == 0f)
@@ -825,8 +830,8 @@ namespace RBMCombat
                         float skillBasedDamageCompared = thrustMagnitudeCompared > 0f ? Utilities.GetSkillBasedDamage(thrustMagnitudeCompared, false, comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).WeaponClass.ToString(),
                             comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).ThrustDamageType, effectiveSkillDR, skillModifier, StrikeType.Thrust, comparedWeapon.Item.Weight) : -1f;
 
-                        float weaponDamageFactor = (float)Math.Sqrt(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageFactor);
-                        float weaponDamageFactorCompared = thrustMagnitudeCompared > 0f ? (float)Math.Sqrt(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).ThrustDamageFactor) : -1f;
+                        thrustDamageFactor = (float)Math.Sqrt(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageFactor);
+                        thrustDamageFactorCompared = thrustMagnitudeCompared > 0f ? (float)Math.Sqrt(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).ThrustDamageFactor) : -1f;
 
                         bool shouldBreakNextTime = false;
 
@@ -841,11 +846,11 @@ namespace RBMCombat
                             if (thrustMagnitudeCompared > 0f)
                             {
                                 int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
-                                targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, skillBasedDamage, i, 1f, out float penetratedDamage, out float bluntForce, weaponDamageFactor, null, false)), 0, 2000);
+                                targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, skillBasedDamage, i, 1f, out float penetratedDamage, out float bluntForce, thrustDamageFactor, null, false)), 0, 2000);
                                 realDamage = MathF.Floor(realDamage * 1f);
 
                                 int realDamageCompared = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).WeaponClass.ToString(),
-                                comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).ThrustDamageType, skillBasedDamageCompared, i, 1f, out float penetratedDamageCompared, out float bluntForceCompared, weaponDamageFactorCompared, null, false)), 0, 2000);
+                                comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).ThrustDamageType, skillBasedDamageCompared, i, 1f, out float penetratedDamageCompared, out float bluntForceCompared, thrustDamageFactorCompared, null, false)), 0, 2000);
                                 realDamageCompared = MathF.Floor(realDamageCompared * 1f);
 
                                 if (penetratedDamage == 0f && penetratedDamageCompared == 0f)
@@ -860,7 +865,7 @@ namespace RBMCombat
                             else
                             {
                                 int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
-                                targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, skillBasedDamage, i, 1f, out float penetratedDamage, out float bluntForce, weaponDamageFactor, null, false)), 0, 2000);
+                                targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, skillBasedDamage, i, 1f, out float penetratedDamage, out float bluntForce, thrustDamageFactor, null, false)), 0, 2000);
                                 realDamage = MathF.Floor(realDamage * 1f);
 
                                 if (penetratedDamage == 0f)
@@ -1138,13 +1143,17 @@ namespace RBMCombat
                 if (!targetWeapon.IsEmpty && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex) != null && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).IsMeleeWeapon)
                 {
                     GetRBMMeleeWeaponStats(targetWeapon, targetWeaponUsageIndex, comparedWeapon, comparedWeaponUsageIndex, out int relevantSkill, out float swingSpeed, out float swingSpeedCompred, out float thrustSpeed, out float thrustSpeedCompred, out float sweetSpotOut, out float sweetSpotComparedOut,
-                    out string swingCombinedStringOut, out string swingCombinedStringComparedOut, out string thrustCombinedStringOut, out string thrustCombinedStringComparedOut);
+                    out string swingCombinedStringOut, out string swingCombinedStringComparedOut, out string thrustCombinedStringOut, out string thrustCombinedStringComparedOut, 
+                    out float swingDamageFactor, out float swingDamageFactorCompared, out float thrustDamageFactor, out float thrustDamageFactorCompared);
                     if (currentSelectedChar != null)
                     {
 
                         methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "RBM Stats", "", 1, null });
 
                         methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Relevant Skill: "), relevantSkill, relevantSkill });
+
+                        methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Swing Damage Factor:"), MathF.Round(swingDamageFactor * 100f), MathF.Round(swingDamageFactorCompared * 100f) });
+                        methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Thrust Damage Factor:"), MathF.Round(thrustDamageFactor * 100f), MathF.Round(thrustDamageFactorCompared * 100f) });
 
                         methodAddFloatProperty.Invoke(__instance, new object[] { new TextObject("Swing Speed, m/s:"), swingSpeed, swingSpeedCompred, false });
                         methodAddFloatProperty.Invoke(__instance, new object[] { new TextObject("Thrust Speed, m/s: "), thrustSpeed, thrustSpeedCompred, false });
@@ -1327,10 +1336,13 @@ namespace RBMCombat
                             string hintText = "";
                             if (item.GetWeaponWithUsageIndex(usageindex).IsMeleeWeapon) {
                                 GetRBMMeleeWeaponStats(eq, usageindex, EquipmentElement.Invalid, -1, out int relevantSkill, out float swingSpeed, out float swingSpeedCompred, out float thrustSpeed, out float thrustSpeedCompred, out float sweetSpotOut, out float sweetSpotComparedOut,
-                            out string swingCombinedStringOut, out string swingCombinedStringComparedOut, out string thrustCombinedStringOut, out string thrustCombinedStringComparedOut);
+                            out string swingCombinedStringOut, out string swingCombinedStringComparedOut, out string thrustCombinedStringOut, out string thrustCombinedStringComparedOut ,
+                            out float swingDamageFactor, out float swingDamageFactorCompared, out float thrustDamageFactor, out float thrustDamageFactorCompared);
 
                                 hintText += "RBM Stats\n";
                                 hintText += "Relevant Skill: " + relevantSkill + "\n";
+                                hintText += "Swing Damage Factor: " + MathF.Round(swingDamageFactor * 100f) + "\n";
+                                hintText += "Thrust Damage Factor: " + MathF.Round(thrustDamageFactor * 100f) + "\n";
                                 hintText += "Swing Speed, m/s: " + swingSpeed + "\n";
                                 hintText += "Thrust Speed, m/s: " + thrustSpeed + "\n";
 
