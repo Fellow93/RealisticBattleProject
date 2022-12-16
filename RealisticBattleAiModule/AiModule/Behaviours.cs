@@ -10,6 +10,7 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
+using static RBMAI.OverrideBehaviorMountedSkirmish;
 using static TaleWorlds.MountAndBlade.ArrangementOrder;
 using static TaleWorlds.MountAndBlade.HumanAIComponent;
 
@@ -341,6 +342,22 @@ namespace RBMAI
     [HarmonyPatch(typeof(BehaviorMountedSkirmish))]
     class OverrideBehaviorMountedSkirmish
     {
+        public enum RotationDirection
+        {
+            Left,
+            Right
+        }
+
+        public class RotationChangeClass
+        {
+            public int waitbeforeChangeCooldownMax = 100;
+            public int waitbeforeChangeCooldownCurrent = 0;
+            public RotationDirection rotationDirection = RotationDirection.Left;
+
+            public RotationChangeClass() { }
+        }
+
+        public static Dictionary<Formation, RotationChangeClass> rotationDirectionDictionary = new Dictionary<Formation, RotationChangeClass> { };
         private struct Ellipse
         {
             private readonly Vec2 _center;
@@ -359,9 +376,17 @@ namespace RBMAI
                 _direction = direction;
             }
 
-            public Vec2 GetTargetPos(Vec2 position, float distance)
+            public Vec2 GetTargetPos(Vec2 position, float distance, RotationDirection rotationDirection)
             {
-                Vec2 vec = _direction.LeftVec();
+                Vec2 vec;
+                if (rotationDirection == RotationDirection.Left)
+                {
+                    vec = _direction.LeftVec();
+                }
+                else
+                {
+                    vec = _direction.RightVec();
+                }
                 Vec2 vec2 = _center + vec * _halfLength;
                 Vec2 vec3 = _center - vec * _halfLength;
                 Vec2 vec4 = position - _center;
@@ -468,7 +493,7 @@ namespace RBMAI
                 else
                 {
                     Vec2 vec = (__instance.Formation.QuerySystem.MedianPosition.AsVec2 - targetFormationQS.MedianPosition.AsVec2).Normalized().LeftVec();
-                    FormationQuerySystem closestSignificantlyLargeEnemyFormation = targetFormationQS;
+                    FormationQuerySystem closestSignificantlyLargeEnemyFormation = __instance.Formation.QuerySystem.ClosestEnemyFormation;
                     float num2 = 50f + (targetFormationQS.Formation.Width + __instance.Formation.Depth) * 0.5f;
                     float num3 = 0f;
 
@@ -477,6 +502,13 @@ namespace RBMAI
                     if (__instance.Formation != null && __instance.Formation.QuerySystem.IsInfantryFormation)
                     {
                         enemyFormation = RBMAI.Utilities.FindSignificantEnemyToPosition(__instance.Formation, position, true, true, false, false, false, false);
+                    }
+
+                    if(closestSignificantlyLargeEnemyFormation != null && closestSignificantlyLargeEnemyFormation.AveragePosition.Distance(__instance.Formation.CurrentPosition) < __instance.Formation.Depth / 2f + (
+                        (closestSignificantlyLargeEnemyFormation.Formation.QuerySystem.FormationPower / __instance.Formation.QuerySystem.FormationPower) * 20f + 10f))
+                    {
+                        ____currentOrder = MovementOrder.MovementOrderChargeToTarget(closestSignificantlyLargeEnemyFormation.Formation);
+                        return;
                     }
 
                     //foreach (Team team in Mission.Current.Teams.ToList())
@@ -500,11 +532,11 @@ namespace RBMAI
                     //    }
                     //}
 
-                    //if (__instance.Formation.QuerySystem.RangedCavalryUnitRatio > 0.95f && targetFormationQS.Formation == enemyFormation)
-                    //{
-                    //    ____currentOrder = MovementOrder.MovementOrderCharge;
-                    //    return;
-                    //}
+                        //if (__instance.Formation.QuerySystem.RangedCavalryUnitRatio > 0.95f && targetFormationQS.Formation == enemyFormation)
+                        //{
+                        //    ____currentOrder = MovementOrder.MovementOrderCharge;
+                        //    return;
+                        //}
 
                     if (enemyFormation != null && enemyFormation.QuerySystem != null)
                     {
@@ -514,31 +546,55 @@ namespace RBMAI
                         {
                             distance = 30f;
                         }
-                        //distance += (enemyFormation.Depth + __instance.Formation.Width) * 0.5f;
-                        //num5 = Math.Min(num5, __instance.Formation.QuerySystem.MissileRange - __instance.Formation.Width * 0.5f);
+
+                        RotationChangeClass rotationDirection;
+                        if (!rotationDirectionDictionary.TryGetValue(__instance.Formation, out rotationDirection)){
+                            rotationDirection = new RotationChangeClass();
+                            rotationDirectionDictionary.Add(__instance.Formation, rotationDirection);
+                        }
+
                         if (__instance.Formation.QuerySystem.IsRangedCavalryFormation)
                         {
-                            //if(Utilities.FormationFightingInMelee(enemyFormation, 0.1f)){
-                            //    Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, enemyFormation.Width * 0.5f * 1f, enemyFormation.Direction);
-                            //    position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f));
-                            //    position2.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f));
-                            //}
-                            //else
-                            //{
                             Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, (enemyFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose)?enemyFormation.Width * 0.25f: enemyFormation.Width * 0.5f, enemyFormation.Direction);
-                            position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f));
-                            //position2.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f));
-                            //}
-                            //____currentOrder = MovementOrder.MovementOrderMove(position);
+                            position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f, rotationDirection.rotationDirection));
                         }
                         else
                         {
                             Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, enemyFormation.Width * 0.5f , enemyFormation.Direction);
-                            position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f));
-                            //position2.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f));
+                            position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f, rotationDirection.rotationDirection));
                         }
-                        //___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection((targetFormation.QuerySystem.MedianPosition.AsVec2 - position.AsVec2).Normalized());
-                        
+                        if (rotationDirection.waitbeforeChangeCooldownCurrent > 0)
+                        {
+                            if (rotationDirection.waitbeforeChangeCooldownCurrent > rotationDirection.waitbeforeChangeCooldownMax)
+                            {
+                                rotationDirection.waitbeforeChangeCooldownCurrent = 0;
+                                rotationDirectionDictionary[__instance.Formation] = rotationDirection;
+                            }
+                            else
+                            {
+                                rotationDirection.waitbeforeChangeCooldownCurrent++;
+                                rotationDirectionDictionary[__instance.Formation] = rotationDirection;
+                            }
+                            position.SetVec2(enemyFormation.CurrentPosition + enemyFormation.Direction.Normalized() * (__instance.Formation.Depth / 2f + enemyFormation.Depth / 2f + 50f));
+                            if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(position.AsVec2))
+                            {
+                                position.SetVec2(enemyFormation.CurrentPosition + enemyFormation.Direction.Normalized() * -(__instance.Formation.Depth / 2f + enemyFormation.Depth / 2f + 50f));
+                            }
+                        }
+                        float distanceFromBoudnary = Mission.Current.GetClosestBoundaryPosition(__instance.Formation.CurrentPosition).Distance(__instance.Formation.CurrentPosition);
+                        if (distanceFromBoudnary <= __instance.Formation.Width / 2f)
+                        {
+                            if(rotationDirection.waitbeforeChangeCooldownCurrent > rotationDirection.waitbeforeChangeCooldownMax)
+                            {
+                                rotationDirection.waitbeforeChangeCooldownCurrent = 0;
+                                rotationDirectionDictionary[__instance.Formation] = rotationDirection;
+                            }
+                            else
+                            {
+                                rotationDirection.waitbeforeChangeCooldownCurrent++;
+                                rotationDirectionDictionary[__instance.Formation] = rotationDirection;
+                            }
+                        }
                     }
                     else
                     {
