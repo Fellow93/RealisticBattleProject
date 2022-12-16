@@ -556,12 +556,12 @@ namespace RBMAI
                         if (__instance.Formation.QuerySystem.IsRangedCavalryFormation)
                         {
                             Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, (enemyFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose)?enemyFormation.Width * 0.25f: enemyFormation.Width * 0.5f, enemyFormation.Direction);
-                            position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f, rotationDirection.rotationDirection));
+                            position.SetVec2(ellipse.GetTargetPos(__instance.Formation.SmoothedAverageUnitPosition, 25f, rotationDirection.rotationDirection));
                         }
                         else
                         {
                             Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, enemyFormation.Width * 0.5f , enemyFormation.Direction);
-                            position.SetVec2(ellipse.GetTargetPos(__instance.Formation.QuerySystem.AveragePosition, 25f, rotationDirection.rotationDirection));
+                            position.SetVec2(ellipse.GetTargetPos(__instance.Formation.SmoothedAverageUnitPosition, 25f, rotationDirection.rotationDirection));
                         }
                         if (rotationDirection.waitbeforeChangeCooldownCurrent > 0)
                         {
