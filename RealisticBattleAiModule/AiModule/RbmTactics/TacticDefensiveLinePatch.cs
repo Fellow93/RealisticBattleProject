@@ -43,6 +43,7 @@ namespace RBMAI.AiModule.RbmTactics
             {
                 ____rangedCavalry.AI.ResetBehaviorWeights();
                 TacticFullScaleAttack.SetDefaultBehaviorWeights(____rangedCavalry);
+                ____rangedCavalry.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
                 ____rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
             }
         }

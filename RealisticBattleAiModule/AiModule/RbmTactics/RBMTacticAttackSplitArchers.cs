@@ -129,7 +129,8 @@ public class RBMTacticAttackSplitArchers : TacticComponent
 		{
 			_rangedCavalry.AI.ResetBehaviorWeights();
 			SetDefaultBehaviorWeights(_rangedCavalry);
-			_rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+            _rangedCavalry.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
+            _rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
 		}
 	}
 

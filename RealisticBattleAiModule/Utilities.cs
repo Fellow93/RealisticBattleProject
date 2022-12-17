@@ -27,7 +27,7 @@ namespace RBMAI
                 if (FormationFightingInMelee(mainInfantry, 0.35f)){ 
                     return true;
                 }
-                if (mainInfantry.QuerySystem.ClosestEnemyFormation != null && mainInfantry.QuerySystem.ClosestEnemyFormation.Formation != null)
+                if (mainInfantry != null && mainInfantry.CountOfUnits > 0 && mainInfantry.QuerySystem.ClosestEnemyFormation != null && mainInfantry.QuerySystem.ClosestEnemyFormation.Formation != null)
                 {
                     Formation enemyForamtion = RBMAI.Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false, true);
                     if (enemyForamtion != null)
@@ -415,6 +415,36 @@ namespace RBMAI
                                 //{
                                 //    formations.Add(enemyFormation);
                                 //}
+                            }
+                        }
+                    }
+                }
+            }
+            return formations;
+        }
+
+        public static List<Formation> FindSignificantArcherFormations(Formation formation)
+        {
+            List<Formation> formations = new List<Formation>();
+            if (formation != null)
+            {
+                if (formation.QuerySystem.ClosestEnemyFormation != null)
+                {
+                    foreach (Team team in Mission.Current.Teams.ToList())
+                    {
+                        if (team.IsEnemyOf(formation.Team))
+                        {
+                            if (team.Formations.ToList().Count == 1)
+                            {
+                                formations.Add(team.Formations.ToList()[0]);
+                                return formations;
+                            }
+                            foreach (Formation enemyFormation in team.Formations.ToList())
+                            {
+                                if (formation != null && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
+                                {
+                                    formations.Add(enemyFormation);
+                                }
                             }
                         }
                     }

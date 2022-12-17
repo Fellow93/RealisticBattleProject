@@ -48,6 +48,13 @@ namespace RBMAI
 			bool flag = false;
 			Vec2 vec;
 			Vec2 vec2;
+            if (base.Formation.CountOfUnits <= 1)
+            {
+                vec = base.Formation.Direction;
+                medianPosition.SetVec2(base.Formation.QuerySystem.AveragePosition);
+                base.CurrentOrder = MovementOrder.MovementOrderMove(medianPosition);
+                return;
+            }
             if (base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation == null)
             {
                 vec = base.Formation.Direction;

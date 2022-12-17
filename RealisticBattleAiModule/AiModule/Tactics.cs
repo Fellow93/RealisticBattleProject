@@ -294,6 +294,7 @@ namespace RBMAI
             [HarmonyPatch("OnUnitAddedToFormationForTheFirstTime")]
             static void PostfixOnUnitAddedToFormationForTheFirstTime(Formation formation)
             {
+                formation.QuerySystem.Expire();
                 formation.AI.AddAiBehavior(new RBMBehaviorArcherSkirmish(formation));
                 formation.AI.AddAiBehavior(new RBMBehaviorForwardSkirmish(formation));
                 formation.AI.AddAiBehavior(new RBMBehaviorInfantryAttackFlank(formation));
@@ -598,6 +599,7 @@ namespace RBMAI
                 {
                         ____rangedCavalry.AI.ResetBehaviorWeights();
                     TacticRangedHarrassmentOffensive.SetDefaultBehaviorWeights(____rangedCavalry);
+                    ____rangedCavalry.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
                     ____rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                 }
             }

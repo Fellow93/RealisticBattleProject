@@ -149,17 +149,24 @@ namespace RBMAI
                 }
                 if (____mainFormation != null && __instance.Formation != null && ____mainFormation.CountOfUnits > 0 && ____mainFormation.IsInfantry())
                 {
+                    
                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(____mainFormation.Direction);
-
                     WorldPosition medianPosition = ____mainFormation.QuerySystem.MedianPosition;
-                    Vec2 calcPosition = medianPosition.AsVec2 - ____mainFormation.Direction.Normalized() * (____mainFormation.Depth / 2f + __instance.Formation.Depth / 2f + 5f);
+                    Vec2 calcPosition;
+                    if (__instance.Formation.QuerySystem.IsRangedCavalryFormation)
+                    {
+                        calcPosition = medianPosition.AsVec2 - ____mainFormation.Direction.Normalized() * (____mainFormation.Depth / 2f + __instance.Formation.Depth / 2f + 15f);
+                    }
+                    else
+                    {
+                        calcPosition = medianPosition.AsVec2 - ____mainFormation.Direction.Normalized() * (____mainFormation.Depth / 2f + __instance.Formation.Depth / 2f + 5f);
+                    }
                     medianPosition.SetVec2(calcPosition);
                     if (!Mission.Current.IsPositionInsideBoundaries(calcPosition) || medianPosition.GetNavMesh() == UIntPtr.Zero)
                     {
                         medianPosition = ____mainFormation.QuerySystem.MedianPosition;
                     }
                     ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
-
                 }
             }
 
@@ -643,6 +650,20 @@ namespace RBMAI
                 {
                     __result = 0.01f;
                     return;
+                }
+
+                float powerSum = 0f;
+                if(!Utilities.HasBattleBeenJoined(__instance.Formation, false, 75f))
+                {
+                    foreach (Formation enemyArcherFormation in Utilities.FindSignificantArcherFormations(__instance.Formation))
+                    {
+                        powerSum += enemyArcherFormation.QuerySystem.FormationPower;
+                    }
+                    if (powerSum > 0f && __instance.Formation.QuerySystem.FormationPower > 0f && (__instance.Formation.QuerySystem.FormationPower / powerSum) < 0.75f)
+                    {
+                        __result = 0.01f;
+                        return;
+                    }
                 }
                 __result = 100f;
                 return;
