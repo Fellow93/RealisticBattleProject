@@ -64,7 +64,7 @@
     </Materials>
   </CraftingPiece>
 
-  <CraftingPiece id="axe_craft_36_head" name="{=cEU66ABf}Northern Battle Axe Blade" tier="3" piece_type="Blade" mesh="axe_craft_36_head" distance_to_next_piece="10.4" distance_to_previous_piece="3.4" weight="0.266">
+  <CraftingPiece id="axe_craft_36_head" name="{=cEU66ABf}Northern Battle Axe Blade" tier="3" piece_type="Blade" mesh="axe_craft_36_head" distance_to_next_piece="10.4" distance_to_previous_piece="3.4" weight="0.396">
 
     <BuildData piece_offset="-6.8" />
     <BladeData stack_amount="3" blade_length="15.764" blade_width="16" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -79,7 +79,7 @@
       <Material id="Iron3" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_35_head" name="{=VfzFTGd8}Small Round Bit Head" tier="2" piece_type="Blade" mesh="axe_craft_35_head" distance_to_next_piece="5" distance_to_previous_piece="3.6" weight="0.266">
+  <CraftingPiece id="axe_craft_35_head" name="{=VfzFTGd8}Small Round Bit Head" tier="2" piece_type="Blade" mesh="axe_craft_35_head" distance_to_next_piece="5" distance_to_previous_piece="3.6" weight="0.366">
 
     <BuildData piece_offset="-7.2" />
     <BladeData stack_amount="3" blade_length="10.364" blade_width="20.3" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -93,7 +93,7 @@
       <Material id="Iron2" count="4" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_27_head" name="{=g2r3QKOB}Southern Small Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_27_head" distance_to_next_piece="8.3" distance_to_previous_piece="3.1" weight="0.267">
+  <CraftingPiece id="axe_craft_27_head" name="{=g2r3QKOB}Southern Small Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_27_head" distance_to_next_piece="8.3" distance_to_previous_piece="3.1" weight="0.367">
 
     <BuildData piece_offset="-6.2" />
     <BladeData stack_amount="3" blade_length="16.562" blade_width="13.626" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -107,7 +107,7 @@
       <Material id="Iron2" count="4" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_26_head" name="{=Tui9qvOZ}Tzikurion Head" tier="3" piece_type="Blade" mesh="axe_craft_26_head" distance_to_next_piece="9" distance_to_previous_piece="3.5" weight="0.307">
+  <CraftingPiece id="axe_craft_26_head" name="{=Tui9qvOZ}Tzikurion Head" tier="3" piece_type="Blade" mesh="axe_craft_26_head" distance_to_next_piece="9" distance_to_previous_piece="3.5" weight="0.507">
 
     <BuildData piece_offset="0" />
     <BladeData stack_amount="2" blade_length="17.6" blade_width="19.393" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
@@ -121,7 +121,7 @@
       <Material id="Iron3" count="4" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_11_head" name="{=1NSafswc}Gallogaich Axe Head" tier="4" piece_type="Blade" mesh="axe_craft_11_head" distance_to_next_piece="2.124" distance_to_previous_piece="3.279" weight="0.325">
+  <CraftingPiece id="axe_craft_11_head" name="{=1NSafswc}Gallogaich Axe Head" tier="4" piece_type="Blade" mesh="axe_craft_11_head" distance_to_next_piece="2.124" distance_to_previous_piece="3.279" weight="0.425">
 
     <BuildData piece_offset="-6.558" />
     <BladeData stack_amount="3" blade_length="9.79" blade_width="28.335" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -136,11 +136,11 @@
       <Material id="Iron4" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_25_head" name="{=m6CVEgTU}Spiked Battle Axe Blade" tier="5" piece_type="Blade" mesh="axe_craft_25_head" distance_to_next_piece="13.9" distance_to_previous_piece="4" weight="0.3">
+  <CraftingPiece id="axe_craft_25_head" name="{=m6CVEgTU}Spiked Battle Axe Blade" tier="5" piece_type="Blade" mesh="axe_craft_25_head" distance_to_next_piece="13.9" distance_to_previous_piece="4" weight="0.7">
 
     <BuildData piece_offset="-8" />
     <BladeData stack_amount="3" blade_length="25.328" blade_width="31.023" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Swing damage_type="Cut" damage_factor="1.3" />
+      <Swing damage_type="Cut" damage_factor="1.1" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -152,7 +152,7 @@
       <Material id="Iron4" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_20_head" name="{=X7OrRebK}Narrow Sparth Blade" tier="2" piece_type="Blade" mesh="axe_craft_20_head" distance_to_next_piece="3.6" distance_to_previous_piece="2.7" weight="0.262">
+  <CraftingPiece id="axe_craft_20_head" name="{=X7OrRebK}Narrow Sparth Blade" tier="2" piece_type="Blade" mesh="axe_craft_20_head" distance_to_next_piece="3.6" distance_to_previous_piece="2.7" weight="0.362">
 
     <BuildData piece_offset="-5.4" />
     <BladeData stack_amount="3" blade_length="9.683" blade_width="18.004" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -167,7 +167,7 @@
       <Material id="Iron3" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_20_head_blunt" name="{=nsjbWcmp}Narrow Blunt Sparth Blade" tier="2" piece_type="Blade" mesh="axe_craft_20_head" distance_to_next_piece="3.6" distance_to_previous_piece="2.7" weight="0.262" is_hidden="true">
+  <CraftingPiece id="axe_craft_20_head_blunt" name="{=nsjbWcmp}Narrow Blunt Sparth Blade" tier="2" piece_type="Blade" mesh="axe_craft_20_head" distance_to_next_piece="3.6" distance_to_previous_piece="2.7" weight="0.362" is_hidden="true">
 
     <BuildData piece_offset="-5.4" />
     <BladeData stack_amount="3" blade_length="9.683" blade_width="18.004" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -182,7 +182,7 @@
       <Material id="Iron3" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_21_head" name="{=NS83CCvb}Common Iron Axe Head" tier="3" piece_type="Blade" mesh="axe_craft_21_head" distance_to_next_piece="2.6" distance_to_previous_piece="2" weight="0.271">
+  <CraftingPiece id="axe_craft_21_head" name="{=NS83CCvb}Common Iron Axe Head" tier="3" piece_type="Blade" mesh="axe_craft_21_head" distance_to_next_piece="2.6" distance_to_previous_piece="2" weight="0.371">
 
     <BuildData piece_offset="-4" />
     <BladeData stack_amount="3" blade_length="9.382" blade_width="18.004" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -196,7 +196,7 @@
       <Material id="Iron3" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_30_head" name="{=IZw8FnwW}Large Ascia Head" tier="2" piece_type="Blade" mesh="axe_craft_30_head" distance_to_next_piece="2.6" distance_to_previous_piece="2.3" weight="0.294">
+  <CraftingPiece id="axe_craft_30_head" name="{=IZw8FnwW}Large Ascia Head" tier="2" piece_type="Blade" mesh="axe_craft_30_head" distance_to_next_piece="2.6" distance_to_previous_piece="2.3" weight="0.394">
 
     <BuildData piece_offset="-4.6" />
     <BladeData stack_amount="3" blade_length="8.442" blade_width="19.527" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -210,7 +210,7 @@
       <Material id="Iron2" count="4" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_30_head_blunt" name="{=M9ACQeD6}Large Blunt Ascia Head" tier="2" piece_type="Blade" mesh="axe_craft_30_head" distance_to_next_piece="2.6" distance_to_previous_piece="2.3" weight="0.294" is_hidden="true">
+  <CraftingPiece id="axe_craft_30_head_blunt" name="{=M9ACQeD6}Large Blunt Ascia Head" tier="2" piece_type="Blade" mesh="axe_craft_30_head" distance_to_next_piece="2.6" distance_to_previous_piece="2.3" weight="0.394" is_hidden="true">
 
     <BuildData piece_offset="-4.6" />
     <BladeData stack_amount="3" blade_length="8.442" blade_width="19.527" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -224,7 +224,7 @@
       <Material id="Iron2" count="4" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_18_head" name="{=4Ilo91CO}Western Battle Axe Head" tier="4" piece_type="Blade" mesh="axe_craft_18_head" distance_to_next_piece="3.4" distance_to_previous_piece="1.3" weight="0.30">
+  <CraftingPiece id="axe_craft_18_head" name="{=4Ilo91CO}Western Battle Axe Head" tier="4" piece_type="Blade" mesh="axe_craft_18_head" distance_to_next_piece="3.4" distance_to_previous_piece="1.3" weight="0.50">
 
     <BuildData piece_offset="-2.6" />
     <BladeData stack_amount="3" blade_length="11.4" blade_width="17.4" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -239,7 +239,7 @@
       <Material id="Iron4" count="4" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_2_head" name="{=VccYBtB0}Northern Hatchet Head" tier="2" piece_type="Blade" mesh="axe_craft_2_head" distance_to_next_piece="3.986" distance_to_previous_piece="2.314" weight="0.30">
+  <CraftingPiece id="axe_craft_2_head" name="{=VccYBtB0}Northern Hatchet Head" tier="2" piece_type="Blade" mesh="axe_craft_2_head" distance_to_next_piece="3.986" distance_to_previous_piece="2.314" weight="0.40">
 
     <BuildData piece_offset="-5.628" />
     <BladeData stack_amount="3" blade_length="12.2" blade_width="24.433" physics_material="metal_weapon" body_name="bo_axe_longer_a">
@@ -253,7 +253,7 @@
       <Material id="Iron2" count="4" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_23_head" name="{=kNhcSC6i}Northern Bearded Head" tier="4" piece_type="Blade" mesh="axe_craft_23_head" distance_to_next_piece="3" distance_to_previous_piece="5.3" weight="0.30">
+  <CraftingPiece id="axe_craft_23_head" name="{=kNhcSC6i}Northern Bearded Head" tier="4" piece_type="Blade" mesh="axe_craft_23_head" distance_to_next_piece="3" distance_to_previous_piece="5.3" weight="0.60">
 
     <BuildData piece_offset="-10.6" />
     <BladeData stack_amount="3" blade_length="24.97" blade_width="20.661" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -268,7 +268,7 @@
       <Material id="Iron3" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_9_head" name="{=8S6ZYPFD}Round Bitted Fine Steel Hatchet Head" tier="5" piece_type="Blade" mesh="axe_craft_9_head" distance_to_next_piece="4.642" distance_to_previous_piece="2.104" weight="0.283">
+  <CraftingPiece id="axe_craft_9_head" name="{=8S6ZYPFD}Round Bitted Fine Steel Hatchet Head" tier="5" piece_type="Blade" mesh="axe_craft_9_head" distance_to_next_piece="4.642" distance_to_previous_piece="2.104" weight="0.383">
 
     <BuildData piece_offset="-4.208" />
     <BladeData stack_amount="3" blade_length="11.538" blade_width="26.876" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -285,11 +285,11 @@
       <Material id="Iron5" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_8_head" name="{=WkTkxQfw}Rectangular Bit Blade" tier="5" piece_type="Blade" mesh="axe_craft_8_head" distance_to_next_piece="11.156" distance_to_previous_piece="1.96" weight="0.351">
+  <CraftingPiece id="axe_craft_8_head" name="{=WkTkxQfw}Rectangular Bit Blade" tier="5" piece_type="Blade" mesh="axe_craft_8_head" distance_to_next_piece="11.156" distance_to_previous_piece="1.96" weight="0.651">
 
     <BuildData piece_offset="-3.92" />
     <BladeData stack_amount="3" blade_length="22.332" blade_width="23.205" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Swing damage_type="Cut" damage_factor="1.5" />
+      <Swing damage_type="Cut" damage_factor="1.2" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -302,7 +302,7 @@
       <Material id="Iron5" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_24_head" name="{=fOrRdtNK}Small Spurred Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_24_head" distance_to_next_piece="2.6" distance_to_previous_piece="2.1" weight="0.30">
+  <CraftingPiece id="axe_craft_24_head" name="{=fOrRdtNK}Small Spurred Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_24_head" distance_to_next_piece="2.6" distance_to_previous_piece="2.1" weight="0.40">
 
     <BuildData piece_offset="-4.2" />
     <BladeData stack_amount="3" blade_length="9.46" blade_width="21.987" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -316,7 +316,7 @@
       <Material id="Iron2" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_29_head" name="{=iFhr5nGq}Imperial Axe Head" tier="3" piece_type="Blade" mesh="axe_craft_29_head" distance_to_next_piece="2.6" distance_to_previous_piece="2.3" weight="0.30">
+  <CraftingPiece id="axe_craft_29_head" name="{=iFhr5nGq}Imperial Axe Head" tier="3" piece_type="Blade" mesh="axe_craft_29_head" distance_to_next_piece="2.6" distance_to_previous_piece="2.3" weight="0.40">
 
     <BuildData piece_offset="-9.6" />
     <BladeData stack_amount="3" blade_length="9.105" blade_width="23.082" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -330,7 +330,7 @@
       <Material id="Iron3" count="4" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_28_head" name="{=ajVcY9v6}Small Hammer Axe Head" tier="3" piece_type="Blade" mesh="axe_craft_28_head" distance_to_next_piece="2.8" distance_to_previous_piece="3.1" weight="0.30">
+  <CraftingPiece id="axe_craft_28_head" name="{=ajVcY9v6}Small Hammer Axe Head" tier="3" piece_type="Blade" mesh="axe_craft_28_head" distance_to_next_piece="2.8" distance_to_previous_piece="3.1" weight="0.40">
 
     <BuildData piece_offset="-6.2" />
     <BladeData stack_amount="3" blade_length="12.961" blade_width="19.393" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -345,7 +345,7 @@
       <Material id="Iron3" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_12_head" name="{=cK6D7cyn}Large Franziska Head" tier="3" piece_type="Blade" mesh="axe_craft_12_head" distance_to_next_piece="5" distance_to_previous_piece="1.5" weight="0.247">
+  <CraftingPiece id="axe_craft_12_head" name="{=cK6D7cyn}Large Franziska Head" tier="3" piece_type="Blade" mesh="axe_craft_12_head" distance_to_next_piece="5" distance_to_previous_piece="1.5" weight="0.347">
 
     <BuildData piece_offset="-3" />
     <BladeData stack_amount="3" blade_length="11.622" blade_width="23.945" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -359,7 +359,7 @@
       <Material id="Iron3" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_19_head" name="{=ZxZ7AJ1r}Southern Battle Axe Blade" tier="4" piece_type="Blade" mesh="axe_craft_19_head" distance_to_next_piece="11.1" distance_to_previous_piece="10.2" weight="0.35">
+  <CraftingPiece id="axe_craft_19_head" name="{=ZxZ7AJ1r}Southern Battle Axe Blade" tier="4" piece_type="Blade" mesh="axe_craft_19_head" distance_to_next_piece="11.1" distance_to_previous_piece="10.2" weight="0.45">
 
     <BuildData piece_offset="-20.4" />
     <BladeData stack_amount="3" blade_length="22.539" blade_width="16.706" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -374,7 +374,7 @@
       <Material id="Iron3" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_33_head" name="{=SR7a3qlO}Round Bit Battle Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_33_head" distance_to_next_piece="7.2" distance_to_previous_piece="3" weight="0.266">
+  <CraftingPiece id="axe_craft_33_head" name="{=SR7a3qlO}Round Bit Battle Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_33_head" distance_to_next_piece="7.2" distance_to_previous_piece="3" weight="0.366">
 
     <BuildData piece_offset="-6" />
     <BladeData stack_amount="3" blade_length="12.564" blade_width="15.1" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -398,7 +398,7 @@
                  mesh="axe_craft_15_head"
                  distance_to_next_piece="4.1"
                  distance_to_previous_piece="3.2"
-                 weight="0.4"
+                 weight="0.5"
                  is_default="true">
 
     <BuildData piece_offset="-6.4" />
@@ -425,7 +425,7 @@
   
   
   
-  <CraftingPiece id="axe_craft_7_head" name="{=USWfzbuW}Northern Broad Great Axe Head" tier="4" piece_type="Blade" mesh="axe_craft_7_head" distance_to_next_piece="14.96" distance_to_previous_piece="2.712" weight="0.4">
+  <CraftingPiece id="axe_craft_7_head" name="{=USWfzbuW}Northern Broad Great Axe Head" tier="4" piece_type="Blade" mesh="axe_craft_7_head" distance_to_next_piece="14.96" distance_to_previous_piece="2.712" weight="0.6">
 
     <BuildData piece_offset="-5.424" />
     <BladeData stack_amount="3" blade_length="28.366" blade_width="28.192" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -440,7 +440,7 @@
       <Material id="Iron3" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_17_head" name="{=R62maL2H}Bill Head" tier="4" piece_type="Blade" mesh="axe_craft_17_head" distance_to_next_piece="21" distance_to_previous_piece="3.8" weight="0.75">
+  <CraftingPiece id="axe_craft_17_head" name="{=R62maL2H}Bill Head" tier="4" piece_type="Blade" mesh="axe_craft_17_head" distance_to_next_piece="21" distance_to_previous_piece="3.8" weight="0.7">
     <BuildData piece_offset="-7.6" />
     <BladeData stack_amount="3" blade_length="33.887" blade_width="22.47" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Pierce" damage_factor="0.9" />
@@ -453,7 +453,7 @@
       <Material id="Iron4" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_6_head" name="{=tNtulHAv}Broad Large Norse Head" tier="3" piece_type="Blade" mesh="axe_craft_6_head" distance_to_next_piece="18.597" distance_to_previous_piece="3.996" weight="0.4">
+  <CraftingPiece id="axe_craft_6_head" name="{=tNtulHAv}Broad Large Norse Head" tier="3" piece_type="Blade" mesh="axe_craft_6_head" distance_to_next_piece="18.597" distance_to_previous_piece="3.996" weight="0.5">
 
     <BuildData piece_offset="-7.992" />
     <BladeData stack_amount="3" blade_length="24.612" blade_width="24.998" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -468,11 +468,11 @@
       <Material id="Iron2" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_16_head" name="{=0gteBOD7}Bardiche Head" tier="4" piece_type="Blade" mesh="axe_craft_16_head" distance_to_next_piece="28.8" distance_to_previous_piece="6" weight="0.35">
+  <CraftingPiece id="axe_craft_16_head" name="{=0gteBOD7}Bardiche Head" tier="4" piece_type="Blade" mesh="axe_craft_16_head" distance_to_next_piece="28.8" distance_to_previous_piece="6" weight="0.7">
 
     <BuildData piece_offset="-12" />
     <BladeData stack_amount="3" blade_length="57.435" blade_width="23.337" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Swing damage_type="Cut" damage_factor="1.1" />
+      <Swing damage_type="Cut" damage_factor="1.0" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -482,11 +482,11 @@
       <Material id="Iron4" count="4" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_38_head" name="{=SEsx3kZz}Heavy Bardiche Head" tier="5" piece_type="Blade" mesh="axe_craft_16_head" distance_to_next_piece="28.8" distance_to_previous_piece="6" weight="0.3">
+  <CraftingPiece id="axe_craft_38_head" name="{=SEsx3kZz}Heavy Bardiche Head" tier="5" piece_type="Blade" mesh="axe_craft_16_head" distance_to_next_piece="28.8" distance_to_previous_piece="6" weight="0.8">
 
     <BuildData piece_offset="-12" />
     <BladeData stack_amount="3" blade_length="57.435" blade_width="23.337" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Swing damage_type="Cut" damage_factor="1.3" />
+      <Swing damage_type="Cut" damage_factor="1.2" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -499,7 +499,7 @@
       <Material id="Iron4" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_1_head" name="{=NfPgejKk}Drilled Sparth Blade" tier="5" piece_type="Blade" mesh="axe_craft_1_head" distance_to_next_piece="5.402" distance_to_previous_piece="2.747" weight="0.35">
+  <CraftingPiece id="axe_craft_1_head" name="{=NfPgejKk}Drilled Sparth Blade" tier="5" piece_type="Blade" mesh="axe_craft_1_head" distance_to_next_piece="5.402" distance_to_previous_piece="2.747" weight="0.5">
 
     <BuildData piece_offset="-8.241" />
     <BladeData stack_amount="3" blade_length="16.651" blade_width="26.744" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -516,11 +516,11 @@
       <Material id="Iron3" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_22_head" name="{=IxCaIvUk}Large Northern Broad Head With Decorated Neck" tier="5" piece_type="Blade" mesh="axe_craft_22_head" distance_to_next_piece="9.3" distance_to_previous_piece="2" weight="0.3">
+  <CraftingPiece id="axe_craft_22_head" name="{=IxCaIvUk}Large Northern Broad Head With Decorated Neck" tier="5" piece_type="Blade" mesh="axe_craft_22_head" distance_to_next_piece="9.3" distance_to_previous_piece="2" weight="0.6">
 
     <BuildData piece_offset="-4" />
     <BladeData stack_amount="3" blade_length="20.781" blade_width="30.384" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Swing damage_type="Cut" damage_factor="1.5" />
+      <Swing damage_type="Cut" damage_factor="1.2" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -533,7 +533,7 @@
       <Material id="Iron4" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_14_head" name="{=ALO9gw69}Square Bit Two Handed Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_14_head" distance_to_next_piece="3.6" distance_to_previous_piece="2.9" weight="0.40">
+  <CraftingPiece id="axe_craft_14_head" name="{=ALO9gw69}Square Bit Two Handed Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_14_head" distance_to_next_piece="3.6" distance_to_previous_piece="2.9" weight="0.4">
 
     <BuildData piece_offset="-5.8" />
     <BladeData stack_amount="3" blade_length="13.923" blade_width="21.94" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -547,7 +547,7 @@
       <Material id="Iron2" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_14_head_blunt" name="{=Wn4GjoXY}Square Bit Blunt Two Handed Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_14_head" distance_to_next_piece="3.6" distance_to_previous_piece="2.9" weight="0.40" is_hidden="true">
+  <CraftingPiece id="axe_craft_14_head_blunt" name="{=Wn4GjoXY}Square Bit Blunt Two Handed Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_14_head" distance_to_next_piece="3.6" distance_to_previous_piece="2.9" weight="0.4" is_hidden="true">
 
     <BuildData piece_offset="-5.8" />
     <BladeData stack_amount="3" blade_length="13.923" blade_width="21.94" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -561,7 +561,7 @@
       <Material id="Iron2" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_5_head" name="{=orwoyDlX}Great Sparth Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_5_head" distance_to_next_piece="3.414" distance_to_previous_piece="2.617" weight="0.40">
+  <CraftingPiece id="axe_craft_5_head" name="{=orwoyDlX}Great Sparth Axe Head" tier="2" piece_type="Blade" mesh="axe_craft_5_head" distance_to_next_piece="3.414" distance_to_previous_piece="2.617" weight="0.5">
 
     <BuildData piece_offset="-5.234" />
     <BladeData stack_amount="3" blade_length="13.105" blade_width="27.618" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -575,7 +575,7 @@
       <Material id="Iron2" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_3_head" name="{=gSdybwMN}Large Drilled Norse Bearded Head" tier="4" piece_type="Blade" mesh="axe_craft_3_head" distance_to_next_piece="13.057" distance_to_previous_piece="2.314" weight="0.35">
+  <CraftingPiece id="axe_craft_3_head" name="{=gSdybwMN}Large Drilled Norse Bearded Head" tier="4" piece_type="Blade" mesh="axe_craft_3_head" distance_to_next_piece="13.057" distance_to_previous_piece="2.314" weight="0.55">
 
     <BuildData piece_offset="-4.628" />
     <BladeData stack_amount="3" blade_length="23.005" blade_width="22.407" physics_material="metal_weapon" body_name="bo_axe_longer_b">
@@ -590,7 +590,7 @@
       <Material id="Iron4" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_34_head" name="{=a0erBuF1}Hooked Axe Head" tier="4" piece_type="Blade" mesh="axe_craft_34_head" distance_to_next_piece="8.8" distance_to_previous_piece="4" weight="0.3">
+  <CraftingPiece id="axe_craft_34_head" name="{=a0erBuF1}Hooked Axe Head" tier="4" piece_type="Blade" mesh="axe_craft_34_head" distance_to_next_piece="8.8" distance_to_previous_piece="4" weight="0.5">
 
     <BuildData piece_offset="-8" />
     <BladeData stack_amount="3" blade_length="20.281" blade_width="19.8" physics_material="metal_weapon" body_name="bo_axe_longer_b">

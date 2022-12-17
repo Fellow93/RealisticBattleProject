@@ -4433,7 +4433,7 @@
       <skill id="Crossbow"
              value="15" />
       <skill id="Throwing"
-             value="30" />
+             value="100" />
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.battanian_horseman" />
@@ -4447,6 +4447,8 @@
                  id="Item.highland_scouts_shield" />
       <equipment slot="Item2"
                  id="Item.battania_axe_2_t4" />
+      <equipment slot="Item3"
+                 id="Item.northern_javelin_2_t3" />
       <equipment slot="Body"
                  id="Item.battania_woodland_chainmail" />
       <equipment slot="Gloves"
@@ -4469,6 +4471,8 @@
                  id="Item.highland_scouts_shield" />
       <equipment slot="Item2"
                  id="Item.battania_sword_4_t4" />
+      <equipment slot="Item3"
+                 id="Item.northern_javelin_2_t3" />
       <equipment slot="Body"
                  id="Item.scale_armor" />
       <equipment slot="Gloves"
@@ -4489,6 +4493,8 @@
                  id="Item.highland_scouts_shield" />
       <equipment slot="Item2"
                  id="Item.battania_axe_2_t4" />
+      <equipment slot="Item3"
+                 id="Item.northern_javelin_2_t3" />
       <equipment slot="Body"
                  id="Item.battania_woodland_chainmail" />
       <equipment slot="Gloves"

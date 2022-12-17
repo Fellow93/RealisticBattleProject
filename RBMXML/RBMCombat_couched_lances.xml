@@ -610,7 +610,7 @@
                  piece_type="Blade"
                  mesh="spear_blade_31"
                  length="7"
-                 weight="0.5"
+                 weight="0.1"
                  excluded_item_usage_features="shield:thrust">
     <BladeData stack_amount="3"
                physics_material="wood_weapon"
@@ -630,7 +630,7 @@
                  piece_type="Blade"
                  mesh="sickle_blade_1"
                  length="38.5"
-                 weight="0.262"
+                 weight="0.1"
                  full_scale="true"
                  excluded_item_usage_features="shield:thrust">
     <BladeData stack_amount="3"
@@ -651,7 +651,7 @@
                  piece_type="Blade"
                  mesh="spear_blade_12"
                  length="63"
-                 weight="0.3248"
+                 weight="0.1"
                  excluded_item_usage_features="shield:thrust">
     <BladeData stack_amount="3"
                physics_material="wood_weapon"
@@ -666,7 +666,7 @@
                  piece_type="Blade"
                  mesh="spear_blade_21"
                  length="23.5"
-                 weight="0.332"
+                 weight="0.1"
                  excluded_item_usage_features="shield:thrust">
     <!--WOOD-->
     <BladeData stack_amount="3"
@@ -682,7 +682,7 @@
                  piece_type="Blade"
                  mesh="spear_blade_28"
                  length="29.7"
-                 weight="0.228"
+                 weight="0.1"
                  excluded_item_usage_features="shield:thrust">
     <!--WOOD-->
     <BladeData stack_amount="3"
@@ -698,7 +698,7 @@
                  piece_type="Blade"
                  mesh="spear_blade_30"
                  length="42.5"
-                 weight="0.268"
+                 weight="0.1"
                  excluded_item_usage_features="swing">
     <!--WOOD-->
 
@@ -715,7 +715,7 @@
                  piece_type="Blade"
                  mesh="spear_blade_32"
                  length="32.7"
-                 weight="0.2"
+                 weight="0.1"
                  excluded_item_usage_features="swing">
 
     <BladeData stack_amount="3"
@@ -739,7 +739,7 @@
                  piece_type="Blade"
                  mesh="spear_blade_29"
                  length="42.5"
-                 weight="0.172"
+                 weight="0.1"
                  excluded_item_usage_features="swing">
     <!--WOOD-->
 
