@@ -222,7 +222,7 @@
     </Materials>
   </CraftingPiece>
   
-  <CraftingPiece id="spear_blade_19" name="{=OBeOZ27b}Glaive Head" tier="5" piece_type="Blade" mesh="spear_blade_19" length="37.4" weight="0.9">
+  <CraftingPiece id="spear_blade_19" name="{=OBeOZ27b}Glaive Head" tier="5" piece_type="Blade" mesh="spear_blade_19" length="37.4" weight="0.35">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="0.7" />
       <Swing damage_type="Cut" damage_factor="1.4" />
@@ -242,7 +242,7 @@
     </Materials>
   </CraftingPiece>
   
-  <CraftingPiece id="spear_blade_24" name="{=bjQ8J71a}Long Glaive Head" tier="5" piece_type="Blade" mesh="spear_blade_24" length="68" weight="0.35">
+  <CraftingPiece id="spear_blade_24" name="{=bjQ8J71a}Long Glaive Head" tier="5" piece_type="Blade" mesh="spear_blade_24" length="68" weight="0.40">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="0.9" />
       <Swing damage_type="Cut" damage_factor="1.5" />
@@ -388,8 +388,8 @@
 
   <CraftingPiece id="spear_blade_6" name="{=S75vUGzK}Fine Steel Hewing Spear Head" tier="5" piece_type="Blade" mesh="spear_blade_6" length="84.4" weight="1.25">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="1" />
-      <Swing damage_type="Cut" damage_factor="1.1" />
+      <Thrust damage_type="Pierce" damage_factor="1.15" />
+      <Swing damage_type="Cut" damage_factor="0.9" />
     </BladeData>
     <Materials>
       <Material id="Iron5" count="1" />
@@ -452,7 +452,7 @@
   
   <CraftingPiece id="spear_blade_27" name="{=1rGNXUaJ}Thin Fine Steel Hewing Spear Head" tier="5" piece_type="Blade" mesh="spear_blade_27" length="69.5" weight="0.7">
     <BladeData stack_amount="4" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_2" holster_body_name="bo_throwing_spear_quiver_2" holster_mesh_length="94.6">
-      <Thrust damage_type="Pierce" damage_factor="1.3" />
+      <Thrust damage_type="Pierce" damage_factor="1.25" />
       <Swing damage_type="Cut" damage_factor="1.0" />
     </BladeData>
     <Materials>

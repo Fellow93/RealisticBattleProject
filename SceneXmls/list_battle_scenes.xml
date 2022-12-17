@@ -1,4 +1,6 @@
-﻿  <!--Siege Maps-->
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CustomBattleScenes>
+  <!--Siege Maps-->
   <Scene id="battania_castle_b"
          name="{=eeSLHoF6}Llanoc Hen Castle"
          terrain="Plain"
@@ -9,7 +11,7 @@
          terrain="Plain"
          is_siege_map="true"></Scene> lvl 1, 2 and 3 complete
 		 
-  <Scene id="battania_town_b"
+  <Scene id="battania_town_c"
          name="{=990Fhxcw}Pen Cannoc"
          terrain="Plain"
          is_siege_map="true"></Scene>
@@ -19,7 +21,7 @@
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
-  <Scene id="battania_town_c"
+  <Scene id="battania_town_e"
          name="{=0BPeUfA9}Dunglanys"
          terrain="Plain"
          is_siege_map="true"></Scene>
@@ -37,7 +39,7 @@
   <Scene id="aserai_castle_002"
          name="{=OLrhkKUo}Ain Baliq Castle"
          terrain="Plain"
-         is_siege_map="true"></Scene> lvl 1, 2 and 3 done
+         is_siege_map="true"></Scene> lvl 1, 2 and 3 complete
 		 
   <Scene id="aserai_castle_a"
          name="{=Sk1x6LZK}Barihal Castle"
@@ -59,32 +61,62 @@
          terrain="Plain"
          is_siege_map="true"></Scene> lvl 1, 2 and 3 done
 		 
-  <Scene id="sturgia_town_g"
+  <Scene id="sturgia_town_b"
          name="{=TGPsNCI5}Varnovapol"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="sturgia_town_g"
+         name="{=ShP2XUV7}Varcheg"
          terrain="Plain"
          is_siege_map="true"></Scene> lvl 1, 2 and 3 done
 		 
-  <Scene id="sturgia_town_g"
+  <Scene id="sturgia_town_c"
+         name="{=varCZlso}Balgard"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="sturgia_town_e"
+         name="{=8vI0Twwn}Omor"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="sturgia_town_a"
          name="{=68hY2ikn}Sibir"
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
-  <Scene id="sturgia_town_c"
+  <Scene id="sturgia_town_f"
+         name="{=OcQDxfnH}Revyl"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="sturgia_town_d"
          name="{=qaoM6HL6}Tyal"
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
-  <Scene id="aserai_town_a"
+  <Scene id="aserai_town_b"
          name="{=KfHLVdry}Iyakis"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="aserai_town_f"
+         name="{=rk7xneq9}Razih"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="aserai_town_g"
+         name="{=vN32HHek}Hubyar"
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
   <Scene id="empire_castle_004"
          name="{=9on9e5m7}Thractorae Castle"
          terrain="Plain"
-         is_siege_map="true"></Scene> lvl 1, 2 and 3 done
+         is_siege_map="true"></Scene>  lvl 1, 2 and 3 done
 		 
-  <Scene id="aserai_town_c"
+  <Scene id="aserai_town_e"
          name="{=aRPxOOCW}Qasira"
          terrain="Plain"
          is_siege_map="true"></Scene>
@@ -94,12 +126,12 @@
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
-  <Scene id="empire_town_g"
+  <Scene id="empire_town_f"
          name="{=Luj9oWEl}Lageta"
          terrain="Plain"
-         is_siege_map="true"></Scene>
+         is_siege_map="true"></Scene>  lvl 1, 2 and 3 done
 		 
-  <Scene id="empire_town_i"
+  <Scene id="empire_town_o"
          name="{=BWii0r6E}Syronea"
          terrain="Plain"
          is_siege_map="true"></Scene>
@@ -114,7 +146,7 @@
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
-  <Scene id="empire_town_b"
+  <Scene id="empire_town_n"
          name="{=ArtPdp9q}Amprela"
          terrain="Plain"
          is_siege_map="true"></Scene>
@@ -129,58 +161,98 @@
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
+  <Scene id="khuzait_town_004"
+         name="{=ur24SWTb}Odokh"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
   <Scene id="khuzait_city_b"
          name="{=RQ37o2Yu}Baltakhand"
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
-  <Scene id="aserai_town_b"
+  <Scene id="khuzait_town_g"
+         name="{=j04TBG56}Akkalat"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="aserai_town_c"
          name="{=TWmYlcCZ}Quyaz"
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
-  <Scene id="empire_town_j_siege"
+  <Scene id="aserai_town_a"
+         name="{=tJtC25tG}Husn Fulq"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_town_g"
          name="{=eEqUBFb3}Epicrotea"
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
-  <Scene id="khuzait_town_004"
+  <Scene id="khuzait_town_f"
          name="{=FhgEIFWb}Makeb"
          terrain="Steppe"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="khuzait_town_e"
+         name="{=vITP9z1Z}Ortongard"
+         terrain="Plain"
          is_siege_map="true"></Scene>
 		 
   <Scene id="sturgia_castle_siege_001"
          name="{=IPbMskbi}Ustokol Castle"
          terrain="Steppe"
-         is_siege_map="true"></Scene> lvl 1, 2 and 3 done
+         is_siege_map="true"></Scene>  lvl 1, 2 and 3 done
 		 
   <Scene id="empire_town_c"
          name="{=K2NeKiuO}Ortysia"
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
+  <Scene id="empire_town_j_siege"
+         name="{=IZ1b77Ma}Amitatys"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
   <Scene id="empire_town_d"
          name="{=UBbTKSsa}Zeonica"
          terrain="Plain"
-         is_siege_map="true"></Scene> lvl 1, 2 and 3 done
+         is_siege_map="true"></Scene>  lvl 1, 2 and 3 done
 		 
-  <Scene id="empire_town_e"
+  <Scene id="empire_town_b"
          name="{=Sm9T9Qwi}Myzea"
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
-  <Scene id="empire_town_f"
+  <Scene id="empire_town_l"
          name="{=zRbhAwyr}Vostrum"
          terrain="Plain"
-         is_siege_map="true"></Scene> lvl 1,2 and 3 done
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_town_e"
+         name="{=K0JCdjQd}Poros"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
 		 
   <Scene id="empire_town_k"
          name="{=TapuitFC}Onira"
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
-  <Scene id="empire_town_l"
+  <Scene id="empire_town_p"
+         name="{=aTEsacqP}Phycaon"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_town_q"
          name="{=bskXLff6}Diathma"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_town_r"
+         name="{=Y3Ava3iD}Saneopa"
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
@@ -189,7 +261,7 @@
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
-  <Scene id="empire_town_n"
+  <Scene id="empire_town_i"
          name="{=YeWZBSx8}Jalmarys"
          terrain="Plain"
          is_siege_map="true"></Scene>
@@ -197,32 +269,37 @@
   <Scene id="empire_castle_b"
          name="{=rtiVr8Nm}Sestadaim Castle"
          terrain="Plain"
-         is_siege_map="true"></Scene> lvl 1, 2 and 3 done
+         is_siege_map="true"></Scene>  lvl 1, 2 and 3 done
 		 
   <Scene id="empire_castle_c"
          name="{=QuLrXJoP}Jogurys Castle"
          terrain="Plain"
-         is_siege_map="true"></Scene> lvl 1, 2 and 3 done
+         is_siege_map="true"></Scene>  lvl 1, 2 and 3 done
 		 
   <Scene id="sturgia_castle_c"
          name="{=PF1ohppa}Mazhadan Castle"
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
-  <Scene id="vlandia_town_e"
+  <Scene id="vlandia_town_f"
          name="{=JwMfPrlm}Rovalt"
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
-  <Scene id="vlandia_town_f"
+  <Scene id="vlandia_town_d"
+         name="{=jFy1l9iu}Ostican"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="vlandia_town_e"
          name="{=SdKNB1JO}Sargot"
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
-  <Scene id="vlandia_town_g"
+  <Scene id="vlandia_town_h"
          name="{=1hIKR8Sa}Ocs Hall"
          terrain="Plain"
-         is_siege_map="true"></Scene> lvl 1, 2 and 3 done
+         is_siege_map="true"></Scene>
 		 
   <Scene id="vlandia_castle_a"
          name="{=r2cvi5pi}Hongard Castle"
@@ -242,132 +319,24 @@
   <Scene id="vlandia_castle_b"
          name="{=c8A1uisA}Verecsand Castle"
          terrain="Plain"
-         is_siege_map="true"></Scene> lvl 1, 2 and 3 done
+         is_siege_map="true"></Scene>  lvl 1, 2 and 3 done
 		 
-  <!--<Scene id="vlandia_castle_005a"
-         name="{=JaoBYmxR}vlandia_castle_005a"
-         terrain="Plain"
-         is_siege_map="true"></Scene>-->
-  <!--<Scene id="ai_siege_test_scn_spawner"
-         name="ai_siege_test_scn_spawner"
-         terrain="Plain"
-         is_siege_map="true">
-  </Scene>
-  <Scene id="ai_siege_test_scn" name="ai_siege_test_scn" terrain="Plain" is_siege_map="true">
-  </Scene>
-  <Scene id="battania_town_c"
-         name="battania_town_c"
-         terrain="Plain"
-         is_siege_map="true">
-  </Scene>
-  <Scene id="vlandia_castle_005a"
-         name="vlandia_castle_005a"
-         terrain="Plain"
-         is_siege_map="true">
-  </Scene>
-  <Scene id="empire_siege_001"
-         name="empire_siege_001"
-         terrain="Plain"
-         is_siege_map="true">
-  </Scene>
-  <Scene id="aserai_castle_002"
-         name="aserai_castle_002"
-         terrain="Plain"
-         is_siege_map="true">
-  </Scene>
-  <Scene id="sturgia_castle_003"
-         name="sturgia_castle_003"
-         terrain="Plain"
-         is_siege_map="true">
-  </Scene>
-  <Scene id="sturgia_town_b"
-         name="sturgia_town_b"
-         terrain="Plain"
-         is_siege_map="true">
-  </Scene>
-  <Scene id="sturgia_town_c"
-         name="sturgia_town_c"
-         terrain="Plain"
-         is_siege_map="true">
-  </Scene>
-  <Scene id="aserai_town_a"
-         name="aserai_town_a"
-         terrain="Plain"
-         is_siege_map="true">
-  </Scene>
-  <Scene id="empire_castle_004"
-         name="empire_castle_004"
-         terrain="Plain"
-         is_siege_map="true">
-  </Scene>
-  <Scene id="aserai_town_c"
-         name="aserai_town_c"
-         terrain="Plain"
-         is_siege_map="true">
-  </Scene>
-  <Scene id="empire_town_g"
-         name="empire_town_g"
-         terrain="Plain"
-         is_siege_map="true">
-  </Scene>
-  <Scene id="empire_town_h"
-         name="empire_town_h"
-         terrain="Plain"
-         is_siege_map="true">
-  </Scene>
-  <Scene id="empire_town_j_siege"
-         name="empire_town_j_siege"
-         terrain="Plain"
-         is_siege_map="true">
-  </Scene>
-  <Scene id="khuzait_castle_siege_001"
-         name="khuzait_castle_siege_001"
-         terrain="Plain"
-         is_siege_map="true">
-  </Scene>
-  <Scene id="ai_siege_test_scn_spawner"
-         name="ai_siege_test_scn_spawner"
-         terrain="Plain"
-         is_siege_map="true">
-  </Scene>
-  <Scene id="khuzait_city_a"
-         name="khuzait_city_a"
-         terrain="Plain"
-         is_siege_map="true">
-  </Scene>
-  <Scene id="khuzait_city_b"
-         name="khuzait_city_b"
-         terrain="Plain"
-         is_siege_map="true">
-  </Scene>
-  <Scene id="aserai_town_b"
-         name="aserai_town_b"
-         terrain="Plain"
-         is_siege_map="true">
-  </Scene>
-  <Scene id="ai_siege_test_scn" name="ai_siege_test_scn" terrain="Plain" is_siege_map="true">
-  </Scene>
-  <Scene id="archer_wall_test" name="archer_wall_test" terrain="Steppe">
-  </Scene>
-  <Scene id="archer_wall_test_l3" name="archer_wall_test_l3" terrain="Steppe">
-  </Scene>-->
-  
-  <Scene id="vlandia_town_a"
+  <Scene id="vlandia_town_g"
          name="{=jHEGCQ8y}Charas"
          terrain="Plain"
-         is_siege_map="true"></Scene>
+         is_siege_map="true"></Scene>  lvl 1, 2 and 3 done
 		 
-  <Scene id="vlandia_town_c"
+  <Scene id="vlandia_city_a"
          name="{=b33aHvbC}Jaculan"
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
-  <Scene id="vlandia_city_a"
+  <Scene id="vlandia_town_a"
          name="{=w7ImuzEs}Pravend"
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
-  <Scene id="vlandia_town_d"
+  <Scene id="vlandia_town_c"
          name="{=P6TPNvWz}Galend"
          terrain="Plain"
          is_siege_map="true"></Scene>
@@ -377,8 +346,13 @@
          terrain="Plain"
          is_siege_map="true"></Scene>
 		 
-  <Scene id="battania_town_d"
+  <Scene id="battania_town_b"
          name="{=oxSVeo6J}Seonon"
          terrain="Plain"
-         is_siege_map="true"></Scene> lvl 1, 2 and 3 done
-
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="battania_town_d"
+         name="{=B6EMyA1v}Marunath"
+         terrain="Plain"
+         is_siege_map="true"></Scene>  lvl 1, 2 and 3 done
+</CustomBattleScenes>
