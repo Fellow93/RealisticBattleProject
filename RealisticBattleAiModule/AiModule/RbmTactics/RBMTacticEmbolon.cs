@@ -1,5 +1,7 @@
 ﻿using RBMAI;
+using System;
 using System.Linq;
+using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 
 public class RBMTacticEmbolon : TacticComponent
@@ -168,13 +170,23 @@ public class RBMTacticEmbolon : TacticComponent
 				if (agent.HasMount) {
 					if (agent.Character?.Level >= 21)
 					{
-						heavyCavCount++;
-					}
+						if(agent.MountAgent != null )
+						{
+                            EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
+                            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+							{
+								if((float)equipmentElement.GetModifiedArmArmor() > 40f)
+								{
+                                    heavyCavCount++;
+                                }
+                            }
+                        }
+                    }
 					cavCount++;
 				}
 			}
 		}
-		if (team.QuerySystem.CavalryRatio > 0.2f && (float)((float)heavyCavCount / (float)cavCount) >= 0.5f )
+		if (team.QuerySystem.CavalryRatio > 0.2f && (float)((float)heavyCavCount / (float)cavCount) >= 0.6f )
         {
 			return 5f;
         }
