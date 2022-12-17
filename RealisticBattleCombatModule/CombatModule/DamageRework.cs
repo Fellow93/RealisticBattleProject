@@ -608,17 +608,24 @@ namespace RBMCombat
                 float localInflictedDamage = 0;
                 attackCollisionData.InflictedDamage = 0;
 
+                Agent victim = null;
+                Agent attacker = null;
+                foreach (Agent agent in Mission.Current.Agents)
+                {
+                    if (attackInformation.VictimAgentOrigin == agent.Origin)
+                    {
+                        victim = agent;
+                    }
+                    if (attackInformation.AttackerAgentOrigin == agent.Origin)
+                    {
+                        attacker = agent;
+                    }
+                }
+
                 MissionWeapon victimShield = attackInformation.VictimShield;
                 if (victimShield.IsEmpty)
                 {
-                    Agent victim = null;
-                    foreach (Agent agent in Mission.Current.Agents)
-                    {
-                        if (attackInformation.VictimAgentOrigin == agent.Origin)
-                        {
-                            victim = agent;
-                        }
-                    }
+                   
                     for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                     {
                         if (victim != null && victim.Equipment != null && !victim.Equipment[equipmentIndex].IsEmpty)
@@ -630,6 +637,14 @@ namespace RBMCombat
                         }
                     }
                 }
+
+                if(victim != null && attacker != null)
+                {
+                    MethodInfo method = typeof(Agent).GetMethod("UpdateLastAttackAndHitTimes", BindingFlags.NonPublic | BindingFlags.Instance);
+                    method.DeclaringType.GetMethod("UpdateLastAttackAndHitTimes");
+                    method.Invoke(victim, new object[] { attacker, attackCollisionData.IsMissile });
+                }
+
                 victimShield = attackInformation.VictimShield;
                 if (!victimShield.IsEmpty && victimShield.CurrentUsageItem.WeaponFlags.HasAnyFlag(WeaponFlags.CanBlockRanged) & attackInformation.CanGiveDamageToAgentShield)
                 {

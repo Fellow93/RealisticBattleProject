@@ -394,7 +394,6 @@ namespace RBMAI
             {
                 //LastMeleeHitTime = currentTime;
                 LastMeleeHitTime.SetValue(__instance, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-
             }
             if (attackerAgent != __instance && attackerAgent != null)
             {
@@ -407,6 +406,23 @@ namespace RBMAI
                 {
                     //attackerAgent.LastMeleeAttackTime = currentTime;
                     LastMeleeAttackTime.SetValue(attackerAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                }
+            }
+
+            if (!__instance.IsHuman)
+            {
+                if(__instance.RiderAgent != null)
+                {
+                    if (isMissile)
+                    {
+                        //__instance.LastRangedHitTime = currentTime;
+                        LastRangedHitTime.SetValue(__instance.RiderAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                    }
+                    else
+                    {
+                        //LastMeleeHitTime = currentTime;
+                        LastMeleeHitTime.SetValue(__instance.RiderAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                    }
                 }
             }
             return false;
