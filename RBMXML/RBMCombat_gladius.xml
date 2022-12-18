@@ -415,7 +415,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_5"
              Type="Handle"
-             scale_factor="50" />
+             scale_factor="100" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="khuzait_mace_4_t5"
