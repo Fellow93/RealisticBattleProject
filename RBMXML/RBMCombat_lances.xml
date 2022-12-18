@@ -747,7 +747,7 @@
     <Pieces>
       <Piece id="spear_blade_7" Type="Blade" scale_factor="100" />
       <Piece id="default_polearm_guard" Type="Guard" scale_factor="100" />
-      <Piece id="spear_handle_20" Type="Handle" scale_factor="200" />
+      <Piece id="spear_handle_5" Type="Handle" scale_factor="200" />
       <Piece id="default_polearm_pommel" Type="Pommel" scale_factor="100" />
     </Pieces>
   </CraftedItem> 
