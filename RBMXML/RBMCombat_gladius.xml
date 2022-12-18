@@ -160,7 +160,8 @@
              Type="Handle"
              scale_factor="100" />
       <Piece id="empire_pommel_1"
-             Type="Pommel"/>
+             Type="Pommel"
+             scale_factor="50" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="battania_mace_1_t2"
@@ -216,7 +217,8 @@
              Type="Handle"
              scale_factor="100" />
       <Piece id="spear_pommel_5"
-             Type="Pommel"/>
+             Type="Pommel"
+             scale_factor="50" />
     </Pieces>
   </CraftedItem>
   <!-- RENAME CIHAN -->
@@ -244,7 +246,8 @@
              Type="Handle"
              scale_factor="100" />
       <Piece id="empire_pommel_4"
-             Type="Pommel"/>
+             Type="Pommel"
+             scale_factor="50" />
     </Pieces>
   </CraftedItem>
   <!-- #endregion -->
@@ -261,7 +264,8 @@
              Type="Handle"
              scale_factor="100" />
       <Piece id="spear_pommel_5"
-             Type="Pommel"/>
+             Type="Pommel"
+             scale_factor="50" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="empire_mace_2_t4"
@@ -277,7 +281,7 @@
              scale_factor="100" />
       <Piece id="empire_pommel_5"
              Type="Pommel"
-             scale_factor="90"/>
+             scale_factor="45"/>
     </Pieces>
   </CraftedItem>
   <CraftedItem id="empire_mace_3_t4"
@@ -293,7 +297,7 @@
              scale_factor="100" />
 	  <Piece id="spear_pommel_11"
 			 Type="Pommel"
-			 scale_factor="90"/>
+			 scale_factor="45"/>
     </Pieces>
   </CraftedItem>
   <CraftedItem id="aserai_mace_4_t4"
@@ -348,7 +352,7 @@
              scale_factor="100" />
       <Piece id="spear_pommel_5"
              Type="Pommel"
-             scale_factor="90"/>
+             scale_factor="45"/>
     </Pieces>
   </CraftedItem>
   <CraftedItem id="eastern_steel_mace_t4"
@@ -364,7 +368,7 @@
              scale_factor="100" />
       <Piece id="vlandian_pommel_2"
              Type="Pommel"
-             scale_factor="90"/>
+             scale_factor="45"/>
     </Pieces>
   </CraftedItem>
   <!-- #endregion -->
@@ -382,7 +386,7 @@
              scale_factor="120" />
       <Piece id="spear_pommel_9"
              Type="Pommel"
-             scale_factor="100"/>
+             scale_factor="50"/>
     </Pieces>
   </CraftedItem>
   <CraftedItem id="empire_mace_4_t5"
@@ -397,7 +401,8 @@
              Type="Handle"
              scale_factor="100" />
       <Piece id="empire_noble_pommel_1"
-             Type="Pommel"/>
+             Type="Pommel"
+             scale_factor="50" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="empire_mace_5_t5"
@@ -410,7 +415,7 @@
              scale_factor="100" />
       <Piece id="mace_handle_5"
              Type="Handle"
-             scale_factor="100" />
+             scale_factor="50" />
     </Pieces>
   </CraftedItem>
   <CraftedItem id="khuzait_mace_4_t5"
@@ -425,7 +430,7 @@
              scale_factor="100" />
       <Piece id="khuzait_noble_pommel_1"
              Type="Pommel"
-             scale_factor="90"/>
+             scale_factor="45"/>
     </Pieces>
   </CraftedItem>
 </Items>
