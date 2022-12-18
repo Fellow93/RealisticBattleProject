@@ -186,7 +186,7 @@ namespace RBMCombat
                             {
                                 float swingskillModifier = 1f + (effectiveSkillDR / 800f);
 
-                                swingSpeed = swingSpeed * 0.9f * swingskillModifier * num;
+                                swingSpeed = swingSpeed * 0.83f * swingskillModifier * num;
                                 break;
                             }
                     }
@@ -550,7 +550,7 @@ namespace RBMCombat
                         {
                             float swingskillModifier = 1f + (effectiveSkillDR / 800f);
 
-                            swingSpeed = swingSpeed * 0.9f * swingskillModifier * progressEffect;
+                            swingSpeed = swingSpeed * 0.83f * swingskillModifier * progressEffect;
                             break;
                         }
                 }

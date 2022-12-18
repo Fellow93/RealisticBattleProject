@@ -1138,7 +1138,7 @@ namespace  RBMCombat
                             float thrustskillModifier = 1f + (effectiveSkillDR / 800f);
                             float handlingskillModifier = 1f + (effectiveSkillDR / 800f);
 
-                            swingSpeedReal = MathF.Ceiling((swingSpeed * 0.9f) * swingskillModifier);
+                            swingSpeedReal = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
                             thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
                             thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.15f) * thrustskillModifier);
                             handlingReal = MathF.Ceiling((handling * 0.9f) * handlingskillModifier);
