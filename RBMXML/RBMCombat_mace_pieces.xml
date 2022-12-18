@@ -413,7 +413,7 @@
       <Material id="Iron3" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="mace_head_21" name="{=ntIEIQ0N}Light Shishpar Head" tier="4" piece_type="Blade" mesh="mace_head_21" length="6.5" weight="0.428" full_scale="true" excluded_item_usage_features="thrust">
+  <CraftingPiece id="mace_head_21" name="{=ntIEIQ0N}Light Shishpar Head" tier="4" piece_type="Blade" mesh="mace_head_21" length="6.5" weight="0.378" full_scale="true" excluded_item_usage_features="thrust">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="0.9" />
@@ -490,7 +490,7 @@
       <Material id="Iron3" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="mace_handle_10" name="{=kjw9c4M2}Steel Angular Mace Handle" tier="4" piece_type="Handle" mesh="mace_handle_10" length="52" weight="0.64" item_holster_pos_shift="0,0,0.05" CraftingCost="80">
+  <CraftingPiece id="mace_handle_10" name="{=kjw9c4M2}Steel Angular Mace Handle" tier="4" piece_type="Handle" mesh="mace_handle_10" length="52" weight="0.50" item_holster_pos_shift="0,0,0.05" CraftingCost="80">
 
     <BuildData piece_offset="13.7" />
     <Materials>
