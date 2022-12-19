@@ -468,7 +468,6 @@ namespace  RBMCombat
                         float min = 15f * (1 + skillModifier);
                         float max = 24f * (1 + (2 * skillModifier));
                         skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4f);
-                        skillBasedDamage = (MBMath.ClampFloat(, , ) * 4f);
                         if (damageType == DamageTypes.Blunt)
                         {
                             //skillBasedDamage = magnitude * 1.3f + 0.5f * ((60f + (effectiveSkill * 0.4f)) * 1.30f);
