@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
-using static TaleWorlds.MountAndBlade.Agent;
 
 namespace  RBMCombat
 {
@@ -487,7 +486,10 @@ namespace  RBMCombat
                         }
                         else
                         {
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.075f), 15f * (1 + skillModifier), 20f * (1 + (2 * skillModifier))) * 4f);
+                            float value = magnitude + (effectiveSkill * 0.075f);
+                            float min = 15f * (1 + skillModifier);
+                            float max = 20f * (1 + (2 * skillModifier));
+                            skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4f);
                         }
                         if (magnitude > 1f)
                         {

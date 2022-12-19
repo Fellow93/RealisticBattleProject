@@ -1091,6 +1091,7 @@ namespace RBMCombat
                     GetRBMMeleeWeaponStats(targetWeapon, targetWeaponUsageIndex, comparedWeapon, comparedWeaponUsageIndex, out int relevantSkill, out float swingSpeed, out float swingSpeedCompred, out float thrustSpeed, out float thrustSpeedCompred, out float sweetSpotOut, out float sweetSpotComparedOut,
                     out string swingCombinedStringOut, out string swingCombinedStringComparedOut, out string thrustCombinedStringOut, out string thrustCombinedStringComparedOut, 
                     out float swingDamageFactor, out float swingDamageFactorCompared, out float thrustDamageFactor, out float thrustDamageFactorCompared);
+
                     if (currentSelectedChar != null)
                     {
 
@@ -1128,6 +1129,23 @@ namespace RBMCombat
                             {
                                 methodCreateProperty.Invoke(__instance, new object[] { __instance.ComparedItemProperties, "", "Thrust Damage (Hover)", 1, null });
                                 __instance.ComparedItemProperties[__instance.ComparedItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(thrustCombinedStringComparedOut));
+                            }
+                        }
+
+                        if (RBMConfig.RBMConfig.developerMode)
+                        {
+                            if(targetWeapon.Item.WeaponDesign != null && targetWeapon.Item.WeaponDesign.UsedPieces != null && targetWeapon.Item.WeaponDesign.UsedPieces.Count() > 0)
+                            {
+                                methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "RBM Developer Stats", "", 1, null });
+
+                                foreach (WeaponDesignElement wde in targetWeapon.Item.WeaponDesign.UsedPieces)
+                                {
+                                    methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", wde.CraftingPiece.StringId + " " + wde.CraftingPiece.Name, 1, null });
+                                    methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Scale Percentage:"), wde.ScalePercentage, wde.ScalePercentage });
+                                    methodAddFloatProperty.Invoke(__instance, new object[] { new TextObject("Weight:"), wde.CraftingPiece.Weight, wde.CraftingPiece.Weight, false });
+                                    methodAddFloatProperty.Invoke(__instance, new object[] { new TextObject("Length:"), wde.CraftingPiece.Length, wde.CraftingPiece.Length, false });
+
+                                }
                             }
                         }
                     }
