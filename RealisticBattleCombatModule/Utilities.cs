@@ -356,7 +356,10 @@ namespace  RBMCombat
                     {
                         if (damageType == DamageTypes.Cut)
                         {
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.133f), 5f * (1 + skillModifier), 15f * (1 + (2 * skillModifier))) * 4f);
+                            float value = magnitude + (effectiveSkill * 0.133f);
+                            float min = 5f * (1 + skillModifier);
+                            float max = 15f * (1 + (2 * skillModifier));
+                            skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4f);
                             //skillBasedDamage = magnitude + 40f + (effectiveSkill * 0.53f);
                         }
                         else if (damageType == DamageTypes.Blunt)
@@ -430,7 +433,10 @@ namespace  RBMCombat
                 case "OneHandedAxe":
                 case "ThrowingAxe":
                     {
-                        skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.1f), 10f * (1 + skillModifier), 18f * (1 + (2 * skillModifier))) * 4f);
+                        float value = magnitude + (effectiveSkill * 0.1f);
+                        float min = 10f * (1 + skillModifier);
+                        float max = 18f * (1 + (2 * skillModifier));
+                        skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4f);
                         if (damageType == DamageTypes.Blunt)
                         {
                             //skillBasedDamage = magnitude + 0.5f * (60f + (effectiveSkill * 0.4f));
@@ -458,7 +464,11 @@ namespace  RBMCombat
                     }
                 case "TwoHandedAxe":
                     {
-                        skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.13f), 15f * (1 + skillModifier), 24f * (1 + (2 * skillModifier))) * 4f);
+                        float value = magnitude + (effectiveSkill * 0.13f);
+                        float min = 15f * (1 + skillModifier);
+                        float max = 24f * (1 + (2 * skillModifier));
+                        skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4f);
+                        skillBasedDamage = (MBMath.ClampFloat(, , ) * 4f);
                         if (damageType == DamageTypes.Blunt)
                         {
                             //skillBasedDamage = magnitude * 1.3f + 0.5f * ((60f + (effectiveSkill * 0.4f)) * 1.30f);
@@ -486,10 +496,11 @@ namespace  RBMCombat
                         }
                         else
                         {
-                            float value = magnitude + (effectiveSkill * 0.075f);
-                            float min = 15f * (1 + skillModifier);
-                            float max = 20f * (1 + (2 * skillModifier));
+                            float value = magnitude + ( effectiveSkill * 0.075f);
+                            float min = 10f * (1 + skillModifier);
+                            float max = 15f * (1 + (2 * skillModifier));
                             skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4f);
+                            //skillBasedDamage = value;
                         }
                         if (magnitude > 1f)
                         {
@@ -611,7 +622,10 @@ namespace  RBMCombat
                     {
                         if (damageType == DamageTypes.Cut)
                         {
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.1495f), 18f * (1 + skillModifier), 28f * (1 + (2 * skillModifier))) * 4f);
+                            float value = magnitude + (effectiveSkill * 0.1495f);
+                            float min = 18f * (1 + skillModifier);
+                            float max = 28f * (1 + (2 * skillModifier));
+                            skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4f);
                         }
                         else if (damageType == DamageTypes.Blunt && !isPassiveUsage)
                         {
