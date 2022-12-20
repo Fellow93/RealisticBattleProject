@@ -501,6 +501,7 @@ namespace RBMCombat
 
         }
     }
+
     [HarmonyPatch(typeof(ItemModifier))]
     [HarmonyPatch("ModifyArmor")]
     class ModifyArmorPatch
@@ -523,6 +524,33 @@ namespace RBMCombat
         {
             float calculatedModifier = 1f + (____armor / 100f);
             int result = ModifyFactor(armorValue, calculatedModifier);
+            __result = MBMath.ClampInt(result, 1, result);
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(ItemModifier))]
+    [HarmonyPatch("ModifyDamage")]
+    class ModifyModifyDamagePatch
+    {
+
+        private static int ModifyFactor(int baseValue, float factor)
+        {
+            if (baseValue == 0)
+            {
+                return 0;
+            }
+            if (!MBMath.ApproximatelyEquals(factor, 0f))
+            {
+                baseValue = ((factor < 1f) ? MathF.Ceiling(factor * (float)baseValue) : MathF.Floor(factor * (float)baseValue));
+            }
+            return baseValue;
+        }
+
+        static bool Prefix(ref int baseDamage, ref int __result, ref int ____damage)
+        {
+            float calculatedModifier = 1f + (____damage / 100f);
+            int result = ModifyFactor(baseDamage, calculatedModifier);
             __result = MBMath.ClampInt(result, 1, result);
             return false;
         }

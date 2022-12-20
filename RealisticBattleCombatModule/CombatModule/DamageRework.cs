@@ -338,7 +338,7 @@ namespace RBMCombat
 
                 IAgentOriginBase attackerAgentOrigin = attackInformation.AttackerAgentOrigin;
                 Formation attackerFormation = attackInformation.AttackerFormation;
-
+                ItemModifier itemModifier = null;
                 if (!attackCollisionData.IsAlternativeAttack && !attackInformation.IsAttackerAgentMount && !attackCollisionData.IsFallDamage && attackerAgentOrigin != null && attackInformation.AttackerAgentCharacter != null && !attackCollisionData.IsMissile)
                 {
                     SkillObject skill = (attackerWeapon == null) ? DefaultSkills.Athletics : attackerWeapon.RelevantSkill;
@@ -349,6 +349,7 @@ namespace RBMCombat
                         float skillModifier = Utilities.CalculateSkillModifier(ef);
                         if(attacker != null && attacker.Equipment != null && attacker.GetWieldedItemIndex(HandIndex.MainHand) != EquipmentIndex.None)
                         {
+                            itemModifier = attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].ItemModifier;
                             magnitude = Utilities.GetSkillBasedDamage(magnitude, attackInformation.IsAttackerAgentDoingPassiveAttack, weaponType, damageType, effectiveSkill, skillModifier, (StrikeType)attackCollisionData.StrikeType, attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight());
                         }
                         else
@@ -581,7 +582,9 @@ namespace RBMCombat
                 float weaponDamageFactor = 1f;
                 if (attackerWeapon != null)
                 {
-                    weaponDamageFactor = (float)Math.Sqrt((attackCollisionData.StrikeType == (int)StrikeType.Thrust) ? attackerWeapon.ThrustDamageFactor : attackerWeapon.SwingDamageFactor);
+                    weaponDamageFactor = (float)Math.Sqrt((attackCollisionData.StrikeType == (int)StrikeType.Thrust) 
+                        ? Utilities.getThrustDamageFactor(attackerWeapon, itemModifier)
+                        : Utilities.getSwingDamageFactor(attackerWeapon, itemModifier));
                 }
                 inflictedDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(weaponType, damageType, magnitude, armorAmount, victimAgentAbsorbedDamageRatio, out _, out _, weaponDamageFactor, player, isPlayerVictim)), 0, 2000);
                 inflictedDamage = MathF.Floor(inflictedDamage * dmgMultiplier);

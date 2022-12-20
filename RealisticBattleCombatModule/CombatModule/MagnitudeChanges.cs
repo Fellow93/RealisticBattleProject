@@ -554,12 +554,11 @@ namespace RBMCombat
                             break;
                         }
                 }
-
+                float weaponWeight = weapon.Item.Weight;
+                float weaponInertia = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia;
+                float weaponCOM = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass;
                 for (float currentSpot = 1f; currentSpot > 0.35f; currentSpot -= 0.01f)
                 {
-                    float weaponWeight = weapon.Item.Weight;
-                    float weaponInertia = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia;
-                    float weaponCOM = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass;
                     float currentSpotMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(currentSelectedChar, null, swingSpeed, currentSpot, weaponWeight,
                         weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex),
                         weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).GetRealWeaponLength(), weaponInertia, weaponCOM, 0f, false);
@@ -712,8 +711,8 @@ namespace RBMCombat
                         float skillBasedDamageCompared = sweetSpotMagnitudeCompared > 0f ? Utilities.GetSkillBasedDamage(sweetSpotMagnitudeCompared, false, comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).WeaponClass.ToString(),
                             comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).SwingDamageType, effectiveSkillDR, skillModifier, StrikeType.Swing, comparedWeapon.Item.Weight) : -1f;
 
-                        swingDamageFactor = (float)Math.Sqrt(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageFactor);
-                        swingDamageFactorCompared = sweetSpotMagnitudeCompared > 0f ? (float)Math.Sqrt(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).SwingDamageFactor) : -1f;
+                        swingDamageFactor = (float)Math.Sqrt(Utilities.getSwingDamageFactor(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex), targetWeapon.ItemModifier));
+                        swingDamageFactorCompared = sweetSpotMagnitudeCompared > 0f ? (float)Math.Sqrt(Utilities.getSwingDamageFactor(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex), comparedWeapon.ItemModifier)) : -1f;
 
                         bool shouldBreakNextTime = false;
 
@@ -776,8 +775,8 @@ namespace RBMCombat
                         float skillBasedDamageCompared = thrustMagnitudeCompared > 0f ? Utilities.GetSkillBasedDamage(thrustMagnitudeCompared, false, comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).WeaponClass.ToString(),
                             comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).ThrustDamageType, effectiveSkillDR, skillModifier, StrikeType.Thrust, comparedWeapon.Item.Weight) : -1f;
 
-                        thrustDamageFactor = (float)Math.Sqrt(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageFactor);
-                        thrustDamageFactorCompared = thrustMagnitudeCompared > 0f ? (float)Math.Sqrt(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).ThrustDamageFactor) : -1f;
+                        thrustDamageFactor = (float)Math.Sqrt(Utilities.getThrustDamageFactor(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex), targetWeapon.ItemModifier));
+                        thrustDamageFactorCompared = thrustMagnitudeCompared > 0f ? (float)Math.Sqrt(Utilities.getThrustDamageFactor(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex), comparedWeapon.ItemModifier)) : -1f;
 
                         bool shouldBreakNextTime = false;
 
@@ -1010,7 +1009,7 @@ namespace RBMCombat
                             float missileMagnitude = CalculateMissileMagnitude(WeaponClass.Javelin, targetWeapon.Weight, calculatedMissileSpeed, targetWeapon.GetModifiedThrustDamageForUsage(targetWeaponUsageIndex), 1f, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType);
                             string combinedDamageString = "A-Armor\nD-Damage Inflicted\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
                             methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Missile Damage", 1, null });
-                            float weaponDamageFactor = (float)Math.Sqrt(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageFactor);
+                            float weaponDamageFactor = (float)Math.Sqrt(Utilities.getThrustDamageFactor(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex), targetWeapon.ItemModifier));
                             for (float i = 0; i <= 100; i += 10)
                             {
                                 if (shouldBreakNextTime)
