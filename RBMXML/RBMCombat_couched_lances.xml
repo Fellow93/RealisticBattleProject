@@ -197,7 +197,7 @@
 <CraftingPiece id="spear_blade_43" name="{=wait0O6m}Warrazor Head" tier="5" piece_type="Blade" mesh="spear_blade_43" length="64.4" weight="0.6" excluded_item_usage_features="shield">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
 	  <Thrust damage_type="Pierce" damage_factor="0.8" />
-      <Swing damage_type="Cut" damage_factor="1.6" />
+      <Swing damage_type="Cut" damage_factor="1.3" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="2" />
@@ -225,7 +225,7 @@
   <CraftingPiece id="spear_blade_19" name="{=OBeOZ27b}Glaive Head" tier="5" piece_type="Blade" mesh="spear_blade_19" length="37.4" weight="0.35">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="0.7" />
-      <Swing damage_type="Cut" damage_factor="1.4" />
+      <Swing damage_type="Cut" damage_factor="1.1" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="1" />
@@ -235,7 +235,7 @@
   <CraftingPiece id="spear_blade_19_blunt" name="{=OBeOZ27b}Glaive Head" tier="5" piece_type="Blade" mesh="spear_blade_19" length="37.4" weight="0.3">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="0.7" />
-      <Swing damage_type="Cut" damage_factor="1.4" />
+      <Swing damage_type="Cut" damage_factor="1.1" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="1" />
@@ -245,7 +245,7 @@
   <CraftingPiece id="spear_blade_24" name="{=bjQ8J71a}Long Glaive Head" tier="5" piece_type="Blade" mesh="spear_blade_24" length="68" weight="0.40">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="0.9" />
-      <Swing damage_type="Cut" damage_factor="1.5" />
+      <Swing damage_type="Cut" damage_factor="1.2" />
     </BladeData>
     <Materials>
       <Material id="Iron5" count="2" />
@@ -255,8 +255,8 @@
 <CraftingPiece id="axe_craft_10_head" name="{=LNDbMUK0}Voulge Head" tier="5" piece_type="Blade" mesh="axe_craft_10_head" distance_to_next_piece="23" distance_to_previous_piece="4" weight="0.6">
     <BuildData piece_offset="-8" />
     <BladeData stack_amount="3" blade_length="23.118" blade_width="18.371" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Thrust damage_type="Pierce" damage_factor="0.9" />
-      <Swing damage_type="Cut" damage_factor="1.5" />
+      <Thrust damage_type="Pierce" damage_factor="1.1" />
+      <Swing damage_type="Cut" damage_factor="1.2" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -299,7 +299,7 @@
     <CraftingPiece id="spear_blade_22" name="{=3ged5Ozt}Exceptional Eastern Glaive" tier="5" piece_type="Blade" mesh="spear_blade_22" length="89" weight="0.4">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="0.9" />
-      <Swing damage_type="Cut" damage_factor="1.6" />
+      <Swing damage_type="Cut" damage_factor="1.3" />
     </BladeData>
     <Materials>
       <Material id="Iron5" count="2" />
@@ -496,10 +496,10 @@
       <Material id="Iron2" count="1" />
     </Materials>
   </CraftingPiece>
-<!-- Pike, damage workaround -->   
+<!-- Pike -->   
   <CraftingPiece id="spear_blade_41" name="{=TKVxb6QD}Thamaskene Steel Leaf Shaped Pike Head" tier="5" piece_type="Blade" mesh="spear_blade_41" length="53.2" weight="0.4792" excluded_item_usage_features="swing">
     <BladeData stack_amount="1" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="1.4" />
+      <Thrust damage_type="Pierce" damage_factor="1.2" />
     </BladeData>
     <Materials>
       <Material id="Iron5" count="2" />
@@ -578,17 +578,16 @@
       <Material id="Iron4" count="2" />
     </Materials>
   </CraftingPiece>
-<!-- Pike, damage workaround -->  
-  <CraftingPiece id="spear_blade_25" name="{=mrTkURKV}Notched Fork Head" tier="5" piece_type="Blade" mesh="spear_blade_25" length="42.5" weight="0.5504" excluded_item_usage_features="swing">
+  
+  <CraftingPiece id="spear_blade_25" name="{=mrTkURKV}Notched Fork Head" tier="3" piece_type="Blade" mesh="spear_blade_25" length="42.5" weight="0.5504" excluded_item_usage_features="swing">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="1.2" />
+      <Thrust damage_type="Pierce" damage_factor="0.9" />
     </BladeData>
     <Flags></Flags>
     <Materials>
       <Material id="Iron3" count="2" />
     </Materials>
   </CraftingPiece>
-<!-- Pike -->   
 <!-- #endregion cut polearms -->
 <!-- #falx sword --> 
    <CraftingPiece id="battania_blade_6" name="{=IUlApNGp}Long Falx Blade" tier="5" piece_type="Blade" mesh="battania_blade_6" culture="Culture.battania" length="95.6" weight="0.8" excluded_item_usage_features="thrust:TwoHandedPolearm_Bracing">

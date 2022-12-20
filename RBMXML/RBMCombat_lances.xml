@@ -682,7 +682,7 @@
                name="{=GKzw7E8a}Simple Pike"
                crafting_template="Pike">
     <Pieces>
-      <Piece id="spear_blade_25"
+      <Piece id="spear_blade_9"
              Type="Blade"
              scale_factor="90" />
       <Piece id="spear_handle_7"
@@ -720,7 +720,7 @@
                name="{=dkuzrKJF}Fine Pike"
                crafting_template="Pike">
     <Pieces>
-      <Piece id="spear_blade_41"
+      <Piece id="spear_blade_11"
              Type="Blade"
              scale_factor="110" />
       <Piece id="spear_handle_7"
