@@ -248,6 +248,10 @@ public class RBMTacticAttackSplitArchers : TacticComponent
 
 	protected override float GetTacticWeight()
 	{
+		if(Mission.Current != null && !Mission.Current.IsTeleportingAgents && team.TeamAI.IsCurrentTactic(this) && team.QuerySystem.RangedRatio > 0.05f)
+		{
+			return 10f;
+		}
 		if(team.QuerySystem.RangedRatio > 0.2f)
         {
 			return 10f;

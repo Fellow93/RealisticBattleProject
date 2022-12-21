@@ -29,7 +29,7 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
 		//ManageFormationCounts(1, 1, 2, 1);
 		ManageFormationCounts(3, 1, 2, 1);
 		_mainInfantry = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsInfantryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
-		if (_mainInfantry != null)
+		if (_mainInfantry != null && _mainInfantry.IsAIControlled)
 		{
 			_mainInfantry.AI.IsMainFormation = true;
 			_mainInfantry.AI.Side = FormationAI.BehaviorSide.Middle;

@@ -247,24 +247,11 @@ public class RBMTacticDefendSplitArchers : TacticComponent
 
 	protected override float GetTacticWeight()
 	{
-		//if (!team.TeamAI.IsDefenseApplicable || base.Formations.All((Formation f) => !f.QuerySystem.IsInfantryFormation))
-		//{
-		//	return 0f;
-		//}
-		//Formation formation = _mainInfantry ?? base.Formations.Where((Formation f) => f.QuerySystem.IsInfantryFormation).MaxBy((Formation f) => f.CountOfUnits);
-		//if (formation == null)
-		//{
-		//	return 0f;
-		//}
-		//if (_mainInfantry == null)
-		//{
-		//	_mainInfantry = formation;
-		//}
-		//float num = team.QuerySystem.InfantryRatio + team.QuerySystem.RangedRatio;
-		//float value = _mainInfantry.QuerySystem.AveragePosition.Distance(_mainInfantry.QuerySystem.HighGroundCloseToForeseenBattleGround);
-		//float num2 = MBMath.Lerp(0.7f, 1f, (150f - MBMath.ClampFloat(value, 50f, 150f)) / 100f);
-		//return num * 1.1f * TacticComponent.CalculateNotEngagingTacticalAdvantage(team.QuerySystem) * num2 / MathF.Sqrt(team.QuerySystem.RemainingPowerRatio);
-		if (team.QuerySystem.RangedRatio > 0.2f)
+        if (Mission.Current != null && !Mission.Current.IsTeleportingAgents && team.TeamAI.IsCurrentTactic(this) && team.QuerySystem.RangedRatio > 0.05f)
+        {
+            return 10f;
+        }
+        if (team.QuerySystem.RangedRatio > 0.2f)
 		{
 			return 10f;
 		}

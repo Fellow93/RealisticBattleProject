@@ -36,7 +36,7 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 		{
             _mainInfantry = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsInfantryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
         }
-        if (_mainInfantry != null)
+        if (_mainInfantry != null && _mainInfantry.IsAIControlled)
 		{
 			_mainInfantry.AI.IsMainFormation = true;
 			_mainInfantry.AI.Side = FormationAI.BehaviorSide.Middle;
@@ -80,7 +80,7 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
             {
 				formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
 				{
-					if (formation.IsInfantry())
+					if (formation.IsInfantry() && formation.IsAIControlled)
 					{
 						bool isFlanker = false;
 						//for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
