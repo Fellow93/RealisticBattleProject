@@ -115,7 +115,7 @@ namespace RBMAI.AiModule.RbmTactics
         [HarmonyPatch("ManageFormationCounts")]
         static void PostfixManageFormationCounts(ref Formation ____leftCavalry, ref Formation ____rightCavalry)
         {
-            if (____leftCavalry != null && ____rightCavalry != null)
+            if (____leftCavalry != null && ____rightCavalry != null && ____leftCavalry.IsAIControlled && ____rightCavalry.IsAIControlled)
             {
                 List<Agent> mountedSkirmishersList = new List<Agent>();
                 List<Agent> mountedMeleeList = new List<Agent>();

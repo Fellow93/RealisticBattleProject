@@ -953,6 +953,10 @@ namespace  RBMCombat
             bool isOverheadAttack = attackDirection == Agent.UsageDirection.AttackUp;
 
             thrustSpeed = (isOverheadAttack ? thrustSpeed * 1.33f : thrustSpeed);
+            if (thrustSpeed > 9f)
+            {
+                thrustSpeed = 9f;
+            }
             float combinedSpeed = thrustSpeed + exraLinearSpeed;
             float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill) * 2f;
 
@@ -991,6 +995,10 @@ namespace  RBMCombat
 
             bool isOverheadAttack = attackDirection == Agent.UsageDirection.AttackUp;
             thrustSpeed = (isOverheadAttack ? thrustSpeed + 1f : thrustSpeed);
+            if(thrustSpeed > 6f)
+            {
+                thrustSpeed = 6f;
+            }
             float combinedSpeed = thrustSpeed + exraLinearSpeed;
             float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill) * 2f;
 
