@@ -48,10 +48,9 @@ namespace RBMAI
             static bool PrefixGetOrderPositionOfUnit(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ____detachedUnits, ref WorldPosition __result)
             {
                 //if (__instance.MovementOrder.OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
-                if (unit != null && (__instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation) && !____detachedUnits.Contains(unit))
+                if (Mission.Current != null && Mission.Current.IsFieldBattle && unit != null && (__instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation) && !____detachedUnits.Contains(unit))
                 {
                     int aiDecisionCooldownTime = 3;
-                    bool isFieldBattle = Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle;
                     AIDecision aiDecision;
                     //unit.ClearTargetFrame();
                     
@@ -97,70 +96,67 @@ namespace RBMAI
 
                         if (aiDecisionCooldownDict.TryGetValue(unit, out aiDecision))
                         {
-                            if (isFieldBattle)
+                            if (aiDecision.customMaxCoolDown != -1)
                             {
-                                if (aiDecision.customMaxCoolDown != -1)
-                                {
-                                    if (aiDecision.cooldown < aiDecision.customMaxCoolDown)
-                                    {
-                                        aiDecision.cooldown += 1;
-                                        if (!aiDecision.position.IsValid)
-                                        {
-                                            return true;
-                                        }
-                                        //if (aiDecision.decisionType == AIDecisionType.FlankAllyLeft)
-                                        //{
-                                        //    aiDecision.decisionType = AIDecisionType.None;
-                                        //    WorldPosition leftPosition = unit.GetWorldPosition();
-                                        //    leftPosition.SetVec2(unitPosition + leftVec * 2f);
-                                        //    __result = leftPosition;
-                                        //    aiDecision.decisionType = AIDecisionType.FlankAllyLeft;
-                                        //    aiDecision.position = __result; 
-                                        //    return false;
-                                        //}
-                                        //if(aiDecision.decisionType == AIDecisionType.FlankAllyRight)
-                                        //{
-                                        //    WorldPosition leftPosition = unit.GetWorldPosition();
-                                        //    leftPosition.SetVec2(unitPosition + rightVec * 2f);
-                                        //    __result = leftPosition;
-                                        //    aiDecision.decisionType = AIDecisionType.FlankAllyRight;
-                                        //    aiDecision.position = __result;
-                                        //    return false;
-                                        //}
-                                        //if (aiDecision.decisionType == AIDecisionType.FrontlineBackStep)
-                                        //{
-                                        //    aiDecision.decisionType = AIDecisionType.FrontlineBackStep;
-                                        //    WorldPosition backPosition = unit.GetWorldPosition();
-                                        //    backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
-                                        //    __result = backPosition;
-                                        //    aiDecision.position = __result; 
-                                        //    return false;
-                                        //}
-                                        __result = aiDecision.position;
-                                        return false;
-                                    }
-                                    else
-                                    {
-                                        aiDecision.decisionType = AIDecisionType.None;
-                                        aiDecision.customMaxCoolDown = -1;
-                                        aiDecision.cooldown = 0;
-                                    }
-                                }
-                                if (aiDecision.cooldown < aiDecisionCooldownTime)
+                                if (aiDecision.cooldown < aiDecision.customMaxCoolDown)
                                 {
                                     aiDecision.cooldown += 1;
                                     if (!aiDecision.position.IsValid)
                                     {
                                         return true;
                                     }
+                                    //if (aiDecision.decisionType == AIDecisionType.FlankAllyLeft)
+                                    //{
+                                    //    aiDecision.decisionType = AIDecisionType.None;
+                                    //    WorldPosition leftPosition = unit.GetWorldPosition();
+                                    //    leftPosition.SetVec2(unitPosition + leftVec * 2f);
+                                    //    __result = leftPosition;
+                                    //    aiDecision.decisionType = AIDecisionType.FlankAllyLeft;
+                                    //    aiDecision.position = __result; 
+                                    //    return false;
+                                    //}
+                                    //if(aiDecision.decisionType == AIDecisionType.FlankAllyRight)
+                                    //{
+                                    //    WorldPosition leftPosition = unit.GetWorldPosition();
+                                    //    leftPosition.SetVec2(unitPosition + rightVec * 2f);
+                                    //    __result = leftPosition;
+                                    //    aiDecision.decisionType = AIDecisionType.FlankAllyRight;
+                                    //    aiDecision.position = __result;
+                                    //    return false;
+                                    //}
+                                    //if (aiDecision.decisionType == AIDecisionType.FrontlineBackStep)
+                                    //{
+                                    //    aiDecision.decisionType = AIDecisionType.FrontlineBackStep;
+                                    //    WorldPosition backPosition = unit.GetWorldPosition();
+                                    //    backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
+                                    //    __result = backPosition;
+                                    //    aiDecision.position = __result; 
+                                    //    return false;
+                                    //}
                                     __result = aiDecision.position;
                                     return false;
                                 }
                                 else
                                 {
                                     aiDecision.decisionType = AIDecisionType.None;
+                                    aiDecision.customMaxCoolDown = -1;
                                     aiDecision.cooldown = 0;
                                 }
+                            }
+                            if (aiDecision.cooldown < aiDecisionCooldownTime)
+                            {
+                                aiDecision.cooldown += 1;
+                                if (!aiDecision.position.IsValid)
+                                {
+                                    return true;
+                                }
+                                __result = aiDecision.position;
+                                return false;
+                            }
+                            else
+                            {
+                                aiDecision.decisionType = AIDecisionType.None;
+                                aiDecision.cooldown = 0;
                             }
                         }
                         else
@@ -185,18 +181,9 @@ namespace RBMAI
                             {
                                 isTargetArcher = true;
                             }
-                            if (!isFieldBattle)
-                            {
-                                //unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                                //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 2f, 1.1f, 10f, 0.01f);
-                                //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0.03f);
-                            }
-                            else
-                            {
-                                unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                                unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1.1f, 10f, 0.01f);
-                                unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
-                            }
+                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
+                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1.1f, 10f, 0.01f);
+                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
                             if (IsInImportantFrontlineAction(unit))
                             {
                                 __result = aiDecision.position;
@@ -207,14 +194,7 @@ namespace RBMAI
                         //}
 
                         IEnumerable<Agent> agents;
-                        if (isFieldBattle)
-                        {
-                            agents = mission.GetNearbyAllyAgents(unitPosition + direction * 1.1f, 1.1f, unit.Team);
-                        }
-                        else
-                        {
-                            agents = mission.GetNearbyAllyAgents(unitPosition + direction * 1f, 1f, unit.Team);
-                        }
+                        agents = mission.GetNearbyAllyAgents(unitPosition + direction * 1.1f, 1.1f, unit.Team);
                         Agent tempAgent = unit;
                         agents = agents.Where(a => a != tempAgent).ToList();
                         int agentsCount = agents.Count();
@@ -247,7 +227,7 @@ namespace RBMAI
                                     int agentsRightCount = agentsRight.Count();
                                     int furtherAllyAgentsCount = furtherAllyAgents.Count();
 
-                                    if (isFieldBattle && furtherAllyAgentsCount > allyAgentsCountTreshold)
+                                    if (furtherAllyAgentsCount > allyAgentsCountTreshold)
                                     {
                                         if (agentsLeftCount < agentsRightCount)
                                         {
@@ -300,37 +280,34 @@ namespace RBMAI
                                             aiDecision.position = __result; return false;
                                         }
                                     }
-                                    if (isFieldBattle)
+                                    int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * (unit.Health / unit.HealthLimit) * 65), 70, 170);
+                                    int randInt = MBRandom.RandomInt(unitPower + aggresivnesModifier);
+                                    int defensivnesModifier = 0;
+                                    if (unit.WieldedOffhandWeapon.IsShield())
                                     {
-                                        int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * (unit.Health / unit.HealthLimit) * 65), 70, 170);
-                                        int randInt = MBRandom.RandomInt(unitPower + aggresivnesModifier);
-                                        int defensivnesModifier = 0;
-                                        if (unit.WieldedOffhandWeapon.IsShield())
+                                        defensivnesModifier += hasShieldBonusNumber;
+                                    }
+                                    if (randInt < (unitPower / 3f + defensivnesModifier))
+                                    {
+                                        __result = getNearbyAllyWorldPosition(mission, unitPosition, unit);
+                                        aiDecision.position = __result; return false;
+                                    }
+                                    else
+                                    {
+                                        if (MBRandom.RandomInt(unitPower ) == 0)
                                         {
-                                            defensivnesModifier += hasShieldBonusNumber;
-                                        }
-                                        if (randInt < (unitPower / 3f + defensivnesModifier))
-                                        {
-                                            __result = getNearbyAllyWorldPosition(mission, unitPosition, unit);
-                                            aiDecision.position = __result; return false;
+                                            aiDecision.position = WorldPosition.Invalid;
+                                            aiDecision.customMaxCoolDown = 0;
+                                            return true;
                                         }
                                         else
                                         {
-                                            if (MBRandom.RandomInt(unitPower ) == 0)
-                                            {
-                                                aiDecision.position = WorldPosition.Invalid;
-                                                aiDecision.customMaxCoolDown = 0;
-                                                return true;
-                                            }
-                                            else
-                                            {
-                                                WorldPosition backPosition = unit.GetWorldPosition();
-                                                backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * (backStepDistance + 0.5f));
-                                                __result = backPosition;
-                                                aiDecision.customMaxCoolDown = 2;
-                                                aiDecision.decisionType = AIDecisionType.FrontlineBackStep;
-                                                aiDecision.position = __result; return false;
-                                            }
+                                            WorldPosition backPosition = unit.GetWorldPosition();
+                                            backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * (backStepDistance + 0.5f));
+                                            __result = backPosition;
+                                            aiDecision.customMaxCoolDown = 2;
+                                            aiDecision.decisionType = AIDecisionType.FrontlineBackStep;
+                                            aiDecision.position = __result; return false;
                                         }
                                     }
                                     //else
@@ -349,67 +326,132 @@ namespace RBMAI
                                 //}
                             }
                         }
-                        if (!isFieldBattle)
+                        unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
+                        unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1f, 10f, 0.01f);
+                        unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
+                        IEnumerable<Agent> enemyAgents10f;
+                        IEnumerable<Agent> enemyAgents0f = mission.GetNearbyEnemyAgents(unitPosition, 4.5f, unit.Team);
+                        //IEnumerable<Agent> enemyAgentsImmidiate = null;
+
+                        int enemyAgentsImmidiateCount = 0;
+                        int enemyAgents10fCount = 0;
+                        int powerSumImmidiate = (int)Math.Floor(RBMAI.Utilities.GetPowerOfAgentsSum(enemyAgents0f));
+
+                        if (!isTargetArcher)
                         {
-                            //unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                            //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 2f, 1f, 10f, 0.01f);
-                            //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0.03f);
+                            enemyAgents10f = mission.GetNearbyEnemyAgents(unitPosition + direction * 4.5f, 4.5f, unit.Team);
+                            //enemyAgentsImmidiate = mission.GetNearbyEnemyAgents(unitPosition, 3f, unit.Team);
+
+                            enemyAgentsImmidiateCount = enemyAgents0f.Count();
+                            enemyAgents10fCount = enemyAgents10f.Count();
                         }
                         else
                         {
-                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1f, 10f, 0.01f);
-                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
+                            enemyAgentsImmidiateCount = 0;
+                            enemyAgents10fCount = 0;
                         }
-                        if (isFieldBattle)
+                        if (enemyAgentsImmidiateCount > enemyAgentsCountTreshold || enemyAgents10fCount > enemyAgentsCountTreshold)
                         {
-                            IEnumerable<Agent> enemyAgents10f;
-                            IEnumerable<Agent> enemyAgents0f = mission.GetNearbyEnemyAgents(unitPosition, 4.5f, unit.Team);
-                            //IEnumerable<Agent> enemyAgentsImmidiate = null;
+                            //unit.LookDirection = direction.ToVec3();
+                            //unit.SetDirectionChangeTendency(10f);
+                            int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * (unit.Health / unit.HealthLimit) * 65), 70, 180);
+                            int randInt = MBRandom.RandomInt((int)unitPower + aggresivnesModifier);
+                            int defensivnesModifier = 0;
 
-                            int enemyAgentsImmidiateCount = 0;
-                            int enemyAgents10fCount = 0;
-                            int powerSumImmidiate = (int)Math.Floor(RBMAI.Utilities.GetPowerOfAgentsSum(enemyAgents0f));
+                            if (unit.WieldedOffhandWeapon.IsShield())
+                            {
+                                defensivnesModifier += hasShieldBonusNumber;
+                            }
+                            if (isTargetArcher)
+                            {
+                                defensivnesModifier += isAttackingArcherNumber;
+                            }
+                            if (randInt < 0)
+                            {
+                                __result = unit.GetWorldPosition();
+                                aiDecision.position = __result; return false;
+                            }
 
                             if (!isTargetArcher)
                             {
-                                enemyAgents10f = mission.GetNearbyEnemyAgents(unitPosition + direction * 4.5f, 4.5f, unit.Team);
-                                //enemyAgentsImmidiate = mission.GetNearbyEnemyAgents(unitPosition, 3f, unit.Team);
-
-                                enemyAgentsImmidiateCount = enemyAgents0f.Count();
-                                enemyAgents10fCount = enemyAgents10f.Count();
-                            }
-                            else
-                            {
-                                enemyAgentsImmidiateCount = 0;
-                                enemyAgents10fCount = 0;
-                            }
-                            if (enemyAgentsImmidiateCount > enemyAgentsCountTreshold || enemyAgents10fCount > enemyAgentsCountTreshold)
-                            {
-                                //unit.LookDirection = direction.ToVec3();
-                                //unit.SetDirectionChangeTendency(10f);
-                                int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * (unit.Health / unit.HealthLimit) * 65), 70, 180);
-                                int randInt = MBRandom.RandomInt((int)unitPower + aggresivnesModifier);
-                                int defensivnesModifier = 0;
-
-                                if (unit.WieldedOffhandWeapon.IsShield())
+                                int randImmidiate = MBRandom.RandomInt(powerSumImmidiate);
+                                if (unitPower * 2 < randImmidiate)
                                 {
-                                    defensivnesModifier += hasShieldBonusNumber;
-                                }
-                                if (isTargetArcher)
-                                {
-                                    defensivnesModifier += isAttackingArcherNumber;
-                                }
-                                if (randInt < 0)
-                                {
-                                    __result = unit.GetWorldPosition();
+                                    if (IsInImportantFrontlineAction(unit))
+                                    {
+                                        aiDecision.customMaxCoolDown = 0;
+                                        return false;
+                                    }
+                                    WorldPosition backPosition = unit.GetWorldPosition();
+                                    backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
+                                    __result = backPosition;
+                                    aiDecision.customMaxCoolDown = 1;
+                                    aiDecision.decisionType = AIDecisionType.FrontlineBackStep;
                                     aiDecision.position = __result; return false;
                                 }
-
-                                if (!isTargetArcher)
+                            }
+                            if (enemyAgentsImmidiateCount > enemyAgentsCountCriticalTreshold)
+                            {
+                                //int randImmidiate = MBRandom.RandomInt(powerSumImmidiate);
+                                //if(unitPower / 2 < randImmidiate)
+                                //{
+                                if (IsInImportantFrontlineAction(unit))
                                 {
-                                    int randImmidiate = MBRandom.RandomInt(powerSumImmidiate);
-                                    if (unitPower * 2 < randImmidiate)
+                                    aiDecision.customMaxCoolDown = 0;
+                                    return false;
+                                }
+                                WorldPosition backPosition = unit.GetWorldPosition();
+                                backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
+                                __result = backPosition;
+                                aiDecision.customMaxCoolDown = 2;
+                                aiDecision.decisionType = AIDecisionType.FrontlineBackStep;
+                                aiDecision.position = __result; return false;
+                                //}
+                            }
+                            else if (randInt < (unitPower / 2f + defensivnesModifier))
+                            {
+                                if (randInt < (unitPower / 2f + defensivnesModifier))
+                                {
+                                    if (enemyAgentsImmidiateCount > enemyAgentsCountDangerousTreshold)
+                                    {
+                                        //int randImmidiate = MBRandom.RandomInt(powerSumImmidiate);
+                                        //if (unitPower / 2 < randImmidiate)
+                                        //{
+                                        if (IsInImportantFrontlineAction(unit))
+                                        {
+                                            aiDecision.customMaxCoolDown = 0;
+                                            return false;
+                                        }
+                                        WorldPosition backPosition = unit.GetWorldPosition();
+                                        backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
+                                        __result = backPosition;
+                                        aiDecision.customMaxCoolDown = 1;
+                                        aiDecision.decisionType = AIDecisionType.FrontlineBackStep;
+                                        aiDecision.position = __result; return false;
+                                        //}
+                                    }
+                                    if (IsInImportantFrontlineAction(unit))
+                                    {
+                                        aiDecision.customMaxCoolDown = 0;
+                                        return false;
+                                    }
+                                    __result = getNearbyAllyWorldPosition(mission, unitPosition, unit);
+                                    aiDecision.position = __result; return false;
+                                }
+                                else
+                                {
+                                    if (MBRandom.RandomInt((int)(unitPower / 4)) == 0)
+                                    {
+                                        if (IsInImportantFrontlineAction(unit))
+                                        {
+                                            aiDecision.customMaxCoolDown = 0;
+                                            return false;
+                                        }
+                                        __result = unit.GetWorldPosition();
+                                        //__result = WorldPosition.Invalid;
+                                        aiDecision.position = __result; return false;
+                                    }
+                                    else
                                     {
                                         if (IsInImportantFrontlineAction(unit))
                                         {
@@ -424,90 +466,13 @@ namespace RBMAI
                                         aiDecision.position = __result; return false;
                                     }
                                 }
-                                if (enemyAgentsImmidiateCount > enemyAgentsCountCriticalTreshold)
-                                {
-                                    //int randImmidiate = MBRandom.RandomInt(powerSumImmidiate);
-                                    //if(unitPower / 2 < randImmidiate)
-                                    //{
-                                    if (IsInImportantFrontlineAction(unit))
-                                    {
-                                        aiDecision.customMaxCoolDown = 0;
-                                        return false;
-                                    }
-                                    WorldPosition backPosition = unit.GetWorldPosition();
-                                    backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
-                                    __result = backPosition;
-                                    aiDecision.customMaxCoolDown = 2;
-                                    aiDecision.decisionType = AIDecisionType.FrontlineBackStep;
-                                    aiDecision.position = __result; return false;
-                                    //}
-                                }
-                                else if (randInt < (unitPower / 2f + defensivnesModifier))
-                                {
-                                    if (randInt < (unitPower / 2f + defensivnesModifier))
-                                    {
-                                        if (enemyAgentsImmidiateCount > enemyAgentsCountDangerousTreshold)
-                                        {
-                                            //int randImmidiate = MBRandom.RandomInt(powerSumImmidiate);
-                                            //if (unitPower / 2 < randImmidiate)
-                                            //{
-                                            if (IsInImportantFrontlineAction(unit))
-                                            {
-                                                aiDecision.customMaxCoolDown = 0;
-                                                return false;
-                                            }
-                                            WorldPosition backPosition = unit.GetWorldPosition();
-                                            backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
-                                            __result = backPosition;
-                                            aiDecision.customMaxCoolDown = 1;
-                                            aiDecision.decisionType = AIDecisionType.FrontlineBackStep;
-                                            aiDecision.position = __result; return false;
-                                            //}
-                                        }
-                                        if (IsInImportantFrontlineAction(unit))
-                                        {
-                                            aiDecision.customMaxCoolDown = 0;
-                                            return false;
-                                        }
-                                        __result = getNearbyAllyWorldPosition(mission, unitPosition, unit);
-                                        aiDecision.position = __result; return false;
-                                    }
-                                    else
-                                    {
-                                        if (MBRandom.RandomInt((int)(unitPower / 4)) == 0)
-                                        {
-                                            if (IsInImportantFrontlineAction(unit))
-                                            {
-                                                aiDecision.customMaxCoolDown = 0;
-                                                return false;
-                                            }
-                                            __result = unit.GetWorldPosition();
-                                            //__result = WorldPosition.Invalid;
-                                            aiDecision.position = __result; return false;
-                                        }
-                                        else
-                                        {
-                                            if (IsInImportantFrontlineAction(unit))
-                                            {
-                                                aiDecision.customMaxCoolDown = 0;
-                                                return false;
-                                            }
-                                            WorldPosition backPosition = unit.GetWorldPosition();
-                                            backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
-                                            __result = backPosition;
-                                            aiDecision.customMaxCoolDown = 1;
-                                            aiDecision.decisionType = AIDecisionType.FrontlineBackStep;
-                                            aiDecision.position = __result; return false;
-                                        }
-                                    }
 
-                                }
-                                else if (randInt < unitPower)
-                                {
-                                    aiDecision.position = WorldPosition.Invalid;
-                                    aiDecision.customMaxCoolDown = 0;
-                                    return true;
-                                }
+                            }
+                            else if (randInt < unitPower)
+                            {
+                                aiDecision.position = WorldPosition.Invalid;
+                                aiDecision.customMaxCoolDown = 0;
+                                return true;
                             }
                         }
                         //else
