@@ -1407,5 +1407,22 @@ namespace RBMCombat
             }
         }
     }
+
+    [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
+    [HarmonyPatch("GetAttackCollisionResults")]
+    class GetAttackCollisionResultsPatch
+    {
+        static void Postfix(in AttackInformation attackInformation, bool crushedThrough, float momentumRemaining, in MissionWeapon attackerWeapon, bool cancelDamage, ref AttackCollisionData attackCollisionData, ref CombatLogData combatLog, int speedBonus)
+        {
+            if (!attackCollisionData.IsColliderAgent && attackCollisionData.EntityExists)
+            {
+                if (!attackCollisionData.IsMissile)
+                {
+                    attackCollisionData.InflictedDamage = attackCollisionData.InflictedDamage + 5;
+                    combatLog.InflictedDamage = attackCollisionData.InflictedDamage;
+                }
+            }
+        }
+    }
 }
 
