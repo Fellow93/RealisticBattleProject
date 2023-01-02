@@ -303,7 +303,7 @@
               speed_rating="0"
               missile_speed="8"
               weapon_length="95"
-              thrust_damage="33"
+              thrust_damage="30"
               thrust_damage_type="Blunt"
               item_usage="heavy_stone"
               flying_sound_code="event:/mission/combat/boulder/passby"
@@ -351,7 +351,7 @@
               speed_rating="0"
               missile_speed="8"
               weapon_length="95"
-              thrust_damage="33"
+              thrust_damage="40"
               thrust_damage_type="Blunt"
               item_usage="heavy_stone"
               flying_sound_code="event:/mission/combat/boulder/passby"
@@ -367,7 +367,7 @@
                      UseHandAsThrowBase="true"
                      LeavesTrail="true"
                      Burning="true"
-                     AffectsArea="true"
+                     AffectsArea="false"
                      AmmoCanBreakOnBounceBack="true" />
       </Weapon>
     </ItemComponent>

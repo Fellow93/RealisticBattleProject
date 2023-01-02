@@ -1,0 +1,1247 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CustomBattleScenes>
+  <Scene id="battle_terrain_a"
+         name="{=tBZ507q1}Vladiv Forest (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_005"
+         name="{=XOThK6JN}Bay of West Vlandia (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_006"
+         name="{=fphSzBHI}Biscan Woods (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_012"
+         name="{=0MbpibwT}Neurval Valley (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_034"
+         name="{=7hw1LcEO}Epiric Mountain Pass (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_030"
+         name="{=7t4rSHJF}Upper Thrand River (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_053"
+         name="{=LACC0MNV}Aminys Bridges (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_149"
+         name="{=yKvr7MEB}West Llyn Tywal (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_028"
+         name="{=S9xlDnPL}Dalmengus Coast (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_027"
+         name="{=TufwCXsb}East Dunglanys (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_025"
+         name="{=N7tngupZ}Swenryn Plains (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_044"
+         name="{=fQhG6WJA}Ircara Edge Mountains (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_046"
+         name="{=MysnepcM}Ircara Forest (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_047"
+         name="{=6Ra8Qamo}Skorin Plains (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_048"
+         name="{=HOSVm9Av}Miron River Basin (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_040"
+         name="{=Ad995J9D}Galchas Wastes (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_130"
+         name="{=bw647Ns0}Diathma Meadows (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_050"
+         name="{=cprzAUO2}Dryatic Mountain Plains (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_128"
+         name="{=0p1Xuz4D}Lower Dryatic Mountain (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_131"
+         name="{=q8eVTV1M}Aris Lowlands (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_106"
+         name="{=JbFXhMJB}Ophthys Forest (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_107"
+         name="{=XyYl7ito}Upper Sethys River (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_098"
+         name="{=kx9W7aUN}Ornion Plateau (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_097"
+         name="{=ajuEIe2m}Sethys Woods (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_096"
+         name="{=n1pZuP9U}Tripotamia Valley (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_092"
+         name="{=NzQVLsOH}Calsa River (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_094"
+         name="{=NQKWCA6m}Calsa Wastes (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_biome_088"
+         name="{=wKYM4OQY}Nahr Al-Kals Plateau (Steppe)"
+         terrain="Steppe"></Scene>
+  <Scene id="battle_terrain_biome_089"
+         name="{=2ritKG4l}Tiagys Riverbed (Steppe)"
+         terrain="Steppe"></Scene>
+  <Scene id="battle_terrain_biome_148"
+         name="{=tFkhbulg}Akkan Hill Pass (Steppe)"
+         terrain="Steppe"></Scene>
+  <Scene id="battle_terrain_biome_083"
+         name="{=DDzuJuFC}Jade Sea Coast (Desert)"
+         terrain="Desert"></Scene>
+  <Scene id="battle_terrain_biome_076"
+         name="{=gdPguBbF}Jarjara Lowlands (Desert)"
+         terrain="Desert"></Scene>
+  <Scene id="battle_terrain_biome_075"
+         name="{=wL4VPMJY}Damar Bridge (Desert)"
+         terrain="Desert"></Scene>
+  <Scene id="battle_terrain_biome_065"
+         name="{=ho6w9wbi}West Jade Sea (Desert)"
+         terrain="Desert"></Scene>
+  <Scene id="battle_terrain_biome_067"
+         name="{=iRJx70Q7}South Wastes (Desert)"
+         terrain="Desert"></Scene>
+  <Scene id="battle_terrain_s"
+         name="{=ijKTVdiS}Gavys River (Plain)"
+         terrain="Plain">
+    <TerrainTypes>
+      <TerrainType name="River" />
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_v"
+         name="{=oifHnpLh}Gamardan Forest (Plain)"
+         terrain="Plain">
+    <TerrainTypes>
+      <TerrainType name="Forest" />
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_y"
+         name="{=NWDzoBvg}Tasheba Coast (Steppe)"
+         terrain="Steppe">
+    <TerrainTypes>
+      <TerrainType name="Water" />
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_001"
+         name="{=fHiAAOmo}Chertyg Mountain Pass (Plain)"
+         terrain="Plain"
+         forest_density="low"></Scene>
+  <Scene id="battle_terrain_004"
+         name="{=gPiWhghv}Dryatic Mountain Pass (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_006"
+         name="{=45k7HhNO}Ov Plains (Steppe)"
+         terrain="Steppe"></Scene>
+  <Scene id="battle_terrain_010"
+         name="{=lmaUNOay}Jabal Ashab Desert (Desert)"
+         terrain="Desert">
+    <TerrainTypes>
+      <TerrainType name="Dune" />
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_011"
+         name="{=VARi169Z}Trand River Valley (Plain)"
+         terrain="Plain">
+    <TerrainTypes>
+      <TerrainType name="River" />
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_012"
+         name="{=fXaZ3CG4}Bars Dag Wastes (Steppe)"
+         terrain="Steppe"></Scene>
+  <Scene id="battle_terrain_013"
+         name="{=YJpAgpco}Nevys Valley (Steppe)"
+         terrain="Steppe"></Scene>
+  <Scene id="battle_terrain_014"
+         name="{=mVnh3kqF}Devseg Plateau (Steppe)"
+         terrain="Steppe"></Scene>
+  <Scene id="battle_terrain_018"
+         name="{=2JJHMZa8}Ozu River (Steppe)"
+         terrain="Steppe"></Scene>
+  <Scene id="battle_terrain_020"
+         name="{=O3GrNfIR}Vesin Coast (Plain)"
+         terrain="Plain">
+    <TerrainTypes>
+      <TerrainType name="Mountain" />
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_021"
+         name="{=8nAcLLnQ}Vinela Coast (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_027"
+         name="{=3oKJwsxm}Temea Creek (Plain)"
+         terrain="Plain">
+    <TerrainTypes>
+      <TerrainType name="Forest" />
+      <TerrainType name="River" />
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_029"
+         name="{=O6hUb0PH}Laconis Shores (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_030"
+         name="{=XOj46kua}Drapand Cliffs (Plain)"
+         terrain="Plain">
+    <TerrainTypes>
+      <TerrainType name="Mountain" />
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_031"
+         name="{=udfsSBuj}Kachyar Valley (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_f"
+         name="{=awebxthZ}Oritan River (Swamp)"
+         terrain="Swamp"
+         forest_density="low"></Scene>
+  <Scene id="battle_terrain_g"
+         name="{=bFXvvRDp}Bir Seif Desert Pass (Desert)"
+         terrain="Desert">
+    <TerrainTypes>
+      <TerrainType name="Mountain" />
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_h"
+         name="{=sVurp04I}Potamis Woods (Plain)"
+         terrain="Plain"
+         forest_density="low"></Scene>
+  <Scene id="battle_terrain_i"
+         name="{=UL5Ebxfq}Goleryn Basin (Plain)"
+         terrain="Plain"
+         forest_density="low">
+    <TerrainTypes>
+      <TerrainType name="Mountain" />
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_k"
+         name="{=JrgJjJtU}Hertogea Jungle (Plain)"
+         terrain="Plain"
+         forest_density="low"></Scene>
+  <Scene id="battle_terrain_O"
+         name="{=FtAQwVpt}Zestea Valley (Plain)"
+         terrain="Plain"
+         forest_density="low">
+    <TerrainTypes>
+      <TerrainType name="Mountain" />
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_p"
+         name="{=MQQy8Ufb}Bay of Tirby Woods (Plain)"
+         terrain="Plain">
+    <TerrainTypes>
+      <TerrainType name="Water" />
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_005"
+         name="{=GnaHLFY1}Iltan Swamp (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_033"
+         name="{=1nWa3qgb}Bog Beth Arch (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_034"
+         name="{=YqnN2sbr}Calsea Swamps (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_b"
+         name="{=TiUvsxPP}Abba Basin (Desert)"
+         terrain="Desert"></Scene>
+  <Scene id="battle_terrain_d"
+         name="{=umUUXGom}Jabal Tamar Desert (Desert)"
+         terrain="Desert"></Scene>
+  <Scene id="battle_terrain_e"
+         name="{=UYl1t6jl}Wadar Desert (Desert)"
+         terrain="Desert"></Scene>
+  <Scene id="battle_terrain_J"
+         name="{=RKLVUpGR}Kvol Woods (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_L"
+         name="{=b9maTDoe}Vealos Basin (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_m"
+         name="{=Dga5nleS}Samatha Valley (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_n"
+         name="{=buD5S2YV}Canoros Forest (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_r"
+         name="{=qxtk8aub}Imlagh Forest (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_t"
+         name="{=IMqEmnPb}Miron Woods (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_u"
+         name="{=RdWjsx6Y}Ismilkorg Woods (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_z"
+         name="{=p0tSofNV}Palisont Valley (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_003"
+         name="{=3pAMEPX3}Temea Forest (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_007"
+         name="{=ZY5hwSyO}Takor Mountains (Steppe)"
+         terrain="Steppe"></Scene>
+  <Scene id="battle_terrain_008"
+         name="{=j3M2FUDQ}Jarjara Desert Pass (Desert)"
+         terrain="Desert"></Scene>
+  <Scene id="battle_terrain_009"
+         name="{=xDOAD5f6}Liwas Desert (Desert)"
+         terrain="Desert"></Scene>
+  <Scene id="battle_terrain_015"
+         name="{=RY3L0QLA}Tismil Wastes (Steppe)"
+         terrain="Steppe"></Scene>
+  <Scene id="battle_terrain_017"
+         name="{=LZPV5OV6}Damar River (Steppe)"
+         terrain="Steppe"></Scene>
+  <Scene id="battle_terrain_019"
+         name="{=XJAEaQHv}Sulun Dag Wastes (Steppe)"
+         terrain="Steppe"></Scene>
+  <Scene id="battle_terrain_022"
+         name="{=1rG1qcKN}Medeni Coast (Desert)"
+         terrain="Desert"></Scene>
+  <Scene id="battle_terrain_023"
+         name="{=IjRalhdI}Uchalion Forest (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_024"
+         name="{=JRuVr22Q}Tor Leiad Forest (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_025"
+         name="{=6ZFSqsNv}Morihig Woods (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_026"
+         name="{=4TNHQfwj}Erithrys Foothill (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_028"
+         name="{=JnraGGd4}Myzead Woods (Plain)"
+         terrain="Plain"></Scene>
+  <Scene id="battle_terrain_032"
+         name="{=kygtIpwm}Pendraic Prairie (Plain)"
+         terrain="Plain"></Scene>
+  <!--<Scene id="battle_terrain_b" name="{=*}battle_terrain_b (Desert)" terrain="Desert">
+  </Scene>-->
+  <!--<Scene id="battle_terrain_c" name="{=*}battle_terrain_c (Steppe)" terrain="Steppe" >
+  </Scene>-->
+  <!--<Scene id="battle_terrain_d" name="{=*}battle_terrain_d (Desert)" terrain="Desert">
+  </Scene>-->
+  <!--<Scene id="battle_terrain_e" name="{=*}battle_terrain_e (Desert)" terrain="Desert">
+    <TerrainTypes>
+      <TerrainType name="Dune"/>
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_f" name="{=*}battle_terrain_f (Swamp)" terrain="Swamp" forest_density="low">
+  </Scene>
+  <Scene id="battle_terrain_g" name="{=*}battle_terrain_g (Desert)" terrain="Desert" >
+    <TerrainTypes>
+      <TerrainType name="Mountain"/>
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_h" name="{=*}battle_terrain_h (Plain)" terrain="Plain" forest_density="low">
+  </Scene>
+  <Scene id="battle_terrain_i" name="{=*}battle_terrain_i (Plain)" terrain="Plain" forest_density="low">
+    <TerrainTypes>
+      <TerrainType name="Mountain"/>
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_k" name="{=*}battle_terrain_k (Plain)" terrain="Plain" forest_density="low">
+  </Scene>-->
+  <!--<Scene id="battle_terrain_j" name="{=*}battle_terrain_j (Plain)" terrain="Plain" forest_density="low">
+    <TerrainTypes>
+      <TerrainType name="Mountain"/>
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_k" name="{=*}battle_terrain_k (Plain)" terrain="Plain" forest_density="low">
+  </Scene>
+  <Scene id="battle_terrain_L" name="{=*}battle_terrain_L (Plain)" terrain="Plain" forest_density="low">
+    <TerrainTypes>
+      <TerrainType name="Mountain"/>
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_m" name="{=*}battle_terrain_m (Plain)" terrain="Plain" forest_density="low">
+    <TerrainTypes>
+      <TerrainType name="Mountain"/>
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_n" name="{=*}battle_terrain_n (Plain)" terrain="Plain" forest_density="low">
+  </Scene>-->
+  <!--<Scene id="battle_terrain_O" name="{=*}battle_terrain_O (Plain)" terrain="Plain" forest_density="low">
+    <TerrainTypes>
+      <TerrainType name="Mountain"/>
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_p" name="{=*}battle_terrain_p (Plain)" terrain="Plain" >
+    <TerrainTypes>
+      <TerrainType name="Water"/>
+    </TerrainTypes>
+  </Scene>-->
+  <!--<Scene id="battle_terrain_r" name="{=*}battle_terrain_r (Plain)" terrain="Plain" >
+    <TerrainTypes>
+      <TerrainType name="Mountain"/>
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_s" name="{=*}battle_terrain_s (Plain)" terrain="Plain" >
+    <TerrainTypes>
+      <TerrainType name="River"/>
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_t" name="{=*}battle_terrain_t (Plain)" terrain="Plain" forest_density="low">
+    <TerrainTypes>
+      <TerrainType name="River"/>
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_001" name="{=*}battle_terrain_001 (Plain)" terrain="Plain" forest_density="low">
+  </Scene>
+  <Scene id="battle_terrain_002" name="{=*}battle_terrain_002 (Plain)" terrain="Plain" >
+    <TerrainTypes>
+      <flag name="IsAmbush" value="true"/>
+    </TerrainTypes>
+  </Scene>
+  <Scene id="battle_terrain_003" name="{=*}battle_terrain_003 (Plain)" terrain="Plain" >
+  </Scene>
+  <Scene id="battle_terrain_004" name="{=*}battle_terrain_004 (Plain)" terrain="Plain" >
+  </Scene>
+  <Scene id="battle_terrain_006" name="{=*}battle_terrain_006 (Steppe)" terrain="Steppe" >
+  </Scene>
+  <Scene id="battle_terrain_012" name="{=*}battle_terrain_012 (Steppe)" terrain="Steppe" >
+  </Scene>
+  <Scene id="battle_terrain_016" name="{=*}battle_terrain_016 (Plain)" terrain="Plain" >
+    <TerrainTypes>
+      <TerrainType name="River"/>
+    </TerrainTypes>
+  </Scene>-->
+  <!--<Scene id="empire_town_i" name="{=*}Empire Town I (Plain)" terrain="Plain" >
+  </Scene>
+  <Scene id="vlandia_city_a" name="{=*}Vlandia Town A (Plain)" terrain="Plain" >
+  </Scene>
+  <Scene id="aserai_town_a" name="{=*}Aserai Town A (Plain)" terrain="Plain" >
+  </Scene>
+  <Scene id="battania_town_b" name="{=*}Battania Town B (Plain)" terrain="Plain" >
+  </Scene>
+  <Scene id="khuzait_city_b" name="{=*}Khuzait Town B (Plain)" terrain="Plain" >
+  </Scene>-->
+  <!--Siege Maps-->
+  <Scene id="battania_castle_b"
+         name="{=eeSLHoF6}Llanoc Hen Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="battania_castle_a"
+         name="{=SDoABuDm}Ab Comer Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="battania_town_c"
+         name="{=990Fhxcw}Pen Cannoc"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="battania_town_a"
+         name="{=2hIl3Pld}Car Banseth"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="battania_town_e"
+         name="{=0BPeUfA9}Dunglanys"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="vlandia_castle_005a"
+         name="{=txX7q3OL}Talivel Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_siege_001"
+         name="{=snbaIFOU}Veron Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="aserai_castle_002"
+         name="{=OLrhkKUo}Ain Baliq Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="aserai_castle_a"
+         name="{=Sk1x6LZK}Barihal Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="aserai_castle_c"
+         name="{=vK8aRweu}Jamayeh Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="aserai_castle_d"
+         name="{=WxSfaOM1}Medeni Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="sturgia_castle_003"
+         name="{=VZJF1eXu}Takor Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="sturgia_town_b"
+         name="{=TGPsNCI5}Varnovapol"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="sturgia_town_g"
+         name="{=ShP2XUV7}Varcheg"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="sturgia_town_c"
+         name="{=varCZlso}Balgard"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="sturgia_town_e"
+         name="{=8vI0Twwn}Omor"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="sturgia_town_a"
+         name="{=68hY2ikn}Sibir"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="sturgia_town_f"
+         name="{=OcQDxfnH}Revyl"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="sturgia_town_d"
+         name="{=qaoM6HL6}Tyal"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="aserai_town_b"
+         name="{=KfHLVdry}Iyakis"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="aserai_town_f"
+         name="{=rk7xneq9}Razih"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="aserai_town_g"
+         name="{=vN32HHek}Hubyar"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_castle_004"
+         name="{=9on9e5m7}Thractorae Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="aserai_town_e"
+         name="{=aRPxOOCW}Qasira"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="aserai_town_d"
+         name="{=PMf8vgt1}Askar"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_town_f"
+         name="{=Luj9oWEl}Lageta"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_town_o"
+         name="{=BWii0r6E}Syronea"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_town_h"
+         name="{=q0JVAZjz}Rhotae"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_town_a"
+         name="{=324mqAvm}Argoron"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_town_n"
+         name="{=ArtPdp9q}Amprela"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="khuzait_castle_siege_001"
+         name="{=3cBdEWg4}Hakkun Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="khuzait_city_a"
+         name="{=nx8dPxlY}Chaikand"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="khuzait_town_004"
+         name="{=ur24SWTb}Odokh"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="khuzait_city_b"
+         name="{=RQ37o2Yu}Baltakhand"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="khuzait_town_g"
+         name="{=j04TBG56}Akkalat"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="aserai_town_c"
+         name="{=TWmYlcCZ}Quyaz"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="aserai_town_a"
+         name="{=tJtC25tG}Husn Fulq"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_town_g"
+         name="{=eEqUBFb3}Epicrotea"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="khuzait_town_f"
+         name="{=FhgEIFWb}Makeb"
+         terrain="Steppe"
+         is_siege_map="true"></Scene>
+  <Scene id="khuzait_town_e"
+         name="{=vITP9z1Z}Ortongard"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="sturgia_castle_siege_001"
+         name="{=IPbMskbi}Ustokol Castle"
+         terrain="Steppe"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_town_c"
+         name="{=K2NeKiuO}Ortysia"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_town_j_siege"
+         name="{=IZ1b77Ma}Amitatys"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_town_d"
+         name="{=UBbTKSsa}Zeonica"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_town_b"
+         name="{=Sm9T9Qwi}Myzea"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_town_l"
+         name="{=zRbhAwyr}Vostrum"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_town_e"
+         name="{=K0JCdjQd}Poros"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_town_k"
+         name="{=TapuitFC}Onira"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_town_p"
+         name="{=aTEsacqP}Phycaon"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_town_q"
+         name="{=bskXLff6}Diathma"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_town_r"
+         name="{=Y3Ava3iD}Saneopa"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_town_m"
+         name="{=uADa8Bmy}Lycaron"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_town_i"
+         name="{=YeWZBSx8}Jalmarys"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_castle_b"
+         name="{=rtiVr8Nm}Sestadaim Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="empire_castle_c"
+         name="{=QuLrXJoP}Jogurys Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="sturgia_castle_c"
+         name="{=PF1ohppa}Mazhadan Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="vlandia_town_f"
+         name="{=JwMfPrlm}Rovalt"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="vlandia_town_d"
+         name="{=jFy1l9iu}Ostican"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="vlandia_town_e"
+         name="{=SdKNB1JO}Sargot"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="vlandia_town_h"
+         name="{=1hIKR8Sa}Ocs Hall"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="vlandia_castle_a"
+         name="{=r2cvi5pi}Hongard Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="vlandia_castle_d"
+         name="{=RgO750Ca}Usanc Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="vlandia_castle_c"
+         name="{=KirQzyQV}Caleus Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="vlandia_castle_b"
+         name="{=c8A1uisA}Verecsand Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <!--<Scene id="vlandia_castle_005a"
+         name="{=JaoBYmxR}vlandia_castle_005a"
+         terrain="Plain"
+         is_siege_map="true"></Scene>-->
+  <!--<Scene id="ai_siege_test_scn_spawner"
+         name="ai_siege_test_scn_spawner"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="ai_siege_test_scn" name="ai_siege_test_scn" terrain="Plain" is_siege_map="true">
+  </Scene>
+  <Scene id="battania_town_c"
+         name="battania_town_c"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="vlandia_castle_005a"
+         name="vlandia_castle_005a"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="empire_siege_001"
+         name="empire_siege_001"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="aserai_castle_002"
+         name="aserai_castle_002"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="sturgia_castle_003"
+         name="sturgia_castle_003"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="sturgia_town_b"
+         name="sturgia_town_b"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="sturgia_town_c"
+         name="sturgia_town_c"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="aserai_town_a"
+         name="aserai_town_a"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="empire_castle_004"
+         name="empire_castle_004"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="aserai_town_c"
+         name="aserai_town_c"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="empire_town_g"
+         name="empire_town_g"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="empire_town_h"
+         name="empire_town_h"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="empire_town_j_siege"
+         name="empire_town_j_siege"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="khuzait_castle_siege_001"
+         name="khuzait_castle_siege_001"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="ai_siege_test_scn_spawner"
+         name="ai_siege_test_scn_spawner"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="khuzait_city_a"
+         name="khuzait_city_a"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="khuzait_city_b"
+         name="khuzait_city_b"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="aserai_town_b"
+         name="aserai_town_b"
+         terrain="Plain"
+         is_siege_map="true">
+  </Scene>
+  <Scene id="ai_siege_test_scn" name="ai_siege_test_scn" terrain="Plain" is_siege_map="true">
+  </Scene>
+  <Scene id="archer_wall_test" name="archer_wall_test" terrain="Steppe">
+  </Scene>
+  <Scene id="archer_wall_test_l3" name="archer_wall_test_l3" terrain="Steppe">
+  </Scene>-->
+  <Scene id="vlandia_town_g"
+         name="{=jHEGCQ8y}Charas"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="vlandia_city_a"
+         name="{=b33aHvbC}Jaculan"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="vlandia_town_a"
+         name="{=w7ImuzEs}Pravend"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="vlandia_town_c"
+         name="{=P6TPNvWz}Galend"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="khuzait_castle_002"
+         name="{=73f3hn4j}Simira Castle"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="battania_town_b"
+         name="{=oxSVeo6J}Seonon"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <Scene id="battania_town_d"
+         name="{=B6EMyA1v}Marunath"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+  <!--Village Maps-->
+  <Scene id="battania_village_k"
+         name="{=IyuoDcuP}Rhemtoil"
+         terrain="Plain"
+         is_village_map="true"></Scene>
+  <Scene id="vlandia_village_n"
+         name="{=diY4gxkG}Verecsand"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_002"
+         name="{=xdYXz0PY}Jogurys"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_003"
+         name="{=Q1FSLwaw}Vargornis"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_004"
+         name="{=dAqn04iR}Avalyps"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_007"
+         name="{=HcX4VAOW}Popsia"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_008"
+         name="{=JNz2l5Xt}Hertogea"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_x"
+         name="{=0gkY50ld}Alision"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_p"
+         name="{=wwITudGq}Agalmon"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="vlandia_village_l"
+         name="{=jZyyJMqF}Mot"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="vlandia_village_k"
+         name="{=mJV8DyC1}Nogrent"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="vlandia_village_m"
+         name="{=wj01G6Mw}Vesin"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="vlandia_village_i"
+         name="{=fmjfc45Z}Drapand"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="vlandia_village_g"
+         name="{=8txiTiHl}Fregian"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <!-- <Scene id="aserai_village_i"
+         name="{=*}Ezbet Nahul"
+         terrain="Forest"
+         is_village_map="true"></Scene> -->
+  <Scene id="aserai_village_j"
+         name="{=7RZaNy5N}Hoqqa"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="aserai_village_k"
+         name="{=Lac7Lb0P}Uqba"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="aserai_village_m"
+         name="{=hndY2L5P}Wadar"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="aserai_village_d"
+         name="{=YgQ7rtND}Deir Hawa"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="aserai_village_g"
+         name="{=dBlbWtZR}Bir seif"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="aserai_village_l"
+         name="{=9v0dObmN}Tasheba"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="aserai_village_e"
+         name="{=VA7hpaye}Mossom"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="battania_village_i"
+         name="{=gKHzk2U0}Ath Cafal"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="battania_village_j"
+         name="{=EF64kAD9}Fenon Tryn"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="battania_village_l"
+         name="{=7P8SuEYM}Glenlithrig"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="battania_village_h"
+         name="{=y4pFeCFr}Morihig"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="battania_village_g"
+         name="{=IvJd7Nbr}Bog Beth"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="battania_village_m"
+         name="{=3hffTbxP}Geunat Nal"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="sturgia_village_e"
+         name="{=ka2XFasQ}Bukits"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="sturgia_village_f"
+         name="{=czzagO4q}Yangutum"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="sturgia_village_g"
+         name="{=GZYmOqZK}Urikskala"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="sturgia_village_h"
+         name="{=zuYafrkj}Visibrot"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="sturgia_village_c"
+         name="{=FY9WBGWk}Mazhadan"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="sturgia_village_j"
+         name="{=dah9IZxv}Rodobas"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="sturgia_village_d"
+         name="{=tLLrL2po}Kvol"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="sturgia_village_k"
+         name="{=843GVedi}Korsyas"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="sturgia_village_l"
+         name="{=t3t5XL2b}Chornobas"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="khuzait_village_i"
+         name="{=6eH3F48v}Esme"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="khuzait_village_j"
+         name="{=v8anZHEq}Erzenur"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="khuzait_village_f"
+         name="{=x4tYsDgI}Nutyuk"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="khuzait_village_e"
+         name="{=J5ofaQnM}Karahan"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="khuzait_village_d"
+         name="{=qumw7GQb}Dinar"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="khuzait_village_k"
+         name="{=3ujFSm58}Tepes"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="khuzait_village_l"
+         name="{=UcwyFba8}Kiraz"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="khuzait_village_a"
+         name="{=Qtskr0Fg}Shapeshte"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="battania_village"
+         name="{=Ku2aoyjk}Bryn glas"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="battania_village_e"
+         name="{=RdMsvNec}Tor Melina"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="aserai_village_b"
+         name="{=0gGlpoDG}Ain baliq"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="aserai_village_c"
+         name="{=Fy68tN4M}Asmait"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="khuzait_village_b"
+         name="{=JGEWHtGL}Asalig"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="khuzait_village_c"
+         name="{=tPS2xGZN}Kuruluk"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="sturgia_village_a"
+         name="{=Jwo98TB7}Forin"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="sturgia_village_b"
+         name="{=3Uvpavg7}Vladiv"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="vlandia_village_b"
+         name="{=ov9jrNqP}Ormanfard"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="vlandia_village_c"
+         name="{=7vn2VRP0}Mareiven"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="vlandia_village_j"
+         name="{=NlrfibI9}Remental"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_f"
+         name="{=vXqCDtR6}Vathea"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_g"
+         name="{=p7X1aLIP}Samatha"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_k"
+         name="{=jpqT9axa}Syratos"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_l"
+         name="{=ylK7UJp9}Carphenion"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_s"
+         name="{=SZ3fWeNn}Gamardan"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_t"
+         name="{=I7QRokP0}Crios"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_r"
+         name="{=bGvPtKc3}Zestea"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_m"
+         name="{=HfHfODCq}Epinosa"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_u"
+         name="{=K5RYhaN1}Melion"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_h"
+         name="{=y0QUAVsw}Gersegos"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_v"
+         name="{=AtIlQijG}Thractorae"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_o"
+         name="{=cNiWekai}Lochana"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_i"
+         name="{=FQ0sIVLT}Primessos"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_y"
+         name="{=YbKvMKr3}Leblenion"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_j"
+         name="{=OSv0n6Eq}Rhesos"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_z"
+         name="{=glewzQmU}Morenia"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_a"
+         name="{=lfGlDXu2}Goleryn"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_b"
+         name="{=bQVkbPpU}Jeracos"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_c"
+         name="{=aIPzzKgq}Thorios"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_d"
+         name="{=PnfGEvfu}Canterion"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_e"
+         name="{=QRioHPAs}Bergum"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_001"
+         name="{=3kni3h4a}Dyopalis"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_005"
+         name="{=ihlDZZ9a}Vealos"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_009"
+         name="{=CD2aFnTf}Aeoria"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_011"
+         name="{=HSanKfUO}Gaos"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="empire_village_006"
+         name="{=SxGXPdms}Tevea"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="khuzait_village_g"
+         name="{=XI0Tct5W}Tismil"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="khuzait_village_h"
+         name="{=AD2SK3nm}Usek"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="vlandia_village_d"
+         name="{=7b44joze}Halisvust"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="vlandia_village_e"
+         name="{=F4SBmZ83}Etirfurd"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="vlandia_village_f"
+         name="{=AC37qQMF}Hongard"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <Scene id="vlandia_village_h"
+         name="{=PYggrg9m}Palisont"
+         terrain="Forest"
+         is_village_map="true"></Scene>
+  <!--Lords Hall Scenes-->
+  <Scene id="european_castle_keep_a_l1_interior"
+         name="{=!}european_castle_keep_a_l1_interior"
+         terrain="Forest"
+         is_lords_hall_map="true"></Scene>
+  <Scene id="european_castle_keep_a_l2_interior"
+         name="{=!}european_castle_keep_a_l2_interior"
+         terrain="Forest"
+         is_lords_hall_map="true"></Scene>
+  <Scene id="european_castle_keep_a_l3_interior"
+         name="{=!}european_castle_keep_a_l3_interior"
+         terrain="Forest"
+         is_lords_hall_map="true"></Scene>
+  <Scene id="empire_castle_keep_a_l1_interior"
+         name="{=!}empire_castle_keep_a_l1_interior"
+         terrain="Forest"
+         is_lords_hall_map="true"></Scene>
+  <Scene id="empire_castle_keep_a_l2_interior"
+         name="{=!}empire_castle_keep_a_l2_interior"
+         terrain="Forest"
+         is_lords_hall_map="true"></Scene>
+  <Scene id="empire_castle_keep_a_l3_interior"
+         name="{=!}empire_castle_keep_a_l3_interior"
+         terrain="Forest"
+         is_lords_hall_map="true"></Scene>
+  <Scene id="aserai_castle_keep_a_l1_interior"
+         name="{=!}aserai_castle_keep_a_l1_interior"
+         terrain="Forest"
+         is_lords_hall_map="true"></Scene>
+  <Scene id="aserai_castle_keep_a_l2_interior"
+         name="{=!}aserai_castle_keep_a_l2_interior"
+         terrain="Forest"
+         is_lords_hall_map="true"></Scene>
+  <Scene id="aserai_castle_keep_a_l3_interior"
+         name="{=!}aserai_castle_keep_a_l3_interior"
+         terrain="Forest"
+         is_lords_hall_map="true"></Scene>
+  <Scene id="battania_castle_keep_a_l1_interior"
+         name="{=!}battania_castle_keep_a_l1_interior"
+         terrain="Forest"
+         is_lords_hall_map="true"></Scene>
+  <Scene id="battania_castle_keep_a_l2_interior"
+         name="{=!}battania_castle_keep_a_l2_interior"
+         terrain="Forest"
+         is_lords_hall_map="true"></Scene>
+  <Scene id="battania_castle_keep_a_l3_interior"
+         name="{=!}battania_castle_keep_a_l3_interior"
+         terrain="Forest"
+         is_lords_hall_map="true"></Scene>
+  <Scene id="sturgia_castle_keep_a_l2_interior"
+         name="{=!}sturgia_castle_keep_a_l2_interior"
+         terrain="Forest"
+         is_lords_hall_map="true"></Scene>
+  <Scene id="sturgia_castle_keep_a_l3_interior"
+         name="{=!}sturgia_castle_keep_a_l3_interior"
+         terrain="Forest"
+         is_lords_hall_map="true"></Scene>
+  <Scene id="khuzait_castle_keep_a_l1_interior"
+         name="{=!}khuzait_castle_keep_a_l1_interior"
+         terrain="Forest"
+         is_lords_hall_map="true"></Scene>
+  <Scene id="khuzait_castle_keep_a_l2_interior"
+         name="{=!}khuzait_castle_keep_a_l2_interior"
+         terrain="Forest"
+         is_lords_hall_map="true"></Scene>
+  <Scene id="khuzait_castle_keep_a_l3_interior"
+         name="{=!}khuzait_castle_keep_a_l3_interior"
+         terrain="Forest"
+         is_lords_hall_map="true"></Scene>
+		 
+  <Scene id="empire_castle_f"
+         name="empire_castle_f"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+		 
+  <Scene id="empire_castle_g"
+         name="empire_castle_g"
+         terrain="Plain"
+         is_siege_map="true"></Scene>
+</CustomBattleScenes>
