@@ -480,7 +480,7 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="empire_crown" name="{=FZ6VCoKI}empire_crown" mesh="empire_crown" culture="Culture.empire" weight="3.1" appearance="6" Type="HeadArmor" is_merchandise="false">
+	<Item id="empire_crown" name="{=udQSdRXR}Jeweled Crown" mesh="empire_crown" culture="Culture.empire" weight="3.1" appearance="6" Type="HeadArmor" is_merchandise="false">
 		<ItemComponent>
 			<Armor head_armor="46" body_armor="0" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
 		</ItemComponent>
