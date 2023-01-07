@@ -364,5 +364,5 @@
   <Scene id="empire_castle_g"
          name="{=9on9e5m7}Mecalovea Castle"
          terrain="Plain"
-         is_siege_map="true"></Scene>
+         is_siege_map="true"></Scene>  lvl 1, 2 and 3 done
 </CustomBattleScenes>
