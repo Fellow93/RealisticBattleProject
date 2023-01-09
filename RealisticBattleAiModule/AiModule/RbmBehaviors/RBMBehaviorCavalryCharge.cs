@@ -260,7 +260,13 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 			isFirstCharge = false;
         }
 
-		if (chargeState != _chargeState || newTarget)
+		bool isChargingCav = false;
+		if(_lastTarget != null && (_lastTarget.IsCavalryFormation || _lastTarget.IsRangedCavalryFormation))
+		{
+			isChargingCav = true;
+        }
+
+		if (chargeState != _chargeState || newTarget || (isChargingCav && chargeState == ChargeState.Charging))
 		{
 			_chargeState = chargeState;
 
