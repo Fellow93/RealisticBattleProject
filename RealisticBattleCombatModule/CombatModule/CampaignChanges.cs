@@ -672,9 +672,9 @@ namespace RBMCombat
                         {
                             PerkHelper.AddPerkBonusForParty(DefaultPerks.TwoHanded.ThickHides, mobileParty, isPrimaryBonus: false, ref stat);
                         }
-                        if (captain.GetPerkValue(DefaultPerks.Polearm.GenerousRations))
+                        if (captain.GetPerkValue(DefaultPerks.Polearm.HardyFrontline))
                         {
-                            PerkHelper.AddPerkBonusForParty(DefaultPerks.Polearm.GenerousRations, mobileParty, isPrimaryBonus: true, ref stat);
+                            PerkHelper.AddPerkBonusForParty(DefaultPerks.Polearm.HardyFrontline, mobileParty, isPrimaryBonus: true, ref stat);
                         }
                         if (characterObject.IsRanged)
                         {

@@ -16,7 +16,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 	{
 		int skirmIndex = -1;
 		ManageFormationCounts(2, 1, 2, 1);
-        _mainInfantry = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsInfantryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
+        _mainInfantry = ChooseAndSortByPriority(FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsInfantryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
 		if (_mainInfantry != null)
 		{
 			_mainInfantry.AI.IsMainFormation = true;
@@ -57,7 +57,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 			});
 
 			int i = 0;
-			foreach(Formation formation in Formations.ToList())
+			foreach(Formation formation in FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
             {
 				formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
 				{
@@ -131,16 +131,16 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 			if(skirmIndex != -1)
             {
 				int j = 0;
-				int infCount = Formations.ToList()[0].CountOfUnits + Formations.ToList()[skirmIndex].CountOfUnits;
+				int infCount = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0].CountOfUnits + FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[skirmIndex].CountOfUnits;
 				foreach (Agent agent in skirmishersList.ToList())
 				{
 					if (j < infCount / 4f)
 					{
-						agent.Formation = Formations.ToList()[skirmIndex];
+						agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[skirmIndex];
 					}
 					else
 					{
-						agent.Formation = Formations.ToList()[0];
+						agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0];
 					}
 					j++;
 				}
@@ -149,25 +149,25 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 				{
 					if (j < infCount / 4f)
 					{
-						agent.Formation = Formations.ToList()[skirmIndex];
+						agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[skirmIndex];
 					}
 					else
 					{
-						agent.Formation = Formations.ToList()[0];
+						agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0];
 					}
 					j++;
 				}
-				if(Formations.ElementAtOrDefault(skirmIndex) != null)
+				if(FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ElementAtOrDefault(skirmIndex) != null)
 				{
-                    this.team.TriggerOnFormationsChanged(Formations.ToList()[skirmIndex]);
-                    this.team.TriggerOnFormationsChanged(Formations.ToList()[0]);
+                    this.Team.TriggerOnFormationsChanged(FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[skirmIndex]);
+                    this.Team.TriggerOnFormationsChanged(FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0]);
                 }
             }
 			
 		}
 
-		_archers = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsRangedFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
-		List<Formation> list = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower);
+		_archers = ChooseAndSortByPriority(FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsRangedFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
+		List<Formation> list = ChooseAndSortByPriority(FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower);
 		if (list.Count > 0)
 		{
 			_leftCavalry = list[0];
@@ -187,11 +187,11 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 			_leftCavalry = null;
 			_rightCavalry = null;
 		}
-		_rangedCavalry = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsRangedCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
+		_rangedCavalry = ChooseAndSortByPriority(FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsRangedCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
 
-		if(skirmIndex != -1 && Formations.Count() > skirmIndex && Formations.ToList()[skirmIndex].QuerySystem.IsInfantryFormation)
+		if(skirmIndex != -1 && FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).Count() > skirmIndex && FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[skirmIndex].QuerySystem.IsInfantryFormation)
         {
-			_skirmishers = Formations.ToList()[skirmIndex];
+			_skirmishers = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[skirmIndex];
             _skirmishers.AI.IsMainFormation = false;
 
         }
@@ -224,7 +224,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 
 	private void Advance()
 	{
-		if (team.IsPlayerTeam && !team.IsPlayerGeneral && team.IsPlayerSergeant)
+		if (Team.IsPlayerTeam && !Team.IsPlayerGeneral && Team.IsPlayerSergeant)
 		{
 			SoundTacticalHorn(TacticComponent.MoveHornSoundIndex);
 		}
@@ -295,7 +295,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 
 	private void Attack()
 	{
-		if (team.IsPlayerTeam && !team.IsPlayerGeneral && team.IsPlayerSergeant)
+		if (Team.IsPlayerTeam && !Team.IsPlayerGeneral && Team.IsPlayerSergeant)
 		{
 			SoundTacticalHorn(TacticComponent.AttackHornSoundIndex);
 		}
@@ -354,7 +354,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 
 	protected override bool CheckAndSetAvailableFormationsChanged()
 	{
-		int num = base.Formations.Count((Formation f) => f.IsAIControlled);
+		int num = base.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).Count((Formation f) => f.IsAIControlled);
 		bool num2 = num != _AIControlledFormationCount;
 		if (num2)
 		{
@@ -428,9 +428,9 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 
         foreach (Team team in Mission.Current.Teams.ToList())
         {
-            if (team.IsEnemyOf(base.team))
+            if (Team.IsEnemyOf(base.Team))
             {
-                foreach (Formation formation in team.Formations.ToList())
+                foreach (Formation formation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
                 {
                     if (formation.QuerySystem.IsInfantryFormation)
                     {
@@ -446,9 +446,9 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 
         foreach (Team team in Mission.Current.Teams.ToList())
         {
-            if (!team.IsEnemyOf(base.team))
+            if (!Team.IsEnemyOf(base.Team))
             {
-                foreach (Formation formation in team.Formations.ToList())
+                foreach (Formation formation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
                 {
                     if (formation.QuerySystem.IsInfantryFormation)
                     {
@@ -468,7 +468,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
             return 0.01f;
         }
 
-        foreach (Agent agent in team.ActiveAgents.ToList())
+        foreach (Agent agent in Team.ActiveAgents.ToList())
         {
             if (agent.Formation != null && agent.Formation.QuerySystem.IsInfantryFormation) {
                 if (RBMAI.Utilities.CheckIfSkirmisherAgent(agent, 2))
@@ -478,11 +478,11 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 			}
         }
 
-        float num = team.QuerySystem.RangedCavalryRatio * (float)team.QuerySystem.MemberCount;
+        float num = Team.QuerySystem.RangedCavalryRatio * (float)Team.QuerySystem.MemberCount;
 		float skirmisherRatio = skirmisherCount / allyInfCount;
-		if(team.QuerySystem.InfantryRatio > 0.45f)
+		if(Team.QuerySystem.InfantryRatio > 0.45f)
         {
-			return team.QuerySystem.InfantryRatio * skirmisherRatio * 1.7f * (float)team.QuerySystem.MemberCount / ((float)team.QuerySystem.MemberCount - num) * (float)Math.Sqrt(team.QuerySystem.TotalPowerRatio);
+			return Team.QuerySystem.InfantryRatio * skirmisherRatio * 1.7f * (float)Team.QuerySystem.MemberCount / ((float)Team.QuerySystem.MemberCount - num) * (float)Math.Sqrt(Team.QuerySystem.TotalPowerRatio);
         }
         else
         {

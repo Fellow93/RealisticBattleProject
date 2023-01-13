@@ -145,7 +145,7 @@ namespace RBMAI
             {
                 if(____mainFormation != null && (____mainFormation.CountOfUnits == 0 || !____mainFormation.IsInfantry()))
                 {
-                    ____mainFormation = __instance.Formation.Team.Formations.FirstOrDefault((Formation f) => f.AI.IsMainFormation);
+                    ____mainFormation = __instance.Formation.Team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).FirstOrDefault((Formation f) => f.AI.IsMainFormation);
                 }
                 if (____mainFormation != null && __instance.Formation != null && ____mainFormation.CountOfUnits > 0 && ____mainFormation.IsInfantry())
                 {
@@ -524,7 +524,7 @@ namespace RBMAI
                     //    {
                     //        continue;
                     //    }
-                    //    foreach (Formation formation2 in team.FormationsIncludingSpecialAndEmpty.ToList())
+                    //    foreach (Formation formation2 in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0)IncludingSpecialAndEmpty.ToList())
                     //    {
                     //        if (formation2.CountOfUnits > 0 && formation2.QuerySystem != closestSignificantlyLargeEnemyFormation)
                     //        {
@@ -914,7 +914,7 @@ namespace RBMAI
         {
             if (____mainFormation == null || !____mainFormation.AI.IsMainFormation)
             {
-                ____mainFormation = __instance.Formation.Team.Formations.FirstOrDefault((Formation f) => f.AI.IsMainFormation);
+                ____mainFormation = __instance.Formation.Team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).FirstOrDefault((Formation f) => f.AI.IsMainFormation);
             }
             if (____mainFormation == null || __instance.Formation.AI.IsMainFormation)
             {
@@ -1594,7 +1594,7 @@ namespace RBMAI
                 WorldPosition newPosition = enemyQuerySystem.MedianPosition;
                 if (querySystem.IsRangedFormation || querySystem.IsRangedCavalryFormation)
                 {
-                    float effectiveMissileRange = querySystem.MissileRange / 2.25f;
+                    float effectiveMissileRange = querySystem.MissileRangeAdjusted / 2.25f;
                     if (!(newPosition.AsVec2.DistanceSquared(querySystem.AveragePosition) > effectiveMissileRange * effectiveMissileRange))
                     {
                         Vec2 directionAux2 = (enemyQuerySystem.MedianPosition.AsVec2 - querySystem.MedianPosition.AsVec2).Normalized();

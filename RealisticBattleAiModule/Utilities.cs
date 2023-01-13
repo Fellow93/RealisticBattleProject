@@ -7,6 +7,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
+using TaleWorlds.LinQuick;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.Core.ItemObject;
 
@@ -225,7 +226,7 @@ namespace RBMAI
             {
                 if (team.IsEnemyOf(unit.Formation.Team))
                 {
-                    foreach (Formation enemyFormation in team.Formations.ToList())
+                    foreach (Formation enemyFormation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
                     {
                         enemyFormation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                         {
@@ -396,12 +397,12 @@ namespace RBMAI
                     {
                         if (team.IsEnemyOf(formation.Team))
                         {
-                            if (team.Formations.ToList().Count == 1)
+                            if (team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList().Count == 1)
                             {
-                                formations.Add(team.Formations.ToList()[0]);
+                                formations.Add(team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0]);
                                 return formations;
                             }
-                            foreach (Formation enemyFormation in team.Formations.ToList())
+                            foreach (Formation enemyFormation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
                             {
                                 if (formation != null && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
                                 {
@@ -434,12 +435,12 @@ namespace RBMAI
                     {
                         if (team.IsEnemyOf(formation.Team))
                         {
-                            if (team.Formations.ToList().Count == 1)
+                            if (team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList().Count == 1)
                             {
-                                formations.Add(team.Formations.ToList()[0]);
+                                formations.Add(team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0]);
                                 return formations;
                             }
-                            foreach (Formation enemyFormation in team.Formations.ToList())
+                            foreach (Formation enemyFormation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
                             {
                                 if (formation != null && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
                                 {
@@ -470,7 +471,7 @@ namespace RBMAI
                     {
                         if (team.IsEnemyOf(formation.Team))
                         {
-                            foreach (Formation enemyFormation in team.Formations.ToList())
+                            foreach (Formation enemyFormation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
                             {
                                 allEnemyFormations.Add(enemyFormation);
                             }
@@ -626,7 +627,7 @@ namespace RBMAI
                     {
                         if (team.IsEnemyOf(formation.Team))
                         {
-                            foreach (Formation enemyFormation in team.Formations.ToList())
+                            foreach (Formation enemyFormation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
                             {
                                 allEnemyFormations.Add(enemyFormation);
                             }
@@ -813,7 +814,7 @@ namespace RBMAI
                         {
                             if (team.IsEnemyOf(formation.Team))
                             {
-                                foreach (Formation enemyFormation in team.Formations.ToList())
+                                foreach (Formation enemyFormation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
                                 {
                                     allEnemyFormations.Add(enemyFormation);
                                 }
@@ -850,15 +851,15 @@ namespace RBMAI
                     {
                         if (!team.IsEnemyOf(formation.Team))
                         {
-                            if (team.Formations.ToList().Count == 1)
+                            if (team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList().Count == 1)
                             {
-                                significantAlly = team.Formations.ToList()[0];
+                                significantAlly = team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0];
                                 return significantAlly;
                             }
                             if (unitCountMatters)
                             {
                                 int unitCount = -1;
-                                foreach (Formation allyFormation in team.Formations.ToList())
+                                foreach (Formation allyFormation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
                                 {
                                     if (formation != null && includeInfantry && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsInfantryFormation)
                                     {
@@ -888,7 +889,7 @@ namespace RBMAI
                             }
                             else
                             {
-                                foreach (Formation allyFormation in team.Formations.ToList())
+                                foreach (Formation allyFormation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
                                 {
                                     if (formation != null && includeInfantry && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsInfantryFormation)
                                     {
@@ -1123,7 +1124,7 @@ namespace RBMAI
             {
                 if (team.IsEnemyOf(formation.Team))
                 {
-                    foreach (Formation enemyFormation in team.Formations.ToList())
+                    foreach (Formation enemyFormation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
                     {
                         formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                         {

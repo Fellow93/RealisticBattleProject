@@ -21,14 +21,14 @@ public class RBMTacticAttackSplitArchers : TacticComponent
 	protected void AssignTacticFormations()
 	{
 		ManageFormationCounts(1, 2, 2, 1);
-		_mainInfantry = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsInfantryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
+		_mainInfantry = ChooseAndSortByPriority(FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsInfantryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
 		if (_mainInfantry != null)
 		{
 			_mainInfantry.AI.IsMainFormation = true;
 			_mainInfantry.AI.Side = FormationAI.BehaviorSide.Middle;
 
 		}
-		List<Formation> cavFormationsList = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower);
+		List<Formation> cavFormationsList = ChooseAndSortByPriority(FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower);
 		if (cavFormationsList.Count > 0)
 		{
 			_leftCavalry = cavFormationsList[0];
@@ -48,8 +48,8 @@ public class RBMTacticAttackSplitArchers : TacticComponent
 			_leftCavalry = null;
 			_rightCavalry = null;
 		}
-		_rangedCavalry = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsRangedCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
-		List<Formation> archerFormationsList = ChooseAndSortByPriority(Formations, (Formation f) => f.QuerySystem.IsRangedFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower);
+		_rangedCavalry = ChooseAndSortByPriority(FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsRangedCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
+		List<Formation> archerFormationsList = ChooseAndSortByPriority(FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsRangedFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower);
 		if (archerFormationsList.Count > 0)
 		{
 			leftArchers = archerFormationsList[0];
@@ -79,7 +79,7 @@ public class RBMTacticAttackSplitArchers : TacticComponent
 
 	private void Advance()
 	{
-		if (team.IsPlayerTeam && !team.IsPlayerGeneral && team.IsPlayerSergeant)
+		if (Team.IsPlayerTeam && !Team.IsPlayerGeneral && Team.IsPlayerSergeant)
 		{
 			SoundTacticalHorn(MoveHornSoundIndex);
 		}
@@ -136,7 +136,7 @@ public class RBMTacticAttackSplitArchers : TacticComponent
 
 	private void Attack()
 	{
-		if (team.IsPlayerTeam && !team.IsPlayerGeneral && team.IsPlayerSergeant)
+		if (Team.IsPlayerTeam && !Team.IsPlayerGeneral && Team.IsPlayerSergeant)
 		{
 			SoundTacticalHorn(AttackHornSoundIndex);
 		}
@@ -183,9 +183,9 @@ public class RBMTacticAttackSplitArchers : TacticComponent
 
 	protected override bool CheckAndSetAvailableFormationsChanged()
 	{
-		int num = base.Formations.Count((Formation f) => f.IsAIControlled);
-		bool num2 = num != _AIControlledFormationCount;
-		if (num2)
+        int num = base.FormationsIncludingEmpty.Count((Formation f) => f.IsAIControlled);
+        bool num2 = num != _AIControlledFormationCount;
+        if (num2)
 		{
 			_AIControlledFormationCount = num;
 			IsTacticReapplyNeeded = true;
@@ -248,11 +248,11 @@ public class RBMTacticAttackSplitArchers : TacticComponent
 
 	protected override float GetTacticWeight()
 	{
-		if(Mission.Current != null && !Mission.Current.IsTeleportingAgents && team.TeamAI.IsCurrentTactic(this) && team.QuerySystem.RangedRatio > 0.05f)
+		if(Mission.Current != null && !Mission.Current.IsTeleportingAgents && Team.TeamAI.IsCurrentTactic(this) && Team.QuerySystem.RangedRatio > 0.05f)
 		{
 			return 10f;
 		}
-		if(team.QuerySystem.RangedRatio > 0.2f)
+		if(Team.QuerySystem.RangedRatio > 0.2f)
         {
 			return 10f;
         }

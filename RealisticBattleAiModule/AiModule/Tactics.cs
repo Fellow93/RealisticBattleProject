@@ -475,10 +475,11 @@ namespace RBMAI
                 if (___team.QuerySystem.InfantryRatio <= 0.1f && ___team.QuerySystem.RangedRatio <= 0.1f)
                 {
                     float power = ___team.QuerySystem.TeamPower;
-                    float enemyPower = ___team.QuerySystem.EnemyTeams.Sum((TeamQuerySystem et) => et.TeamPower);
+                    //float enemyPower = ___team.QuerySystem.EnemyTeams.Sum((TeamQuerySystem et) => et.TeamPower);
+                    float enemyPower = ___team.QuerySystem.GetLocalEnemyPower(___team.QuerySystem.AveragePosition);
                     if (power / enemyPower <= 0.15f)
                     {
-                        foreach (Formation formation in ___team.Formations.ToList())
+                        foreach (Formation formation in ___team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
                         {
                             formation.AI.ResetBehaviorWeights();
                             formation.AI.SetBehaviorWeight<BehaviorRetreat>(100f);

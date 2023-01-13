@@ -79,14 +79,14 @@ namespace RBMAI
                 float distance = vec.Normalize();
 
                 bool isFormationShooting = Utilities.IsFormationShooting(base.Formation);
-                float effectiveShootingRange = (Formation.Depth / 2f) + (Formation.QuerySystem.MissileRange / 1.7f);
+                float effectiveShootingRange = (Formation.Depth / 2f) + (Formation.QuerySystem.MissileRangeAdjusted / 1.7f);
                 FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
                 _currentTacticField.DeclaringType.GetField("_currentTactic");
                 if (base.Formation?.Team?.TeamAI != null)
                 {
                     if (_currentTacticField.GetValue(base.Formation?.Team?.TeamAI) != null && _currentTacticField.GetValue(base.Formation?.Team?.TeamAI).ToString().Contains("SplitArchers"))
                     {
-                        if (significantEnemy != null && base.Formation?.Team?.Formations.Count((Formation f) => f.QuerySystem.IsRangedFormation) > 1)
+                        if (significantEnemy != null && base.Formation?.Team?.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).Count((Formation f) => f.QuerySystem.IsRangedFormation) > 1)
                         {
                             effectiveShootingRange += significantEnemy.Width / 3.5f;
                         }
@@ -143,7 +143,7 @@ namespace RBMAI
                                 if (base.Formation.QuerySystem.IsRangedFormation && distance < effectiveShootingRange * 0.4f)
                                 {
                                     Formation meleeFormation = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
-                                    if (meleeFormation != null && meleeFormation.QuerySystem.IsInfantryFormation && meleeFormation.QuerySystem.MedianPosition.AsVec2.Distance(base.Formation.QuerySystem.MedianPosition.AsVec2) <= base.Formation.QuerySystem.MissileRange)
+                                    if (meleeFormation != null && meleeFormation.QuerySystem.IsInfantryFormation && meleeFormation.QuerySystem.MedianPosition.AsVec2.Distance(base.Formation.QuerySystem.MedianPosition.AsVec2) <= base.Formation.QuerySystem.MissileRangeAdjusted)
                                     {
                                         rollPullBackAngle = MBRandom.RandomFloat;
                                         _behaviorState = BehaviorState.PullingBack;
@@ -196,7 +196,7 @@ namespace RBMAI
                     case BehaviorState.PullingBack:
                         {
                             Formation meleeFormationPull = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
-                            if (meleeFormationPull != null && meleeFormationPull.QuerySystem.MedianPosition.AsVec2.Distance(base.Formation.QuerySystem.MedianPosition.AsVec2) > base.Formation.QuerySystem.MissileRange)
+                            if (meleeFormationPull != null && meleeFormationPull.QuerySystem.MedianPosition.AsVec2.Distance(base.Formation.QuerySystem.MedianPosition.AsVec2) > base.Formation.QuerySystem.MissileRangeAdjusted)
                             {
                                 _behaviorState = BehaviorState.Shooting;
                                 flag = true;

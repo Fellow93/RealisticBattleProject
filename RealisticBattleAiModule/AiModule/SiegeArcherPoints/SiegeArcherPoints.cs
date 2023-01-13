@@ -317,39 +317,59 @@ public class SiegeArcherPoints : MissionView
     //}
 
     [HarmonyPatch(typeof(ArrangementOrder))]
-	[HarmonyPatch("GetCloseStrategicAreas")]
-	class GetCloseStrategicAreasPatch
-	{
-		static bool Prefix(ref IEnumerable<StrategicArea> __result, Formation formation, ref ArrangementOrder __instance)
+	[HarmonyPatch("IsStrategicAreaClose")]
+	class IsStrategicAreaClosePatch
+    {
+		static bool Prefix(ref StrategicArea strategicArea, ref Formation formation, ref ArrangementOrder __instance, ref bool __result)
 		{
-			if (formation.Team?.TeamAI == null)
-			{
-				__result = new List<StrategicArea>();
-				return false;
-			}
-			__result = formation.Team.TeamAI.GetStrategicAreas().Where(delegate (StrategicArea sa)
-			{
-				float customDistanceToCheck = 150f;
-				if (sa != null && formation != null && sa.GameEntity != null && sa.GameEntity.GlobalPosition != null && sa.IsUsableBy(formation.Team.Side))
-				{
-					if (sa.IgnoreHeight)
-					{
-						if (MathF.Abs(sa.GameEntity.GlobalPosition.x - formation.OrderPosition.X) <= customDistanceToCheck)
-						{
-							return MathF.Abs(sa.GameEntity.GlobalPosition.y - formation.OrderPosition.Y) <= customDistanceToCheck;
-						}
-						return false;
-					}
-					WorldPosition worldPosition = formation.CreateNewOrderWorldPosition(WorldPosition.WorldPositionEnforcedCache.None);
-					Vec3 targetPoint = sa.GameEntity.GlobalPosition;
-					return worldPosition.DistanceSquaredWithLimit(in targetPoint, customDistanceToCheck * customDistanceToCheck + 1E-05f) < customDistanceToCheck * customDistanceToCheck;
-				}
-				return false;
-			});//.OrderByDescending(o =>o.GameEntity.GlobalPosition.z).ToList();
-			//List<StrategicArea> newlist = __result.ToList();
-			//newlist.Randomize();
-			//__result = newlist;
+			float distanceToCheck = 150f;
+            if (strategicArea.IsUsableBy(formation.Team.Side))
+            {
+                if (strategicArea.IgnoreHeight)
+                {
+                    if (MathF.Abs(strategicArea.GameEntity.GlobalPosition.x - formation.OrderPosition.X) <= distanceToCheck)
+                    {
+                        __result =  MathF.Abs(strategicArea.GameEntity.GlobalPosition.y - formation.OrderPosition.Y) <= distanceToCheck;
+                        return false;
+                    }
+                    __result = false;
+                    return false;
+                }
+                WorldPosition worldPosition = formation.CreateNewOrderWorldPosition(WorldPosition.WorldPositionEnforcedCache.None);
+                Vec3 targetPoint = strategicArea.GameEntity.GlobalPosition;
+                __result = worldPosition.DistanceSquaredWithLimit(in targetPoint, distanceToCheck * distanceToCheck + 1E-05f) < distanceToCheck * distanceToCheck;
+                return false;
+            }
+            __result =  false;
 			return false;
-		}
+            //if (formation.Team?.TeamAI == null)
+            //{
+            //	__result = new List<StrategicArea>();
+            //	return false;
+            //}
+            //__result = formation.Team.TeamAI.GetStrategicAreas().Where(delegate (StrategicArea sa)
+            //{
+            //	float customDistanceToCheck = 150f;
+            //	if (sa != null && formation != null && sa.GameEntity != null && sa.GameEntity.GlobalPosition != null && sa.IsUsableBy(formation.Team.Side))
+            //	{
+            //		if (sa.IgnoreHeight)
+            //		{
+            //			if (MathF.Abs(sa.GameEntity.GlobalPosition.x - formation.OrderPosition.X) <= customDistanceToCheck)
+            //			{
+            //				return MathF.Abs(sa.GameEntity.GlobalPosition.y - formation.OrderPosition.Y) <= customDistanceToCheck;
+            //			}
+            //			return false;
+            //		}
+            //		WorldPosition worldPosition = formation.CreateNewOrderWorldPosition(WorldPosition.WorldPositionEnforcedCache.None);
+            //		Vec3 targetPoint = sa.GameEntity.GlobalPosition;
+            //		return worldPosition.DistanceSquaredWithLimit(in targetPoint, customDistanceToCheck * customDistanceToCheck + 1E-05f) < customDistanceToCheck * customDistanceToCheck;
+            //	}
+            //	return false;
+            //});//.OrderByDescending(o =>o.GameEntity.GlobalPosition.z).ToList();
+            ////List<StrategicArea> newlist = __result.ToList();
+            ////newlist.Randomize();
+            ////__result = newlist;
+            //return false;
+        }
 	}
 }

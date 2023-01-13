@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
 using SandBox.Missions.MissionLogics;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.Core;
@@ -32,7 +34,7 @@ namespace RBMAI.AiModule
                             Formation formation = agentTeam.GetFormation(troop.GetFormationClass());
                             if (formation.CountOfUnits == 0)
                             {
-                                foreach (Formation allyFormation in agentTeam.Formations)
+                                foreach (Formation allyFormation in agentTeam.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0))
                                 {
                                     if (allyFormation.CountOfUnits > 0)
                                     {
@@ -177,7 +179,11 @@ namespace RBMAI.AiModule
                     spawnSettings.DefenderAdvantageFactor = defenderAdvantage;
                     spawnSettings.ReinforcementBatchPercentage = 0.25f;
                     spawnSettings.DesiredReinforcementPercentage = 0.5f;
-                    spawnSettings.ReinforcementTroopsSpawnMethod = MissionSpawnSettings.ReinforcementSpawnMethod.Fixed;
+                    //spawnSettings.ReinforcementTroopsSpawnMethod = MissionSpawnSettings.ReinforcementSpawnMethod.Fixed;
+
+                    PropertyInfo propertySReinforcementTroopsSpawnMethod = typeof(MissionSpawnSettings).GetProperty("ReinforcementTroopsSpawnMethod");
+                    propertySReinforcementTroopsSpawnMethod.DeclaringType.GetProperty("ReinforcementTroopsSpawnMethod");
+                    propertySReinforcementTroopsSpawnMethod.SetValue(spawnSettings, MissionSpawnSettings.ReinforcementSpawnMethod.Fixed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
 
                     ____missionAgentSpawnLogic.InitWithSinglePhase(numberOfHealthyMembers, numberOfHealthyMembers2, defenderInitialSpawn, attackerInitialSpawn, spawnDefenders: true, spawnAttackers: true, in spawnSettings);
                     return false;
@@ -219,7 +225,12 @@ namespace RBMAI.AiModule
                         spawnSettings.DefenderAdvantageFactor = defenderAdvantage;
                         spawnSettings.ReinforcementBatchPercentage = 0.25f;
                         spawnSettings.DesiredReinforcementPercentage = 0.5f;
-                        spawnSettings.ReinforcementTroopsSpawnMethod = MissionSpawnSettings.ReinforcementSpawnMethod.Fixed;
+
+                        PropertyInfo propertySReinforcementTroopsSpawnMethod = typeof(MissionSpawnSettings).GetProperty("ReinforcementTroopsSpawnMethod");
+                        propertySReinforcementTroopsSpawnMethod.DeclaringType.GetProperty("ReinforcementTroopsSpawnMethod");
+                        propertySReinforcementTroopsSpawnMethod.SetValue(spawnSettings, MissionSpawnSettings.ReinforcementSpawnMethod.Fixed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+
+                        //spawnSettings.ReinforcementTroopsSpawnMethod = MissionSpawnSettings.ReinforcementSpawnMethod.Fixed;
                         //public MissionSpawnSettings(float reinforcementInterval, float reinforcementIntervalChange, int reinforcementIntervalCount, InitialSpawnMethod initialTroopsSpawnMethod,
                         //ReinforcementSpawnMethod reinforcementTroopsSpawnMethod, float reinforcementBatchPercentage, float desiredReinforcementPercentage, float defenderReinforcementBatchPercentage = 0, float attackerReinforcementBatchPercentage = 0, float defenderAdvantageFactor = 1, float defenderRatioLimit = 0.6F);
                         //MissionSpawnSettings(10f, 0f, 0, InitialSpawnMethod.BattleSizeAllocating, ReinforcementSpawnMethod.Balanced, 0.05f, 0.166f); normal

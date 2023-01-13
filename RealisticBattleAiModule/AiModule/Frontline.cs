@@ -193,10 +193,10 @@ namespace RBMAI
                         }
                         //}
 
-                        IEnumerable<Agent> agents;
-                        agents = mission.GetNearbyAllyAgents(unitPosition + direction * 1.1f, 1.1f, unit.Team);
+                        MBList<Agent> agents = new MBList<Agent>();
+                        agents = mission.GetNearbyAllyAgents(unitPosition + direction * 1.1f, 1.1f, unit.Team, agents);
                         Agent tempAgent = unit;
-                        agents = agents.Where(a => a != tempAgent).ToList();
+                        agents = (MBList<Agent>)agents.Where(a => a != tempAgent).ToList();
                         int agentsCount = agents.Count();
 
                         if (agentsCount > allyAgentsCountTreshold && !unit.IsDoingPassiveAttack)
@@ -218,10 +218,14 @@ namespace RBMAI
 
                                     //Vec2 leftVec = unit.Formation.Direction.LeftVec().Normalized();
                                     //Vec2 rightVec = unit.Formation.Direction.RightVec().Normalized();
-                                    
-                                    IEnumerable<Agent> agentsLeft = mission.GetNearbyAllyAgents(unitPosition + leftVec * 1.35f, 1.35f, unit.Team);
-                                    IEnumerable<Agent> agentsRight = mission.GetNearbyAllyAgents(unitPosition + rightVec * 1.35f, 1.35f, unit.Team);
-                                    IEnumerable<Agent> furtherAllyAgents = mission.GetNearbyAllyAgents(unitPosition + direction * 2.2f, 1.1f, unit.Team);
+
+                                    MBList<Agent> agentsLeft = new MBList<Agent>();
+                                    MBList<Agent> agentsRight = new MBList<Agent>();
+                                    MBList<Agent> furtherAllyAgents = new MBList<Agent>();
+
+                                    agentsLeft = mission.GetNearbyAllyAgents(unitPosition + leftVec * 1.35f, 1.35f, unit.Team, agentsLeft);
+                                    agentsRight = mission.GetNearbyAllyAgents(unitPosition + rightVec * 1.35f, 1.35f, unit.Team, agentsRight);
+                                    furtherAllyAgents = mission.GetNearbyAllyAgents(unitPosition + direction * 2.2f, 1.1f, unit.Team, furtherAllyAgents);
 
                                     int agentsLeftCount = agentsLeft.Count();
                                     int agentsRightCount = agentsRight.Count();
@@ -329,8 +333,9 @@ namespace RBMAI
                         unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
                         unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1f, 10f, 0.01f);
                         unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
-                        IEnumerable<Agent> enemyAgents10f;
-                        IEnumerable<Agent> enemyAgents0f = mission.GetNearbyEnemyAgents(unitPosition, 4.5f, unit.Team);
+                        MBList<Agent> enemyAgents0f = new MBList<Agent>(); 
+                        MBList<Agent> enemyAgents10f = new MBList<Agent>();
+                        enemyAgents0f = mission.GetNearbyEnemyAgents(unitPosition, 4.5f, unit.Team, enemyAgents0f);
                         //IEnumerable<Agent> enemyAgentsImmidiate = null;
 
                         int enemyAgentsImmidiateCount = 0;
@@ -339,7 +344,7 @@ namespace RBMAI
 
                         if (!isTargetArcher)
                         {
-                            enemyAgents10f = mission.GetNearbyEnemyAgents(unitPosition + direction * 4.5f, 4.5f, unit.Team);
+                            enemyAgents10f = mission.GetNearbyEnemyAgents(unitPosition + direction * 4.5f, 4.5f, unit.Team, enemyAgents10f);
                             //enemyAgentsImmidiate = mission.GetNearbyEnemyAgents(unitPosition, 3f, unit.Team);
 
                             enemyAgentsImmidiateCount = enemyAgents0f.Count();
@@ -496,7 +501,8 @@ namespace RBMAI
 
             public static WorldPosition getNearbyAllyWorldPosition(Mission mission, Vec2 unitPosition, Agent unit)
             {
-                IEnumerable<Agent> nearbyAllyAgents = mission.GetNearbyAllyAgents(unitPosition, 5f, unit.Team);
+                MBList<Agent> nearbyAllyAgents = new MBList<Agent>();
+                nearbyAllyAgents = mission.GetNearbyAllyAgents(unitPosition, 5f, unit.Team, nearbyAllyAgents);
                 if (nearbyAllyAgents.Count() > 0)
                 {
                     List<Agent> allyAgentList = nearbyAllyAgents.ToList();

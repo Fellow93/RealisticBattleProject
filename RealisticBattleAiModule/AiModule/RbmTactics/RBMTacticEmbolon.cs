@@ -19,19 +19,19 @@ public class RBMTacticEmbolon : TacticComponent
 	protected override void ManageFormationCounts()
 	{
 		ManageFormationCounts(1, 1, 1, 1);
-		_mainInfantry = TacticComponent.ChooseAndSortByPriority(base.Formations, (Formation f) => f.QuerySystem.IsInfantryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
+		_mainInfantry = TacticComponent.ChooseAndSortByPriority(base.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsInfantryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
 		if (_mainInfantry != null)
 		{
 			_mainInfantry.AI.IsMainFormation = true;
 		}
-		_archers = TacticComponent.ChooseAndSortByPriority(base.Formations, (Formation f) => f.QuerySystem.IsRangedFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
-		_cavalry = TacticComponent.ChooseAndSortByPriority(base.Formations, (Formation f) => f.QuerySystem.IsCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
-		_rangedCavalry = TacticComponent.ChooseAndSortByPriority(base.Formations, (Formation f) => f.QuerySystem.IsRangedCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
+		_archers = TacticComponent.ChooseAndSortByPriority(base.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsRangedFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
+		_cavalry = TacticComponent.ChooseAndSortByPriority(base.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
+		_rangedCavalry = TacticComponent.ChooseAndSortByPriority(base.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsRangedCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
 	}
 
 	private void Advance()
 	{
-		if (team.IsPlayerTeam && !team.IsPlayerGeneral && team.IsPlayerSergeant)
+		if (Team.IsPlayerTeam && !Team.IsPlayerGeneral && Team.IsPlayerSergeant)
 		{
 			SoundTacticalHorn(TacticComponent.MoveHornSoundIndex);
 		}
@@ -64,7 +64,7 @@ public class RBMTacticEmbolon : TacticComponent
 
 	private void Attack()
 	{
-		if (team.IsPlayerTeam && !team.IsPlayerGeneral && team.IsPlayerSergeant)
+		if (Team.IsPlayerTeam && !Team.IsPlayerGeneral && Team.IsPlayerSergeant)
 		{
 			SoundTacticalHorn(TacticComponent.AttackHornSoundIndex);
 		}
@@ -97,7 +97,7 @@ public class RBMTacticEmbolon : TacticComponent
 
 	protected override bool CheckAndSetAvailableFormationsChanged()
 	{
-		int num = base.Formations.Count((Formation f) => f.IsAIControlled);
+		int num = base.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).Count((Formation f) => f.IsAIControlled);
 		bool num2 = num != _AIControlledFormationCount;
 		if (num2)
 		{
@@ -163,7 +163,7 @@ public class RBMTacticEmbolon : TacticComponent
 	{
 		float heavyCavCount = 0;
 		float cavCount = 0;
-		foreach (Agent agent in team?.ActiveAgents?.ToList())
+		foreach (Agent agent in Team?.ActiveAgents?.ToList())
 		{
 			if (agent.Formation != null && agent.Formation.QuerySystem.IsCavalryFormation)
 			{
@@ -186,7 +186,7 @@ public class RBMTacticEmbolon : TacticComponent
 				}
 			}
 		}
-		if (team.QuerySystem.CavalryRatio > 0.2f && (float)((float)heavyCavCount / (float)cavCount) >= 0.6f )
+		if (Team.QuerySystem.CavalryRatio > 0.2f && (float)((float)heavyCavCount / (float)cavCount) >= 0.6f )
         {
 			return 5f;
         }

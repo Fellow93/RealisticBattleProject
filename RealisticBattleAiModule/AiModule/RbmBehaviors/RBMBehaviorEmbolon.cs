@@ -2,6 +2,7 @@
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
+using TaleWorlds.LinQuick;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
@@ -17,8 +18,8 @@ namespace RBMAI
 			: base(formation)
 		{
             _behaviorSide = formation.AI.Side;
-			_mainFormation = formation.Team.Formations.FirstOrDefault((Formation f) => f.AI.IsMainFormation);
-			CalculateCurrentOrder();
+			_mainFormation = formation.Team.FormationsIncludingEmpty.FirstOrDefaultQ((Formation f) => f.CountOfUnits > 0 && f.AI.IsMainFormation);
+            CalculateCurrentOrder();
 		}
 
 		protected override void CalculateCurrentOrder()
@@ -42,11 +43,11 @@ namespace RBMAI
 			CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(direction);
 		}
 
-		public override void OnValidBehaviorSideSet()
+		public override void OnValidBehaviorSideChanged()
 		{
-			base.OnValidBehaviorSideSet();
-			_mainFormation = base.Formation.Team.Formations.FirstOrDefault((Formation f) => f.AI.IsMainFormation);
-		}
+            base.OnValidBehaviorSideChanged();
+            _mainFormation = base.Formation.Team.FormationsIncludingEmpty.FirstOrDefaultQ((Formation f) => f.CountOfUnits > 0 && f.AI.IsMainFormation);
+        }
 
 		public override void TickOccasionally()
 		{
@@ -91,8 +92,8 @@ namespace RBMAI
 		{
 			if (_mainFormation == null || !_mainFormation.AI.IsMainFormation)
 			{
-				_mainFormation = base.Formation.Team.Formations.FirstOrDefault((Formation f) => f.AI.IsMainFormation);
-			}
+				_mainFormation = base.Formation.Team.FormationsIncludingEmpty.FirstOrDefaultQ((Formation f) => f.CountOfUnits > 0 && f.AI.IsMainFormation);
+            }
 			if (_mainFormation == null || base.Formation.AI.IsMainFormation)
 			{
 				return 0f;
