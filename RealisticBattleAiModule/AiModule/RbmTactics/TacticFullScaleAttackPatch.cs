@@ -95,9 +95,7 @@ namespace RBMAI.AiModule.RbmTactics
         [HarmonyPatch("GetTacticWeight")]
         static void PostfixGetAiWeight(TacticFullScaleAttack __instance, ref float __result)
         {
-            FieldInfo teamField = typeof(TacticFullScaleAttack).GetField("team", BindingFlags.NonPublic | BindingFlags.Instance);
-            teamField.DeclaringType.GetField("team");
-            Team currentTeam = (Team)teamField.GetValue(__instance);
+            Team currentTeam = __instance.Team;
             if (currentTeam.Side == BattleSideEnum.Defender)
             {
                 if (currentTeam.QuerySystem.InfantryRatio > 0.9f)

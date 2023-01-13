@@ -468,18 +468,17 @@ namespace RBMAI
         {
             [HarmonyPrefix]
             [HarmonyPatch("GetTacticWeight")]
-            static bool PrefixGetTacticWeight(ref TacticCoordinatedRetreat __instance, ref Team ___team, ref float __result)
+            static bool PrefixGetTacticWeight(ref TacticCoordinatedRetreat __instance, ref float __result)
             {
                 //__result = 100f;
-                
-                if (___team.QuerySystem.InfantryRatio <= 0.1f && ___team.QuerySystem.RangedRatio <= 0.1f)
+                if (__instance.Team.QuerySystem.InfantryRatio <= 0.1f && __instance.Team.QuerySystem.RangedRatio <= 0.1f)
                 {
-                    float power = ___team.QuerySystem.TeamPower;
+                    float power = __instance.Team.QuerySystem.TeamPower;
                     //float enemyPower = ___team.QuerySystem.EnemyTeams.Sum((TeamQuerySystem et) => et.TeamPower);
-                    float enemyPower = ___team.QuerySystem.GetLocalEnemyPower(___team.QuerySystem.AveragePosition);
+                    float enemyPower = __instance.Team.QuerySystem.GetLocalEnemyPower(__instance.Team.QuerySystem.AveragePosition);
                     if (power / enemyPower <= 0.15f)
                     {
-                        foreach (Formation formation in ___team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
+                        foreach (Formation formation in __instance.Team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
                         {
                             formation.AI.ResetBehaviorWeights();
                             formation.AI.SetBehaviorWeight<BehaviorRetreat>(100f);
@@ -733,9 +732,9 @@ namespace RBMAI
 
             [HarmonyPostfix]
             [HarmonyPatch("GetTacticWeight")]
-            static void PostfixGetTacticWeight(ref TacticRangedHarrassmentOffensive __instance, ref Team ___team, ref float __result)
+            static void PostfixGetTacticWeight(ref TacticRangedHarrassmentOffensive __instance, ref float __result)
             {
-                if(___team?.Leader?.Character?.Culture?.GetCultureCode() == CultureCode.Khuzait)
+                if(__instance.Team?.Leader?.Character?.Culture?.GetCultureCode() == CultureCode.Khuzait)
                 {
                     __result *= 1.1f;
                 }
@@ -776,9 +775,9 @@ namespace RBMAI
         {
             [HarmonyPrefix]
             [HarmonyPatch("ManageFormationCounts", new Type[] { typeof(int), typeof(int), typeof(int), typeof(int) })]
-            static bool PrefixSetDefaultBehaviorWeights(ref TacticComponent __instance, ref Team ___team, ref int infantryCount, ref int rangedCount, ref int cavalryCount, ref int rangedCavalryCount)
+            static bool PrefixSetDefaultBehaviorWeights(ref TacticComponent __instance, ref int infantryCount, ref int rangedCount, ref int cavalryCount, ref int rangedCavalryCount)
             {
-                if (Mission.Current != null && Mission.Current.IsSiegeBattle && ___team.IsPlayerTeam)
+                if (Mission.Current != null && Mission.Current.IsSiegeBattle && __instance.Team.IsPlayerTeam)
                 {
                     //Mission.Current.TryRemakeInitialDeploymentPlanForBattleSide(Mission.Current.PlayerTeam.Side);
                     //if (Mission.Current.IsSiegeBattle)
@@ -792,37 +791,37 @@ namespace RBMAI
                 }
                 if (Mission.Current != null && Mission.Current.IsFieldBattle)
                 {
-                    foreach (Agent agent in ___team.ActiveAgents)
+                    foreach (Agent agent in __instance.Team.ActiveAgents)
                     {
                         if (agent != null && agent.IsHuman && !agent.IsRunningAway)
                         {
                             bool isRanged = (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) && agent.Equipment.GetAmmoAmount(WeaponClass.Arrow) > 5) || (agent.Equipment.HasRangedWeapon(WeaponClass.Bolt) && agent.Equipment.GetAmmoAmount(WeaponClass.Bolt) > 5);
                             if (agent.HasMount && isRanged)
                             {
-                                if (___team.GetFormation(FormationClass.HorseArcher) != null && ___team.GetFormation(FormationClass.HorseArcher).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
+                                if (__instance.Team.GetFormation(FormationClass.HorseArcher) != null && __instance.Team.GetFormation(FormationClass.HorseArcher).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
                                 {
-                                    agent.Formation = ___team.GetFormation(FormationClass.HorseArcher);
+                                    agent.Formation = __instance.Team.GetFormation(FormationClass.HorseArcher);
                                 }
                             }
                             if (agent.HasMount && !isRanged)
                             {
-                                if (___team.GetFormation(FormationClass.Cavalry) != null && ___team.GetFormation(FormationClass.Cavalry).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
+                                if (__instance.Team.GetFormation(FormationClass.Cavalry) != null && __instance.Team.GetFormation(FormationClass.Cavalry).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
                                 {
-                                    agent.Formation = ___team.GetFormation(FormationClass.Cavalry);
+                                    agent.Formation = __instance.Team.GetFormation(FormationClass.Cavalry);
                                 }
                             }
                             if (!agent.HasMount && isRanged)
                             {
-                                if (___team.GetFormation(FormationClass.Ranged) != null && ___team.GetFormation(FormationClass.Ranged).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
+                                if (__instance.Team.GetFormation(FormationClass.Ranged) != null && __instance.Team.GetFormation(FormationClass.Ranged).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
                                 {
-                                    agent.Formation = ___team.GetFormation(FormationClass.Ranged);
+                                    agent.Formation = __instance.Team.GetFormation(FormationClass.Ranged);
                                 }
                             }
                             if (!agent.HasMount && !isRanged)
                             {
-                                if (___team.GetFormation(FormationClass.Infantry) != null && ___team.GetFormation(FormationClass.Infantry).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
+                                if (__instance.Team.GetFormation(FormationClass.Infantry) != null && __instance.Team.GetFormation(FormationClass.Infantry).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
                                 {
-                                    agent.Formation = ___team.GetFormation(FormationClass.Infantry);
+                                    agent.Formation = __instance.Team.GetFormation(FormationClass.Infantry);
                                 }
                             }
                         }
@@ -842,7 +841,7 @@ namespace RBMAI
 
             [HarmonyPostfix]
             [HarmonyPatch("ManageFormationCounts", new Type[] { typeof(int), typeof(int), typeof(int), typeof(int) })]
-            static void PostfixSetDefaultBehaviorWeights(ref TacticComponent __instance, ref Team ___team, ref int infantryCount, ref int rangedCount, ref int cavalryCount, ref int rangedCavalryCount)
+            static void PostfixSetDefaultBehaviorWeights(ref TacticComponent __instance, ref int infantryCount, ref int rangedCount, ref int cavalryCount, ref int rangedCavalryCount)
             {
                 //if (Mission.Current != null && Mission.Current.IsSiegeBattle && ___team.IsPlayerTeam)
                 //{

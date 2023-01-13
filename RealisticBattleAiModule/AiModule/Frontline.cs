@@ -196,7 +196,7 @@ namespace RBMAI
                         MBList<Agent> agents = new MBList<Agent>();
                         agents = mission.GetNearbyAllyAgents(unitPosition + direction * 1.1f, 1.1f, unit.Team, agents);
                         Agent tempAgent = unit;
-                        agents = (MBList<Agent>)agents.Where(a => a != tempAgent).ToList();
+                        agents = new MBList<Agent>(agents.Where(a => a != tempAgent).ToList());
                         int agentsCount = agents.Count();
 
                         if (agentsCount > allyAgentsCountTreshold && !unit.IsDoingPassiveAttack)

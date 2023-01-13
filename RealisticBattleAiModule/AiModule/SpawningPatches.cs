@@ -245,79 +245,79 @@ namespace RBMAI.AiModule
             }
         }
 
-        [HarmonyPatch(typeof(MissionAgentSpawnLogic))]
-        class OverrideBattleSizeSpawnTick
-        {
+        //[HarmonyPatch(typeof(MissionAgentSpawnLogic))]
+        //class OverrideBattleSizeSpawnTick
+        //{
 
-            private static bool hasOneSideSpawnedReinforcements = false;
-            private static bool hasOneSideSpawnedReinforcementsAttackers = false;
-            private static int numOfDefWhenSpawning = -1;
-            private static int numOfAttWhenSpawning = -1;
+        //    private static bool hasOneSideSpawnedReinforcements = false;
+        //    private static bool hasOneSideSpawnedReinforcementsAttackers = false;
+        //    private static int numOfDefWhenSpawning = -1;
+        //    private static int numOfAttWhenSpawning = -1;
 
-            private class SpawnPhase
-            {
-                public int TotalSpawnNumber;
+        //    private class SpawnPhase
+        //    {
+        //        public int TotalSpawnNumber;
 
-                public int InitialSpawnedNumber;
+        //        public int InitialSpawnedNumber;
 
-                public int InitialSpawnNumber;
+        //        public int InitialSpawnNumber;
 
-                public int RemainingSpawnNumber;
+        //        public int RemainingSpawnNumber;
 
-                public int NumberActiveTroops;
+        //        public int NumberActiveTroops;
 
-                public void OnInitialTroopsSpawned()
-                {
-                    InitialSpawnedNumber = InitialSpawnNumber;
-                    InitialSpawnNumber = 0;
-                }
-            }
+        //        public void OnInitialTroopsSpawned()
+        //        {
+        //            InitialSpawnedNumber = InitialSpawnNumber;
+        //            InitialSpawnNumber = 0;
+        //        }
+        //    }
 
-            [HarmonyPrefix]
-            [HarmonyPatch("CheckReinforcementBatch")]
-            static bool PrefixBattleSizeSpawnTick(ref MissionAgentSpawnLogic __instance, ref bool ____reinforcementSpawnEnabled, ref int ____battleSize, ref List<SpawnPhase>[] ____phases, ref MissionSpawnSettings ____spawnSettings)
-            {
-                if (Mission.Current.MissionTeamAIType != Mission.MissionTeamAITypeEnum.FieldBattle)
-                {
-                    return true;
-                }
-                int numberOfTroops = __instance.NumberOfAgents;
-                for (int i = 0; i < 2; i++)
-                {
-                    int numberOfTroopsCanBeSpawned = ____phases[i][0].RemainingSpawnNumber;
-                    if (numberOfTroops > 0 && numberOfTroopsCanBeSpawned > 0)
-                    {
-                        if (__instance.NumberOfRemainingTroops <= 0 || numberOfTroopsCanBeSpawned <= 0)
-                        {
-                            return true;
-                        }
-                        int activeAtt = __instance.NumberOfActiveAttackerTroops;
-                        int activeDef = __instance.NumberOfActiveDefenderTroops;
+        //    [HarmonyPrefix]
+        //    [HarmonyPatch("CheckReinforcementBatch")]
+        //    static bool PrefixBattleSizeSpawnTick(ref MissionAgentSpawnLogic __instance, ref bool ____reinforcementSpawnEnabled, ref int ____battleSize, ref List<SpawnPhase>[] ____phases, ref MissionSpawnSettings ____spawnSettings)
+        //    {
+        //        if (Mission.Current.MissionTeamAIType != Mission.MissionTeamAITypeEnum.FieldBattle)
+        //        {
+        //            return true;
+        //        }
+        //        int numberOfTroops = __instance.NumberOfAgents;
+        //        for (int i = 0; i < 2; i++)
+        //        {
+        //            int numberOfTroopsCanBeSpawned = ____phases[i][0].RemainingSpawnNumber;
+        //            if (numberOfTroops > 0 && numberOfTroopsCanBeSpawned > 0)
+        //            {
+        //                if (__instance.NumberOfRemainingTroops <= 0 || numberOfTroopsCanBeSpawned <= 0)
+        //                {
+        //                    return true;
+        //                }
+        //                int activeAtt = __instance.NumberOfActiveAttackerTroops;
+        //                int activeDef = __instance.NumberOfActiveDefenderTroops;
 
-                        float num4 = (float)(____phases[0][0].InitialSpawnedNumber - __instance.NumberOfActiveDefenderTroops) / (float)____phases[0][0].InitialSpawnedNumber;
-                        float num5 = (float)(____phases[1][0].InitialSpawnedNumber - __instance.NumberOfActiveAttackerTroops) / (float)____phases[1][0].InitialSpawnedNumber;
-                        if ((____battleSize * 0.4f > __instance.NumberOfActiveDefenderTroops + __instance.NumberOfActiveAttackerTroops) || num4 >= 0.6f || num5 >= 0.6f)
-                        {
-                            ____reinforcementSpawnEnabled = true;
-                            numOfDefWhenSpawning = __instance.NumberOfActiveDefenderTroops;
-                            numOfAttWhenSpawning = __instance.NumberOfActiveAttackerTroops;
+        //                float num4 = (float)(____phases[0][0].InitialSpawnedNumber - __instance.NumberOfActiveDefenderTroops) / (float)____phases[0][0].InitialSpawnedNumber;
+        //                float num5 = (float)(____phases[1][0].InitialSpawnedNumber - __instance.NumberOfActiveAttackerTroops) / (float)____phases[1][0].InitialSpawnedNumber;
+        //                if ((____battleSize * 0.4f > __instance.NumberOfActiveDefenderTroops + __instance.NumberOfActiveAttackerTroops) || num4 >= 0.6f || num5 >= 0.6f)
+        //                {
+        //                    ____reinforcementSpawnEnabled = true;
+        //                    numOfDefWhenSpawning = __instance.NumberOfActiveDefenderTroops;
+        //                    numOfAttWhenSpawning = __instance.NumberOfActiveAttackerTroops;
 
-                            int numberOfInvolvedMen = __instance.GetTotalNumberOfTroopsForSide(BattleSideEnum.Defender);
-                            int numberOfInvolvedMen2 = __instance.GetTotalNumberOfTroopsForSide(BattleSideEnum.Attacker);
+        //                    int numberOfInvolvedMen = __instance.GetTotalNumberOfTroopsForSide(BattleSideEnum.Defender);
+        //                    int numberOfInvolvedMen2 = __instance.GetTotalNumberOfTroopsForSide(BattleSideEnum.Attacker);
 
-                            ____spawnSettings.DefenderReinforcementBatchPercentage = (____battleSize * 0.5f - numOfDefWhenSpawning) / (numberOfInvolvedMen + numberOfInvolvedMen2);
-                            ____spawnSettings.AttackerReinforcementBatchPercentage = (____battleSize * 0.5f - numOfAttWhenSpawning) / (numberOfInvolvedMen + numberOfInvolvedMen2);
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                }
-                return true;
-            }
-        }
+        //                    ____spawnSettings.DefenderReinforcementBatchPercentage = (____battleSize * 0.5f - numOfDefWhenSpawning) / (numberOfInvolvedMen + numberOfInvolvedMen2);
+        //                    ____spawnSettings.AttackerReinforcementBatchPercentage = (____battleSize * 0.5f - numOfAttWhenSpawning) / (numberOfInvolvedMen + numberOfInvolvedMen2);
+        //                    return true;
+        //                }
+        //                else
+        //                {
+        //                    return false;
+        //                }
+        //            }
+        //        }
+        //        return true;
+        //    }
+        //}
 
         [HarmonyPatch(typeof(PlayerEncounter))]
         [HarmonyPatch("CheckIfBattleShouldContinueAfterBattleMission")]
