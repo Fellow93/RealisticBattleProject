@@ -357,7 +357,6 @@
   <CraftingPiece id="empire_guard_1" name="{=lOiyLjqK}Imperial Crescent Guard" tier="4" piece_type="Guard" mesh="empire_guard_1" culture="Culture.empire" length="3.8" weight="0.08">
 
     <BuildData next_piece_offset="0.5" />
-    <BuildData next_piece_offset="0.5" />
     <StatContributions armor_bonus="4" />
     <Materials>
       <Material id="Iron4" count="2" />

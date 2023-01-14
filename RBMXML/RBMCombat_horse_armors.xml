@@ -21,7 +21,6 @@
              material_type="Cloth" />
     </ItemComponent>
     <Flags Civilian="true" />
-    <Flags />
   </Item>
   <Item multiplayer_item="false"
         id="bandit_saddle_steppe"
@@ -622,7 +621,6 @@
              material_type="Cloth" />
     </ItemComponent>
     <Flags Civilian="true" />
-    <Flags />
   </Item>
   <Item id="mule_load_b"
         name="{=2SUb8jNP}Mule Harness with Baskets"
@@ -638,7 +636,6 @@
              material_type="Cloth" />
     </ItemComponent>
     <Flags Civilian="true" />
-    <Flags />
   </Item>
   <Item id="mule_load_c"
         name="{=JHef9oad}Mule Harness with Bags"
@@ -654,7 +651,6 @@
              material_type="Cloth" />
     </ItemComponent>
     <Flags Civilian="true" />
-    <Flags />
   </Item>
   <Item id="camel_saddle"
         name="{=q1z4FQub}Camel Saddle"
@@ -670,7 +666,6 @@
              material_type="Leather" />
     </ItemComponent>
     <Flags Civilian="true" />
-    <Flags />
   </Item>
   <Item id="camel_saddle_a"
         name="{=ZJYVpjuR}Camel Saddle with Heavy Load"
@@ -687,7 +682,6 @@
              material_type="Leather" />
     </ItemComponent>
     <Flags Civilian="true" />
-    <Flags />
   </Item>
   <Item id="camel_saddle_b"
         name="{=OflbQCw6}Camel Saddle with Light Load"
@@ -704,6 +698,5 @@
              material_type="Leather" />
     </ItemComponent>
     <Flags Civilian="true" />
-    <Flags />
   </Item>
 </Items>
