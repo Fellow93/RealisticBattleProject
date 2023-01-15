@@ -7,9 +7,9 @@ namespace RBMConfig
     public static class RBMConfig
     {
         public static XmlDocument xmlConfig = new XmlDocument();
-        public static float ThrustMagnitudeModifier = 0.02f;
-        public static float OneHandedThrustDamageBonus = 50f;
-        public static float TwoHandedThrustDamageBonus = 50f;
+        public static float ThrustMagnitudeModifier = 0.05f;
+        public static float OneHandedThrustDamageBonus = 20f;
+        public static float TwoHandedThrustDamageBonus = 20f;
         //modules
         public static bool rbmTournamentEnabled = true;
         public static bool rbmAiEnabled = true;
