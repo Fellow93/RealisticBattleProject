@@ -1440,4 +1440,98 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
+  <Item id="aserai_brass_plate_a"
+        name="{=bxzrU99N}Southern Mail Shirt with Brass Plates"
+        lod_atlas_index="3"
+        mesh="aserai_brass_plate_a"
+        culture="Culture.aserai"
+        weight="18.0"
+        appearance="4"
+        Type="BodyArmor">
+    <ItemComponent>
+      <Armor body_armor="50"
+             leg_armor="32"
+             arm_armor="42"
+             covers_body="true"
+             modifier_group="chain"
+             material_type="Chainmail" />
+    </ItemComponent>
+    <Flags UseTeamColor="true" />
+  </Item>
+  <Item id="aserai_brass_plate_b"
+        name="{=OyBdFyeV}Southern Sleeveless Mail Shirt with Brass Plates"
+        lod_atlas_index="3"
+        mesh="aserai_brass_plate_b"
+        culture="Culture.aserai"
+        weight="15.0"
+        appearance="4"
+        Type="BodyArmor">
+    <ItemComponent>
+      <Armor body_armor="50"
+             leg_armor="32"
+             arm_armor="12"
+             covers_body="true"
+             modifier_group="chain"
+             material_type="Chainmail" />
+    </ItemComponent>
+    <Flags UseTeamColor="true" />
+  </Item>
+  <Item id="khuzait_heavy_armor"
+        name="{=CttLMqiq}Khan's Coat of Plates"
+        mesh="khuzait_heavy_armor"
+        culture="Culture.khuzait"
+        weight="26.5"
+        appearance="8"
+        Type="BodyArmor">
+    <ItemComponent>
+      <Armor body_armor="100"
+             leg_armor="55"
+             arm_armor="80"
+             covers_body="true"
+             modifier_group="plate"
+             material_type="Plate" />
+    </ItemComponent>
+    <Flags UseTeamColor="true" />
+  </Item>
+  <Item id="battania_brass_plate_armor"
+        name="{=79I1U8OC}Bronze Breastplate"
+        subtype="body_armor"
+        mesh="battania_brass_plate_armor"
+        culture="Culture.battania"
+        weight="10"
+        difficulty="0"
+        appearance="1.9"
+        Type="BodyArmor">
+    <ItemComponent>
+      <Armor body_armor="70"
+             leg_armor="20"
+             arm_armor="20"
+             has_gender_variations="true"
+             covers_body="true"
+             modifier_group="plate"
+             material_type="Plate" />
+    </ItemComponent>
+    <Flags DoesNotHideChest="true"
+           UseTeamColor="true"
+           Civilian="true" />
+  </Item>
+  <Item id="empire_plate_vest_armor"
+        name="{=TOf8dVcn}Ornate Scale Armor"
+        mesh="empire_plate_vest_armor"
+        subtype="body_armor"
+        culture="Culture.empire"
+        weight="16.0"
+        difficulty="0"
+        appearance="6.0"
+        Type="BodyArmor">
+    <ItemComponent>
+      <Armor body_armor="37"
+             leg_armor="30"
+             arm_armor="12"
+             covers_body="true"
+             modifier_group="plate"
+             material_type="Plate" />
+    </ItemComponent>
+    <Flags UseTeamColor="true" />
+  </Item>
 </Items>
