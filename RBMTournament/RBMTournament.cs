@@ -39,7 +39,7 @@ namespace RBMTournament
             }
             int playerArmorTier = countOfArmor > 0 ? MathF.Round(armorTierSum / countOfArmor) : 0;
 
-            int playerTier = playerLevelTier > armorTierSum ? playerLevelTier : playerArmorTier;
+            int playerTier = playerLevelTier > playerArmorTier ? playerLevelTier : playerArmorTier;
             playerTier = MBMath.ClampInt(playerTier, 1, 6);
             return playerTier;
         }
