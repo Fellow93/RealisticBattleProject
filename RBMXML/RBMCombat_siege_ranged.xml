@@ -172,7 +172,8 @@
                      Consumable="true"
                      LeavesTrail="true"
                      Burning="true"
-                     AffectsAreaBig="true"
+					 AffectsArea="true"
+                     AffectsAreaBig="false"
                      AmmoBreaksOnBounceBack="true" />
       </Weapon>
     </ItemComponent>
