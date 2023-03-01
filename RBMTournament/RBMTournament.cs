@@ -58,6 +58,10 @@ namespace RBMTournament
                     ____aliveParticipants = ____match.Participants.ToList();
                     ____aliveTeams = ____match.Teams.ToList();
                 }
+                if(____aliveParticipants == null || ____aliveTeams == null)
+                {
+                    return true;
+                }
                 TournamentParticipant tournamentParticipant = ____aliveParticipants.FirstOrDefault((TournamentParticipant x) => x.Character == CharacterObject.PlayerCharacter);
                 if (tournamentParticipant != null)
                 {
