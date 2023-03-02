@@ -1149,25 +1149,26 @@ namespace RBMCombat
                             {
                                 if (attackerAgent.Team != victimAgent.Team)
                                 {
+                                    Blow newBlow = __result;
                                     sbyte weaponAttachBoneIndex = (sbyte)(attackerWeapon.IsEmpty ? (-1) : attackerAgent.Monster.GetBoneToAttachForItemFlags(attackerWeapon.Item.ItemFlags));
-                                    __result.WeaponRecord.FillAsMeleeBlow(attackerWeapon.Item, attackerWeapon.CurrentUsageItem, collisionData.AffectorWeaponSlotOrMissileIndex, weaponAttachBoneIndex);
-                                    __result.StrikeType = (StrikeType)collisionData.StrikeType;
-                                    __result.DamageType = ((!attackerWeapon.IsEmpty && true && !collisionData.IsAlternativeAttack) ? ((DamageTypes)collisionData.DamageType) : DamageTypes.Blunt);
-                                    __result.NoIgnore = collisionData.IsAlternativeAttack;
-                                    __result.AttackerStunPeriod = collisionData.AttackerStunPeriod;
-                                    __result.DefenderStunPeriod = collisionData.DefenderStunPeriod * 0.5f;
-                                    __result.BlowFlag = BlowFlags.None;
-                                    __result.Position = collisionData.CollisionGlobalPosition;
-                                    __result.BoneIndex = collisionData.CollisionBoneIndex;
-                                    __result.Direction = blowDirection;
-                                    __result.SwingDirection = swingDirection;
-                                    //__result.InflictedDamage = 1;
-                                    __result.VictimBodyPart = collisionData.VictimHitBodyPart;
-                                    __result.BlowFlag |= BlowFlags.NonTipThrust;
-                                    victimAgent.RegisterBlow(__result, collisionData);
+                                    newBlow.WeaponRecord.FillAsMeleeBlow(attackerWeapon.Item, attackerWeapon.CurrentUsageItem, collisionData.AffectorWeaponSlotOrMissileIndex, weaponAttachBoneIndex);
+                                    newBlow.StrikeType = (StrikeType)collisionData.StrikeType;
+                                    newBlow.DamageType = ((!attackerWeapon.IsEmpty && true && !collisionData.IsAlternativeAttack) ? ((DamageTypes)collisionData.DamageType) : DamageTypes.Blunt);
+                                    newBlow.NoIgnore = collisionData.IsAlternativeAttack;
+                                    newBlow.AttackerStunPeriod = collisionData.AttackerStunPeriod;
+                                    newBlow.DefenderStunPeriod = collisionData.DefenderStunPeriod * 0.5f;
+                                    newBlow.BlowFlag = BlowFlags.None;
+                                    newBlow.Position = collisionData.CollisionGlobalPosition;
+                                    newBlow.BoneIndex = collisionData.CollisionBoneIndex;
+                                    newBlow.Direction = blowDirection;
+                                    newBlow.SwingDirection = swingDirection;
+                                    newBlow.InflictedDamage = 0;
+                                    newBlow.VictimBodyPart = collisionData.VictimHitBodyPart;
+                                    newBlow.BlowFlag |= BlowFlags.NonTipThrust;
+                                    victimAgent.RegisterBlow(newBlow, collisionData);
                                     foreach (MissionBehavior missionBehaviour in __instance.MissionBehaviors)
                                     {
-                                        missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, null, __result, ref collisionData, in attackerWeapon);
+                                        missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, null, newBlow, ref collisionData, in attackerWeapon);
                                     }
                                 }
                                 break;
