@@ -1114,7 +1114,9 @@ namespace RBMAI
         [HarmonyPatch("CalculateCurrentOrder")]
         static bool PrefixCalculateCurrentOrder(ref BehaviorCharge __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
         {
-            if (__instance.Formation!= null && !(__instance.Formation.Team.IsPlayerTeam || __instance.Formation.Team.IsPlayerAlly) && Campaign.Current != null && MobileParty.MainParty != null && MobileParty.MainParty.MapEvent != null)
+            if (__instance.Formation!= null && !(__instance.Formation.Team.IsPlayerTeam || __instance.Formation.Team.IsPlayerAlly) && Campaign.Current != null && MobileParty.MainParty != null && MobileParty.MainParty.MapEvent != null &&
+                MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Defender) != null && MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Defender).Name != null &&
+                MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Attacker) != null && MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Attacker).Name != null)
             {
                 TextObject defenderName = MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Defender).Name;
                 TextObject attackerName = MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Attacker).Name;
