@@ -612,13 +612,42 @@ namespace RBMAI
         }
     }
 
+    [HarmonyPatch(typeof(BannerBearerLogic))]
+    [HarmonyPatch("RespawnAsBannerBearer")]
+    class RespawnAsBannerBearerPatch
+    {
+        static bool Prefix(ref BannerBearerLogic __instance, Agent agent, ref Agent __result, bool isAlarmed, bool wieldInitialWeapons, bool forceDismounted, string specialActionSetSuffix = null, bool useTroopClassForSpawn = false)
+        {
+            if (agent != null && agent.Formation != null)
+            {
+                Formation formation = agent.Formation;
+                MethodInfo method = typeof(BannerBearerLogic).GetMethod("GetFormationControllerFromFormation", BindingFlags.NonPublic | BindingFlags.Instance);
+                method.DeclaringType.GetMethod("GetFormationControllerFromFormation");
+                Object obj = method.Invoke(__instance, new object[] { agent.Formation });
+                if(obj != null)
+                {
+                    return true;
+                }
+                else
+                {
+                    __result = agent;
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
     //[HarmonyPatch(typeof(MissionAgentLabelView))]
     //[HarmonyPatch("SetHighlightForAgents")]
     //class SetHighlightForAgentsPatch
     //{
     //    static bool Prefix( bool highlight, ref bool useSiegeMachineUsers, ref bool useAllTeamAgents, Dictionary<Agent, MetaMesh> ____agentMeshes, MissionAgentLabelView __instance)
     //    {
-            
+
     //        if (__instance.Mission.PlayerTeam?.PlayerOrderController == null)
     //        {
     //            bool flag = __instance.Mission.PlayerTeam == null;
@@ -637,7 +666,7 @@ namespace RBMAI
     //                        method.DeclaringType.GetMethod("UpdateSelectionVisibility");
     //                        method.Invoke(__instance, new object[] { user, agentMesh, highlight });
     //                    }
-                        
+
     //                }
     //            }
     //            return false;
