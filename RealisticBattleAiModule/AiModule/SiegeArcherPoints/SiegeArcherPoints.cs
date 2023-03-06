@@ -327,7 +327,7 @@ public class SiegeArcherPoints : MissionView
             {
                 if (strategicArea.IgnoreHeight)
                 {
-                    if (MathF.Abs(strategicArea.GameEntity.GlobalPosition.x - formation.OrderPosition.X) <= distanceToCheck)
+                    if (strategicArea.GameEntity != null && MathF.Abs(strategicArea.GameEntity.GlobalPosition.x - formation.OrderPosition.X) <= distanceToCheck)
                     {
                         __result =  MathF.Abs(strategicArea.GameEntity.GlobalPosition.y - formation.OrderPosition.Y) <= distanceToCheck;
                         return false;
