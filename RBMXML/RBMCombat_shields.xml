@@ -628,7 +628,7 @@
 	</Item>
 	<Item id="decorated_steppe_shield_shoulder" name="Shoulder Strapped Round Steppe Shield" body_name="bo_cap_shield_khuzait_cavalary_b" shield_body_name="bo_shield_khuzait_cavalary_b" recalculate_body="false" mesh="shield_khuzait_cavalary_b" using_tableau="true" weight="4.7" appearance="0.9" Type="Shield" item_holsters="left_shoulder_targe:shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.05,0.01" is_merchandise="true" culture="Culture.khuzait">
 		<ItemComponent>
-			<Weapon weapon_class="LargeShield" body_armor="4" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="60" center_of_mass="-0.0,0.075,0.05" hit_points="500">
+			<Weapon weapon_class="LargeShield" body_armor="10" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="60" center_of_mass="-0.0,0.075,0.05" hit_points="1000">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -636,7 +636,7 @@
 	</Item>
 	<Item id="steppe_guardian_shield_shoulder" name="Shoulder Strapped Eastern Cavalry Shield" body_name="bo_cap_shield_khuzait_cavalary_d" shield_body_name="bo_shield_khuzait_cavalary_d" recalculate_body="false" mesh="shield_khuzait_cavalary_d" using_tableau="true" weight="2.7" appearance="0.9" Type="Shield" item_holsters="left_shoulder_targe:shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.05,0.01" is_merchandise="true" culture="Culture.khuzait">
 		<ItemComponent>
-			<Weapon weapon_class="LargeShield" body_armor="8" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="60" center_of_mass="-0.0,0.075,0.05" hit_points="1080">
+			<Weapon weapon_class="LargeShield" body_armor="11" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="60" center_of_mass="-0.0,0.075,0.05" hit_points="1100">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -644,7 +644,7 @@
 	</Item>
 	<Item id="tribal_steppe_shield_shoulder" name="Shoulder Strapped Tribal Steppe Shield" body_name="bo_cap_shield_khuzait_cavalary_a" shield_body_name="bo_shield_khuzait_cavalary_a" recalculate_body="false" mesh="shield_khuzait_cavalary_a" using_tableau="true" weight="4.7" appearance="0.9" Type="Shield" item_holsters="left_shoulder_targe:shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.05,0.01" is_merchandise="true" culture="Culture.khuzait">
 		<ItemComponent>
-			<Weapon weapon_class="LargeShield" body_armor="4" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="60" center_of_mass="-0.0,0.075,0.05" hit_points="640">
+			<Weapon weapon_class="LargeShield" body_armor="9" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="60" center_of_mass="-0.0,0.075,0.05" hit_points="900">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
 			</Weapon>
 		</ItemComponent>
