@@ -11,12 +11,10 @@ using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.CampaignSystem.Extensions;
 using TaleWorlds.CampaignSystem.Roster;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Party;
-using static SandBox.CampaignBehaviors.LordConversationsCampaignBehavior;
 
 namespace RBMTournament
 {
@@ -467,7 +465,7 @@ namespace RBMTournament
                             {
                                 if (leaderHero.CurrentSettlement != settlement)
                                 {
-                                    Debug.Print(leaderHero.StringId + " is in settlement.Parties list but current settlement is not, tournament settlement: " + settlement.StringId);
+                                    //Debug.Print(leaderHero.StringId + " is in settlement.Parties list but current settlement is not, tournament settlement: " + settlement.StringId);
                                 }
                                 if (!list.Contains(leaderHero.CharacterObject))
                                 {
@@ -486,7 +484,7 @@ namespace RBMTournament
                             {
                                 if (hero.CurrentSettlement != settlement)
                                 {
-                                    Debug.Print(hero.StringId + " is in settlement.HeroesWithoutParty list but current settlement is not, tournament settlement: " + settlement.StringId);
+                                    //Debug.Print(hero.StringId + " is in settlement.HeroesWithoutParty list but current settlement is not, tournament settlement: " + settlement.StringId);
                                 }
                                 if (!list.Contains(hero.CharacterObject))
                                 {
@@ -505,7 +503,7 @@ namespace RBMTournament
                             {
                                 if (hero2.CurrentSettlement != settlement)
                                 {
-                                    Debug.Print(hero2.StringId + " is in settlement.HeroesWithoutParty list but current settlement is not, tournament settlement: " + settlement.StringId);
+                                    //Debug.Print(hero2.StringId + " is in settlement.HeroesWithoutParty list but current settlement is not, tournament settlement: " + settlement.StringId);
                                 }
                                 if (!list.Contains(hero2.CharacterObject))
                                 {
@@ -530,7 +528,7 @@ namespace RBMTournament
                                 {
                                     if (character.HeroObject.CurrentSettlement != settlement)
                                     {
-                                        Debug.Print(character.HeroObject.StringId + " is in settlement.HeroesWithoutParty list but current settlement is not, tournament settlement: " + settlement.StringId);
+                                        //Debug.Print(character.HeroObject.StringId + " is in settlement.HeroesWithoutParty list but current settlement is not, tournament settlement: " + settlement.StringId);
                                     }
                                     if (!list.Contains(character))
                                     {

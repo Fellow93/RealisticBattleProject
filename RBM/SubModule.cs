@@ -52,7 +52,7 @@ namespace RBM
             }
             else
             {
-                HarmonyModules.rbmtHarmony.UnpatchAll(HarmonyModules.rbmtHarmony.Id);
+                Harmony.UnpatchID(HarmonyModules.rbmtHarmony.Id);
             }
             if (RBMConfig.RBMConfig.rbmAiEnabled)
             {
@@ -60,7 +60,7 @@ namespace RBM
             }
             else
             {
-                HarmonyModules.rbmaiHarmony.UnpatchAll(HarmonyModules.rbmaiHarmony.Id);
+                Harmony.UnpatchID(HarmonyModules.rbmaiHarmony.Id);
             }
             if (RBMConfig.RBMConfig.rbmCombatEnabled)
             {
@@ -70,17 +70,17 @@ namespace RBM
             }
             else
             {
-                HarmonyModules.rbmcombatHarmony.UnpatchAll(HarmonyModules.rbmcombatHarmony.Id);
+                Harmony.UnpatchID(HarmonyModules.rbmcombatHarmony.Id);
             }
         }
 
         public static void UnpatchAllRBM()
         {
             RBMAiPatcher.patched = false;
-            HarmonyModules.rbmHarmony.UnpatchAll(HarmonyModules.rbmHarmony.Id);
-            HarmonyModules.rbmtHarmony.UnpatchAll(HarmonyModules.rbmtHarmony.Id);
-            HarmonyModules.rbmaiHarmony.UnpatchAll(HarmonyModules.rbmaiHarmony.Id);
-            HarmonyModules.rbmcombatHarmony.UnpatchAll(HarmonyModules.rbmcombatHarmony.Id);
+            Harmony.UnpatchID(HarmonyModules.rbmHarmony.Id);
+            Harmony.UnpatchID(HarmonyModules.rbmtHarmony.Id);
+            Harmony.UnpatchID(HarmonyModules.rbmaiHarmony.Id);
+            Harmony.UnpatchID(HarmonyModules.rbmcombatHarmony.Id);
         }
 
         protected override void OnSubModuleLoad()
