@@ -1243,6 +1243,12 @@ namespace RBMCombat
         {
             static bool Prefix(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
             {
+
+                if (affectedAgent != null && blow.InflictedDamage > 1f && affectedAgent.State == AgentState.Active && attackCollisionData.CollisionResult == CombatCollisionResult.StrikeAgent)
+                {
+                    Utilities.initiateCheckForArmor(ref affectedAgent, attackCollisionData, blow, affectorAgent, attackerWeapon);
+                    Utilities.numOfHits++;
+                }
                 if (affectedAgent.Character != null && affectorAgent != null && affectorAgent.Character != null && affectedAgent.State == AgentState.Active)
                 {
                     bool isFatal = affectedAgent.Health - (float)blow.InflictedDamage < 1f;
@@ -1262,6 +1268,21 @@ namespace RBMCombat
                     }
                 }
                 return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(CustomBattleAgentLogic))]
+        [HarmonyPatch("OnAgentHit")]
+        class CustomBattleAgentLogicPatch
+        {
+            static bool Prefix(Agent affectedAgent, Agent affectorAgent, in MissionWeapon affectorWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
+            {
+                if (affectedAgent != null && affectedAgent.State == AgentState.Active && blow.InflictedDamage > 1f && attackCollisionData.CollisionResult == CombatCollisionResult.StrikeAgent)
+                {
+                    Utilities.initiateCheckForArmor(ref affectedAgent, attackCollisionData, blow, affectorAgent, affectorWeapon);
+                    Utilities.numOfHits++;
+                }
+                return true;
             }
         }
 
@@ -1385,12 +1406,6 @@ namespace RBMCombat
                 if (collisionData.CollisionResult == CombatCollisionResult.Blocked || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked || collisionData.CollisionResult == CombatCollisionResult.Parried)
                 {
                     isBlocked = true;
-                }
-
-                if (__instance != null && damagedHp > 1)
-                {
-                    Utilities.initiateCheckForArmor(ref __instance, collisionData);
-                    Utilities.numOfHits++;
                 }
 
                 method3.Invoke(__instance.Mission, new object[] { __instance, agent, b, collisionData, isBlocked, damagedHp });

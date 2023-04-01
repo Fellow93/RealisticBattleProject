@@ -1,9 +1,12 @@
 ﻿using RBMConfig;
 using System;
 using System.Collections.Generic;
+using TaleWorlds.CampaignSystem.Extensions;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
+using static TaleWorlds.Core.ArmorComponent;
+using static TaleWorlds.MountAndBlade.Agent;
 
 namespace  RBMCombat
 {
@@ -207,7 +210,7 @@ namespace  RBMCombat
             return 25;
         }
 
-        static public void initiateCheckForArmor(ref Agent victim, AttackCollisionData attackCollisionData)
+        static public void initiateCheckForArmor(ref Agent victim, AttackCollisionData attackCollisionData, Blow blow, Agent affectorAgent, in MissionWeapon attackerWeapon)
         {
             BoneBodyPartType bodyPartHit = attackCollisionData.VictimHitBodyPart;
 
@@ -261,24 +264,179 @@ namespace  RBMCombat
             }
             if(equipmentIndex != EquipmentIndex.None && itemType != ItemObject.ItemTypeEnum.Invalid)
             {
-                lowerArmorQualityCheck(ref victim, equipmentIndex, itemType);
+                lowerArmorQualityCheck(ref victim, equipmentIndex, itemType, attackCollisionData, blow, affectorAgent, attackerWeapon);
             }
         }
 
-        static public void lowerArmorQualityCheck(ref Agent agent, EquipmentIndex equipmentIndex, ItemObject.ItemTypeEnum itemType)
+        static public void lowerArmorQualityCheck(ref Agent agent, EquipmentIndex equipmentIndex, ItemObject.ItemTypeEnum itemType, AttackCollisionData attackCollisionData, Blow blow, Agent attacker, in MissionWeapon attackerWeapon)
         {
-            //InformationManager.DisplayMessage(new InformationMessage( (float)numOfHits + ""));
             EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
-            //numOfHits++;
             if (equipmentElement.Item != null && equipmentElement.Item.ItemType == itemType)
             {
-                float probability = 0.1f;
-                //if (equipmentElement.ItemModifier != null)
-                //{
-                //    probability = equipmentElement.ItemModifier.LootDropScore / 100f;
-                //}
+                WeaponClass weaponType = blow.WeaponRecord.WeaponClass;
+
+                float weaponTypeScaling = 1f;
+                float weaponDamageFactor = 1f;
+                float magnitude = blow.BaseMagnitude;
+                RBMCombatConfigWeaponType rbmCombatConfigWeaponType = RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType.ToString());
+                float armorThreshold = 4f;
+                float armorValue = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBM(agent, attackCollisionData.VictimHitBodyPart);
+
+                ArmorMaterialTypes armorMaterialType = equipmentElement.Item.ArmorComponent.MaterialType;
+                DamageTypes damageType = (DamageTypes)attackCollisionData.DamageType;
+                if (attacker.IsHuman)
+                {
+                    EquipmentIndex slotIndex = attacker.GetWieldedItemIndex(HandIndex.MainHand);
+                    if(slotIndex != EquipmentIndex.None)
+                    {
+                        int usageIndex = attacker.Equipment[slotIndex].CurrentUsageIndex;
+                        WeaponComponentData wcd = attackerWeapon.GetWeaponComponentDataForUsage(usageIndex);
+                        ItemModifier itemModifier = null;
+                        if (!attackCollisionData.IsAlternativeAttack && attacker.IsHuman && !attackCollisionData.IsFallDamage && attacker.Origin != null && !attackCollisionData.IsMissile)
+                        {
+                            if (!attackCollisionData.IsMissile)
+                            {
+                                float wdm = MissionGameModels.Current.AgentStatCalculateModel.GetWeaponDamageMultiplier(attacker.Character, attacker.Origin, attacker.Formation, wcd);
+                                magnitude = attackCollisionData.BaseMagnitude / wdm;
+                            }
+                            SkillObject skill = (wcd == null) ? DefaultSkills.Athletics : wcd.RelevantSkill;
+                            if (skill != null)
+                            {
+                                int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attacker.Character, attacker.Origin, attacker.Formation, skill);
+                                float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
+                                float skillModifier = Utilities.CalculateSkillModifier(ef);
+                                if (attacker != null && attacker.Equipment != null && attacker.GetWieldedItemIndex(HandIndex.MainHand) != EquipmentIndex.None)
+                                {
+                                    itemModifier = attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].ItemModifier;
+                                    magnitude = Utilities.GetSkillBasedDamage(blow.BaseMagnitude, attacker.IsDoingPassiveAttack, weaponType.ToString(), damageType, effectiveSkill, skillModifier, (StrikeType)attackCollisionData.StrikeType, attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight());
+                                }
+                                else
+                                {
+                                }
+                            }
+                        }
+                        weaponDamageFactor = (float)Math.Sqrt((attackCollisionData.StrikeType == (int)StrikeType.Thrust)
+                        ? Utilities.getThrustDamageFactor(wcd, itemModifier)
+                        : Utilities.getSwingDamageFactor(wcd, itemModifier));
+                    }
+                }
+
+                switch (damageType)
+                {
+                    case DamageTypes.Pierce:
+                        {
+                            armorThreshold = rbmCombatConfigWeaponType.ExtraArmorThresholdFactorPierce;
+                            weaponTypeScaling = 1f;
+                            break;
+                        }
+                    case DamageTypes.Cut:
+                        {
+                            armorThreshold = rbmCombatConfigWeaponType.ExtraArmorThresholdFactorCut;
+                            switch (weaponType)
+                            {
+                                case WeaponClass.OneHandedSword:
+                                case WeaponClass.Dagger:
+                                    {
+                                        switch (armorMaterialType)
+                                        {
+                                            case ArmorMaterialTypes.Cloth:
+                                            case ArmorMaterialTypes.Leather:
+                                                {
+                                                    weaponTypeScaling = 5f;
+                                                    break;
+                                                }
+                                            case ArmorMaterialTypes.Chainmail:
+                                                {
+                                                    weaponTypeScaling = 1f;
+                                                    break;
+                                                }
+                                            case ArmorMaterialTypes.Plate:
+                                                {
+                                                    weaponTypeScaling = 2f;
+                                                    break;
+                                                }
+                                        }
+                                        break;
+                                    }
+                                case WeaponClass.TwoHandedSword:
+                                    {
+                                        switch (armorMaterialType)
+                                        {
+                                            case ArmorMaterialTypes.Cloth:
+                                            case ArmorMaterialTypes.Leather:
+                                                {
+                                                    weaponTypeScaling = 5f;
+                                                    break;
+                                                }
+                                            case ArmorMaterialTypes.Chainmail:
+                                                {
+                                                    weaponTypeScaling = 1.5f;
+                                                    break;
+                                                }
+                                            case ArmorMaterialTypes.Plate:
+                                                {
+                                                    weaponTypeScaling = 3f;
+                                                    break;
+                                                }
+                                        }
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        switch (armorMaterialType)
+                                        {
+                                            case ArmorMaterialTypes.Cloth:
+                                            case ArmorMaterialTypes.Leather:
+                                                {
+                                                    weaponTypeScaling = 2f;
+                                                    break;
+                                                }
+                                            case ArmorMaterialTypes.Chainmail:
+                                                {
+                                                    weaponTypeScaling = 2f;
+                                                    break;
+                                                }
+                                            case ArmorMaterialTypes.Plate:
+                                                {
+                                                    weaponTypeScaling = 4f;
+                                                    break;
+                                                }
+                                        }
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
+                    case DamageTypes.Blunt:
+                        {
+                            switch (armorMaterialType)
+                            {
+                                case ArmorMaterialTypes.Cloth:
+                                case ArmorMaterialTypes.Leather:
+                                case ArmorMaterialTypes.Chainmail:
+                                    {
+                                        weaponTypeScaling = 0.5f;
+                                        break;
+                                    }
+                                case ArmorMaterialTypes.Plate:
+                                    {
+                                        weaponTypeScaling = 6f;
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
+                }
+                float defaultProbability = 0.05f;
+                if(damageType== DamageTypes.Pierce)
+                {;
+                    magnitude = magnitude * RBMConfig.RBMConfig.OneHandedThrustDamageBonus;
+                }
+                float magScaling = (float)Math.Pow((magnitude * weaponDamageFactor) / (armorThreshold * armorValue), 2);
+                float scaledProbability = (defaultProbability + magScaling) * weaponTypeScaling;
                 float randomF = MBRandom.RandomFloat;
-                if (randomF <= probability)
+                InformationManager.DisplayMessage(new InformationMessage(weaponType+ " " + damageType + " " + armorMaterialType + ": " + Math.Round(scaledProbability * 100f, 2) + "%"));
+                if (randomF <= scaledProbability)
                 {
                     //numOfDurabilityDowngrade++;
                     lowerArmorQuality(ref agent, equipmentIndex, itemType);
