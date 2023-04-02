@@ -12,7 +12,7 @@ namespace RBMCombat
     {
         [HarmonyPatch(typeof(SandboxAgentStatCalculateModel))]
         [HarmonyPatch("UpdateHorseStats")]
-        class UpdateHorseStatsPatch
+        class SandboxAgentStatCalculateModelUpdateHorseStatsPatch
         {
             static void Postfix(ref SandboxAgentStatCalculateModel __instance, ref Agent agent, ref AgentDrivenProperties agentDrivenProperties)
             {
@@ -83,16 +83,36 @@ namespace RBMCombat
                         agentDrivenProperties.MountSpeed = MBMath.Lerp(baseSpeed, agentDrivenProperties.MountSpeed, weightModifier);
                     }
                 }
+
+                agentDrivenProperties.AttributeShieldMissileCollisionBodySizeAdder = 0.01f;
+                float weightOfHorseAndRaider = 0f;
+                if (agent.RiderAgent != null)
+                {
+                    MissionEquipment equipment = agent.RiderAgent.Equipment;
+                    weightOfHorseAndRaider += (float)agent.RiderAgent.Monster.Weight;
+                    weightOfHorseAndRaider += agent.RiderAgent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: true);
+                    weightOfHorseAndRaider += equipment.GetTotalWeightOfWeapons();
+                    weightOfHorseAndRaider += (float)agent.Monster.Weight;
+                    weightOfHorseAndRaider += agent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: false);
+                    weightOfHorseAndRaider += 100f;
+                }
+                else
+                {
+                    weightOfHorseAndRaider += (float)agent.Monster.Weight;
+                    weightOfHorseAndRaider += agent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: false);
+                    weightOfHorseAndRaider += 100f;
+                }
+                agentDrivenProperties.MountChargeDamage = weightOfHorseAndRaider;
             }
         }
 
         [HarmonyPatch(typeof(CustomBattleAgentStatCalculateModel))]
-        [HarmonyPatch("UpdateAgentStats")]
+        [HarmonyPatch("UpdateHorseStats")]
         class CustomBattleAgentStatCalculateModelUpdateHorseStatsPatch
         {
             static void Postfix(ref CustomBattleAgentStatCalculateModel __instance, ref Agent agent, ref AgentDrivenProperties agentDrivenProperties)
             {
-                if (!agent.IsHuman && agent.RiderAgent != null)
+                if (agent.RiderAgent != null)
                 {
                     int effectiveRidingSkill = 0;
                     effectiveRidingSkill = __instance.GetEffectiveSkill(agent.RiderAgent.Character, agent.RiderAgent.Origin, agent.RiderAgent.Formation, DefaultSkills.Riding);
@@ -156,6 +176,24 @@ namespace RBMCombat
                         agentDrivenProperties.MountSpeed = MBMath.Lerp(baseSpeed, agentDrivenProperties.MountSpeed, weightModifier);
                     }
                 }
+
+                agentDrivenProperties.AttributeShieldMissileCollisionBodySizeAdder = 0.01f;
+                float weightOfHorseAndRaider = 0f;
+                if (agent.RiderAgent != null)
+                {
+                    MissionEquipment equipment = agent.RiderAgent.Equipment;
+                    weightOfHorseAndRaider += (float)agent.RiderAgent.Monster.Weight;
+                    weightOfHorseAndRaider += agent.RiderAgent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: true);
+                    weightOfHorseAndRaider += equipment.GetTotalWeightOfWeapons();
+                    weightOfHorseAndRaider += (float)agent.Monster.Weight;
+                    weightOfHorseAndRaider += agent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: false);
+                }
+                else
+                {
+                    weightOfHorseAndRaider += (float)agent.Monster.Weight;
+                    weightOfHorseAndRaider += agent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: false);
+                }
+                agentDrivenProperties.MountChargeDamage = weightOfHorseAndRaider;
             }
         }
 
@@ -234,37 +272,6 @@ namespace RBMCombat
             }
         }
 
-        [HarmonyPatch(typeof(CustomBattleAgentStatCalculateModel))]
-        [HarmonyPatch("UpdateAgentStats")]
-        class CustomBattleUpdateAgentStats
-        {
-            static void Postfix(Agent agent, AgentDrivenProperties agentDrivenProperties)
-            {
-                agentDrivenProperties.AttributeShieldMissileCollisionBodySizeAdder = 0.01f;
-
-                if (!agent.IsHuman)
-                {
-                    float weightOfHorseAndRaider = 0f;
-
-                    if (agent.RiderAgent != null)
-                    {
-                        MissionEquipment equipment = agent.RiderAgent.Equipment;
-                        weightOfHorseAndRaider += (float)agent.RiderAgent.Monster.Weight;
-                        weightOfHorseAndRaider += agent.RiderAgent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: true);
-                        weightOfHorseAndRaider += equipment.GetTotalWeightOfWeapons();
-                        weightOfHorseAndRaider += (float)agent.Monster.Weight;
-                        weightOfHorseAndRaider += agent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: false);
-                    }
-                    else
-                    {
-                        weightOfHorseAndRaider += (float)agent.Monster.Weight;
-                        weightOfHorseAndRaider += agent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: false);
-                    }
-                    agentDrivenProperties.MountChargeDamage = weightOfHorseAndRaider;
-                }
-            }
-        }
-
         [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
         [HarmonyPatch("ComputeBlowMagnitudeFromHorseCharge")]
         class ChangeHorseDamageCalculation
@@ -289,32 +296,6 @@ namespace RBMCombat
                 return MathF.Max(0f, b);
             }
         }
-
-        [HarmonyPatch(typeof(SandboxAgentStatCalculateModel))]
-        [HarmonyPatch("UpdateHorseStats")]
-        class ChangeHorseChargeBonus
-        {
-            static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties)
-            {
-                float weightOfHorseAndRaider = 0f;
-                if (agent.RiderAgent != null)
-                {
-                    MissionEquipment equipment = agent.RiderAgent.Equipment;
-                    weightOfHorseAndRaider += (float)agent.RiderAgent.Monster.Weight;
-                    weightOfHorseAndRaider += agent.RiderAgent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: true);
-                    weightOfHorseAndRaider += equipment.GetTotalWeightOfWeapons();
-                    weightOfHorseAndRaider += (float)agent.Monster.Weight;
-                    weightOfHorseAndRaider += agent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: false);
-                    weightOfHorseAndRaider += 100f;
-                }
-                else
-                {
-                    weightOfHorseAndRaider += (float)agent.Monster.Weight;
-                    weightOfHorseAndRaider += agent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: false);
-                    weightOfHorseAndRaider += 100f;
-                }
-                agentDrivenProperties.MountChargeDamage = weightOfHorseAndRaider;
-            }
-        }
+        
     }
 }
