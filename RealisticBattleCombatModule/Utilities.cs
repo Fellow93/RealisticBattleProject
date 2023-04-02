@@ -321,6 +321,11 @@ namespace  RBMCombat
                     }
                 }
 
+                if (attacker != null && attackCollisionData.StrikeType == (int)StrikeType.Swing && !attackCollisionData.AttackBlockedWithShield && !attacker.WieldedWeapon.IsEmpty && !Utilities.HitWithWeaponBlade(in attackCollisionData, attacker.WieldedWeapon))
+                {
+                    damageType = DamageTypes.Blunt;
+                }
+
                 switch (damageType)
                 {
                     case DamageTypes.Pierce:
