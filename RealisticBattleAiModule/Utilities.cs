@@ -1089,7 +1089,7 @@ namespace RBMAI
                 field.DeclaringType.GetField("_currentTactic");
                 TacticComponent currentTactic = (TacticComponent)field.GetValue(formation.Team.TeamAI);
 
-                if(currentTactic != null && currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry) || currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry))
+                if(currentTactic != null && (currentTactic is RBMTacticAttackSplitInfantry || currentTactic is RBMTacticAttackSplitInfantry))
                 {
                     return false;
                 }

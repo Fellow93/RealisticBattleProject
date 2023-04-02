@@ -90,7 +90,7 @@ namespace RBMCombat
         [HarmonyPatch("UpdateAgentStats")]
         class CustomBattleAgentStatCalculateModelUpdateHorseStatsPatch
         {
-            static void Postfix(ref SandboxAgentStatCalculateModel __instance, ref Agent agent, ref AgentDrivenProperties agentDrivenProperties)
+            static void Postfix(ref CustomBattleAgentStatCalculateModel __instance, ref Agent agent, ref AgentDrivenProperties agentDrivenProperties)
             {
                 if (!agent.IsHuman && agent.RiderAgent != null)
                 {

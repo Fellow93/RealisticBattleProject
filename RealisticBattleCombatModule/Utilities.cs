@@ -428,7 +428,7 @@ namespace  RBMCombat
                         }
                 }
                 float defaultProbability = 0.05f;
-                if(damageType== DamageTypes.Pierce)
+                if(damageType== DamageTypes.Pierce && !blow.IsMissile)
                 {;
                     magnitude = magnitude * RBMConfig.RBMConfig.OneHandedThrustDamageBonus;
                 }
