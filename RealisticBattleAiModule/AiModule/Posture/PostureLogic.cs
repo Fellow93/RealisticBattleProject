@@ -152,7 +152,6 @@ namespace RBMAI
             {
                 if ((new StackTrace()).GetFrame(3).GetMethod().Name.Contains("MeleeHit"))
                 {
-
                     if (RBMConfig.RBMConfig.postureEnabled && attackerAgent != null && victimAgent != null && attackerWeapon.CurrentUsageItem != null &&
                         attackerWeapon.CurrentUsageItem != null) {
                         Posture defenderPosture = null;
@@ -165,8 +164,16 @@ namespace RBMAI
                         float absoluteDamageModifier = 3f;
                         float absoluteShieldDamageModifier = 1.2f;
 
+                        bool isRunningForward = false;
+                        float currentSpeed = attackerAgent.GetCurrentVelocity().Length;
+                        if (currentSpeed >= attackerAgent.WalkSpeedCached)
+                        {
+                            isRunningForward = true;
+                        }
+
                         if (!collisionData.AttackBlockedWithShield)
                         {
+                            bool pommelHit = !Utilities.HitWithWeaponBlade(in collisionData, in attackerWeapon);
                             if (collisionData.CollisionResult == CombatCollisionResult.Blocked)
                             {
                                 if (defenderPosture != null)
@@ -190,11 +197,18 @@ namespace RBMAI
                                             }
                                             if (!victimAgent.HasMount)
                                             {
-                                                makePostureCrashThroughBlow(ref __instance, ref __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
+                                                if (pommelHit)
+                                                {
+                                                    makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
+                                                }
+                                                else
+                                                {
+                                                    makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                                }
                                             }
                                             else
                                             {
-                                                makePostureCrashThroughBlow(ref __instance, ref __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
+                                                makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
                                             }
                                         }
                                         defenderPosture.posture = defenderPosture.maxPosture * postureResetModifier;
@@ -209,7 +223,8 @@ namespace RBMAI
                                     {
                                     }
                                 }
-                            } else if (collisionData.CollisionResult == CombatCollisionResult.Parried)
+                            } 
+                            else if (collisionData.CollisionResult == CombatCollisionResult.Parried)
                             {
                                 if (defenderPosture != null)
                                 {
@@ -230,7 +245,14 @@ namespace RBMAI
                                             {
                                                 InformationManager.DisplayMessage(new InformationMessage("Enemy Posture break: Posture depleted, perfect parry, " + MathF.Floor(healthDamage) + " damage crushed through", Color.FromUint(4282569842u)));
                                             }
-                                            makePostureCrashThroughBlow(ref __instance, ref __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                            if (pommelHit)
+                                            {
+                                                makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
+                                            }
+                                            else
+                                            {
+                                                makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                            }
                                         }
                                         defenderPosture.posture = defenderPosture.maxPosture * postureResetModifier;
                                         addPosturedamageVisual(attackerAgent, victimAgent);
@@ -248,18 +270,73 @@ namespace RBMAI
                                         }
                                         if (!attackerAgent.HasMount)
                                         {
-                                            makePostureRiposteBlow(ref __instance, ref __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
+                                            if (isRunningForward)
+                                            {
+                                                makePostureRiposteBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
+                                            }
+                                            else
+                                            {
+                                                makePostureRiposteBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                            }
                                         }
                                         else
                                         {
-                                            makePostureRiposteBlow(ref __instance, ref __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
+                                            makePostureRiposteBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
                                         }
                                         attackerPosture.posture = attackerPosture.maxPosture * postureResetModifier;
                                         addPosturedamageVisual(attackerAgent, victimAgent);
                                     }
                                 }
                             }
-
+                            else if (victimAgent.IsHuman && attackerAgent.IsHuman && collisionData.CollisionResult == CombatCollisionResult.StrikeAgent)
+                            {
+                                if (defenderPosture != null)
+                                {
+                                    float postureDmg;
+                                    if (pommelHit)
+                                    {
+                                        postureDmg = calculateDefenderPostureDamage(victimAgent, attackerAgent, absoluteDamageModifier, 2f, ref collisionData, attackerWeapon);
+                                    }
+                                    else
+                                    {
+                                        postureDmg = calculateDefenderPostureDamage(victimAgent, attackerAgent, absoluteDamageModifier, 1f, ref collisionData, attackerWeapon);
+                                    }
+                                    defenderPosture.posture = defenderPosture.posture - postureDmg;
+                                    addPosturedamageVisual(attackerAgent, victimAgent);
+                                    if (defenderPosture.posture <= 0f)
+                                    {
+                                        EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
+                                        if (wieldedItemIndex != EquipmentIndex.None)
+                                        {
+                                            if (!victimAgent.HasMount)
+                                            {
+                                                if (pommelHit)
+                                                {
+                                                    makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
+                                                }
+                                                else
+                                                {
+                                                    makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
+                                            }
+                                        }
+                                        defenderPosture.posture = defenderPosture.maxPosture * postureResetModifier;
+                                        addPosturedamageVisual(attackerAgent, victimAgent);
+                                    }
+                                }
+                                if (attackerPosture != null)
+                                {
+                                    attackerPosture.posture = attackerPosture.posture - calculateAttackerPostureDamage(victimAgent, attackerAgent, absoluteDamageModifier, 0.25f, ref collisionData, attackerWeapon);
+                                    addPosturedamageVisual(attackerAgent, victimAgent);
+                                    if (attackerPosture.posture <= 0f)
+                                    {
+                                    }
+                                }
+                            }
                         }
                         else if (collisionData.AttackBlockedWithShield)
                         {
@@ -280,11 +357,11 @@ namespace RBMAI
                                             }
                                             if (!victimAgent.HasMount)
                                             {
-                                                makePostureBlow(ref __instance, ref __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
+                                                makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
                                             }
                                             else
                                             {
-                                                makePostureBlow(ref __instance, ref __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
+                                                makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
                                             }
                                         }
                                         defenderPosture.posture = defenderPosture.maxPosture * postureResetModifier;
@@ -300,8 +377,7 @@ namespace RBMAI
                                     }
                                 }
                             }
-                            else if ((collisionData.CollisionResult == CombatCollisionResult.Blocked && collisionData.CorrectSideShieldBlock) ||
-                            (collisionData.CollisionResult == CombatCollisionResult.Parried && !collisionData.CorrectSideShieldBlock))
+                            else if ((collisionData.CollisionResult == CombatCollisionResult.Blocked && collisionData.CorrectSideShieldBlock) || (collisionData.CollisionResult == CombatCollisionResult.Parried && !collisionData.CorrectSideShieldBlock))
                             {
                                 if (defenderPosture != null)
                                 {
@@ -318,11 +394,11 @@ namespace RBMAI
                                             }
                                             if (!victimAgent.HasMount)
                                             {
-                                                makePostureBlow(ref __instance, ref __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
+                                                makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
                                             }
                                             else
                                             {
-                                                makePostureBlow(ref __instance, ref __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
+                                                makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
                                             }
 
                                         }
@@ -338,7 +414,8 @@ namespace RBMAI
                                     {
                                     }
                                 }
-                            } else if (collisionData.CollisionResult == CombatCollisionResult.Parried && collisionData.CorrectSideShieldBlock)
+                            } 
+                            else if (collisionData.CollisionResult == CombatCollisionResult.Parried && collisionData.CorrectSideShieldBlock)
                             {
                                 if (defenderPosture != null)
                                 {
@@ -353,7 +430,7 @@ namespace RBMAI
                                             {
                                                 InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, perfect parry, correct side block", Color.FromUint(4282569842u)));
                                             }
-                                            makePostureBlow(ref __instance, ref __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                            makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
                                         }
                                         defenderPosture.posture = defenderPosture.maxPosture * postureResetModifier;
                                         addPosturedamageVisual(attackerAgent, victimAgent);
@@ -369,7 +446,14 @@ namespace RBMAI
                                         {
                                             InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, perfect parry, correct side block", Color.FromUint(4282569842u)));
                                         }
-                                        makePostureRiposteBlow(ref __instance, ref __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
+                                        if (isRunningForward)
+                                        {
+                                            makePostureRiposteBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
+                                        }
+                                        else
+                                        {
+                                            makePostureRiposteBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                        }
                                         attackerPosture.posture = attackerPosture.maxPosture * postureResetModifier;
                                         addPosturedamageVisual(attackerAgent, victimAgent);
                                     }
@@ -391,7 +475,7 @@ namespace RBMAI
                                         {
                                             InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, chamber block", Color.FromUint(4282569842u)));
                                         }
-                                        makePostureBlow(ref __instance, ref __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.NonTipThrust);
+                                        makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.NonTipThrust);
                                     }
                                     defenderPosture.posture = defenderPosture.maxPosture * postureResetModifier;
                                     addPosturedamageVisual(attackerAgent, victimAgent);
@@ -399,7 +483,7 @@ namespace RBMAI
                             }
                             if (attackerPosture != null)
                             {
-                                float postureDmg = calculateAttackerPostureDamage(victimAgent, attackerAgent, absoluteDamageModifier, 1.25f, ref collisionData, attackerWeapon);
+                                float postureDmg = calculateAttackerPostureDamage(victimAgent, attackerAgent, absoluteDamageModifier, 2f, ref collisionData, attackerWeapon);
                                 attackerPosture.posture = attackerPosture.posture - postureDmg;
                                 addPosturedamageVisual(attackerAgent, victimAgent);
                                 if (attackerPosture.posture <= 0f)
@@ -409,7 +493,18 @@ namespace RBMAI
                                     {
                                         InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, chamber block " + MathF.Floor(healthDamage) + " damage crushed through", Color.FromUint(4282569842u)));
                                     }
-                                    makePostureCrashThroughBlow(ref __instance, ref __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack | BlowFlags.CrushThrough);
+                                    makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown | BlowFlags.CrushThrough);
+                                    attackerPosture.posture = attackerPosture.maxPosture * postureResetModifier;
+                                    addPosturedamageVisual(attackerAgent, victimAgent);
+                                }
+                                else
+                                {
+                                    float healthDamage = calculateHealthDamage(attackerPosture.posture * -1f, __result, attackerAgent);
+                                    if (attackerAgent.IsPlayerControlled)
+                                    {
+                                        InformationManager.DisplayMessage(new InformationMessage("Chamber block " + MathF.Floor(healthDamage) + " damage crushed through", Color.FromUint(4282569842u)));
+                                    }
+                                    makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack | BlowFlags.CrushThrough);
                                     attackerPosture.posture = attackerPosture.maxPosture * postureResetModifier;
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                 }
@@ -876,94 +971,97 @@ namespace RBMAI
                 return 1f;
             }
 
-            static void makePostureRiposteBlow(ref Mission mission, ref Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
+            static void makePostureRiposteBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
             {
-                blow.BaseMagnitude = collisionData.BaseMagnitude;
-                blow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
-                blow.InflictedDamage = 1;
-                blow.SelfInflictedDamage = collisionData.SelfInflictedDamage;
-                blow.AbsorbedByArmor = collisionData.AbsorbedByArmor;
+                Blow newBLow = blow;
+                newBLow.BaseMagnitude = collisionData.BaseMagnitude;
+                newBLow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
+                newBLow.InflictedDamage = 1;
+                newBLow.SelfInflictedDamage = collisionData.SelfInflictedDamage;
+                newBLow.AbsorbedByArmor = collisionData.AbsorbedByArmor;
 
                 sbyte weaponAttachBoneIndex = (sbyte)(attackerWeapon.IsEmpty ? (-1) : attackerAgent.Monster.GetBoneToAttachForItemFlags(attackerWeapon.Item.ItemFlags));
-                blow.WeaponRecord.FillAsMeleeBlow(attackerWeapon.Item, attackerWeapon.CurrentUsageItem, collisionData.AffectorWeaponSlotOrMissileIndex, weaponAttachBoneIndex);
-                blow.StrikeType = (StrikeType)collisionData.StrikeType;
-                blow.DamageType = ((!attackerWeapon.IsEmpty && true && !collisionData.IsAlternativeAttack) ? ((DamageTypes)collisionData.DamageType) : DamageTypes.Blunt);
-                blow.NoIgnore = collisionData.IsAlternativeAttack;
-                blow.AttackerStunPeriod = collisionData.AttackerStunPeriod;
-                blow.DefenderStunPeriod = collisionData.DefenderStunPeriod;
-                blow.BlowFlag = BlowFlags.None;
-                blow.Position = collisionData.CollisionGlobalPosition;
-                blow.BoneIndex = collisionData.CollisionBoneIndex;
-                blow.Direction = blowDirection;
-                blow.SwingDirection = swingDirection;
+                newBLow.WeaponRecord.FillAsMeleeBlow(attackerWeapon.Item, attackerWeapon.CurrentUsageItem, collisionData.AffectorWeaponSlotOrMissileIndex, weaponAttachBoneIndex);
+                newBLow.StrikeType = (StrikeType)collisionData.StrikeType;
+                newBLow.DamageType = ((!attackerWeapon.IsEmpty && true && !collisionData.IsAlternativeAttack) ? ((DamageTypes)collisionData.DamageType) : DamageTypes.Blunt);
+                newBLow.NoIgnore = collisionData.IsAlternativeAttack;
+                newBLow.AttackerStunPeriod = collisionData.AttackerStunPeriod;
+                newBLow.DefenderStunPeriod = collisionData.DefenderStunPeriod;
+                newBLow.BlowFlag = BlowFlags.None;
+                newBLow.Position = collisionData.CollisionGlobalPosition;
+                newBLow.BoneIndex = collisionData.CollisionBoneIndex;
+                newBLow.Direction = blowDirection;
+                newBLow.SwingDirection = swingDirection;
                 //blow.InflictedDamage = 1;
-                blow.VictimBodyPart = collisionData.VictimHitBodyPart;
-                blow.BlowFlag |= addedBlowFlag;
-                attackerAgent.RegisterBlow(blow, collisionData);
+                newBLow.VictimBodyPart = collisionData.VictimHitBodyPart;
+                newBLow.BlowFlag |= addedBlowFlag;
+                attackerAgent.RegisterBlow(newBLow, collisionData);
                 foreach (MissionBehavior missionBehaviour in mission.MissionBehaviors)
                 {
-                    missionBehaviour.OnRegisterBlow(victimAgent, attackerAgent, null, blow, ref collisionData, in attackerWeapon);
+                    missionBehaviour.OnRegisterBlow(victimAgent, attackerAgent, null, newBLow, ref collisionData, in attackerWeapon);
                 }
             }
 
-            static void makePostureBlow(ref Mission mission, ref Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
+            static void makePostureBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
             {
-                blow.BaseMagnitude = collisionData.BaseMagnitude;
-                blow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
-                blow.InflictedDamage = 1;
-                blow.SelfInflictedDamage = collisionData.SelfInflictedDamage;
-                blow.AbsorbedByArmor = collisionData.AbsorbedByArmor;
+                Blow newBLow = blow;
+                newBLow.BaseMagnitude = collisionData.BaseMagnitude;
+                newBLow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
+                newBLow.InflictedDamage = 1;
+                newBLow.SelfInflictedDamage = collisionData.SelfInflictedDamage;
+                newBLow.AbsorbedByArmor = collisionData.AbsorbedByArmor;
 
                 sbyte weaponAttachBoneIndex = (sbyte)(attackerWeapon.IsEmpty ? (-1) : attackerAgent.Monster.GetBoneToAttachForItemFlags(attackerWeapon.Item.ItemFlags));
-                blow.WeaponRecord.FillAsMeleeBlow(attackerWeapon.Item, attackerWeapon.CurrentUsageItem, collisionData.AffectorWeaponSlotOrMissileIndex, weaponAttachBoneIndex);
-                blow.StrikeType = (StrikeType)collisionData.StrikeType;
-                blow.DamageType = ((!attackerWeapon.IsEmpty && true && !collisionData.IsAlternativeAttack) ? ((DamageTypes)collisionData.DamageType) : DamageTypes.Blunt);
-                blow.NoIgnore = collisionData.IsAlternativeAttack;
-                blow.AttackerStunPeriod = collisionData.AttackerStunPeriod;
-                blow.DefenderStunPeriod = collisionData.DefenderStunPeriod;
-                blow.BlowFlag = BlowFlags.None;
-                blow.Position = collisionData.CollisionGlobalPosition;
-                blow.BoneIndex = collisionData.CollisionBoneIndex;
-                blow.Direction = blowDirection;
-                blow.SwingDirection = swingDirection;
+                newBLow.WeaponRecord.FillAsMeleeBlow(attackerWeapon.Item, attackerWeapon.CurrentUsageItem, collisionData.AffectorWeaponSlotOrMissileIndex, weaponAttachBoneIndex);
+                newBLow.StrikeType = (StrikeType)collisionData.StrikeType;
+                newBLow.DamageType = ((!attackerWeapon.IsEmpty && true && !collisionData.IsAlternativeAttack) ? ((DamageTypes)collisionData.DamageType) : DamageTypes.Blunt);
+                newBLow.NoIgnore = collisionData.IsAlternativeAttack;
+                newBLow.AttackerStunPeriod = collisionData.AttackerStunPeriod;
+                newBLow.DefenderStunPeriod = collisionData.DefenderStunPeriod;
+                newBLow.BlowFlag = BlowFlags.None;
+                newBLow.Position = collisionData.CollisionGlobalPosition;
+                newBLow.BoneIndex = collisionData.CollisionBoneIndex;
+                newBLow.Direction = blowDirection;
+                newBLow.SwingDirection = swingDirection;
                 //blow.InflictedDamage = 1;
-                blow.VictimBodyPart = collisionData.VictimHitBodyPart;
-                blow.BlowFlag |= addedBlowFlag;
-                victimAgent.RegisterBlow(blow, collisionData);
+                newBLow.VictimBodyPart = collisionData.VictimHitBodyPart;
+                newBLow.BlowFlag |= addedBlowFlag;
+                victimAgent.RegisterBlow(newBLow, collisionData);
                 foreach (MissionBehavior missionBehaviour in mission.MissionBehaviors)
                 {
-                    missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, null, blow, ref collisionData, in attackerWeapon);
+                    missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, null, newBLow, ref collisionData, in attackerWeapon);
                 }
             }
 
-            static void makePostureCrashThroughBlow(ref Mission mission, ref Blow blow, Agent attackerAgent, Agent victimAgent, int inflictedHpDmg, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
+            static void makePostureCrashThroughBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, int inflictedHpDmg, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
             {
-                blow.BaseMagnitude = collisionData.BaseMagnitude;
-                blow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
-                blow.InflictedDamage = inflictedHpDmg;
-                blow.SelfInflictedDamage = collisionData.SelfInflictedDamage;
-                blow.AbsorbedByArmor = collisionData.AbsorbedByArmor;
+                Blow newBLow = blow;
+                newBLow.BaseMagnitude = collisionData.BaseMagnitude;
+                newBLow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
+                newBLow.InflictedDamage = inflictedHpDmg;
+                newBLow.SelfInflictedDamage = collisionData.SelfInflictedDamage;
+                newBLow.AbsorbedByArmor = collisionData.AbsorbedByArmor;
 
                 sbyte weaponAttachBoneIndex = (sbyte)(attackerWeapon.IsEmpty ? (-1) : attackerAgent.Monster.GetBoneToAttachForItemFlags(attackerWeapon.Item.ItemFlags));
-                blow.WeaponRecord.FillAsMeleeBlow(attackerWeapon.Item, attackerWeapon.CurrentUsageItem, collisionData.AffectorWeaponSlotOrMissileIndex, weaponAttachBoneIndex);
-                blow.StrikeType = (StrikeType)collisionData.StrikeType;
-                blow.DamageType = ((!attackerWeapon.IsEmpty && true && !collisionData.IsAlternativeAttack) ? ((DamageTypes)collisionData.DamageType) : DamageTypes.Blunt);
-                blow.NoIgnore = collisionData.IsAlternativeAttack;
-                blow.AttackerStunPeriod = collisionData.AttackerStunPeriod;
-                blow.DefenderStunPeriod = collisionData.DefenderStunPeriod;
-                blow.BlowFlag = BlowFlags.None;
-                blow.Position = collisionData.CollisionGlobalPosition;
-                blow.BoneIndex = collisionData.CollisionBoneIndex;
-                blow.Direction = blowDirection;
-                blow.SwingDirection = swingDirection;
+                newBLow.WeaponRecord.FillAsMeleeBlow(attackerWeapon.Item, attackerWeapon.CurrentUsageItem, collisionData.AffectorWeaponSlotOrMissileIndex, weaponAttachBoneIndex);
+                newBLow.StrikeType = (StrikeType)collisionData.StrikeType;
+                newBLow.DamageType = ((!attackerWeapon.IsEmpty && true && !collisionData.IsAlternativeAttack) ? ((DamageTypes)collisionData.DamageType) : DamageTypes.Blunt);
+                newBLow.NoIgnore = collisionData.IsAlternativeAttack;
+                newBLow.AttackerStunPeriod = collisionData.AttackerStunPeriod;
+                newBLow.DefenderStunPeriod = collisionData.DefenderStunPeriod;
+                newBLow.BlowFlag = BlowFlags.None;
+                newBLow.Position = collisionData.CollisionGlobalPosition;
+                newBLow.BoneIndex = collisionData.CollisionBoneIndex;
+                newBLow.Direction = blowDirection;
+                newBLow.SwingDirection = swingDirection;
                 //blow.InflictedDamage = 1;
-                blow.VictimBodyPart = collisionData.VictimHitBodyPart;
-                blow.BlowFlag |= BlowFlags.CrushThrough;
-                blow.BlowFlag |= addedBlowFlag;
-                victimAgent.RegisterBlow(blow, collisionData);
+                newBLow.VictimBodyPart = collisionData.VictimHitBodyPart;
+                newBLow.BlowFlag |= BlowFlags.CrushThrough;
+                newBLow.BlowFlag |= addedBlowFlag;
+                victimAgent.RegisterBlow(newBLow, collisionData);
                 foreach (MissionBehavior missionBehaviour in mission.MissionBehaviors)
                 {
-                    missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, null, blow, ref collisionData, in attackerWeapon);
+                    missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, null, newBLow, ref collisionData, in attackerWeapon);
                 }
             }
         }

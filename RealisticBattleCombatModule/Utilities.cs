@@ -437,8 +437,9 @@ namespace  RBMCombat
                 {;
                     magnitude = magnitude * RBMConfig.RBMConfig.OneHandedThrustDamageBonus;
                 }
-                float magScaling = (float)Math.Pow((magnitude * weaponDamageFactor) / (armorThreshold * armorValue), 2);
-                float scaledProbability = (defaultProbability + magScaling) * weaponTypeScaling;
+                //float magScaling = (float)Math.Pow((magnitude * weaponDamageFactor) / (armorThreshold * armorValue), 2);
+                float magScaling = (blow.AbsorbedByArmor / (armorValue * armorThreshold)) / 10f;
+                float scaledProbability = defaultProbability + (magScaling * weaponTypeScaling);
                 float randomF = MBRandom.RandomFloat;
                 InformationManager.DisplayMessage(new InformationMessage(weaponType+ " " + damageType + " " + armorMaterialType + ": " + Math.Round(scaledProbability * 100f, 2) + "%"));
                 if (randomF <= scaledProbability)

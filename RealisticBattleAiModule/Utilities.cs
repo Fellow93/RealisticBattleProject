@@ -1215,6 +1215,37 @@ namespace RBMAI
             return (float)((2 + tier) * (8 + tier)) * 0.02f * (isHero ? 1.5f : (isMounted ? 1.2f : 1f));
         }
 
+        public static bool HitWithWeaponBladeTip(in AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
+        {
+            WeaponComponentData currentUsageItem = attackerWeapon.CurrentUsageItem;
+            if (currentUsageItem != null)
+            {
+                WeaponClass weaponClass = attackerWeapon.CurrentUsageItem.WeaponClass;
+                if (collisionData.CollisionDistanceOnWeapon > currentUsageItem.GetRealWeaponLength() * 0.95f)
+                {
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        }
+
+        public static bool HitWithWeaponBlade(in AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
+        {
+            WeaponComponentData currentUsageItem = attackerWeapon.CurrentUsageItem;
+            if (attackerWeapon.Item != null && currentUsageItem != null && attackerWeapon.Item.WeaponDesign != null &&
+                attackerWeapon.Item.WeaponDesign.UsedPieces != null && attackerWeapon.Item.WeaponDesign.UsedPieces.Length > 0)
+            {
+                //WeaponClass weaponClass = attackerWeapon.CurrentUsageItem.WeaponClass;
+                if (collisionData.CollisionDistanceOnWeapon < currentUsageItem.GetRealWeaponLength() - attackerWeapon.Item.WeaponDesign.UsedPieces[0].ScaledBladeLength)
+                {
+                    return false;
+                }
+                return true;
+            }
+            return true;
+        }
+
     }
 }
 
