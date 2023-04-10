@@ -13,6 +13,7 @@ using static TaleWorlds.MountAndBlade.Agent;
 using static TaleWorlds.MountAndBlade.Mission;
 using static TaleWorlds.Core.ItemObject;
 using NetworkMessages.FromServer;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
 
 namespace RBMCombat
 {
@@ -1144,10 +1145,26 @@ namespace RBMCombat
                     {
                         return true;
                     }
-                        //FieldInfo _attackBlockedWithShield = typeof(AttackCollisionData).GetField("_attackBlockedWithShield", BindingFlags.NonPublic | BindingFlags.Instance);
-                        //_attackBlockedWithShield.DeclaringType.GetField("_attackBlockedWithShield");
-                        //_attackBlockedWithShield.SetValue(collisionData, true);
-                        AttackCollisionData acd = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(true, collisionData.CorrectSideShieldBlock, collisionData.IsAlternativeAttack, collisionData.IsColliderAgent, collisionData.CollidedWithShieldOnBack,
+
+                    if (attacker.Character != null)
+                    {
+                        TaleWorlds.CampaignSystem.CharacterObject characterObject = attacker.Character as TaleWorlds.CampaignSystem.CharacterObject;
+                        if (characterObject != null)
+                        {
+                            if (characterObject.HeroObject != null)
+                            {
+                                if (characterObject.HeroObject.GetPerkValue(DefaultPerks.Throwing.Impale))
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+
+                    //FieldInfo _attackBlockedWithShield = typeof(AttackCollisionData).GetField("_attackBlockedWithShield", BindingFlags.NonPublic | BindingFlags.Instance);
+                    //_attackBlockedWithShield.DeclaringType.GetField("_attackBlockedWithShield");
+                    //_attackBlockedWithShield.SetValue(collisionData, true);
+                    AttackCollisionData acd = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(true, collisionData.CorrectSideShieldBlock, collisionData.IsAlternativeAttack, collisionData.IsColliderAgent, collisionData.CollidedWithShieldOnBack,
                         collisionData.IsMissile, collisionData.MissileBlockedWithWeapon, collisionData.MissileHasPhysics, collisionData.EntityExists, collisionData.ThrustTipHit, collisionData.MissileGoneUnderWater, collisionData.MissileGoneOutOfBorder,
                         CombatCollisionResult.Blocked, collisionData.AffectorWeaponSlotOrMissileIndex, collisionData.StrikeType, collisionData.DamageType, collisionData.CollisionBoneIndex,
                         collisionData.VictimHitBodyPart, collisionData.AttackBoneIndex, collisionData.AttackDirection, collisionData.PhysicsMaterialIndex, collisionData.CollisionHitResultFlags, collisionData.AttackProgress, collisionData.CollisionDistanceOnWeapon,
@@ -1158,6 +1175,8 @@ namespace RBMCombat
                     acd.SelfInflictedDamage = collisionData.SelfInflictedDamage;
                     acd.InflictedDamage = collisionData.InflictedDamage;
                     acd.AbsorbedByArmor = collisionData.AbsorbedByArmor;
+
+                    
                     collisionData = acd;
                 }
             }

@@ -1244,7 +1244,7 @@ namespace RBMCombat
             static bool Prefix(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
             {
 
-                if (affectedAgent != null && blow.InflictedDamage > 1f && affectedAgent.State == AgentState.Active && attackCollisionData.CollisionResult == CombatCollisionResult.StrikeAgent)
+                if (affectedAgent != null && blow.InflictedDamage > 1f && affectedAgent.State == AgentState.Active && attackCollisionData.CollisionResult == CombatCollisionResult.StrikeAgent && !blow.IsFallDamage)
                 {
                     Utilities.initiateCheckForArmor(ref affectedAgent, attackCollisionData, blow, affectorAgent, attackerWeapon);
                     Utilities.numOfHits++;
@@ -1277,7 +1277,7 @@ namespace RBMCombat
         {
             static bool Prefix(Agent affectedAgent, Agent affectorAgent, in MissionWeapon affectorWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
             {
-                if (affectedAgent != null && affectedAgent.State == AgentState.Active && blow.InflictedDamage > 1f && attackCollisionData.CollisionResult == CombatCollisionResult.StrikeAgent)
+                if (affectedAgent != null && affectedAgent.State == AgentState.Active && blow.InflictedDamage > 1f && attackCollisionData.CollisionResult == CombatCollisionResult.StrikeAgent && !blow.IsFallDamage)
                 {
                     Utilities.initiateCheckForArmor(ref affectedAgent, attackCollisionData, blow, affectorAgent, affectorWeapon);
                     Utilities.numOfHits++;
