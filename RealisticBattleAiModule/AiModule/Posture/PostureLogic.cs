@@ -152,7 +152,7 @@ namespace RBMAI
             {
                 if ((new StackTrace()).GetFrame(3).GetMethod().Name.Contains("MeleeHit"))
                 {
-                    if (RBMConfig.RBMConfig.postureEnabled && attackerAgent != null && victimAgent != null && attackerWeapon.CurrentUsageItem != null &&
+                    if (RBMConfig.RBMConfig.postureEnabled && attackerAgent != null && victimAgent != null && !attackerAgent.IsFriendOf(victimAgent) && attackerWeapon.CurrentUsageItem != null &&
                         attackerWeapon.CurrentUsageItem != null) {
                         Posture defenderPosture = null;
                         Posture attackerPosture = null;
