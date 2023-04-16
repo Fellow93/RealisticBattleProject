@@ -1720,7 +1720,7 @@
     <combat_parameter id="polearm_ready_right_horseback"
                       collision_check_starting_percent="0.34"
                       collision_check_ending_percent="0.48"
-                      weapon_offset="0,0,0.05"
+                      weapon_offset="0,0,0"
                       vertical_rot_limit_multiplier_up="0.5"
                       vertical_rot_limit_multiplier_down="0.6"
                       left_rider_rot_limit="right_swing_polearm_rider_rot_limit_left"
