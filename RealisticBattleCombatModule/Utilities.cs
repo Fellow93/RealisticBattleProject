@@ -375,12 +375,12 @@ namespace  RBMCombat
                                                 }
                                             case ArmorMaterialTypes.Chainmail:
                                                 {
-                                                    weaponTypeScaling = 1.5f;
+                                                    weaponTypeScaling = 1.25f;
                                                     break;
                                                 }
                                             case ArmorMaterialTypes.Plate:
                                                 {
-                                                    weaponTypeScaling = 3f;
+                                                    weaponTypeScaling = 2.5f;
                                                     break;
                                                 }
                                         }
@@ -420,12 +420,12 @@ namespace  RBMCombat
                                 case ArmorMaterialTypes.Leather:
                                 case ArmorMaterialTypes.Chainmail:
                                     {
-                                        weaponTypeScaling = 0.5f;
+                                        weaponTypeScaling = 1f;
                                         break;
                                     }
                                 case ArmorMaterialTypes.Plate:
                                     {
-                                        weaponTypeScaling = 6f;
+                                        weaponTypeScaling = 12f;
                                         break;
                                     }
                             }
@@ -438,7 +438,7 @@ namespace  RBMCombat
                     magnitude = magnitude * RBMConfig.RBMConfig.OneHandedThrustDamageBonus;
                 }
                 //float magScaling = (float)Math.Pow((magnitude * weaponDamageFactor) / (armorThreshold * armorValue), 2);
-                float magScaling = (blow.AbsorbedByArmor / (armorValue * armorThreshold)) / 10f;
+                float magScaling = (blow.AbsorbedByArmor / (armorValue * armorThreshold)) / 5f;
                 float scaledProbability = defaultProbability + (magScaling * weaponTypeScaling);
                 float randomF = MBRandom.RandomFloat;
                 InformationManager.DisplayMessage(new InformationMessage(weaponType+ " " + damageType + " " + armorMaterialType + ": " + Math.Round(scaledProbability * 100f, 2) + "%"));
