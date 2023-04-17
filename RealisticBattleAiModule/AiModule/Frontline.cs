@@ -198,6 +198,54 @@ namespace RBMAI
                         Agent tempAgent = unit;
                         agents = new MBList<Agent>(agents.Where(a => a != tempAgent).ToList());
                         int agentsCount = agents.Count();
+                        int attackTogether = 0;
+
+                        MBList<Agent> agentsLeft = new MBList<Agent>();
+                        MBList<Agent> agentsRight = new MBList<Agent>();
+                        agentsLeft = mission.GetNearbyAllyAgents(unitPosition + leftVec * 1.35f, 1.35f, unit.Team, agentsLeft);
+                        agentsRight = mission.GetNearbyAllyAgents(unitPosition + rightVec * 1.35f, 1.35f, unit.Team, agentsRight);
+
+                        float attackingTogetherLimit = 10f;
+                        int attackingTogether = 0;
+                        foreach (Agent agent in agentsLeft)
+                        {
+                            switch (agent.AttackDirection)
+                            {
+                                case Agent.UsageDirection.AttackBegin:
+                                case Agent.UsageDirection.AttackLeft:
+                                case Agent.UsageDirection.AttackRight:
+                                case Agent.UsageDirection.AttackDown:
+                                case Agent.UsageDirection.AttackEnd:
+                                    {
+                                        attackingTogether += 10;
+                                        break;
+                                    }
+                            }
+                        }
+                        foreach (Agent agent in agentsRight)
+                        {
+                            switch (agent.AttackDirection)
+                            {
+                                case Agent.UsageDirection.AttackBegin:
+                                case Agent.UsageDirection.AttackLeft:
+                                case Agent.UsageDirection.AttackRight:
+                                case Agent.UsageDirection.AttackDown:
+                                case Agent.UsageDirection.AttackEnd:
+                                    {
+                                        attackingTogether += 10;
+                                        break;
+                                    }
+                            }
+                        }
+
+                        //if(MBRandom.RandomFloat >= (attackingTogether / attackingTogetherLimit){
+                        //    attackingTogether += 50;
+                        //}
+
+                        if (attackingTogether > 40)
+                        {
+                            attackingTogether = 40;
+                        }
 
                         if (agentsCount > allyAgentsCountTreshold && !unit.IsDoingPassiveAttack)
                         {
@@ -218,15 +266,11 @@ namespace RBMAI
 
                                     //Vec2 leftVec = unit.Formation.Direction.LeftVec().Normalized();
                                     //Vec2 rightVec = unit.Formation.Direction.RightVec().Normalized();
-
-                                    MBList<Agent> agentsLeft = new MBList<Agent>();
-                                    MBList<Agent> agentsRight = new MBList<Agent>();
+                                    
                                     MBList<Agent> furtherAllyAgents = new MBList<Agent>();
-
-                                    agentsLeft = mission.GetNearbyAllyAgents(unitPosition + leftVec * 1.35f, 1.35f, unit.Team, agentsLeft);
-                                    agentsRight = mission.GetNearbyAllyAgents(unitPosition + rightVec * 1.35f, 1.35f, unit.Team, agentsRight);
+                                    
                                     furtherAllyAgents = mission.GetNearbyAllyAgents(unitPosition + direction * 2.2f, 1.1f, unit.Team, furtherAllyAgents);
-
+                                    
                                     int agentsLeftCount = agentsLeft.Count();
                                     int agentsRightCount = agentsRight.Count();
                                     int furtherAllyAgentsCount = furtherAllyAgents.Count();
@@ -359,7 +403,7 @@ namespace RBMAI
                         {
                             //unit.LookDirection = direction.ToVec3();
                             //unit.SetDirectionChangeTendency(10f);
-                            int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * (unit.Health / unit.HealthLimit) * 65), 70, 180);
+                            int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * (unit.Health / unit.HealthLimit) * 65) + attackingTogether, 60, 180);
                             int randInt = MBRandom.RandomInt((int)unitPower + aggresivnesModifier);
                             int defensivnesModifier = 0;
 

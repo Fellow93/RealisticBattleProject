@@ -928,7 +928,7 @@ namespace RBMAI
 
     [MBCallback]
     [HarmonyPatch(typeof(HumanAIComponent))]
-    class OnDismountPatch
+    class AdjustSpeedLimitPatch
     {
         [HarmonyPrefix]
         [HarmonyPatch("AdjustSpeedLimit")]

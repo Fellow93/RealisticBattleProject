@@ -1412,7 +1412,10 @@ namespace RBMCombat
                 if (__instance.Health < 1f)
                 {
                     KillInfo overrideKillInfo = (b.IsFallDamage ? KillInfo.Gravity : KillInfo.Invalid);
-                    __instance.Die(b, overrideKillInfo);
+                    if (__instance.IsActive())
+                    {
+                        __instance.Die(b, overrideKillInfo);
+                    }
                 }
 
                 MethodInfo method2 = typeof(Agent).GetMethod("HandleBlowAux", BindingFlags.NonPublic | BindingFlags.Instance);

@@ -502,7 +502,7 @@ namespace RBMAI
     {
         static void Postfix(Agent agent, Mission __instance)
         {
-            if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle)
+            if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
             {
                 bool isInfFormationActive = agent.Team.GetFormation(FormationClass.Infantry) != null && agent.Team.GetFormation(FormationClass.Infantry).CountOfUnits > 0;
                 bool isArcFormationActive = agent.Team.GetFormation(FormationClass.Ranged) != null && agent.Team.GetFormation(FormationClass.Ranged).CountOfUnits > 0;
@@ -521,29 +521,41 @@ namespace RBMAI
                     }
                     if (distanceToArc > 0f && distanceToArc < distanceToInf)
                     {
-                        agent.Formation = agent.Team.GetFormation(FormationClass.Ranged);
-                        agent.DisableScriptedMovement();
-                        return;
+                        if (agent.IsActive())
+                        {
+                            agent.Formation = agent.Team.GetFormation(FormationClass.Ranged);
+                            agent.DisableScriptedMovement();
+                            return;
+                        }
                     }
                     else if (distanceToInf > 0f && distanceToInf < distanceToArc)
                     {
-                        agent.Formation = agent.Team.GetFormation(FormationClass.Infantry);
-                        agent.DisableScriptedMovement();
-                        return;
-                    }
-                    else
-                    {
-                        if (distanceToInf > 0f)
+                        if (agent.IsActive())
                         {
                             agent.Formation = agent.Team.GetFormation(FormationClass.Infantry);
                             agent.DisableScriptedMovement();
                             return;
                         }
+                    }
+                    else
+                    {
+                        if (distanceToInf > 0f)
+                        {
+                            if (agent.IsActive())
+                            {
+                                agent.Formation = agent.Team.GetFormation(FormationClass.Infantry);
+                                agent.DisableScriptedMovement();
+                                return;
+                            }
+                        }
                         else if (distanceToArc > 0f)
                         {
-                            agent.Formation = agent.Team.GetFormation(FormationClass.Ranged);
-                            agent.DisableScriptedMovement();
-                            return;
+                            if (agent.IsActive())
+                            {
+                                agent.Formation = agent.Team.GetFormation(FormationClass.Ranged);
+                                agent.DisableScriptedMovement();
+                                return;
+                            }
                         }
                     }
                 }
@@ -551,9 +563,12 @@ namespace RBMAI
                 {
                     if (agent.Formation != null && isInfFormationActive)
                     {
-                        agent.Formation = agent.Team.GetFormation(FormationClass.Infantry);
-                        agent.DisableScriptedMovement();
-                        return;
+                        if (agent.IsActive())
+                        {
+                            agent.Formation = agent.Team.GetFormation(FormationClass.Infantry);
+                            agent.DisableScriptedMovement();
+                            return;
+                        }
                     }
                 }
             }
@@ -566,7 +581,7 @@ namespace RBMAI
     {
         static void Postfix(Agent agent, Mission __instance)
         {
-            if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle)
+            if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
             {
                 bool isCavFormationActive = agent.Team.GetFormation(FormationClass.Cavalry) != null && agent.Team.GetFormation(FormationClass.Cavalry).CountOfUnits > 0;
                 bool isHaFormationActive = agent.Team.GetFormation(FormationClass.HorseArcher) != null && agent.Team.GetFormation(FormationClass.HorseArcher).CountOfUnits > 0;
@@ -574,18 +589,24 @@ namespace RBMAI
                 {
                     if (agent.Formation != null && isHaFormationActive)
                     {
-                        agent.Formation = agent.Team.GetFormation(FormationClass.HorseArcher);
-                        agent.DisableScriptedMovement();
-                        return;
+                        if (agent.IsActive())
+                        {
+                            agent.Formation = agent.Team.GetFormation(FormationClass.HorseArcher);
+                            agent.DisableScriptedMovement();
+                            return;
+                        }
                     }
                 }
                 else
                 {
                     if (agent.Formation != null && isCavFormationActive)
                     {
-                        agent.Formation = agent.Team.GetFormation(FormationClass.Cavalry);
-                        agent.DisableScriptedMovement();
-                        return;
+                        if (agent.IsActive())
+                        {
+                            agent.Formation = agent.Team.GetFormation(FormationClass.Cavalry);
+                            agent.DisableScriptedMovement();
+                            return;
+                        }
                     }
                 }
             }
