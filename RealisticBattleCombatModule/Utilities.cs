@@ -289,10 +289,9 @@ namespace  RBMCombat
                     EquipmentIndex slotIndex = attacker.GetWieldedItemIndex(HandIndex.MainHand);
                     if(slotIndex != EquipmentIndex.None)
                     {
-                        int usageIndex = attacker.Equipment[slotIndex].CurrentUsageIndex;
-                        WeaponComponentData wcd = attackerWeapon.GetWeaponComponentDataForUsage(usageIndex);
+                        WeaponComponentData wcd = attackerWeapon.CurrentUsageItem;
                         ItemModifier itemModifier = null;
-                        if (!attackCollisionData.IsAlternativeAttack && attacker.IsHuman && !attackCollisionData.IsFallDamage && attacker.Origin != null && !attackCollisionData.IsMissile)
+                        if (!attackCollisionData.IsAlternativeAttack && attacker.IsHuman && !attackCollisionData.IsFallDamage && attacker.Origin != null && !attackCollisionData.IsMissile && wcd != null)
                         {
                             if (!attackCollisionData.IsMissile)
                             {
