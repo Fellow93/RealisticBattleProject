@@ -24,7 +24,19 @@ namespace  RBMCombat
             if (attackerWeapon.Item != null && currentUsageItem != null && attackerWeapon.Item.WeaponDesign != null &&
                 attackerWeapon.Item.WeaponDesign.UsedPieces != null && attackerWeapon.Item.WeaponDesign.UsedPieces.Length > 0)
             {
-                float bladeLength = attackerWeapon.Item.WeaponDesign.UsedPieces[0].ScaledBladeLength + 0.15f;
+                bool isSwordType = false;
+                if (attackerWeapon.CurrentUsageItem != null)
+                    switch (attackerWeapon.CurrentUsageItem.WeaponClass)
+                    {
+                        case WeaponClass.Dagger:
+                        case WeaponClass.OneHandedSword:
+                        case WeaponClass.TwoHandedSword:
+                            {
+                                isSwordType = true;
+                                break;
+                            }
+                    }
+                float bladeLength = attackerWeapon.Item.WeaponDesign.UsedPieces[0].ScaledBladeLength + (isSwordType ? 0f : 0.15f);
                 float realWeaponLength = currentUsageItem.GetRealWeaponLength();
                 if (collisionData.CollisionDistanceOnWeapon < (realWeaponLength - bladeLength))
                 {

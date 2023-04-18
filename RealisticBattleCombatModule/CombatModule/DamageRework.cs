@@ -1147,7 +1147,8 @@ namespace RBMCombat
                         case "TwoHandedPolearm":
                         case "TwoHandedMace":
                             {
-                                if (attackerAgent.Team != victimAgent.Team)
+                                bool hitWithBlade = Utilities.HitWithWeaponBlade(in collisionData, in attackerWeapon);
+                                if (attackerAgent.Team != victimAgent.Team && hitWithBlade)
                                 {
                                     Blow newBlow = __result;
                                     sbyte weaponAttachBoneIndex = (sbyte)(attackerWeapon.IsEmpty ? (-1) : attackerAgent.Monster.GetBoneToAttachForItemFlags(attackerWeapon.Item.ItemFlags));

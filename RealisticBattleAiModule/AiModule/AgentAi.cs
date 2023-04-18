@@ -651,8 +651,15 @@ namespace RBMAI
                 }
                 else
                 {
-                    __result = agent;
-                    return false;
+                    if (agent.IsActive())
+                    {
+                        __result = agent;
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
             }
             else
