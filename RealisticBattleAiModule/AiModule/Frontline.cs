@@ -11,12 +11,14 @@ using TaleWorlds.MountAndBlade;
 using static RBMAI.Tactics;
 using static RBMAI.Tactics.AIDecision;
 using static TaleWorlds.MountAndBlade.HumanAIComponent;
-using static TaleWorlds.MountAndBlade.Source.Objects.Siege.AgentPathNavMeshChecker;
 
 namespace RBMAI
 {
-    class Frontline
+    public static class Frontline
     {
+        public static bool defensiveCommand = false;
+        public static bool normalCommand = true;
+        public static bool aggressiveCommand = false;
 
         public static bool IsInImportantFrontlineAction(Agent agent)
         {
@@ -68,6 +70,10 @@ namespace RBMAI
                     int enemyAgentsCountCriticalTreshold = 6;
                     int hasShieldBonusNumber = 40;
                     int isAttackingArcherNumber = -60;
+                    if (__instance.CountOfUnits <= 30)
+                    {
+                        return true;
+                    }
                     int aggresivnesModifier = 15;
                     float backStepDistance = 0.35f;
                     if (isAgentInDefensiveOrder)
@@ -80,7 +86,24 @@ namespace RBMAI
                         hasShieldBonusNumber = 40;
                         aggresivnesModifier = 15;
                     }
+
+                    if (__instance.Captain != null && __instance.Captain.IsPlayerTroop)
+                    {
+                        if (aggressiveCommand)
+                        {
+                            aggresivnesModifier += 50;
+                        }
+                        else if (defensiveCommand)
+                        {
+                            aggresivnesModifier += -50;
+                        }
+                        else if (normalCommand)
+                        {
+                            aggresivnesModifier += 0;
+                        }
+                    }
                     
+
                     if (targetAgent != null && vanillaTargetAgent != null)
                     {
                         if (vanillaTargetAgent.Formation != null && vanillaTargetAgent.Formation == targetAgent.Formation)
@@ -242,9 +265,10 @@ namespace RBMAI
                         //    attackingTogether += 50;
                         //}
 
-                        if (attackingTogether > 40)
+                        if (attackingTogether > 50)
                         {
-                            attackingTogether = 40;
+                            //unit.SetWantsToYell();
+                            attackingTogether = 50;
                         }
 
                         if (agentsCount > allyAgentsCountTreshold && !unit.IsDoingPassiveAttack)
@@ -403,7 +427,7 @@ namespace RBMAI
                         {
                             //unit.LookDirection = direction.ToVec3();
                             //unit.SetDirectionChangeTendency(10f);
-                            int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * (unit.Health / unit.HealthLimit) * 65) + attackingTogether, 60, 180);
+                            int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * (unit.Health / unit.HealthLimit) * 40) + attackingTogether, 40, 180);
                             int randInt = MBRandom.RandomInt((int)unitPower + aggresivnesModifier);
                             int defensivnesModifier = 0;
 

@@ -105,10 +105,35 @@ namespace RBM
                 if (ScreenManager.TopScreen != null && (Mission.Current.IsFieldBattle || Mission.Current.IsSiegeBattle || Mission.Current.SceneName.Contains("arena") || (MapEvent.PlayerMapEvent != null && MapEvent.PlayerMapEvent.IsHideoutBattle)))
                 {
                     MissionScreen missionScreen = ScreenManager.TopScreen as MissionScreen;
-                    if (missionScreen != null && missionScreen.InputManager != null && missionScreen.InputManager.IsControlDown() && missionScreen.InputManager.IsKeyPressed(InputKey.V))
+                    if (missionScreen != null && missionScreen.InputManager != null && missionScreen.InputManager.IsControlDown())
                     {
-                        Mission.Current.SetFastForwardingFromUI(!Mission.Current.IsFastForward);
-                        InformationManager.DisplayMessage(new InformationMessage("Vroom = " + Mission.Current.IsFastForward, Color.FromUint(4282569842u)));
+                        if (missionScreen.InputManager.IsKeyPressed(InputKey.V))
+                        {
+                            Mission.Current.SetFastForwardingFromUI(!Mission.Current.IsFastForward);
+                            InformationManager.DisplayMessage(new InformationMessage("Vroom = " + Mission.Current.IsFastForward, Color.FromUint(4282569842u)));
+                        }
+                        if (missionScreen.InputManager.IsKeyPressed(InputKey.Numpad2))
+                        {
+                            Frontline.normalCommand = !Frontline.normalCommand;
+                            Frontline.aggressiveCommand = !Frontline.normalCommand;
+                            Frontline.defensiveCommand = !Frontline.normalCommand;
+                            InformationManager.DisplayMessage(new InformationMessage("Normal", Color.FromUint(4282569842u)));
+                        }
+                        if (missionScreen.InputManager.IsKeyPressed(InputKey.Numpad1))
+                        {
+                            Frontline.aggressiveCommand = !Frontline.aggressiveCommand;
+                            Frontline.normalCommand = !Frontline.aggressiveCommand;
+                            Frontline.defensiveCommand = !Frontline.aggressiveCommand;
+
+                            InformationManager.DisplayMessage(new InformationMessage("Aggressive", Color.FromUint(4282569842u)));
+                        }
+                        if (missionScreen.InputManager.IsKeyPressed(InputKey.Numpad3))
+                        {
+                            Frontline.defensiveCommand = !Frontline.defensiveCommand;
+                            Frontline.normalCommand = !Frontline.defensiveCommand;
+                            Frontline.aggressiveCommand = !Frontline.defensiveCommand;
+                            InformationManager.DisplayMessage(new InformationMessage("Defensive", Color.FromUint(4282569842u)));
+                        }
                     }
                 }
             }
