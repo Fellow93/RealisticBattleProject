@@ -1,7 +1,6 @@
 ﻿using RBMConfig;
 using System;
 using System.Collections.Generic;
-using TaleWorlds.CampaignSystem.Extensions;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -25,8 +24,9 @@ namespace  RBMCombat
             if (attackerWeapon.Item != null && currentUsageItem != null && attackerWeapon.Item.WeaponDesign != null &&
                 attackerWeapon.Item.WeaponDesign.UsedPieces != null && attackerWeapon.Item.WeaponDesign.UsedPieces.Length > 0)
             {
-                //WeaponClass weaponClass = attackerWeapon.CurrentUsageItem.WeaponClass;
-                if (collisionData.CollisionDistanceOnWeapon < currentUsageItem.GetRealWeaponLength() - attackerWeapon.Item.WeaponDesign.UsedPieces[0].ScaledBladeLength)
+                float bladeLength = attackerWeapon.Item.WeaponDesign.UsedPieces[0].ScaledBladeLength + 0.15f;
+                float realWeaponLength = currentUsageItem.GetRealWeaponLength();
+                if (collisionData.CollisionDistanceOnWeapon < (realWeaponLength - bladeLength))
                 {
                     return false;
                 }
