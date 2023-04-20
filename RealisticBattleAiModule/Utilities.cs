@@ -1259,6 +1259,36 @@ namespace RBMAI
             return true;
         }
 
+        public static float GetComHitModifier(in AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
+        {
+            WeaponComponentData currentUsageItem = attackerWeapon.CurrentUsageItem;
+            float comHitModifier = 0f;
+            if (attackerWeapon.Item != null && currentUsageItem != null && attackerWeapon.Item.WeaponDesign != null &&
+                attackerWeapon.Item.WeaponDesign.UsedPieces != null && attackerWeapon.Item.WeaponDesign.UsedPieces.Length > 0)
+            {
+                float impactPointAsPercent = MBMath.ClampFloat(collisionData.CollisionDistanceOnWeapon, -0.2f, currentUsageItem.GetRealWeaponLength()) / currentUsageItem.GetRealWeaponLength();
+                float comAsPercent = MBMath.ClampFloat(currentUsageItem.CenterOfMass, -0.2f, currentUsageItem.GetRealWeaponLength()) / currentUsageItem.GetRealWeaponLength();
+                comHitModifier = 1f - Math.Abs(comAsPercent - impactPointAsPercent);
+                if (attackerWeapon.CurrentUsageItem != null)
+                    switch (attackerWeapon.CurrentUsageItem.WeaponClass)
+                    {
+                        case WeaponClass.Dagger:
+                        case WeaponClass.OneHandedSword:
+                        case WeaponClass.TwoHandedSword:
+                            {
+                                float bladeLength = attackerWeapon.Item.WeaponDesign.UsedPieces[0].ScaledBladeLength + 0f;
+                                float realWeaponLength = currentUsageItem.GetRealWeaponLength();
+                                if (collisionData.CollisionDistanceOnWeapon < (realWeaponLength - bladeLength))
+                                {
+                                    comHitModifier = 1f;
+                                }
+                                break;
+                            }
+                    }
+            }
+            return comHitModifier;
+        }
+
     }
 }
 
