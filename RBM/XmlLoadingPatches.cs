@@ -6,20 +6,19 @@ using TaleWorlds.ObjectSystem;
 
 namespace RBM
 {
-    class XmlLoadingPatches
+    internal class XmlLoadingPatches
     {
-
         [HarmonyPatch(typeof(MBObjectManager))]
         [HarmonyPatch("MergeTwoXmls")]
-        class MergeTwoXmlsPatch
+        private class MergeTwoXmlsPatch
         {
-            static bool Prefix(ref XmlDocument xmlDocument1, ref XmlDocument xmlDocument2, ref XmlDocument __result)
+            private static bool Prefix(ref XmlDocument xmlDocument1, ref XmlDocument xmlDocument2, ref XmlDocument __result)
             {
                 XDocument originalXml = MBObjectManager.ToXDocument(xmlDocument1);
                 XDocument mergedXml = MBObjectManager.ToXDocument(xmlDocument2);
 
                 List<XElement> nodesToRemoveArray = new List<XElement>();
-                if(!RBMConfig.RBMConfig.rbmCombatEnabled && xmlDocument2.BaseURI.Contains("RBMCombat"))
+                if (!RBMConfig.RBMConfig.rbmCombatEnabled && xmlDocument2.BaseURI.Contains("RBMCombat"))
                 {
                     __result = MBObjectManager.ToXmlDocument(originalXml);
                     return false;
@@ -33,7 +32,6 @@ namespace RBM
                 {
                     foreach (XElement origNode in originalXml.Root.Elements())
                     {
-
                         if (origNode.Name == "ItemModifier" && xmlDocument2.BaseURI.Contains("RBM"))
                         {
                             foreach (XElement mergedNode in mergedXml.Root.Elements())
@@ -145,6 +143,5 @@ namespace RBM
                 return true;
             }
         }
-
     }
 }

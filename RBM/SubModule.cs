@@ -90,7 +90,7 @@ namespace RBM
 
             TaleWorlds.MountAndBlade.Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("RBM Configuration"), 9999, delegate
             {
-               ScreenManager.PushScreen(new RBMConfig.RBMConfigScreen());
+                ScreenManager.PushScreen(new RBMConfig.RBMConfigScreen());
             }, () => (false, new TextObject("RBM Configuration"))));
         }
 
@@ -154,7 +154,6 @@ namespace RBM
             if (RBMConfig.RBMConfig.developerMode)
             {
                 mission.AddMissionBehavior((MissionBehavior)(object)new BattleStatsLogic());
-                
             }
             if (RBMConfig.RBMConfig.rbmCombatEnabled)
             {
@@ -162,7 +161,7 @@ namespace RBM
                 {
                     mission.AddMissionBehavior((MissionBehavior)(object)new PlayerArmorStatus());
                 }
-            } 
+            }
             if (RBMConfig.RBMConfig.rbmAiEnabled)
             {
                 if (RBMConfig.RBMConfig.postureEnabled && RBMConfig.RBMConfig.postureGUIEnabled)
@@ -174,7 +173,7 @@ namespace RBM
             }
             else
             {
-                if(mission.GetMissionBehavior<SiegeArcherPoints>() != null)
+                if (mission.GetMissionBehavior<SiegeArcherPoints>() != null)
                 {
                     mission.RemoveMissionBehavior(mission.GetMissionBehavior<SiegeArcherPoints>());
                 }

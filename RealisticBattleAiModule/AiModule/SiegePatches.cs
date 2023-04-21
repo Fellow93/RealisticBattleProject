@@ -9,11 +9,10 @@ using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.Source.Missions.Handlers.Logic;
 using static TaleWorlds.MountAndBlade.FormationAI;
-using static TaleWorlds.MountAndBlade.SiegeLane;
 
 namespace RBMAI.AiModule
 {
-    class SiegePatches
+    internal class SiegePatches
     {
         public static Dictionary<Team, bool> carryOutDefenceEnabled = new Dictionary<Team, bool>();
         public static Dictionary<Team, bool> archersShiftAroundEnabled = new Dictionary<Team, bool>();
@@ -32,11 +31,11 @@ namespace RBMAI.AiModule
         }
 
         [HarmonyPatch(typeof(TacticDefendCastle))]
-        class TacticDefendCastlePatch
+        private class TacticDefendCastlePatch
         {
             [HarmonyPrefix]
             [HarmonyPatch("CarryOutDefense")]
-            static bool PrefixCarryOutDefense(ref TacticDefendCastle __instance, ref bool doRangedJoinMelee)
+            private static bool PrefixCarryOutDefense(ref TacticDefendCastle __instance, ref bool doRangedJoinMelee)
             {
                 if (Mission.Current.Mode != MissionMode.Deployment)
                 {
@@ -99,7 +98,7 @@ namespace RBMAI.AiModule
 
             [HarmonyPrefix]
             [HarmonyPatch("ArcherShiftAround")]
-            static bool PrefixArcherShiftAround(ref TacticDefendCastle __instance)
+            private static bool PrefixArcherShiftAround(ref TacticDefendCastle __instance)
             {
                 if (Mission.Current.Mode != MissionMode.Deployment)
                 {
@@ -139,11 +138,11 @@ namespace RBMAI.AiModule
         }
 
         [HarmonyPatch(typeof(Mission))]
-        class MissionPatch
+        private class MissionPatch
         {
             [HarmonyPostfix]
             [HarmonyPatch("OnObjectDisabled")]
-            static void PostfixOnObjectDisabled(DestructableComponent destructionComponent)
+            private static void PostfixOnObjectDisabled(DestructableComponent destructionComponent)
             {
                 if (destructionComponent.GameEntity.GetFirstScriptOfType<UsableMachine>() != null && destructionComponent.GameEntity.GetFirstScriptOfType<UsableMachine>().GetType().Equals(typeof(BatteringRam)) && destructionComponent.GameEntity.GetFirstScriptOfType<UsableMachine>().IsDestroyed)
                 {
@@ -154,9 +153,8 @@ namespace RBMAI.AiModule
         }
 
         [HarmonyPatch(typeof(BehaviorAssaultWalls))]
-        class OverrideBehaviorAssaultWalls
+        private class OverrideBehaviorAssaultWalls
         {
-
             private enum BehaviorState
             {
                 Deciding,
@@ -170,7 +168,7 @@ namespace RBMAI.AiModule
 
             [HarmonyPrefix]
             [HarmonyPatch("CalculateCurrentOrder")]
-            static bool PrefixCalculateCurrentOrder(ref BehaviorAssaultWalls __instance, ref MovementOrder ____chargeOrder)
+            private static bool PrefixCalculateCurrentOrder(ref BehaviorAssaultWalls __instance, ref MovementOrder ____chargeOrder)
             {
                 //__instance.Formation.AI.SetBehaviorWeight<BehaviorCharge>(0f);
                 //if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
@@ -182,7 +180,7 @@ namespace RBMAI.AiModule
 
             [HarmonyPostfix]
             [HarmonyPatch("CalculateCurrentOrder")]
-            static void PostfixCalculateCurrentOrder(ref BehaviorAssaultWalls __instance, ref MovementOrder ____wallSegmentMoveOrder, ref MovementOrder ____attackEntityOrderOuterGate, ref ArrangementOrder ___CurrentArrangementOrder, ref MovementOrder ____chargeOrder, ref TeamAISiegeComponent ____teamAISiegeComponent, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState, ref MovementOrder ____attackEntityOrderInnerGate)
+            private static void PostfixCalculateCurrentOrder(ref BehaviorAssaultWalls __instance, ref MovementOrder ____wallSegmentMoveOrder, ref MovementOrder ____attackEntityOrderOuterGate, ref ArrangementOrder ___CurrentArrangementOrder, ref MovementOrder ____chargeOrder, ref TeamAISiegeComponent ____teamAISiegeComponent, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState, ref MovementOrder ____attackEntityOrderInnerGate)
             {
                 //____attackEntityOrderInnerGate = MovementOrder.MovementOrderAttackEntity(____teamAISiegeComponent.InnerGate.GameEntity, surroundEntity: false);
                 //___CurrentArrangementOrder = ArrangementOrder.ArrangementOrderLine;
@@ -224,7 +222,6 @@ namespace RBMAI.AiModule
                         {
                             if (__instance.Formation.AI.Side == BehaviorSide.Left || __instance.Formation.AI.Side == BehaviorSide.Right)
                             {
-
                                 //__instance.Formation.DisbandAttackEntityDetachment();
 
                                 //foreach (IDetachment detach in __instance.Formation.Detachments.ToList())
@@ -261,25 +258,22 @@ namespace RBMAI.AiModule
             }
         }
 
-
         ////[HarmonyPatch(typeof(AttackEntityOrderDetachment))]
         ////class OverrideAttackEntityOrderDetachment
         ////{
-
         ////    [HarmonyPostfix]
         ////    [HarmonyPatch("Initialize")]
         ////    static void PostfixInitialize(ref BattleSideEnum managedSide, Vec3 managedDirection, ref float queueBeginDistance, ref int ____maxUserCount, ref float ____agentSpacing, ref float ____queueBeginDistance, ref float ____queueRowSize, ref float ____costPerRow, ref float ____baseCost)
         ////    {
-
         ////    }
         ////}
 
         [HarmonyPatch(typeof(BehaviorShootFromCastleWalls))]
-        class OverrideBehaviorShootFromCastleWalls
+        private class OverrideBehaviorShootFromCastleWalls
         {
             [HarmonyPrefix]
             [HarmonyPatch("OnBehaviorActivatedAux")]
-            static bool PrefixOnBehaviorActivatedAux(ref BehaviorShootFromCastleWalls __instance, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder)
+            private static bool PrefixOnBehaviorActivatedAux(ref BehaviorShootFromCastleWalls __instance, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder)
             {
                 __instance.Formation.SetMovementOrder(____currentOrder);
                 __instance.Formation.FacingOrder = ___CurrentFacingOrder;
@@ -292,7 +286,7 @@ namespace RBMAI.AiModule
 
             [HarmonyPrefix]
             [HarmonyPatch("TickOccasionally")]
-            static bool PrefixTickOccasionally(ref BehaviorShootFromCastleWalls __instance, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref TacticalPosition ____tacticalArcherPosition)
+            private static bool PrefixTickOccasionally(ref BehaviorShootFromCastleWalls __instance, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref TacticalPosition ____tacticalArcherPosition)
             {
                 if (__instance.Formation.ArrangementOrder == ArrangementOrder.ArrangementOrderLine)
                 {
@@ -309,11 +303,11 @@ namespace RBMAI.AiModule
         }
 
         [HarmonyPatch(typeof(BehaviorUseSiegeMachines))]
-        class OverrideBehaviorUseSiegeMachines
+        private class OverrideBehaviorUseSiegeMachines
         {
             [HarmonyPrefix]
             [HarmonyPatch("GetAiWeight")]
-            static bool PrefixGetAiWeight(ref BehaviorUseSiegeMachines __instance, ref float __result, ref TeamAISiegeComponent ____teamAISiegeComponent, List<UsableMachine> ____primarySiegeWeapons)
+            private static bool PrefixGetAiWeight(ref BehaviorUseSiegeMachines __instance, ref float __result, ref TeamAISiegeComponent ____teamAISiegeComponent, List<UsableMachine> ____primarySiegeWeapons)
             {
                 float result = 0f;
                 if (____teamAISiegeComponent != null && ____primarySiegeWeapons.Any() && ____primarySiegeWeapons.All((UsableMachine psw) => !(psw as IPrimarySiegeWeapon).HasCompletedAction()))
@@ -326,7 +320,7 @@ namespace RBMAI.AiModule
 
             [HarmonyPostfix]
             [HarmonyPatch("TickOccasionally")]
-            static void PrefixTickOccasionally(ref BehaviorUseSiegeMachines __instance)
+            private static void PrefixTickOccasionally(ref BehaviorUseSiegeMachines __instance)
             {
                 if (__instance.Formation.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall)
                 {
@@ -336,11 +330,11 @@ namespace RBMAI.AiModule
         }
 
         //[HarmonyPatch(typeof(BehaviorWaitForLadders))]
-        class OverrideBehaviorWaitForLadders
+        private class OverrideBehaviorWaitForLadders
         {
             [HarmonyPrefix]
             [HarmonyPatch("GetAiWeight")]
-            static bool PrefixOnGetAiWeight(ref BehaviorWaitForLadders __instance, MovementOrder ____followOrder, ref TacticalPosition ____followTacticalPosition, ref float __result, ref TeamAISiegeComponent ____teamAISiegeComponent)
+            private static bool PrefixOnGetAiWeight(ref BehaviorWaitForLadders __instance, MovementOrder ____followOrder, ref TacticalPosition ____followTacticalPosition, ref float __result, ref TeamAISiegeComponent ____teamAISiegeComponent)
             {
                 if (____followTacticalPosition != null)
                 {
@@ -367,7 +361,7 @@ namespace RBMAI.AiModule
 
             [HarmonyPostfix]
             [HarmonyPatch("TickOccasionally")]
-            static void PrefixTickOccasionally(ref BehaviorWaitForLadders __instance)
+            private static void PrefixTickOccasionally(ref BehaviorWaitForLadders __instance)
             {
                 if (__instance.Formation.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall)
                 {
@@ -377,9 +371,8 @@ namespace RBMAI.AiModule
         }
 
         [HarmonyPatch(typeof(BehaviorDefendCastleKeyPosition))]
-        class OverrideBehaviorDefendCastleKeyPosition
+        private class OverrideBehaviorDefendCastleKeyPosition
         {
-
             private enum BehaviorState
             {
                 UnSet,
@@ -389,7 +382,7 @@ namespace RBMAI.AiModule
 
             [HarmonyPrefix]
             [HarmonyPatch("OnBehaviorActivatedAux")]
-            static bool PrefixOnBehaviorActivatedAux(ref BehaviorDefendCastleKeyPosition __instance, ref FacingOrder ____waitFacingOrder, ref FacingOrder ____readyFacingOrder, ref TeamAISiegeComponent ____teamAISiegeDefender, ref FacingOrder ___CurrentFacingOrder, FormationAI.BehaviorSide ____behaviorSide, ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate, ref TacticalPosition ____tacticalMiddlePos, ref TacticalPosition ____tacticalWaitPos, ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState)
+            private static bool PrefixOnBehaviorActivatedAux(ref BehaviorDefendCastleKeyPosition __instance, ref FacingOrder ____waitFacingOrder, ref FacingOrder ____readyFacingOrder, ref TeamAISiegeComponent ____teamAISiegeDefender, ref FacingOrder ___CurrentFacingOrder, FormationAI.BehaviorSide ____behaviorSide, ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate, ref TacticalPosition ____tacticalMiddlePos, ref TacticalPosition ____tacticalWaitPos, ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState)
             {
                 MethodInfo method = typeof(BehaviorDefendCastleKeyPosition).GetMethod("ResetOrderPositions", BindingFlags.NonPublic | BindingFlags.Instance);
                 method.DeclaringType.GetMethod("ResetOrderPositions");
@@ -406,7 +399,7 @@ namespace RBMAI.AiModule
 
             [HarmonyPrefix]
             [HarmonyPatch("CalculateCurrentOrder")]
-            static bool PrefixCalculateCurrentOrder(ref BehaviorDefendCastleKeyPosition __instance, ref FacingOrder ____waitFacingOrder, ref FacingOrder ____readyFacingOrder, ref TeamAISiegeComponent ____teamAISiegeDefender, ref FacingOrder ___CurrentFacingOrder, FormationAI.BehaviorSide ____behaviorSide, ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate, ref TacticalPosition ____tacticalMiddlePos, ref TacticalPosition ____tacticalWaitPos, ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState)
+            private static bool PrefixCalculateCurrentOrder(ref BehaviorDefendCastleKeyPosition __instance, ref FacingOrder ____waitFacingOrder, ref FacingOrder ____readyFacingOrder, ref TeamAISiegeComponent ____teamAISiegeDefender, ref FacingOrder ___CurrentFacingOrder, FormationAI.BehaviorSide ____behaviorSide, ref List<SiegeLadder> ____laddersOnThisSide, ref CastleGate ____innerGate, ref CastleGate ____outerGate, ref TacticalPosition ____tacticalMiddlePos, ref TacticalPosition ____tacticalWaitPos, ref MovementOrder ____waitOrder, ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState)
             {
                 ____behaviorSide = __instance.Formation.AI.Side;
                 ____innerGate = null;
@@ -538,7 +531,6 @@ namespace RBMAI.AiModule
                         }
                     }
 
-
                     if (____innerGate != null && !____innerGate.IsDestroyed)
                     {
                         WorldPosition position = ____tacticalMiddlePos.Position;
@@ -566,7 +558,6 @@ namespace RBMAI.AiModule
                             ____waitOrder = MovementOrder.MovementOrderChargeToTarget(correctEnemy);
                             ____currentOrder = ____readyOrder;
                         }
-
                     }
                 }
 
@@ -617,7 +608,6 @@ namespace RBMAI.AiModule
             //                }
             //            }
             //        }
-
 
             //        if (____innerGate != null && !____innerGate.IsDestroyed)
             //        {
@@ -729,12 +719,11 @@ namespace RBMAI.AiModule
         }
 
         [HarmonyPatch(typeof(LadderQueueManager))]
-        class OverrideLadderQueueManager
+        private class OverrideLadderQueueManager
         {
-
             [HarmonyPostfix]
             [HarmonyPatch("Initialize")]
-            static void PostfixInitialize(ref BattleSideEnum managedSide, Vec3 managedDirection, ref float ____arcAngle, ref float queueBeginDistance, ref int ____maxUserCount, ref float ____agentSpacing, ref float ____queueBeginDistance, ref float ____queueRowSize, ref float ____costPerRow, ref float ____baseCost)
+            private static void PostfixInitialize(ref BattleSideEnum managedSide, Vec3 managedDirection, ref float ____arcAngle, ref float queueBeginDistance, ref int ____maxUserCount, ref float ____agentSpacing, ref float ____queueBeginDistance, ref float ____queueRowSize, ref float ____costPerRow, ref float ____baseCost)
             {
                 if (____maxUserCount == 3)
                 {
@@ -759,14 +748,12 @@ namespace RBMAI.AiModule
                 //    ____queueRowSize = 5f;
                 //    ____maxUserCount = 10;
                 //}
-
             }
         }
 
         [HarmonyPatch(typeof(SiegeTower))]
-        class OverrideSiegeTower
+        private class OverrideSiegeTower
         {
-
             //[HarmonyPostfix]
             //[HarmonyPatch("OnInit")]
             //static void PostfixOnInit(ref SiegeTower __instance, ref GameEntity ____gameEntity, ref GameEntity ____cleanState, ref List<LadderQueueManager> ____queueManagers, ref int ___DynamicNavmeshIdStart)
@@ -913,11 +900,11 @@ namespace RBMAI.AiModule
         //}
 
         [HarmonyPatch(typeof(AgentMoraleInteractionLogic))]
-        class AgentMoraleInteractionLogicPatch
+        private class AgentMoraleInteractionLogicPatch
         {
             [HarmonyPrefix]
             [HarmonyPatch("ApplyMoraleEffectOnAgentIncapacitated")]
-            static bool PrefixAfterStart(Agent affectedAgent, Agent affectorAgent, float affectedSideMaxMoraleLoss, float affectorSideMoraleMaxGain, float effectRadius)
+            private static bool PrefixAfterStart(Agent affectedAgent, Agent affectorAgent, float affectedSideMaxMoraleLoss, float affectorSideMoraleMaxGain, float effectRadius)
             {
                 if (affectedAgent != null)
                 {
@@ -943,33 +930,33 @@ namespace RBMAI.AiModule
         //}
 
         [HarmonyPatch(typeof(TacticDefendCastle))]
-        class StopUsingStrategicAreasPatch
+        private class StopUsingStrategicAreasPatch
         {
             [HarmonyPrefix]
             [HarmonyPatch("StopUsingStrategicAreas")]
-            static bool Prefix()
+            private static bool Prefix()
             {
                 return false;
             }
         }
 
         [HarmonyPatch(typeof(TacticDefendCastle))]
-        class StopUsingAllMachinesPatch
+        private class StopUsingAllMachinesPatch
         {
             [HarmonyPrefix]
             [HarmonyPatch("StopUsingAllMachines")]
-            static bool Prefix()
+            private static bool Prefix()
             {
                 return false;
             }
         }
 
         [HarmonyPatch(typeof(TacticDefendCastle))]
-        class StopUsingAllRangedSiegeWeaponsPatch
+        private class StopUsingAllRangedSiegeWeaponsPatch
         {
             [HarmonyPrefix]
             [HarmonyPatch("StopUsingAllRangedSiegeWeapons")]
-            static bool Prefix()
+            private static bool Prefix()
             {
                 return false;
             }

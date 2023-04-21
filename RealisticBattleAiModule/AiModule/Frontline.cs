@@ -1,5 +1,4 @@
-﻿
-using HarmonyLib;
+﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,15 +38,14 @@ namespace RBMAI
         }
 
         [HarmonyPatch(typeof(Formation))]
-        class OverrideFormation
+        private class OverrideFormation
         {
-
             //private static int aiDecisionCooldownTime = 2;
             private static int aiDecisionCooldownTimeSiege = 0;
 
             [HarmonyPrefix]
             [HarmonyPatch("GetOrderPositionOfUnit")]
-            static bool PrefixGetOrderPositionOfUnit(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ____detachedUnits, ref WorldPosition __result)
+            private static bool PrefixGetOrderPositionOfUnit(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ____detachedUnits, ref WorldPosition __result)
             {
                 //if (__instance.MovementOrder.OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsInfantryFormation && !___detachedUnits.Contains(unit))
                 if (Mission.Current != null && Mission.Current.IsFieldBattle && unit != null && (__instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation) && !____detachedUnits.Contains(unit))
@@ -55,7 +53,7 @@ namespace RBMAI
                     int aiDecisionCooldownTime = 3;
                     AIDecision aiDecision;
                     //unit.ClearTargetFrame();
-                    
+
                     bool isTargetArcher = false;
                     bool isAgentInDefensiveOrder = __instance.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall ||
                         __instance.ArrangementOrder == ArrangementOrder.ArrangementOrderCircle ||
@@ -63,7 +61,7 @@ namespace RBMAI
                     var targetAgent = Utilities.GetCorrectTarget(unit);
                     var vanillaTargetAgent = unit.GetTargetAgent();
                     Mission mission = Mission.Current;
-                    
+
                     int allyAgentsCountTreshold = 3;
                     int enemyAgentsCountTreshold = 3;
                     int enemyAgentsCountDangerousTreshold = 4;
@@ -102,7 +100,6 @@ namespace RBMAI
                             aggresivnesModifier += 0;
                         }
                     }
-                    
 
                     if (targetAgent != null && vanillaTargetAgent != null)
                     {
@@ -135,7 +132,7 @@ namespace RBMAI
                                     //    leftPosition.SetVec2(unitPosition + leftVec * 2f);
                                     //    __result = leftPosition;
                                     //    aiDecision.decisionType = AIDecisionType.FlankAllyLeft;
-                                    //    aiDecision.position = __result; 
+                                    //    aiDecision.position = __result;
                                     //    return false;
                                     //}
                                     //if(aiDecision.decisionType == AIDecisionType.FlankAllyRight)
@@ -153,7 +150,7 @@ namespace RBMAI
                                     //    WorldPosition backPosition = unit.GetWorldPosition();
                                     //    backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
                                     //    __result = backPosition;
-                                    //    aiDecision.position = __result; 
+                                    //    aiDecision.position = __result;
                                     //    return false;
                                     //}
                                     __result = aiDecision.position;
@@ -290,11 +287,11 @@ namespace RBMAI
 
                                     //Vec2 leftVec = unit.Formation.Direction.LeftVec().Normalized();
                                     //Vec2 rightVec = unit.Formation.Direction.RightVec().Normalized();
-                                    
+
                                     MBList<Agent> furtherAllyAgents = new MBList<Agent>();
-                                    
+
                                     furtherAllyAgents = mission.GetNearbyAllyAgents(unitPosition + direction * 2.2f, 1.1f, unit.Team, furtherAllyAgents);
-                                    
+
                                     int agentsLeftCount = agentsLeft.Count();
                                     int agentsRightCount = agentsRight.Count();
                                     int furtherAllyAgentsCount = furtherAllyAgents.Count();
@@ -366,7 +363,7 @@ namespace RBMAI
                                     }
                                     else
                                     {
-                                        if (MBRandom.RandomInt(unitPower ) == 0)
+                                        if (MBRandom.RandomInt(unitPower) == 0)
                                         {
                                             aiDecision.position = WorldPosition.Invalid;
                                             aiDecision.customMaxCoolDown = 0;
@@ -394,14 +391,14 @@ namespace RBMAI
                                     aiDecision.customMaxCoolDown = 0;
                                     return true;
                                 }
-                                
+
                                 //}
                             }
                         }
                         unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
                         unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1f, 10f, 0.01f);
                         unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
-                        MBList<Agent> enemyAgents0f = new MBList<Agent>(); 
+                        MBList<Agent> enemyAgents0f = new MBList<Agent>();
                         MBList<Agent> enemyAgents10f = new MBList<Agent>();
                         enemyAgents0f = mission.GetNearbyEnemyAgents(unitPosition, 4.5f, unit.Team, enemyAgents0f);
                         //IEnumerable<Agent> enemyAgentsImmidiate = null;
@@ -539,7 +536,6 @@ namespace RBMAI
                                         aiDecision.position = __result; return false;
                                     }
                                 }
-
                             }
                             else if (randInt < unitPower)
                             {
@@ -603,7 +599,7 @@ namespace RBMAI
                     {
                         result.SetVec2(unitPosition);
                     }
-                    
+
                     return result;
                 }
                 else
@@ -614,7 +610,7 @@ namespace RBMAI
 
             [HarmonyPrefix]
             [HarmonyPatch("GetOrderPositionOfUnitAux")]
-            static bool PrefixGetOrderPositionOfUnitAux(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ____detachedUnits, ref WorldPosition __result)
+            private static bool PrefixGetOrderPositionOfUnitAux(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ____detachedUnits, ref WorldPosition __result)
             {
                 //if (Mission.Current.IsFieldBattle && unit != null && (__instance.QuerySystem.IsInfantryFormation) && (__instance.AI != null || __instance.IsAIControlled == false) && __instance.AI.ActiveBehavior != null)
                 //{
@@ -702,15 +698,14 @@ namespace RBMAI
                 return true;
             }
         }
-        
     }
 
     [HarmonyPatch(typeof(HumanAIComponent))]
-    class OverrideFormation
+    internal class OverrideFormation
     {
         [HarmonyPrefix]
         [HarmonyPatch("UpdateFormationMovement")]
-        static void PostfixUpdateFormationMovement(ref HumanAIComponent __instance, ref Agent ___Agent)
+        private static void PostfixUpdateFormationMovement(ref HumanAIComponent __instance, ref Agent ___Agent)
         {
             if (___Agent.Controller == Agent.ControllerType.AI && ___Agent.Formation != null && ___Agent.Formation.GetReadonlyMovementOrderReference().OrderEnum == MovementOrder.MovementOrderEnum.Move)
             {
@@ -727,7 +722,7 @@ namespace RBMAI
     }
 
     [HarmonyPatch(typeof(HumanAIComponent))]
-    class OverrideFormationMovementComponent
+    internal class OverrideFormationMovementComponent
     {
         internal enum MovementOrderEnum
         {
@@ -745,6 +740,7 @@ namespace RBMAI
             Advance,
             FallBack
         }
+
         internal enum MovementStateEnum
         {
             Charge,
@@ -758,7 +754,7 @@ namespace RBMAI
 
         [HarmonyPrefix]
         [HarmonyPatch("GetFormationFrame")]
-        static bool PrefixGetFormationFrame(ref bool __result, ref Agent ___Agent, ref HumanAIComponent __instance, ref WorldPosition formationPosition, ref Vec2 formationDirection, ref float speedLimit, ref bool isSettingDestinationSpeed, ref bool limitIsMultiplier)
+        private static bool PrefixGetFormationFrame(ref bool __result, ref Agent ___Agent, ref HumanAIComponent __instance, ref WorldPosition formationPosition, ref Vec2 formationDirection, ref float speedLimit, ref bool isSettingDestinationSpeed, ref bool limitIsMultiplier)
         {
             if (___Agent != null)
             {
@@ -771,7 +767,7 @@ namespace RBMAI
                         {
                             isSettingDestinationSpeed = false;
                             formationPosition = formation.GetOrderPositionOfUnit(___Agent);
-                            if(___Agent.GetTargetAgent() != null)
+                            if (___Agent.GetTargetAgent() != null)
                             {
                                 formationDirection = ___Agent.GetTargetAgent().Position.AsVec2 - ___Agent.Position.AsVec2;
                             }

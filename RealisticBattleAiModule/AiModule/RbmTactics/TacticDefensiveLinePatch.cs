@@ -4,11 +4,11 @@ using TaleWorlds.MountAndBlade;
 namespace RBMAI.AiModule.RbmTactics
 {
     [HarmonyPatch(typeof(TacticDefensiveLine))]
-    class TacticDefensiveLinePatch
+    internal class TacticDefensiveLinePatch
     {
         [HarmonyPrefix]
         [HarmonyPatch("HasBattleBeenJoined")]
-        static bool PrefixHasBattleBeenJoined(ref Formation ____mainInfantry, ref bool ____hasBattleBeenJoined, ref bool __result)
+        private static bool PrefixHasBattleBeenJoined(ref Formation ____mainInfantry, ref bool ____hasBattleBeenJoined, ref bool __result)
         {
             __result = RBMAI.Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined);
             return false;
@@ -16,7 +16,7 @@ namespace RBMAI.AiModule.RbmTactics
 
         [HarmonyPostfix]
         [HarmonyPatch("Defend")]
-        static void PostfixDefend(ref Formation ____archers, ref Formation ____mainInfantry, ref Formation ____rightCavalry, ref Formation ____leftCavalry, ref Formation ____rangedCavalry)
+        private static void PostfixDefend(ref Formation ____archers, ref Formation ____mainInfantry, ref Formation ____rightCavalry, ref Formation ____leftCavalry, ref Formation ____rangedCavalry)
         {
             if (____archers != null)
             {
@@ -50,7 +50,7 @@ namespace RBMAI.AiModule.RbmTactics
 
         [HarmonyPostfix]
         [HarmonyPatch("Engage")]
-        static void PostfixEngage(ref Formation ____archers, ref Formation ____mainInfantry, ref Formation ____rightCavalry, ref Formation ____leftCavalry, ref Formation ____rangedCavalry)
+        private static void PostfixEngage(ref Formation ____archers, ref Formation ____mainInfantry, ref Formation ____rightCavalry, ref Formation ____leftCavalry, ref Formation ____rangedCavalry)
         {
             if (____archers != null)
             {

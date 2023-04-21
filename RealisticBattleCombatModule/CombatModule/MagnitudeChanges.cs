@@ -1,16 +1,16 @@
-﻿using TaleWorlds.Core;
-using TaleWorlds.MountAndBlade;
-using HarmonyLib;
-using TaleWorlds.Library;
-using TaleWorlds.CampaignSystem.ViewModelCollection.Inventory;
+﻿using HarmonyLib;
 using System;
-using TaleWorlds.CampaignSystem;
-using System.Reflection;
-using TaleWorlds.Localization;
-using TaleWorlds.Core.ViewModelCollection.Information;
-using TaleWorlds.CampaignSystem.ViewModelCollection.Encyclopedia.Pages;
-using TaleWorlds.CampaignSystem.ViewModelCollection;
 using System.Linq;
+using System.Reflection;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.ViewModelCollection;
+using TaleWorlds.CampaignSystem.ViewModelCollection.Encyclopedia.Pages;
+using TaleWorlds.CampaignSystem.ViewModelCollection.Inventory;
+using TaleWorlds.Core;
+using TaleWorlds.Core.ViewModelCollection.Information;
+using TaleWorlds.Library;
+using TaleWorlds.Localization;
+using TaleWorlds.MountAndBlade;
 
 namespace RBMCombat
 {
@@ -40,7 +40,6 @@ namespace RBMCombat
 
                     if (weapon.Item != null && weapon.CurrentUsageItem != null)
                     {
-
                         Agent attacker = null;
                         foreach (Agent agent in Mission.Current.Agents)
                         {
@@ -344,7 +343,7 @@ namespace RBMCombat
                         break;
                     }
             }
-            
+
             baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining;
 
             if (weaponClass == WeaponClass.Javelin)
@@ -397,9 +396,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
         [HarmonyPatch("ComputeBlowMagnitudeMissile")]
-        class ComputeBlowMagnitudeMissilePacth
+        private class ComputeBlowMagnitudeMissilePacth
         {
-            static bool Prefix(in AttackInformation attackInformation, in AttackCollisionData acd, in MissionWeapon weapon, float momentumRemaining, in Vec2 victimVelocity, out float baseMagnitude, out float specialMagnitude)
+            private static bool Prefix(in AttackInformation attackInformation, in AttackCollisionData acd, in MissionWeapon weapon, float momentumRemaining, in Vec2 victimVelocity, out float baseMagnitude, out float specialMagnitude)
             {
                 Vec3 missileVelocity = acd.MissileVelocity;
 
@@ -425,7 +424,7 @@ namespace RBMCombat
                 {
                     length = missileVelocity.Length;
                 }
-                baseMagnitude = CalculateMissileMagnitude(weapon.CurrentUsageItem.WeaponClass, weaponItem.Weight, length, missileTotalDamage, momentumRemaining, (DamageTypes) acd.DamageType);
+                baseMagnitude = CalculateMissileMagnitude(weapon.CurrentUsageItem.WeaponClass, weaponItem.Weight, length, missileTotalDamage, momentumRemaining, (DamageTypes)acd.DamageType);
                 specialMagnitude = baseMagnitude;
 
                 return false;
@@ -434,9 +433,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(CombatStatCalculator))]
         [HarmonyPatch("CalculateStrikeMagnitudeForPassiveUsage")]
-        class ChangeLanceDamage
+        private class ChangeLanceDamage
         {
-            static bool Prefix(float weaponWeight, float extraLinearSpeed, ref float __result)
+            private static bool Prefix(float weaponWeight, float extraLinearSpeed, ref float __result)
             {
                 __result = CalculateStrikeMagnitudeForThrust(0f, weaponWeight, extraLinearSpeed, isThrown: false);
                 return false;
@@ -447,20 +446,18 @@ namespace RBMCombat
                 float num = extraLinearSpeed * 1f; // because cav in the game is roughly 50% faster than it should be
                 float num2 = 0.5f * weaponWeight * num * num * RBMConfig.RBMConfig.ThrustMagnitudeModifier; // lances need to have 3 times more damage to be preferred over maces
                 return num2;
-
             }
-        }    
+        }
 
         [HarmonyPatch(typeof(CombatStatCalculator))]
         [HarmonyPatch("CalculateStrikeMagnitudeForThrust")]
-        class CalculateStrikeMagnitudeForThrustPatch
+        private class CalculateStrikeMagnitudeForThrustPatch
         {
-            static bool Prefix(float thrustWeaponSpeed, float weaponWeight, float extraLinearSpeed, bool isThrown, ref float __result)
+            private static bool Prefix(float thrustWeaponSpeed, float weaponWeight, float extraLinearSpeed, bool isThrown, ref float __result)
             {
                 float combinedSpeed = MBMath.ClampFloat(thrustWeaponSpeed, 4f, 6f) + extraLinearSpeed;
                 if (combinedSpeed > 0f)
                 {
-
                     float kineticEnergy = 0.5f * weaponWeight * combinedSpeed * combinedSpeed;
                     float mixedEnergy = 0.5f * (weaponWeight + 1.5f) * combinedSpeed * combinedSpeed;
                     float baselineEnergy = 0.5f * 8f * combinedSpeed * combinedSpeed;
@@ -471,7 +468,6 @@ namespace RBMCombat
                     //{
                     //    basedamage = mixedEnergy;
                     //}
-
 
                     //float handBonus = 0.5f * (weaponWeight + 1.5f) * combinedSpeed * combinedSpeed;
                     //float handLimit = 120f;
@@ -658,7 +654,7 @@ namespace RBMCombat
 
         public static void GetRBMMeleeWeaponStats(in EquipmentElement targetWeapon, int targetWeaponUsageIndex, EquipmentElement comparedWeapon, int comparedWeaponUsageIndex,
             out int relevantSkill, out float swingSpeed, out float swingSpeedCompred, out float thrustSpeed, out float thrustSpeedCompred, out float sweetSpotOut, out float sweetSpotComparedOut,
-            out string swingCombinedStringOut, out string swingCombinedStringComparedOut, out string thrustCombinedStringOut, out string thrustCombinedStringComparedOut , 
+            out string swingCombinedStringOut, out string swingCombinedStringComparedOut, out string thrustCombinedStringOut, out string thrustCombinedStringComparedOut,
             out float swingDamageFactor, out float swingDamageFactorCompared, out float thrustDamageFactor, out float thrustDamageFactorCompared)
         {
             relevantSkill = 0;
@@ -765,7 +761,6 @@ namespace RBMCombat
 
                     if (targetWeapon.GetModifiedThrustDamageForUsage(targetWeaponUsageIndex) > 0f)
                     {
-
                         float thrustMagnitude = CalculateThrustMagnitude(targetWeapon, targetWeaponUsageIndex, effectiveSkill);
                         float thrustMagnitudeCompared = CalculateThrustMagnitude(comparedWeapon, comparedWeaponUsageIndex, effectiveSkill);
 
@@ -833,9 +828,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(ItemMenuVM))]
         [HarmonyPatch("SetWeaponComponentTooltip")]
-        class SetWeaponComponentTooltipPatch
+        private class SetWeaponComponentTooltipPatch
         {
-            static void Postfix(ref ItemMenuVM __instance, in EquipmentElement targetWeapon, int targetWeaponUsageIndex, EquipmentElement comparedWeapon, int comparedWeaponUsageIndex, bool isInit)
+            private static void Postfix(ref ItemMenuVM __instance, in EquipmentElement targetWeapon, int targetWeaponUsageIndex, EquipmentElement comparedWeapon, int comparedWeaponUsageIndex, bool isInit)
             {
                 MethodInfo methodAddFloatProperty = typeof(ItemMenuVM).GetMethod("AddFloatProperty", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(TextObject), typeof(float), typeof(float?), typeof(bool) }, null);
                 methodAddFloatProperty.DeclaringType.GetMethod("AddFloatProperty", new[] { typeof(TextObject), typeof(float), typeof(float?), typeof(bool) });
@@ -869,7 +864,8 @@ namespace RBMCombat
                         {
                             int drawWeight = targetWeapon.GetModifiedMissileSpeedForUsage(targetWeaponUsageIndex);
                             float ammoWeightIdealModifier;
-                            if (targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ItemUsage.Equals("bow")){
+                            if (targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ItemUsage.Equals("bow"))
+                            {
                                 ammoWeightIdealModifier = 1600f;
                             }
                             else
@@ -880,7 +876,7 @@ namespace RBMCombat
                             float ammoWeightIdeal = drawWeight / ammoWeightIdealModifier;
 
                             int calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeightIdeal, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ItemUsage, drawWeight);
-                        
+
                             methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "RBM Stats", "", 1, null });
 
                             methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Ideal Ammo Weight Range/Damage, grams: "), MathF.Round(ammoWeightIdeal * 1000f), MathF.Round(ammoWeightIdeal * 1000f) });
@@ -1049,7 +1045,7 @@ namespace RBMCombat
                             string combinedDamageString = "A-Armor\nD-Damage Inflicted\nP-Penetrated Damage\nB-Blunt Focre Trauma\n";
                             methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Missile Damage", 1, null });
                             float weaponDamageFactor = (float)Math.Sqrt(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageFactor);
-                            if(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.ThrowingAxe)
+                            if (targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.ThrowingAxe)
                             {
                                 weaponDamageFactor = (float)Math.Sqrt(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageFactor);
                             }
@@ -1069,8 +1065,8 @@ namespace RBMCombat
                                 }
                                 else
                                 {
-                                     realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
-                                targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, missileMagnitude, i, 1f, out penetratedDamage, out bluntForce, weaponDamageFactor, null, false)), 0, 2000);
+                                    realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
+                               targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, missileMagnitude, i, 1f, out penetratedDamage, out bluntForce, weaponDamageFactor, null, false)), 0, 2000);
                                 }
                                 realDamage = MathF.Floor(realDamage * 1f);
 
@@ -1088,12 +1084,11 @@ namespace RBMCombat
                 if (!targetWeapon.IsEmpty && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex) != null && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).IsMeleeWeapon)
                 {
                     GetRBMMeleeWeaponStats(targetWeapon, targetWeaponUsageIndex, comparedWeapon, comparedWeaponUsageIndex, out int relevantSkill, out float swingSpeed, out float swingSpeedCompred, out float thrustSpeed, out float thrustSpeedCompred, out float sweetSpotOut, out float sweetSpotComparedOut,
-                    out string swingCombinedStringOut, out string swingCombinedStringComparedOut, out string thrustCombinedStringOut, out string thrustCombinedStringComparedOut, 
+                    out string swingCombinedStringOut, out string swingCombinedStringComparedOut, out string thrustCombinedStringOut, out string thrustCombinedStringComparedOut,
                     out float swingDamageFactor, out float swingDamageFactorCompared, out float thrustDamageFactor, out float thrustDamageFactorCompared);
 
                     if (currentSelectedChar != null)
                     {
-
                         methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "RBM Stats", "", 1, null });
 
                         methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Relevant Skill: "), relevantSkill, relevantSkill });
@@ -1120,7 +1115,6 @@ namespace RBMCombat
 
                         if (targetWeapon.GetModifiedThrustDamageForUsage(targetWeaponUsageIndex) > 0f)
                         {
-
                             methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "", "Thrust Damage (Hover)", 1, null });
 
                             __instance.TargetItemProperties[__instance.TargetItemProperties.Count - 1].PropertyHint = new HintViewModel(new TextObject(thrustCombinedStringOut));
@@ -1133,7 +1127,7 @@ namespace RBMCombat
 
                         if (RBMConfig.RBMConfig.developerMode)
                         {
-                            if(targetWeapon.Item.WeaponDesign != null && targetWeapon.Item.WeaponDesign.UsedPieces != null && targetWeapon.Item.WeaponDesign.UsedPieces.Count() > 0)
+                            if (targetWeapon.Item.WeaponDesign != null && targetWeapon.Item.WeaponDesign.UsedPieces != null && targetWeapon.Item.WeaponDesign.UsedPieces.Count() > 0)
                             {
                                 methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "RBM Developer Stats", "", 1, null });
 
@@ -1143,7 +1137,6 @@ namespace RBMCombat
                                     methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Scale Percentage:"), wde.ScalePercentage, wde.ScalePercentage });
                                     methodAddFloatProperty.Invoke(__instance, new object[] { new TextObject("Weight:"), wde.CraftingPiece.Weight, wde.CraftingPiece.Weight, false });
                                     methodAddFloatProperty.Invoke(__instance, new object[] { new TextObject("Length:"), wde.CraftingPiece.Length, wde.CraftingPiece.Length, false });
-
                                 }
                             }
                         }
@@ -1153,9 +1146,9 @@ namespace RBMCombat
         }
 
         public static void getRBMArmorStatsStrings(Equipment equipment,
-            out string combinedHeadString ,
-            out string combinedBodyString ,
-            out string combinedArmString ,
+            out string combinedHeadString,
+            out string combinedBodyString,
+            out string combinedArmString,
             out string combinedLegString)
         {
             combinedHeadString = "";
@@ -1166,7 +1159,6 @@ namespace RBMCombat
             {
                 if (equipment != null)
                 {
-                    
                     float headArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Head);
                     float neckArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Neck);
                     float shoulderArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.ShoulderLeft);
@@ -1175,7 +1167,7 @@ namespace RBMCombat
                     float abdomenArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Abdomen);
                     float legsArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Legs);
 
-                    combinedHeadString += String.Format("{0,-32}", "Head Armor: ")  + headArmor + "\n";
+                    combinedHeadString += String.Format("{0,-32}", "Head Armor: ") + headArmor + "\n";
                     if (!equipment[EquipmentIndex.Head].IsEmpty)
                     {
                         float faceArmor = equipment[EquipmentIndex.Head].GetModifiedBodyArmor();
@@ -1206,9 +1198,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(SPInventoryVM))]
         [HarmonyPatch("UpdateCharacterArmorValues")]
-        class UpdateCharacterArmorValuesPatch
+        private class UpdateCharacterArmorValuesPatch
         {
-            static void Postfix(ref SPInventoryVM __instance, CharacterObject ____currentCharacter)
+            private static void Postfix(ref SPInventoryVM __instance, CharacterObject ____currentCharacter)
             {
                 if (____currentCharacter != null)
                 {
@@ -1219,20 +1211,20 @@ namespace RBMCombat
                        out string combinedBodyString,
                        out string combinedArmString,
                        out string combinedLegString);
-                    
+
                     __instance.HeadArmorHint = new HintViewModel(new TextObject(combinedHeadString));
                     __instance.BodyArmorHint = new HintViewModel(new TextObject(combinedBodyString));
                     __instance.ArmArmorHint = new HintViewModel(new TextObject(combinedArmString));
                     __instance.LegArmorHint = new HintViewModel(new TextObject(combinedLegString));
-                    }
                 }
             }
+        }
 
         [HarmonyPatch(typeof(SPInventoryVM))]
         [HarmonyPatch("RefreshValues")]
-        class RefreshValuesPatch
+        private class RefreshValuesPatch
         {
-            static void Postfix(ref SPInventoryVM __instance, CharacterObject ____currentCharacter)
+            private static void Postfix(ref SPInventoryVM __instance, CharacterObject ____currentCharacter)
             {
                 if (____currentCharacter != null)
                 {
@@ -1252,11 +1244,11 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(EncyclopediaUnitPageVM))]
         [HarmonyPatch("RefreshValues")]
-        class EncyclopediaUnitPageVMRefreshValuesPatch
+        private class EncyclopediaUnitPageVMRefreshValuesPatch
         {
-            static void Postfix(ref EncyclopediaUnitPageVM __instance, CharacterObject ____character)
+            private static void Postfix(ref EncyclopediaUnitPageVM __instance, CharacterObject ____character)
             {
-                if(__instance.EquipmentSetSelector != null)
+                if (__instance.EquipmentSetSelector != null)
                 {
                     equipmentSetindex = __instance.EquipmentSetSelector.SelectedIndex;
                 }
@@ -1266,9 +1258,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(EncyclopediaUnitPageVM))]
         [HarmonyPatch("OnEquipmentSetChange")]
-        class EncyclopediaUnitPageVOnEquipmentSetChangePatch
+        private class EncyclopediaUnitPageVOnEquipmentSetChangePatch
         {
-            static void Postfix(ref EncyclopediaUnitPageVM __instance)
+            private static void Postfix(ref EncyclopediaUnitPageVM __instance)
             {
                 if (__instance.EquipmentSetSelector != null)
                 {
@@ -1279,11 +1271,11 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(PropertyBasedTooltipVMExtensions))]
         [HarmonyPatch("UpdateTooltip", new[] { typeof(PropertyBasedTooltipVM), typeof(EquipmentElement?) })]
-        class UpdateTooltipPatch
+        private class UpdateTooltipPatch
         {
-            static void Postfix(ref PropertyBasedTooltipVM propertyBasedTooltipVM, EquipmentElement? equipmentElement)
+            private static void Postfix(ref PropertyBasedTooltipVM propertyBasedTooltipVM, EquipmentElement? equipmentElement)
             {
-                if(equipmentElement != null && equipmentElement.HasValue)
+                if (equipmentElement != null && equipmentElement.HasValue)
                 {
                     EquipmentElement eq = equipmentElement.Value;
                     if (propertyBasedTooltipVM != null && currentSelectedChar != null && eq.Item != null)
@@ -1297,9 +1289,10 @@ namespace RBMCombat
                                 usageindex = 1;
                             }
                             string hintText = "";
-                            if (item.GetWeaponWithUsageIndex(usageindex).IsMeleeWeapon) {
+                            if (item.GetWeaponWithUsageIndex(usageindex).IsMeleeWeapon)
+                            {
                                 GetRBMMeleeWeaponStats(eq, usageindex, EquipmentElement.Invalid, -1, out int relevantSkill, out float swingSpeed, out float swingSpeedCompred, out float thrustSpeed, out float thrustSpeedCompred, out float sweetSpotOut, out float sweetSpotComparedOut,
-                            out string swingCombinedStringOut, out string swingCombinedStringComparedOut, out string thrustCombinedStringOut, out string thrustCombinedStringComparedOut ,
+                            out string swingCombinedStringOut, out string swingCombinedStringComparedOut, out string thrustCombinedStringOut, out string thrustCombinedStringComparedOut,
                             out float swingDamageFactor, out float swingDamageFactorCompared, out float thrustDamageFactor, out float thrustDamageFactorCompared);
 
                                 hintText += "RBM Stats\n";
@@ -1332,9 +1325,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(PropertyBasedTooltipVMExtensions))]
         [HarmonyPatch("UpdateTooltip", new[] { typeof(PropertyBasedTooltipVM), typeof(CharacterObject) })]
-        class UpdateTooltipCharacterObjectPatch
+        private class UpdateTooltipCharacterObjectPatch
         {
-            static void Postfix(ref PropertyBasedTooltipVM propertyBasedTooltipVM, CharacterObject character)
+            private static void Postfix(ref PropertyBasedTooltipVM propertyBasedTooltipVM, CharacterObject character)
             {
                 if (character != null)
                 {

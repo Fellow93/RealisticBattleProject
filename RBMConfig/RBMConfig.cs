@@ -10,18 +10,24 @@ namespace RBMConfig
         public static float ThrustMagnitudeModifier = 0.05f;
         public static float OneHandedThrustDamageBonus = 20f;
         public static float TwoHandedThrustDamageBonus = 20f;
+
         //modules
         public static bool rbmTournamentEnabled = true;
+
         public static bool rbmAiEnabled = true;
         public static bool rbmCombatEnabled = true;
         public static bool developerMode = false;
+
         //RBMAI
         public static bool postureEnabled = true;
+
         public static float playerPostureMultiplier = 1f;
         public static bool postureGUIEnabled = true;
         public static bool vanillaCombatAi = false;
+
         //RBMCombat
         public static bool realisticArrowArc = false;
+
         public static bool armorStatusUIEnabled = true;
         public static float armorMultiplier = 2f;
         public static bool armorPenetrationMessage = false;
@@ -61,7 +67,7 @@ namespace RBMConfig
 
         public static void parseXmlConfig()
         {
-            if(xmlConfig.SelectSingleNode("/Config/DeveloperMode") != null)
+            if (xmlConfig.SelectSingleNode("/Config/DeveloperMode") != null)
             {
                 developerMode = true;
             }
@@ -126,7 +132,7 @@ namespace RBMConfig
             maceBluntModifier = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/MaceBluntModifier").InnerText);
             armorThresholdModifier = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorThresholdModifier").InnerText);
             bluntTraumaBonus = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BluntTraumaBonus").InnerText);
-            foreach(XmlNode weaponTypeNode in xmlConfig.SelectSingleNode("/Config/RBMCombat/WeaponTypes").ChildNodes)
+            foreach (XmlNode weaponTypeNode in xmlConfig.SelectSingleNode("/Config/RBMCombat/WeaponTypes").ChildNodes)
             {
                 RBMCombatConfigWeaponType weaponTypeFactors = new RBMCombatConfigWeaponType();
                 weaponTypeFactors.weaponType = weaponTypeNode.Name;
@@ -225,19 +231,18 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/TradePriceModifier"), priceMultipliers.TradePriceModifier.ToString());
 
             xmlConfig.Save(Utilities.GetConfigFilePath());
-
         }
 
         public static RBMCombatConfigWeaponType getWeaponTypeFactors(string weaponType)
         {
-            foreach(RBMCombatConfigWeaponType weaponTypeFactors in weaponTypesFactors)
+            foreach (RBMCombatConfigWeaponType weaponTypeFactors in weaponTypesFactors)
             {
-                if (weaponTypeFactors.weaponType.Equals(weaponType)){
+                if (weaponTypeFactors.weaponType.Equals(weaponType))
+                {
                     return weaponTypeFactors;
                 }
             }
             return null;
         }
-
     }
 }

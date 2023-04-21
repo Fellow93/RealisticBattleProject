@@ -103,6 +103,7 @@ namespace RBMAI
 
         private bool _isEnemyReachable = true;
         private bool _engaging = true;
+
         public RBMBehaviorHorseArcherSkirmish(Formation formation)
             : base(formation)
         {
@@ -123,7 +124,7 @@ namespace RBMAI
             {
                 bool num = (base.Formation.QuerySystem.AverageAllyPosition - base.Formation.Team.QuerySystem.AverageEnemyPosition).LengthSquared <= 3600f;
                 bool engaging = _engaging;
-                engaging = _engaging = num || ((!_engaging) ? ((base.Formation.QuerySystem.AveragePosition - base.Formation.QuerySystem.AverageAllyPosition).LengthSquared <= 3600f) : (!(base.Formation.QuerySystem.UnderRangedAttackRatio * 0.5f > base.Formation.QuerySystem.MakingRangedAttackRatio) ));
+                engaging = _engaging = num || ((!_engaging) ? ((base.Formation.QuerySystem.AveragePosition - base.Formation.QuerySystem.AverageAllyPosition).LengthSquared <= 3600f) : (!(base.Formation.QuerySystem.UnderRangedAttackRatio * 0.5f > base.Formation.QuerySystem.MakingRangedAttackRatio)));
                 if (_engaging)
                 {
                     if (targetFormation != null)
@@ -143,7 +144,6 @@ namespace RBMAI
                 {
                     position = new WorldPosition(Mission.Current.Scene, new Vec3(base.Formation.QuerySystem.AverageAllyPosition, base.Formation.Team.QuerySystem.MedianPosition.GetNavMeshZ() + 100f));
                 }
-                
             }
             if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(position.AsVec2))
             {
@@ -154,7 +154,7 @@ namespace RBMAI
             {
                 CurrentOrder = MovementOrder.MovementOrderMove(position);
             }
-    }
+        }
 
         public override void TickOccasionally()
         {
@@ -221,5 +221,4 @@ namespace RBMAI
             }
         }
     }
-
 }

@@ -10,23 +10,22 @@ using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
-using TaleWorlds.MountAndBlade.View.MissionViews;
 using static TaleWorlds.MountAndBlade.ArrangementOrder;
 
 namespace RBMAI
 {
-    class AgentAi
+    internal class AgentAi
     {
         [HarmonyPatch(typeof(AgentStatCalculateModel))]
         [HarmonyPatch("SetAiRelatedProperties")]
-        class OverrideSetAiRelatedProperties
+        private class OverrideSetAiRelatedProperties
         {
-            static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem, AgentStatCalculateModel __instance)
+            private static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem, AgentStatCalculateModel __instance)
             {
                 bool agentHasShield = false;
-                if(agent.GetWieldedItemIndex(Agent.HandIndex.OffHand) != EquipmentIndex.None)
+                if (agent.GetWieldedItemIndex(Agent.HandIndex.OffHand) != EquipmentIndex.None)
                 {
-                    if(agent.Equipment[agent.GetWieldedItemIndex(Agent.HandIndex.OffHand)].CurrentUsageItem.WeaponClass == WeaponClass.SmallShield || 
+                    if (agent.Equipment[agent.GetWieldedItemIndex(Agent.HandIndex.OffHand)].CurrentUsageItem.WeaponClass == WeaponClass.SmallShield ||
                         agent.Equipment[agent.GetWieldedItemIndex(Agent.HandIndex.OffHand)].CurrentUsageItem.WeaponClass == WeaponClass.LargeShield)
                     {
                         agentHasShield = true;
@@ -45,7 +44,7 @@ namespace RBMAI
                 float meleeLevel = RBMAI.Utilities.CalculateAILevel(agent, meleeSkill);                 //num
                 float effectiveSkillLevel = RBMAI.Utilities.CalculateAILevel(agent, effectiveSkill);    //num2
                 float meleeDefensivness = meleeLevel + agent.Defensiveness;             //num3
-                
+
                 if (RBMConfig.RBMConfig.rbmCombatEnabled)
                 {
                     agentDrivenProperties.AiChargeHorsebackTargetDistFactor = 7f;
@@ -112,7 +111,7 @@ namespace RBMAI
                 //agentDrivenProperties.AiFlyingMissileCheckRadius = 250f;
 
                 float num4 = 1f - effectiveSkillLevel;
-                if(!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Crossbow)
+                if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Crossbow)
                 {
                     agentDrivenProperties.AiShooterError = 0.030f - (0.007f * effectiveSkillLevel);
                 }
@@ -121,11 +120,10 @@ namespace RBMAI
                     agentDrivenProperties.AiShooterError = 0.025f - (0.020f * effectiveSkillLevel);
                 }
 
-                if(agent.IsAIControlled)
+                if (agent.IsAIControlled)
                 {
                     agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
                     agentDrivenProperties.WeaponBestAccuracyWaitTime = 1.33f;
-
                 }
 
                 agentDrivenProperties.AiRangerLeadErrorMin = (float)((0.0 - (double)num4) * 0.349999994039536) + 0.3f;
@@ -133,7 +131,7 @@ namespace RBMAI
 
                 if (equippedItem != null && equippedItem.RelevantSkill == DefaultSkills.Bow)
                 {
-                    if(agent.MountAgent != null)
+                    if (agent.MountAgent != null)
                     {
                         //agentDrivenProperties.AiRangerVerticalErrorMultiplier = 0f;//horse archers
                         //agentDrivenProperties.AiRangerHorizontalErrorMultiplier = 0f;//horse archers
@@ -149,7 +147,7 @@ namespace RBMAI
                         agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.020f - effectiveSkill * 0.0001f, 0.01f, 0.020f);//bow
                     }
                 }
-                else if(equippedItem != null && equippedItem.RelevantSkill == DefaultSkills.Crossbow)
+                else if (equippedItem != null && equippedItem.RelevantSkill == DefaultSkills.Crossbow)
                 {
                     agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.015f - effectiveSkill * 0.0001f, 0.005f, 0.015f);//crossbow
                     agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.010f - effectiveSkill * 0.0001f, 0.005f, 0.010f);//crossbow
@@ -161,10 +159,10 @@ namespace RBMAI
                 }
 
                 agentDrivenProperties.AiShootFreq = MBMath.ClampFloat(effectiveSkillLevel * 1.5f, 0.1f, 0.9f); // when set to 0 AI never shoots
-                                                                                                          //agentDrivenProperties.AiWaitBeforeShootFactor = 0f;
-                //agentDrivenProperties.AiMinimumDistanceToContinueFactor = 5f; //2f + 0.3f * (3f - meleeSkill);
-                //agentDrivenProperties.AIHoldingReadyMaxDuration = 0.1f; //MBMath.Lerp(0.25f, 0f, MBMath.Min(1f, num * 1.2f));
-                //agentDrivenProperties.AIHoldingReadyVariationPercentage = //num;
+                                                                                                               //agentDrivenProperties.AiWaitBeforeShootFactor = 0f;
+                                                                                                               //agentDrivenProperties.AiMinimumDistanceToContinueFactor = 5f; //2f + 0.3f * (3f - meleeSkill);
+                                                                                                               //agentDrivenProperties.AIHoldingReadyMaxDuration = 0.1f; //MBMath.Lerp(0.25f, 0f, MBMath.Min(1f, num * 1.2f));
+                                                                                                               //agentDrivenProperties.AIHoldingReadyVariationPercentage = //num;
 
                 //agentDrivenProperties.ReloadSpeed = 0.19f; //0.12 for heavy crossbows, 0.19f for light crossbows, composite bows and longbows.
 
@@ -189,9 +187,9 @@ namespace RBMAI
 
     [HarmonyPatch(typeof(SandboxAgentStatCalculateModel))]
     [HarmonyPatch("GetSkillEffectsOnAgent")]
-    class GetSkillEffectsOnAgentPatch
+    internal class GetSkillEffectsOnAgentPatch
     {
-        static bool Prefix(ref SandboxAgentStatCalculateModel __instance, ref Agent agent,ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData rightHandEquippedItem)
+        private static bool Prefix(ref SandboxAgentStatCalculateModel __instance, ref Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData rightHandEquippedItem)
         {
             CharacterObject characterObject = agent.Character as CharacterObject;
             float swingSpeedMultiplier = agentDrivenProperties.SwingSpeedMultiplier;
@@ -245,7 +243,6 @@ namespace RBMAI
                     stat.AddFactor(value);
                     stat2.AddFactor(value);
                     stat3.AddFactor(value);
-
                 }
                 agentDrivenProperties.SwingSpeedMultiplier = stat.ResultNumber;
                 agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier = stat2.ResultNumber;
@@ -255,12 +252,12 @@ namespace RBMAI
             return false;
         }
     }
-  
+
     [HarmonyPatch(typeof(ArrangementOrder))]
     [HarmonyPatch("GetShieldDirectionOfUnit")]
-    class HoldTheDoor
+    internal class HoldTheDoor
     {
-        static void Postfix(ref Agent.UsageDirection __result, Formation formation, Agent unit, ArrangementOrderEnum orderEnum)
+        private static void Postfix(ref Agent.UsageDirection __result, Formation formation, Agent unit, ArrangementOrderEnum orderEnum)
         {
             //if (!formation.QuerySystem.IsCavalryFormation && !formation.QuerySystem.IsRangedCavalryFormation)
             //{
@@ -335,6 +332,7 @@ namespace RBMAI
                     }
                     __result = Agent.UsageDirection.None;
                     return;
+
                 case ArrangementOrderEnum.Circle:
                 case ArrangementOrderEnum.Square:
                     if (unit.Formation.FiringOrder.OrderEnum != FiringOrder.RangedWeaponUsageOrderEnum.HoldYourFire)
@@ -358,6 +356,7 @@ namespace RBMAI
                     }
                     __result = Agent.UsageDirection.None;
                     return;
+
                 default:
                     __result = Agent.UsageDirection.None;
                     return;
@@ -367,10 +366,9 @@ namespace RBMAI
 
     [HarmonyPatch(typeof(Agent))]
     [HarmonyPatch("UpdateLastAttackAndHitTimes")]
-    class UpdateLastAttackAndHitTimesFix
+    internal class UpdateLastAttackAndHitTimesFix
     {
-
-        static bool Prefix(ref Agent __instance, Agent attackerAgent, bool isMissile)
+        private static bool Prefix(ref Agent __instance, Agent attackerAgent, bool isMissile)
         {
             PropertyInfo LastRangedHitTime = typeof(Agent).GetProperty("LastRangedHitTime");
             LastRangedHitTime.DeclaringType.GetProperty("LastRangedHitTime");
@@ -411,7 +409,7 @@ namespace RBMAI
 
             if (!__instance.IsHuman)
             {
-                if(__instance.RiderAgent != null)
+                if (__instance.RiderAgent != null)
                 {
                     if (isMissile)
                     {
@@ -431,12 +429,11 @@ namespace RBMAI
 
     [HarmonyPatch(typeof(HumanAIComponent))]
     [HarmonyPatch("OnTickAsAI")]
-    class OnTickAsAIPatch
+    internal class OnTickAsAIPatch
     {
-
         public static Dictionary<Agent, float> itemPickupDistanceStorage = new Dictionary<Agent, float> { };
 
-        static void Postfix(ref SpawnedItemEntity ____itemToPickUp, ref Agent ___Agent)
+        private static void Postfix(ref SpawnedItemEntity ____itemToPickUp, ref Agent ___Agent)
         {
             if (____itemToPickUp != null && (___Agent.AIStateFlags & Agent.AIStateFlag.UseObjectMoving) != 0)
             {
@@ -447,17 +444,16 @@ namespace RBMAI
                 float distanceSq = origin.DistanceSquaredWithLimit(in targetPoint, num * num + 1E-05f);
                 float newDist = -1f;
                 itemPickupDistanceStorage.TryGetValue(___Agent, out newDist);
-                if(newDist == 0f)
+                if (newDist == 0f)
                 {
                     itemPickupDistanceStorage[___Agent] = distanceSq;
                 }
                 else
                 {
-                    if(distanceSq == newDist)
+                    if (distanceSq == newDist)
                     {
                         ___Agent.StopUsingGameObject(isSuccessful: false);
                         itemPickupDistanceStorage.Remove(___Agent);
-
                     }
                     itemPickupDistanceStorage[___Agent] = distanceSq;
                 }
@@ -469,11 +465,10 @@ namespace RBMAI
     [HarmonyPatch("OnAgentShootMissile")]
     [UsedImplicitly]
     [MBCallback]
-    class OverrideOnAgentShootMissile
+    internal class OverrideOnAgentShootMissile
     {
-
         //private static int _oldMissileSpeed;
-        static bool Prefix(Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, ref Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
+        private static bool Prefix(Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, ref Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
         {
             MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
             WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
@@ -488,7 +483,6 @@ namespace RBMAI
                 else
                 {
                     velocity.z = velocity.z - 2f;
-
                 }
             }
 
@@ -498,9 +492,9 @@ namespace RBMAI
 
     [HarmonyPatch(typeof(Mission))]
     [HarmonyPatch("OnAgentDismount")]
-    class OnAgentDismountPatch
+    internal class OnAgentDismountPatch
     {
-        static void Postfix(Agent agent, Mission __instance)
+        private static void Postfix(Agent agent, Mission __instance)
         {
             if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
             {
@@ -510,7 +504,7 @@ namespace RBMAI
                 {
                     float distanceToInf = -1f;
                     float distanceToArc = -1f;
-                    
+
                     if (agent.Formation != null && isInfFormationActive)
                     {
                         distanceToInf = agent.Team.GetFormation(FormationClass.Infantry).QuerySystem.MedianPosition.AsVec2.Distance(agent.Formation.QuerySystem.MedianPosition.AsVec2);
@@ -577,9 +571,9 @@ namespace RBMAI
 
     [HarmonyPatch(typeof(Mission))]
     [HarmonyPatch("OnAgentMount")]
-    class OnAgentMountPatch
+    internal class OnAgentMountPatch
     {
-        static void Postfix(Agent agent, Mission __instance)
+        private static void Postfix(Agent agent, Mission __instance)
         {
             if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
             {
@@ -615,9 +609,9 @@ namespace RBMAI
 
     [HarmonyPatch(typeof(Formation))]
     [HarmonyPatch("ApplyActionOnEachUnit", new Type[] { typeof(Action<Agent>), typeof(Agent) })]
-    class ApplyActionOnEachUnitPatch
+    internal class ApplyActionOnEachUnitPatch
     {
-        static bool Prefix(ref Action<Agent> action, ref Agent ignoreAgent, ref Formation __instance)
+        private static bool Prefix(ref Action<Agent> action, ref Agent ignoreAgent, ref Formation __instance)
         {
             try
             {
@@ -635,9 +629,9 @@ namespace RBMAI
 
     [HarmonyPatch(typeof(BannerBearerLogic))]
     [HarmonyPatch("RespawnAsBannerBearer")]
-    class RespawnAsBannerBearerPatch
+    internal class RespawnAsBannerBearerPatch
     {
-        static bool Prefix(ref BannerBearerLogic __instance, Agent agent, ref Agent __result, bool isAlarmed, bool wieldInitialWeapons, bool forceDismounted, string specialActionSetSuffix = null, bool useTroopClassForSpawn = false)
+        private static bool Prefix(ref BannerBearerLogic __instance, Agent agent, ref Agent __result, bool isAlarmed, bool wieldInitialWeapons, bool forceDismounted, string specialActionSetSuffix = null, bool useTroopClassForSpawn = false)
         {
             if (agent != null && agent.Formation != null)
             {
@@ -645,7 +639,7 @@ namespace RBMAI
                 MethodInfo method = typeof(BannerBearerLogic).GetMethod("GetFormationControllerFromFormation", BindingFlags.NonPublic | BindingFlags.Instance);
                 method.DeclaringType.GetMethod("GetFormationControllerFromFormation");
                 Object obj = method.Invoke(__instance, new object[] { agent.Formation });
-                if(obj != null)
+                if (obj != null)
                 {
                     return true;
                 }
@@ -675,7 +669,6 @@ namespace RBMAI
     //{
     //    static bool Prefix( bool highlight, ref bool useSiegeMachineUsers, ref bool useAllTeamAgents, Dictionary<Agent, MetaMesh> ____agentMeshes, MissionAgentLabelView __instance)
     //    {
-
     //        if (__instance.Mission.PlayerTeam?.PlayerOrderController == null)
     //        {
     //            bool flag = __instance.Mission.PlayerTeam == null;

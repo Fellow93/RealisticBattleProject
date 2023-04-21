@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.Core.ItemObject;
@@ -9,12 +8,11 @@ using static TaleWorlds.Core.ItemObject;
 namespace RBMAI.AiModule.RbmTactics
 {
     [HarmonyPatch(typeof(TacticFullScaleAttack))]
-    class TacticFullScaleAttackPatch
+    internal class TacticFullScaleAttackPatch
     {
-
         [HarmonyPostfix]
         [HarmonyPatch("Advance")]
-        static void PostfixAdvance(ref Formation ____mainInfantry, ref Formation ____archers, ref Formation ____rightCavalry, ref Formation ____leftCavalry, ref Formation ____rangedCavalry)
+        private static void PostfixAdvance(ref Formation ____mainInfantry, ref Formation ____archers, ref Formation ____rightCavalry, ref Formation ____leftCavalry, ref Formation ____rangedCavalry)
         {
             if (____mainInfantry != null)
             {
@@ -39,7 +37,7 @@ namespace RBMAI.AiModule.RbmTactics
                 ____leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Left;
                 ____leftCavalry.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Left;
             }
-            if(____rangedCavalry != null)
+            if (____rangedCavalry != null)
             {
                 ____rangedCavalry.AI.ResetBehaviorWeights();
                 TacticFullScaleAttack.SetDefaultBehaviorWeights(____rangedCavalry);
@@ -50,9 +48,8 @@ namespace RBMAI.AiModule.RbmTactics
 
         [HarmonyPostfix]
         [HarmonyPatch("Attack")]
-        static void PostfixAttack(ref Formation ____mainInfantry, ref Formation ____archers, ref Formation ____rightCavalry, ref Formation ____leftCavalry, ref Formation ____rangedCavalry)
+        private static void PostfixAttack(ref Formation ____mainInfantry, ref Formation ____archers, ref Formation ____rightCavalry, ref Formation ____leftCavalry, ref Formation ____rangedCavalry)
         {
-
             if (____archers != null)
             {
                 ____archers.AI.ResetBehaviorWeights();
@@ -86,14 +83,14 @@ namespace RBMAI.AiModule.RbmTactics
 
         [HarmonyPostfix]
         [HarmonyPatch("HasBattleBeenJoined")]
-        static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
+        private static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
         {
             __result = RBMAI.Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined);
         }
 
         [HarmonyPostfix]
         [HarmonyPatch("GetTacticWeight")]
-        static void PostfixGetAiWeight(TacticFullScaleAttack __instance, ref float __result)
+        private static void PostfixGetAiWeight(TacticFullScaleAttack __instance, ref float __result)
         {
             Team currentTeam = __instance.Team;
             if (currentTeam.Side == BattleSideEnum.Defender)
@@ -103,7 +100,7 @@ namespace RBMAI.AiModule.RbmTactics
                     __result = 100f;
                 }
             }
-            if(float.IsNaN(__result))
+            if (float.IsNaN(__result))
             {
                 __result = 0.01f;
             }
@@ -111,7 +108,7 @@ namespace RBMAI.AiModule.RbmTactics
 
         [HarmonyPostfix]
         [HarmonyPatch("ManageFormationCounts")]
-        static void PostfixManageFormationCounts(ref Formation ____leftCavalry, ref Formation ____rightCavalry)
+        private static void PostfixManageFormationCounts(ref Formation ____leftCavalry, ref Formation ____rightCavalry)
         {
             if (____leftCavalry != null && ____rightCavalry != null && ____leftCavalry.IsAIControlled && ____rightCavalry.IsAIControlled)
             {

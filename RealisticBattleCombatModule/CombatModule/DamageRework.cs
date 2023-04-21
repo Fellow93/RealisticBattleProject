@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using RBMConfig;
 using SandBox.GameComponents;
 using SandBox.Missions.MissionLogics;
 using System;
@@ -13,14 +12,13 @@ using static TaleWorlds.MountAndBlade.Agent;
 
 namespace RBMCombat
 {
-    class DamageRework
+    internal class DamageRework
     {
-
         [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
         [HarmonyPatch("GetEntityDamageMultiplier")]
-        class GetEntityDamageMultiplierPatch
+        private class GetEntityDamageMultiplierPatch
         {
-            static bool Prefix(bool isAttackerAgentDoingPassiveAttack, WeaponComponentData weapon, DamageTypes damageType, bool isWoodenBody, ref float __result)
+            private static bool Prefix(bool isAttackerAgentDoingPassiveAttack, WeaponComponentData weapon, DamageTypes damageType, bool isWoodenBody, ref float __result)
             {
                 float dmgMultiplier = 1f;
                 if (isAttackerAgentDoingPassiveAttack)
@@ -45,6 +43,7 @@ namespace RBMCombat
                                 dmgMultiplier *= 0.8f;
                             }
                             break;
+
                         case DamageTypes.Pierce:
                             if (weapon.WeaponClass == WeaponClass.Arrow || weapon.WeaponClass == WeaponClass.Bolt || weapon.WeaponClass == WeaponClass.Javelin)
                             {
@@ -68,14 +67,14 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(Mission))]
         [HarmonyPatch("GetAttackCollisionResults")]
-        class GetAttackCollisionResultsPatch
+        private class GetAttackCollisionResultsPatch
         {
-            static void Postfix(Agent attackerAgent, Agent victimAgent, ref AttackCollisionData attackCollisionData, out CombatLogData combatLog, ref CombatLogData __result)
+            private static void Postfix(Agent attackerAgent, Agent victimAgent, ref AttackCollisionData attackCollisionData, out CombatLogData combatLog, ref CombatLogData __result)
             {
                 if (attackerAgent != null && attackCollisionData.StrikeType == (int)StrikeType.Swing && !attackCollisionData.AttackBlockedWithShield && !attackerAgent.WieldedWeapon.IsEmpty && !Utilities.HitWithWeaponBlade(in attackCollisionData, attackerAgent.WieldedWeapon))
                 {
                     string typeOfHandle = "Handle";
-                    if (attackerAgent.WieldedWeapon.CurrentUsageItem != null && 
+                    if (attackerAgent.WieldedWeapon.CurrentUsageItem != null &&
                         (attackerAgent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Dagger ||
                         attackerAgent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.OneHandedSword ||
                         attackerAgent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.TwoHandedSword))
@@ -100,7 +99,7 @@ namespace RBMCombat
         [HarmonyPatch("ComputeBlowDamage")]
         public class OverrideDamageCalc
         {
-            static bool Prefix(ref AttackInformation attackInformation, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, ref DamageTypes damageType, float magnitude, int speedBonus, bool cancelDamage, out int inflictedDamage, out int absorbedByArmor)
+            private static bool Prefix(ref AttackInformation attackInformation, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, ref DamageTypes damageType, float magnitude, int speedBonus, bool cancelDamage, out int inflictedDamage, out int absorbedByArmor)
             {
                 float armorAmountFloat = attackInformation.ArmorAmountFloat;
                 if (!attackCollisionData.IsMissile)
@@ -347,7 +346,7 @@ namespace RBMCombat
                         int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgentCharacter, attackerAgentOrigin, attackerFormation, skill);
                         float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
                         float skillModifier = Utilities.CalculateSkillModifier(ef);
-                        if(attacker != null && attacker.Equipment != null && attacker.GetWieldedItemIndex(HandIndex.MainHand) != EquipmentIndex.None)
+                        if (attacker != null && attacker.Equipment != null && attacker.GetWieldedItemIndex(HandIndex.MainHand) != EquipmentIndex.None)
                         {
                             itemModifier = attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].ItemModifier;
                             magnitude = Utilities.GetSkillBasedDamage(magnitude, attackInformation.IsAttackerAgentDoingPassiveAttack, weaponType, damageType, effectiveSkill, skillModifier, (StrikeType)attackCollisionData.StrikeType, attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight());
@@ -582,7 +581,7 @@ namespace RBMCombat
                 float weaponDamageFactor = 1f;
                 if (attackerWeapon != null)
                 {
-                    weaponDamageFactor = (float)Math.Sqrt((attackCollisionData.StrikeType == (int)StrikeType.Thrust) 
+                    weaponDamageFactor = (float)Math.Sqrt((attackCollisionData.StrikeType == (int)StrikeType.Thrust)
                         ? Utilities.getThrustDamageFactor(attackerWeapon, itemModifier)
                         : Utilities.getSwingDamageFactor(attackerWeapon, itemModifier));
                 }
@@ -628,7 +627,6 @@ namespace RBMCombat
                 MissionWeapon victimShield = attackInformation.VictimShield;
                 if (victimShield.IsEmpty)
                 {
-                   
                     for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                     {
                         if (victim != null && victim.Equipment != null && !victim.Equipment[equipmentIndex].IsEmpty)
@@ -641,7 +639,7 @@ namespace RBMCombat
                     }
                 }
 
-                if(victim != null && attacker != null)
+                if (victim != null && attacker != null)
                 {
                     MethodInfo method = typeof(Agent).GetMethod("UpdateLastAttackAndHitTimes", BindingFlags.NonPublic | BindingFlags.Instance);
                     method.DeclaringType.GetMethod("UpdateLastAttackAndHitTimes");
@@ -987,22 +985,21 @@ namespace RBMCombat
 
             [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
             [HarmonyPatch("ComputeBlowDamageOnShield")]
-            class OverrideDamageCalcShield
+            private class OverrideDamageCalcShield
             {
-                static bool Prefix(ref AttackInformation attackInformation, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, float blowMagnitude, out int inflictedDamage)
+                private static bool Prefix(ref AttackInformation attackInformation, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, float blowMagnitude, out int inflictedDamage)
                 {
                     RBMComputeBlowDamageOnShield(ref attackInformation, ref attackCollisionData, attackerWeapon, blowMagnitude, out inflictedDamage);
                     return false;
                 }
             }
-
         }
 
         [HarmonyPatch(typeof(SandboxAgentStatCalculateModel))]
         [HarmonyPatch("UpdateHumanStats")]
-        class SandboxAgentUpdateHumanStats
+        private class SandboxAgentUpdateHumanStats
         {
-            static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties)
+            private static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties)
             {
                 agentDrivenProperties.AttributeShieldMissileCollisionBodySizeAdder = 0.01f;
             }
@@ -1056,9 +1053,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(Mission))]
         [HarmonyPatch("CreateMeleeBlow")]
-        class CreateMeleeBlowPatch
+        private class CreateMeleeBlowPatch
         {
-            static void Postfix(ref Mission __instance, ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
+            private static void Postfix(ref Mission __instance, ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
             {
                 string weaponType = "otherDamage";
                 if (attackerWeapon.Item != null && attackerWeapon.CurrentUsageItem != null)
@@ -1084,7 +1081,6 @@ namespace RBMCombat
                             case "TwoHandedPolearm":
                                 if (attackerAgent.Team != victimAgent.Team)
                                 {
-
                                     //AttackCollisionData newdata = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(false, false, false, true, false, false, false, false, false, true, false, collisionData.CollisionResult, collisionData.AffectorWeaponSlotOrMissileIndex,
                                     //    collisionData.StrikeType, collisionData.StrikeType, collisionData.CollisionBoneIndex, BoneBodyPartType.Chest, collisionData.AttackBoneIndex, collisionData.AttackDirection, collisionData.PhysicsMaterialIndex,
                                     //    collisionData.CollisionHitResultFlags, collisionData.AttackProgress, collisionData.CollisionDistanceOnWeapon, collisionData.AttackerStunPeriod, collisionData.DefenderStunPeriod, collisionData.MissileTotalDamage,
@@ -1104,7 +1100,6 @@ namespace RBMCombat
                 {
                     if (attackerAgent.Team != victimAgent.Team)
                     {
-
                         //AttackCollisionData newdata = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(false, false, false, true, false, false, false, false, false, true, false, collisionData.CollisionResult, collisionData.AffectorWeaponSlotOrMissileIndex,
                         //    collisionData.StrikeType, collisionData.StrikeType, collisionData.CollisionBoneIndex, BoneBodyPartType.Chest, collisionData.AttackBoneIndex, collisionData.AttackDirection, collisionData.PhysicsMaterialIndex,
                         //    collisionData.CollisionHitResultFlags, collisionData.AttackProgress, collisionData.CollisionDistanceOnWeapon, collisionData.AttackerStunPeriod, collisionData.DefenderStunPeriod, collisionData.MissileTotalDamage,
@@ -1182,15 +1177,14 @@ namespace RBMCombat
                     __result.BlowFlag = BlowFlags.NonTipThrust;
                     return;
                 }
-
             }
         }
 
         [HarmonyPatch(typeof(Mission))]
         [HarmonyPatch("RegisterBlow")]
-        class RegisterBlowPatch
+        private class RegisterBlowPatch
         {
-            static bool Prefix(ref Mission __instance, ref Agent attacker, ref Agent victim, GameEntity realHitEntity, ref Blow b, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, ref CombatLogData combatLogData)
+            private static bool Prefix(ref Mission __instance, ref Agent attacker, ref Agent victim, GameEntity realHitEntity, ref Blow b, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, ref CombatLogData combatLogData)
             {
                 if (victim != null && victim.IsMount && collisionData.IsMissile)
                 {
@@ -1240,11 +1234,10 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(BattleAgentLogic))]
         [HarmonyPatch("OnAgentHit")]
-        class OnAgentHitPatch
+        private class OnAgentHitPatch
         {
-            static bool Prefix(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
+            private static bool Prefix(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
             {
-
                 if (affectedAgent != null && blow.InflictedDamage > 1f && affectedAgent.State == AgentState.Active && attackCollisionData.CollisionResult == CombatCollisionResult.StrikeAgent && !blow.IsFallDamage)
                 {
                     Utilities.initiateCheckForArmor(ref affectedAgent, attackCollisionData, blow, affectorAgent, attackerWeapon);
@@ -1274,9 +1267,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(CustomBattleAgentLogic))]
         [HarmonyPatch("OnAgentHit")]
-        class CustomBattleAgentLogicPatch
+        private class CustomBattleAgentLogicPatch
         {
-            static bool Prefix(Agent affectedAgent, Agent affectorAgent, in MissionWeapon affectorWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
+            private static bool Prefix(Agent affectedAgent, Agent affectorAgent, in MissionWeapon affectorWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
             {
                 if (affectedAgent != null && affectedAgent.State == AgentState.Active && blow.InflictedDamage > 1f && attackCollisionData.CollisionResult == CombatCollisionResult.StrikeAgent && !blow.IsFallDamage)
                 {
@@ -1289,7 +1282,7 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(Agent))]
         [HarmonyPatch("HandleBlow")]
-        class HandleBlowPatch
+        private class HandleBlowPatch
         {
             private static ArmorComponent.ArmorMaterialTypes GetProtectorArmorMaterialOfBone(Agent agent, sbyte boneIndex)
             {
@@ -1306,13 +1299,16 @@ namespace RBMCombat
                             case BoneBodyPartType.ShoulderRight:
                                 equipmentIndex = EquipmentIndex.Body;
                                 break;
+
                             case BoneBodyPartType.ArmLeft:
                             case BoneBodyPartType.ArmRight:
                                 equipmentIndex = EquipmentIndex.Gloves;
                                 break;
+
                             case BoneBodyPartType.Legs:
                                 equipmentIndex = EquipmentIndex.Leg;
                                 break;
+
                             case BoneBodyPartType.Head:
                             case BoneBodyPartType.Neck:
                                 equipmentIndex = EquipmentIndex.NumAllWeaponSlots;
@@ -1329,7 +1325,8 @@ namespace RBMCombat
                 }
                 return ArmorComponent.ArmorMaterialTypes.None;
             }
-            static bool Prefix(ref Agent __instance, ref Blow b, AgentLastHitInfo ____lastHitInfo, in AttackCollisionData collisionData)
+
+            private static bool Prefix(ref Agent __instance, ref Blow b, AgentLastHitInfo ____lastHitInfo, in AttackCollisionData collisionData)
             {
                 b.BaseMagnitude = Math.Min(b.BaseMagnitude, 1000f) / 8f;
                 Agent agent = (b.OwnerId != -1) ? __instance.Mission.FindAgentWithIndex(b.OwnerId) : __instance;
@@ -1375,7 +1372,6 @@ namespace RBMCombat
                 }
                 if (b.InflictedDamage == 1 && isKnockBack)
                 {
-
                 }
                 else
                 {
@@ -1430,9 +1426,9 @@ namespace RBMCombat
 
     [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
     [HarmonyPatch("GetAttackCollisionResults")]
-    class GetAttackCollisionResultsPatch
+    internal class GetAttackCollisionResultsPatch
     {
-        static void Postfix(in AttackInformation attackInformation, bool crushedThrough, float momentumRemaining, in MissionWeapon attackerWeapon, bool cancelDamage, ref AttackCollisionData attackCollisionData, ref CombatLogData combatLog, int speedBonus)
+        private static void Postfix(in AttackInformation attackInformation, bool crushedThrough, float momentumRemaining, in MissionWeapon attackerWeapon, bool cancelDamage, ref AttackCollisionData attackCollisionData, ref CombatLogData combatLog, int speedBonus)
         {
             if (!attackCollisionData.IsColliderAgent && attackCollisionData.EntityExists)
             {
@@ -1445,4 +1441,3 @@ namespace RBMCombat
         }
     }
 }
-

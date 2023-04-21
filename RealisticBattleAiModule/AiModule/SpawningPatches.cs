@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using SandBox.Missions.MissionLogics;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TaleWorlds.CampaignSystem.Encounters;
@@ -13,15 +12,14 @@ using TaleWorlds.MountAndBlade.MissionSpawnHandlers;
 
 namespace RBMAI.AiModule
 {
-    class SpawningPatches
+    internal class SpawningPatches
     {
-
         [HarmonyPatch(typeof(Mission))]
-        class SpawnTroopPatch
+        private class SpawnTroopPatch
         {
             [HarmonyPrefix]
             [HarmonyPatch("SpawnTroop")]
-            static bool PrefixSpawnTroop(ref Mission __instance, IAgentOriginBase troopOrigin, bool isPlayerSide, bool hasFormation, bool spawnWithHorse, bool isReinforcement, int formationTroopCount, int formationTroopIndex, bool isAlarmed, bool wieldInitialWeapons, bool forceDismounted, ref Vec3? initialPosition, ref Vec2? initialDirection, string specialActionSetSuffix = null)
+            private static bool PrefixSpawnTroop(ref Mission __instance, IAgentOriginBase troopOrigin, bool isPlayerSide, bool hasFormation, bool spawnWithHorse, bool isReinforcement, int formationTroopCount, int formationTroopIndex, bool isAlarmed, bool wieldInitialWeapons, bool forceDismounted, ref Vec3? initialPosition, ref Vec2? initialDirection, string specialActionSetSuffix = null)
             {
                 if (Mission.Current != null && Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
                 {
@@ -62,11 +60,11 @@ namespace RBMAI.AiModule
         }
 
         [HarmonyPatch(typeof(SandBoxSiegeMissionSpawnHandler))]
-        class OverrideSandBoxSiegeMissionSpawnHandler
+        private class OverrideSandBoxSiegeMissionSpawnHandler
         {
             [HarmonyPrefix]
             [HarmonyPatch("AfterStart")]
-            static bool PrefixAfterStart(ref MapEvent ____mapEvent, ref MissionAgentSpawnLogic ____missionAgentSpawnLogic)
+            private static bool PrefixAfterStart(ref MapEvent ____mapEvent, ref MissionAgentSpawnLogic ____missionAgentSpawnLogic)
             {
                 if (____mapEvent != null)
                 {
@@ -81,7 +79,6 @@ namespace RBMAI.AiModule
 
                     if (totalBattleSize > battleSize)
                     {
-
                         float defenderAdvantage = (float)battleSize / ((float)defenderInitialSpawn * ((battleSize * 2f) / (totalBattleSize)));
                         if (defenderInitialSpawn < (battleSize / 2f))
                         {
@@ -107,11 +104,11 @@ namespace RBMAI.AiModule
         }
 
         [HarmonyPatch(typeof(CustomSiegeMissionSpawnHandler))]
-        class OverrideCustomSiegeMissionSpawnHandler
+        private class OverrideCustomSiegeMissionSpawnHandler
         {
             [HarmonyPrefix]
             [HarmonyPatch("AfterStart")]
-            static bool PrefixAfterStart(ref MissionAgentSpawnLogic ____missionAgentSpawnLogic, ref CustomBattleCombatant[] ____battleCombatants)
+            private static bool PrefixAfterStart(ref MissionAgentSpawnLogic ____missionAgentSpawnLogic, ref CustomBattleCombatant[] ____battleCombatants)
             {
                 int battleSize = ____missionAgentSpawnLogic.BattleSize;
 
@@ -124,7 +121,6 @@ namespace RBMAI.AiModule
 
                 if (totalBattleSize > battleSize)
                 {
-
                     float defenderAdvantage = (float)battleSize / ((float)defenderInitialSpawn * ((battleSize * 2f) / (totalBattleSize)));
                     if (defenderInitialSpawn < (battleSize / 2f))
                     {
@@ -148,13 +144,12 @@ namespace RBMAI.AiModule
         }
 
         [HarmonyPatch(typeof(CustomBattleMissionSpawnHandler))]
-        class OverrideAfterStartCustomBattleMissionSpawnHandler
+        private class OverrideAfterStartCustomBattleMissionSpawnHandler
         {
             [HarmonyPrefix]
             [HarmonyPatch("AfterStart")]
-            static bool PrefixAfterStart(ref MissionAgentSpawnLogic ____missionAgentSpawnLogic, ref CustomBattleCombatant ____defenderParty, ref CustomBattleCombatant ____attackerParty)
+            private static bool PrefixAfterStart(ref MissionAgentSpawnLogic ____missionAgentSpawnLogic, ref CustomBattleCombatant ____defenderParty, ref CustomBattleCombatant ____attackerParty)
             {
-
                 int battleSize = ____missionAgentSpawnLogic.BattleSize;
 
                 int numberOfHealthyMembers = ____defenderParty.NumberOfHealthyMembers;
@@ -166,7 +161,6 @@ namespace RBMAI.AiModule
 
                 if (totalBattleSize > battleSize)
                 {
-
                     float defenderAdvantage = (float)battleSize / ((float)defenderInitialSpawn * ((battleSize * 2f) / (totalBattleSize)));
                     if (defenderInitialSpawn < (battleSize / 2f))
                     {
@@ -193,11 +187,11 @@ namespace RBMAI.AiModule
         }
 
         [HarmonyPatch(typeof(SandBoxBattleMissionSpawnHandler))]
-        class OverrideAfterStartSandBoxBattleMissionSpawnHandler
+        private class OverrideAfterStartSandBoxBattleMissionSpawnHandler
         {
             [HarmonyPrefix]
             [HarmonyPatch("AfterStart")]
-            static bool PrefixAfterStart(ref MissionAgentSpawnLogic ____missionAgentSpawnLogic, ref MapEvent ____mapEvent)
+            private static bool PrefixAfterStart(ref MissionAgentSpawnLogic ____missionAgentSpawnLogic, ref MapEvent ____mapEvent)
             {
                 if (____mapEvent != null)
                 {
@@ -212,7 +206,6 @@ namespace RBMAI.AiModule
 
                     if (totalBattleSize > battleSize)
                     {
-
                         float defenderAdvantage = (float)battleSize / ((float)defenderInitialSpawn * ((battleSize * 2f) / (totalBattleSize)));
                         if (defenderInitialSpawn < (battleSize / 2f))
                         {
@@ -248,7 +241,6 @@ namespace RBMAI.AiModule
         //[HarmonyPatch(typeof(MissionAgentSpawnLogic))]
         //class OverrideBattleSizeSpawnTick
         //{
-
         //    private static bool hasOneSideSpawnedReinforcements = false;
         //    private static bool hasOneSideSpawnedReinforcementsAttackers = false;
         //    private static int numOfDefWhenSpawning = -1;
@@ -321,9 +313,9 @@ namespace RBMAI.AiModule
 
         [HarmonyPatch(typeof(PlayerEncounter))]
         [HarmonyPatch("CheckIfBattleShouldContinueAfterBattleMission")]
-        class SetRoutedPatch
+        private class SetRoutedPatch
         {
-            static bool Prefix(ref PlayerEncounter __instance, ref MapEvent ____mapEvent, ref CampaignBattleResult ____campaignBattleResult, ref bool __result)
+            private static bool Prefix(ref PlayerEncounter __instance, ref MapEvent ____mapEvent, ref CampaignBattleResult ____campaignBattleResult, ref bool __result)
             {
                 if (____campaignBattleResult != null && ____campaignBattleResult.PlayerVictory && ____campaignBattleResult.BattleResolved)
                 {

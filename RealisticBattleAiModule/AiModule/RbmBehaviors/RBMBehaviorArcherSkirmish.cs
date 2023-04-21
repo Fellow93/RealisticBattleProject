@@ -7,47 +7,49 @@ using TaleWorlds.MountAndBlade;
 
 namespace RBMAI
 {
-	class RBMBehaviorArcherSkirmish : BehaviorComponent
-	{
+    internal class RBMBehaviorArcherSkirmish : BehaviorComponent
+    {
+        private int flankCooldownMax = 40;
 
-		private int flankCooldownMax = 40;
-		//public float customWidth = 110f;
+        //public float customWidth = 110f;
         public Timer repositionTimer = null;
+
         public Timer refreshPositionTimer = null;
         public Timer flankinTimer = null;
-		public int side = MBRandom.RandomInt(2);
-		public int cooldown = 0;
+        public int side = MBRandom.RandomInt(2);
+        public int cooldown = 0;
         public bool nudgeFormation;
 
-		public bool wasShootingBefore = false;
-		private enum BehaviorState
-		{
-			Approaching,
-			Shooting,
-			PullingBack,
+        public bool wasShootingBefore = false;
+
+        private enum BehaviorState
+        {
+            Approaching,
+            Shooting,
+            PullingBack,
             Flanking
-		}
+        }
 
         private BehaviorState _behaviorState = BehaviorState.PullingBack;
 
-		private Timer _cantShootTimer;
+        private Timer _cantShootTimer;
 
         private bool firstTime = true;
 
-		public RBMBehaviorArcherSkirmish(Formation formation)
-			: base(formation)
-		{
-			base.BehaviorCoherence = 0.5f;
-			_cantShootTimer = new Timer(0f, 0f);
-			CalculateCurrentOrder();
-		}
+        public RBMBehaviorArcherSkirmish(Formation formation)
+            : base(formation)
+        {
+            base.BehaviorCoherence = 0.5f;
+            _cantShootTimer = new Timer(0f, 0f);
+            CalculateCurrentOrder();
+        }
 
-		protected override void CalculateCurrentOrder()
-		{
-			WorldPosition medianPosition = base.Formation.QuerySystem.MedianPosition;
-			bool flag = false;
-			Vec2 vec;
-			Vec2 vec2;
+        protected override void CalculateCurrentOrder()
+        {
+            WorldPosition medianPosition = base.Formation.QuerySystem.MedianPosition;
+            bool flag = false;
+            Vec2 vec;
+            Vec2 vec2;
             if (base.Formation.CountOfUnits <= 1)
             {
                 vec = base.Formation.Direction;
@@ -75,7 +77,7 @@ namespace RBMAI
                 significantAlly = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false, true);
 
                 //vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - base.Formation.QuerySystem.MedianPosition.AsVec2;
-                vec = significantEnemy.SmoothedAverageUnitPosition- base.Formation.SmoothedAverageUnitPosition;
+                vec = significantEnemy.SmoothedAverageUnitPosition - base.Formation.SmoothedAverageUnitPosition;
                 float distance = vec.Normalize();
 
                 bool isFormationShooting = Utilities.IsFormationShooting(base.Formation);
@@ -93,7 +95,7 @@ namespace RBMAI
                     }
                 }
 
-                if(significantEnemy != null)
+                if (significantEnemy != null)
                 {
                     effectiveShootingRange += (significantEnemy.Depth / 2f);
                 }
@@ -135,7 +137,6 @@ namespace RBMAI
                                         break;
                                     }
                                 }
-
                             }
                             else
                             {
@@ -152,14 +153,15 @@ namespace RBMAI
                                 }
                                 else
                                 {
-                                    if(refreshPositionTimer == null)
+                                    if (refreshPositionTimer == null)
                                     {
                                         refreshPositionTimer = new Timer(Mission.Current.CurrentTime, 30f);
                                         _behaviorState = BehaviorState.Approaching;
                                     }
                                     else
                                     {
-                                        if(refreshPositionTimer.Check(Mission.Current.CurrentTime)){
+                                        if (refreshPositionTimer.Check(Mission.Current.CurrentTime))
+                                        {
                                             refreshPositionTimer = null;
                                         }
                                     }
@@ -226,7 +228,7 @@ namespace RBMAI
                 }
 
                 bool shouldReposition = false;
-                if(_behaviorState == BehaviorState.PullingBack)
+                if (_behaviorState == BehaviorState.PullingBack)
                 {
                     if (repositionTimer == null)
                     {
@@ -248,9 +250,10 @@ namespace RBMAI
                         case BehaviorState.Shooting:
                             medianPosition.SetVec2(base.Formation.QuerySystem.AveragePosition);
                             break;
+
                         case BehaviorState.Approaching:
                             rollPullBackAngle = MBRandom.RandomFloat;
-                            
+
                             if (side == 0)
                             {
                                 medianPosition.SetVec2(significantEnemy.QuerySystem.AveragePosition + significantEnemy.QuerySystem.MedianPosition.AsVec2.LeftVec().Normalized() * rollPullBackAngle * 70f);
@@ -260,6 +263,7 @@ namespace RBMAI
                                 medianPosition.SetVec2(significantEnemy.QuerySystem.AveragePosition + significantEnemy.QuerySystem.MedianPosition.AsVec2.RightVec().Normalized() * rollPullBackAngle * 70f);
                             }
                             break;
+
                         case BehaviorState.PullingBack:
                             medianPosition = significantEnemy.QuerySystem.MedianPosition;
                             rollPullBackAngle = MBRandom.RandomFloat;
@@ -289,34 +293,34 @@ namespace RBMAI
         }
 
         public override void TickOccasionally()
-		{
-			CalculateCurrentOrder();
+        {
+            CalculateCurrentOrder();
             //if(base.Formation.Width > customWidth)
             //{
             //    base.Formation.FormOrder = FormOrder.FormOrderCustom(customWidth);
             //}
             base.Formation.SetMovementOrder(base.CurrentOrder);
-			base.Formation.FacingOrder = CurrentFacingOrder;
-		}
+            base.Formation.FacingOrder = CurrentFacingOrder;
+        }
 
-		protected override void OnBehaviorActivatedAux()
-		{
-			//_cantShootDistance = float.MaxValue;
-			_behaviorState = BehaviorState.PullingBack;
-			_cantShootTimer.Reset(Mission.Current.CurrentTime, MBMath.Lerp(5f, 10f, (MBMath.ClampFloat(base.Formation.CountOfUnits, 10f, 60f) - 10f) * 0.02f));
-			CalculateCurrentOrder();
-			base.Formation.SetMovementOrder(base.CurrentOrder);
-			base.Formation.FacingOrder = CurrentFacingOrder;
-			base.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
-			base.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
-			base.Formation.FormOrder = FormOrder.FormOrderWide;
-			base.Formation.WeaponUsageOrder = WeaponUsageOrder.WeaponUsageOrderUseAny;
-		}
+        protected override void OnBehaviorActivatedAux()
+        {
+            //_cantShootDistance = float.MaxValue;
+            _behaviorState = BehaviorState.PullingBack;
+            _cantShootTimer.Reset(Mission.Current.CurrentTime, MBMath.Lerp(5f, 10f, (MBMath.ClampFloat(base.Formation.CountOfUnits, 10f, 60f) - 10f) * 0.02f));
+            CalculateCurrentOrder();
+            base.Formation.SetMovementOrder(base.CurrentOrder);
+            base.Formation.FacingOrder = CurrentFacingOrder;
+            base.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
+            base.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
+            base.Formation.FormOrder = FormOrder.FormOrderWide;
+            base.Formation.WeaponUsageOrder = WeaponUsageOrder.WeaponUsageOrderUseAny;
+        }
 
-		protected override float GetAiWeight()
-		{
-			FormationQuerySystem querySystem = base.Formation.QuerySystem;
-			return MBMath.Lerp(0.1f, 1f, MBMath.ClampFloat(querySystem.RangedUnitRatio + querySystem.RangedCavalryUnitRatio, 0f, 0.5f) * 2f);
-		}
-	}
+        protected override float GetAiWeight()
+        {
+            FormationQuerySystem querySystem = base.Formation.QuerySystem;
+            return MBMath.Lerp(0.1f, 1f, MBMath.ClampFloat(querySystem.RangedUnitRatio + querySystem.RangedCavalryUnitRatio, 0f, 0.5f) * 2f);
+        }
+    }
 }

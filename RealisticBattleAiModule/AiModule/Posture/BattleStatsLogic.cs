@@ -1,10 +1,10 @@
-﻿using TaleWorlds.Engine.GauntletUI;
-using TaleWorlds.Library;
-using TaleWorlds.MountAndBlade.View.Screens;
-using TaleWorlds.MountAndBlade;
-using static RBMAI.Tactics;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TaleWorlds.Core;
+using TaleWorlds.Engine.GauntletUI;
+using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade;
+using TaleWorlds.MountAndBlade.View.Screens;
+using static RBMAI.Tactics;
 
 namespace RBMAI
 {
@@ -83,14 +83,14 @@ namespace RBMAI
                     }
                 }
             }
-                //InformationManager.DisplayMessage(new InformationMessage("ATK ARC:" + archersDamageDone));
-                //InformationManager.DisplayMessage(new InformationMessage("ATK HA :" + haDamageDone));
-                //InformationManager.DisplayMessage(new InformationMessage("ATK CAV:" + cavDamageDone));
-                //InformationManager.DisplayMessage(new InformationMessage("ATK INF:" + infDamageDone));
-                //InformationManager.DisplayMessage(new InformationMessage("DEF ARC:" + archersDamageDone));
-                //InformationManager.DisplayMessage(new InformationMessage("DEF HA :" + haDamageDone));
-                //InformationManager.DisplayMessage(new InformationMessage("DEF CAV:" + cavDamageDone));
-                //InformationManager.DisplayMessage(new InformationMessage("DEF INF:" + infDamageDone));
+            //InformationManager.DisplayMessage(new InformationMessage("ATK ARC:" + archersDamageDone));
+            //InformationManager.DisplayMessage(new InformationMessage("ATK HA :" + haDamageDone));
+            //InformationManager.DisplayMessage(new InformationMessage("ATK CAV:" + cavDamageDone));
+            //InformationManager.DisplayMessage(new InformationMessage("ATK INF:" + infDamageDone));
+            //InformationManager.DisplayMessage(new InformationMessage("DEF ARC:" + archersDamageDone));
+            //InformationManager.DisplayMessage(new InformationMessage("DEF HA :" + haDamageDone));
+            //InformationManager.DisplayMessage(new InformationMessage("DEF CAV:" + cavDamageDone));
+            //InformationManager.DisplayMessage(new InformationMessage("DEF INF:" + infDamageDone));
             _dataSource.Atkarc = "ATK ARC:" + atkarc;
             _dataSource.Atkha = "ATK HA :" + atkha;
             _dataSource.Atkcav = "ATK CAV:" + atkcav;
@@ -99,7 +99,6 @@ namespace RBMAI
             _dataSource.Defha = "DEF HA :" + defha;
             _dataSource.Defcav = "DEF CAV:" + defcav;
             _dataSource.Definf = "DEF INF:" + definf;
-
         }
     }
 }

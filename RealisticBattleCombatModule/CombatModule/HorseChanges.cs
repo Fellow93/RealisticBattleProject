@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using SandBox.GameComponents;
-using System;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
@@ -8,13 +7,13 @@ using TaleWorlds.MountAndBlade;
 
 namespace RBMCombat
 {
-    class HorseChanges
+    internal class HorseChanges
     {
         [HarmonyPatch(typeof(SandboxAgentStatCalculateModel))]
         [HarmonyPatch("UpdateHorseStats")]
-        class SandboxAgentStatCalculateModelUpdateHorseStatsPatch
+        private class SandboxAgentStatCalculateModelUpdateHorseStatsPatch
         {
-            static void Postfix(ref SandboxAgentStatCalculateModel __instance, ref Agent agent, ref AgentDrivenProperties agentDrivenProperties)
+            private static void Postfix(ref SandboxAgentStatCalculateModel __instance, ref Agent agent, ref AgentDrivenProperties agentDrivenProperties)
             {
                 if (agent.RiderAgent != null)
                 {
@@ -108,9 +107,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(CustomBattleAgentStatCalculateModel))]
         [HarmonyPatch("UpdateHorseStats")]
-        class CustomBattleAgentStatCalculateModelUpdateHorseStatsPatch
+        private class CustomBattleAgentStatCalculateModelUpdateHorseStatsPatch
         {
-            static void Postfix(ref CustomBattleAgentStatCalculateModel __instance, ref Agent agent, ref AgentDrivenProperties agentDrivenProperties)
+            private static void Postfix(ref CustomBattleAgentStatCalculateModel __instance, ref Agent agent, ref AgentDrivenProperties agentDrivenProperties)
             {
                 if (agent.RiderAgent != null)
                 {
@@ -153,7 +152,7 @@ namespace RBMCombat
 
                     float addedWeight = harness.Weight + agent.RiderAgent.SpawnEquipment.GetTotalWeightOfArmor(true) + agent.RiderAgent.SpawnEquipment.GetTotalWeightOfWeapons() + agent.RiderAgent.Monster.Weight;
 
-                    float weightModifier = MathF.Pow(475f, 2) / MathF.Pow(mountElement.Weight + addedWeight, 2) ;
+                    float weightModifier = MathF.Pow(475f, 2) / MathF.Pow(mountElement.Weight + addedWeight, 2);
 
                     float mountMasteryModifier = MathF.Lerp(minSkillModifier, maxSkillModifier, (float)mountMastery / (float)mountSkillDifficultyTreshold);
 
@@ -199,9 +198,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
         [HarmonyPatch("DecideMountRearedByBlow")]
-        class DecideMountRearedByBlowPatch
+        private class DecideMountRearedByBlowPatch
         {
-            static bool Prefix(ref Mission __instance, Agent attackerAgent, Agent victimAgent, in AttackCollisionData collisionData, WeaponComponentData attackerWeapon, in Blow blow, ref bool __result)
+            private static bool Prefix(ref Mission __instance, Agent attackerAgent, Agent victimAgent, in AttackCollisionData collisionData, WeaponComponentData attackerWeapon, in Blow blow, ref bool __result)
             {
                 //if(collisionData.InflictedDamage < 0)
                 //{
@@ -237,11 +236,11 @@ namespace RBMCombat
         }
 
         [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
-        class DecideAgentDismountedByBlowPatch
+        private class DecideAgentDismountedByBlowPatch
         {
             [HarmonyPrefix]
             [HarmonyPatch("DecideAgentDismountedByBlow")]
-            static bool PrefixDecideAgentDismountedByBlow(Agent attackerAgent, Agent victimAgent, in AttackCollisionData collisionData, WeaponComponentData attackerWeapon, ref Blow blow)
+            private static bool PrefixDecideAgentDismountedByBlow(Agent attackerAgent, Agent victimAgent, in AttackCollisionData collisionData, WeaponComponentData attackerWeapon, ref Blow blow)
             {
                 if (!blow.IsMissile)
                 {
@@ -274,9 +273,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
         [HarmonyPatch("ComputeBlowMagnitudeFromHorseCharge")]
-        class ChangeHorseDamageCalculation
+        private class ChangeHorseDamageCalculation
         {
-            static bool Prefix(in AttackInformation attackInformation, in AttackCollisionData acd, Vec2 attackerAgentVelocity, Vec2 victimAgentVelocity, out float baseMagnitude, out float specialMagnitude)
+            private static bool Prefix(in AttackInformation attackInformation, in AttackCollisionData acd, Vec2 attackerAgentVelocity, Vec2 victimAgentVelocity, out float baseMagnitude, out float specialMagnitude)
             {
                 Vec2 chargerMovementDirection = attackInformation.AttackerAgentMovementDirection;
                 Vec2 vec = chargerMovementDirection * Vec2.DotProduct(victimAgentVelocity, chargerMovementDirection);
@@ -296,6 +295,5 @@ namespace RBMCombat
                 return MathF.Max(0f, b);
             }
         }
-        
     }
 }

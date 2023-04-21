@@ -13,256 +13,254 @@ using TaleWorlds.MountAndBlade.View.MissionViews;
 
 public class SiegeArcherPoints : MissionView
 {
-	public bool firstTime = true;
-	public bool xmlExists = false;
-	public static bool isEditingXml = true;
-	public bool editingWarningDisplayed = false;
-	public bool isFirstTimeLoading = true;
+    public bool firstTime = true;
+    public bool xmlExists = false;
+    public static bool isEditingXml = true;
+    public bool editingWarningDisplayed = false;
+    public bool isFirstTimeLoading = true;
 
-	public override void OnMissionScreenTick(float dt)
-	{
-		//((MissionView)this).OnMissionScreenTick(dt);
-		if (isFirstTimeLoading && Mission.Current != null && Mission.Current.IsSiegeBattle)
-		{
-			XmlDocument xmlDocument = new XmlDocument();
-			if (File.Exists(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml"))
-			{
-				xmlDocument.Load(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
-				xmlExists = true;
-			}
+    public override void OnMissionScreenTick(float dt)
+    {
+        //((MissionView)this).OnMissionScreenTick(dt);
+        if (isFirstTimeLoading && Mission.Current != null && Mission.Current.IsSiegeBattle)
+        {
+            XmlDocument xmlDocument = new XmlDocument();
+            if (File.Exists(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml"))
+            {
+                xmlDocument.Load(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
+                xmlExists = true;
+            }
 
-			if (xmlExists)
-			{
-				List<GameEntity> gameEntities = new List<GameEntity>();
-				Mission.Current.Scene.GetEntities(ref gameEntities);
+            if (xmlExists)
+            {
+                List<GameEntity> gameEntities = new List<GameEntity>();
+                Mission.Current.Scene.GetEntities(ref gameEntities);
                 StrategicArea strategicArea;
                 List<StrategicArea> _strategicAreas = (from amo in Mission.Current.ActiveMissionObjects
-                                   where (strategicArea = amo as StrategicArea) != null && strategicArea.IsActive && strategicArea.IsUsableBy(BattleSideEnum.Defender) 
-								   && (strategicArea.GameEntity.GetOldPrefabName().Contains("archer_position") || strategicArea.GameEntity.GetOldPrefabName().Contains("strategic_archer_point"))
+                                                       where (strategicArea = amo as StrategicArea) != null && strategicArea.IsActive && strategicArea.IsUsableBy(BattleSideEnum.Defender)
+                                                       && (strategicArea.GameEntity.GetOldPrefabName().Contains("archer_position") || strategicArea.GameEntity.GetOldPrefabName().Contains("strategic_archer_point"))
                                                        select amo as StrategicArea).ToList();
-				foreach (StrategicArea _strategicArea in _strategicAreas)
-				{
-					Mission.Current.Teams.Defender.TeamAI.RemoveStrategicArea(_strategicArea);
+                foreach (StrategicArea _strategicArea in _strategicAreas)
+                {
+                    Mission.Current.Teams.Defender.TeamAI.RemoveStrategicArea(_strategicArea);
                     _strategicArea.GameEntity.RemoveAllChildren();
                     _strategicArea.GameEntity.Remove(1);
                 }
-				foreach (GameEntity g2 in gameEntities)
-				{
-					if (g2.HasScriptOfType<StrategicArea>() && (!g2.HasTag("PlayerStratPoint") & !g2.HasTag("BeerMarkerPlayer")) && g2.GetOldPrefabName() == "strategic_archer_point")
-					{
-						if (g2.GetFirstScriptOfType<StrategicArea>().IsUsableBy(BattleSideEnum.Defender))
-						{
+                foreach (GameEntity g2 in gameEntities)
+                {
+                    if (g2.HasScriptOfType<StrategicArea>() && (!g2.HasTag("PlayerStratPoint") & !g2.HasTag("BeerMarkerPlayer")) && g2.GetOldPrefabName() == "strategic_archer_point")
+                    {
+                        if (g2.GetFirstScriptOfType<StrategicArea>().IsUsableBy(BattleSideEnum.Defender))
+                        {
                             Mission.Current.Teams.Defender.TeamAI.RemoveStrategicArea(g2.GetFirstScriptOfType<StrategicArea>());
                             g2.RemoveAllChildren();
                             g2.Remove(1);
                         }
-					}
-				}
-				List<GameEntity> ListBase = Mission.Current.Scene.FindEntitiesWithTag("BeerMarkerBase").ToList();
-				foreach (GameEntity b in ListBase)
-				{
-					b.RemoveAllChildren();
-					b.Remove(1);
-				}
-				List<GameEntity> ListG = Mission.Current.Scene.FindEntitiesWithTag("PlayerStratPoint").ToList();
-				List<GameEntity> ListArrow = Mission.Current.Scene.FindEntitiesWithTag("BeerMarkerPlayer").ToList();
-				foreach (GameEntity g in ListG)
-				{
-					Mission.Current.Teams.Defender.TeamAI.RemoveStrategicArea(g.GetFirstScriptOfType<StrategicArea>());
-					g.RemoveAllChildren();
-					g.Remove(1);
-				}
-				foreach (GameEntity h in ListArrow)
-				{
-					h.RemoveAllChildren();
-					h.Remove(1);
-				}
+                    }
+                }
+                List<GameEntity> ListBase = Mission.Current.Scene.FindEntitiesWithTag("BeerMarkerBase").ToList();
+                foreach (GameEntity b in ListBase)
+                {
+                    b.RemoveAllChildren();
+                    b.Remove(1);
+                }
+                List<GameEntity> ListG = Mission.Current.Scene.FindEntitiesWithTag("PlayerStratPoint").ToList();
+                List<GameEntity> ListArrow = Mission.Current.Scene.FindEntitiesWithTag("BeerMarkerPlayer").ToList();
+                foreach (GameEntity g in ListG)
+                {
+                    Mission.Current.Teams.Defender.TeamAI.RemoveStrategicArea(g.GetFirstScriptOfType<StrategicArea>());
+                    g.RemoveAllChildren();
+                    g.Remove(1);
+                }
+                foreach (GameEntity h in ListArrow)
+                {
+                    h.RemoveAllChildren();
+                    h.Remove(1);
+                }
 
-				foreach (XmlNode pointNode in xmlDocument.SelectSingleNode("/points").ChildNodes)
-				{
-					double[] parsed = Array.ConvertAll(pointNode.InnerText.Split(new[] { ',', }, StringSplitOptions.RemoveEmptyEntries), Double.Parse);
+                foreach (XmlNode pointNode in xmlDocument.SelectSingleNode("/points").ChildNodes)
+                {
+                    double[] parsed = Array.ConvertAll(pointNode.InnerText.Split(new[] { ',', }, StringSplitOptions.RemoveEmptyEntries), Double.Parse);
 
-					//WorldFrame worldPos = new WorldFrame(new Mat3((float)parsed[0], (float)parsed[1], (float)parsed[2], (float)parsed[3],
-					//	(float)parsed[4], (float)parsed[5], (float)parsed[6], (float)parsed[7], (float)parsed[8]), new WorldPosition(Mission.Current.Scene, new Vec3((float)parsed[9], (float)parsed[10], (float)parsed[11])));
+                    //WorldFrame worldPos = new WorldFrame(new Mat3((float)parsed[0], (float)parsed[1], (float)parsed[2], (float)parsed[3],
+                    //	(float)parsed[4], (float)parsed[5], (float)parsed[6], (float)parsed[7], (float)parsed[8]), new WorldPosition(Mission.Current.Scene, new Vec3((float)parsed[9], (float)parsed[10], (float)parsed[11])));
 
-					MatrixFrame matFrame = new MatrixFrame((float)parsed[0], (float)parsed[1], (float)parsed[2], (float)parsed[3],
-						(float)parsed[4], (float)parsed[5], (float)parsed[6], (float)parsed[7], (float)parsed[8], (float)parsed[9], (float)parsed[10], (float)parsed[11]);
+                    MatrixFrame matFrame = new MatrixFrame((float)parsed[0], (float)parsed[1], (float)parsed[2], (float)parsed[3],
+                        (float)parsed[4], (float)parsed[5], (float)parsed[6], (float)parsed[7], (float)parsed[8], (float)parsed[9], (float)parsed[10], (float)parsed[11]);
 
-					GameEntity gameEntity = GameEntity.Instantiate(Mission.Current.Scene, "strategic_archer_point", matFrame);
-					gameEntity.SetMobility(GameEntity.Mobility.dynamic);
-					gameEntity.AddTag("PlayerStratPoint");
-					gameEntity.SetVisibilityExcludeParents(visible: true);
-					StrategicArea firstScriptOfType = gameEntity.GetFirstScriptOfType<StrategicArea>();
-					firstScriptOfType.InitializeAutogenerated(1f, 1, Mission.Current.Teams.Defender.Side);
+                    GameEntity gameEntity = GameEntity.Instantiate(Mission.Current.Scene, "strategic_archer_point", matFrame);
+                    gameEntity.SetMobility(GameEntity.Mobility.dynamic);
+                    gameEntity.AddTag("PlayerStratPoint");
+                    gameEntity.SetVisibilityExcludeParents(visible: true);
+                    StrategicArea firstScriptOfType = gameEntity.GetFirstScriptOfType<StrategicArea>();
+                    firstScriptOfType.InitializeAutogenerated(1f, 1, Mission.Current.Teams.Defender.Side);
 
-					GameEntity BeerMark = GameEntity.Instantiate(Mission.Current.Scene, "arrow_new_icon", matFrame);
-					BeerMark.AddTag("BeerMarkerPlayer");
-					BeerMark.SetVisibilityExcludeParents(visible: false);
-					BeerMark.GetGlobalScale().Normalize();
-					BeerMark.SetMobility(GameEntity.Mobility.dynamic);
-					foreach(Team team in Mission.Current.Teams)
-					{
-						if (team.IsDefender)
-						{
+                    GameEntity BeerMark = GameEntity.Instantiate(Mission.Current.Scene, "arrow_new_icon", matFrame);
+                    BeerMark.AddTag("BeerMarkerPlayer");
+                    BeerMark.SetVisibilityExcludeParents(visible: false);
+                    BeerMark.GetGlobalScale().Normalize();
+                    BeerMark.SetMobility(GameEntity.Mobility.dynamic);
+                    foreach (Team team in Mission.Current.Teams)
+                    {
+                        if (team.IsDefender)
+                        {
                             team.TeamAI.AddStrategicArea(firstScriptOfType);
                         }
-					}
-                    
+                    }
                 }
             }
 
-			isFirstTimeLoading = false;
-			return;
-		}
+            isFirstTimeLoading = false;
+            return;
+        }
 
-		if (firstTime && Mission.Current != null && Mission.Current.IsSiegeBattle && Mission.Current.PlayerTeam.IsDefender && Mission.Current.Mode != MissionMode.Deployment)
-		{
-
+        if (firstTime && Mission.Current != null && Mission.Current.IsSiegeBattle && Mission.Current.PlayerTeam.IsDefender && Mission.Current.Mode != MissionMode.Deployment)
+        {
             if (firstTime && !RBMConfig.RBMConfig.developerMode)
-			{
+            {
                 firstTime = false;
                 return;
-			}
-			InformationManager.DisplayMessage(new InformationMessage("!!! DEVELOPER MODE, NORMAL USER SHOULDN'T SEE THIS MESSAGE"));
-			List<GameEntity> gameEntities = new List<GameEntity>();
-			Mission.Current.Scene.GetEntities(ref gameEntities);
+            }
+            InformationManager.DisplayMessage(new InformationMessage("!!! DEVELOPER MODE, NORMAL USER SHOULDN'T SEE THIS MESSAGE"));
+            List<GameEntity> gameEntities = new List<GameEntity>();
+            Mission.Current.Scene.GetEntities(ref gameEntities);
 
-			XmlDocument xmlDocument = new XmlDocument();
-			if (File.Exists(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml"))
-			{
-				xmlDocument.Load(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
-				xmlExists = true;
-			}
-			else
-			{
-				XmlDeclaration xmlDeclaration = xmlDocument.CreateXmlDeclaration("1.0", "UTF-8", null);
+            XmlDocument xmlDocument = new XmlDocument();
+            if (File.Exists(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml"))
+            {
+                xmlDocument.Load(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
+                xmlExists = true;
+            }
+            else
+            {
+                XmlDeclaration xmlDeclaration = xmlDocument.CreateXmlDeclaration("1.0", "UTF-8", null);
 
-				XmlElement root = xmlDocument.DocumentElement;
-				xmlDocument.InsertBefore(xmlDeclaration, root);
-				xmlDocument.AppendChild(xmlDocument.CreateElement(string.Empty, "points", string.Empty));
-			}
+                XmlElement root = xmlDocument.DocumentElement;
+                xmlDocument.InsertBefore(xmlDeclaration, root);
+                xmlDocument.AppendChild(xmlDocument.CreateElement(string.Empty, "points", string.Empty));
+            }
 
-			XmlNode pointNode = xmlDocument.SelectSingleNode("/points");
-			if (pointNode == null)
-			{
-				pointNode = xmlDocument.CreateElement(string.Empty, "points", string.Empty);
-			}
+            XmlNode pointNode = xmlDocument.SelectSingleNode("/points");
+            if (pointNode == null)
+            {
+                pointNode = xmlDocument.CreateElement(string.Empty, "points", string.Empty);
+            }
 
-			pointNode.RemoveAll();
+            pointNode.RemoveAll();
 
-			foreach (GameEntity g in gameEntities)
-			{
-				if (g.HasScriptOfType<StrategicArea>() && g.GetFirstScriptOfType<StrategicArea>().IsUsableBy(BattleSideEnum.Defender) && g.GetOldPrefabName() == "strategic_archer_point")
-				{
-					XmlElement newPointNode = xmlDocument.CreateElement(string.Empty, "point", string.Empty);
-					string stringToBeSaved = "";
-					stringToBeSaved += g.GetGlobalFrame().rotation.s.x + "," + g.GetGlobalFrame().rotation.s.y + "," + g.GetGlobalFrame().rotation.s.z + ",";
-					stringToBeSaved += g.GetGlobalFrame().rotation.f.x + "," + g.GetGlobalFrame().rotation.f.y + "," + g.GetGlobalFrame().rotation.f.z + ",";
-					stringToBeSaved += g.GetGlobalFrame().rotation.u.x + "," + g.GetGlobalFrame().rotation.u.y + "," + g.GetGlobalFrame().rotation.u.z + ",";
-					stringToBeSaved += g.GetGlobalFrame().origin.x + "," + g.GetGlobalFrame().origin.y + "," + g.GetGlobalFrame().origin.z;
-					newPointNode.InnerText = stringToBeSaved;
+            foreach (GameEntity g in gameEntities)
+            {
+                if (g.HasScriptOfType<StrategicArea>() && g.GetFirstScriptOfType<StrategicArea>().IsUsableBy(BattleSideEnum.Defender) && g.GetOldPrefabName() == "strategic_archer_point")
+                {
+                    XmlElement newPointNode = xmlDocument.CreateElement(string.Empty, "point", string.Empty);
+                    string stringToBeSaved = "";
+                    stringToBeSaved += g.GetGlobalFrame().rotation.s.x + "," + g.GetGlobalFrame().rotation.s.y + "," + g.GetGlobalFrame().rotation.s.z + ",";
+                    stringToBeSaved += g.GetGlobalFrame().rotation.f.x + "," + g.GetGlobalFrame().rotation.f.y + "," + g.GetGlobalFrame().rotation.f.z + ",";
+                    stringToBeSaved += g.GetGlobalFrame().rotation.u.x + "," + g.GetGlobalFrame().rotation.u.y + "," + g.GetGlobalFrame().rotation.u.z + ",";
+                    stringToBeSaved += g.GetGlobalFrame().origin.x + "," + g.GetGlobalFrame().origin.y + "," + g.GetGlobalFrame().origin.z;
+                    newPointNode.InnerText = stringToBeSaved;
 
-					pointNode.AppendChild(newPointNode);
-				}
-			}
-			xmlDocument.Save(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
-			firstTime = false;
-		}
+                    pointNode.AppendChild(newPointNode);
+                }
+            }
+            xmlDocument.Save(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
+            firstTime = false;
+        }
 
-		//if (Mission.Current.MainAgent != null)
-		//{
-		//	if (Mission.Current.IsOrderMenuOpen)
-		//	{
-		//		if (((MissionView)this).Input.IsKeyPressed(InputKey.O) || ((MissionView)this).Input.IsKeyPressed(InputKey.P)
-		//		|| ((MissionView)this).Input.IsKeyPressed(InputKey.K) || ((MissionView)this).Input.IsKeyPressed(InputKey.L))
-		//		{
-		//			GameEntity cursor = Mission.Current.Scene.FindEntityWithTag("cursormain");
-		//			Vec2 rotation = cursor.GetGlobalFrame().rotation.f.AsVec2;
-		//			Vec3 flag = ((MissionView)this).MissionScreen.GetOrderFlagPosition();
+        //if (Mission.Current.MainAgent != null)
+        //{
+        //	if (Mission.Current.IsOrderMenuOpen)
+        //	{
+        //		if (((MissionView)this).Input.IsKeyPressed(InputKey.O) || ((MissionView)this).Input.IsKeyPressed(InputKey.P)
+        //		|| ((MissionView)this).Input.IsKeyPressed(InputKey.K) || ((MissionView)this).Input.IsKeyPressed(InputKey.L))
+        //		{
+        //			GameEntity cursor = Mission.Current.Scene.FindEntityWithTag("cursormain");
+        //			Vec2 rotation = cursor.GetGlobalFrame().rotation.f.AsVec2;
+        //			Vec3 flag = ((MissionView)this).MissionScreen.GetOrderFlagPosition();
 
-		//			XmlDocument xmlDocument = new XmlDocument();
-		//			if (File.Exists(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml"))
-		//			{
-		//				xmlDocument.Load(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml");
-		//				xmlExists = true;
-		//			}
-		//			else
-		//			{
-		//				XmlDeclaration xmlDeclaration = xmlDocument.CreateXmlDeclaration("1.0", "UTF-8", null);
+        //			XmlDocument xmlDocument = new XmlDocument();
+        //			if (File.Exists(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml"))
+        //			{
+        //				xmlDocument.Load(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml");
+        //				xmlExists = true;
+        //			}
+        //			else
+        //			{
+        //				XmlDeclaration xmlDeclaration = xmlDocument.CreateXmlDeclaration("1.0", "UTF-8", null);
 
-		//				XmlElement root = xmlDocument.DocumentElement;
-		//				xmlDocument.InsertBefore(xmlDeclaration, root);
-		//				xmlDocument.AppendChild(xmlDocument.CreateElement(string.Empty, "points", string.Empty));
-		//			}
+        //				XmlElement root = xmlDocument.DocumentElement;
+        //				xmlDocument.InsertBefore(xmlDeclaration, root);
+        //				xmlDocument.AppendChild(xmlDocument.CreateElement(string.Empty, "points", string.Empty));
+        //			}
 
-		//			XmlNode pointNode = xmlDocument.SelectSingleNode("/points");
-		//			if (pointNode == null)
-		//			{
-		//				pointNode = xmlDocument.CreateElement(string.Empty, "points", string.Empty);
-		//			}
+        //			XmlNode pointNode = xmlDocument.SelectSingleNode("/points");
+        //			if (pointNode == null)
+        //			{
+        //				pointNode = xmlDocument.CreateElement(string.Empty, "points", string.Empty);
+        //			}
 
-		//			string innerText = flag.x + "," + flag.y + "," + flag.z + "," + rotation.x + "," + rotation.y;
+        //			string innerText = flag.x + "," + flag.y + "," + flag.z + "," + rotation.x + "," + rotation.y;
 
-		//			if (((MissionView)this).Input.IsKeyPressed(InputKey.O)){
-		//				XmlNode node = xmlDocument.SelectSingleNode("/points/left_wait");
-		//				if (node != null)
-  //                      {
-		//					node.InnerText = innerText;
-		//				}
-		//				else
-  //                      {
-		//					node = xmlDocument.CreateElement(string.Empty, "left_wait", string.Empty);
-		//					node.InnerText = innerText;
-		//					pointNode.AppendChild(node);
-		//				}
-		//			}
-		//			if (((MissionView)this).Input.IsKeyPressed(InputKey.P))
-		//			{
-		//				XmlNode node = xmlDocument.SelectSingleNode("/points/right_wait");
-		//				if (node != null)
-		//				{
-		//					node.InnerText = innerText;
-		//				}
-		//				else
-		//				{
-		//					node = xmlDocument.CreateElement(string.Empty, "right_wait", string.Empty);
-		//					node.InnerText = innerText;
-		//					pointNode.AppendChild(node);
-		//				}
-		//			}
-		//			if (((MissionView)this).Input.IsKeyPressed(InputKey.K))
-		//			{
-		//				XmlNode node = xmlDocument.SelectSingleNode("/points/left_ready");
-		//				if (node != null)
-		//				{
-		//					node.InnerText = innerText;
-		//				}
-		//				else
-		//				{
-		//					node = xmlDocument.CreateElement(string.Empty, "left_ready", string.Empty);
-		//					node.InnerText = innerText;
-		//					pointNode.AppendChild(node);
-		//				}
-		//			}
-		//			if (((MissionView)this).Input.IsKeyPressed(InputKey.L))
-		//			{
-		//				XmlNode node = xmlDocument.SelectSingleNode("/points/right_ready");
-		//				if (node != null)
-		//				{
-		//					node.InnerText = innerText;
-		//				}
-		//				else
-		//				{
-		//					node = xmlDocument.CreateElement(string.Empty, "right_ready", string.Empty);
-		//					node.InnerText = innerText;
-		//					pointNode.AppendChild(node);
-		//				}
-		//			}
-		//			xmlDocument.Save(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml");
-		//		}
-		//	}
-		//}
-	}
+        //			if (((MissionView)this).Input.IsKeyPressed(InputKey.O)){
+        //				XmlNode node = xmlDocument.SelectSingleNode("/points/left_wait");
+        //				if (node != null)
+        //                      {
+        //					node.InnerText = innerText;
+        //				}
+        //				else
+        //                      {
+        //					node = xmlDocument.CreateElement(string.Empty, "left_wait", string.Empty);
+        //					node.InnerText = innerText;
+        //					pointNode.AppendChild(node);
+        //				}
+        //			}
+        //			if (((MissionView)this).Input.IsKeyPressed(InputKey.P))
+        //			{
+        //				XmlNode node = xmlDocument.SelectSingleNode("/points/right_wait");
+        //				if (node != null)
+        //				{
+        //					node.InnerText = innerText;
+        //				}
+        //				else
+        //				{
+        //					node = xmlDocument.CreateElement(string.Empty, "right_wait", string.Empty);
+        //					node.InnerText = innerText;
+        //					pointNode.AppendChild(node);
+        //				}
+        //			}
+        //			if (((MissionView)this).Input.IsKeyPressed(InputKey.K))
+        //			{
+        //				XmlNode node = xmlDocument.SelectSingleNode("/points/left_ready");
+        //				if (node != null)
+        //				{
+        //					node.InnerText = innerText;
+        //				}
+        //				else
+        //				{
+        //					node = xmlDocument.CreateElement(string.Empty, "left_ready", string.Empty);
+        //					node.InnerText = innerText;
+        //					pointNode.AppendChild(node);
+        //				}
+        //			}
+        //			if (((MissionView)this).Input.IsKeyPressed(InputKey.L))
+        //			{
+        //				XmlNode node = xmlDocument.SelectSingleNode("/points/right_ready");
+        //				if (node != null)
+        //				{
+        //					node.InnerText = innerText;
+        //				}
+        //				else
+        //				{
+        //					node = xmlDocument.CreateElement(string.Empty, "right_ready", string.Empty);
+        //					node.InnerText = innerText;
+        //					pointNode.AppendChild(node);
+        //				}
+        //			}
+        //			xmlDocument.Save(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + "_inf_positions.xml");
+        //		}
+        //	}
+        //}
+    }
 
     //[HarmonyPatch(typeof(BehaviorDefendCastleKeyPosition))]
     //[HarmonyPatch("ResetOrderPositions")]
@@ -275,7 +273,7 @@ public class SiegeArcherPoints : MissionView
     //		Ready
     //	}
 
-    //	static void Postfix(ref BehaviorDefendCastleKeyPosition __instance, ref WorldPosition ____readyOrderPosition, ref MovementOrder ____waitOrder, 
+    //	static void Postfix(ref BehaviorDefendCastleKeyPosition __instance, ref WorldPosition ____readyOrderPosition, ref MovementOrder ____waitOrder,
     //		ref MovementOrder ____readyOrder, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState, ref FacingOrder ___CurrentFacingOrder,
     //		ref FacingOrder ____readyFacingOrder, ref FacingOrder ____waitFacingOrder, ref TacticalPosition ____tacticalWaitPos)
     //	{
@@ -293,7 +291,6 @@ public class SiegeArcherPoints : MissionView
     //				tempPos.SetVec2(new Vec2((float)leftWait[0], (float)leftWait[1]));
     //				____readyOrderPosition.SetVec3(UIntPtr.Zero, new Vec3((float)leftReady[0], (float)leftReady[1], (float)leftReady[2]), false);
 
-
     //			}
     //			else if (__instance.Formation.AI.Side == FormationAI.BehaviorSide.Right)
     //			{
@@ -303,7 +300,6 @@ public class SiegeArcherPoints : MissionView
     //				____readyFacingOrder = FacingOrder.FacingOrderLookAtDirection(new Vec2((float)rightReady[3], (float)rightReady[4]));
     //				tempPos.SetVec2(new Vec2((float)rightWait[0], (float)rightWait[1]));
     //				____readyOrderPosition.SetVec3(UIntPtr.Zero, new Vec3((float)rightReady[0], (float)rightReady[1], (float)rightReady[2]), false);
-
 
     //			}
 
@@ -317,19 +313,19 @@ public class SiegeArcherPoints : MissionView
     //}
 
     [HarmonyPatch(typeof(ArrangementOrder))]
-	[HarmonyPatch("IsStrategicAreaClose")]
-	class IsStrategicAreaClosePatch
+    [HarmonyPatch("IsStrategicAreaClose")]
+    private class IsStrategicAreaClosePatch
     {
-		static bool Prefix(ref StrategicArea strategicArea, ref Formation formation, ref ArrangementOrder __instance, ref bool __result)
-		{
-			float distanceToCheck = 150f;
+        private static bool Prefix(ref StrategicArea strategicArea, ref Formation formation, ref ArrangementOrder __instance, ref bool __result)
+        {
+            float distanceToCheck = 150f;
             if (strategicArea.IsUsableBy(formation.Team.Side))
             {
                 if (strategicArea.IgnoreHeight)
                 {
                     if (strategicArea.GameEntity != null && MathF.Abs(strategicArea.GameEntity.GlobalPosition.x - formation.OrderPosition.X) <= distanceToCheck)
                     {
-                        __result =  MathF.Abs(strategicArea.GameEntity.GlobalPosition.y - formation.OrderPosition.Y) <= distanceToCheck;
+                        __result = MathF.Abs(strategicArea.GameEntity.GlobalPosition.y - formation.OrderPosition.Y) <= distanceToCheck;
                         return false;
                     }
                     __result = false;
@@ -340,8 +336,8 @@ public class SiegeArcherPoints : MissionView
                 __result = worldPosition.DistanceSquaredWithLimit(in targetPoint, distanceToCheck * distanceToCheck + 1E-05f) < distanceToCheck * distanceToCheck;
                 return false;
             }
-            __result =  false;
-			return false;
+            __result = false;
+            return false;
             //if (formation.Team?.TeamAI == null)
             //{
             //	__result = new List<StrategicArea>();
@@ -371,5 +367,5 @@ public class SiegeArcherPoints : MissionView
             ////__result = newlist;
             //return false;
         }
-	}
+    }
 }

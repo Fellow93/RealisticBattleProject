@@ -4,8 +4,11 @@ namespace RBMCombat
 {
     public class RangedWeaponStatsComparer : IEqualityComparer<string>
     {
-        public int GetHashCode(string rac) { return rac.GetHashCode(); }
-        public bool Equals(string rac1, string rac2) { return rac1.Equals(rac2); }
+        public int GetHashCode(string rac)
+        { return rac.GetHashCode(); }
+
+        public bool Equals(string rac1, string rac2)
+        { return rac1.Equals(rac2); }
     }
 
     public class RangedWeaponStats
@@ -26,11 +29,9 @@ namespace RBMCombat
             this.drawWeight = drawWeight;
         }
 
-
         public int getDrawWeight()
         {
             return drawWeight;
         }
-
     }
 }

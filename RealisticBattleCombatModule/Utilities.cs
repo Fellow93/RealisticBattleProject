@@ -7,7 +7,7 @@ using TaleWorlds.MountAndBlade;
 using static TaleWorlds.Core.ArmorComponent;
 using static TaleWorlds.MountAndBlade.Agent;
 
-namespace  RBMCombat
+namespace RBMCombat
 {
     public static class Utilities
     {
@@ -109,7 +109,8 @@ namespace  RBMCombat
             return MBMath.ClampFloat(relevantSkillLevel / 250f, 0f, 1f);
         }
 
-        public static float GetEffectiveSkillWithDR(int effectiveSkill){
+        public static float GetEffectiveSkillWithDR(int effectiveSkill)
+        {
             float effectiveSkillWithDR = 0f;
             effectiveSkillWithDR = (600f / (600f + effectiveSkill)) * (float)effectiveSkill;
 
@@ -202,7 +203,7 @@ namespace  RBMCombat
         public static int assignThrowableMissileSpeed(float ammoWeight, int correctiveMissileSpeed, float effectiveSkill)
         {
             //float ammoWeight = throwable.GetWeight() / throwable.Amount;
-            int calculatedThrowingSpeed = calculateThrowableSpeed(ammoWeight,effectiveSkill);
+            int calculatedThrowingSpeed = calculateThrowableSpeed(ammoWeight, effectiveSkill);
             //PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
             //property.DeclaringType.GetProperty("MissileSpeed");
             //throwable.CurrentUsageIndex = index;
@@ -222,7 +223,7 @@ namespace  RBMCombat
             return 25;
         }
 
-        static public void initiateCheckForArmor(ref Agent victim, AttackCollisionData attackCollisionData, Blow blow, Agent affectorAgent, in MissionWeapon attackerWeapon)
+        public static void initiateCheckForArmor(ref Agent victim, AttackCollisionData attackCollisionData, Blow blow, Agent affectorAgent, in MissionWeapon attackerWeapon)
         {
             BoneBodyPartType bodyPartHit = attackCollisionData.VictimHitBodyPart;
 
@@ -274,13 +275,13 @@ namespace  RBMCombat
                         }
                 }
             }
-            if(equipmentIndex != EquipmentIndex.None && itemType != ItemObject.ItemTypeEnum.Invalid)
+            if (equipmentIndex != EquipmentIndex.None && itemType != ItemObject.ItemTypeEnum.Invalid)
             {
                 lowerArmorQualityCheck(ref victim, equipmentIndex, itemType, attackCollisionData, blow, affectorAgent, attackerWeapon);
             }
         }
 
-        static public void lowerArmorQualityCheck(ref Agent agent, EquipmentIndex equipmentIndex, ItemObject.ItemTypeEnum itemType, AttackCollisionData attackCollisionData, Blow blow, Agent attacker, in MissionWeapon attackerWeapon)
+        public static void lowerArmorQualityCheck(ref Agent agent, EquipmentIndex equipmentIndex, ItemObject.ItemTypeEnum itemType, AttackCollisionData attackCollisionData, Blow blow, Agent attacker, in MissionWeapon attackerWeapon)
         {
             EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
             if (equipmentElement.Item != null && equipmentElement.Item.ItemType == itemType)
@@ -299,7 +300,7 @@ namespace  RBMCombat
                 if (attacker.IsHuman)
                 {
                     EquipmentIndex slotIndex = attacker.GetWieldedItemIndex(HandIndex.MainHand);
-                    if(slotIndex != EquipmentIndex.None)
+                    if (slotIndex != EquipmentIndex.None)
                     {
                         WeaponComponentData wcd = attackerWeapon.CurrentUsageItem;
                         ItemModifier itemModifier = null;
@@ -444,15 +445,16 @@ namespace  RBMCombat
                         }
                 }
                 float defaultProbability = 0.05f;
-                if(damageType== DamageTypes.Pierce && !blow.IsMissile)
-                {;
+                if (damageType == DamageTypes.Pierce && !blow.IsMissile)
+                {
+                    ;
                     magnitude = magnitude * RBMConfig.RBMConfig.OneHandedThrustDamageBonus;
                 }
                 //float magScaling = (float)Math.Pow((magnitude * weaponDamageFactor) / (armorThreshold * armorValue), 2);
                 float magScaling = (blow.AbsorbedByArmor / (armorValue * armorThreshold)) / 5f;
                 float scaledProbability = defaultProbability + (magScaling * weaponTypeScaling);
                 float randomF = MBRandom.RandomFloat;
-                InformationManager.DisplayMessage(new InformationMessage(weaponType+ " " + damageType + " " + armorMaterialType + ": " + Math.Round(scaledProbability * 100f, 2) + "%"));
+                InformationManager.DisplayMessage(new InformationMessage(weaponType + " " + damageType + " " + armorMaterialType + ": " + Math.Round(scaledProbability * 100f, 2) + "%"));
                 if (randomF <= scaledProbability)
                 {
                     //numOfDurabilityDowngrade++;
@@ -461,7 +463,7 @@ namespace  RBMCombat
             }
         }
 
-        static public void lowerArmorQuality(ref Agent agent, EquipmentIndex equipmentIndex, ItemObject.ItemTypeEnum itemType)
+        public static void lowerArmorQuality(ref Agent agent, EquipmentIndex equipmentIndex, ItemObject.ItemTypeEnum itemType)
         {
             string oldItemModifier = " ";
             EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
@@ -516,7 +518,7 @@ namespace  RBMCombat
             }
         }
 
-        public static float GetSkillBasedDamage(float magnitude , bool isPassiveUsage, string weaponType, DamageTypes damageType, float effectiveSkill, float skillModifier, StrikeType strikeType, float weaponWeight)
+        public static float GetSkillBasedDamage(float magnitude, bool isPassiveUsage, string weaponType, DamageTypes damageType, float effectiveSkill, float skillModifier, StrikeType strikeType, float weaponWeight)
         {
             float skillBasedDamage = 0f;
             const float ashBreakTreshold = 430f;
@@ -670,7 +672,7 @@ namespace  RBMCombat
                         }
                         else
                         {
-                            float value = magnitude + ( effectiveSkill * 0.075f);
+                            float value = magnitude + (effectiveSkill * 0.075f);
                             float min = 10f * (1 + skillModifier);
                             float max = 15f * (1 + (2 * skillModifier));
                             skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4f);
@@ -711,12 +713,10 @@ namespace  RBMCombat
                         }
                         else
                         {
-
                             if (isPassiveUsage)
                             {
                                 float couchedSkill = 0.5f + effectiveSkill * 0.02f;
                                 float skillCap = (150f + effectiveSkill * 1.5f);
-
 
                                 if (weaponWeight < 2.1f)
                                 {
@@ -748,7 +748,6 @@ namespace  RBMCombat
                                     }
                                     magnitude *= 1f;
                                 }
-
                                 else
                                 {
                                     if (CouchedMagnitude > (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) //skill based damage
@@ -775,7 +774,6 @@ namespace  RBMCombat
 
                                 //skillBasedDamage = magnitude * 0.4f + 60f * RBMConfig.RBMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.26f * RBMConfig.RBMConfig.ThrustMagnitudeModifier);
                                 //if (skillBasedDamage > 170f * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
-
 
                                 //{
                                 //    skillBasedDamage = 170f * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
@@ -843,7 +841,6 @@ namespace  RBMCombat
                                     }
                                     magnitude *= 1f;
                                 }
-
                                 else
                                 {
                                     if (CouchedMagnitude > (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) //skill based damage
@@ -884,12 +881,10 @@ namespace  RBMCombat
                     }
             }
             return magnitude;
-
         }
 
         public static float RBMComputeDamage(string weaponType, DamageTypes damageType, float magnitude, float armorEffectiveness, float absorbedDamageRatio, out float penetratedDamage, out float bluntTraumaAfterArmor, float weaponDamageFactor = 1f, BasicCharacterObject player = null, bool isPlayerVictim = false)
         {
-
             float damage = 0f;
             float armorReduction = 100f / (100f + armorEffectiveness * RBMConfig.RBMConfig.armorMultiplier);
             float mag_1h_thrust;
@@ -1065,7 +1060,6 @@ namespace  RBMCombat
                             }
                         }
                         break;
-
                     }
                 case DamageTypes.Pierce:
                     {
@@ -1170,7 +1164,7 @@ namespace  RBMCombat
 
             bool isOverheadAttack = attackDirection == Agent.UsageDirection.AttackUp;
             thrustSpeed = (isOverheadAttack ? thrustSpeed + 1f : thrustSpeed);
-            if(thrustSpeed > 6f)
+            if (thrustSpeed > 6f)
             {
                 thrustSpeed = 6f;
             }
@@ -1348,7 +1342,7 @@ namespace  RBMCombat
 
         public static float getSwingDamageFactor(WeaponComponentData wcd, ItemModifier itemModifier)
         {
-            if(itemModifier == null)
+            if (itemModifier == null)
             {
                 return wcd.SwingDamageFactor;
             }
@@ -1384,4 +1378,3 @@ namespace  RBMCombat
         }
     }
 }
-

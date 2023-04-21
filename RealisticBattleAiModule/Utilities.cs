@@ -7,7 +7,6 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
-using TaleWorlds.LinQuick;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.Core.ItemObject;
 
@@ -15,7 +14,6 @@ namespace RBMAI
 {
     public static class Utilities
     {
-
         public static bool HasBattleBeenJoined(Formation mainInfantry, bool hasBattleBeenJoined, float battleJoinRange = 75f)
         {
             bool isOnlyCavReamining = CheckIfOnlyCavRemaining(mainInfantry);
@@ -25,7 +23,8 @@ namespace RBMAI
             }
             if (mainInfantry != null)
             {
-                if (FormationFightingInMelee(mainInfantry, 0.35f)){ 
+                if (FormationFightingInMelee(mainInfantry, 0.35f))
+                {
                     return true;
                 }
                 if (mainInfantry != null && mainInfantry.CountOfUnits > 0 && mainInfantry.QuerySystem.ClosestEnemyFormation != null && mainInfantry.QuerySystem.ClosestEnemyFormation.Formation != null)
@@ -33,11 +32,10 @@ namespace RBMAI
                     Formation enemyForamtion = RBMAI.Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false, true);
                     if (enemyForamtion != null)
                     {
-                        float distance = mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(enemyForamtion.QuerySystem.MedianPosition.AsVec2) + mainInfantry.Depth/2f + enemyForamtion.Depth / 2f;
+                        float distance = mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(enemyForamtion.QuerySystem.MedianPosition.AsVec2) + mainInfantry.Depth / 2f + enemyForamtion.Depth / 2f;
                         return (distance <= (battleJoinRange + (hasBattleBeenJoined ? 5f : 0f)));
                     }
                 }
-
             }
             return true;
         }
@@ -166,7 +164,6 @@ namespace RBMAI
             return null;
         }
 
-
         public static Agent NearestAgentFromFormation(Vec2 unitPosition, Formation targetFormation)
         {
             Agent targetAgent = null;
@@ -206,11 +203,11 @@ namespace RBMAI
                     else
                     {
                         float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
-                            if (newDist < distance)
-                            {
-                                targetAgent = agent;
-                                distance = newDist;
-                            }
+                        if (newDist < distance)
+                        {
+                            targetAgent = agent;
+                            distance = newDist;
+                        }
                     }
                 });
             }
@@ -302,7 +299,6 @@ namespace RBMAI
                     //    agent.ClearTargetFrame();
                     //}
                     ratio = (float)countOfShooting / (float)formation.CountOfUnits;
-
                 });
                 if (ratio > desiredRatio)
                 {
@@ -349,7 +345,6 @@ namespace RBMAI
                     }
                     countedUnits++;
                     ratio = (float)countOfSkirmishers / (float)formation.CountOfUnits;
-
                 });
                 if (ratio > desiredRatio)
                 {
@@ -464,7 +459,6 @@ namespace RBMAI
 
             if (formation != null)
             {
-
                 if (formation.QuerySystem.ClosestEnemyFormation != null)
                 {
                     foreach (Team team in Mission.Current.Teams.ToList())
@@ -586,7 +580,6 @@ namespace RBMAI
                                 }
                             }
                         }
-
                     }
                     if (significantEnemy == null)
                     {
@@ -725,7 +718,7 @@ namespace RBMAI
                                 float unitCount = (float)formation.CountOfUnits;
                                 float distance = formation.QuerySystem.MedianPosition.AsVec2.Distance(significantFormation.QuerySystem.MedianPosition.AsVec2);
                                 float newFormationWeight = (distance / unitCount) / (isMain ? 1.5f : 1f);
-                                
+
                                 if (newFormationWeight < formationWeight)
                                 {
                                     significantEnemy = significantFormation;
@@ -774,10 +767,9 @@ namespace RBMAI
                                         dist = newDist;
                                     }
                                 }
-                                
                             }
                         }
-                        if(significantEnemy == null)
+                        if (significantEnemy == null)
                         {
                             dist = 10000f;
                             float unitCountRatio = 0f;
@@ -828,10 +820,10 @@ namespace RBMAI
                                 result = false;
                             }
                         }
-
                     }
                 }
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 result = false;
             }
@@ -863,7 +855,7 @@ namespace RBMAI
                                 {
                                     if (formation != null && includeInfantry && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsInfantryFormation)
                                     {
-                                        if(allyFormation.CountOfUnits > unitCount)
+                                        if (allyFormation.CountOfUnits > unitCount)
                                         {
                                             significantAlly = allyFormation;
                                             unitCount = allyFormation.CountOfUnits;
@@ -960,10 +952,13 @@ namespace RBMAI
                     {
                         case CampaignOptions.Difficulty.VeryEasy:
                             return 0.70f;
+
                         case CampaignOptions.Difficulty.Easy:
                             return 0.85f;
+
                         case CampaignOptions.Difficulty.Realistic:
                             return 1.0f;
+
                         default:
                             return 1.0f;
                     }
@@ -974,10 +969,13 @@ namespace RBMAI
                     {
                         case CampaignOptions.Difficulty.VeryEasy:
                             return 0.1f;
+
                         case CampaignOptions.Difficulty.Easy:
                             return 0.32f;
+
                         case CampaignOptions.Difficulty.Realistic:
                             return 0.96f;
+
                         default:
                             return 0.5f;
                     }
@@ -1083,13 +1081,13 @@ namespace RBMAI
             int countAll = 0;
             int countHasShield = 0;
 
-            if(formation.Team.HasTeamAi)
+            if (formation.Team.HasTeamAi)
             {
                 FieldInfo field = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
                 field.DeclaringType.GetField("_currentTactic");
                 TacticComponent currentTactic = (TacticComponent)field.GetValue(formation.Team.TeamAI);
 
-                if(currentTactic != null && (currentTactic is RBMTacticAttackSplitInfantry || currentTactic is RBMTacticAttackSplitInfantry))
+                if (currentTactic != null && (currentTactic is RBMTacticAttackSplitInfantry || currentTactic is RBMTacticAttackSplitInfantry))
                 {
                     return false;
                 }
@@ -1106,7 +1104,7 @@ namespace RBMAI
                 }
             });
 
-            if(countHasShield/countAll >= haveShieldThreshold)
+            if (countHasShield / countAll >= haveShieldThreshold)
             {
                 return true;
             }
@@ -1198,7 +1196,7 @@ namespace RBMAI
         public static float GetPowerOfAgentsSum(IEnumerable<Agent> agents)
         {
             float result = 0f;
-            foreach(Agent agent in agents)
+            foreach (Agent agent in agents)
             {
                 result += MBMath.ClampInt((int)Math.Floor(agent.CharacterPowerCached * 65), 75, 200);
             }
@@ -1237,7 +1235,7 @@ namespace RBMAI
                 attackerWeapon.Item.WeaponDesign.UsedPieces != null && attackerWeapon.Item.WeaponDesign.UsedPieces.Length > 0)
             {
                 bool isSwordType = false;
-                if(attackerWeapon.CurrentUsageItem != null)
+                if (attackerWeapon.CurrentUsageItem != null)
                     switch (attackerWeapon.CurrentUsageItem.WeaponClass)
                     {
                         case WeaponClass.Dagger:
@@ -1248,7 +1246,7 @@ namespace RBMAI
                                 break;
                             }
                     }
-                float bladeLength = attackerWeapon.Item.WeaponDesign.UsedPieces[0].ScaledBladeLength + (isSwordType?0f:0.15f);
+                float bladeLength = attackerWeapon.Item.WeaponDesign.UsedPieces[0].ScaledBladeLength + (isSwordType ? 0f : 0.15f);
                 float realWeaponLength = currentUsageItem.GetRealWeaponLength();
                 if (collisionData.CollisionDistanceOnWeapon < (realWeaponLength - bladeLength))
                 {
@@ -1288,7 +1286,5 @@ namespace RBMAI
             }
             return comHitModifier;
         }
-
     }
 }
-

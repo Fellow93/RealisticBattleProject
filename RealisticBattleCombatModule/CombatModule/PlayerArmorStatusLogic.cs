@@ -1,9 +1,8 @@
-﻿using TaleWorlds.Engine.GauntletUI;
+﻿using TaleWorlds.Core;
+using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.Library;
-using TaleWorlds.MountAndBlade.View.Screens;
 using TaleWorlds.MountAndBlade;
-using TaleWorlds.Engine;
-using TaleWorlds.Core;
+using TaleWorlds.MountAndBlade.View.Screens;
 
 namespace RBMCombat
 {
@@ -36,11 +35,11 @@ namespace RBMCombat
 
         public string decideIconColor(int num)
         {
-            if(num > 100)
+            if (num > 100)
             {
                 return PlayerArmorStatusVM.green;
             }
-            else if(num == 100)
+            else if (num == 100)
             {
                 return PlayerArmorStatusVM.grey;
             }
@@ -64,7 +63,7 @@ namespace RBMCombat
 
         public int getModifierPercentage(ItemModifier im)
         {
-            if(im != null)
+            if (im != null)
             {
                 return im.ModifyArmor(100);
             }
@@ -76,7 +75,8 @@ namespace RBMCombat
 
         public override void OnMissionTick(float dt)
         {
-            if (tickTimer < tickTimerReset) {
+            if (tickTimer < tickTimerReset)
+            {
                 tickTimer++;
                 //if (Mission.Current.MainAgent != null && Mission.Current.MainAgent.IsDoingPassiveAttack)
                 //{
@@ -149,7 +149,6 @@ namespace RBMCombat
                     _dataSource.Harness = decideIconColor(harness);
                 }
             }
-            
         }
 
         //public override void OnRegisterBlow(Agent attacker, Agent victim, GameEntity realHitEntity, Blow b, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
@@ -216,14 +215,14 @@ namespace RBMCombat
         //            }
         //            _dataSource.Harness = "Harness: " + harness + "%";
         //        }
-                
+
         //    }
-            //private string helmet = "Helmet: 100%";
-            //private string shoulders = "Shoulders: 100%";
-            //private string body = "Body: 100%";
-            //private string gloves = "Gloves: 100%";
-            //private string legs = "Legs: 100%";
-    
+        //private string helmet = "Helmet: 100%";
+        //private string shoulders = "Shoulders: 100%";
+        //private string body = "Body: 100%";
+        //private string gloves = "Gloves: 100%";
+        //private string legs = "Legs: 100%";
+
         //}
     }
 }

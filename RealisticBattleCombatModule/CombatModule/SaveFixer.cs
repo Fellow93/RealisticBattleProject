@@ -39,7 +39,7 @@
 //                        toRemainList.Add(data[i]);
 //                        //data[i] = new TroopRosterElement(Campaign.Current.Factions.FirstOrDefault().Culture.BasicTroop);
 //                    }
-                    
+
 //                }
 //                if (toRemainList.Count == 0)
 //                {
@@ -262,7 +262,6 @@
 //            [HarmonyPatch("InitializeIconIdAndFrequencies")]
 //            public static bool InitializeIconIdAndFrequenciesPrefix(ref Dictionary<CultureObject, Dictionary<int, int>> ____cultureIconIdAndFrequencies)
 //            {
-
 //                foreach (CultureObject key in ____cultureIconIdAndFrequencies.Keys.ToList())
 //                {
 //                    if(key.BasicTroop == null)

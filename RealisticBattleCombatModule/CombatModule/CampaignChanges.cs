@@ -22,7 +22,7 @@ using static TaleWorlds.CampaignSystem.ComponentInterfaces.MilitaryPowerModel;
 
 namespace RBMCombat
 {
-    class CampaignChanges
+    internal class CampaignChanges
     {
         public static List<CharacterObject> FillTroopListUntilTier(CharacterObject starterTroop, int tier)
         {
@@ -55,11 +55,11 @@ namespace RBMCombat
         }
 
         [HarmonyPatch(typeof(DefaultPartyHealingModel))]
-        class OverrideDefaultPartyHealingModel
+        private class OverrideDefaultPartyHealingModel
         {
             [HarmonyPrefix]
             [HarmonyPatch("GetSurvivalChance")]
-            static bool PrefixGetAiWeight(ref float __result, PartyBase party, CharacterObject character, DamageTypes damageType, PartyBase enemyParty = null)
+            private static bool PrefixGetAiWeight(ref float __result, PartyBase party, CharacterObject character, DamageTypes damageType, PartyBase enemyParty = null)
             {
                 if ((character.IsHero && CampaignOptions.BattleDeath == CampaignOptions.Difficulty.VeryEasy) || (character.IsPlayerCharacter && CampaignOptions.BattleDeath == CampaignOptions.Difficulty.Easy))
                 {
@@ -119,9 +119,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(StoryModeGenericXpModel))]
         [HarmonyPatch("GetXpMultiplier")]
-        class AddSkillXpPatch
+        private class AddSkillXpPatch
         {
-            static bool Prefix(StoryModeGenericXpModel __instance, Hero hero, ref float __result)
+            private static bool Prefix(StoryModeGenericXpModel __instance, Hero hero, ref float __result)
             {
                 __result = 1f;
                 return false;
@@ -130,9 +130,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(DefaultCombatXpModel))]
         [HarmonyPatch("GetXpMultiplierFromShotDifficulty")]
-        class GetXpMultiplierFromShotDifficultyPatch
+        private class GetXpMultiplierFromShotDifficultyPatch
         {
-            static bool Prefix(DefaultCombatXpModel __instance, float shotDifficulty, ref float __result)
+            private static bool Prefix(DefaultCombatXpModel __instance, float shotDifficulty, ref float __result)
             {
                 if (shotDifficulty > 14.4f)
                 {
@@ -144,11 +144,11 @@ namespace RBMCombat
         }
 
         [HarmonyPatch(typeof(DefaultCombatXpModel))]
-        class GetXpFromHitPatch
+        private class GetXpFromHitPatch
         {
             [HarmonyPrefix]
             [HarmonyPatch("GetXpFromHit")]
-            static bool PrefixGetXpFromHit(ref DefaultCombatXpModel __instance, CharacterObject attackerTroop, CharacterObject captain, CharacterObject attackedTroop, PartyBase party, int damage, bool isFatal, MissionTypeEnum missionType, out int xpAmount)
+            private static bool PrefixGetXpFromHit(ref DefaultCombatXpModel __instance, CharacterObject attackerTroop, CharacterObject captain, CharacterObject attackedTroop, PartyBase party, int damage, bool isFatal, MissionTypeEnum missionType, out int xpAmount)
             {
                 if (missionType == MissionTypeEnum.Battle || missionType == MissionTypeEnum.PracticeFight || missionType == MissionTypeEnum.Tournament || missionType == MissionTypeEnum.SimulationBattle)
                 {
@@ -165,7 +165,7 @@ namespace RBMCombat
                         attackerTroopPower = OverrideDefaultMilitaryPowerModel.GetTroopPowerBasedOnContextForXPAttacker(attackerTroop);
                     }
                     float rawXpNum = 0;
-                    
+
                     rawXpNum = 0.4f * (victimTroopPower + 0.5f) * (attackerTroopPower + 0.5f) * (float)(30);
 
                     float xpModifier;
@@ -174,6 +174,7 @@ namespace RBMCombat
                         case MissionTypeEnum.NoXp:
                             xpModifier = 0f;
                             break;
+
                         default:
                             xpModifier = 1f;
                             break;
@@ -213,11 +214,11 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(Mission))]
         [HarmonyPatch("CreateMeleeBlow")]
-        class CreateMeleeBlowPatch
+        private class CreateMeleeBlowPatch
         {
-            static void Postfix(ref Mission __instance, ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
+            private static void Postfix(ref Mission __instance, ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
             {
-                if(Campaign.Current != null)
+                if (Campaign.Current != null)
                 {
                     if (victimAgent != null && victimAgent.Character != null && victimAgent.Character.IsHero)
                     {
@@ -283,105 +284,12 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(TrainingFieldMissionController))]
         [HarmonyPatch("BowInTrainingAreaUpdate")]
-        static class BowInTrainingAreaUpdatePatch
+        private static class BowInTrainingAreaUpdatePatch
         {
-            static int lastBreakeableCount = -1;
-            static bool shouldCount = false;
-            static void Postfix(int ____trainingProgress, TutorialArea ____activeTutorialArea, int ____trainingSubTypeIndex)
-            {
-                if (____trainingProgress == 1)
-                {
-                    lastBreakeableCount = -1;
-                }
-                if(____trainingProgress == 4)
-                {
-                    if (lastBreakeableCount == -1)
-                    {
-                        lastBreakeableCount = ____activeTutorialArea.GetBrokenBreakableCount(____trainingSubTypeIndex);
-                    }
-                    else
-                    {
-                        if (lastBreakeableCount != ____activeTutorialArea.GetBrokenBreakableCount(____trainingSubTypeIndex))
-                        {
-                            lastBreakeableCount = ____activeTutorialArea.GetBrokenBreakableCount(____trainingSubTypeIndex);
-                            shouldCount = true;
-                        }
-                    }
-                }
-                if (shouldCount && ____trainingProgress == 4)
-                {
-                    shouldCount = false;
-                    EquipmentIndex ei = Mission.Current.MainAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
-                    if (ei != EquipmentIndex.None)
-                    {
-                        CharacterObject playerCharacter = (CharacterObject)CharacterObject.PlayerCharacter;
-                        if (playerCharacter != null)
-                        {
-                            if (Mission.Current.MainAgent.WieldedWeapon.CurrentUsageItem != null)
-                            {
-                                WeaponComponentData wieldedWeapon = Mission.Current.MainAgent.WieldedWeapon.CurrentUsageItem;
-                                SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(wieldedWeapon, false);
-                                if(skillForWeapon != null)
-                                {
-                                    playerCharacter.HeroObject.AddSkillXp(skillForWeapon, 50);
-                                    if (Mission.Current.MainAgent.HasMount)
-                                    {
-                                        playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Riding, 25);
-                                    }
-                                    else
-                                    {
-                                        playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Athletics, 25);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    
-                }
-            }
-        }
+            private static int lastBreakeableCount = -1;
+            private static bool shouldCount = false;
 
-        [HarmonyPatch(typeof(TrainingFieldMissionController))]
-        [HarmonyPatch("BowTrainingEndedSuccessfully")]
-        static class BowTrainingEndedSuccessfullyPatch
-        {
-            static void Postfix(int ____trainingProgress, TutorialArea ____activeTutorialArea, int ____trainingSubTypeIndex)
-            {
-                EquipmentIndex ei = Mission.Current.MainAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
-                if (ei != EquipmentIndex.None)
-                {
-                    CharacterObject playerCharacter = (CharacterObject)CharacterObject.PlayerCharacter;
-                    if(playerCharacter != null)
-                    {
-                        if(Mission.Current.MainAgent.WieldedWeapon.CurrentUsageItem != null)
-                        {
-                            WeaponComponentData wieldedWeapon = Mission.Current.MainAgent.WieldedWeapon.CurrentUsageItem;
-                            SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(wieldedWeapon, false);
-                            if (skillForWeapon != null)
-                            {
-                                playerCharacter.HeroObject.AddSkillXp(skillForWeapon, 500);
-                                if (Mission.Current.MainAgent.HasMount)
-                                {
-                                    playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Riding, 250);
-                                }
-                                else
-                                {
-                                    playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Athletics, 250);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(TrainingFieldMissionController))]
-        [HarmonyPatch("MountedTrainingUpdate")]
-        static class MountedTrainingUpdatePatch
-        {
-            static int lastBreakeableCount = -1;
-            static bool shouldCount = false;
-            static void Postfix(int ____trainingProgress, TutorialArea ____activeTutorialArea, int ____trainingSubTypeIndex)
+            private static void Postfix(int ____trainingProgress, TutorialArea ____activeTutorialArea, int ____trainingSubTypeIndex)
             {
                 if (____trainingProgress == 1)
                 {
@@ -430,21 +338,114 @@ namespace RBMCombat
                             }
                         }
                     }
+                }
+            }
+        }
 
+        [HarmonyPatch(typeof(TrainingFieldMissionController))]
+        [HarmonyPatch("BowTrainingEndedSuccessfully")]
+        private static class BowTrainingEndedSuccessfullyPatch
+        {
+            private static void Postfix(int ____trainingProgress, TutorialArea ____activeTutorialArea, int ____trainingSubTypeIndex)
+            {
+                EquipmentIndex ei = Mission.Current.MainAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                if (ei != EquipmentIndex.None)
+                {
+                    CharacterObject playerCharacter = (CharacterObject)CharacterObject.PlayerCharacter;
+                    if (playerCharacter != null)
+                    {
+                        if (Mission.Current.MainAgent.WieldedWeapon.CurrentUsageItem != null)
+                        {
+                            WeaponComponentData wieldedWeapon = Mission.Current.MainAgent.WieldedWeapon.CurrentUsageItem;
+                            SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(wieldedWeapon, false);
+                            if (skillForWeapon != null)
+                            {
+                                playerCharacter.HeroObject.AddSkillXp(skillForWeapon, 500);
+                                if (Mission.Current.MainAgent.HasMount)
+                                {
+                                    playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Riding, 250);
+                                }
+                                else
+                                {
+                                    playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Athletics, 250);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(TrainingFieldMissionController))]
+        [HarmonyPatch("MountedTrainingUpdate")]
+        private static class MountedTrainingUpdatePatch
+        {
+            private static int lastBreakeableCount = -1;
+            private static bool shouldCount = false;
+
+            private static void Postfix(int ____trainingProgress, TutorialArea ____activeTutorialArea, int ____trainingSubTypeIndex)
+            {
+                if (____trainingProgress == 1)
+                {
+                    lastBreakeableCount = -1;
+                }
+                if (____trainingProgress == 4)
+                {
+                    if (lastBreakeableCount == -1)
+                    {
+                        lastBreakeableCount = ____activeTutorialArea.GetBrokenBreakableCount(____trainingSubTypeIndex);
+                    }
+                    else
+                    {
+                        if (lastBreakeableCount != ____activeTutorialArea.GetBrokenBreakableCount(____trainingSubTypeIndex))
+                        {
+                            lastBreakeableCount = ____activeTutorialArea.GetBrokenBreakableCount(____trainingSubTypeIndex);
+                            shouldCount = true;
+                        }
+                    }
+                }
+                if (shouldCount && ____trainingProgress == 4)
+                {
+                    shouldCount = false;
+                    EquipmentIndex ei = Mission.Current.MainAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                    if (ei != EquipmentIndex.None)
+                    {
+                        CharacterObject playerCharacter = (CharacterObject)CharacterObject.PlayerCharacter;
+                        if (playerCharacter != null)
+                        {
+                            if (Mission.Current.MainAgent.WieldedWeapon.CurrentUsageItem != null)
+                            {
+                                WeaponComponentData wieldedWeapon = Mission.Current.MainAgent.WieldedWeapon.CurrentUsageItem;
+                                SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(wieldedWeapon, false);
+                                if (skillForWeapon != null)
+                                {
+                                    playerCharacter.HeroObject.AddSkillXp(skillForWeapon, 50);
+                                    if (Mission.Current.MainAgent.HasMount)
+                                    {
+                                        playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Riding, 25);
+                                    }
+                                    else
+                                    {
+                                        playerCharacter.HeroObject.AddSkillXp(DefaultSkills.Athletics, 25);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
 
         [HarmonyPatch(typeof(TrainingFieldMissionController))]
         [HarmonyPatch("MountedTrainingEndedSuccessfully")]
-        static class MountedTrainingEndedSuccessfullyPatch
+        private static class MountedTrainingEndedSuccessfullyPatch
         {
-            static void Postfix(int ____trainingProgress, TutorialArea ____activeTutorialArea, int ____trainingSubTypeIndex, float ____timeScore)
+            private static void Postfix(int ____trainingProgress, TutorialArea ____activeTutorialArea, int ____trainingSubTypeIndex, float ____timeScore)
             {
                 int brokenBreakableCount = ____activeTutorialArea.GetBrokenBreakableCount(____trainingSubTypeIndex);
                 int breakablesCount = ____activeTutorialArea.GetBreakablesCount(____trainingSubTypeIndex);
                 float missFactor = (float)brokenBreakableCount / (float)breakablesCount;
-                if(missFactor >= 1f)
+                if (missFactor >= 1f)
                 {
                     missFactor = 1.25f;
                 }
@@ -480,12 +481,12 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(DefaultVolunteerModel))]
         [HarmonyPatch("GetBasicVolunteer")]
-        static class DefaultVolunteerModelPatch
+        private static class DefaultVolunteerModelPatch
         {
-            static bool Prefix(Hero sellerHero, ref CharacterObject __result)
+            private static bool Prefix(Hero sellerHero, ref CharacterObject __result)
             {
                 float randomF = MBRandom.RandomFloat;
-                if(randomF < 0.15f)
+                if (randomF < 0.15f)
                 {
                     __result = sellerHero.Culture.EliteBasicTroop;
                     return false;
@@ -499,7 +500,7 @@ namespace RBMCombat
         }
 
         [HarmonyPatch(typeof(PerkHelper))]
-        class OverrideAddPerkBonusForParty
+        private class OverrideAddPerkBonusForParty
         {
             private static void AddToStat(ref ExplainedNumber stat, SkillEffect.EffectIncrementType effectIncrementType, float number, TextObject text)
             {
@@ -508,6 +509,7 @@ namespace RBMCombat
                     case SkillEffect.EffectIncrementType.Add:
                         stat.Add(number, text);
                         break;
+
                     case SkillEffect.EffectIncrementType.AddFactor:
                         stat.AddFactor(number * 0.01f, text);
                         break;
@@ -516,8 +518,8 @@ namespace RBMCombat
 
             [HarmonyPrefix]
             [HarmonyPatch("AddPerkBonusForParty")]
-            static bool PrefixAddPerkBonusForParty(PerkObject perk, MobileParty party, bool isPrimaryBonus,
-                ref ExplainedNumber stat, ref TextObject ____textLeader ,ref TextObject ____textScout, ref TextObject ____textSurgeon, ref TextObject ____textQuartermaster)
+            private static bool PrefixAddPerkBonusForParty(PerkObject perk, MobileParty party, bool isPrimaryBonus,
+                ref ExplainedNumber stat, ref TextObject ____textLeader, ref TextObject ____textScout, ref TextObject ____textSurgeon, ref TextObject ____textQuartermaster)
             {
                 Hero hero = party?.LeaderHero;
                 if (hero == null)
@@ -651,11 +653,11 @@ namespace RBMCombat
         }
 
         [HarmonyPatch(typeof(SandboxAgentStatCalculateModel))]
-        class OverrideGetEffectiveMaxHealth
+        private class OverrideGetEffectiveMaxHealth
         {
             [HarmonyPrefix]
             [HarmonyPatch("GetEffectiveMaxHealth")]
-            static bool PrefixGetEffectiveMaxHealth(ref SandboxAgentStatCalculateModel __instance, ref float __result, Agent agent)
+            private static bool PrefixGetEffectiveMaxHealth(ref SandboxAgentStatCalculateModel __instance, ref float __result, Agent agent)
             {
                 float baseHealthLimit = agent.BaseHealthLimit;
                 ExplainedNumber stat = new ExplainedNumber(baseHealthLimit);
@@ -732,11 +734,11 @@ namespace RBMCombat
         }
 
         [HarmonyPatch(typeof(CharacterObject))]
-        class OverrideCharacterObject
+        private class OverrideCharacterObject
         {
             [HarmonyPrefix]
             [HarmonyPatch("GetPowerImp")]
-            static bool PrefixGetPowerImp(ref float __result, int tier, bool isHero = false, bool isMounted = false)
+            private static bool PrefixGetPowerImp(ref float __result, int tier, bool isHero = false, bool isMounted = false)
             {
                 bool isNoble = false;
                 float origPower = (float)((2 + tier) * (8 + tier)) * 0.02f * (isHero ? 1.5f : (isMounted ? 1.2f : 1f));
@@ -745,6 +747,7 @@ namespace RBMCombat
                 __result = (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * (isHero ? 1.5f : 1f) * (isMounted ? 1.5f : 1f) * (isNoble ? 1.5f : 1f);
                 return false;
             }
+
             public static float CustomGetPowerImp(int tier, bool isHero = false, bool isMounted = false, bool isNoble = false)
             {
                 return (float)((2f + tier) * (8f + tier)) * 0.02f * (isHero ? 1.5f : 1f) * (isMounted ? 1.5f : 1f) * (isNoble ? 1.5f : 1f);
@@ -752,7 +755,7 @@ namespace RBMCombat
 
             [HarmonyPrefix]
             [HarmonyPatch("GetPower")]
-            static bool PrefixGetPower(ref CharacterObject __instance, ref float __result)
+            private static bool PrefixGetPower(ref CharacterObject __instance, ref float __result)
             {
                 //return GetPowerImp(IsHero ? (HeroObject.Level / 4 + 1) : Tier, IsHero, IsMounted);
                 int tier = __instance.IsHero ? (__instance.HeroObject.Level / 4 + 1) : __instance.Tier;
@@ -785,7 +788,7 @@ namespace RBMCombat
 
             [HarmonyPrefix]
             [HarmonyPatch("GetBattlePower")]
-            static bool PrefixGetBattlePower(ref CharacterObject __instance, ref float __result)
+            private static bool PrefixGetBattlePower(ref CharacterObject __instance, ref float __result)
             {
                 int tier = __instance.IsHero ? (__instance.HeroObject.Level / 4 + 1) : __instance.Tier;
                 bool isNoble = false;
@@ -828,16 +831,19 @@ namespace RBMCombat
                     case MapEvent.BattleTypes.FieldBattle:
                         result = (isSimulation ? PowerCalculationContext.FieldBattleSimulation : PowerCalculationContext.FieldBattle);
                         break;
+
                     case MapEvent.BattleTypes.Raid:
                     case MapEvent.BattleTypes.IsForcingVolunteers:
                     case MapEvent.BattleTypes.IsForcingSupplies:
                         result = ((battleSideEnum != BattleSideEnum.Attacker) ? (isSimulation ? PowerCalculationContext.RaidSimulationAsDefender : PowerCalculationContext.RaidAsDefender) : (isSimulation ? PowerCalculationContext.RaidSimulationAsAttacker : PowerCalculationContext.RaidAsAttacker));
                         break;
+
                     case MapEvent.BattleTypes.Siege:
                     case MapEvent.BattleTypes.SallyOut:
                     case MapEvent.BattleTypes.SiegeOutside:
                         result = ((battleSideEnum != BattleSideEnum.Attacker) ? (isSimulation ? PowerCalculationContext.SiegeSimulationAsDefender : PowerCalculationContext.SiegeAsDefender) : (isSimulation ? PowerCalculationContext.SiegeSimulationAsAttacker : PowerCalculationContext.SiegeAsAttacker));
                         break;
+
                     case MapEvent.BattleTypes.Hideout:
                         result = PowerCalculationContext.Hideout;
                         break;
@@ -847,25 +853,25 @@ namespace RBMCombat
 
             [HarmonyPrefix]
             [HarmonyPatch("GetTroopPowerBasedOnContext")]
-            static bool PrefixGetTroopPowerBasedOnContext(ref float __result, CharacterObject troop, MapEvent.BattleTypes battleType = MapEvent.BattleTypes.None, BattleSideEnum battleSideEnum = BattleSideEnum.None, bool isSimulation = false)
+            private static bool PrefixGetTroopPowerBasedOnContext(ref float __result, CharacterObject troop, MapEvent.BattleTypes battleType = MapEvent.BattleTypes.None, BattleSideEnum battleSideEnum = BattleSideEnum.None, bool isSimulation = false)
             {
                 PowerCalculationContext context = DetermineContext(battleType, battleSideEnum, isSimulation);
 
                 int tier = (troop.IsHero ? (troop.HeroObject.Level / 4 + 1) : troop.Tier);
                 bool isNoble = false;
-                if(troop.Culture != null)
+                if (troop.Culture != null)
                 {
                     CharacterObject EliteBasicTroop = troop.Culture.EliteBasicTroop;
-                    if(troop == EliteBasicTroop)
+                    if (troop == EliteBasicTroop)
                     {
                         isNoble = true;
                     }
                     else
                     {
                         List<CharacterObject> cultureNobleTroopList = FillTroopListUntilTier(troop.Culture.EliteBasicTroop, 10);
-                        foreach(CharacterObject co in cultureNobleTroopList)
+                        foreach (CharacterObject co in cultureNobleTroopList)
                         {
-                            if(co == troop)
+                            if (co == troop)
                             {
                                 isNoble = true;
                             }
@@ -873,7 +879,7 @@ namespace RBMCombat
                     }
                 }
                 float origPower = (float)((2f + tier) * (8f + tier)) * 0.02f * (troop.IsHero ? 1.5f : (troop.IsMounted ? 1.2f : 1f));
-                float modifiedTier = (tier-1) * 3f;
+                float modifiedTier = (tier - 1) * 3f;
                 modifiedTier = MathF.Clamp(modifiedTier, 1f, modifiedTier);
                 if ((uint)(context - 6) <= 1u)
                 {
@@ -886,9 +892,9 @@ namespace RBMCombat
 
             [HarmonyPatch(typeof(CommonAIComponent))]
             [HarmonyPatch("InitializeMorale")]
-            class InitializeMoralePatch
+            private class InitializeMoralePatch
             {
-                static bool Prefix(ref CommonAIComponent __instance, ref Agent ___Agent, ref float ____initialMorale, ref float ____recoveryMorale)
+                private static bool Prefix(ref CommonAIComponent __instance, ref Agent ___Agent, ref float ____initialMorale, ref float ____recoveryMorale)
                 {
                     //int num = MBRandom.RandomInt(30);
                     int num = 30;
@@ -933,24 +939,23 @@ namespace RBMCombat
 
             [HarmonyPatch(typeof(Agent))]
             [HarmonyPatch("InitializeSpawnEquipment")]
-            class InitializeSpawnEquipmentPatch
+            private class InitializeSpawnEquipmentPatch
             {
-                static bool Prefix(Equipment spawnEquipment, ref Agent __instance)
+                private static bool Prefix(Equipment spawnEquipment, ref Agent __instance)
                 {
-                    
                     if (Campaign.Current != null && __instance.IsHuman && __instance.IsHero && !__instance.Character.IsPlayerCharacter)
                     {
                         Equipment spawnEquipment2 = spawnEquipment.Clone();
                         bool shoudReceiveUpgradedGear = false;
                         Hero hero = ((CharacterObject)__instance.Character).HeroObject;
-                        foreach(Kingdom kingdom in Kingdom.All)
+                        foreach (Kingdom kingdom in Kingdom.All)
                         {
-                            if(kingdom.Leader != null && kingdom.Leader == hero)
+                            if (kingdom.Leader != null && kingdom.Leader == hero)
                             {
                                 shoudReceiveUpgradedGear = true;
                                 break;
                             }
-                            foreach(Hero lord in kingdom.Lords)
+                            foreach (Hero lord in kingdom.Lords)
                             {
                                 if (lord != null && lord == hero)
                                 {
@@ -979,25 +984,23 @@ namespace RBMCombat
                         propertySpawnEquipment.DeclaringType.GetProperty("SpawnEquipment");
                         propertySpawnEquipment.SetValue(__instance, spawnEquipment2, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                         return false;
-
                     }
                     return true;
                 }
             }
 
-
             [HarmonyPatch(typeof(Equipment))]
             [HarmonyPatch("GetRandomizedEquipment")]
-            class GetRandomizedEquipmentPatch
+            private class GetRandomizedEquipmentPatch
             {
-                static bool Prefix(ref List<Equipment> equipmentSets, ref EquipmentIndex weaponSlot, ref int weaponSetNo, ref bool randomEquipmentModifier, ref EquipmentElement __result)
+                private static bool Prefix(ref List<Equipment> equipmentSets, ref EquipmentIndex weaponSlot, ref int weaponSetNo, ref bool randomEquipmentModifier, ref EquipmentElement __result)
                 {
                     EquipmentElement equipmentFromSlot = equipmentSets[weaponSetNo].GetEquipmentFromSlot(weaponSlot);
                     //if(equipmentSets.Count > 1)
                     //{
                     //    bool testik = false;
                     //}
-                    __result =  equipmentFromSlot;
+                    __result = equipmentFromSlot;
                     return false;
                 }
             }

@@ -1,10 +1,10 @@
 ﻿namespace RBMAI
 {
-	using TaleWorlds.Library;
+    using TaleWorlds.Library;
 
-	public class BattleStatsVM : ViewModel
+    public class BattleStatsVM : ViewModel
     {
-		private string atkarc = "ATK ARC: 0";
+        private string atkarc = "ATK ARC: 0";
         private string atkha = "ATK HA : 0";
         private string atkcav = "ATK CAV: 0";
         private string atkinf = "ATK INF: 0";
@@ -14,18 +14,18 @@
         private string definf = "DEF INF: 0";
 
         [DataSourceProperty]
-		public string Atkarc
-		{
-			get
-			{
-				return atkarc;
-			}
-			set
-			{
+        public string Atkarc
+        {
+            get
+            {
+                return atkarc;
+            }
+            set
+            {
                 atkarc = value;
-				OnPropertyChanged("Atkarc");
-			}
-		}
+                OnPropertyChanged("Atkarc");
+            }
+        }
 
         [DataSourceProperty]
         public string Atkha
@@ -40,6 +40,7 @@
                 OnPropertyChanged("Atkha");
             }
         }
+
         [DataSourceProperty]
         public string Atkcav
         {
@@ -53,6 +54,7 @@
                 OnPropertyChanged("Atkcav");
             }
         }
+
         [DataSourceProperty]
         public string Atkinf
         {
@@ -66,6 +68,7 @@
                 OnPropertyChanged("Atkinf");
             }
         }
+
         [DataSourceProperty]
         public string Defarc
         {
@@ -79,6 +82,7 @@
                 OnPropertyChanged("Defarc");
             }
         }
+
         [DataSourceProperty]
         public string Defha
         {
@@ -92,6 +96,7 @@
                 OnPropertyChanged("Defha");
             }
         }
+
         [DataSourceProperty]
         public string Defcav
         {
@@ -105,6 +110,7 @@
                 OnPropertyChanged("Defcav");
             }
         }
+
         [DataSourceProperty]
         public string Definf
         {
@@ -119,5 +125,4 @@
             }
         }
     }
-
 }

@@ -7,7 +7,7 @@ namespace RBMCombat
 {
     public class ArmorRework
     {
-        static public float getHeadArmor(Agent agent)
+        public static float getHeadArmor(Agent agent)
         {
             float num = 0f;
             EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.Head];
@@ -18,7 +18,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getNeckArmor(Agent agent)
+        public static float getNeckArmor(Agent agent)
         {
             float num = 0f;
             EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.Body];
@@ -29,7 +29,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getHorseHeadArmor(Agent agent)
+        public static float getHorseHeadArmor(Agent agent)
         {
             float num = 0f;
             EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
@@ -41,7 +41,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getHorseLegArmor(Agent agent)
+        public static float getHorseLegArmor(Agent agent)
         {
             float num = 0f;
             EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
@@ -53,7 +53,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getHorseArmArmor(Agent agent)
+        public static float getHorseArmArmor(Agent agent)
         {
             float num = 0f;
             EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
@@ -65,7 +65,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getHorseBodyArmor(Agent agent)
+        public static float getHorseBodyArmor(Agent agent)
         {
             float num = 0f;
             EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
@@ -82,7 +82,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getShoulderArmor(Agent agent)
+        public static float getShoulderArmor(Agent agent)
         {
             float num = 0f;
             for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
@@ -93,7 +93,6 @@ namespace RBMCombat
                 {
                     num += (float)equipmentElement.GetModifiedBodyArmor();
                     num += (float)equipmentElement.GetModifiedArmArmor();
-
                 }
                 if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
                 {
@@ -103,7 +102,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getAbdomenArmor(Agent agent)
+        public static float getAbdomenArmor(Agent agent)
         {
             float num = 0f;
             for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
@@ -117,7 +116,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getMyChestArmor(Agent agent)
+        public static float getMyChestArmor(Agent agent)
         {
             float num = 0f;
             for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
@@ -131,7 +130,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getArmArmor(Agent agent)
+        public static float getArmArmor(Agent agent)
         {
             float num = 0f;
             for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
@@ -145,7 +144,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getLegArmor(Agent agent)
+        public static float getLegArmor(Agent agent)
         {
             float num = 0f;
             for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
@@ -163,7 +162,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getHeadArmor(Equipment equipment)
+        public static float getHeadArmor(Equipment equipment)
         {
             float num = 0f;
             EquipmentElement equipmentElement = equipment[EquipmentIndex.Head];
@@ -174,7 +173,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getNeckArmor(Equipment equipment)
+        public static float getNeckArmor(Equipment equipment)
         {
             float num = 0f;
             EquipmentElement equipmentElement = equipment[EquipmentIndex.Body];
@@ -185,7 +184,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getHorseHeadArmor(Equipment equipment)
+        public static float getHorseHeadArmor(Equipment equipment)
         {
             float num = 0f;
             EquipmentElement equipmentElement = equipment[EquipmentIndex.HorseHarness];
@@ -197,7 +196,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getHorseLegArmor(Equipment equipment)
+        public static float getHorseLegArmor(Equipment equipment)
         {
             float num = 0f;
             EquipmentElement equipmentElement = equipment[EquipmentIndex.HorseHarness];
@@ -209,7 +208,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getHorseArmArmor(Equipment equipment)
+        public static float getHorseArmArmor(Equipment equipment)
         {
             float num = 0f;
             EquipmentElement equipmentElement = equipment[EquipmentIndex.HorseHarness];
@@ -221,7 +220,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getHorseBodyArmor(Equipment equipment)
+        public static float getHorseBodyArmor(Equipment equipment)
         {
             float num = 0f;
             EquipmentElement equipmentElement = equipment[EquipmentIndex.HorseHarness];
@@ -238,7 +237,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getShoulderArmor(Equipment equipment)
+        public static float getShoulderArmor(Equipment equipment)
         {
             float num = 0f;
             for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
@@ -249,7 +248,6 @@ namespace RBMCombat
                 {
                     num += (float)equipmentElement.GetModifiedBodyArmor();
                     num += (float)equipmentElement.GetModifiedArmArmor();
-
                 }
                 if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
                 {
@@ -259,7 +257,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getAbdomenArmor(Equipment equipment)
+        public static float getAbdomenArmor(Equipment equipment)
         {
             float num = 0f;
             for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
@@ -273,7 +271,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getMyChestArmor(Equipment equipment)
+        public static float getMyChestArmor(Equipment equipment)
         {
             float num = 0f;
             for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
@@ -287,7 +285,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getArmArmor(Equipment equipment)
+        public static float getArmArmor(Equipment equipment)
         {
             float num = 0f;
             for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
@@ -301,7 +299,7 @@ namespace RBMCombat
             return num;
         }
 
-        static public float getLegArmor(Equipment equipment)
+        public static float getLegArmor(Equipment equipment)
         {
             float num = 0f;
             for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
@@ -372,7 +370,6 @@ namespace RBMCombat
                         }
                 }
             }
-
             else
             {
                 switch (bodyPart)
@@ -431,11 +428,12 @@ namespace RBMCombat
             }
             return result;
         }
+
         public static float GetBaseArmorEffectivenessForBodyPartRBMHuman(Equipment equipment, BoneBodyPartType bodyPart)
         {
             float result;
-                switch (bodyPart)
-                {
+            switch (bodyPart)
+            {
                 case BoneBodyPartType.None:
                     {
                         result = 0f;
@@ -492,21 +490,18 @@ namespace RBMCombat
         [HarmonyPatch("GetBaseArmorEffectivenessForBodyPart")]
         public class ChangeBodyPartArmor
         {
-
             public static bool Prefix(Agent __instance, BoneBodyPartType bodyPart, ref float __result)
             {
                 __result = GetBaseArmorEffectivenessForBodyPartRBM(__instance, bodyPart);
                 return false;
             }
-
         }
     }
 
     [HarmonyPatch(typeof(ItemModifier))]
     [HarmonyPatch("ModifyArmor")]
-    class ModifyArmorPatch
+    internal class ModifyArmorPatch
     {
-
         private static int ModifyFactor(int baseValue, float factor)
         {
             if (baseValue == 0)
@@ -520,7 +515,7 @@ namespace RBMCombat
             return baseValue;
         }
 
-        static bool Prefix(ref int armorValue, ref int __result ,ref int ____armor)
+        private static bool Prefix(ref int armorValue, ref int __result, ref int ____armor)
         {
             float calculatedModifier = 1f + (____armor / 100f);
             int result = ModifyFactor(armorValue, calculatedModifier);
@@ -531,9 +526,8 @@ namespace RBMCombat
 
     [HarmonyPatch(typeof(ItemModifier))]
     [HarmonyPatch("ModifyDamage")]
-    class ModifyModifyDamagePatch
+    internal class ModifyModifyDamagePatch
     {
-
         private static int ModifyFactor(int baseValue, float factor)
         {
             if (baseValue == 0)
@@ -547,7 +541,7 @@ namespace RBMCombat
             return baseValue;
         }
 
-        static bool Prefix(ref int baseDamage, ref int __result, ref int ____damage)
+        private static bool Prefix(ref int baseDamage, ref int __result, ref int ____damage)
         {
             float calculatedModifier = 1f + (____damage / 100f);
             int result = ModifyFactor(baseDamage, calculatedModifier);

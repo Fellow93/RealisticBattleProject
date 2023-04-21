@@ -1,19 +1,19 @@
-﻿using TaleWorlds.Core;
-using TaleWorlds.MountAndBlade;
-using HarmonyLib;
-using System.Reflection;
+﻿using HarmonyLib;
 using JetBrains.Annotations;
-using TaleWorlds.Library;
+using NetworkMessages.FromServer;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using TaleWorlds.Localization;
-using System;
+using System.Reflection;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
+using TaleWorlds.Core;
 using TaleWorlds.Engine;
+using TaleWorlds.Library;
+using TaleWorlds.Localization;
+using TaleWorlds.MountAndBlade;
+using static TaleWorlds.Core.ItemObject;
 using static TaleWorlds.MountAndBlade.Agent;
 using static TaleWorlds.MountAndBlade.Mission;
-using static TaleWorlds.Core.ItemObject;
-using NetworkMessages.FromServer;
-using TaleWorlds.CampaignSystem.CharacterDevelopment;
 
 namespace RBMCombat
 {
@@ -29,7 +29,7 @@ namespace RBMCombat
         [HarmonyPatch("FinishMissionLoading")]
         public class MissionLoadChangeParameters
         {
-            static void Postfix()
+            private static void Postfix()
             {
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionArrow, 0.0015f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionJavelin, 0.00215f);
@@ -48,7 +48,6 @@ namespace RBMCombat
                 //ManagedParameters.SetParameter(ManagedParametersEnum.ThrustCombatSpeedGraphZeroProgressValue, 0.3f);
                 //ManagedParameters.SetParameter(ManagedParametersEnum.ThrustCombatSpeedGraphFirstMaximumPoint, 0.05f);
                 //ManagedParameters.SetParameter(ManagedParametersEnum.ThrustCombatSpeedGraphSecondMaximumPoint, 0.95f);
-
             }
         }
 
@@ -78,16 +77,17 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(Agent))]
         [HarmonyPatch("WeaponEquipped")]
-        class OverrideWeaponEquipped
+        private class OverrideWeaponEquipped
         {
-            static bool Prefix(ref Agent __instance, EquipmentIndex equipmentSlot, in WeaponData weaponData, ref WeaponStatsData[] weaponStatsData, in WeaponData ammoWeaponData,ref WeaponStatsData[] ammoWeaponStatsData, GameEntity weaponEntity, bool removeOldWeaponFromScene, bool isWieldedOnSpawn)
+            private static bool Prefix(ref Agent __instance, EquipmentIndex equipmentSlot, in WeaponData weaponData, ref WeaponStatsData[] weaponStatsData, in WeaponData ammoWeaponData, ref WeaponStatsData[] ammoWeaponStatsData, GameEntity weaponEntity, bool removeOldWeaponFromScene, bool isWieldedOnSpawn)
             {
-                if(weaponStatsData != null)
+                if (weaponStatsData != null)
                 {
                     for (int i = 0; i < weaponStatsData.Length; i++)
                     {
                         SkillObject skill = (weaponData.GetItemObject() == null) ? DefaultSkills.Athletics : weaponData.GetItemObject().RelevantSkill;
-                        if(skill != null) {
+                        if (skill != null)
+                        {
                             int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance.Character, __instance.Origin, __instance.Formation, skill);
                             float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
 
@@ -95,14 +95,14 @@ namespace RBMCombat
                             EquipmentElement ee = new EquipmentElement(missionWeapon.Item);
                             Utilities.CalculateVisualSpeeds(ee, i, effectiveSkillDR, out int swingSpeedReal, out int thrustSpeedReal, out int handlingReal);
 
-                            if(swingSpeedReal >= 0 && thrustSpeedReal >= 0 && handlingReal >= 0)
+                            if (swingSpeedReal >= 0 && thrustSpeedReal >= 0 && handlingReal >= 0)
                             {
                                 weaponStatsData[i].SwingSpeed = swingSpeedReal;
                                 weaponStatsData[i].ThrustSpeed = thrustSpeedReal;
                                 weaponStatsData[i].DefendSpeed = handlingReal;
                             }
 
-                            if((WeaponClass)weaponStatsData[i].WeaponClass == WeaponClass.Bow)
+                            if ((WeaponClass)weaponStatsData[i].WeaponClass == WeaponClass.Bow)
                             {
                                 int thrustSpeed = missionWeapon.GetModifiedThrustSpeedForCurrentUsage();
                                 if (RBMConfig.RBMConfig.realisticRangedReload.Equals("1") || RBMConfig.RBMConfig.realisticRangedReload.Equals("2"))
@@ -167,9 +167,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(Agent))]
         [HarmonyPatch("EquipItemsFromSpawnEquipment")]
-        class OverrideEquipItemsFromSpawnEquipment
+        private class OverrideEquipItemsFromSpawnEquipment
         {
-            static bool Prefix(ref Agent __instance)
+            private static bool Prefix(ref Agent __instance)
             {
                 ArrayList stringRangedWeapons = new ArrayList();
                 MissionWeapon arrow = MissionWeapon.Invalid;
@@ -186,7 +186,6 @@ namespace RBMCombat
 
                 for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                 {
-
                     if (__instance.Equipment != null && !__instance.Equipment[equipmentIndex].IsEmpty)
                     {
                         MissionWeapon missionWeapon = __instance.Equipment[equipmentIndex];
@@ -310,7 +309,7 @@ namespace RBMCombat
 
                         calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon.CurrentUsageItem.ItemUsage, missionWeapon.CurrentUsageItem.MissileSpeed + msModifier); //rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight());
                         rangedWeaponMW[missionWeapon.GetModifiedItemName().ToString()] = missionWeapon;
-                        
+
                         propertyMissileSpeed.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                     }
                     else if (!missionWeapon.Equals(MissionWeapon.Invalid))
@@ -322,7 +321,8 @@ namespace RBMCombat
 
                 return true;
             }
-            static void Postfix(Agent __instance)
+
+            private static void Postfix(Agent __instance)
             {
                 PropertyInfo propertyMissileSpeed = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                 propertyMissileSpeed.DeclaringType.GetProperty("MissileSpeed");
@@ -338,7 +338,6 @@ namespace RBMCombat
 
                 for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                 {
-
                     if (__instance.Equipment != null && !__instance.Equipment[equipmentIndex].IsEmpty)
                     {
                         MissionWeapon mw = __instance.Equipment[equipmentIndex];
@@ -359,7 +358,6 @@ namespace RBMCombat
 
                         if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
                         {
-
                             propertyMissileSpeed.SetValue(__instance.Equipment[equipmentIndex].CurrentUsageItem, rangedWeaponStats[mw.GetModifiedItemName().ToString()].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                         }
                     }
@@ -373,11 +371,10 @@ namespace RBMCombat
         [HarmonyPatch("OnAgentShootMissile")]
         [UsedImplicitly]
         [MBCallback]
-        class OverrideOnAgentShootMissile
+        private class OverrideOnAgentShootMissile
         {
-
             //private static int _oldMissileSpeed;
-            static bool Prefix(Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, ref Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
+            private static bool Prefix(Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, ref Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
             {
                 MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
                 WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
@@ -433,7 +430,6 @@ namespace RBMCombat
                             velocity.z = velocity.z - 2f;
                         }
                     }
-                    
                 }
 
                 if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
@@ -477,7 +473,6 @@ namespace RBMCombat
                     PropertyInfo property2 = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                     property2.DeclaringType.GetProperty("MissileSpeed");
                     property2.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-
                 }
 
                 //if (shooterAgent != null && !shooterAgent.IsAIControlled && !BannerlordConfig.DisplayTargetingReticule && (wsd[0].WeaponClass == (int)WeaponClass.Bow || wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
@@ -496,7 +491,7 @@ namespace RBMCombat
                 return true;
             }
 
-            static void Postfix(ref Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
+            private static void Postfix(ref Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
             {
                 MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
                 WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
@@ -539,13 +534,14 @@ namespace RBMCombat
         [UsedImplicitly]
         [MBCallback]
         [HarmonyPatch(typeof(Mission))]
-        class OverrideEndMission
+        private class OverrideEndMission
         {
             [HarmonyPrefix]
             [HarmonyPatch("EndMission")]
-            static bool PrefixOnEndMissionResult(ref Mission __instance)
+            private static bool PrefixOnEndMissionResult(ref Mission __instance)
             {
-                foreach (KeyValuePair<string, MissionWeapon> mw in rangedWeaponMW) {
+                foreach (KeyValuePair<string, MissionWeapon> mw in rangedWeaponMW)
+                {
                     WeaponStatsData[] wsd = mw.Value.GetWeaponStatsData();
                     if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
                     {
@@ -604,14 +600,13 @@ namespace RBMCombat
         //[HarmonyPatch("ReloadAmmo")]
         //class OnWieldedItemIndexChangePatch
         //{
-
         //}
 
         [HarmonyPatch(typeof(Agent))]
         [HarmonyPatch("OnWieldedItemIndexChange")]
-        class OnWieldedItemIndexChangePatch
+        private class OnWieldedItemIndexChangePatch
         {
-            static void Postfix(ref Agent __instance, bool isOffHand, bool isWieldedInstantly, bool isWieldedOnSpawn)
+            private static void Postfix(ref Agent __instance, bool isOffHand, bool isWieldedInstantly, bool isWieldedOnSpawn)
             {
                 EquipmentIndex wieldedItemIndex = __instance.GetWieldedItemIndex(HandIndex.MainHand);
                 if (wieldedItemIndex != EquipmentIndex.None)
@@ -672,13 +667,13 @@ namespace RBMCombat
                                 {
                                     __instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags |= WeaponFlags.UnloadWhenSheathed;
                                     __instance.Equipment[equipmentIndex].GetWeaponStatsData()[0].WeaponFlags = (ulong)__instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags;
-                                    
+
                                     MissionWeapon mwa = mw.AmmoWeapon;
                                     int ammoInHandCount = mwa.Amount;
-                                    if(mwa.Amount > 0)
+                                    if (mwa.Amount > 0)
                                     {
                                         __instance.Equipment.GetAmmoCountAndIndexOfType(mw.Item.Type, out var ammouCount, out var eIndex);
-                                        if(eIndex != EquipmentIndex.None)
+                                        if (eIndex != EquipmentIndex.None)
                                         {
                                             __instance.SetReloadAmmoInSlot(equipmentIndex, eIndex, Convert.ToInt16(-ammoInHandCount));
                                             __instance.SetWeaponReloadPhaseAsClient(equipmentIndex, 0);
@@ -686,7 +681,7 @@ namespace RBMCombat
                                             {
                                                 for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.NumAllWeaponSlots; i++)
                                                 {
-                                                    if (!__instance.Equipment[i].IsEmpty && !__instance.Equipment[eIndex].IsEmpty && 
+                                                    if (!__instance.Equipment[i].IsEmpty && !__instance.Equipment[eIndex].IsEmpty &&
                                                         __instance.Equipment[i].Item != null && __instance.Equipment[eIndex].Item != null &&
                                                         __instance.Equipment[i].Item.PrimaryWeapon != null && __instance.Equipment[eIndex].Item.PrimaryWeapon != null)
                                                     {
@@ -707,7 +702,6 @@ namespace RBMCombat
                                             }
                                         }
                                     }
-                                    
                                 }
                             }
                         }
@@ -715,11 +709,10 @@ namespace RBMCombat
                 }
             }
         }
-
     }
 
     [HarmonyPatch(typeof(RangedSiegeWeapon))]
-    class OverrideRangedSiegeWeapon
+    internal class OverrideRangedSiegeWeapon
     {
         //[HarmonyPrefix]
         //[HarmonyPatch("CalculateShootingRange")]
@@ -738,11 +731,10 @@ namespace RBMCombat
 
         [HarmonyPrefix]
         [HarmonyPatch("GetTargetReleaseAngle")]
-        static bool PrefixGetTargetReleaseAngle(RangedSiegeWeapon __instance, ref float __result, Vec3 target, ref string[] ___SkeletonNames, ItemObject ___OriginalMissileItem)
+        private static bool PrefixGetTargetReleaseAngle(RangedSiegeWeapon __instance, ref float __result, Vec3 target, ref string[] ___SkeletonNames, ItemObject ___OriginalMissileItem)
         {
             if (___SkeletonNames != null && ___SkeletonNames.Length > 0 && ___SkeletonNames[0].Contains("ballista"))
             {
-
                 PropertyInfo property = typeof(RangedSiegeWeapon).GetProperty("MissleStartingPositionForSimulation", BindingFlags.NonPublic | BindingFlags.Instance);
                 property.DeclaringType.GetProperty("MissleStartingPositionForSimulation");
                 Vec3 MissleStartingPositionForSimulation = (Vec3)property.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
@@ -759,7 +751,7 @@ namespace RBMCombat
 
         [HarmonyPrefix]
         [HarmonyPatch("ShootProjectileAux")]
-        static bool PrefixShootProjectileAux(ref RangedSiegeWeapon __instance, ref string[] ___SkeletonNames,ref ItemObject missileItem,ref Agent ____lastShooterAgent, ref ItemObject ___LoadedMissileItem)
+        private static bool PrefixShootProjectileAux(ref RangedSiegeWeapon __instance, ref string[] ___SkeletonNames, ref ItemObject missileItem, ref Agent ____lastShooterAgent, ref ItemObject ___LoadedMissileItem)
         {
             if (___SkeletonNames != null && ___SkeletonNames.Length > 0 && ___SkeletonNames[0].Contains("trebuchet"))
             {
@@ -767,38 +759,38 @@ namespace RBMCombat
                 {
                     Mat3 mat = default(Mat3);
 
-                PropertyInfo property = typeof(RangedSiegeWeapon).GetProperty("ShootingDirection", BindingFlags.NonPublic | BindingFlags.Instance);
-                property.DeclaringType.GetProperty("ShootingDirection");
-                mat.f = (Vec3)property.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+                    PropertyInfo property = typeof(RangedSiegeWeapon).GetProperty("ShootingDirection", BindingFlags.NonPublic | BindingFlags.Instance);
+                    property.DeclaringType.GetProperty("ShootingDirection");
+                    mat.f = (Vec3)property.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
 
-                mat.u = Vec3.Up;
-                Mat3 mat2 = mat;
-                mat2.Orthonormalize();
-                float a = MBRandom.RandomFloat * ((float)Math.PI * 2f);
-                mat2.RotateAboutForward(a);
-                float f = 1.5f * MBRandom.RandomFloat;
-                mat2.RotateAboutSide(f.ToRadians());
+                    mat.u = Vec3.Up;
+                    Mat3 mat2 = mat;
+                    mat2.Orthonormalize();
+                    float a = MBRandom.RandomFloat * ((float)Math.PI * 2f);
+                    mat2.RotateAboutForward(a);
+                    float f = 1.5f * MBRandom.RandomFloat;
+                    mat2.RotateAboutSide(f.ToRadians());
 
-                Mat3 identity = Mat3.Identity;
-                //identity.f = GetBallisticErrorAppliedDirection(1f);
-                //identity.f = mat2.f;
-                //identity.Orthonormalize();
+                    Mat3 identity = Mat3.Identity;
+                    //identity.f = GetBallisticErrorAppliedDirection(1f);
+                    //identity.f = mat2.f;
+                    //identity.Orthonormalize();
 
-                ItemObject @object = Game.Current.ObjectManager.GetObject<ItemObject>("grapeshot_projectile");
+                    ItemObject @object = Game.Current.ObjectManager.GetObject<ItemObject>("grapeshot_projectile");
 
-                PropertyInfo property3 = typeof(RangedSiegeWeapon).GetProperty("ShootingSpeed", BindingFlags.NonPublic | BindingFlags.Instance);
-                property3.DeclaringType.GetProperty("ShootingSpeed");
-                float num = (float)property3.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+                    PropertyInfo property3 = typeof(RangedSiegeWeapon).GetProperty("ShootingSpeed", BindingFlags.NonPublic | BindingFlags.Instance);
+                    property3.DeclaringType.GetProperty("ShootingSpeed");
+                    float num = (float)property3.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
 
-                num *= MBRandom.RandomFloatRanged(0.95f, 1.05f);
-                identity.f = mat2.f;
-                identity.Orthonormalize();
+                    num *= MBRandom.RandomFloatRanged(0.95f, 1.05f);
+                    identity.f = mat2.f;
+                    identity.Orthonormalize();
 
-                PropertyInfo property2 = typeof(RangedSiegeWeapon).GetProperty("Projectile", BindingFlags.NonPublic | BindingFlags.Instance);
-                property2.DeclaringType.GetProperty("Projectile");
-                Vec3 ProjectileEntityCurrentGlobalPosition = ((SynchedMissionObject)property2.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null)).GameEntity.GetGlobalFrame().origin;
+                    PropertyInfo property2 = typeof(RangedSiegeWeapon).GetProperty("Projectile", BindingFlags.NonPublic | BindingFlags.Instance);
+                    property2.DeclaringType.GetProperty("Projectile");
+                    Vec3 ProjectileEntityCurrentGlobalPosition = ((SynchedMissionObject)property2.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null)).GameEntity.GetGlobalFrame().origin;
 
-                Mission.Current.AddCustomMissile(____lastShooterAgent, new MissionWeapon(@object, null, ____lastShooterAgent.Origin?.Banner, 1), ProjectileEntityCurrentGlobalPosition, identity.f, identity, ___LoadedMissileItem.PrimaryWeapon.MissileSpeed, num, addRigidBody: false, __instance);
+                    Mission.Current.AddCustomMissile(____lastShooterAgent, new MissionWeapon(@object, null, ____lastShooterAgent.Origin?.Banner, 1), ProjectileEntityCurrentGlobalPosition, identity.f, identity, ___LoadedMissileItem.PrimaryWeapon.MissileSpeed, num, addRigidBody: false, __instance);
                 }
                 return false;
             }
@@ -838,9 +830,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(AgentStatCalculateModel))]
         [HarmonyPatch("SetAiRelatedProperties")]
-        class OverrideSetAiRelatedProperties
+        private class OverrideSetAiRelatedProperties
         {
-            static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem, AgentStatCalculateModel __instance)
+            private static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem, AgentStatCalculateModel __instance)
             {
                 if (agent.IsPlayerControlled)
                 {
@@ -874,7 +866,6 @@ namespace RBMCombat
                                 }
                             }
                         }
-
                     }
                     else if (RBMConfig.RBMConfig.realisticRangedReload.Equals("2"))
                     {
@@ -970,27 +961,26 @@ namespace RBMCombat
     //}
 
     [HarmonyPatch(typeof(Mangonel))]
-    class OverrideMangonel
+    internal class OverrideMangonel
     {
         [HarmonyPrefix]
         [HarmonyPatch("OnTick")]
-        static bool PrefixOnTick(ref Mangonel __instance, ref float ___currentReleaseAngle)
+        private static bool PrefixOnTick(ref Mangonel __instance, ref float ___currentReleaseAngle)
         {
             float baseSpeed = 20f;
             float speedIncrease = 1.125f;
             __instance.ProjectileSpeed = baseSpeed + (((___currentReleaseAngle * MathF.RadToDeg)) * speedIncrease);
 
             return true;
-
         }
     }
 
     [HarmonyPatch(typeof(Mission))]
-    class HandleMissileCollisionReactionPatch
+    internal class HandleMissileCollisionReactionPatch
     {
         [HarmonyPrefix]
         [HarmonyPatch("HandleMissileCollisionReaction")]
-        static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, int missileIndex, ref MissileCollisionReaction collisionReaction, MatrixFrame attachLocalFrame, Agent attackerAgent, Agent attachedAgent, bool attachedToShield, sbyte attachedBoneIndex, MissionObject attachedMissionObject, Vec3 bounceBackVelocity, Vec3 bounceBackAngularVelocity, int forcedSpawnIndex, bool isAttachedFrameLocal)
+        private static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, int missileIndex, ref MissileCollisionReaction collisionReaction, MatrixFrame attachLocalFrame, Agent attackerAgent, Agent attachedAgent, bool attachedToShield, sbyte attachedBoneIndex, MissionObject attachedMissionObject, Vec3 bounceBackVelocity, Vec3 bounceBackAngularVelocity, int forcedSpawnIndex, bool isAttachedFrameLocal)
         {
             Missile missile = ____missiles[missileIndex];
             MissionObjectId missionObjectId = new MissionObjectId(-1, createdAtRuntime: true);
@@ -999,6 +989,7 @@ namespace RBMCombat
                 case MissileCollisionReaction.BecomeInvisible:
                     missile.Entity.Remove(81);
                     break;
+
                 case MissileCollisionReaction.Stick:
                     missile.Entity.SetVisibilityExcludeParents(visible: true);
                     if (attachedAgent != null)
@@ -1039,6 +1030,7 @@ namespace RBMCombat
                         missionObjectId = __instance.SpawnWeaponAsDropFromMissile(missileIndex, attachedMissionObject, in attachLocalFrame, WeaponSpawnFlags.AsMissile | WeaponSpawnFlags.WithStaticPhysics, in velocity, in velocity, forcedSpawnIndex);
                     }
                     break;
+
                 case MissileCollisionReaction.BounceBack:
                     missile.Entity.SetVisibilityExcludeParents(visible: true);
                     missionObjectId = __instance.SpawnWeaponAsDropFromMissile(missileIndex, null, in attachLocalFrame, WeaponSpawnFlags.AsMissile | WeaponSpawnFlags.WithPhysics, in bounceBackVelocity, in bounceBackAngularVelocity, forcedSpawnIndex);
@@ -1067,12 +1059,11 @@ namespace RBMCombat
     [UsedImplicitly]
     [MBCallback]
     [HarmonyPatch(typeof(Mission))]
-    class MeleeHitCallbackPatch
+    internal class MeleeHitCallbackPatch
     {
-
         [HarmonyPrefix]
         [HarmonyPatch("MeleeHitCallback")]
-        static bool Prefix(ref Mission __instance, ref AttackCollisionData collisionData, Agent attacker, Agent victim, GameEntity realHitEntity, ref float inOutMomentumRemaining, ref MeleeCollisionReaction colReaction, CrushThroughState crushThroughState, Vec3 blowDir, Vec3 swingDir, ref HitParticleResultData hitParticleResultData, bool crushedThroughWithoutAgentCollision)
+        private static bool Prefix(ref Mission __instance, ref AttackCollisionData collisionData, Agent attacker, Agent victim, GameEntity realHitEntity, ref float inOutMomentumRemaining, ref MeleeCollisionReaction colReaction, CrushThroughState crushThroughState, Vec3 blowDir, Vec3 swingDir, ref HitParticleResultData hitParticleResultData, bool crushedThroughWithoutAgentCollision)
         {
             if (collisionData.CollidedWithShieldOnBack)
             {
@@ -1097,7 +1088,7 @@ namespace RBMCombat
 
         [HarmonyPostfix]
         [HarmonyPatch("MeleeHitCallback")]
-        static void Postfix(ref Mission __instance, ref AttackCollisionData collisionData, Agent attacker, Agent victim, GameEntity realHitEntity, ref float inOutMomentumRemaining, ref MeleeCollisionReaction colReaction, CrushThroughState crushThroughState, Vec3 blowDir, Vec3 swingDir, ref HitParticleResultData hitParticleResultData, bool crushedThroughWithoutAgentCollision)
+        private static void Postfix(ref Mission __instance, ref AttackCollisionData collisionData, Agent attacker, Agent victim, GameEntity realHitEntity, ref float inOutMomentumRemaining, ref MeleeCollisionReaction colReaction, CrushThroughState crushThroughState, Vec3 blowDir, Vec3 swingDir, ref HitParticleResultData hitParticleResultData, bool crushedThroughWithoutAgentCollision)
         {
             //if (collisionData.AttackBlockedWithShield && collisionData.CollidedWithShieldOnBack)
             //{
@@ -1128,19 +1119,18 @@ namespace RBMCombat
     [UsedImplicitly]
     [MBCallback]
     [HarmonyPatch(typeof(Mission))]
-    class MissileHitCallbackPatch
+    internal class MissileHitCallbackPatch
     {
-
         [HarmonyPrefix]
         [HarmonyPatch("MissileHitCallback")]
-        static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
+        private static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
         {
             Missile missile;
             if (____missiles.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out missile))
             {
                 if (collisionData.CollidedWithShieldOnBack)
                 {
-                    if (missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.MultiplePenetration) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.CanPenetrateShield) || 
+                    if (missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.MultiplePenetration) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.CanPenetrateShield) ||
                         missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsArea) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsAreaBig))
                     {
                         return true;
@@ -1176,7 +1166,6 @@ namespace RBMCombat
                     acd.InflictedDamage = collisionData.InflictedDamage;
                     acd.AbsorbedByArmor = collisionData.AbsorbedByArmor;
 
-                    
                     collisionData = acd;
                 }
             }
@@ -1185,7 +1174,7 @@ namespace RBMCombat
 
         [HarmonyPostfix]
         [HarmonyPatch("MissileHitCallback")]
-        static void Postfix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
+        private static void Postfix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
         {
             Missile missile;
             if (____missiles.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out missile))

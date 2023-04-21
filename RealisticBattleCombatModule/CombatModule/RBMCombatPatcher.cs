@@ -6,7 +6,7 @@ namespace RBMCombat
     {
         public static void DoPatching(ref Harmony rbmcombatHarmony)
         {
-                rbmcombatHarmony.PatchAll();
+            rbmcombatHarmony.PatchAll();
         }
     }
 }

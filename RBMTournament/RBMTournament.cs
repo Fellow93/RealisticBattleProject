@@ -2,27 +2,24 @@
 using SandBox.Tournaments.MissionLogics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
+using TaleWorlds.CampaignSystem.Extensions;
 using TaleWorlds.CampaignSystem.GameComponents;
+using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.TournamentGames;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
-using TaleWorlds.CampaignSystem.Extensions;
-using TaleWorlds.CampaignSystem.Roster;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using TaleWorlds.CampaignSystem.Actions;
-using TaleWorlds.CampaignSystem.Party;
-using static SandBox.CampaignBehaviors.LordConversationsCampaignBehavior;
 
 namespace RBMTournament
 {
-    class RBMTournament
+    internal class RBMTournament
     {
-
         public static int calculatePlayerTournamentTier()
         {
             int playerLevelTier = MathF.Min(MathF.Max(MathF.Ceiling(((float)CharacterObject.PlayerCharacter.Level - 5f) / 5f), 0), Campaign.Current.Models.CharacterStatsModel.MaxCharacterTier);
@@ -45,11 +42,11 @@ namespace RBMTournament
         }
 
         [HarmonyPatch(typeof(TournamentFightMissionController))]
-        class TournamentFightMissionControllerPatch
+        private class TournamentFightMissionControllerPatch
         {
             [HarmonyPrefix]
             [HarmonyPatch("Simulate")]
-            static bool SimulatePrefix(ref TournamentFightMissionController __instance, ref TournamentMatch ____match, ref CultureObject ____culture, ref bool ____isSimulated,
+            private static bool SimulatePrefix(ref TournamentFightMissionController __instance, ref TournamentMatch ____match, ref CultureObject ____culture, ref bool ____isSimulated,
                 ref List<TournamentParticipant> ____aliveParticipants, ref List<TournamentTeam> ____aliveTeams)
             {
                 ____isSimulated = false;
@@ -58,7 +55,7 @@ namespace RBMTournament
                     ____aliveParticipants = ____match.Participants.ToList();
                     ____aliveTeams = ____match.Teams.ToList();
                 }
-                if(____aliveParticipants == null || ____aliveTeams == null)
+                if (____aliveParticipants == null || ____aliveTeams == null)
                 {
                     return true;
                 }
@@ -80,7 +77,7 @@ namespace RBMTournament
                 foreach (TournamentParticipant aliveParticipant in ____aliveParticipants)
                 {
                     aliveParticipant.Character.GetSimulationAttackPower(out var attackPoints, out var defencePoints, aliveParticipant.MatchEquipment);
-                    if(attackPoints <= 0)
+                    if (attackPoints <= 0)
                     {
                         attackPoints = 1;
                     }
@@ -114,7 +111,7 @@ namespace RBMTournament
 
                     MethodInfo method = typeof(TournamentFightMissionController).GetMethod("CheckIfTeamIsDead", BindingFlags.NonPublic | BindingFlags.Instance);
                     method.DeclaringType.GetMethod("CheckIfTeamIsDead");
-                    bool checkifteamdead = (bool)method.Invoke(__instance, new object[] {tournamentParticipant3.Team });
+                    bool checkifteamdead = (bool)method.Invoke(__instance, new object[] { tournamentParticipant3.Team });
 
                     if (checkifteamdead)
                     {
@@ -134,7 +131,7 @@ namespace RBMTournament
 
             [HarmonyPostfix]
             [HarmonyPatch("PrepareForMatch")]
-            static void PrepareForMatchPrefix(ref TournamentFightMissionController __instance, ref TournamentMatch ____match, ref CultureObject ____culture)
+            private static void PrepareForMatchPrefix(ref TournamentFightMissionController __instance, ref TournamentMatch ____match, ref CultureObject ____culture)
             {
                 float randomFloat = MBRandom.RandomFloat;
                 int teamSize = ____match.Teams.First().Participants.Count();
@@ -173,7 +170,7 @@ namespace RBMTournament
                             {
                                 if (playerTier > 3)
                                 {
-                                    if(item.PrimaryWeapon.WeaponClass == WeaponClass.OneHandedAxe || item.PrimaryWeapon.WeaponClass == WeaponClass.Mace)
+                                    if (item.PrimaryWeapon.WeaponClass == WeaponClass.OneHandedAxe || item.PrimaryWeapon.WeaponClass == WeaponClass.Mace)
                                     {
                                         oneHandedList.Add(item);
                                     }
@@ -203,7 +200,8 @@ namespace RBMTournament
                                 twoHandedList.Add(item);
                             }
                         }
-                    }else if (!item.IsCraftedByPlayer && item.Type == ItemObject.ItemTypeEnum.Polearm && item.PrimaryWeapon.SwingDamage > 0)
+                    }
+                    else if (!item.IsCraftedByPlayer && item.Type == ItemObject.ItemTypeEnum.Polearm && item.PrimaryWeapon.SwingDamage > 0)
                     {
                         if (item.Culture == ____culture)
                         {
@@ -242,13 +240,11 @@ namespace RBMTournament
                                         }
                                     case 3:
                                         {
-                                            
                                             participant.MatchEquipment.AddEquipmentToSlotWithoutAgent(index, new EquipmentElement(Game.Current.ObjectManager.GetObject<ItemObject>("composite_steppe_bow")));
                                             break;
                                         }
                                     case 4:
                                         {
-                                            
                                             participant.MatchEquipment.AddEquipmentToSlotWithoutAgent(index, new EquipmentElement(Game.Current.ObjectManager.GetObject<ItemObject>("steppe_war_bow")));
                                             break;
                                         }
@@ -363,7 +359,7 @@ namespace RBMTournament
                             }
                             if (participant.MatchEquipment[index].Item != null && participant.MatchEquipment[index].Item.Type == ItemObject.ItemTypeEnum.Shield)
                             {
-                                if((teamSize == 1 || teamSize == 2) && randomFloat >= 0.5f)
+                                if ((teamSize == 1 || teamSize == 2) && randomFloat >= 0.5f)
                                 {
                                     participant.MatchEquipment.AddEquipmentToSlotWithoutAgent(index, new EquipmentElement(null));
                                 }
@@ -423,8 +419,6 @@ namespace RBMTournament
                 return troops;
             }
 
-            
-
             public static int calculateNpcTournamentTier(CharacterObject npc)
             {
                 int playerLevelTier = MathF.Min(MathF.Max(MathF.Ceiling(((float)npc.Level - 5f) / 5f), 0), Campaign.Current.Models.CharacterStatsModel.MaxCharacterTier);
@@ -448,7 +442,7 @@ namespace RBMTournament
 
             [HarmonyPrefix]
             [HarmonyPatch("GetParticipantCharacters")]
-            static bool GetParticipantCharactersPrefix(ref FightTournamentGame __instance, ref List<CharacterObject> __result, Settlement settlement, bool includePlayer = true)
+            private static bool GetParticipantCharactersPrefix(ref FightTournamentGame __instance, ref List<CharacterObject> __result, Settlement settlement, bool includePlayer = true)
             {
                 List<CharacterObject> list = new List<CharacterObject>();
                 if (includePlayer)
@@ -547,7 +541,6 @@ namespace RBMTournament
                     else
                     {
                         InformationManager.DisplayMessage(new InformationMessage("Lower tier tournament: Tier " + playerTier));
-
                     }
                     //CultureObject cultureMercenaryObject = Game.Current.ObjectManager.GetObject<CultureObject>("neutral");
                     CultureObject culture = Settlement.CurrentSettlement.Culture;
@@ -558,7 +551,7 @@ namespace RBMTournament
                     List<CharacterObject> troops = FillTroopListFromCulture(culture);
 
                     list.Add(CharacterObject.PlayerCharacter);
-                    for(int i = 0; i < __instance.MaximumParticipantCount && list.Count < __instance.MaximumParticipantCount; i++)
+                    for (int i = 0; i < __instance.MaximumParticipantCount && list.Count < __instance.MaximumParticipantCount; i++)
                     {
                         //float randomFloat = MBRandom.RandomFloat;
                         CharacterObject troopToAdd = null;
@@ -599,12 +592,12 @@ namespace RBMTournament
                             {
                                 troopsFromTier = troops.FindAll((CharacterObject troop) => troop != null && tier >= 5 ? (troop.Tier >= 5) : troop.Tier == tier);
                                 tier--;
-                                if(tier == 0)
+                                if (tier == 0)
                                 {
                                     break;
                                 }
                             } while (troopsFromTier.Count <= 0);
-                            if(troopsFromTier.Count > 0)
+                            if (troopsFromTier.Count > 0)
                             {
                                 troopToAdd = troopsFromTier[MBRandom.RandomInt(troopsFromTier.Count - 1)];
                                 if (troopToAdd != null)
@@ -625,44 +618,44 @@ namespace RBMTournament
 
             [HarmonyPostfix]
             [HarmonyPatch("GetTournamentPrize")]
-            static void GetTournamentPrizePostfix(ref FightTournamentGame __instance, ref ItemObject __result, bool includePlayer, int lastRecordedLordCountForTournamentPrize)
+            private static void GetTournamentPrizePostfix(ref FightTournamentGame __instance, ref ItemObject __result, bool includePlayer, int lastRecordedLordCountForTournamentPrize)
             {
                 //if (includePlayer)
                 //{
-                    CultureObject culture = __instance.Town.Culture;
-                    int playerTier = calculatePlayerTournamentTier();
-                    List<ItemObject> list = new List<ItemObject>();
-                    foreach (ItemObject item in Items.All)
+                CultureObject culture = __instance.Town.Culture;
+                int playerTier = calculatePlayerTournamentTier();
+                List<ItemObject> list = new List<ItemObject>();
+                foreach (ItemObject item in Items.All)
+                {
+                    if (!item.NotMerchandise && (item.Type == ItemObject.ItemTypeEnum.Bow || item.Type == ItemObject.ItemTypeEnum.Crossbow || item.Type == ItemObject.ItemTypeEnum.Shield || item.IsCraftedWeapon || item.IsMountable || item.ArmorComponent != null) && !item.IsCraftedByPlayer)
                     {
-                        if (!item.NotMerchandise && (item.Type == ItemObject.ItemTypeEnum.Bow || item.Type == ItemObject.ItemTypeEnum.Crossbow || item.Type == ItemObject.ItemTypeEnum.Shield || item.IsCraftedWeapon || item.IsMountable || item.ArmorComponent != null) && !item.IsCraftedByPlayer)
+                        if (item.Culture == culture)
                         {
-                            if (item.Culture == culture)
+                            if (playerTier >= 5 ? (int)item.Tier >= playerTier - 1 : (int)item.Tier == playerTier)
                             {
-                                if (playerTier >= 5 ? (int)item.Tier >= playerTier - 1 : (int)item.Tier == playerTier)
-                                {
-                                    list.Add(item);
-                                }
+                                list.Add(item);
                             }
                         }
                     }
-                    if (list.Count > 0)
-                    {
-                        __result = list.GetRandomElement();
-                    }
+                }
+                if (list.Count > 0)
+                {
+                    __result = list.GetRandomElement();
+                }
                 //}
             }
         }
 
         [HarmonyPatch(typeof(TournamentGame))]
-        class TournamentGamePatch
+        private class TournamentGamePatch
         {
             [HarmonyPrefix]
             [HarmonyPatch("UpdateTournamentPrize")]
-            static bool UpdateTournamentPrizePrefix(ref TournamentGame __instance, ref bool includePlayer, ref bool removeCurrentPrize)
+            private static bool UpdateTournamentPrizePrefix(ref TournamentGame __instance, ref bool includePlayer, ref bool removeCurrentPrize)
             {
-                if(__instance.Prize != null)
+                if (__instance.Prize != null)
                 {
-                    if((int)__instance.Prize.Tier != calculatePlayerTournamentTier())
+                    if ((int)__instance.Prize.Tier != calculatePlayerTournamentTier())
                     {
                         return true;
                     }
@@ -676,11 +669,11 @@ namespace RBMTournament
         }
 
         [HarmonyPatch(typeof(TournamentManager))]
-        class GivePrizeToWinnerPatch
+        private class GivePrizeToWinnerPatch
         {
             [HarmonyPrefix]
             [HarmonyPatch("GivePrizeToWinner")]
-            static bool GivePrizeToWinnerPrefix(ref TournamentManager __instance,ref TournamentGame tournament, ref Hero winner, ref bool isPlayerParticipated)
+            private static bool GivePrizeToWinnerPrefix(ref TournamentManager __instance, ref TournamentGame tournament, ref Hero winner, ref bool isPlayerParticipated)
             {
                 if (!isPlayerParticipated)
                 {
@@ -693,14 +686,14 @@ namespace RBMTournament
                     List<ItemModifier> viableEM = new List<ItemModifier>();
                     if (itemModifiers != null && itemModifiers.Count > 0)
                     {
-                        foreach(ItemModifier im in itemModifiers)
+                        foreach (ItemModifier im in itemModifiers)
                         {
-                            if(im.ProductionDropScore > 0 && im.PriceMultiplier >= 1f)
+                            if (im.ProductionDropScore > 0 && im.PriceMultiplier >= 1f)
                             {
                                 viableEM.Add(im);
                             }
                         }
-                        if(viableEM != null && viableEM.Count > 0)
+                        if (viableEM != null && viableEM.Count > 0)
                         {
                             foreach (ItemModifier im in viableEM)
                             {
@@ -715,11 +708,10 @@ namespace RBMTournament
                                 }
                                 else
                                 {
-                                    InformationManager.DisplayMessage(new InformationMessage("You missed roll for " +im.Name+ " item modifier, rolled:" + roll + " needed: " + rollNeeded));
+                                    InformationManager.DisplayMessage(new InformationMessage("You missed roll for " + im.Name + " item modifier, rolled:" + roll + " needed: " + rollNeeded));
                                 }
                             }
                         }
-                        
                     }
                     winner.PartyBelongedTo.ItemRoster.AddToCounts(eePrize, 1);
                 }
@@ -809,11 +801,11 @@ namespace RBMTournament
         //}
 
         [HarmonyPatch(typeof(DefaultTournamentModel))]
-        class DefaultTournamentModelPatch
+        private class DefaultTournamentModelPatch
         {
             [HarmonyPrefix]
             [HarmonyPatch("GetRenownReward")]
-            static bool GetRenownRewardPrefix(ref DefaultTournamentModel __instance, Hero winner, Town town, ref int __result)
+            private static bool GetRenownRewardPrefix(ref DefaultTournamentModel __instance, Hero winner, Town town, ref int __result)
             {
                 if (winner.IsHumanPlayerCharacter)
                 {

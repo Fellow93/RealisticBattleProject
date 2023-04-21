@@ -4,13 +4,13 @@ using TaleWorlds.Core;
 
 namespace RBMCombat
 {
-    class ItemValuesTiers
+    internal class ItemValuesTiers
     {
         [HarmonyPatch(typeof(DefaultItemValueModel))]
         [HarmonyPatch("CalculateValue")]
-        class OverrideCalculateValue
+        private class OverrideCalculateValue
         {
-            static bool Prefix(ref DefaultItemValueModel __instance, ItemObject item, ref int __result)
+            private static bool Prefix(ref DefaultItemValueModel __instance, ItemObject item, ref int __result)
             {
                 float price = 1;
                 float tier = 1f;
@@ -122,9 +122,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(DefaultItemValueModel))]
         [HarmonyPatch("CalculateHorseTier")]
-        class OverrideCalculateHorseTier
+        private class OverrideCalculateHorseTier
         {
-            static bool Prefix(ref DefaultItemValueModel __instance, HorseComponent horseComponent, ref float __result)
+            private static bool Prefix(ref DefaultItemValueModel __instance, HorseComponent horseComponent, ref float __result)
             {
                 float tier = 0f;
                 if (horseComponent.IsPackAnimal)
@@ -146,7 +146,7 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(DefaultItemValueModel))]
         [HarmonyPatch("CalculateTierMeleeWeapon")]
-        class OverrideCalculateTierMeleeWeapon
+        private class OverrideCalculateTierMeleeWeapon
         {
             private static float GetFactor(DamageTypes swingDamageType)
             {
@@ -154,14 +154,16 @@ namespace RBMCombat
                 {
                     default:
                         return 1f;
+
                     case DamageTypes.Pierce:
                         return 1.15f;
+
                     case DamageTypes.Blunt:
                         return 2.0f;
                 }
             }
 
-            static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
+            private static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
             {
                 WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
                 float val = ((float)weaponComponentData.ThrustDamage * RBMConfig.RBMConfig.OneHandedThrustDamageBonus - 75f) * 0.1f * GetFactor(weaponComponentData.ThrustDamageType) * ((float)weaponComponentData.ThrustSpeed * 0.01f);
@@ -258,9 +260,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(DefaultItemValueModel))]
         [HarmonyPatch("CalculateAmmoTier")]
-        class CalculateAmmoTierPatch
+        private class CalculateAmmoTierPatch
         {
-            static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
+            private static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
             {
                 WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
                 float missileWeight = weaponComponent.Item.Weight;
@@ -275,9 +277,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(DefaultItemValueModel))]
         [HarmonyPatch("CalculateShieldTier")]
-        class CalculateShieldTierPatch
+        private class CalculateShieldTierPatch
         {
-            static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
+            private static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
             {
                 WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
                 //weaponComponentData.MaxDataValue - hitpointy stitov
@@ -295,9 +297,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(DefaultItemValueModel))]
         [HarmonyPatch("CalculateRangedWeaponTier")]
-        class OverrideCalculateRangedWeaponTier
+        private class OverrideCalculateRangedWeaponTier
         {
-            static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
+            private static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
             {
                 WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
                 //float num;
@@ -308,6 +310,7 @@ namespace RBMCombat
                     default:
                         RangedTier = (DrawWeight - 60f) * 0.049f;
                         break;
+
                     case ItemObject.ItemTypeEnum.Crossbow:
                         RangedTier = (DrawWeight - 250f) * 0.021f;
                         break;
@@ -322,8 +325,6 @@ namespace RBMCombat
         //[HarmonyPatch("CalculateAmmoTier")]
         //class OverrideCalculateAmmoTier
         //{
-
-
         //    static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
         //    {
         //        WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
@@ -340,9 +341,9 @@ namespace RBMCombat
 
         [HarmonyPatch(typeof(DefaultItemValueModel))]
         [HarmonyPatch("CalculateArmorTier")]
-        class OverrideCalculateArmorTier
+        private class OverrideCalculateArmorTier
         {
-            static bool Prefix(ref DefaultItemValueModel __instance, ArmorComponent armorComponent, ref float __result)
+            private static bool Prefix(ref DefaultItemValueModel __instance, ArmorComponent armorComponent, ref float __result)
             {
                 float ArmorTier = 0f;
                 if (armorComponent.Item.ItemType == ItemObject.ItemTypeEnum.LegArmor)

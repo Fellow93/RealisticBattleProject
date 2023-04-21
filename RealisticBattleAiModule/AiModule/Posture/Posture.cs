@@ -16,7 +16,6 @@
             this.maxPosture = maxPosture;
             this.regenPerTick = regenPerTick;
             this.posture = this.maxPosture;
-
         }
     }
 }

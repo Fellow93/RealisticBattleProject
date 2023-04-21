@@ -1,6 +1,6 @@
-﻿using TaleWorlds.MountAndBlade;
-using HarmonyLib;
+﻿using HarmonyLib;
 using SandBox.Missions.MissionLogics;
+using TaleWorlds.MountAndBlade;
 
 namespace RBMAI
 {
@@ -8,6 +8,7 @@ namespace RBMAI
     {
         public static Harmony harmony = null;
         public static bool patched = false;
+
         public static void DoPatching()
         {
             //var harmony = new Harmony("com.pf.rbai");
@@ -27,10 +28,8 @@ namespace RBMAI
             var original2 = AccessTools.Method(typeof(CampaignMissionComponent), "EarlyStart");
             var postfix2 = AccessTools.Method(typeof(Tactics.CampaignMissionComponentPatch), nameof(Tactics.CampaignMissionComponentPatch.Postfix));
             harmony.Patch(original2, null, new HarmonyMethod(postfix2));
-            
-            //harmony.Patch(original, postfix: new HarmonyMethod(postfix));
 
+            //harmony.Patch(original, postfix: new HarmonyMethod(postfix));
         }
     }
-
 }

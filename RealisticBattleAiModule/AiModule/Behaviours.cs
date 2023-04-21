@@ -10,21 +10,19 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
-using static RBMAI.OverrideBehaviorMountedSkirmish;
 using static TaleWorlds.MountAndBlade.ArrangementOrder;
 using static TaleWorlds.MountAndBlade.HumanAIComponent;
 
 namespace RBMAI
 {
-    class Behaviours
+    internal class Behaviours
     {
-
         [HarmonyPatch(typeof(BehaviorSkirmishLine))]
-        class OverrideBehaviorSkirmishLine
+        private class OverrideBehaviorSkirmishLine
         {
             [HarmonyPostfix]
             [HarmonyPatch("CalculateCurrentOrder")]
-            static void PostfixCalculateCurrentOrder(Formation ____mainFormation, ref FacingOrder ___CurrentFacingOrder)
+            private static void PostfixCalculateCurrentOrder(Formation ____mainFormation, ref FacingOrder ___CurrentFacingOrder)
             {
                 if (____mainFormation != null)
                 {
@@ -34,7 +32,7 @@ namespace RBMAI
 
             [HarmonyPostfix]
             [HarmonyPatch("OnBehaviorActivatedAux")]
-            static void PostfixOnBehaviorActivatedAux(ref BehaviorSkirmishLine __instance)
+            private static void PostfixOnBehaviorActivatedAux(ref BehaviorSkirmishLine __instance)
             {
                 __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
                 //__instance.Formation.FormOrder = FormOrder.FormOrderWide;
@@ -43,13 +41,13 @@ namespace RBMAI
         }
 
         [HarmonyPatch(typeof(BehaviorDefend))]
-        class OverrideBehaviorDefend
+        private class OverrideBehaviorDefend
         {
             public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
 
             [HarmonyPostfix]
             [HarmonyPatch("CalculateCurrentOrder")]
-            static void PostfixCalculateCurrentOrder(ref BehaviorDefend __instance, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged, ref FacingOrder ___CurrentFacingOrder)
+            private static void PostfixCalculateCurrentOrder(ref BehaviorDefend __instance, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged, ref FacingOrder ___CurrentFacingOrder)
             {
                 if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                 {
@@ -95,13 +93,13 @@ namespace RBMAI
         }
 
         [HarmonyPatch(typeof(BehaviorHoldHighGround))]
-        class OverrideBehaviorHoldHighGround
+        private class OverrideBehaviorHoldHighGround
         {
             public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
 
             [HarmonyPostfix]
             [HarmonyPatch("CalculateCurrentOrder")]
-            static void PostfixCalculateCurrentOrder(ref BehaviorHoldHighGround __instance, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged, ref FacingOrder ___CurrentFacingOrder)
+            private static void PostfixCalculateCurrentOrder(ref BehaviorHoldHighGround __instance, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged, ref FacingOrder ___CurrentFacingOrder)
             {
                 if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                 {
@@ -136,20 +134,18 @@ namespace RBMAI
         }
 
         [HarmonyPatch(typeof(BehaviorScreenedSkirmish))]
-        class OverrideBehaviorScreenedSkirmish
+        private class OverrideBehaviorScreenedSkirmish
         {
-
             [HarmonyPostfix]
             [HarmonyPatch("CalculateCurrentOrder")]
-            static void PostfixCalculateCurrentOrder(ref Formation ____mainFormation, ref BehaviorScreenedSkirmish __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
+            private static void PostfixCalculateCurrentOrder(ref Formation ____mainFormation, ref BehaviorScreenedSkirmish __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
             {
-                if(____mainFormation != null && (____mainFormation.CountOfUnits == 0 || !____mainFormation.IsInfantry()))
+                if (____mainFormation != null && (____mainFormation.CountOfUnits == 0 || !____mainFormation.IsInfantry()))
                 {
                     ____mainFormation = __instance.Formation.Team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).FirstOrDefault((Formation f) => f.AI.IsMainFormation);
                 }
                 if (____mainFormation != null && __instance.Formation != null && ____mainFormation.CountOfUnits > 0 && ____mainFormation.IsInfantry())
                 {
-                    
                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(____mainFormation.Direction);
                     WorldPosition medianPosition = ____mainFormation.QuerySystem.MedianPosition;
                     Vec2 calcPosition;
@@ -172,7 +168,7 @@ namespace RBMAI
 
             [HarmonyPrefix]
             [HarmonyPatch("TickOccasionally")]
-            static bool PrefixTickOccasionally(Formation ____mainFormation, BehaviorScreenedSkirmish __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
+            private static bool PrefixTickOccasionally(Formation ____mainFormation, BehaviorScreenedSkirmish __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
             {
                 MethodInfo method = typeof(BehaviorScreenedSkirmish).GetMethod("CalculateCurrentOrder", BindingFlags.NonPublic | BindingFlags.Instance);
                 method.DeclaringType.GetMethod("CalculateCurrentOrder");
@@ -190,7 +186,7 @@ namespace RBMAI
 
             [HarmonyPostfix]
             [HarmonyPatch("OnBehaviorActivatedAux")]
-            static void PostfixOnBehaviorActivatedAux(ref BehaviorScreenedSkirmish __instance)
+            private static void PostfixOnBehaviorActivatedAux(ref BehaviorScreenedSkirmish __instance)
             {
                 __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
             }
@@ -205,7 +201,7 @@ namespace RBMAI
     }
 
     [HarmonyPatch(typeof(BehaviorCautiousAdvance))]
-    class OverrideBehaviorCautiousAdvance
+    internal class OverrideBehaviorCautiousAdvance
     {
         private enum BehaviorState
         {
@@ -219,7 +215,7 @@ namespace RBMAI
 
         [HarmonyPostfix]
         [HarmonyPatch("CalculateCurrentOrder")]
-        static void PostfixCalculateCurrentOrder(ref Vec2 ____shootPosition, ref Formation ____archerFormation, BehaviorCautiousAdvance __instance, ref BehaviorState ____behaviorState, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
+        private static void PostfixCalculateCurrentOrder(ref Vec2 ____shootPosition, ref Formation ____archerFormation, BehaviorCautiousAdvance __instance, ref BehaviorState ____behaviorState, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
         {
             if (__instance.Formation != null && ____archerFormation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
@@ -227,7 +223,6 @@ namespace RBMAI
 
                 if (significantEnemy != null)
                 {
-
                     int waitCountShooting = 0;
                     int waitCountApproaching = 0;
                     if (!waitCountShootingStorage.TryGetValue(__instance.Formation, out waitCountShooting))
@@ -261,7 +256,7 @@ namespace RBMAI
                                 }
                                 else
                                 {
-                                    if(distance > 100f)
+                                    if (distance > 100f)
                                     {
                                         waitCountShootingStorage[__instance.Formation] = waitCountShootingStorage[__instance.Formation] + 2;
                                     }
@@ -323,7 +318,6 @@ namespace RBMAI
                                     }
                                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
                                     waitCountApproachingStorage[__instance.Formation] = 0;
-
                                 }
                                 else
                                 {
@@ -335,19 +329,17 @@ namespace RBMAI
                                     }
                                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
                                     waitCountApproachingStorage[__instance.Formation] = waitCountApproachingStorage[__instance.Formation] + 1;
-
                                 }
                                 break;
                             }
                     }
                 }
             }
-
         }
     }
 
     [HarmonyPatch(typeof(BehaviorMountedSkirmish))]
-    class OverrideBehaviorMountedSkirmish
+    internal class OverrideBehaviorMountedSkirmish
     {
         public enum RotationDirection
         {
@@ -361,10 +353,12 @@ namespace RBMAI
             public int waitbeforeChangeCooldownCurrent = 0;
             public RotationDirection rotationDirection = RotationDirection.Left;
 
-            public RotationChangeClass() { }
+            public RotationChangeClass()
+            { }
         }
 
         public static Dictionary<Formation, RotationChangeClass> rotationDirectionDictionary = new Dictionary<Formation, RotationChangeClass> { };
+
         private struct Ellipse
         {
             private readonly Vec2 _center;
@@ -469,7 +463,7 @@ namespace RBMAI
 
         [HarmonyPostfix]
         [HarmonyPatch("CalculateCurrentOrder")]
-        static void PostfixCalculateCurrentOrder(BehaviorMountedSkirmish __instance, ref bool ____engaging, ref MovementOrder ____currentOrder, ref bool ____isEnemyReachable, ref FacingOrder ___CurrentFacingOrder)
+        private static void PostfixCalculateCurrentOrder(BehaviorMountedSkirmish __instance, ref bool ____engaging, ref MovementOrder ____currentOrder, ref bool ____isEnemyReachable, ref FacingOrder ___CurrentFacingOrder)
         {
             WorldPosition position = __instance.Formation.QuerySystem.MedianPosition;
             WorldPosition position2 = __instance.Formation.QuerySystem.MedianPosition;
@@ -511,7 +505,7 @@ namespace RBMAI
                         enemyFormation = RBMAI.Utilities.FindSignificantEnemyToPosition(__instance.Formation, position, true, true, false, false, false, false);
                     }
 
-                    if(closestSignificantlyLargeEnemyFormation != null && closestSignificantlyLargeEnemyFormation.AveragePosition.Distance(__instance.Formation.CurrentPosition) < __instance.Formation.Depth / 2f + (
+                    if (closestSignificantlyLargeEnemyFormation != null && closestSignificantlyLargeEnemyFormation.AveragePosition.Distance(__instance.Formation.CurrentPosition) < __instance.Formation.Depth / 2f + (
                         (closestSignificantlyLargeEnemyFormation.Formation.QuerySystem.FormationPower / __instance.Formation.QuerySystem.FormationPower) * 20f + 10f))
                     {
                         ____currentOrder = MovementOrder.MovementOrderChargeToTarget(closestSignificantlyLargeEnemyFormation.Formation);
@@ -539,11 +533,11 @@ namespace RBMAI
                     //    }
                     //}
 
-                        //if (__instance.Formation.QuerySystem.RangedCavalryUnitRatio > 0.95f && targetFormationQS.Formation == enemyFormation)
-                        //{
-                        //    ____currentOrder = MovementOrder.MovementOrderCharge;
-                        //    return;
-                        //}
+                    //if (__instance.Formation.QuerySystem.RangedCavalryUnitRatio > 0.95f && targetFormationQS.Formation == enemyFormation)
+                    //{
+                    //    ____currentOrder = MovementOrder.MovementOrderCharge;
+                    //    return;
+                    //}
 
                     if (enemyFormation != null && enemyFormation.QuerySystem != null)
                     {
@@ -555,19 +549,20 @@ namespace RBMAI
                         }
 
                         RotationChangeClass rotationDirection;
-                        if (!rotationDirectionDictionary.TryGetValue(__instance.Formation, out rotationDirection)){
+                        if (!rotationDirectionDictionary.TryGetValue(__instance.Formation, out rotationDirection))
+                        {
                             rotationDirection = new RotationChangeClass();
                             rotationDirectionDictionary.Add(__instance.Formation, rotationDirection);
                         }
 
                         if (__instance.Formation.QuerySystem.IsRangedCavalryFormation)
                         {
-                            Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, (enemyFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose)?enemyFormation.Width * 0.25f: enemyFormation.Width * 0.5f, enemyFormation.Direction);
+                            Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, (enemyFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose) ? enemyFormation.Width * 0.25f : enemyFormation.Width * 0.5f, enemyFormation.Direction);
                             position.SetVec2(ellipse.GetTargetPos(__instance.Formation.SmoothedAverageUnitPosition, 25f, rotationDirection.rotationDirection));
                         }
                         else
                         {
-                            Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, enemyFormation.Width * 0.5f , enemyFormation.Direction);
+                            Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.MedianPosition.AsVec2, distance, enemyFormation.Width * 0.5f, enemyFormation.Direction);
                             position.SetVec2(ellipse.GetTargetPos(__instance.Formation.SmoothedAverageUnitPosition, 25f, rotationDirection.rotationDirection));
                         }
                         if (rotationDirection.waitbeforeChangeCooldownCurrent > 0)
@@ -591,7 +586,7 @@ namespace RBMAI
                         float distanceFromBoudnary = Mission.Current.GetClosestBoundaryPosition(__instance.Formation.CurrentPosition).Distance(__instance.Formation.CurrentPosition);
                         if (distanceFromBoudnary <= __instance.Formation.Width / 2f)
                         {
-                            if(rotationDirection.waitbeforeChangeCooldownCurrent > rotationDirection.waitbeforeChangeCooldownMax)
+                            if (rotationDirection.waitbeforeChangeCooldownCurrent > rotationDirection.waitbeforeChangeCooldownMax)
                             {
                                 rotationDirection.waitbeforeChangeCooldownCurrent = 0;
                                 rotationDirectionDictionary[__instance.Formation] = rotationDirection;
@@ -618,12 +613,11 @@ namespace RBMAI
             {
                 ____currentOrder = MovementOrder.MovementOrderMove(position);
             }
-
         }
 
         [HarmonyPostfix]
         [HarmonyPatch("GetAiWeight")]
-        static void PostfixGetAiWeight(ref BehaviorMountedSkirmish __instance, ref float __result, ref bool ____isEnemyReachable)
+        private static void PostfixGetAiWeight(ref BehaviorMountedSkirmish __instance, ref float __result, ref bool ____isEnemyReachable)
         {
             if (__instance.Formation != null && __instance.Formation.QuerySystem.IsCavalryFormation)
             {
@@ -653,7 +647,7 @@ namespace RBMAI
                 }
 
                 float powerSum = 0f;
-                if(!Utilities.HasBattleBeenJoined(__instance.Formation, false, 75f))
+                if (!Utilities.HasBattleBeenJoined(__instance.Formation, false, 75f))
                 {
                     foreach (Formation enemyArcherFormation in Utilities.FindSignificantArcherFormations(__instance.Formation))
                     {
@@ -693,7 +687,7 @@ namespace RBMAI
     }
 
     [HarmonyPatch(typeof(BehaviorProtectFlank))]
-    class OverrideBehaviorProtectFlank
+    internal class OverrideBehaviorProtectFlank
     {
         private enum BehaviorState
         {
@@ -704,7 +698,7 @@ namespace RBMAI
 
         [HarmonyPrefix]
         [HarmonyPatch("CalculateCurrentOrder")]
-        static bool PrefixCalculateCurrentOrder(ref BehaviorProtectFlank __instance, ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviorState ____protectFlankState, ref Formation ____mainFormation, ref FormationAI.BehaviorSide ____behaviorSide)
+        private static bool PrefixCalculateCurrentOrder(ref BehaviorProtectFlank __instance, ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviorState ____protectFlankState, ref Formation ____mainFormation, ref FormationAI.BehaviorSide ____behaviorSide)
         {
             WorldPosition position = __instance.Formation.QuerySystem.MedianPosition;
             Vec2 averagePosition = __instance.Formation.QuerySystem.AveragePosition;
@@ -784,10 +778,9 @@ namespace RBMAI
             return false;
         }
 
-
         [HarmonyPrefix]
         [HarmonyPatch("CheckAndChangeState")]
-        static bool PrefixCheckAndChangeState(ref BehaviorProtectFlank __instance, ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviorState ____protectFlankState, ref Formation ____mainFormation, ref FormationAI.BehaviorSide ____behaviorSide)
+        private static bool PrefixCheckAndChangeState(ref BehaviorProtectFlank __instance, ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviorState ____protectFlankState, ref Formation ____mainFormation, ref FormationAI.BehaviorSide ____behaviorSide)
         {
             if (__instance.Formation != null && __instance.Formation.QuerySystem.IsInfantryFormation)
             {
@@ -813,7 +806,6 @@ namespace RBMAI
                             }
                         case BehaviorState.Charging:
                             {
-
                                 FormationQuerySystem closestFormation = __instance.Formation.QuerySystem.ClosestEnemyFormation;
                                 if (closestFormation != null && closestFormation.Formation != null)
                                 {
@@ -866,7 +858,6 @@ namespace RBMAI
                             }
                         case BehaviorState.Charging:
                             {
-
                                 FormationQuerySystem closestFormation = __instance.Formation.QuerySystem.ClosestEnemyFormation;
                                 if (closestFormation != null && closestFormation.Formation != null)
                                 {
@@ -900,7 +891,7 @@ namespace RBMAI
 
         [HarmonyPostfix]
         [HarmonyPatch("OnBehaviorActivatedAux")]
-        static void PostfixOnBehaviorActivatedAux(ref BehaviorProtectFlank __instance)
+        private static void PostfixOnBehaviorActivatedAux(ref BehaviorProtectFlank __instance)
         {
             if (__instance.Formation != null && __instance.Formation.QuerySystem.IsInfantryFormation)
             {
@@ -910,7 +901,7 @@ namespace RBMAI
 
         [HarmonyPrefix]
         [HarmonyPatch("GetAiWeight")]
-        static bool PostfixGetAiWeight(ref BehaviorProtectFlank __instance, ref float __result, ref Formation ____mainFormation)
+        private static bool PostfixGetAiWeight(ref BehaviorProtectFlank __instance, ref float __result, ref Formation ____mainFormation)
         {
             if (____mainFormation == null || !____mainFormation.AI.IsMainFormation)
             {
@@ -928,11 +919,11 @@ namespace RBMAI
 
     [MBCallback]
     [HarmonyPatch(typeof(HumanAIComponent))]
-    class AdjustSpeedLimitPatch
+    internal class AdjustSpeedLimitPatch
     {
         [HarmonyPrefix]
         [HarmonyPatch("AdjustSpeedLimit")]
-        static bool AdjustSpeedLimitPrefix(ref HumanAIComponent __instance,ref Agent agent,ref float desiredSpeed,ref bool limitIsMultiplier, ref Agent ___Agent)
+        private static bool AdjustSpeedLimitPrefix(ref HumanAIComponent __instance, ref Agent agent, ref float desiredSpeed, ref bool limitIsMultiplier, ref Agent ___Agent)
         {
             //FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
             //_currentTacticField.DeclaringType.GetField("_currentTactic");
@@ -961,9 +952,9 @@ namespace RBMAI
             //        }
             //    }
             //}
-            if(agent.Formation != null && (agent.Formation.QuerySystem.IsRangedCavalryFormation || agent.Formation.QuerySystem.IsCavalryFormation))
+            if (agent.Formation != null && (agent.Formation.QuerySystem.IsRangedCavalryFormation || agent.Formation.QuerySystem.IsCavalryFormation))
             {
-                if(agent.MountAgent != null)
+                if (agent.MountAgent != null)
                 {
                     float speed = agent.MountAgent.AgentDrivenProperties.MountSpeed;
                     ___Agent.SetMaximumSpeedLimit(speed, false);
@@ -971,11 +962,11 @@ namespace RBMAI
                     return false;
                 }
             }
-            else if(agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null && 
-                (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorForwardSkirmish) || 
+            else if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
+                (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorForwardSkirmish) ||
                 agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorInfantryAttackFlank)))
             {
-                if(limitIsMultiplier && desiredSpeed < 0.85f)
+                if (limitIsMultiplier && desiredSpeed < 0.85f)
                 {
                     desiredSpeed = 0.85f;
                 }
@@ -1047,11 +1038,11 @@ namespace RBMAI
     }
 
     [HarmonyPatch(typeof(BehaviorHorseArcherSkirmish))]
-    class OverrideBehaviorHorseArcherSkirmish
+    internal class OverrideBehaviorHorseArcherSkirmish
     {
         [HarmonyPrefix]
         [HarmonyPatch("GetAiWeight")]
-        static bool PrefixGetAiWeight(ref float __result)
+        private static bool PrefixGetAiWeight(ref float __result)
         {
             __result = 0f;
             return false;
@@ -1059,11 +1050,11 @@ namespace RBMAI
     }
 
     [HarmonyPatch(typeof(BehaviorPullBack))]
-    class OverrideBehaviorPullBack
+    internal class OverrideBehaviorPullBack
     {
         [HarmonyPrefix]
         [HarmonyPatch("GetAiWeight")]
-        static bool PrefixGetAiWeight(ref float __result)
+        private static bool PrefixGetAiWeight(ref float __result)
         {
             __result = 0f;
             return false;
@@ -1071,11 +1062,11 @@ namespace RBMAI
     }
 
     [HarmonyPatch(typeof(BehaviorVanguard))]
-    class OverrideBehaviorVanguard
+    internal class OverrideBehaviorVanguard
     {
         [HarmonyPrefix]
         [HarmonyPatch("TickOccasionally")]
-        static bool PrefixTickOccasionally(ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder, BehaviorVanguard __instance)
+        private static bool PrefixTickOccasionally(ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder, BehaviorVanguard __instance)
         {
             MethodInfo method = typeof(BehaviorVanguard).GetMethod("CalculateCurrentOrder", BindingFlags.NonPublic | BindingFlags.Instance);
             method.DeclaringType.GetMethod("CalculateCurrentOrder");
@@ -1097,7 +1088,7 @@ namespace RBMAI
 
         [HarmonyPrefix]
         [HarmonyPatch("OnBehaviorActivatedAux")]
-        static void PostfixOnBehaviorActivatedAux(ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder, BehaviorVanguard __instance)
+        private static void PostfixOnBehaviorActivatedAux(ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder, BehaviorVanguard __instance)
         {
             __instance.Formation.FormOrder = FormOrder.FormOrderDeep;
             __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderSkein;
@@ -1105,22 +1096,22 @@ namespace RBMAI
     }
 
     [HarmonyPatch(typeof(BehaviorCharge))]
-    class OverrideBehaviorCharge
+    internal class OverrideBehaviorCharge
     {
         public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
         public static Dictionary<Formation, float> timeToMoveStorage = new Dictionary<Formation, float> { };
 
         [HarmonyPrefix]
         [HarmonyPatch("CalculateCurrentOrder")]
-        static bool PrefixCalculateCurrentOrder(ref BehaviorCharge __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
+        private static bool PrefixCalculateCurrentOrder(ref BehaviorCharge __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
         {
-            if (__instance.Formation!= null && !(__instance.Formation.Team.IsPlayerTeam || __instance.Formation.Team.IsPlayerAlly) && Campaign.Current != null && MobileParty.MainParty != null && MobileParty.MainParty.MapEvent != null &&
+            if (__instance.Formation != null && !(__instance.Formation.Team.IsPlayerTeam || __instance.Formation.Team.IsPlayerAlly) && Campaign.Current != null && MobileParty.MainParty != null && MobileParty.MainParty.MapEvent != null &&
                 MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Defender) != null && MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Defender).Name != null &&
                 MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Attacker) != null && MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Attacker).Name != null)
             {
                 TextObject defenderName = MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Defender).Name;
                 TextObject attackerName = MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Attacker).Name;
-                if ((attackerName!= null && defenderName != null) && (defenderName.Contains("Looter") || defenderName.Contains("Bandit") || defenderName.Contains("Raider") || attackerName.Contains("Looter") || attackerName.Contains("Bandit") || attackerName.Contains("Raider")))
+                if ((attackerName != null && defenderName != null) && (defenderName.Contains("Looter") || defenderName.Contains("Bandit") || defenderName.Contains("Raider") || attackerName.Contains("Looter") || attackerName.Contains("Bandit") || attackerName.Contains("Raider")))
                 {
                     return true;
                 }
@@ -1171,7 +1162,7 @@ namespace RBMAI
                             else
                             {
                                 float storedPositonDistance = (storedPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2).Normalize();
-                                if(storedPositonDistance > (__instance.Formation.Depth / 2f) + 10f)
+                                if (storedPositonDistance > (__instance.Formation.Depth / 2f) + 10f)
                                 {
                                     positionsStorage.Remove(__instance.Formation);
                                     positionsStorage.Add(__instance.Formation, positionNew);
@@ -1231,7 +1222,6 @@ namespace RBMAI
                                     {
                                         ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
                                     }
-
                                 }
                                 if (cavDist > 85f)
                                 {
@@ -1269,7 +1259,6 @@ namespace RBMAI
                         else
                         {
                             ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
-
                         }
                         __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
                         return false;
@@ -1289,7 +1278,7 @@ namespace RBMAI
                     {
                         __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderShieldWall;
                     }
-                    else if(__instance.Formation.TargetFormation != null && __instance.Formation.TargetFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderLine)
+                    else if (__instance.Formation.TargetFormation != null && __instance.Formation.TargetFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderLine)
                     {
                         __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
                     }
@@ -1304,7 +1293,6 @@ namespace RBMAI
             if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
                 __instance.Formation.TargetFormation = __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation;
-
             }
             ____currentOrder = MovementOrder.MovementOrderCharge;
             return false;
@@ -1312,9 +1300,9 @@ namespace RBMAI
 
         [HarmonyPostfix]
         [HarmonyPatch("GetAiWeight")]
-        static void PrefixGetAiWeight(ref BehaviorCharge __instance, ref float __result)
+        private static void PrefixGetAiWeight(ref BehaviorCharge __instance, ref float __result)
         {
-            if(__instance.Formation != null && __instance.Formation.QuerySystem.IsRangedCavalryFormation)
+            if (__instance.Formation != null && __instance.Formation.QuerySystem.IsRangedCavalryFormation)
             {
                 __result = __result * 0.2f;
             }
@@ -1323,7 +1311,7 @@ namespace RBMAI
     }
 
     [HarmonyPatch(typeof(MovementOrder))]
-    class OverrideMovementOrder
+    internal class OverrideMovementOrder
     {
         internal enum MovementOrderEnum
         {
@@ -1344,7 +1332,7 @@ namespace RBMAI
 
         [HarmonyPrefix]
         [HarmonyPatch("SetChargeBehaviorValues")]
-        static bool PrefixSetChargeBehaviorValues(Agent unit)
+        private static bool PrefixSetChargeBehaviorValues(Agent unit)
         {
             if (unit != null && unit.Formation != null)
             {
@@ -1442,7 +1430,7 @@ namespace RBMAI
 
         [HarmonyPrefix]
         [HarmonyPatch("SetFollowBehaviorValues")]
-        static bool PrefixSetFollowBehaviorValues(Agent unit)
+        private static bool PrefixSetFollowBehaviorValues(Agent unit)
         {
             if (unit.Formation != null)
             {
@@ -1463,7 +1451,7 @@ namespace RBMAI
 
         [HarmonyPrefix]
         [HarmonyPatch("SetDefaultMoveBehaviorValues")]
-        static bool PrefixSetDefaultMoveBehaviorValues(Agent unit)
+        private static bool PrefixSetDefaultMoveBehaviorValues(Agent unit)
         {
             if (unit.Formation != null)
             {
@@ -1520,7 +1508,7 @@ namespace RBMAI
 
         [HarmonyPrefix]
         [HarmonyPatch("GetSubstituteOrder")]
-        static bool PrefixGetSubstituteOrder(MovementOrder __instance, ref MovementOrder __result, Formation formation)
+        private static bool PrefixGetSubstituteOrder(MovementOrder __instance, ref MovementOrder __result, Formation formation)
         {
             if (formation != null && (formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && __instance.OrderType == OrderType.ChargeWithTarget)
             {
@@ -1545,7 +1533,7 @@ namespace RBMAI
 
         [HarmonyPostfix]
         [HarmonyPatch("GetPositionAux")]
-        static void GetPositionAuxPostfix(ref MovementOrder __instance, ref WorldPosition __result, ref Formation f, ref WorldPosition.WorldPositionEnforcedCache worldPositionEnforcedCache)
+        private static void GetPositionAuxPostfix(ref MovementOrder __instance, ref WorldPosition __result, ref Formation f, ref WorldPosition.WorldPositionEnforcedCache worldPositionEnforcedCache)
         {
             if (__instance.OrderEnum == MovementOrder.MovementOrderEnum.FallBack)
             {
@@ -1671,7 +1659,7 @@ namespace RBMAI
     }
 
     [HarmonyPatch(typeof(Agent))]
-    class OverrideAgent
+    internal class OverrideAgent
     {
         //[HarmonyPrefix]
         //[HarmonyPatch("GetTargetAgent")]
@@ -1705,7 +1693,7 @@ namespace RBMAI
 
         [HarmonyPrefix]
         [HarmonyPatch("SetFiringOrder")]
-        static bool PrefixSetFiringOrder(ref Agent __instance, ref int order)
+        private static bool PrefixSetFiringOrder(ref Agent __instance, ref int order)
         {
             if (__instance.Formation != null && __instance.Formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget)
             {
@@ -1756,16 +1744,16 @@ namespace RBMAI
     }
 
     [HarmonyPatch(typeof(Agent))]
-    class OverrideUpdateFormationOrders
+    internal class OverrideUpdateFormationOrders
     {
         [HarmonyPrefix]
         [HarmonyPatch("UpdateFormationOrders")]
-        static bool PrefixUpdateFormationOrders(ref Agent __instance)
+        private static bool PrefixUpdateFormationOrders(ref Agent __instance)
         {
             if (__instance.Formation != null && __instance.IsAIControlled && __instance.Formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget)
             {
-                if(__instance.Formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.Square || 
-                    __instance.Formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.Circle || 
+                if (__instance.Formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.Square ||
+                    __instance.Formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.Circle ||
                     __instance.Formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.ShieldWall)
                 {
                     __instance.EnforceShieldUsage(ArrangementOrder.GetShieldDirectionOfUnit(__instance.Formation, __instance, __instance.Formation.ArrangementOrder.OrderEnum));
@@ -1795,11 +1783,11 @@ namespace RBMAI
     }
 
     [HarmonyPatch(typeof(Formation))]
-    class SetPositioningPatch
+    internal class SetPositioningPatch
     {
         [HarmonyPrefix]
         [HarmonyPatch("SetPositioning")]
-        static bool PrefixSetPositioning(ref Formation __instance,ref int? unitSpacing)
+        private static bool PrefixSetPositioning(ref Formation __instance, ref int? unitSpacing)
         {
             if (__instance.ArrangementOrder == ArrangementOrderScatter)
             {
@@ -1841,11 +1829,11 @@ namespace RBMAI
     //}
 
     [HarmonyPatch(typeof(Formation))]
-    class OverrideSetMovementOrder
+    internal class OverrideSetMovementOrder
     {
         [HarmonyPrefix]
         [HarmonyPatch("SetMovementOrder")]
-        static bool PrefixSetOrder(Formation __instance, ref MovementOrder input)
+        private static bool PrefixSetOrder(Formation __instance, ref MovementOrder input)
         {
             if (input.OrderType == OrderType.Charge)
             {
@@ -1869,7 +1857,6 @@ namespace RBMAI
     //        return true;
     //    }
     //}
-
 
     //[HarmonyPatch(typeof(FormationAI))]
     //class OverrideFindBestBehavior
@@ -1924,11 +1911,11 @@ namespace RBMAI
     //}
 
     [HarmonyPatch(typeof(BehaviorRegroup))]
-    class OverrideBehaviorRegroup
+    internal class OverrideBehaviorRegroup
     {
         [HarmonyPrefix]
         [HarmonyPatch("GetAiWeight")]
-        static bool PrefixGetAiWeight(ref BehaviorRegroup __instance, ref float __result)
+        private static bool PrefixGetAiWeight(ref BehaviorRegroup __instance, ref float __result)
         {
             if (__instance.Formation != null)
             {
@@ -1940,20 +1927,19 @@ namespace RBMAI
                 }
                 //if(__instance.Formation.QuerySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents > 15f)
                 //{
-                    //__result = 10f;
-                    //return false;
+                //__result = 10f;
+                //return false;
                 //}
                 //__result =  MBMath.Lerp(0.1f, 1.2f, MBMath.ClampFloat(behaviorCoherence * (querySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents + 1f) / (querySystem.IdealAverageDisplacement + 1f), 0f, 3f) / 3f);
                 __result = MBMath.Lerp(0.1f, 1.2f, MBMath.ClampFloat(__instance.BehaviorCoherence * (querySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents + 1f) / (querySystem.IdealAverageDisplacement + 1f), 0f, 3f) / 3f);
                 return false;
-
             }
             return true;
         }
 
         [HarmonyPrefix]
         [HarmonyPatch("CalculateCurrentOrder")]
-        static bool PrefixCalculateCurrentOrder(ref BehaviorRegroup __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
+        private static bool PrefixCalculateCurrentOrder(ref BehaviorRegroup __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
         {
             if (__instance.Formation != null && __instance.Formation.QuerySystem.IsInfantryFormation && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
@@ -1974,34 +1960,32 @@ namespace RBMAI
 
         [HarmonyPostfix]
         [HarmonyPatch("TickOccasionally")]
-        static void PrefixTickOccasionally(ref BehaviorRegroup __instance)
+        private static void PrefixTickOccasionally(ref BehaviorRegroup __instance)
         {
             __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
         }
     }
 
     [HarmonyPatch(typeof(BehaviorAdvance))]
-    class OverrideBehaviorAdvance
+    internal class OverrideBehaviorAdvance
     {
         public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
         public static Dictionary<Formation, int> waitCountStorage = new Dictionary<Formation, int> { };
 
         [HarmonyPrefix]
         [HarmonyPatch("CalculateCurrentOrder")]
-        static bool PrefixCalculateCurrentOrder(ref BehaviorAdvance __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
+        private static bool PrefixCalculateCurrentOrder(ref BehaviorAdvance __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
         {
-            
             if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
 
                 if (__instance.Formation.QuerySystem.IsInfantryFormation && !RBMAI.Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
                 {
-
                     FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
                     _currentTacticField.DeclaringType.GetField("_currentTactic");
                     //TacticComponent _currentTactic = (TacticComponent);
-                    if(__instance.Formation?.Team?.TeamAI != null)
+                    if (__instance.Formation?.Team?.TeamAI != null)
                     {
                         if (_currentTacticField.GetValue(__instance.Formation?.Team?.TeamAI) != null && _currentTacticField.GetValue(__instance.Formation?.Team?.TeamAI).ToString().Contains("SplitArchers"))
                         {
@@ -2010,7 +1994,7 @@ namespace RBMAI
                             {
                                 Vec2 dir = allyArchers.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                                 float allyArchersDist = dir.Normalize();
-                                if (allyArchersDist - (allyArchers.Width/2f) - (__instance.Formation.Width /2f) > 60f)
+                                if (allyArchersDist - (allyArchers.Width / 2f) - (__instance.Formation.Width / 2f) > 60f)
                                 {
                                     ____currentOrder = MovementOrder.MovementOrderMove(__instance.Formation.QuerySystem.MedianPosition);
                                     return false;
@@ -2058,7 +2042,6 @@ namespace RBMAI
                             else
                             {
                                 ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
-
                             }
                             if (cavDist > 70f)
                             {
@@ -2095,7 +2078,6 @@ namespace RBMAI
                         else
                         {
                             ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
-
                         }
                         //__instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
                         return false;
@@ -2132,7 +2114,7 @@ namespace RBMAI
 
                     Vec2 vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                     WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
-                    
+
                     //if (!Mission.Current.IsPositionInsideBoundaries(positionNew.AsVec2) || positionNew.GetNavMesh() == UIntPtr.Zero)
                     //{
                     //}
@@ -2159,7 +2141,7 @@ namespace RBMAI
 
         [HarmonyPrefix]
         [HarmonyPatch("TickOccasionally")]
-        static bool PrefixTickOccasionally(ref BehaviorAdvance __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder,
+        private static bool PrefixTickOccasionally(ref BehaviorAdvance __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder,
             ref bool ____isInShieldWallDistance, ref bool ____switchedToShieldWallRecently, ref Timer ____switchedToShieldWallTimer)
         {
             MethodInfo method = typeof(BehaviorAdvance).GetMethod("CalculateCurrentOrder", BindingFlags.NonPublic | BindingFlags.Instance);

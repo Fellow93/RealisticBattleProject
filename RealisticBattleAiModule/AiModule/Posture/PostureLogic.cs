@@ -1,6 +1,4 @@
 ﻿using HarmonyLib;
-using RBMConfig;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using TaleWorlds.CampaignSystem.TournamentGames;
@@ -15,6 +13,7 @@ namespace RBMAI
         //private static int tickCooldownReset = 30;
         //private static int tickCooldown = 0;
         private static float timeToCalc = 0.5f;
+
         private static float currentDt = 0f;
 
         private static float weaponLengthPostureFactor = 0.2f;
@@ -29,9 +28,9 @@ namespace RBMAI
 
         [HarmonyPatch(typeof(Agent))]
         [HarmonyPatch("EquipItemsFromSpawnEquipment")]
-        class EquipItemsFromSpawnEquipmentPatch
+        private class EquipItemsFromSpawnEquipmentPatch
         {
-            static void Prefix(ref Agent __instance)
+            private static void Prefix(ref Agent __instance)
             {
                 AgentPostures.values[__instance] = new Posture();
             }
@@ -39,12 +38,13 @@ namespace RBMAI
 
         [HarmonyPatch(typeof(Agent))]
         [HarmonyPatch("OnWieldedItemIndexChange")]
-        class OnWieldedItemIndexChangePatch
+        private class OnWieldedItemIndexChangePatch
         {
-            static void Postfix(ref Agent __instance, bool isOffHand, bool isWieldedInstantly, bool isWieldedOnSpawn)
+            private static void Postfix(ref Agent __instance, bool isOffHand, bool isWieldedInstantly, bool isWieldedOnSpawn)
             {
                 float playerPostureModifier;
-                switch (RBMConfig.RBMConfig.playerPostureMultiplier) {
+                switch (RBMConfig.RBMConfig.playerPostureMultiplier)
+                {
                     case 0:
                         {
                             playerPostureModifier = 1f;
@@ -138,7 +138,7 @@ namespace RBMAI
         [HarmonyPatch("FinishMissionLoading")]
         public class FinishMissionLoadingPatch
         {
-            static void Postfix()
+            private static void Postfix()
             {
                 AgentPostures.values.Clear();
             }
@@ -146,14 +146,15 @@ namespace RBMAI
 
         [HarmonyPatch(typeof(Mission))]
         [HarmonyPatch("CreateMeleeBlow")]
-        class CreateMeleeBlowPatch
+        private class CreateMeleeBlowPatch
         {
-            static void Postfix(ref Mission __instance, ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
+            private static void Postfix(ref Mission __instance, ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
             {
                 if ((new StackTrace()).GetFrame(3).GetMethod().Name.Contains("MeleeHit"))
                 {
                     if (RBMConfig.RBMConfig.postureEnabled && attackerAgent != null && victimAgent != null && !attackerAgent.IsFriendOf(victimAgent) && attackerWeapon.CurrentUsageItem != null &&
-                        attackerWeapon.CurrentUsageItem != null) {
+                        attackerWeapon.CurrentUsageItem != null)
+                    {
                         Posture defenderPosture = null;
                         Posture attackerPosture = null;
                         AgentPostures.values.TryGetValue(victimAgent, out defenderPosture);
@@ -174,7 +175,6 @@ namespace RBMAI
                         float comHitModifier = Utilities.GetComHitModifier(in collisionData, in attackerWeapon);
                         if (!collisionData.AttackBlockedWithShield)
                         {
-
                             if (collisionData.CollisionResult == CombatCollisionResult.Blocked)
                             {
                                 if (defenderPosture != null)
@@ -204,14 +204,14 @@ namespace RBMAI
                                                 //}
                                                 //else
                                                 //{
-                                                    if (postureDmg >= defenderPosture.maxPosture * 0.33f)
-                                                    {
-                                                        makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
-                                                    }
-                                                    else
-                                                    {
-                                                        makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                                    }
+                                                if (postureDmg >= defenderPosture.maxPosture * 0.33f)
+                                                {
+                                                    makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
+                                                }
+                                                else
+                                                {
+                                                    makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                                }
                                                 //}
                                             }
                                             else
@@ -225,13 +225,13 @@ namespace RBMAI
                                 }
                                 if (attackerPosture != null)
                                 {
-                                    attackerPosture.posture = attackerPosture.posture - calculateAttackerPostureDamage(victimAgent, attackerAgent, absoluteDamageModifier,0.25f, ref collisionData, attackerWeapon, comHitModifier);
+                                    attackerPosture.posture = attackerPosture.posture - calculateAttackerPostureDamage(victimAgent, attackerAgent, absoluteDamageModifier, 0.25f, ref collisionData, attackerWeapon, comHitModifier);
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (attackerPosture.posture <= 0f)
                                     {
                                     }
                                 }
-                            } 
+                            }
                             else if (collisionData.CollisionResult == CombatCollisionResult.Parried)
                             {
                                 if (defenderPosture != null)
@@ -241,7 +241,7 @@ namespace RBMAI
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (defenderPosture.posture <= 0f)
                                     {
-                                        float healthDamage = calculateHealthDamage(defenderPosture.posture *-1f, __result, victimAgent);
+                                        float healthDamage = calculateHealthDamage(defenderPosture.posture * -1f, __result, victimAgent);
                                         EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
                                         if (wieldedItemIndex != EquipmentIndex.None)
                                         {
@@ -253,7 +253,7 @@ namespace RBMAI
                                             {
                                                 InformationManager.DisplayMessage(new InformationMessage("Enemy Posture break: Posture depleted, perfect parry, " + MathF.Floor(healthDamage) + " damage crushed through", Color.FromUint(4282569842u)));
                                             }
-                                            if(postureDmg >= defenderPosture.maxPosture * 0.33f)
+                                            if (postureDmg >= defenderPosture.maxPosture * 0.33f)
                                             {
                                                 makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
                                             }
@@ -417,7 +417,6 @@ namespace RBMAI
                                             {
                                                 makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
                                             }
-
                                         }
                                         defenderPosture.posture = defenderPosture.maxPosture * postureResetModifier;
                                         addPosturedamageVisual(attackerAgent, victimAgent);
@@ -431,7 +430,7 @@ namespace RBMAI
                                     {
                                     }
                                 }
-                            } 
+                            }
                             else if (collisionData.CollisionResult == CombatCollisionResult.Parried && collisionData.CorrectSideShieldBlock)
                             {
                                 if (defenderPosture != null)
@@ -538,10 +537,9 @@ namespace RBMAI
                         }
                     }
                 }
-
             }
 
-            static void addPosturedamageVisual(Agent attackerAgent, Agent victimAgent)
+            private static void addPosturedamageVisual(Agent attackerAgent, Agent victimAgent)
             {
                 if (RBMConfig.RBMConfig.postureEnabled)
                 {
@@ -620,7 +618,7 @@ namespace RBMAI
                 return MBMath.ClampInt(MathF.Ceiling(Game.Current.BasicModels.StrikeMagnitudeModel.ComputeRawDamage(b.DamageType, overPostureDamage, armorSumPosture, 1f)), 0, 2000);
             }
 
-            static float calculateDefenderPostureDamage(Agent defenderAgent, Agent attackerAgent, float absoluteDamageModifier, float actionTypeDamageModifier, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier)
+            private static float calculateDefenderPostureDamage(Agent defenderAgent, Agent attackerAgent, float absoluteDamageModifier, float actionTypeDamageModifier, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier)
             {
                 float result = 0f;
                 float defenderPostureDamageModifier = 1f; // terms and conditions may apply
@@ -706,7 +704,7 @@ namespace RBMAI
                     if (ei != EquipmentIndex.None)
                     {
                         WeaponClass ws = defenderAgent.Equipment[defenderAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand)].CurrentUsageItem.WeaponClass;
-                        if(ws == WeaponClass.OneHandedAxe || ws == WeaponClass.OneHandedPolearm || ws == WeaponClass.OneHandedSword || ws == WeaponClass.Mace)
+                        if (ws == WeaponClass.OneHandedAxe || ws == WeaponClass.OneHandedPolearm || ws == WeaponClass.OneHandedSword || ws == WeaponClass.Mace)
                         {
                             attackBlockedByOneHanedWithoutShield = true;
                         }
@@ -815,7 +813,7 @@ namespace RBMAI
                 return result;
             }
 
-            static float calculateAttackerPostureDamage(Agent defenderAgent, Agent attackerAgent, float absoluteDamageModifier, float actionTypeDamageModifier, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier)
+            private static float calculateAttackerPostureDamage(Agent defenderAgent, Agent attackerAgent, float absoluteDamageModifier, float actionTypeDamageModifier, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier)
             {
                 float result = 0f;
                 float postureDamageModifier = 1f; // terms and conditions may apply
@@ -999,7 +997,7 @@ namespace RBMAI
                 return 1f;
             }
 
-            static void makePostureRiposteBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
+            private static void makePostureRiposteBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
             {
                 Blow newBLow = blow;
                 newBLow.BaseMagnitude = collisionData.BaseMagnitude;
@@ -1030,7 +1028,7 @@ namespace RBMAI
                 }
             }
 
-            static void makePostureBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
+            private static void makePostureBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
             {
                 Blow newBLow = blow;
                 newBLow.BaseMagnitude = collisionData.BaseMagnitude;
@@ -1061,7 +1059,7 @@ namespace RBMAI
                 }
             }
 
-            static void makePostureCrashThroughBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, int inflictedHpDmg, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
+            private static void makePostureCrashThroughBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, int inflictedHpDmg, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
             {
                 Blow newBLow = blow;
                 newBLow.BaseMagnitude = collisionData.BaseMagnitude;
@@ -1075,8 +1073,8 @@ namespace RBMAI
                 newBLow.StrikeType = (StrikeType)collisionData.StrikeType;
                 newBLow.DamageType = ((!attackerWeapon.IsEmpty && true && !collisionData.IsAlternativeAttack) ? ((DamageTypes)collisionData.DamageType) : DamageTypes.Blunt);
                 newBLow.NoIgnore = collisionData.IsAlternativeAttack;
-                newBLow.AttackerStunPeriod = collisionData.AttackerStunPeriod;
-                newBLow.DefenderStunPeriod = collisionData.DefenderStunPeriod;
+                newBLow.AttackerStunPeriod = collisionData.AttackerStunPeriod / 5f;
+                newBLow.DefenderStunPeriod = collisionData.DefenderStunPeriod * 5f;
                 newBLow.BlowFlag = BlowFlags.None;
                 newBLow.Position = collisionData.CollisionGlobalPosition;
                 newBLow.BoneIndex = collisionData.CollisionBoneIndex;
@@ -1096,9 +1094,9 @@ namespace RBMAI
 
         [HarmonyPatch(typeof(Agent))]
         [HarmonyPatch("OnShieldDamaged")]
-        class OnShieldDamagedPatch
+        private class OnShieldDamagedPatch
         {
-            static bool Prefix(ref Agent __instance, ref EquipmentIndex slotIndex, ref int inflictedDamage)
+            private static bool Prefix(ref Agent __instance, ref EquipmentIndex slotIndex, ref int inflictedDamage)
             {
                 //__instance.HandleDropWeapon(false, slotIndex);
                 //float sumWeight = 0f;
@@ -1116,7 +1114,6 @@ namespace RBMAI
                 //{
                 //    if (sumWeight > 1f)
                 //    {
-                        
                 //        Vec3 velocity = new Vec3(0, 0, 0);
                 //        Vec3 velocity2 = __instance.Velocity;
                 //        if ((velocity - velocity2).LengthSquared > 100f)
@@ -1135,9 +1132,9 @@ namespace RBMAI
 
         [HarmonyPatch(typeof(TournamentRound))]
         [HarmonyPatch("EndMatch")]
-        class EndMatchPatch
+        private class EndMatchPatch
         {
-            static void Postfix(ref TournamentRound __instance)
+            private static void Postfix(ref TournamentRound __instance)
             {
                 foreach (KeyValuePair<Agent, Posture> entry in AgentPostures.values)
                 {
@@ -1177,7 +1174,6 @@ namespace RBMAI
                 {
                     foreach (KeyValuePair<Agent, Posture> entry in AgentPostures.values)
                     {
-
                         //if (XmlConfig.dict["Global.PostureGUIEnabled"] == 1)
                         //{
                         //    if (entry.Key.IsPlayerControlled) {

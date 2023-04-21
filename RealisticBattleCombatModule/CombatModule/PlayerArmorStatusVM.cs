@@ -1,15 +1,15 @@
 ﻿namespace RBMCombat
 {
-	using TaleWorlds.Library;
+    using TaleWorlds.Library;
 
-	public class PlayerArmorStatusVM : ViewModel
+    public class PlayerArmorStatusVM : ViewModel
     {
         //private string helmet = "Helmet: 100%";
         //private string shoulders = "Shoulders: 100%";
         //private string body = "Body: 100%";
         //private string gloves = "Gloves: 100%";
         //private string legs = "Legs: 100%";
-        //private string harness = "Harness: 100%"; 
+        //private string harness = "Harness: 100%";
 
         public const string green = "#90EE90FF";
         public const string grey = "#EEEEEEFF";
@@ -26,18 +26,18 @@
         private string harness = grey;
 
         [DataSourceProperty]
-		public string Helmet
+        public string Helmet
         {
-			get
-			{
-				return helmet;
-			}
-			set
-			{
+            get
+            {
+                return helmet;
+            }
+            set
+            {
                 helmet = value;
-				OnPropertyChanged("Helmet");
-			}
-		}
+                OnPropertyChanged("Helmet");
+            }
+        }
 
         [DataSourceProperty]
         public string Shoulders
