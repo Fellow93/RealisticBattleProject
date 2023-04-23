@@ -676,7 +676,7 @@ namespace RBMCombat
                                 {
                                     if (damageType == DamageTypes.Cut)
                                     {
-                                        blowMagnitude = blowMagnitude + 40f;
+                                        blowMagnitude = (blowMagnitude + 45f) * 1.1f;
                                     }
                                     else
                                     {
@@ -691,7 +691,7 @@ namespace RBMCombat
                                 {
                                     if (damageType == DamageTypes.Cut)
                                     {
-                                        blowMagnitude = blowMagnitude + 40f * 1.3f;
+                                        blowMagnitude = (blowMagnitude + 40f * 1.3f) * 1.1f;
                                     }
                                     else
                                     {
@@ -705,7 +705,7 @@ namespace RBMCombat
                             {
                                 if (blowMagnitude > 1f)
                                 {
-                                    blowMagnitude = blowMagnitude + 60f;
+                                    blowMagnitude = (blowMagnitude + 65f) * 1.1f;
                                 }
                                 break;
                             }
@@ -713,7 +713,7 @@ namespace RBMCombat
                             {
                                 if (blowMagnitude > 1f)
                                 {
-                                    blowMagnitude = blowMagnitude + 60f * 1.15f;
+                                    blowMagnitude = (blowMagnitude + 65f * 1.15f) * 1.1f;
                                 }
                                 break;
                             }
@@ -721,7 +721,7 @@ namespace RBMCombat
                             {
                                 if (blowMagnitude > 1f)
                                 {
-                                    blowMagnitude = blowMagnitude + 60f * 1.3f;
+                                    blowMagnitude = (blowMagnitude + 65f * 1.3f) * 1.1f;
                                 }
                                 break;
                             }
@@ -735,7 +735,7 @@ namespace RBMCombat
                                     }
                                     else
                                     {
-                                        blowMagnitude = blowMagnitude + 30f;
+                                        blowMagnitude = (blowMagnitude + 40f) * 1.1f;
                                     }
                                 }
                                 break;
@@ -750,7 +750,7 @@ namespace RBMCombat
                                     }
                                     else
                                     {
-                                        blowMagnitude = blowMagnitude + 45f * 1.3f;
+                                        blowMagnitude = (blowMagnitude + 55f * 1.3f) * 1.1f;
                                     }
                                 }
                                 break;
