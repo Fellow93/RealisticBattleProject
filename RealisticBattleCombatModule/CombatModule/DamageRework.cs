@@ -676,7 +676,7 @@ namespace RBMCombat
                                 {
                                     if (damageType == DamageTypes.Cut)
                                     {
-                                        blowMagnitude = (blowMagnitude + 45f) * 1.1f;
+                                        blowMagnitude = (blowMagnitude + 145f) * 1.1f;
                                     }
                                     else
                                     {
