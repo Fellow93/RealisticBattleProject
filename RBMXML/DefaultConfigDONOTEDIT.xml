@@ -33,51 +33,51 @@
     </Global>
     <WeaponTypes>
       <Dagger>
-        <ExtraBluntFactorCut>0.15</ExtraBluntFactorCut>
-        <ExtraBluntFactorPierce>0.15</ExtraBluntFactorPierce>
+        <ExtraBluntFactorCut>0.25</ExtraBluntFactorCut>
+        <ExtraBluntFactorPierce>0.35</ExtraBluntFactorPierce>
         <ExtraBluntFactorBlunt>1</ExtraBluntFactorBlunt>
-        <ExtraArmorThresholdFactorPierce>4</ExtraArmorThresholdFactorPierce>
-        <ExtraArmorThresholdFactorCut>4</ExtraArmorThresholdFactorCut>
+        <ExtraArmorThresholdFactorPierce>3</ExtraArmorThresholdFactorPierce>
+        <ExtraArmorThresholdFactorCut>5</ExtraArmorThresholdFactorCut>
         <ExtraArmorSkillDamageAbsorb>1</ExtraArmorSkillDamageAbsorb>
       </Dagger>
       <ThrowingKnife>
         <ExtraBluntFactorCut>0.15</ExtraBluntFactorCut>
         <ExtraBluntFactorPierce>0.15</ExtraBluntFactorPierce>
         <ExtraBluntFactorBlunt>1</ExtraBluntFactorBlunt>
-        <ExtraArmorThresholdFactorPierce>4</ExtraArmorThresholdFactorPierce>
-        <ExtraArmorThresholdFactorCut>4</ExtraArmorThresholdFactorCut>
+        <ExtraArmorThresholdFactorPierce>3</ExtraArmorThresholdFactorPierce>
+        <ExtraArmorThresholdFactorCut>5</ExtraArmorThresholdFactorCut>
         <ExtraArmorSkillDamageAbsorb>1</ExtraArmorSkillDamageAbsorb>
       </ThrowingKnife>
       <OneHandedSword>
-        <ExtraBluntFactorCut>0.15</ExtraBluntFactorCut>
-        <ExtraBluntFactorPierce>0.2</ExtraBluntFactorPierce>
+        <ExtraBluntFactorCut>0.25</ExtraBluntFactorCut>
+        <ExtraBluntFactorPierce>0.35</ExtraBluntFactorPierce>
         <ExtraBluntFactorBlunt>1</ExtraBluntFactorBlunt>
-        <ExtraArmorThresholdFactorPierce>4</ExtraArmorThresholdFactorPierce>
-        <ExtraArmorThresholdFactorCut>4</ExtraArmorThresholdFactorCut>
+        <ExtraArmorThresholdFactorPierce>3.5</ExtraArmorThresholdFactorPierce>
+        <ExtraArmorThresholdFactorCut>5</ExtraArmorThresholdFactorCut>
         <ExtraArmorSkillDamageAbsorb>1</ExtraArmorSkillDamageAbsorb>
       </OneHandedSword>
       <TwoHandedSword>
         <ExtraBluntFactorCut>0.25</ExtraBluntFactorCut>
-        <ExtraBluntFactorPierce>0.25</ExtraBluntFactorPierce>
+        <ExtraBluntFactorPierce>0.35</ExtraBluntFactorPierce>
         <ExtraBluntFactorBlunt>1</ExtraBluntFactorBlunt>
-        <ExtraArmorThresholdFactorPierce>4</ExtraArmorThresholdFactorPierce>
-        <ExtraArmorThresholdFactorCut>4</ExtraArmorThresholdFactorCut>
+        <ExtraArmorThresholdFactorPierce>3.5</ExtraArmorThresholdFactorPierce>
+        <ExtraArmorThresholdFactorCut>5</ExtraArmorThresholdFactorCut>
         <ExtraArmorSkillDamageAbsorb>1</ExtraArmorSkillDamageAbsorb>
       </TwoHandedSword>
       <OneHandedBastardAxe>
-        <ExtraBluntFactorCut>0.25</ExtraBluntFactorCut>
+        <ExtraBluntFactorCut>0.3</ExtraBluntFactorCut>
         <ExtraBluntFactorPierce>0.25</ExtraBluntFactorPierce>
         <ExtraBluntFactorBlunt>1</ExtraBluntFactorBlunt>
         <ExtraArmorThresholdFactorPierce>2.5</ExtraArmorThresholdFactorPierce>
-        <ExtraArmorThresholdFactorCut>4</ExtraArmorThresholdFactorCut>
+        <ExtraArmorThresholdFactorCut>5</ExtraArmorThresholdFactorCut>
         <ExtraArmorSkillDamageAbsorb>1</ExtraArmorSkillDamageAbsorb>
       </OneHandedBastardAxe>
       <OneHandedAxe>
-        <ExtraBluntFactorCut>0.25</ExtraBluntFactorCut>
+        <ExtraBluntFactorCut>0.3</ExtraBluntFactorCut>
         <ExtraBluntFactorPierce>0.25</ExtraBluntFactorPierce>
         <ExtraBluntFactorBlunt>1</ExtraBluntFactorBlunt>
         <ExtraArmorThresholdFactorPierce>2.5</ExtraArmorThresholdFactorPierce>
-        <ExtraArmorThresholdFactorCut>4</ExtraArmorThresholdFactorCut>
+        <ExtraArmorThresholdFactorCut>5</ExtraArmorThresholdFactorCut>
         <ExtraArmorSkillDamageAbsorb>1</ExtraArmorSkillDamageAbsorb>
       </OneHandedAxe>
       <TwoHandedAxe>
@@ -85,23 +85,23 @@
         <ExtraBluntFactorPierce>0.3</ExtraBluntFactorPierce>
         <ExtraBluntFactorBlunt>1</ExtraBluntFactorBlunt>
         <ExtraArmorThresholdFactorPierce>2.5</ExtraArmorThresholdFactorPierce>
-        <ExtraArmorThresholdFactorCut>4</ExtraArmorThresholdFactorCut>
+        <ExtraArmorThresholdFactorCut>5</ExtraArmorThresholdFactorCut>
         <ExtraArmorSkillDamageAbsorb>1</ExtraArmorSkillDamageAbsorb>
       </TwoHandedAxe>
       <OneHandedPolearm>
-        <ExtraBluntFactorCut>0.2</ExtraBluntFactorCut>
-        <ExtraBluntFactorPierce>0.15</ExtraBluntFactorPierce>
+        <ExtraBluntFactorCut>0.3</ExtraBluntFactorCut>
+        <ExtraBluntFactorPierce>0.35</ExtraBluntFactorPierce>
         <ExtraBluntFactorBlunt>1</ExtraBluntFactorBlunt>
-        <ExtraArmorThresholdFactorPierce>4</ExtraArmorThresholdFactorPierce>
-        <ExtraArmorThresholdFactorCut>4</ExtraArmorThresholdFactorCut>
+        <ExtraArmorThresholdFactorPierce>3</ExtraArmorThresholdFactorPierce>
+        <ExtraArmorThresholdFactorCut>5</ExtraArmorThresholdFactorCut>
         <ExtraArmorSkillDamageAbsorb>1</ExtraArmorSkillDamageAbsorb>
       </OneHandedPolearm>
       <TwoHandedPolearm>
         <ExtraBluntFactorCut>0.3</ExtraBluntFactorCut>
-        <ExtraBluntFactorPierce>0.15</ExtraBluntFactorPierce>
+        <ExtraBluntFactorPierce>0.35</ExtraBluntFactorPierce>
         <ExtraBluntFactorBlunt>1</ExtraBluntFactorBlunt>
-        <ExtraArmorThresholdFactorPierce>4</ExtraArmorThresholdFactorPierce>
-        <ExtraArmorThresholdFactorCut>4</ExtraArmorThresholdFactorCut>
+        <ExtraArmorThresholdFactorPierce>3</ExtraArmorThresholdFactorPierce>
+        <ExtraArmorThresholdFactorCut>5</ExtraArmorThresholdFactorCut>
         <ExtraArmorSkillDamageAbsorb>1</ExtraArmorSkillDamageAbsorb>
       </TwoHandedPolearm>
       <Mace>
@@ -138,15 +138,15 @@
       </Bolt>
       <Javelin>
         <ExtraBluntFactorCut>0.05</ExtraBluntFactorCut>
-        <ExtraBluntFactorPierce>0.15</ExtraBluntFactorPierce>
+        <ExtraBluntFactorPierce>0.2</ExtraBluntFactorPierce>
         <ExtraBluntFactorBlunt>1</ExtraBluntFactorBlunt>
-        <ExtraArmorThresholdFactorPierce>4</ExtraArmorThresholdFactorPierce>
+        <ExtraArmorThresholdFactorPierce>3</ExtraArmorThresholdFactorPierce>
         <ExtraArmorThresholdFactorCut>3</ExtraArmorThresholdFactorCut>
         <ExtraArmorSkillDamageAbsorb>1</ExtraArmorSkillDamageAbsorb>
       </Javelin>
       <ThrowingAxe>
-        <ExtraBluntFactorCut>0.25</ExtraBluntFactorCut>
-        <ExtraBluntFactorPierce>0.15</ExtraBluntFactorPierce>
+        <ExtraBluntFactorCut>0.3</ExtraBluntFactorCut>
+        <ExtraBluntFactorPierce>0.2</ExtraBluntFactorPierce>
         <ExtraBluntFactorBlunt>1</ExtraBluntFactorBlunt>
         <ExtraArmorThresholdFactorPierce>2.5</ExtraArmorThresholdFactorPierce>
         <ExtraArmorThresholdFactorCut>4</ExtraArmorThresholdFactorCut>

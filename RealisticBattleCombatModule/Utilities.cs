@@ -536,7 +536,7 @@ namespace RBMCombat
                             float value = magnitude + (effectiveSkill * 0.133f);
                             float min = 5f * (1 + skillModifier);
                             float max = 15f * (1 + (2 * skillModifier));
-                            skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4f);
+                            skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4.6f);
                             //skillBasedDamage = magnitude + 40f + (effectiveSkill * 0.53f);
                         }
                         else if (damageType == DamageTypes.Blunt)
@@ -573,21 +573,21 @@ namespace RBMCombat
                     {
                         if (damageType == DamageTypes.Cut)
                         {
-                            float value = magnitude + (effectiveSkill * 0.173f);
+                            float value = magnitude + (effectiveSkill * 0.199f);
                             float min = 12f * (1 + skillModifier);
                             float max = 20f * (1 + (2 * skillModifier));
-                            skillBasedDamage = MBMath.ClampFloat(value, min, max) * 4f;
+                            skillBasedDamage = MBMath.ClampFloat(value, min, max) * 4.6f;
                         }
                         else if (damageType == DamageTypes.Blunt)
                         {
                             //skillBasedDamage = magnitude * 1.3f + 0.5f * ((40f + (effectiveSkill * 0.53f)) * 1.3f);
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.0975f), 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4f) * 0.4f;
+                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.112f), 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4f) * 0.4f;
                         }
                         else
                         {
                             if (strikeType == (int)StrikeType.Swing)
                             {
-                                skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.133f), 12f * (1 + skillModifier), 20f * (1 + (2 * skillModifier))) * 4f) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                                skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.199f), 12f * (1 + skillModifier), 20f * (1 + (2 * skillModifier))) * 4f) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
                             }
                             else
                             {
@@ -613,7 +613,7 @@ namespace RBMCombat
                         float value = magnitude + (effectiveSkill * 0.1f);
                         float min = 10f * (1 + skillModifier);
                         float max = 18f * (1 + (2 * skillModifier));
-                        skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4f);
+                        skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4.6f);
                         if (damageType == DamageTypes.Blunt)
                         {
                             //skillBasedDamage = magnitude + 0.5f * (60f + (effectiveSkill * 0.4f));
@@ -627,11 +627,11 @@ namespace RBMCombat
                     }
                 case "OneHandedBastardAxe":
                     {
-                        skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.115f), 12f * (1 + skillModifier), 20f * (1 + (2 * skillModifier))) * 4f);
+                        skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.13f), 12f * (1 + skillModifier), 20f * (1 + (2 * skillModifier))) * 4.6f);
                         if (damageType == DamageTypes.Blunt)
                         {
                             //skillBasedDamage = magnitude * 1.15f + 0.5f * ((60f + (effectiveSkill * 0.4f)) * 1.15f);
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.08625f), 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4f) * 0.3f;
+                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.09375f), 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4f) * 0.3f;
                         }
                         if (magnitude > 1f)
                         {
@@ -641,14 +641,14 @@ namespace RBMCombat
                     }
                 case "TwoHandedAxe":
                     {
-                        float value = magnitude + (effectiveSkill * 0.13f);
+                        float value = magnitude + (effectiveSkill * 0.15f);
                         float min = 15f * (1 + skillModifier);
                         float max = 24f * (1 + (2 * skillModifier));
-                        skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4f);
+                        skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4.6f);
                         if (damageType == DamageTypes.Blunt)
                         {
                             //skillBasedDamage = magnitude * 1.3f + 0.5f * ((60f + (effectiveSkill * 0.4f)) * 1.30f);
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.0975f), 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4f) * 0.3f;
+                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.112f), 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4f) * 0.3f;
                         }
                         if (magnitude > 1f)
                         {
@@ -675,7 +675,7 @@ namespace RBMCombat
                             float value = magnitude + (effectiveSkill * 0.075f);
                             float min = 10f * (1 + skillModifier);
                             float max = 15f * (1 + (2 * skillModifier));
-                            skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4f);
+                            skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4.6f);
                             //skillBasedDamage = value;
                         }
                         if (magnitude > 1f)
@@ -692,7 +692,7 @@ namespace RBMCombat
                         }
                         else
                         {
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.0975f), 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4f);
+                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.112f), 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4.6f);
                         }
                         if (magnitude > 1f)
                         {
@@ -1021,7 +1021,7 @@ namespace RBMCombat
                         }
                         damage += penetratedDamage;
 
-                        float bluntTrauma = magnitude * (0.5f * RBMConfig.RBMConfig.maceBluntModifier) * bluntFraction;
+                        float bluntTrauma = magnitude * (0.7f * RBMConfig.RBMConfig.maceBluntModifier) * bluntFraction;
                         bluntTraumaAfterArmor = Math.Max(0f, bluntTrauma * armorReduction);
                         damage += bluntTraumaAfterArmor;
 
