@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.TournamentGames;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
@@ -184,7 +186,7 @@ namespace RBMAI
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (defenderPosture.posture <= 0f)
                                     {
-                                        float healthDamage = calculateHealthDamage(defenderPosture.posture * -1f, __result, victimAgent);
+                                        float healthDamage = calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureDmg, __result, victimAgent);
                                         EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
                                         if (wieldedItemIndex != EquipmentIndex.None)
                                         {
@@ -242,7 +244,7 @@ namespace RBMAI
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (defenderPosture.posture <= 0f)
                                     {
-                                        float healthDamage = calculateHealthDamage(defenderPosture.posture * -1f, __result, victimAgent);
+                                        float healthDamage = calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureDmg, __result, victimAgent);
                                         EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
                                         if (wieldedItemIndex != EquipmentIndex.None)
                                         {
@@ -517,7 +519,7 @@ namespace RBMAI
                                 addPosturedamageVisual(attackerAgent, victimAgent);
                                 if (attackerPosture.posture <= 0f)
                                 {
-                                    float healthDamage = calculateHealthDamage(attackerPosture.posture * -1f, __result, attackerAgent);
+                                    float healthDamage = calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureDmg, __result, attackerAgent);
                                     if (attackerAgent.IsPlayerControlled)
                                     {
                                         InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, chamber block " + MathF.Floor(healthDamage) + " damage crushed through", Color.FromUint(4282569842u)));
@@ -528,7 +530,7 @@ namespace RBMAI
                                 }
                                 else
                                 {
-                                    float healthDamage = calculateHealthDamage(attackerPosture.posture * -1f, __result, attackerAgent);
+                                    float healthDamage = calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureDmg, __result, attackerAgent);
                                     if (attackerAgent.IsPlayerControlled)
                                     {
                                         InformationManager.DisplayMessage(new InformationMessage("Chamber block " + MathF.Floor(healthDamage) + " damage crushed through", Color.FromUint(4282569842u)));
@@ -605,7 +607,154 @@ namespace RBMAI
                 }
             }
 
-            public static float calculateHealthDamage(float overPostureDamage, Blow b, Agent victimAgent)
+            public static float CalculateSweetSpotSwingMagnitude(BasicCharacterObject character, MissionWeapon weapon, int weaponUsageIndex, int relevantSkill)
+            {
+                float progressEffect = 1f;
+                float sweetSpotMagnitude = -1f;
+
+                if (weapon.Item != null && weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex) != null)
+                {
+                    float swingSpeed = (float)weapon.GetModifiedSwingSpeedForCurrentUsage() / 4.5454545f * progressEffect;
+
+                    int ef = relevantSkill;
+                    float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
+                    switch (weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).WeaponClass)
+                    {
+                        case WeaponClass.LowGripPolearm:
+                        case WeaponClass.Mace:
+                        case WeaponClass.OneHandedAxe:
+                        case WeaponClass.OneHandedPolearm:
+                        case WeaponClass.TwoHandedMace:
+                            {
+                                float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
+                                swingSpeed = swingSpeed * 0.83f * swingskillModifier * progressEffect;
+                                break;
+                            }
+                        case WeaponClass.TwoHandedPolearm:
+                            {
+                                float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
+                                swingSpeed = swingSpeed * 0.83f * swingskillModifier * progressEffect;
+                                break;
+                            }
+                        case WeaponClass.TwoHandedAxe:
+                            {
+                                float swingskillModifier = 1f + (effectiveSkillDR / 800f);
+
+                                swingSpeed = swingSpeed * 0.75f * swingskillModifier * progressEffect;
+                                break;
+                            }
+                        case WeaponClass.OneHandedSword:
+                        case WeaponClass.Dagger:
+                        case WeaponClass.TwoHandedSword:
+                            {
+                                float swingskillModifier = 1f + (effectiveSkillDR / 800f);
+
+                                swingSpeed = swingSpeed * 0.83f * swingskillModifier * progressEffect;
+                                break;
+                            }
+                    }
+                    float weaponWeight = weapon.Item.Weight;
+                    float weaponInertia = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia;
+                    float weaponCOM = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass;
+                    for (float currentSpot = 1f; currentSpot > 0.35f; currentSpot -= 0.01f)
+                    {
+                        float currentSpotMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(character, null, swingSpeed, currentSpot, weaponWeight,
+                            weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex),
+                            weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).GetRealWeaponLength(), weaponInertia, weaponCOM, 0f, false);
+                        if (currentSpotMagnitude > sweetSpotMagnitude)
+                        {
+                            sweetSpotMagnitude = currentSpotMagnitude;
+                        }
+                    }
+                }
+                return sweetSpotMagnitude;
+            }
+
+            public static float CalculateThrustMagnitude(BasicCharacterObject character, MissionWeapon weapon, int weaponUsageIndex, int relevantSkill)
+            {
+                float progressEffect = 1f;
+                float thrustMagnitude = -1f;
+
+                if (weapon.Item != null && weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex) != null)
+                {
+                    float thrustWeaponSpeed = (float)weapon.GetModifiedThrustSpeedForCurrentUsage() / 11.7647057f * progressEffect;
+
+                    int ef = relevantSkill;
+                    float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
+
+                    float weaponWeight = weapon.Item.Weight;
+                    float weaponInertia = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia;
+                    float weaponCOM = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass;
+
+                    switch (weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).WeaponClass)
+                    {
+                        case WeaponClass.LowGripPolearm:
+                        case WeaponClass.Mace:
+                        case WeaponClass.OneHandedAxe:
+                        case WeaponClass.OneHandedPolearm:
+                        case WeaponClass.TwoHandedMace:
+                            {
+                                float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
+
+                                thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weaponWeight, weaponInertia, weaponCOM);
+                                thrustWeaponSpeed = thrustWeaponSpeed * 0.75f * thrustskillModifier * progressEffect;
+                                break;
+                            }
+                        case WeaponClass.TwoHandedPolearm:
+                            {
+                                float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
+
+                                thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weaponWeight, weaponInertia, weaponCOM);
+                                thrustWeaponSpeed = thrustWeaponSpeed * 0.7f * thrustskillModifier * progressEffect;
+                                break;
+                            }
+                        case WeaponClass.TwoHandedAxe:
+                            {
+                                float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
+
+                                thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weaponWeight, weaponInertia, weaponCOM);
+                                thrustWeaponSpeed = thrustWeaponSpeed * 0.9f * thrustskillModifier * progressEffect;
+                                break;
+                            }
+                        case WeaponClass.OneHandedSword:
+                        case WeaponClass.Dagger:
+                        case WeaponClass.TwoHandedSword:
+                            {
+                                float thrustskillModifier = 1f + (effectiveSkillDR / 800f);
+
+                                thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weaponWeight, weaponInertia, weaponCOM);
+                                thrustWeaponSpeed = thrustWeaponSpeed * 0.7f * thrustskillModifier * progressEffect;
+                                break;
+                            }
+                    }
+
+                    switch (weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).WeaponClass)
+                    {
+                        case WeaponClass.OneHandedPolearm:
+                        case WeaponClass.OneHandedSword:
+                        case WeaponClass.Dagger:
+                        case WeaponClass.Mace:
+                            {
+                                thrustMagnitude = Utilities.CalculateThrustMagnitudeForOneHandedWeapon(weaponWeight, effectiveSkillDR, thrustWeaponSpeed, 0f, Agent.UsageDirection.AttackDown);
+                                break;
+                            }
+                        case WeaponClass.TwoHandedPolearm:
+                        case WeaponClass.TwoHandedSword:
+                            {
+                                thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weaponWeight, effectiveSkillDR, thrustWeaponSpeed, 0f, Agent.UsageDirection.AttackDown);
+                                break;
+                            }
+                        default:
+                            {
+                                thrustMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(character, null, thrustWeaponSpeed, weaponWeight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex), 0f, false);
+                                break;
+                            }
+                    }
+                }
+                return thrustMagnitude;
+            }
+
+            public static float calculateHealthDamage(MissionWeapon targetWeapon, Agent attacker, Agent vicitm, float overPostureDamage, Blow b, Agent victimAgent)
             {
                 float armorSumPosture = victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Head);
                 armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Neck);
@@ -619,7 +768,82 @@ namespace RBMAI
 
                 armorSumPosture = (armorSumPosture / 9f);
 
-                return MBMath.ClampInt(MathF.Ceiling(Game.Current.BasicModels.StrikeMagnitudeModel.ComputeRawDamage(b.DamageType, overPostureDamage, armorSumPosture, 1f)), 0, 2000);
+
+                if (RBMConfig.RBMConfig.rbmCombatEnabled)
+                {
+                    int relevantSkill = 0;
+                    float swingSpeed = 0f;
+                    float thrustSpeed = 0f;
+                    float swingDamageFactor = 0f;
+                    float thrustDamageFactor = 0f;
+                    float sweetSpotOut = 0f;
+                    float sweetSpot = 0f;
+                    int targetWeaponUsageIndex = targetWeapon.CurrentUsageIndex;
+                    BasicCharacterObject currentSelectedChar = attacker.Character;
+
+                    if (currentSelectedChar != null && !targetWeapon.IsEmpty && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex) != null && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).IsMeleeWeapon)
+                    {
+                        if (currentSelectedChar != null)
+                        {
+                            SkillObject skill = targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).RelevantSkill;
+                            int effectiveSkill = currentSelectedChar.GetSkillValue(skill);
+                            float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(effectiveSkill);
+                            float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill);
+
+                            Utilities.CalculateVisualSpeeds(targetWeapon, targetWeaponUsageIndex, effectiveSkillDR, out int swingSpeedReal, out int thrustSpeedReal, out int handlingReal);
+
+                            float swingSpeedRealF = swingSpeedReal / Utilities.swingSpeedTransfer;
+                            float thrustSpeedRealF = thrustSpeedReal / Utilities.thrustSpeedTransfer;
+
+                            relevantSkill = effectiveSkill;
+
+                            swingSpeed = swingSpeedRealF;
+                            thrustSpeed = thrustSpeedRealF;
+                            if (b.StrikeType == StrikeType.Swing)
+                            {
+                                float sweetSpotMagnitude = CalculateSweetSpotSwingMagnitude(currentSelectedChar, targetWeapon, targetWeaponUsageIndex, effectiveSkill);
+
+                                float skillBasedDamage = Utilities.GetSkillBasedDamage(sweetSpotMagnitude, false, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
+                                    targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, effectiveSkillDR, skillModifier, StrikeType.Swing, targetWeapon.Item.Weight);
+
+
+                                swingDamageFactor = (float)Math.Sqrt(Utilities.getSwingDamageFactor(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex), targetWeapon.ItemModifier));
+
+
+                                int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(), targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, skillBasedDamage, armorSumPosture, 1f, out float penetratedDamage, out float bluntForce, swingDamageFactor, null, false)), 0, 2000);
+                                realDamage = MathF.Floor(realDamage * 1f);
+                                return realDamage;
+                            }
+                            else
+                            {
+                                float thrustMagnitude = CalculateThrustMagnitude(currentSelectedChar, targetWeapon, targetWeaponUsageIndex, effectiveSkill);
+
+                                float skillBasedDamage = Utilities.GetSkillBasedDamage(thrustMagnitude, false, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
+                                    targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, effectiveSkillDR, skillModifier, StrikeType.Thrust, targetWeapon.Item.Weight);
+
+
+                                thrustDamageFactor = (float)Math.Sqrt(Utilities.getThrustDamageFactor(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex), targetWeapon.ItemModifier));
+
+                                int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
+                                targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, skillBasedDamage, armorSumPosture, 1f, out float penetratedDamage, out float bluntForce, thrustDamageFactor, null, false)), 0, 2000);
+                                realDamage = MathF.Floor(realDamage * 1f);
+                                return realDamage;
+                            }
+                        }
+                    }
+                }
+
+                int weaponDamage = 0;
+                if (b.StrikeType == StrikeType.Swing)
+                {
+                    weaponDamage = targetWeapon.GetModifiedSwingDamageForCurrentUsage();
+                }
+                else
+                {
+                    weaponDamage = targetWeapon.GetModifiedThrustDamageForCurrentUsage();
+                }
+                
+                    return MBMath.ClampInt(MathF.Ceiling(Game.Current.BasicModels.StrikeMagnitudeModel.ComputeRawDamage(b.DamageType, weaponDamage, armorSumPosture, 1f)), 0, 2000);
             }
 
             private static float calculateDefenderPostureDamage(Agent defenderAgent, Agent attackerAgent, float absoluteDamageModifier, float actionTypeDamageModifier, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier)
