@@ -229,6 +229,7 @@ namespace RBMAI
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (attackerPosture.posture <= 0f)
                                     {
+                                        attackerPosture.posture = 0f;
                                     }
                                 }
                             }
@@ -335,6 +336,7 @@ namespace RBMAI
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (attackerPosture.posture <= 0f)
                                     {
+                                        attackerPosture.posture = 0f;
                                     }
                                 }
                             }
@@ -383,6 +385,7 @@ namespace RBMAI
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (attackerPosture.posture <= 0f)
                                     {
+                                        attackerPosture.posture = 0f;
                                     }
                                 }
                             }
@@ -428,6 +431,7 @@ namespace RBMAI
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (attackerPosture.posture <= 0f)
                                     {
+                                        attackerPosture.posture = 0f;
                                     }
                                 }
                             }
