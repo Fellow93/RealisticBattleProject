@@ -1037,7 +1037,7 @@ namespace RBMAI
 
                 actionTypeDamageModifier += actionTypeDamageModifier * 0.5f * comHitModifier;
                 result = basePostureDamage * actionTypeDamageModifier * defenderPostureDamageModifier * attackerPostureModifier;
-                InformationManager.DisplayMessage(new InformationMessage("Deffender PD: " + result));
+                //InformationManager.DisplayMessage(new InformationMessage("Deffender PD: " + result));
                 return result;
             }
 
@@ -1175,7 +1175,7 @@ namespace RBMAI
 
                 actionTypeDamageModifier += actionTypeDamageModifier * 0.5f * comHitModifier;
                 result = basePostureDamage * actionTypeDamageModifier * postureDamageModifier;
-                InformationManager.DisplayMessage(new InformationMessage("Attacker PD: " + result));
+                //InformationManager.DisplayMessage(new InformationMessage("Attacker PD: " + result));
                 return result;
             }
 

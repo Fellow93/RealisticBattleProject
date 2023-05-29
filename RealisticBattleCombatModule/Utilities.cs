@@ -454,7 +454,7 @@ namespace RBMCombat
                 float magScaling = (blow.AbsorbedByArmor / (armorValue * armorThreshold)) / 5f;
                 float scaledProbability = defaultProbability + (magScaling * weaponTypeScaling);
                 float randomF = MBRandom.RandomFloat;
-                InformationManager.DisplayMessage(new InformationMessage(weaponType + " " + damageType + " " + armorMaterialType + ": " + Math.Round(scaledProbability * 100f, 2) + "%"));
+                //InformationManager.DisplayMessage(new InformationMessage(weaponType + " " + damageType + " " + armorMaterialType + ": " + Math.Round(scaledProbability * 100f, 2) + "%"));
                 if (randomF <= scaledProbability)
                 {
                     //numOfDurabilityDowngrade++;
