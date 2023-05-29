@@ -6,7 +6,7 @@ namespace RBMConfig
     {
         public static string GetConfigFilePath()
         {
-            return System.IO.Path.Combine(GetConfigFolderPath(), "config.xml");
+            return System.IO.Path.Combine(GetConfigFolderPath(), "config2.xml");
         }
 
         public static string GetConfigFolderPath()
