@@ -490,122 +490,122 @@ namespace RBMAI
         }
     }
 
-    [HarmonyPatch(typeof(Mission))]
-    [HarmonyPatch("OnAgentDismount")]
-    internal class OnAgentDismountPatch
-    {
-        private static void Postfix(Agent agent, Mission __instance)
-        {
-            if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
-            {
-                bool isInfFormationActive = agent.Team.GetFormation(FormationClass.Infantry) != null && agent.Team.GetFormation(FormationClass.Infantry).CountOfUnits > 0;
-                bool isArcFormationActive = agent.Team.GetFormation(FormationClass.Ranged) != null && agent.Team.GetFormation(FormationClass.Ranged).CountOfUnits > 0;
-                if (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) || agent.Equipment.HasRangedWeapon(WeaponClass.Bolt))
-                {
-                    float distanceToInf = -1f;
-                    float distanceToArc = -1f;
+    //[HarmonyPatch(typeof(Mission))]
+    //[HarmonyPatch("OnAgentDismount")]
+    //internal class OnAgentDismountPatch
+    //{
+    //    private static void Postfix(Agent agent, Mission __instance)
+    //    {
+    //        if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
+    //        {
+    //            bool isInfFormationActive = agent.Team.GetFormation(FormationClass.Infantry) != null && agent.Team.GetFormation(FormationClass.Infantry).CountOfUnits > 0;
+    //            bool isArcFormationActive = agent.Team.GetFormation(FormationClass.Ranged) != null && agent.Team.GetFormation(FormationClass.Ranged).CountOfUnits > 0;
+    //            if (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) || agent.Equipment.HasRangedWeapon(WeaponClass.Bolt))
+    //            {
+    //                float distanceToInf = -1f;
+    //                float distanceToArc = -1f;
 
-                    if (agent.Formation != null && isInfFormationActive)
-                    {
-                        distanceToInf = agent.Team.GetFormation(FormationClass.Infantry).QuerySystem.MedianPosition.AsVec2.Distance(agent.Formation.QuerySystem.MedianPosition.AsVec2);
-                    }
-                    if (agent.Formation != null && isArcFormationActive)
-                    {
-                        distanceToArc = agent.Team.GetFormation(FormationClass.Ranged).QuerySystem.MedianPosition.AsVec2.Distance(agent.Formation.QuerySystem.MedianPosition.AsVec2);
-                    }
-                    if (distanceToArc > 0f && distanceToArc < distanceToInf)
-                    {
-                        if (agent.IsActive())
-                        {
-                            agent.Formation = agent.Team.GetFormation(FormationClass.Ranged);
-                            agent.DisableScriptedMovement();
-                            return;
-                        }
-                    }
-                    else if (distanceToInf > 0f && distanceToInf < distanceToArc)
-                    {
-                        if (agent.IsActive())
-                        {
-                            agent.Formation = agent.Team.GetFormation(FormationClass.Infantry);
-                            agent.DisableScriptedMovement();
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        if (distanceToInf > 0f)
-                        {
-                            if (agent.IsActive())
-                            {
-                                agent.Formation = agent.Team.GetFormation(FormationClass.Infantry);
-                                agent.DisableScriptedMovement();
-                                return;
-                            }
-                        }
-                        else if (distanceToArc > 0f)
-                        {
-                            if (agent.IsActive())
-                            {
-                                agent.Formation = agent.Team.GetFormation(FormationClass.Ranged);
-                                agent.DisableScriptedMovement();
-                                return;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    if (agent.Formation != null && isInfFormationActive)
-                    {
-                        if (agent.IsActive())
-                        {
-                            agent.Formation = agent.Team.GetFormation(FormationClass.Infantry);
-                            agent.DisableScriptedMovement();
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-    }
+    //                if (agent.Formation != null && isInfFormationActive)
+    //                {
+    //                    distanceToInf = agent.Team.GetFormation(FormationClass.Infantry).QuerySystem.MedianPosition.AsVec2.Distance(agent.Formation.QuerySystem.MedianPosition.AsVec2);
+    //                }
+    //                if (agent.Formation != null && isArcFormationActive)
+    //                {
+    //                    distanceToArc = agent.Team.GetFormation(FormationClass.Ranged).QuerySystem.MedianPosition.AsVec2.Distance(agent.Formation.QuerySystem.MedianPosition.AsVec2);
+    //                }
+    //                if (distanceToArc > 0f && distanceToArc < distanceToInf)
+    //                {
+    //                    if (agent.IsActive())
+    //                    {
+    //                        agent.Formation = agent.Team.GetFormation(FormationClass.Ranged);
+    //                        agent.DisableScriptedMovement();
+    //                        return;
+    //                    }
+    //                }
+    //                else if (distanceToInf > 0f && distanceToInf < distanceToArc)
+    //                {
+    //                    if (agent.IsActive())
+    //                    {
+    //                        agent.Formation = agent.Team.GetFormation(FormationClass.Infantry);
+    //                        agent.DisableScriptedMovement();
+    //                        return;
+    //                    }
+    //                }
+    //                else
+    //                {
+    //                    if (distanceToInf > 0f)
+    //                    {
+    //                        if (agent.IsActive())
+    //                        {
+    //                            agent.Formation = agent.Team.GetFormation(FormationClass.Infantry);
+    //                            agent.DisableScriptedMovement();
+    //                            return;
+    //                        }
+    //                    }
+    //                    else if (distanceToArc > 0f)
+    //                    {
+    //                        if (agent.IsActive())
+    //                        {
+    //                            agent.Formation = agent.Team.GetFormation(FormationClass.Ranged);
+    //                            agent.DisableScriptedMovement();
+    //                            return;
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //            else
+    //            {
+    //                if (agent.Formation != null && isInfFormationActive)
+    //                {
+    //                    if (agent.IsActive())
+    //                    {
+    //                        agent.Formation = agent.Team.GetFormation(FormationClass.Infantry);
+    //                        agent.DisableScriptedMovement();
+    //                        return;
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
 
-    [HarmonyPatch(typeof(Mission))]
-    [HarmonyPatch("OnAgentMount")]
-    internal class OnAgentMountPatch
-    {
-        private static void Postfix(Agent agent, Mission __instance)
-        {
-            if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
-            {
-                bool isCavFormationActive = agent.Team.GetFormation(FormationClass.Cavalry) != null && agent.Team.GetFormation(FormationClass.Cavalry).CountOfUnits > 0;
-                bool isHaFormationActive = agent.Team.GetFormation(FormationClass.HorseArcher) != null && agent.Team.GetFormation(FormationClass.HorseArcher).CountOfUnits > 0;
-                if (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) || agent.Equipment.HasRangedWeapon(WeaponClass.Bolt))
-                {
-                    if (agent.Formation != null && isHaFormationActive)
-                    {
-                        if (agent.IsActive())
-                        {
-                            agent.Formation = agent.Team.GetFormation(FormationClass.HorseArcher);
-                            agent.DisableScriptedMovement();
-                            return;
-                        }
-                    }
-                }
-                else
-                {
-                    if (agent.Formation != null && isCavFormationActive)
-                    {
-                        if (agent.IsActive())
-                        {
-                            agent.Formation = agent.Team.GetFormation(FormationClass.Cavalry);
-                            agent.DisableScriptedMovement();
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-    }
+    //[HarmonyPatch(typeof(Mission))]
+    //[HarmonyPatch("OnAgentMount")]
+    //internal class OnAgentMountPatch
+    //{
+    //    private static void Postfix(Agent agent, Mission __instance)
+    //    {
+    //        if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
+    //        {
+    //            bool isCavFormationActive = agent.Team.GetFormation(FormationClass.Cavalry) != null && agent.Team.GetFormation(FormationClass.Cavalry).CountOfUnits > 0;
+    //            bool isHaFormationActive = agent.Team.GetFormation(FormationClass.HorseArcher) != null && agent.Team.GetFormation(FormationClass.HorseArcher).CountOfUnits > 0;
+    //            if (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) || agent.Equipment.HasRangedWeapon(WeaponClass.Bolt))
+    //            {
+    //                if (agent.Formation != null && isHaFormationActive)
+    //                {
+    //                    if (agent.IsActive())
+    //                    {
+    //                        agent.Formation = agent.Team.GetFormation(FormationClass.HorseArcher);
+    //                        agent.DisableScriptedMovement();
+    //                        return;
+    //                    }
+    //                }
+    //            }
+    //            else
+    //            {
+    //                if (agent.Formation != null && isCavFormationActive)
+    //                {
+    //                    if (agent.IsActive())
+    //                    {
+    //                        agent.Formation = agent.Team.GetFormation(FormationClass.Cavalry);
+    //                        agent.DisableScriptedMovement();
+    //                        return;
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
 
     [HarmonyPatch(typeof(Formation))]
     [HarmonyPatch("ApplyActionOnEachUnit", new Type[] { typeof(Action<Agent>), typeof(Agent) })]
