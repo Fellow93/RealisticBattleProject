@@ -384,7 +384,7 @@ namespace RBMAI
                 aiDecisionCooldownDict.Clear();
                 agentDamage.Clear();
                 RBMAiPatcher.DoPatching();
-                OnTickAsAIPatch.itemPickupDistanceStorage.Clear();
+                AgentAi.OnTickAsAIPatch.itemPickupDistanceStorage.Clear();
                 if (Mission.Current.Teams.Any())
                 {
                     if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Extensions;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -14,8 +15,10 @@ using static TaleWorlds.MountAndBlade.ArrangementOrder;
 
 namespace RBMAI
 {
-    internal class AgentAi
+    public static class AgentAi
     {
+        public static Dictionary<Agent, FormationClass> agentsToChangeFormation = new Dictionary<Agent, FormationClass> { };
+
         [HarmonyPatch(typeof(AgentStatCalculateModel))]
         [HarmonyPatch("SetAiRelatedProperties")]
         private class OverrideSetAiRelatedProperties
@@ -183,485 +186,547 @@ namespace RBMAI
                 //agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, 0f);
             }
         }
-    }
 
-    [HarmonyPatch(typeof(SandboxAgentStatCalculateModel))]
-    [HarmonyPatch("GetSkillEffectsOnAgent")]
-    internal class GetSkillEffectsOnAgentPatch
-    {
-        private static bool Prefix(ref SandboxAgentStatCalculateModel __instance, ref Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData rightHandEquippedItem)
+        [HarmonyPatch(typeof(SandboxAgentStatCalculateModel))]
+        [HarmonyPatch("GetSkillEffectsOnAgent")]
+        internal class GetSkillEffectsOnAgentPatch
         {
-            CharacterObject characterObject = agent.Character as CharacterObject;
-            float swingSpeedMultiplier = agentDrivenProperties.SwingSpeedMultiplier;
-            float thrustOrRangedReadySpeedMultiplier = agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier;
-            float reloadSpeed = agentDrivenProperties.ReloadSpeed;
-            if (characterObject != null && rightHandEquippedItem != null)
+            private static bool Prefix(ref SandboxAgentStatCalculateModel __instance, ref Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData rightHandEquippedItem)
             {
-                int effectiveSkill = __instance.GetEffectiveSkill(characterObject, agent.Origin, agent.Formation, rightHandEquippedItem.RelevantSkill);
-                ExplainedNumber stat = new ExplainedNumber(swingSpeedMultiplier);
-                ExplainedNumber stat2 = new ExplainedNumber(thrustOrRangedReadySpeedMultiplier);
-                ExplainedNumber stat3 = new ExplainedNumber(reloadSpeed);
-                if (rightHandEquippedItem.RelevantSkill == DefaultSkills.OneHanded)
+                CharacterObject characterObject = agent.Character as CharacterObject;
+                float swingSpeedMultiplier = agentDrivenProperties.SwingSpeedMultiplier;
+                float thrustOrRangedReadySpeedMultiplier = agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier;
+                float reloadSpeed = agentDrivenProperties.ReloadSpeed;
+                if (characterObject != null && rightHandEquippedItem != null)
                 {
-                    if (effectiveSkill > 150)
+                    int effectiveSkill = __instance.GetEffectiveSkill(characterObject, agent.Origin, agent.Formation, rightHandEquippedItem.RelevantSkill);
+                    ExplainedNumber stat = new ExplainedNumber(swingSpeedMultiplier);
+                    ExplainedNumber stat2 = new ExplainedNumber(thrustOrRangedReadySpeedMultiplier);
+                    ExplainedNumber stat3 = new ExplainedNumber(reloadSpeed);
+                    if (rightHandEquippedItem.RelevantSkill == DefaultSkills.OneHanded)
                     {
-                        effectiveSkill = 150;
+                        if (effectiveSkill > 150)
+                        {
+                            effectiveSkill = 150;
+                        }
+                        SkillHelper.AddSkillBonusForCharacter(DefaultSkills.OneHanded, DefaultSkillEffects.OneHandedSpeed, characterObject, ref stat, effectiveSkill);
+                        SkillHelper.AddSkillBonusForCharacter(DefaultSkills.OneHanded, DefaultSkillEffects.OneHandedSpeed, characterObject, ref stat2, effectiveSkill);
                     }
-                    SkillHelper.AddSkillBonusForCharacter(DefaultSkills.OneHanded, DefaultSkillEffects.OneHandedSpeed, characterObject, ref stat, effectiveSkill);
-                    SkillHelper.AddSkillBonusForCharacter(DefaultSkills.OneHanded, DefaultSkillEffects.OneHandedSpeed, characterObject, ref stat2, effectiveSkill);
-                }
-                else if (rightHandEquippedItem.RelevantSkill == DefaultSkills.TwoHanded)
-                {
-                    if (effectiveSkill > 150)
+                    else if (rightHandEquippedItem.RelevantSkill == DefaultSkills.TwoHanded)
                     {
-                        effectiveSkill = 150;
+                        if (effectiveSkill > 150)
+                        {
+                            effectiveSkill = 150;
+                        }
+                        SkillHelper.AddSkillBonusForCharacter(DefaultSkills.TwoHanded, DefaultSkillEffects.TwoHandedSpeed, characterObject, ref stat, effectiveSkill);
+                        SkillHelper.AddSkillBonusForCharacter(DefaultSkills.TwoHanded, DefaultSkillEffects.TwoHandedSpeed, characterObject, ref stat2, effectiveSkill);
                     }
-                    SkillHelper.AddSkillBonusForCharacter(DefaultSkills.TwoHanded, DefaultSkillEffects.TwoHandedSpeed, characterObject, ref stat, effectiveSkill);
-                    SkillHelper.AddSkillBonusForCharacter(DefaultSkills.TwoHanded, DefaultSkillEffects.TwoHandedSpeed, characterObject, ref stat2, effectiveSkill);
-                }
-                else if (rightHandEquippedItem.RelevantSkill == DefaultSkills.Polearm)
-                {
-                    if (effectiveSkill > 150)
+                    else if (rightHandEquippedItem.RelevantSkill == DefaultSkills.Polearm)
                     {
-                        effectiveSkill = 150;
+                        if (effectiveSkill > 150)
+                        {
+                            effectiveSkill = 150;
+                        }
+                        SkillHelper.AddSkillBonusForCharacter(DefaultSkills.Polearm, DefaultSkillEffects.PolearmSpeed, characterObject, ref stat, effectiveSkill);
+                        SkillHelper.AddSkillBonusForCharacter(DefaultSkills.Polearm, DefaultSkillEffects.PolearmSpeed, characterObject, ref stat2, effectiveSkill);
                     }
-                    SkillHelper.AddSkillBonusForCharacter(DefaultSkills.Polearm, DefaultSkillEffects.PolearmSpeed, characterObject, ref stat, effectiveSkill);
-                    SkillHelper.AddSkillBonusForCharacter(DefaultSkills.Polearm, DefaultSkillEffects.PolearmSpeed, characterObject, ref stat2, effectiveSkill);
+                    else if (rightHandEquippedItem.RelevantSkill == DefaultSkills.Crossbow)
+                    {
+                        SkillHelper.AddSkillBonusForCharacter(DefaultSkills.Crossbow, DefaultSkillEffects.CrossbowReloadSpeed, characterObject, ref stat3, effectiveSkill);
+                    }
+                    else if (rightHandEquippedItem.RelevantSkill == DefaultSkills.Throwing)
+                    {
+                        SkillHelper.AddSkillBonusForCharacter(DefaultSkills.Throwing, DefaultSkillEffects.ThrowingSpeed, characterObject, ref stat2, effectiveSkill);
+                    }
+                    if (agent.HasMount)
+                    {
+                        int effectiveSkill2 = __instance.GetEffectiveSkill(characterObject, agent.Origin, agent.Formation, DefaultSkills.Riding);
+                        float value = -0.01f * MathF.Max(0f, DefaultSkillEffects.HorseWeaponSpeedPenalty.GetPrimaryValue(effectiveSkill2));
+                        stat.AddFactor(value);
+                        stat2.AddFactor(value);
+                        stat3.AddFactor(value);
+                    }
+                    agentDrivenProperties.SwingSpeedMultiplier = stat.ResultNumber;
+                    agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier = stat2.ResultNumber;
+                    agentDrivenProperties.ReloadSpeed = stat3.ResultNumber;
                 }
-                else if (rightHandEquippedItem.RelevantSkill == DefaultSkills.Crossbow)
-                {
-                    SkillHelper.AddSkillBonusForCharacter(DefaultSkills.Crossbow, DefaultSkillEffects.CrossbowReloadSpeed, characterObject, ref stat3, effectiveSkill);
-                }
-                else if (rightHandEquippedItem.RelevantSkill == DefaultSkills.Throwing)
-                {
-                    SkillHelper.AddSkillBonusForCharacter(DefaultSkills.Throwing, DefaultSkillEffects.ThrowingSpeed, characterObject, ref stat2, effectiveSkill);
-                }
-                if (agent.HasMount)
-                {
-                    int effectiveSkill2 = __instance.GetEffectiveSkill(characterObject, agent.Origin, agent.Formation, DefaultSkills.Riding);
-                    float value = -0.01f * MathF.Max(0f, DefaultSkillEffects.HorseWeaponSpeedPenalty.GetPrimaryValue(effectiveSkill2));
-                    stat.AddFactor(value);
-                    stat2.AddFactor(value);
-                    stat3.AddFactor(value);
-                }
-                agentDrivenProperties.SwingSpeedMultiplier = stat.ResultNumber;
-                agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier = stat2.ResultNumber;
-                agentDrivenProperties.ReloadSpeed = stat3.ResultNumber;
-            }
 
-            return false;
-        }
-    }
-
-    [HarmonyPatch(typeof(ArrangementOrder))]
-    [HarmonyPatch("GetShieldDirectionOfUnit")]
-    internal class HoldTheDoor
-    {
-        private static void Postfix(ref Agent.UsageDirection __result, Formation formation, Agent unit, ArrangementOrderEnum orderEnum)
-        {
-            //if (!formation.QuerySystem.IsCavalryFormation && !formation.QuerySystem.IsRangedCavalryFormation)
-            //{
-            //    if(Mission.Current != null)
-            //    {
-            //        float currentTime = Mission.Current.CurrentTime;
-            //        if (currentTime - unit.LastRangedAttackTime < 7f)
-            //        {
-            //            __result = Agent.UsageDirection.None;
-            //            return;
-            //        }
-            //        switch (orderEnum)
-            //        {
-            //            case ArrangementOrderEnum.Line:
-            //            case ArrangementOrderEnum.Loose:
-            //                {
-            //                    float lastMeleeAttackTime = unit.LastMeleeAttackTime;
-            //                    float lastMeleeHitTime = unit.LastMeleeHitTime;
-            //                    float lastRangedHit = unit.LastRangedHitTime;
-            //                    if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
-            //                    {
-            //                        __result = Agent.UsageDirection.None;
-            //                        return;
-            //                    }
-            //                    if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && formation.QuerySystem.IsInfantryFormation && (((currentTime - lastRangedHit < 2f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.08f)))
-            //                    {
-            //                        __result = Agent.UsageDirection.DefendDown;
-            //                        return;
-            //                    }
-            //                    break;
-            //                }
-            //        }
-            //    }
-            //}
-            if (unit.IsDetachedFromFormation)
-            {
-                __result = Agent.UsageDirection.None;
-                return;
-            }
-            bool test = true;
-            switch (orderEnum)
-            {
-                case ArrangementOrderEnum.ShieldWall:
-                    if (unit.Formation.FiringOrder.OrderEnum != FiringOrder.RangedWeaponUsageOrderEnum.HoldYourFire)
-                    {
-                        bool hasRanged = unit.Equipment.HasAnyWeaponWithFlags(WeaponFlags.HasString);
-                        bool hasTwoHanded = unit.Equipment.HasAnyWeaponWithFlags(WeaponFlags.NotUsableWithOneHand);
-                        if (hasRanged || hasTwoHanded)
-                        {
-                            test = false;
-                        }
-                    }
-                    if (test)
-                    {
-                        if (((IFormationUnit)unit).FormationRankIndex == 0)
-                        {
-                            __result = Agent.UsageDirection.DefendDown;
-                            return;
-                        }
-                        if (formation.Arrangement.GetNeighborUnitOfLeftSide(unit) == null)
-                        {
-                            __result = Agent.UsageDirection.DefendLeft;
-                            return;
-                        }
-                        if (formation.Arrangement.GetNeighborUnitOfRightSide(unit) == null)
-                        {
-                            __result = Agent.UsageDirection.DefendRight;
-                            return;
-                        }
-                        __result = Agent.UsageDirection.AttackEnd;
-                        return;
-                    }
-                    __result = Agent.UsageDirection.None;
-                    return;
-
-                case ArrangementOrderEnum.Circle:
-                case ArrangementOrderEnum.Square:
-                    if (unit.Formation.FiringOrder.OrderEnum != FiringOrder.RangedWeaponUsageOrderEnum.HoldYourFire)
-                    {
-                        bool hasRanged = unit.Equipment.HasAnyWeaponWithFlags(WeaponFlags.HasString);
-                        bool hasTwoHanded = unit.Equipment.HasAnyWeaponWithFlags(WeaponFlags.NotUsableWithOneHand);
-                        if (hasRanged || hasTwoHanded)
-                        {
-                            test = false;
-                        }
-                    }
-                    if (test)
-                    {
-                        if (((IFormationUnit)unit).FormationRankIndex == 0)
-                        {
-                            __result = Agent.UsageDirection.DefendDown;
-                            return;
-                        }
-                        __result = Agent.UsageDirection.AttackEnd;
-                        return;
-                    }
-                    __result = Agent.UsageDirection.None;
-                    return;
-
-                default:
-                    __result = Agent.UsageDirection.None;
-                    return;
+                return false;
             }
         }
-    }
 
-    [HarmonyPatch(typeof(Agent))]
-    [HarmonyPatch("UpdateLastAttackAndHitTimes")]
-    internal class UpdateLastAttackAndHitTimesFix
-    {
-        private static bool Prefix(ref Agent __instance, Agent attackerAgent, bool isMissile)
+        [HarmonyPatch(typeof(ArrangementOrder))]
+        [HarmonyPatch("GetShieldDirectionOfUnit")]
+        internal class HoldTheDoor
         {
-            PropertyInfo LastRangedHitTime = typeof(Agent).GetProperty("LastRangedHitTime");
-            LastRangedHitTime.DeclaringType.GetProperty("LastRangedHitTime");
-
-            PropertyInfo LastRangedAttackTime = typeof(Agent).GetProperty("LastRangedAttackTime");
-            LastRangedAttackTime.DeclaringType.GetProperty("LastRangedAttackTime");
-
-            PropertyInfo LastMeleeHitTime = typeof(Agent).GetProperty("LastMeleeHitTime");
-            LastMeleeHitTime.DeclaringType.GetProperty("LastMeleeHitTime");
-
-            PropertyInfo LastMeleeAttackTime = typeof(Agent).GetProperty("LastMeleeAttackTime");
-            LastMeleeAttackTime.DeclaringType.GetProperty("LastMeleeAttackTime");
-
-            float currentTime = MBCommon.GetTotalMissionTime();
-            if (isMissile)
+            private static void Postfix(ref Agent.UsageDirection __result, Formation formation, Agent unit, ArrangementOrderEnum orderEnum)
             {
-                //__instance.LastRangedHitTime = currentTime;
-                LastRangedHitTime.SetValue(__instance, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                //if (!formation.QuerySystem.IsCavalryFormation && !formation.QuerySystem.IsRangedCavalryFormation)
+                //{
+                //    if(Mission.Current != null)
+                //    {
+                //        float currentTime = Mission.Current.CurrentTime;
+                //        if (currentTime - unit.LastRangedAttackTime < 7f)
+                //        {
+                //            __result = Agent.UsageDirection.None;
+                //            return;
+                //        }
+                //        switch (orderEnum)
+                //        {
+                //            case ArrangementOrderEnum.Line:
+                //            case ArrangementOrderEnum.Loose:
+                //                {
+                //                    float lastMeleeAttackTime = unit.LastMeleeAttackTime;
+                //                    float lastMeleeHitTime = unit.LastMeleeHitTime;
+                //                    float lastRangedHit = unit.LastRangedHitTime;
+                //                    if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
+                //                    {
+                //                        __result = Agent.UsageDirection.None;
+                //                        return;
+                //                    }
+                //                    if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && formation.QuerySystem.IsInfantryFormation && (((currentTime - lastRangedHit < 2f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.08f)))
+                //                    {
+                //                        __result = Agent.UsageDirection.DefendDown;
+                //                        return;
+                //                    }
+                //                    break;
+                //                }
+                //        }
+                //    }
+                //}
+                if (unit.IsDetachedFromFormation)
+                {
+                    __result = Agent.UsageDirection.None;
+                    return;
+                }
+                bool test = true;
+                switch (orderEnum)
+                {
+                    case ArrangementOrderEnum.ShieldWall:
+                        if (unit.Formation.FiringOrder.OrderEnum != FiringOrder.RangedWeaponUsageOrderEnum.HoldYourFire)
+                        {
+                            bool hasRanged = unit.Equipment.HasAnyWeaponWithFlags(WeaponFlags.HasString);
+                            bool hasTwoHanded = unit.Equipment.HasAnyWeaponWithFlags(WeaponFlags.NotUsableWithOneHand);
+                            if (hasRanged || hasTwoHanded)
+                            {
+                                test = false;
+                            }
+                        }
+                        if (test)
+                        {
+                            if (((IFormationUnit)unit).FormationRankIndex == 0)
+                            {
+                                __result = Agent.UsageDirection.DefendDown;
+                                return;
+                            }
+                            if (formation.Arrangement.GetNeighborUnitOfLeftSide(unit) == null)
+                            {
+                                __result = Agent.UsageDirection.DefendLeft;
+                                return;
+                            }
+                            if (formation.Arrangement.GetNeighborUnitOfRightSide(unit) == null)
+                            {
+                                __result = Agent.UsageDirection.DefendRight;
+                                return;
+                            }
+                            __result = Agent.UsageDirection.AttackEnd;
+                            return;
+                        }
+                        __result = Agent.UsageDirection.None;
+                        return;
+
+                    case ArrangementOrderEnum.Circle:
+                    case ArrangementOrderEnum.Square:
+                        if (unit.Formation.FiringOrder.OrderEnum != FiringOrder.RangedWeaponUsageOrderEnum.HoldYourFire)
+                        {
+                            bool hasRanged = unit.Equipment.HasAnyWeaponWithFlags(WeaponFlags.HasString);
+                            bool hasTwoHanded = unit.Equipment.HasAnyWeaponWithFlags(WeaponFlags.NotUsableWithOneHand);
+                            if (hasRanged || hasTwoHanded)
+                            {
+                                test = false;
+                            }
+                        }
+                        if (test)
+                        {
+                            if (((IFormationUnit)unit).FormationRankIndex == 0)
+                            {
+                                __result = Agent.UsageDirection.DefendDown;
+                                return;
+                            }
+                            __result = Agent.UsageDirection.AttackEnd;
+                            return;
+                        }
+                        __result = Agent.UsageDirection.None;
+                        return;
+
+                    default:
+                        __result = Agent.UsageDirection.None;
+                        return;
+                }
             }
-            else
+        }
+
+        [HarmonyPatch(typeof(Agent))]
+        [HarmonyPatch("UpdateLastAttackAndHitTimes")]
+        internal class UpdateLastAttackAndHitTimesFix
+        {
+            private static bool Prefix(ref Agent __instance, Agent attackerAgent, bool isMissile)
             {
-                //LastMeleeHitTime = currentTime;
-                LastMeleeHitTime.SetValue(__instance, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-            }
-            if (attackerAgent != __instance && attackerAgent != null)
-            {
+                PropertyInfo LastRangedHitTime = typeof(Agent).GetProperty("LastRangedHitTime");
+                LastRangedHitTime.DeclaringType.GetProperty("LastRangedHitTime");
+
+                PropertyInfo LastRangedAttackTime = typeof(Agent).GetProperty("LastRangedAttackTime");
+                LastRangedAttackTime.DeclaringType.GetProperty("LastRangedAttackTime");
+
+                PropertyInfo LastMeleeHitTime = typeof(Agent).GetProperty("LastMeleeHitTime");
+                LastMeleeHitTime.DeclaringType.GetProperty("LastMeleeHitTime");
+
+                PropertyInfo LastMeleeAttackTime = typeof(Agent).GetProperty("LastMeleeAttackTime");
+                LastMeleeAttackTime.DeclaringType.GetProperty("LastMeleeAttackTime");
+
+                float currentTime = MBCommon.GetTotalMissionTime();
                 if (isMissile)
                 {
-                    //attackerAgent.LastRangedAttackTime = currentTime;
-                    LastRangedAttackTime.SetValue(attackerAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                    //__instance.LastRangedHitTime = currentTime;
+                    LastRangedHitTime.SetValue(__instance, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                 }
                 else
                 {
-                    //attackerAgent.LastMeleeAttackTime = currentTime;
-                    LastMeleeAttackTime.SetValue(attackerAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                    //LastMeleeHitTime = currentTime;
+                    LastMeleeHitTime.SetValue(__instance, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                 }
-            }
-
-            if (!__instance.IsHuman)
-            {
-                if (__instance.RiderAgent != null)
+                if (attackerAgent != __instance && attackerAgent != null)
                 {
                     if (isMissile)
                     {
-                        //__instance.LastRangedHitTime = currentTime;
-                        LastRangedHitTime.SetValue(__instance.RiderAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                        //attackerAgent.LastRangedAttackTime = currentTime;
+                        LastRangedAttackTime.SetValue(attackerAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                     }
                     else
                     {
-                        //LastMeleeHitTime = currentTime;
-                        LastMeleeHitTime.SetValue(__instance.RiderAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                        //attackerAgent.LastMeleeAttackTime = currentTime;
+                        LastMeleeAttackTime.SetValue(attackerAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                     }
                 }
-            }
-            return false;
-        }
-    }
 
-    [HarmonyPatch(typeof(HumanAIComponent))]
-    [HarmonyPatch("OnTickAsAI")]
-    internal class OnTickAsAIPatch
-    {
-        public static Dictionary<Agent, float> itemPickupDistanceStorage = new Dictionary<Agent, float> { };
-
-        private static void Postfix(ref SpawnedItemEntity ____itemToPickUp, ref Agent ___Agent)
-        {
-            if (____itemToPickUp != null && (___Agent.AIStateFlags & Agent.AIStateFlag.UseObjectMoving) != 0)
-            {
-                float num = MissionGameModels.Current.AgentStatCalculateModel.GetInteractionDistance(___Agent) * 3f;
-                WorldFrame userFrameForAgent = ____itemToPickUp.GetUserFrameForAgent(___Agent);
-                ref WorldPosition origin = ref userFrameForAgent.Origin;
-                Vec3 targetPoint = ___Agent.Position;
-                float distanceSq = origin.DistanceSquaredWithLimit(in targetPoint, num * num + 1E-05f);
-                float newDist = -1f;
-                itemPickupDistanceStorage.TryGetValue(___Agent, out newDist);
-                if (newDist == 0f)
+                if (!__instance.IsHuman)
                 {
-                    itemPickupDistanceStorage[___Agent] = distanceSq;
-                }
-                else
-                {
-                    if (distanceSq == newDist)
+                    if (__instance.RiderAgent != null)
                     {
-                        ___Agent.StopUsingGameObject(isSuccessful: false);
-                        itemPickupDistanceStorage.Remove(___Agent);
+                        if (isMissile)
+                        {
+                            //__instance.LastRangedHitTime = currentTime;
+                            LastRangedHitTime.SetValue(__instance.RiderAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                        }
+                        else
+                        {
+                            //LastMeleeHitTime = currentTime;
+                            LastMeleeHitTime.SetValue(__instance.RiderAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                        }
                     }
-                    itemPickupDistanceStorage[___Agent] = distanceSq;
                 }
-            }
-        }
-    }
-
-    [HarmonyPatch(typeof(Mission))]
-    [HarmonyPatch("OnAgentShootMissile")]
-    [UsedImplicitly]
-    [MBCallback]
-    internal class OverrideOnAgentShootMissile
-    {
-        //private static int _oldMissileSpeed;
-        private static bool Prefix(Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, ref Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
-        {
-            MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
-            WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
-
-            if (!RBMConfig.RBMConfig.rbmCombatEnabled && (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && !shooterAgent.IsMainAgent && (wsd[0].WeaponClass == (int)WeaponClass.Javelin || wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe)))
-            {
-                //float shooterSpeed = shooterAgent.MovementVelocity.Normalize();
-                if (!shooterAgent.HasMount)
-                {
-                    velocity.z = velocity.z - 1.4f;
-                }
-                else
-                {
-                    velocity.z = velocity.z - 2f;
-                }
-            }
-
-            return true;
-        }
-    }
-
-    //[HarmonyPatch(typeof(Mission))]
-    //[HarmonyPatch("OnAgentDismount")]
-    //internal class OnAgentDismountPatch
-    //{
-    //    private static void Postfix(Agent agent, Mission __instance)
-    //    {
-    //        if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
-    //        {
-    //            bool isInfFormationActive = agent.Team.GetFormation(FormationClass.Infantry) != null && agent.Team.GetFormation(FormationClass.Infantry).CountOfUnits > 0;
-    //            bool isArcFormationActive = agent.Team.GetFormation(FormationClass.Ranged) != null && agent.Team.GetFormation(FormationClass.Ranged).CountOfUnits > 0;
-    //            if (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) || agent.Equipment.HasRangedWeapon(WeaponClass.Bolt))
-    //            {
-    //                float distanceToInf = -1f;
-    //                float distanceToArc = -1f;
-
-    //                if (agent.Formation != null && isInfFormationActive)
-    //                {
-    //                    distanceToInf = agent.Team.GetFormation(FormationClass.Infantry).QuerySystem.MedianPosition.AsVec2.Distance(agent.Formation.QuerySystem.MedianPosition.AsVec2);
-    //                }
-    //                if (agent.Formation != null && isArcFormationActive)
-    //                {
-    //                    distanceToArc = agent.Team.GetFormation(FormationClass.Ranged).QuerySystem.MedianPosition.AsVec2.Distance(agent.Formation.QuerySystem.MedianPosition.AsVec2);
-    //                }
-    //                if (distanceToArc > 0f && distanceToArc < distanceToInf)
-    //                {
-    //                    if (agent.IsActive())
-    //                    {
-    //                        agent.Formation = agent.Team.GetFormation(FormationClass.Ranged);
-    //                        agent.DisableScriptedMovement();
-    //                        return;
-    //                    }
-    //                }
-    //                else if (distanceToInf > 0f && distanceToInf < distanceToArc)
-    //                {
-    //                    if (agent.IsActive())
-    //                    {
-    //                        agent.Formation = agent.Team.GetFormation(FormationClass.Infantry);
-    //                        agent.DisableScriptedMovement();
-    //                        return;
-    //                    }
-    //                }
-    //                else
-    //                {
-    //                    if (distanceToInf > 0f)
-    //                    {
-    //                        if (agent.IsActive())
-    //                        {
-    //                            agent.Formation = agent.Team.GetFormation(FormationClass.Infantry);
-    //                            agent.DisableScriptedMovement();
-    //                            return;
-    //                        }
-    //                    }
-    //                    else if (distanceToArc > 0f)
-    //                    {
-    //                        if (agent.IsActive())
-    //                        {
-    //                            agent.Formation = agent.Team.GetFormation(FormationClass.Ranged);
-    //                            agent.DisableScriptedMovement();
-    //                            return;
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //            else
-    //            {
-    //                if (agent.Formation != null && isInfFormationActive)
-    //                {
-    //                    if (agent.IsActive())
-    //                    {
-    //                        agent.Formation = agent.Team.GetFormation(FormationClass.Infantry);
-    //                        agent.DisableScriptedMovement();
-    //                        return;
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
-
-    //[HarmonyPatch(typeof(Mission))]
-    //[HarmonyPatch("OnAgentMount")]
-    //internal class OnAgentMountPatch
-    //{
-    //    private static void Postfix(Agent agent, Mission __instance)
-    //    {
-    //        if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
-    //        {
-    //            bool isCavFormationActive = agent.Team.GetFormation(FormationClass.Cavalry) != null && agent.Team.GetFormation(FormationClass.Cavalry).CountOfUnits > 0;
-    //            bool isHaFormationActive = agent.Team.GetFormation(FormationClass.HorseArcher) != null && agent.Team.GetFormation(FormationClass.HorseArcher).CountOfUnits > 0;
-    //            if (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) || agent.Equipment.HasRangedWeapon(WeaponClass.Bolt))
-    //            {
-    //                if (agent.Formation != null && isHaFormationActive)
-    //                {
-    //                    if (agent.IsActive())
-    //                    {
-    //                        agent.Formation = agent.Team.GetFormation(FormationClass.HorseArcher);
-    //                        agent.DisableScriptedMovement();
-    //                        return;
-    //                    }
-    //                }
-    //            }
-    //            else
-    //            {
-    //                if (agent.Formation != null && isCavFormationActive)
-    //                {
-    //                    if (agent.IsActive())
-    //                    {
-    //                        agent.Formation = agent.Team.GetFormation(FormationClass.Cavalry);
-    //                        agent.DisableScriptedMovement();
-    //                        return;
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
-
-    [HarmonyPatch(typeof(Formation))]
-    [HarmonyPatch("ApplyActionOnEachUnit", new Type[] { typeof(Action<Agent>), typeof(Agent) })]
-    internal class ApplyActionOnEachUnitPatch
-    {
-        private static bool Prefix(ref Action<Agent> action, ref Agent ignoreAgent, ref Formation __instance)
-        {
-            try
-            {
-                __instance.ApplyActionOnEachUnitViaBackupList(action);
                 return false;
             }
-            catch (Exception e)
+        }
+
+        [HarmonyPatch(typeof(HumanAIComponent))]
+        [HarmonyPatch("OnTickAsAI")]
+        public static class OnTickAsAIPatch
+        {
+            public static Dictionary<Agent, float> itemPickupDistanceStorage = new Dictionary<Agent, float> { };
+
+            private static bool Prefix(ref HumanAIComponent __instance, ref SpawnedItemEntity ____itemToPickUp, ref Agent ___Agent, ref MissionTimer ____itemPickUpTickTimer, ref bool ____disablePickUpForAgent, ref GameEntity[] ____tempPickableEntities, ref UIntPtr[] ____pickableItemsId)
             {
+                bool timer = ____itemPickUpTickTimer.Check(reset: true);
+                bool mended = ___Agent.Mission.MissionEnded;
+                bool hasWeapon = false;
+
+                for (int i = 0; i < 5; i++)
                 {
-                    return true;
+                    WeaponComponentData currentUsageItem = ___Agent.Equipment[i].CurrentUsageItem;
+                    if (currentUsageItem != null && currentUsageItem.WeaponFlags.HasAnyFlag(WeaponFlags.MeleeWeapon))
+                    {
+                        hasWeapon = true;
+                    }
+                }
+
+                if (timer && !mended && !hasWeapon)
+                {
+                    EquipmentIndex wieldedItemIndex = ___Agent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                    bool flag = ((wieldedItemIndex == EquipmentIndex.None) ? null : ___Agent.Equipment[wieldedItemIndex].CurrentUsageItem)?.IsRangedWeapon ?? false;
+                    if ( ___Agent.CanBeAssignedForScriptedMovement() && ___Agent.CurrentWatchState == Agent.WatchState.Alarmed && (___Agent.GetAgentFlags() & AgentFlag.CanAttack) != 0)
+                    {
+                        Agent targetAgent = ___Agent.GetTargetAgent();
+                        float maximumForwardUnlimitedSpeed = ___Agent.MaximumForwardUnlimitedSpeed;
+                        if (____itemToPickUp == null)
+                        {
+                            Vec3 bMin = ___Agent.Position - new Vec3(50f, 50f, 1f);
+                            Vec3 bMax = ___Agent.Position + new Vec3(50f, 50f, 1.8f);
+
+                            Vec3 v = ((targetAgent == null) ? Vec3.Invalid : (targetAgent.Position - ___Agent.Position));
+                            int num = ___Agent.Mission.Scene.SelectEntitiesInBoxWithScriptComponent<SpawnedItemEntity>(ref bMin, ref bMax, ____tempPickableEntities, ____pickableItemsId);
+                            float num2 = -1f;
+                            SpawnedItemEntity result = null;
+                            for (int i = 0; i < num; i++)
+                            {
+                                SpawnedItemEntity firstScriptOfType = ____tempPickableEntities[i].GetFirstScriptOfType<SpawnedItemEntity>();
+                                bool flag2 = false;
+                                if (firstScriptOfType != null)
+                                {
+                                    MissionWeapon weaponCopy = firstScriptOfType.WeaponCopy;
+                                    flag2 = !weaponCopy.IsEmpty && (!weaponCopy.IsShield() && !weaponCopy.IsBanner() && !firstScriptOfType.IsStuckMissile() && !firstScriptOfType.IsQuiverAndNotEmpty());
+                                }
+                                if (!flag2 || firstScriptOfType.HasUser || (firstScriptOfType.HasAIMovingTo && !firstScriptOfType.IsAIMovingTo(___Agent)) || !(firstScriptOfType.GameEntityWithWorldPosition.WorldPosition.GetNavMesh() != UIntPtr.Zero))
+                                {
+                                    continue;
+                                }
+                                Vec3 v2 = firstScriptOfType.GetUserFrameForAgent(___Agent).Origin.GetGroundVec3() - ___Agent.Position;
+                                v2.Normalize();
+                                EquipmentIndex equipmentIndex = MissionEquipment.SelectWeaponPickUpSlot(___Agent, firstScriptOfType.WeaponCopy, firstScriptOfType.IsStuckMissile());
+                                WorldPosition worldPosition = firstScriptOfType.GameEntityWithWorldPosition.WorldPosition;
+                                if (equipmentIndex != EquipmentIndex.None && worldPosition.GetNavMesh() != UIntPtr.Zero && ___Agent.Equipment[equipmentIndex].IsEmpty && ___Agent.CanMoveDirectlyToPosition(in worldPosition))
+                                {
+                                    float itemScoreForAgent = MissionGameModels.Current.ItemPickupModel.GetItemScoreForAgent(firstScriptOfType, ___Agent);
+                                    if (itemScoreForAgent > num2)
+                                    {
+                                        result = firstScriptOfType;
+                                        num2 = itemScoreForAgent;
+                                    }
+                                }
+                            }
+                            ____itemToPickUp = result;
+                            if (____itemToPickUp != null)
+                            {
+                                ____itemToPickUp.MovingAgent?.StopUsingGameObject(isSuccessful: false);
+                                __instance.MoveToUsableGameObject(result, null);
+                            }
+                        }
+                    }
+                }
+                return true;
+            }
+
+            private static void Postfix(ref SpawnedItemEntity ____itemToPickUp, ref Agent ___Agent)
+            {
+                if (____itemToPickUp != null && (___Agent.AIStateFlags & Agent.AIStateFlag.UseObjectMoving) != 0)
+                {
+                    float num = MissionGameModels.Current.AgentStatCalculateModel.GetInteractionDistance(___Agent) * 3f;
+                    WorldFrame userFrameForAgent = ____itemToPickUp.GetUserFrameForAgent(___Agent);
+                    ref WorldPosition origin = ref userFrameForAgent.Origin;
+                    Vec3 targetPoint = ___Agent.Position;
+                    float distanceSq = origin.DistanceSquaredWithLimit(in targetPoint, num * num + 1E-05f);
+                    float newDist = -1f;
+                    itemPickupDistanceStorage.TryGetValue(___Agent, out newDist);
+                    if (newDist == 0f)
+                    {
+                        itemPickupDistanceStorage[___Agent] = distanceSq;
+                    }
+                    else
+                    {
+                        if (distanceSq == newDist)
+                        {
+                            ___Agent.StopUsingGameObject(isSuccessful: false);
+                            itemPickupDistanceStorage.Remove(___Agent);
+                        }
+                        itemPickupDistanceStorage[___Agent] = distanceSq;
+                    }
                 }
             }
         }
-    }
 
-    [HarmonyPatch(typeof(BannerBearerLogic))]
-    [HarmonyPatch("RespawnAsBannerBearer")]
-    internal class RespawnAsBannerBearerPatch
-    {
-        private static bool Prefix(ref BannerBearerLogic __instance, Agent agent, ref Agent __result, bool isAlarmed, bool wieldInitialWeapons, bool forceDismounted, string specialActionSetSuffix = null, bool useTroopClassForSpawn = false)
+        [HarmonyPatch(typeof(Mission))]
+        [HarmonyPatch("OnAgentShootMissile")]
+        [UsedImplicitly]
+        [MBCallback]
+        internal class OverrideOnAgentShootMissile
         {
-            if (agent != null && agent.Formation != null)
+            //private static int _oldMissileSpeed;
+            private static bool Prefix(Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, ref Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
             {
-                Formation formation = agent.Formation;
-                MethodInfo method = typeof(BannerBearerLogic).GetMethod("GetFormationControllerFromFormation", BindingFlags.NonPublic | BindingFlags.Instance);
-                method.DeclaringType.GetMethod("GetFormationControllerFromFormation");
-                Object obj = method.Invoke(__instance, new object[] { agent.Formation });
-                if (obj != null)
+                MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
+                WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
+
+                if (!RBMConfig.RBMConfig.rbmCombatEnabled && (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && !shooterAgent.IsMainAgent && (wsd[0].WeaponClass == (int)WeaponClass.Javelin || wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe)))
                 {
-                    return true;
-                }
-                else
-                {
-                    if (agent.IsActive())
+                    //float shooterSpeed = shooterAgent.MovementVelocity.Normalize();
+                    if (!shooterAgent.HasMount)
                     {
-                        __result = agent;
-                        return false;
+                        velocity.z = velocity.z - 1.4f;
                     }
                     else
+                    {
+                        velocity.z = velocity.z - 2f;
+                    }
+                }
+
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(Mission))]
+        [HarmonyPatch("OnAgentDismount")]
+        public class OnAgentDismountPatch
+        {
+            private static void Postfix(Agent agent, Mission __instance)
+            {
+                if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
+                {
+                    bool isInfFormationActive = agent.Team.GetFormation(FormationClass.Infantry) != null && agent.Team.GetFormation(FormationClass.Infantry).CountOfUnits > 0;
+                    bool isArcFormationActive = agent.Team.GetFormation(FormationClass.Ranged) != null && agent.Team.GetFormation(FormationClass.Ranged).CountOfUnits > 0;
+                    if (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) || agent.Equipment.HasRangedWeapon(WeaponClass.Bolt))
+                    {
+                        float distanceToInf = -1f;
+                        float distanceToArc = -1f;
+                        if (agent.Formation != null && isInfFormationActive)
+                        {
+                            distanceToInf = agent.Team.GetFormation(FormationClass.Infantry).QuerySystem.MedianPosition.AsVec2.Distance(agent.Formation.QuerySystem.MedianPosition.AsVec2);
+                        }
+                        if (agent.Formation != null && isArcFormationActive)
+                        {
+                            distanceToArc = agent.Team.GetFormation(FormationClass.Ranged).QuerySystem.MedianPosition.AsVec2.Distance(agent.Formation.QuerySystem.MedianPosition.AsVec2);
+                        }
+                        if (distanceToArc > 0f && distanceToArc < distanceToInf)
+                        {
+                            if (agent.IsActive())
+                            {
+                                agentsToChangeFormation[agent] = FormationClass.Ranged;
+                                return;
+                            }
+                        }
+                        else if (distanceToInf > 0f && distanceToInf < distanceToArc)
+                        {
+                            if (agent.IsActive())
+                            {
+                                agentsToChangeFormation[agent] = FormationClass.Infantry;
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            if (distanceToInf > 0f)
+                            {
+                                if (agent.IsActive())
+                                {
+                                    agentsToChangeFormation[agent] = FormationClass.Infantry;
+                                    return;
+                                }
+                            }
+                            else if (distanceToArc > 0f)
+                            {
+                                if (agent.IsActive())
+                                {
+                                    agentsToChangeFormation[agent] = FormationClass.Ranged;
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (agent.Formation != null && isInfFormationActive)
+                        {
+                            if (agent.IsActive())
+                            {
+                                agentsToChangeFormation[agent] = FormationClass.Infantry;
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(Mission))]
+        [HarmonyPatch("OnAgentMount")]
+        internal class OnAgentMountPatch
+        {
+            private static void Postfix(Agent agent, Mission __instance)
+            {
+                if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
+                {
+                    bool isCavFormationActive = agent.Team.GetFormation(FormationClass.Cavalry) != null && agent.Team.GetFormation(FormationClass.Cavalry).CountOfUnits > 0;
+                    bool isHaFormationActive = agent.Team.GetFormation(FormationClass.HorseArcher) != null && agent.Team.GetFormation(FormationClass.HorseArcher).CountOfUnits > 0;
+                    if (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) || agent.Equipment.HasRangedWeapon(WeaponClass.Bolt))
+                    {
+                        if (agent.Formation != null && isHaFormationActive)
+                        {
+                            if (agent.IsActive())
+                            {
+                                agentsToChangeFormation[agent] = FormationClass.HorseArcher;
+                                return;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (agent.Formation != null && isCavFormationActive)
+                        {
+                            if (agent.IsActive())
+                            {
+                                agentsToChangeFormation[agent] = FormationClass.Cavalry;
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(Formation))]
+        [HarmonyPatch("ApplyActionOnEachUnit", new Type[] { typeof(Action<Agent>), typeof(Agent) })]
+        internal class ApplyActionOnEachUnitPatch
+        {
+            private static bool Prefix(ref Action<Agent> action, ref Agent ignoreAgent, ref Formation __instance)
+            {
+                try
+                {
+                    __instance.ApplyActionOnEachUnitViaBackupList(action);
+                    return false;
+                }
+                catch (Exception e)
+                {
                     {
                         return true;
                     }
                 }
             }
-            else
+        }
+
+        [HarmonyPatch(typeof(BannerBearerLogic))]
+        [HarmonyPatch("RespawnAsBannerBearer")]
+        internal class RespawnAsBannerBearerPatch
+        {
+            private static bool Prefix(ref BannerBearerLogic __instance, Agent agent, ref Agent __result, bool isAlarmed, bool wieldInitialWeapons, bool forceDismounted, string specialActionSetSuffix = null, bool useTroopClassForSpawn = false)
             {
-                return false;
+                if (agent != null && agent.Formation != null)
+                {
+                    Formation formation = agent.Formation;
+                    MethodInfo method = typeof(BannerBearerLogic).GetMethod("GetFormationControllerFromFormation", BindingFlags.NonPublic | BindingFlags.Instance);
+                    method.DeclaringType.GetMethod("GetFormationControllerFromFormation");
+                    Object obj = method.Invoke(__instance, new object[] { agent.Formation });
+                    if (obj != null)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        if (agent.IsActive())
+                        {
+                            __result = agent;
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
-    }
 
     //[HarmonyPatch(typeof(MissionAgentLabelView))]
     //[HarmonyPatch("SetHighlightForAgents")]
@@ -791,4 +856,5 @@ namespace RBMAI
     //        return true;
     //    }
     //}
+    }
 }
