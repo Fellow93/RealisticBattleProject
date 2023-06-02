@@ -344,7 +344,11 @@ namespace RBMAI
                                         {
                                             if (!victimAgent.HasMount)
                                             {
-                                                if (postureDmg >= defenderPosture.maxPosture * 0.33f)
+                                                if (postureDmg >= defenderPosture.maxPosture * 0.33f && !attackerWeapon.IsEmpty && (
+                                                    attackerWeapon.CurrentUsageItem.WeaponClass == WeaponClass.TwoHandedAxe ||
+                                                    attackerWeapon.CurrentUsageItem.WeaponClass == WeaponClass.TwoHandedMace ||
+                                                    attackerWeapon.CurrentUsageItem.WeaponClass == WeaponClass.TwoHandedPolearm ||
+                                                    attackerWeapon.CurrentUsageItem.WeaponClass == WeaponClass.TwoHandedSword ))
                                                 {
                                                     makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
                                                 }
