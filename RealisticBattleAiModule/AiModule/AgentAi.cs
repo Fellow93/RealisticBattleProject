@@ -18,6 +18,8 @@ namespace RBMAI
     public static class AgentAi
     {
         public static Dictionary<Agent, FormationClass> agentsToChangeFormation = new Dictionary<Agent, FormationClass> { };
+        public static MBArrayList<Agent> agentsToDropShield = new MBArrayList<Agent> { };
+        public static MBArrayList<Agent> agentsToDropWeapon = new MBArrayList<Agent> { };
 
         [HarmonyPatch(typeof(AgentStatCalculateModel))]
         [HarmonyPatch("SetAiRelatedProperties")]
