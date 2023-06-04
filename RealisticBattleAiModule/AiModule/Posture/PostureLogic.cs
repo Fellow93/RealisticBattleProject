@@ -147,6 +147,9 @@ namespace RBMAI
             private static void Postfix()
             {
                 AgentPostures.values.Clear();
+                agentsToDropShield.Clear();
+                agentsToDropWeapon.Clear();
+                AgentAi.agentsToChangeFormation.Clear();
             }
         }
 
