@@ -156,7 +156,7 @@ namespace RBMAI
         {
             private static void Postfix(ref Mission __instance, ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
             {
-                if ((new StackTrace()).GetFrame(3).GetMethod().Name.Contains("MeleeHit") && victimAgent.IsHuman)
+                if ((new StackTrace()).GetFrame(3).GetMethod().Name.Contains("MeleeHit") && victimAgent != null && victimAgent.IsHuman)
                 {
                     if (RBMConfig.RBMConfig.postureEnabled && attackerAgent != null && victimAgent != null && !attackerAgent.IsFriendOf(victimAgent) && attackerWeapon.CurrentUsageItem != null &&
                         attackerWeapon.CurrentUsageItem != null)
@@ -1515,7 +1515,7 @@ namespace RBMAI
 
                     foreach(KeyValuePair < Agent, FormationClass > entry in AgentAi.agentsToChangeFormation)
                     {
-                        if (entry.Key.IsActive())
+                        if (entry.Key != null && entry.Key.IsActive() && entry.Key.Team != null)
                         {
                             entry.Key.Formation = entry.Key.Team.GetFormation(entry.Value);
                             entry.Key.DisableScriptedMovement();
@@ -1530,7 +1530,7 @@ namespace RBMAI
 
             foreach (Agent agent in agentsToDropShield)
             {
-                if (agent.IsActive())
+                if (agent != null && agent.IsActive())
                 {
                     for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.ExtraWeaponSlot; equipmentIndex++)
                     {
