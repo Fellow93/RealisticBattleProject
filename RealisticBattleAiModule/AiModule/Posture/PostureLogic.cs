@@ -18,6 +18,8 @@ namespace RBMAI
         private static float timeToCalc = 0.5f;
 
         private static float currentDt = 0f;
+        private static int postureEffectCheck = 0;
+        private static int postureEffectCheckCooldown = 15;
 
         private static float weaponLengthPostureFactor = 0.2f;
         private static float weaponWeightPostureFactor = 0.5f;
@@ -1524,59 +1526,78 @@ namespace RBMAI
                     }
                     AgentAi.agentsToChangeFormation.Clear();
 
+                    for (int i = AgentAi.agentsToDropShield.Count - 1; i >= 0; i--)
+                    {
+                        if (AgentAi.agentsToDropShield[i].State == AgentState.Active)
+                        {
+                            ActionCodeType currentActionType = AgentAi.agentsToDropShield[i].GetCurrentActionType(1);
+                            if (
+                                currentActionType == ActionCodeType.ReleaseMelee ||
+                                currentActionType == ActionCodeType.ReleaseRanged ||
+                                currentActionType == ActionCodeType.ReleaseThrowing ||
+                                currentActionType == ActionCodeType.WeaponBash)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.ExtraWeaponSlot; equipmentIndex++)
+                                {
+                                    MissionWeapon weapon2 = AgentAi.agentsToDropShield[i].Equipment[equipmentIndex];
+                                    if (!weapon2.IsEmpty && (weapon2.IsShield()))
+                                    {
+                                        AgentAi.agentsToDropShield[i].DropItem(equipmentIndex);
+                                        AgentAi.agentsToDropShield[i].UpdateAgentProperties();
+                                        AgentAi.agentsToDropShield.Remove(AgentAi.agentsToDropShield[i]);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            AgentAi.agentsToDropShield.Remove(AgentAi.agentsToDropShield[i]);
+                        }
+                    }
+                    for (int i = AgentAi.agentsToDropWeapon.Count - 1; i >= 0; i--)
+                    {
+                        if (AgentAi.agentsToDropWeapon[i].State == AgentState.Active)
+                        {
+                            ActionCodeType currentActionType = AgentAi.agentsToDropWeapon[i].GetCurrentActionType(1);
+                            if (
+                                currentActionType == ActionCodeType.ReleaseMelee ||
+                                currentActionType == ActionCodeType.ReleaseRanged ||
+                                currentActionType == ActionCodeType.ReleaseThrowing ||
+                                currentActionType == ActionCodeType.WeaponBash)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                EquipmentIndex ei = AgentAi.agentsToDropWeapon[i].GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                                if (ei != EquipmentIndex.None)
+                                {
+                                    AgentAi.agentsToDropWeapon[i].DropItem(ei);
+                                    AgentAi.agentsToDropWeapon[i].UpdateAgentProperties();
+                                    AgentAi.agentsToDropWeapon.Remove(AgentAi.agentsToDropWeapon[i]);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            AgentAi.agentsToDropWeapon.Remove(AgentAi.agentsToDropWeapon[i]);
+                        }
+                    }
+
                     currentDt = 0f;
                 }
             }
 
         }
 
-        public override void OnMeleeHit(Agent attacker, Agent victim, bool isCanceled, AttackCollisionData collisionData)
-        {
-            for (int i = AgentAi.agentsToDropShield.Count - 1; i >= 0; i--)
-            {
-                ActionCodeType currentActionType = AgentAi.agentsToDropShield[i].GetCurrentActionType(1);
-                if (AgentAi.agentsToDropShield[i].State != AgentState.Active ||
-                    currentActionType == ActionCodeType.ReleaseMelee ||
-                    currentActionType == ActionCodeType.ReleaseRanged ||
-                    currentActionType == ActionCodeType.ReleaseThrowing ||
-                    currentActionType == ActionCodeType.WeaponBash)
-                {
-                    continue;
-                }
-                else
-                {
-                    for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.ExtraWeaponSlot; equipmentIndex++)
-                    {
-                        MissionWeapon weapon2 = AgentAi.agentsToDropShield[i].Equipment[equipmentIndex];
-                        if (!weapon2.IsEmpty && (weapon2.IsShield()))
-                        {
-                            AgentAi.agentsToDropShield[i].HandleDropWeapon(false, equipmentIndex);
-                            break;
-                        }
-                    }
-                }
-            }
-            for (int i = AgentAi.agentsToDropWeapon.Count - 1; i >= 0; i--)
-            {
-                ActionCodeType currentActionType = AgentAi.agentsToDropWeapon[i].GetCurrentActionType(1);
-                if (AgentAi.agentsToDropWeapon[i].State != AgentState.Active ||
-                    currentActionType == ActionCodeType.ReleaseMelee ||
-                    currentActionType == ActionCodeType.ReleaseRanged ||
-                    currentActionType == ActionCodeType.ReleaseThrowing ||
-                    currentActionType == ActionCodeType.WeaponBash)
-                {
-                    continue;
-                }
-                else
-                {
-                    EquipmentIndex ei = AgentAi.agentsToDropWeapon[i].GetWieldedItemIndex(Agent.HandIndex.MainHand);
-                    if (ei != EquipmentIndex.None)
-                    {
-                        AgentAi.agentsToDropWeapon[i].HandleDropWeapon(false, ei);
-                        AgentAi.agentsToDropWeapon.Remove(AgentAi.agentsToDropWeapon[i]);
-                    }
-                }
-            }
-        }
+        //public override void OnMeleeHit(Agent attacker, Agent victim, bool isCanceled, AttackCollisionData collisionData)
+        //{
+            
+        //}
     }
 }
