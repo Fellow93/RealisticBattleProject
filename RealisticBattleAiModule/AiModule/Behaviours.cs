@@ -1109,13 +1109,17 @@ namespace RBMAI
                 MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Defender) != null && MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Defender).Name != null &&
                 MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Attacker) != null && MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Attacker).Name != null)
             {
-                TextObject defenderName = MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Defender).Name;
-                TextObject attackerName = MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Attacker).Name;
-                if(defenderName != null && attackerName != null)
+                if (!TextObject.IsNullOrEmpty(MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Defender).Name) &&
+                    !TextObject.IsNullOrEmpty(MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Attacker).Name))
                 {
-                    if ((defenderName.Contains("Looter") || defenderName.Contains("Bandit") || defenderName.Contains("Raider") || attackerName.Contains("Looter") || attackerName.Contains("Bandit") || attackerName.Contains("Raider")))
+                    TextObject defenderName = MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Defender).Name;
+                    TextObject attackerName = MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Attacker).Name;
+                    if (defenderName != null && attackerName != null)
                     {
-                        return true;
+                        if ((defenderName.Contains("Looter") || defenderName.Contains("Bandit") || defenderName.Contains("Raider") || attackerName.Contains("Looter") || attackerName.Contains("Bandit") || attackerName.Contains("Raider")))
+                        {
+                            return true;
+                        }
                     }
                 }
             }
