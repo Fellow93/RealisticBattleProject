@@ -284,9 +284,9 @@ namespace RBMCombat
         public static void lowerArmorQualityCheck(ref Agent agent, EquipmentIndex equipmentIndex, ItemObject.ItemTypeEnum itemType, AttackCollisionData attackCollisionData, Blow blow, Agent attacker, in MissionWeapon attackerWeapon)
         {
             EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
-            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == itemType)
+             if (equipmentElement.Item != null && equipmentElement.Item.ItemType == itemType && !attackerWeapon.IsEmpty && blow.InflictedDamage > 1 && !blow.IsFallDamage)
             {
-                WeaponClass weaponType = blow.WeaponRecord.WeaponClass;
+                WeaponClass weaponType = attackerWeapon.CurrentUsageItem.WeaponClass;
 
                 float weaponTypeScaling = 1f;
                 float weaponDamageFactor = 1f;
@@ -342,13 +342,19 @@ namespace RBMCombat
                 {
                     case DamageTypes.Pierce:
                         {
-                            armorThreshold = rbmCombatConfigWeaponType.ExtraArmorThresholdFactorPierce;
+                            if(rbmCombatConfigWeaponType != null)
+                            {
+                                armorThreshold = rbmCombatConfigWeaponType.ExtraArmorThresholdFactorPierce;
+                            }
                             weaponTypeScaling = 1f;
                             break;
                         }
                     case DamageTypes.Cut:
                         {
-                            armorThreshold = rbmCombatConfigWeaponType.ExtraArmorThresholdFactorCut;
+                            if (rbmCombatConfigWeaponType != null)
+                            {
+                                armorThreshold = rbmCombatConfigWeaponType.ExtraArmorThresholdFactorCut;
+                            }
                             switch (weaponType)
                             {
                                 case WeaponClass.OneHandedSword:
@@ -447,7 +453,6 @@ namespace RBMCombat
                 float defaultProbability = 0.05f;
                 if (damageType == DamageTypes.Pierce && !blow.IsMissile)
                 {
-                    ;
                     magnitude = magnitude * RBMConfig.RBMConfig.OneHandedThrustDamageBonus;
                 }
                 //float magScaling = (float)Math.Pow((magnitude * weaponDamageFactor) / (armorThreshold * armorValue), 2);

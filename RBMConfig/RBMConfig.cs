@@ -242,7 +242,7 @@ namespace RBMConfig
                     return weaponTypeFactors;
                 }
             }
-            return new RBMCombatConfigWeaponType("OneHandedSword", 0.25f, 0.35f, 1f, 3.5f, 5f, 1f);
+            return null;
         }
     }
 }
