@@ -589,7 +589,7 @@ namespace RBMAI
                         }
                         if (distanceToArc > 0f && distanceToArc < distanceToInf)
                         {
-                            if (agent.IsActive())
+                            if (agent != null && agent.IsActive())
                             {
                                 agentsToChangeFormation[agent] = FormationClass.Ranged;
                                 return;
@@ -597,7 +597,7 @@ namespace RBMAI
                         }
                         else if (distanceToInf > 0f && distanceToInf < distanceToArc)
                         {
-                            if (agent.IsActive())
+                            if (agent != null && agent.IsActive())
                             {
                                 agentsToChangeFormation[agent] = FormationClass.Infantry;
                                 return;
@@ -607,7 +607,7 @@ namespace RBMAI
                         {
                             if (distanceToInf > 0f)
                             {
-                                if (agent.IsActive())
+                                if (agent != null && agent.IsActive())
                                 {
                                     agentsToChangeFormation[agent] = FormationClass.Infantry;
                                     return;
@@ -615,7 +615,7 @@ namespace RBMAI
                             }
                             else if (distanceToArc > 0f)
                             {
-                                if (agent.IsActive())
+                                if (agent != null && agent.IsActive())
                                 {
                                     agentsToChangeFormation[agent] = FormationClass.Ranged;
                                     return;
@@ -627,7 +627,7 @@ namespace RBMAI
                     {
                         if (agent.Formation != null && isInfFormationActive)
                         {
-                            if (agent.IsActive())
+                            if (agent != null && agent.IsActive())
                             {
                                 agentsToChangeFormation[agent] = FormationClass.Infantry;
                                 return;
