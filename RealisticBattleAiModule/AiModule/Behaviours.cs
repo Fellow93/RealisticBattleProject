@@ -1111,9 +1111,12 @@ namespace RBMAI
             {
                 TextObject defenderName = MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Defender).Name;
                 TextObject attackerName = MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Attacker).Name;
-                if ((attackerName != null && defenderName != null) && (defenderName.Contains("Looter") || defenderName.Contains("Bandit") || defenderName.Contains("Raider") || attackerName.Contains("Looter") || attackerName.Contains("Bandit") || attackerName.Contains("Raider")))
+                if(defenderName != null && attackerName != null)
                 {
-                    return true;
+                    if ((defenderName.Contains("Looter") || defenderName.Contains("Bandit") || defenderName.Contains("Raider") || attackerName.Contains("Looter") || attackerName.Contains("Bandit") || attackerName.Contains("Raider")))
+                    {
+                        return true;
+                    }
                 }
             }
             if (__instance.Formation != null && (__instance.Formation.QuerySystem.IsInfantryFormation || __instance.Formation.QuerySystem.IsRangedFormation) && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
@@ -2194,4 +2197,41 @@ namespace RBMAI
             return false;
         }
     }
+
+    [HarmonyPatch(typeof(LineFormation))]
+    internal class OverrideLineFormation
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch("SwitchUnitLocations")]
+        private static bool PrefixSwitchUnitLocations(ref BehaviorRegroup __instance, IFormationUnit firstUnit, IFormationUnit secondUnit)
+        {
+            if(firstUnit != null && firstUnit.Formation != null && secondUnit.Formation != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch("RemoveUnit", new Type[] { typeof(IFormationUnit), typeof(bool), typeof(bool) })]
+        private static bool PrefixRemoveUnit(IFormationUnit unit, bool fillInTheGap, bool isRemovingFromAnUnavailablePosition = false)
+        {
+            int formationFileIndex = unit.FormationFileIndex;
+            int formationRankIndex = unit.FormationRankIndex;
+            if (unit != null && unit.Formation != null && formationFileIndex != -1 && formationRankIndex != -1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+    }
+
 }
