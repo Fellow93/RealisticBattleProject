@@ -2209,7 +2209,8 @@ namespace RBMAI
         [HarmonyPatch("SwitchUnitLocations")]
         private static bool PrefixSwitchUnitLocations(ref BehaviorRegroup __instance, IFormationUnit firstUnit, IFormationUnit secondUnit)
         {
-            if(firstUnit != null && firstUnit.Formation != null && secondUnit.Formation != null)
+            if(firstUnit != null && ((Agent)firstUnit).Formation != null && ((Agent)firstUnit).State == AgentState.Active && 
+                secondUnit != null && ((Agent)secondUnit).Formation != null && ((Agent)secondUnit).State == AgentState.Active )
             {
                 return true;
             }
@@ -2226,7 +2227,7 @@ namespace RBMAI
         {
             int formationFileIndex = unit.FormationFileIndex;
             int formationRankIndex = unit.FormationRankIndex;
-            if (unit != null && unit.Formation != null && formationFileIndex != -1 && formationRankIndex != -1)
+            if (unit != null && ((Agent)unit).Formation != null && formationFileIndex != -1 && formationRankIndex != -1)
             {
                 return true;
             }
