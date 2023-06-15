@@ -9,7 +9,6 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
-using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.MountAndBlade.ArrangementOrder;
 using static TaleWorlds.MountAndBlade.HumanAIComponent;
