@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
@@ -1106,21 +1107,14 @@ namespace RBMAI
         private static bool PrefixCalculateCurrentOrder(ref BehaviorCharge __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
         {
             if (__instance.Formation != null && !(__instance.Formation.Team.IsPlayerTeam || __instance.Formation.Team.IsPlayerAlly) && Campaign.Current != null && MobileParty.MainParty != null && MobileParty.MainParty.MapEvent != null &&
-                MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Defender) != null && MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Defender).Name != null &&
-                MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Attacker) != null && MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Attacker).Name != null)
+                MapEvent.PlayerMapEvent.DefenderSide.LeaderParty.MobileParty != null  &&
+                MapEvent.PlayerMapEvent.AttackerSide.LeaderParty.MobileParty != null )
             {
-                if (!TextObject.IsNullOrEmpty(MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Defender).Name) &&
-                    !TextObject.IsNullOrEmpty(MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Attacker).Name))
+                MobileParty defender = MapEvent.PlayerMapEvent.DefenderSide.LeaderParty.MobileParty;
+                MobileParty attacker = MapEvent.PlayerMapEvent.AttackerSide.LeaderParty.MobileParty;
+                if (defender.IsBandit || attacker.IsBandit)
                 {
-                    TextObject defenderName = MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Defender).Name;
-                    TextObject attackerName = MobileParty.MainParty.MapEvent.GetLeaderParty(BattleSideEnum.Attacker).Name;
-                    if (defenderName != null && attackerName != null)
-                    {
-                        if ((defenderName.Contains("Looter") || defenderName.Contains("Bandit") || defenderName.Contains("Raider") || attackerName.Contains("Looter") || attackerName.Contains("Bandit") || attackerName.Contains("Raider")))
-                        {
-                            return true;
-                        }
-                    }
+                    return true;
                 }
             }
             if (__instance.Formation != null && (__instance.Formation.QuerySystem.IsInfantryFormation || __instance.Formation.QuerySystem.IsRangedFormation) && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
