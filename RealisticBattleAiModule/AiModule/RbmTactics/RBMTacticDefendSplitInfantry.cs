@@ -20,7 +20,7 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
         int infCount = 0;
         foreach (Formation formation in FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
         {
-            if (formation.IsInfantry())
+            if (formation.QuerySystem.IsInfantryFormation)
             {
                 infCount += formation.CountOfUnits;
             }
@@ -42,7 +42,7 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
             {
                 formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
-                    if (formation.IsInfantry())
+                    if (formation.QuerySystem.IsInfantryFormation)
                     {
                         bool isFlanker = false;
 

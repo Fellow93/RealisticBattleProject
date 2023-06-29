@@ -45,7 +45,7 @@ namespace RBMAI
 
                 SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
                 int meleeSkill = (int)method.Invoke(__instance, new object[] { agent, equippedItem, secondaryItem });
-                int effectiveSkill = __instance.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
+                int effectiveSkill = __instance.GetEffectiveSkill(agent, skill);
                 float meleeLevel = RBMAI.Utilities.CalculateAILevel(agent, meleeSkill);                 //num
                 float effectiveSkillLevel = RBMAI.Utilities.CalculateAILevel(agent, effectiveSkill);    //num2
                 float meleeDefensivness = meleeLevel + agent.Defensiveness;             //num3
@@ -201,7 +201,7 @@ namespace RBMAI
                 float reloadSpeed = agentDrivenProperties.ReloadSpeed;
                 if (characterObject != null && rightHandEquippedItem != null)
                 {
-                    int effectiveSkill = __instance.GetEffectiveSkill(characterObject, agent.Origin, agent.Formation, rightHandEquippedItem.RelevantSkill);
+                    int effectiveSkill = __instance.GetEffectiveSkill(agent, rightHandEquippedItem.RelevantSkill);
                     ExplainedNumber stat = new ExplainedNumber(swingSpeedMultiplier);
                     ExplainedNumber stat2 = new ExplainedNumber(thrustOrRangedReadySpeedMultiplier);
                     ExplainedNumber stat3 = new ExplainedNumber(reloadSpeed);
@@ -242,7 +242,7 @@ namespace RBMAI
                     }
                     if (agent.HasMount)
                     {
-                        int effectiveSkill2 = __instance.GetEffectiveSkill(characterObject, agent.Origin, agent.Formation, DefaultSkills.Riding);
+                        int effectiveSkill2 = __instance.GetEffectiveSkill(agent, DefaultSkills.Riding);
                         float value = -0.01f * MathF.Max(0f, DefaultSkillEffects.HorseWeaponSpeedPenalty.GetPrimaryValue(effectiveSkill2));
                         stat.AddFactor(value);
                         stat2.AddFactor(value);
@@ -486,7 +486,7 @@ namespace RBMAI
                                 v2.Normalize();
                                 EquipmentIndex equipmentIndex = MissionEquipment.SelectWeaponPickUpSlot(___Agent, firstScriptOfType.WeaponCopy, firstScriptOfType.IsStuckMissile());
                                 WorldPosition worldPosition = firstScriptOfType.GameEntityWithWorldPosition.WorldPosition;
-                                if (equipmentIndex != EquipmentIndex.None && worldPosition.GetNavMesh() != UIntPtr.Zero && ___Agent.Equipment[equipmentIndex].IsEmpty && ___Agent.CanMoveDirectlyToPosition(in worldPosition))
+                                if (equipmentIndex != EquipmentIndex.None && worldPosition.GetNavMesh() != UIntPtr.Zero && ___Agent.Equipment[equipmentIndex].IsEmpty && ___Agent.CanMoveDirectlyToPosition(worldPosition.AsVec2))
                                 {
                                     float itemScoreForAgent = MissionGameModels.Current.ItemPickupModel.GetItemScoreForAgent(firstScriptOfType, ___Agent);
                                     if (itemScoreForAgent > num2)
@@ -694,41 +694,41 @@ namespace RBMAI
             }
         }
 
-        [HarmonyPatch(typeof(BannerBearerLogic))]
-        [HarmonyPatch("RespawnAsBannerBearer")]
-        internal class RespawnAsBannerBearerPatch
-        {
-            private static bool Prefix(ref BannerBearerLogic __instance, Agent agent, ref Agent __result, bool isAlarmed, bool wieldInitialWeapons, bool forceDismounted, string specialActionSetSuffix = null, bool useTroopClassForSpawn = false)
-            {
-                if (agent != null && agent.Formation != null)
-                {
-                    Formation formation = agent.Formation;
-                    MethodInfo method = typeof(BannerBearerLogic).GetMethod("GetFormationControllerFromFormation", BindingFlags.NonPublic | BindingFlags.Instance);
-                    method.DeclaringType.GetMethod("GetFormationControllerFromFormation");
-                    Object obj = method.Invoke(__instance, new object[] { agent.Formation });
-                    if (obj != null)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        if (agent.IsActive())
-                        {
-                            __result = agent;
-                            return false;
-                        }
-                        else
-                        {
-                            return true;
-                        }
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
+        //[HarmonyPatch(typeof(BannerBearerLogic))]
+        //[HarmonyPatch("RespawnAsBannerBearer")]
+        //internal class RespawnAsBannerBearerPatch
+        //{
+        //    private static bool Prefix(ref BannerBearerLogic __instance, Agent agent, ref Agent __result, bool isAlarmed, bool wieldInitialWeapons, bool forceDismounted, string specialActionSetSuffix = null, bool useTroopClassForSpawn = false)
+        //    {
+        //        if (agent != null && agent.Formation != null)
+        //        {
+        //            Formation formation = agent.Formation;
+        //            MethodInfo method = typeof(BannerBearerLogic).GetMethod("GetFormationControllerFromFormation", BindingFlags.NonPublic | BindingFlags.Instance);
+        //            method.DeclaringType.GetMethod("GetFormationControllerFromFormation");
+        //            Object obj = method.Invoke(__instance, new object[] { agent.Formation });
+        //            if (obj != null)
+        //            {
+        //                return true;
+        //            }
+        //            else
+        //            {
+        //                if (agent.IsActive())
+        //                {
+        //                    __result = agent;
+        //                    return false;
+        //                }
+        //                else
+        //                {
+        //                    return true;
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            return false;
+        //        }
+        //    }
+        //}
 
     //[HarmonyPatch(typeof(MissionAgentLabelView))]
     //[HarmonyPatch("SetHighlightForAgents")]

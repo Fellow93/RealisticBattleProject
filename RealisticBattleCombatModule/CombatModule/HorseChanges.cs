@@ -18,7 +18,7 @@ namespace RBMCombat
                 if (agent.RiderAgent != null)
                 {
                     int effectiveRidingSkill = 0;
-                    effectiveRidingSkill = __instance.GetEffectiveSkill(agent.RiderAgent.Character, agent.RiderAgent.Origin, agent.RiderAgent.Formation, DefaultSkills.Riding);
+                    effectiveRidingSkill = __instance.GetEffectiveSkill(agent.RiderAgent, DefaultSkills.Riding);
 
                     Equipment spawnEquipment = agent.SpawnEquipment;
                     EquipmentElement mountElement = spawnEquipment[EquipmentIndex.ArmorItemEndSlot];
@@ -114,7 +114,7 @@ namespace RBMCombat
                 if (agent.RiderAgent != null)
                 {
                     int effectiveRidingSkill = 0;
-                    effectiveRidingSkill = __instance.GetEffectiveSkill(agent.RiderAgent.Character, agent.RiderAgent.Origin, agent.RiderAgent.Formation, DefaultSkills.Riding);
+                    effectiveRidingSkill = __instance.GetEffectiveSkill(agent.RiderAgent, DefaultSkills.Riding);
 
                     Equipment spawnEquipment = agent.SpawnEquipment;
                     EquipmentElement mountElement = spawnEquipment[EquipmentIndex.ArmorItemEndSlot];
@@ -246,7 +246,7 @@ namespace RBMCombat
                 {
                     if (victimAgent != null && victimAgent.HasMount && victimAgent.Character != null && victimAgent.Origin != null)
                     {
-                        int ridingSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(victimAgent.Character, victimAgent.Origin, victimAgent.Formation, DefaultSkills.Riding);
+                        int ridingSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(victimAgent, DefaultSkills.Riding);
                         if (attackerWeapon != null && attackerWeapon.ItemUsage != null && blow.StrikeType == StrikeType.Thrust && blow.BaseMagnitude > (2.4f + (ridingSkill * 0.01f)) &&
                         (blow.VictimBodyPart == BoneBodyPartType.Head || blow.VictimBodyPart == BoneBodyPartType.Neck) &&
                         (attackerWeapon.ItemUsage.Equals("polearm_couch") || attackerWeapon.ItemUsage.Equals("polearm_bracing")))

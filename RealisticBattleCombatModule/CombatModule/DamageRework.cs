@@ -104,7 +104,7 @@ namespace RBMCombat
                 float armorAmountFloat = attackInformation.ArmorAmountFloat;
                 if (!attackCollisionData.IsMissile)
                 {
-                    float wdm = MissionGameModels.Current.AgentStatCalculateModel.GetWeaponDamageMultiplier(attackInformation.AttackerAgentCharacter, attackInformation.AttackerAgentOrigin, attackInformation.AttackerFormation, attackerWeapon);
+                    float wdm = MissionGameModels.Current.AgentStatCalculateModel.GetWeaponDamageMultiplier(attackInformation.AttackerAgent, attackerWeapon);
                     magnitude = attackCollisionData.BaseMagnitude / wdm;
                 }
                 WeaponComponentData shieldOnBack = attackInformation.ShieldOnBack;
@@ -343,7 +343,7 @@ namespace RBMCombat
                     SkillObject skill = (attackerWeapon == null) ? DefaultSkills.Athletics : attackerWeapon.RelevantSkill;
                     if (skill != null)
                     {
-                        int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgentCharacter, attackerAgentOrigin, attackerFormation, skill);
+                        int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgent, skill);
                         float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
                         float skillModifier = Utilities.CalculateSkillModifier(ef);
                         if (attacker != null && attacker.Equipment != null && attacker.GetWieldedItemIndex(HandIndex.MainHand) != EquipmentIndex.None)
@@ -1116,7 +1116,7 @@ namespace RBMCombat
                         __result.AttackerStunPeriod = collisionData.AttackerStunPeriod;
                         __result.DefenderStunPeriod = collisionData.DefenderStunPeriod;
                         __result.BlowFlag = BlowFlags.None;
-                        __result.Position = collisionData.CollisionGlobalPosition;
+                        __result.GlobalPosition = collisionData.CollisionGlobalPosition;
                         __result.BoneIndex = collisionData.CollisionBoneIndex;
                         __result.Direction = blowDirection;
                         __result.SwingDirection = swingDirection;
@@ -1154,7 +1154,7 @@ namespace RBMCombat
                                     newBlow.AttackerStunPeriod = collisionData.AttackerStunPeriod;
                                     newBlow.DefenderStunPeriod = collisionData.DefenderStunPeriod * 0.5f;
                                     newBlow.BlowFlag = BlowFlags.None;
-                                    newBlow.Position = collisionData.CollisionGlobalPosition;
+                                    newBlow.GlobalPosition = collisionData.CollisionGlobalPosition;
                                     newBlow.BoneIndex = collisionData.CollisionBoneIndex;
                                     newBlow.Direction = blowDirection;
                                     newBlow.SwingDirection = swingDirection;
@@ -1339,13 +1339,13 @@ namespace RBMCombat
                     int hitSound = b.WeaponRecord.GetHitSound(isOwnerHumanoid, isCriticalBlow, isLowBlow, isNonTipThrust, b.AttackType, b.DamageType);
                     float soundParameterForArmorType = 0.1f * (float)GetProtectorArmorMaterialOfBone(__instance, b.BoneIndex);
                     SoundEventParameter parameter = new SoundEventParameter("Armor Type", soundParameterForArmorType);
-                    __instance.Mission.MakeSound(hitSound, b.Position, soundCanBePredicted: false, isReliable: true, b.OwnerId, __instance.Index, ref parameter);
+                    __instance.Mission.MakeSound(hitSound, b.GlobalPosition, soundCanBePredicted: false, isReliable: true, b.OwnerId, __instance.Index, ref parameter);
                     if (b.IsMissile && agent != null)
                     {
                         int soundCodeMissionCombatPlayerhit = CombatSoundContainer.SoundCodeMissionCombatPlayerhit;
-                        __instance.Mission.MakeSoundOnlyOnRelatedPeer(soundCodeMissionCombatPlayerhit, b.Position, agent.Index);
+                        __instance.Mission.MakeSoundOnlyOnRelatedPeer(soundCodeMissionCombatPlayerhit, b.GlobalPosition, agent.Index);
                     }
-                    __instance.Mission.AddSoundAlarmFactorToAgents(b.OwnerId, b.Position, 15f);
+                    __instance.Mission.AddSoundAlarmFactorToAgents(b.OwnerId, b.GlobalPosition, 15f);
                 }
                 b.DamagedPercentage = (float)b.InflictedDamage / __instance.HealthLimit;
 

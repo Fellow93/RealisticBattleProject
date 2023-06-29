@@ -71,7 +71,6 @@ namespace RBMAI
             base.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderSkein;
             base.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
             base.Formation.FormOrder = FormOrder.FormOrderDeep;
-            base.Formation.WeaponUsageOrder = WeaponUsageOrder.WeaponUsageOrderUseAny;
         }
 
         public override TextObject GetBehaviorString()
@@ -82,7 +81,7 @@ namespace RBMAI
             if (_mainFormation != null)
             {
                 behaviorString.SetTextVariable("AI_SIDE", GameTexts.FindText("str_formation_ai_side_strings", _mainFormation.AI.Side.ToString()));
-                behaviorString.SetTextVariable("CLASS", GameTexts.FindText("str_formation_class_string", _mainFormation.PrimaryClass.GetName()));
+                behaviorString.SetTextVariable("CLASS", GameTexts.FindText("str_formation_class_string", _mainFormation.RepresentativeClass.GetName()));
             }
             return behaviorString;
         }

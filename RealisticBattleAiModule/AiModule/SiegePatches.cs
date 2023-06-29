@@ -188,24 +188,24 @@ namespace RBMAI.AiModule
                 {
                     case BehaviorState.ClimbWall:
                         {
-                            //if (__instance.Formation != null && __instance.Formation.QuerySystem.MedianPosition.AsVec2.Distance(____wallSegmentMoveOrder.GetPosition(__instance.Formation)) > 60f)
-                            //{
-                            //    ____currentOrder = ____wallSegmentMoveOrder;
-                            //    break;
-                            //}
-                            //if (__instance.Formation != null)
-                            //{
-                            //    Formation enemyFormation = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, false, false, false, false, false);
-                            //    if (enemyFormation != null)
-                            //    {
-                            //        ____currentOrder = MovementOrder.MovementOrderChargeToTarget(enemyFormation);
-                            //        break;
-                            //    }
-                            //}
-                            //if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
-                            //{
-                            //    ____currentOrder = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
-                            //}
+                            if (__instance.Formation != null && __instance.Formation.QuerySystem.MedianPosition.AsVec2.Distance(____wallSegmentMoveOrder.GetPosition(__instance.Formation)) > 60f)
+                            {
+                                ____currentOrder = ____wallSegmentMoveOrder;
+                                break;
+                            }
+                            if (__instance.Formation != null)
+                            {
+                                Formation enemyFormation = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, false, false, false, false, false);
+                                if (enemyFormation != null)
+                                {
+                                    ____currentOrder = MovementOrder.MovementOrderChargeToTarget(enemyFormation);
+                                    break;
+                                }
+                            }
+                            if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
+                            {
+                                ____currentOrder = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                            }
                             break;
                         }
                     case BehaviorState.AttackEntity:
@@ -245,12 +245,12 @@ namespace RBMAI.AiModule
 
                             if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                             {
-                                //____attackEntityOrderInnerGate = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
-                                //____attackEntityOrderOuterGate = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
-                                //____chargeOrder = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
-                                //____chargeOrder.TargetEntity = null;
-                                //____currentOrder = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
-                                //____currentOrder.TargetEntity = null;
+                                ____attackEntityOrderInnerGate = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                                ____attackEntityOrderOuterGate = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                                ____chargeOrder = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                                ____chargeOrder.TargetEntity = null;
+                                ____currentOrder = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                                ____currentOrder.TargetEntity = null;
                             }
                             break;
                         }
@@ -280,7 +280,6 @@ namespace RBMAI.AiModule
                 __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderScatter;
                 __instance.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
                 __instance.Formation.FormOrder = FormOrder.FormOrderWider;
-                __instance.Formation.WeaponUsageOrder = WeaponUsageOrder.WeaponUsageOrderUseAny;
                 return false;
             }
 
@@ -393,7 +392,6 @@ namespace RBMAI.AiModule
                 __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
                 __instance.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
                 //formation.FormOrder = FormOrder.FormOrderWide;
-                __instance.Formation.WeaponUsageOrder = WeaponUsageOrder.WeaponUsageOrderUseAny;
                 return false;
             }
 
@@ -940,7 +938,7 @@ namespace RBMAI.AiModule
             }
         }
 
-        [HarmonyPatch(typeof(TacticDefendCastle))]
+        [HarmonyPatch(typeof(TacticComponent))]
         private class StopUsingAllMachinesPatch
         {
             [HarmonyPrefix]
@@ -951,7 +949,7 @@ namespace RBMAI.AiModule
             }
         }
 
-        [HarmonyPatch(typeof(TacticDefendCastle))]
+        [HarmonyPatch(typeof(TacticComponent))]
         private class StopUsingAllRangedSiegeWeaponsPatch
         {
             [HarmonyPrefix]

@@ -49,7 +49,6 @@ namespace RBMAI
             base.Formation.FacingOrder = FacingOrder.FacingOrderLookAtEnemy;
             base.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
             base.Formation.FormOrder = FormOrder.FormOrderDeep;
-            base.Formation.WeaponUsageOrder = WeaponUsageOrder.WeaponUsageOrderUseAny;
         }
 
         protected override void CalculateCurrentOrder()

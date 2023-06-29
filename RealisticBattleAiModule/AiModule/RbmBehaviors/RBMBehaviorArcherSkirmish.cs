@@ -314,7 +314,6 @@ namespace RBMAI
             base.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
             base.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
             base.Formation.FormOrder = FormOrder.FormOrderWide;
-            base.Formation.WeaponUsageOrder = WeaponUsageOrder.WeaponUsageOrderUseAny;
         }
 
         protected override float GetAiWeight()

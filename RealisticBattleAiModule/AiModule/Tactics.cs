@@ -783,7 +783,8 @@ namespace RBMAI
                     {
                         if (agent != null && agent.IsHuman && !agent.IsRunningAway)
                         {
-                            bool isRanged = (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) && agent.Equipment.GetAmmoAmount(WeaponClass.Arrow) > 5) || (agent.Equipment.HasRangedWeapon(WeaponClass.Bolt) && agent.Equipment.GetAmmoAmount(WeaponClass.Bolt) > 5);
+                            EquipmentIndex wieldedItemIndex = agent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                            bool isRanged = (wieldedItemIndex != EquipmentIndex.None && agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) && agent.Equipment.GetAmmoAmount(wieldedItemIndex) > 5) || (wieldedItemIndex != EquipmentIndex.None && agent.Equipment.HasRangedWeapon(WeaponClass.Bolt) && agent.Equipment.GetAmmoAmount(wieldedItemIndex) > 5);
                             if (agent.HasMount && isRanged)
                             {
                                 if (__instance.Team.GetFormation(FormationClass.HorseArcher) != null && __instance.Team.GetFormation(FormationClass.HorseArcher).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)

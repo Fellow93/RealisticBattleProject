@@ -52,7 +52,7 @@ namespace RBMCombat
                         if (attacker != null)
                         {
                             SkillObject skill = weapon.CurrentUsageItem.RelevantSkill;
-                            int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgentCharacter, attackInformation.AttackerAgentOrigin, attacker.Formation, skill);
+                            int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgent, skill);
                             float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
                             switch (weapon.CurrentUsageItem.WeaponClass)
                             {
@@ -151,7 +151,7 @@ namespace RBMCombat
                         }
                     }
                     SkillObject skill = weapon.CurrentUsageItem.RelevantSkill;
-                    int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgentCharacter, attackInformation.AttackerAgentOrigin, attacker.Formation, skill);
+                    int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgent, skill);
                     float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
                     switch (weapon.CurrentUsageItem.WeaponClass)
                     {
@@ -1269,88 +1269,88 @@ namespace RBMCombat
             }
         }
 
-        [HarmonyPatch(typeof(PropertyBasedTooltipVMExtensions))]
-        [HarmonyPatch("UpdateTooltip", new[] { typeof(PropertyBasedTooltipVM), typeof(EquipmentElement?) })]
-        private class UpdateTooltipPatch
-        {
-            private static void Postfix(ref PropertyBasedTooltipVM propertyBasedTooltipVM, EquipmentElement? equipmentElement)
-            {
-                if (equipmentElement != null && equipmentElement.HasValue)
-                {
-                    EquipmentElement eq = equipmentElement.Value;
-                    if (propertyBasedTooltipVM != null && currentSelectedChar != null && eq.Item != null)
-                    {
-                        ItemObject item = eq.Item;
-                        if (item.WeaponComponent != null && item.Weapons.Count > 0)
-                        {
-                            int usageindex = 0;
-                            if (eq.Item.Weapons.Count > 1 && propertyBasedTooltipVM.IsExtended)
-                            {
-                                usageindex = 1;
-                            }
-                            string hintText = "";
-                            if (item.GetWeaponWithUsageIndex(usageindex).IsMeleeWeapon)
-                            {
-                                GetRBMMeleeWeaponStats(eq, usageindex, EquipmentElement.Invalid, -1, out int relevantSkill, out float swingSpeed, out float swingSpeedCompred, out float thrustSpeed, out float thrustSpeedCompred, out float sweetSpotOut, out float sweetSpotComparedOut,
-                            out string swingCombinedStringOut, out string swingCombinedStringComparedOut, out string thrustCombinedStringOut, out string thrustCombinedStringComparedOut,
-                            out float swingDamageFactor, out float swingDamageFactorCompared, out float thrustDamageFactor, out float thrustDamageFactorCompared);
+        //[HarmonyPatch(typeof(PropertyBasedTooltipVMExtensions))]
+        //[HarmonyPatch("UpdateTooltip", new[] { typeof(PropertyBasedTooltipVM), typeof(EquipmentElement?) })]
+        //private class UpdateTooltipPatch
+        //{
+        //    private static void Postfix(ref PropertyBasedTooltipVM propertyBasedTooltipVM, EquipmentElement? equipmentElement)
+        //    {
+        //        if (equipmentElement != null && equipmentElement.HasValue)
+        //        {
+        //            EquipmentElement eq = equipmentElement.Value;
+        //            if (propertyBasedTooltipVM != null && currentSelectedChar != null && eq.Item != null)
+        //            {
+        //                ItemObject item = eq.Item;
+        //                if (item.WeaponComponent != null && item.Weapons.Count > 0)
+        //                {
+        //                    int usageindex = 0;
+        //                    if (eq.Item.Weapons.Count > 1 && propertyBasedTooltipVM.IsExtended)
+        //                    {
+        //                        usageindex = 1;
+        //                    }
+        //                    string hintText = "";
+        //                    if (item.GetWeaponWithUsageIndex(usageindex).IsMeleeWeapon)
+        //                    {
+        //                        GetRBMMeleeWeaponStats(eq, usageindex, EquipmentElement.Invalid, -1, out int relevantSkill, out float swingSpeed, out float swingSpeedCompred, out float thrustSpeed, out float thrustSpeedCompred, out float sweetSpotOut, out float sweetSpotComparedOut,
+        //                    out string swingCombinedStringOut, out string swingCombinedStringComparedOut, out string thrustCombinedStringOut, out string thrustCombinedStringComparedOut,
+        //                    out float swingDamageFactor, out float swingDamageFactorCompared, out float thrustDamageFactor, out float thrustDamageFactorCompared);
 
-                                hintText += "RBM Stats\n";
-                                hintText += "Relevant Skill: " + relevantSkill + "\n";
-                                hintText += "Swing Damage Factor: " + MathF.Round(swingDamageFactor * 100f) + "\n";
-                                hintText += "Thrust Damage Factor: " + MathF.Round(thrustDamageFactor * 100f) + "\n";
-                                hintText += "Swing Speed, m/s: " + swingSpeed + "\n";
-                                hintText += "Thrust Speed, m/s: " + thrustSpeed + "\n";
+        //                        hintText += "RBM Stats\n";
+        //                        hintText += "Relevant Skill: " + relevantSkill + "\n";
+        //                        hintText += "Swing Damage Factor: " + MathF.Round(swingDamageFactor * 100f) + "\n";
+        //                        hintText += "Thrust Damage Factor: " + MathF.Round(thrustDamageFactor * 100f) + "\n";
+        //                        hintText += "Swing Speed, m/s: " + swingSpeed + "\n";
+        //                        hintText += "Thrust Speed, m/s: " + thrustSpeed + "\n";
 
-                                if (eq.GetModifiedSwingDamageForUsage(usageindex) > 0f)
-                                {
-                                    hintText += "Swing Sweet Spot, %:" + MathF.Floor(sweetSpotOut * 100f) + "\n";
+        //                        if (eq.GetModifiedSwingDamageForUsage(usageindex) > 0f)
+        //                        {
+        //                            hintText += "Swing Sweet Spot, %:" + MathF.Floor(sweetSpotOut * 100f) + "\n";
 
-                                    hintText += "Swing Damage:\n";
-                                    hintText += swingCombinedStringOut + "\n";
-                                }
+        //                            hintText += "Swing Damage:\n";
+        //                            hintText += swingCombinedStringOut + "\n";
+        //                        }
 
-                                if (eq.GetModifiedThrustDamageForUsage(usageindex) > 0f)
-                                {
-                                    hintText += "Thrust Damage:\n";
-                                    hintText += thrustCombinedStringOut + "\n";
-                                }
-                                propertyBasedTooltipVM.AddProperty("", hintText);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        //                        if (eq.GetModifiedThrustDamageForUsage(usageindex) > 0f)
+        //                        {
+        //                            hintText += "Thrust Damage:\n";
+        //                            hintText += thrustCombinedStringOut + "\n";
+        //                        }
+        //                        propertyBasedTooltipVM.AddProperty("", hintText);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
-        [HarmonyPatch(typeof(PropertyBasedTooltipVMExtensions))]
-        [HarmonyPatch("UpdateTooltip", new[] { typeof(PropertyBasedTooltipVM), typeof(CharacterObject) })]
-        private class UpdateTooltipCharacterObjectPatch
-        {
-            private static void Postfix(ref PropertyBasedTooltipVM propertyBasedTooltipVM, CharacterObject character)
-            {
-                if (character != null)
-                {
-                    Equipment equipment;
-                    if (character.BattleEquipments.ToArray().Length > equipmentSetindex)
-                    {
-                        equipment = character.BattleEquipments.ElementAt(equipmentSetindex);
-                    }
-                    else
-                    {
-                        equipment = character.Equipment;
-                    }
-                    getRBMArmorStatsStrings(equipment,
-                       out string combinedHeadString,
-                       out string combinedBodyString,
-                       out string combinedArmString,
-                       out string combinedLegString);
-                    propertyBasedTooltipVM.AddProperty("", combinedHeadString);
-                    propertyBasedTooltipVM.AddProperty("", combinedBodyString);
-                    propertyBasedTooltipVM.AddProperty("", combinedArmString);
-                    propertyBasedTooltipVM.AddProperty("", combinedLegString);
-                }
-            }
-        }
+        //[HarmonyPatch(typeof(PropertyBasedTooltipVMExtensions))]
+        //[HarmonyPatch("UpdateTooltip", new[] { typeof(PropertyBasedTooltipVM), typeof(CharacterObject) })]
+        //private class UpdateTooltipCharacterObjectPatch
+        //{
+        //    private static void Postfix(ref PropertyBasedTooltipVM propertyBasedTooltipVM, CharacterObject character)
+        //    {
+        //        if (character != null)
+        //        {
+        //            Equipment equipment;
+        //            if (character.BattleEquipments.ToArray().Length > equipmentSetindex)
+        //            {
+        //                equipment = character.BattleEquipments.ElementAt(equipmentSetindex);
+        //            }
+        //            else
+        //            {
+        //                equipment = character.Equipment;
+        //            }
+        //            getRBMArmorStatsStrings(equipment,
+        //               out string combinedHeadString,
+        //               out string combinedBodyString,
+        //               out string combinedArmString,
+        //               out string combinedLegString);
+        //            propertyBasedTooltipVM.AddProperty("", combinedHeadString);
+        //            propertyBasedTooltipVM.AddProperty("", combinedBodyString);
+        //            propertyBasedTooltipVM.AddProperty("", combinedArmString);
+        //            propertyBasedTooltipVM.AddProperty("", combinedLegString);
+        //        }
+        //    }
+        //}
     }
 }

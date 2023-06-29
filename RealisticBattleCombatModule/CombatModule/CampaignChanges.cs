@@ -19,6 +19,7 @@ using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.CampaignSystem.ComponentInterfaces.CombatXpModel;
 using static TaleWorlds.CampaignSystem.ComponentInterfaces.MilitaryPowerModel;
+using static TaleWorlds.CampaignSystem.MapEvents.MapEvent;
 
 namespace RBMCombat
 {
@@ -518,8 +519,7 @@ namespace RBMCombat
 
             [HarmonyPrefix]
             [HarmonyPatch("AddPerkBonusForParty")]
-            private static bool PrefixAddPerkBonusForParty(PerkObject perk, MobileParty party, bool isPrimaryBonus,
-                ref ExplainedNumber stat, ref TextObject ____textLeader, ref TextObject ____textScout, ref TextObject ____textSurgeon, ref TextObject ____textQuartermaster)
+            private static bool PrefixAddPerkBonusForParty(PerkObject perk, MobileParty party, bool isPrimaryBonus, ref ExplainedNumber stat)
             {
                 Hero hero = party?.LeaderHero;
                 if (hero == null)
@@ -533,11 +533,11 @@ namespace RBMCombat
                     float num = (flag ? perk.PrimaryBonus : perk.SecondaryBonus);
                     if (flag)
                     {
-                        AddToStat(ref stat, perk.PrimaryIncrementType, num, ____textLeader);
+                        AddToStat(ref stat, perk.PrimaryIncrementType, num, perk.Name);
                     }
                     else
                     {
-                        AddToStat(ref stat, perk.SecondaryIncrementType, num, ____textLeader);
+                        AddToStat(ref stat, perk.SecondaryIncrementType, num, perk.Name);
                     }
                 }
                 flag = isPrimaryBonus && perk.PrimaryRole == SkillEffect.PerkRole.ClanLeader;
@@ -546,11 +546,11 @@ namespace RBMCombat
                 {
                     if (flag)
                     {
-                        AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, ____textLeader);
+                        AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, perk.Name);
                     }
                     else
                     {
-                        AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, ____textLeader);
+                        AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, perk.Name);
                     }
                 }
                 flag = isPrimaryBonus && perk.PrimaryRole == SkillEffect.PerkRole.PartyMember;
@@ -561,7 +561,7 @@ namespace RBMCombat
                     {
                         if (hero.GetPerkValue(perk))
                         {
-                            AddToStat(ref stat, flag ? perk.PrimaryIncrementType : perk.SecondaryIncrementType, flag ? perk.PrimaryBonus : perk.SecondaryBonus, ____textLeader);
+                            AddToStat(ref stat, flag ? perk.PrimaryIncrementType : perk.SecondaryIncrementType, flag ? perk.PrimaryBonus : perk.SecondaryBonus, perk.Name);
                         }
                     }
                     else
@@ -570,7 +570,7 @@ namespace RBMCombat
                         {
                             if (item.Character.IsHero && item.Character.GetPerkValue(perk))
                             {
-                                AddToStat(ref stat, flag ? perk.PrimaryIncrementType : perk.SecondaryIncrementType, flag ? perk.PrimaryBonus : perk.SecondaryBonus, ____textLeader);
+                                AddToStat(ref stat, flag ? perk.PrimaryIncrementType : perk.SecondaryIncrementType, flag ? perk.PrimaryBonus : perk.SecondaryBonus, perk.Name);
                             }
                         }
                     }
@@ -588,11 +588,11 @@ namespace RBMCombat
                     {
                         if (flag)
                         {
-                            AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, ____textLeader);
+                            AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, perk.Name);
                         }
                         else
                         {
-                            AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, ____textLeader);
+                            AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, perk.Name);
                         }
                     }
                 }
@@ -605,11 +605,11 @@ namespace RBMCombat
                     {
                         if (flag)
                         {
-                            AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, ____textScout);
+                            AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, perk.Name);
                         }
                         else
                         {
-                            AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, ____textScout);
+                            AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, perk.Name);
                         }
                     }
                 }
@@ -622,11 +622,11 @@ namespace RBMCombat
                     {
                         if (flag)
                         {
-                            AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, ____textSurgeon);
+                            AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, perk.Name);
                         }
                         else
                         {
-                            AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, ____textSurgeon);
+                            AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, perk.Name);
                         }
                     }
                 }
@@ -641,11 +641,11 @@ namespace RBMCombat
                 {
                     if (flag)
                     {
-                        AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, ____textQuartermaster);
+                        AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, perk.Name);
                     }
                     else
                     {
-                        AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, ____textQuartermaster);
+                        AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, perk.Name);
                     }
                 }
                 return false;
@@ -666,7 +666,7 @@ namespace RBMCombat
                     CharacterObject characterObject = agent.Character as CharacterObject;
                     IAgentOriginBase agentOriginBase = agent?.Origin;
                     MobileParty mobileParty = ((PartyBase)(agentOriginBase?.BattleCombatant))?.MobileParty;
-                    CharacterObject partyLeader = mobileParty?.LeaderHero?.CharacterObject;
+                    //CharacterObject partyLeader = mobileParty?.LeaderHero?.CharacterObject;
                     CharacterObject captain = agent?.Formation?.Captain?.Character as CharacterObject;
                     if (characterObject != null && captain != null)
                     {
@@ -705,7 +705,7 @@ namespace RBMCombat
                         }
                         if (captain.GetPerkValue(DefaultPerks.Medicine.MinisterOfHealth))
                         {
-                            int num = MathF.Max(__instance.GetEffectiveSkill(captain, agentOriginBase, null, DefaultSkills.Medicine) - 200, 0) / 10;
+                            int num = MathF.Max(__instance.GetEffectiveSkill(agent, DefaultSkills.Medicine) - 200, 0) / 10;
                             if (num > 0)
                             {
                                 stat.Add(num);
@@ -823,72 +823,43 @@ namespace RBMCombat
         [HarmonyPatch(typeof(DefaultMilitaryPowerModel))]
         public class OverrideDefaultMilitaryPowerModel
         {
-            private static PowerCalculationContext DetermineContext(MapEvent.BattleTypes battleType, BattleSideEnum battleSideEnum, bool isSimulation)
-            {
-                PowerCalculationContext result = PowerCalculationContext.Default;
-                switch (battleType)
-                {
-                    case MapEvent.BattleTypes.FieldBattle:
-                        result = (isSimulation ? PowerCalculationContext.FieldBattleSimulation : PowerCalculationContext.FieldBattle);
-                        break;
+            //[HarmonyPrefix]
+            //[HarmonyPatch("GetTroopPowerBasedOnContext")]
+            //private static bool PrefixGetTroopPowerBasedOnContext(ref float __result, CharacterObject troop, MapEvent.BattleTypes battleType = MapEvent.BattleTypes.None, BattleSideEnum battleSideEnum = BattleSideEnum.None, bool isSimulation = false)
+            //{
 
-                    case MapEvent.BattleTypes.Raid:
-                    case MapEvent.BattleTypes.IsForcingVolunteers:
-                    case MapEvent.BattleTypes.IsForcingSupplies:
-                        result = ((battleSideEnum != BattleSideEnum.Attacker) ? (isSimulation ? PowerCalculationContext.RaidSimulationAsDefender : PowerCalculationContext.RaidAsDefender) : (isSimulation ? PowerCalculationContext.RaidSimulationAsAttacker : PowerCalculationContext.RaidAsAttacker));
-                        break;
-
-                    case MapEvent.BattleTypes.Siege:
-                    case MapEvent.BattleTypes.SallyOut:
-                    case MapEvent.BattleTypes.SiegeOutside:
-                        result = ((battleSideEnum != BattleSideEnum.Attacker) ? (isSimulation ? PowerCalculationContext.SiegeSimulationAsDefender : PowerCalculationContext.SiegeAsDefender) : (isSimulation ? PowerCalculationContext.SiegeSimulationAsAttacker : PowerCalculationContext.SiegeAsAttacker));
-                        break;
-
-                    case MapEvent.BattleTypes.Hideout:
-                        result = PowerCalculationContext.Hideout;
-                        break;
-                }
-                return result;
-            }
-
-            [HarmonyPrefix]
-            [HarmonyPatch("GetTroopPowerBasedOnContext")]
-            private static bool PrefixGetTroopPowerBasedOnContext(ref float __result, CharacterObject troop, MapEvent.BattleTypes battleType = MapEvent.BattleTypes.None, BattleSideEnum battleSideEnum = BattleSideEnum.None, bool isSimulation = false)
-            {
-                PowerCalculationContext context = DetermineContext(battleType, battleSideEnum, isSimulation);
-
-                int tier = (troop.IsHero ? (troop.HeroObject.Level / 4 + 1) : troop.Tier);
-                bool isNoble = false;
-                if (troop.Culture != null)
-                {
-                    CharacterObject EliteBasicTroop = troop.Culture.EliteBasicTroop;
-                    if (troop == EliteBasicTroop)
-                    {
-                        isNoble = true;
-                    }
-                    else
-                    {
-                        List<CharacterObject> cultureNobleTroopList = FillTroopListUntilTier(troop.Culture.EliteBasicTroop, 10);
-                        foreach (CharacterObject co in cultureNobleTroopList)
-                        {
-                            if (co == troop)
-                            {
-                                isNoble = true;
-                            }
-                        }
-                    }
-                }
-                float origPower = (float)((2f + tier) * (8f + tier)) * 0.02f * (troop.IsHero ? 1.5f : (troop.IsMounted ? 1.2f : 1f));
-                float modifiedTier = (tier - 1) * 3f;
-                modifiedTier = MathF.Clamp(modifiedTier, 1f, modifiedTier);
-                if ((uint)(context - 6) <= 1u)
-                {
-                    __result = (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * (troop.IsHero ? 1.5f : 1f);
-                    return false;
-                }
-                __result = (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * (troop.IsHero ? 1.5f : 1f) * (troop.IsMounted ? 1.5f : 1f) * (isNoble ? 1.5f : 1f);
-                return false;
-            }
+            //    int tier = (troop.IsHero ? (troop.HeroObject.Level / 4 + 1) : troop.Tier);
+            //    bool isNoble = false;
+            //    if (troop.Culture != null)
+            //    {
+            //        CharacterObject EliteBasicTroop = troop.Culture.EliteBasicTroop;
+            //        if (troop == EliteBasicTroop)
+            //        {
+            //            isNoble = true;
+            //        }
+            //        else
+            //        {
+            //            List<CharacterObject> cultureNobleTroopList = FillTroopListUntilTier(troop.Culture.EliteBasicTroop, 10);
+            //            foreach (CharacterObject co in cultureNobleTroopList)
+            //            {
+            //                if (co == troop)
+            //                {
+            //                    isNoble = true;
+            //                }
+            //            }
+            //        }
+            //    }
+            //    float origPower = (float)((2f + tier) * (8f + tier)) * 0.02f * (troop.IsHero ? 1.5f : (troop.IsMounted ? 1.2f : 1f));
+            //    float modifiedTier = (tier - 1) * 3f;
+            //    modifiedTier = MathF.Clamp(modifiedTier, 1f, modifiedTier);
+            //    if (battleType == BattleTypes.Siege)
+            //    {
+            //        __result = (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * (troop.IsHero ? 1.5f : 1f);
+            //        return false;
+            //    }
+            //    __result = (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * (troop.IsHero ? 1.5f : 1f) * (troop.IsMounted ? 1.5f : 1f) * (isNoble ? 1.5f : 1f);
+            //    return false;
+            //}
 
             [HarmonyPatch(typeof(CommonAIComponent))]
             [HarmonyPatch("InitializeMorale")]
@@ -1007,11 +978,9 @@ namespace RBMCombat
 
             public static float GetTroopPowerBasedOnContextForXPAttacker(CharacterObject troop, MapEvent.BattleTypes battleType = MapEvent.BattleTypes.None, BattleSideEnum battleSideEnum = BattleSideEnum.None, bool isSimulation = false)
             {
-                PowerCalculationContext context = DetermineContext(battleType, battleSideEnum, isSimulation);
-
                 int tier = (troop.IsHero ? (troop.HeroObject.Level / 4 + 1) : troop.Tier);
                 var modifiedTier = tier * 1f;
-                if ((uint)(context - 6) <= 1u)
+                if (battleType == BattleTypes.Siege || battleType == BattleTypes.SiegeOutside || battleType == BattleTypes.SallyOut)
                 {
                     return (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * (troop.IsHero ? 1.25f : 1f);
                 }
@@ -1020,11 +989,9 @@ namespace RBMCombat
 
             public static float GetTroopPowerBasedOnContextForXPVictim(CharacterObject troop, MapEvent.BattleTypes battleType = MapEvent.BattleTypes.None, BattleSideEnum battleSideEnum = BattleSideEnum.None, bool isSimulation = false)
             {
-                PowerCalculationContext context = DetermineContext(battleType, battleSideEnum, isSimulation);
-
                 int tier = (troop.IsHero ? (troop.HeroObject.Level / 4 + 1) : troop.Tier);
                 var modifiedTier = tier * 1f;
-                if ((uint)(context - 6) <= 1u)
+                if (battleType == BattleTypes.Siege || battleType == BattleTypes.SiegeOutside || battleType == BattleTypes.SallyOut)
                 {
                     return (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * (troop.IsHero ? 1.5f : 1f);
                 }

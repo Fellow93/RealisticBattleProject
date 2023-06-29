@@ -60,7 +60,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
             {
                 formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
-                    if (i != 0 && formation.IsInfantry())
+                    if (i != 0 && formation.QuerySystem.IsInfantryFormation)
                     {
                         bool isSkirmisher = false;
                         //for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
