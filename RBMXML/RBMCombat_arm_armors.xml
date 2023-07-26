@@ -186,4 +186,21 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
+	<Item
+		id="khuzait_heavy_armor_bracer"
+		name="{=NfFAgMUE}Khan's Plated Bracers"
+		mesh="khuzait_heavy_armor_bracer"
+		culture="Culture.vlandia"
+		weight="2.2"
+		appearance="7"
+		Type="HandArmor">
+		<ItemComponent>
+			<Armor
+				arm_armor="38"
+				covers_hands="false"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags />
+	</Item>
 </Items>

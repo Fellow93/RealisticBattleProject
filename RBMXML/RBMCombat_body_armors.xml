@@ -876,12 +876,6 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="armored_bearskin" name="{=FOx5vZSJ}Armored Bearskin" mesh="battania_helmet_j" culture="Culture.battania" weight="7" Type="Cape" appearance="2" difficulty="0" subtype="body_armor">
-		<ItemComponent>
-			<Armor body_armor="24" modifier_group="cloth" material_type="Cloth"/>
-		</ItemComponent>
-		<Flags/>
-	</Item>
 	<Item id="empire_warrior_padded_armor_b" name="{=3hOPlGlS}Imperial Gambeson Over Leather Jacket" mesh="empire_warrior_padded_armor_b" culture="Culture.empire" weight="1.8" Type="BodyArmor" appearance="1">
 		<ItemComponent>
 			<Armor body_armor="28" leg_armor="27" covers_body="true" modifier_group="cloth" material_type="Cloth" arm_armor="16"/>
@@ -1534,4 +1528,29 @@
     </ItemComponent>
     <Flags UseTeamColor="true" />
   </Item>
+	<Item
+		id="battania_light_armor_e"
+		name="{=yDykmlS7}Tartan Toga"
+		subtype="body_armor"
+		mesh="battania_light_armor_e"
+		culture="Culture.battania"
+		weight="0.7"
+		difficulty="0"
+		appearance="1.1"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="10"
+				leg_armor="15"
+				arm_armor="0"
+				has_gender_variations="true"
+				covers_body="false"
+				modifier_group="cloth"
+				material_type="Cloth" />
+		</ItemComponent>
+		<Flags
+			DoesNotHideChest="true"
+			UseTeamColor="true"
+			Civilian="true" />
+	</Item>
 </Items>

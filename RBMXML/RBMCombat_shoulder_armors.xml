@@ -516,4 +516,58 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
+	<Item id="armored_bearskin" name="{=FOx5vZSJ}Armored Bearskin" mesh="battania_helmet_j" culture="Culture.battania" weight="7" Type="Cape" appearance="2" difficulty="0" subtype="body_armor">
+		<ItemComponent>
+			<Armor body_armor="24" modifier_group="cloth" material_type="Cloth"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item
+		id="fur_cloak_a"
+		name="{=ujntvg7M}Fur Cloak With Round Plate"
+		mesh="fur_cloak_a"
+		culture="Culture.battania"
+		weight="7.6"
+		appearance="6"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="20"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags />
+	</Item>
+	<Item
+		id="fur_cloak_b"
+		name="{=mTsEaNKb}Fur Cloak"
+		mesh="fur_cloak_b"
+		culture="Culture.battania"
+		weight="2.7"
+		appearance="4"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="7"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags />
+	</Item>
+	<Item
+		id="fur_cloak_c"
+		name="{=p0Xgt48l}Large Fur Cloak With Round Plate"
+		mesh="fur_cloak_c"
+		culture="Culture.battania"
+		weight="8.3"
+		appearance="3"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="25"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags />
+	</Item>
 </Items>

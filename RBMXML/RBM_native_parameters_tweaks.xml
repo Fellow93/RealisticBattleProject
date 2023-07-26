@@ -15,7 +15,7 @@
 	
     <native_parameter id="guard_reset_time" value="10.0"/>
 	
-	<native_parameter id="mounted_passive_action_minimum_speed" value="7"/>
+	<native_parameter id="mounted_passive_action_minimum_speed" value="5"/>
 	
 	<native_parameter id="humanoid_physics_capsule_radius_multiplier_for_friend" value="1.1"/>
 	
