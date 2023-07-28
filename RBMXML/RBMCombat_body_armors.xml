@@ -84,7 +84,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="fur_trimmed_short_tunic" name="{=7yGwvnUA}Fur Trimmed Short Tunic" mesh="sturgia_light_armor_d" culture="Culture.sturgia" weight="0.4" Type="BodyArmor" appearance="0.6" difficulty="0" subtype="body_armor" value="120">
+	<Item id="fur_trimmed_short_tunic" name="{=RBM73285}Fur Trimmed Short Tunic" mesh="sturgia_light_armor_d" culture="Culture.sturgia" weight="0.4" Type="BodyArmor" appearance="0.6" difficulty="0" subtype="body_armor" value="120">
 		<ItemComponent>
 			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" has_gender_variations="true" arm_armor="5"/>
 		</ItemComponent>
@@ -120,7 +120,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="northern_tunic" name="{=7yGwvnUA}Northern Tunic" mesh="sturgia_costume_j" culture="Culture.sturgia" weight="0.4" Type="BodyArmor" appearance="0.6" difficulty="0" subtype="body_armor" value="120">
+	<Item id="northern_tunic" name="{=RBMc3029}Northern Tunic" mesh="sturgia_costume_j" culture="Culture.sturgia" weight="0.4" Type="BodyArmor" appearance="0.6" difficulty="0" subtype="body_armor" value="120">
 		<ItemComponent>
 			<Armor body_armor="6" leg_armor="5" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" has_gender_variations="true" arm_armor="5"/>
 		</ItemComponent>
@@ -150,7 +150,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="sturgia_light_tunic" name="{=7yGwvnUA}Long Tunic" mesh="sturgia_light_armor_b" culture="Culture.sturgia" weight="0.4" Type="BodyArmor" appearance="0.6" difficulty="0" subtype="body_armor" value="120">
+	<Item id="sturgia_light_tunic" name="{=RBM4a2c1}Long Tunic" mesh="sturgia_light_armor_b" culture="Culture.sturgia" weight="0.4" Type="BodyArmor" appearance="0.6" difficulty="0" subtype="body_armor" value="120">
 		<ItemComponent>
 			<Armor body_armor="6" leg_armor="5" modifier_group="cloth_unarmoured" material_type="Cloth" has_gender_variations="true" arm_armor="5"/>
 		</ItemComponent>
@@ -588,7 +588,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="light_tunic" name="{=7yGwvnUA}Light Tunic" mesh="sturgia_light_armor_a" culture="Culture.sturgia" weight="0.4" Type="BodyArmor" appearance="0.6" difficulty="0" subtype="body_armor" value="120">
+	<Item id="light_tunic" name="{=RBM4f1ee}Light Tunic" mesh="sturgia_light_armor_a" culture="Culture.sturgia" weight="0.4" Type="BodyArmor" appearance="0.6" difficulty="0" subtype="body_armor" value="120">
 		<ItemComponent>
 			<Armor body_armor="13" leg_armor="13" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" has_gender_variations="true" arm_armor="6"/>
 		</ItemComponent>
