@@ -1,0 +1,749 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base>
+    <tags>
+        <tag language="English"/>
+    </tags>
+<strings>
+    <string id="02g6K4Yw" text="Southern Tribal Turban">
+    <string id="0GKH29JG" text="Mercenary Guard">
+    <string id="0bE9MxK4" text="Wrapped Southern Cap">
+    <string id="0s4IP7jB" text="Old Work Horse">
+    <string id="12PL4971" text="Northern Lamellar Armor">
+    <string id="1Fdtj39w" text="Feathered Spangenhelm Over Imperial Coif">
+    <string id="1UZGbygw" text="Imperial Long Gambeson">
+    <string id="1aOuyULB" text="Storm Charger">
+    <string id="1i0Ttr8H" text="Son of Boyar">
+    <string id="21U7JTFv" text="Western Aketon">
+    <string id="24xuA5G2" text="Desert War Horse">
+    <string id="27IgGO81" text="Highland Mail Shoulder Reinforcements">
+    <string id="28KBiS2H" text="Large Northern Lamellar Shoulders">
+    <string id="2FubBDYB" text="Eastern Polesword">
+    <string id="2VYmGLC6" text="Northern Leather Cap">
+    <string id="2rvCcBuS" text="Brown Hijab">
+    <string id="3BGHFFsL" text="Northern Padded Cloth">
+    <string id="3hOPlGlS" text="Imperial Gambeson Over Leather Jacket">
+    <string id="4BaTgzia" text="Southern Cap">
+    <string id="4XAa0tca" text="Closed Southern Helmet">
+    <string id="4c7e0RCE" text="Northern Nasal Helmet">
+    <string id="5h1qpdoa" text="Imperial Gambeson With Straps">
+    <string id="6Cc4zpeQ" text="Reinforced Southern Round Shield">
+    <string id="6J0aJo7u" text="Southern Rural Headdress">
+    <string id="6Ls9naf4" text="Eastern Steppe Leather Boots">
+    <string id="6SxJ9cpN" text="Southern Round Shield">
+    <string id="6Wkq14uk" text="Highland Peasant Dress">
+    <string id="6YCbEaHK" text="Northern Round Shield">
+    <string id="6Ynb0K0f" text="Southern Reinforced Brass Scale Shoulders">
+    <string id="6qaNQAND" text="Eastern Lamellar Armor">
+    <string id="7rGaUG0W" text="Eastern Fur Hood">
+    <string id="7sgW3eHd" text="Eastern Dress with Fur">
+    <string id="80plewQ1" text="Spark">
+    <string id="82GMEKy8" text="Scale Shoulders">
+    <string id="85q9uY76" text="Highland Half Scaled Harness">
+    <string id="8Oi89KRn" text="Northern Light Harness">
+    <string id="8TbraEGR" text="Western Chainmail">
+    <string id="8cM840mh" text="Northern Luxery Tunic">
+    <string id="8kUwD98O" text="Imperial Studded Strip Shoulders With Lamellar Pauldrons">
+    <string id="8ulJswRY" text="Plated Leather Coat">
+    <string id="9Hr4oEvw" text="Roundkettle Over Imperial Leather">
+    <string id="AVcbBH1J" text="Northern Nasalhelm Over Leather">
+    <string id="AZg2woNV" text="Northern Round Sparring Shield">
+    <string id="AkItuVRh" text="Battanian Tartan with Chest Plate">
+    <string id="AloILntx" text="Southern Common Harness">
+    <string id="AssCCFew" text="Mercenary Horseman">
+    <string id="Auwoehal" text="Highland Warlord Armor">
+    <string id="AwARTy44" text="Imperial Horseman Boots">
+    <string id="B5akzp6B" text="Iron Feathered Spangenhelm">
+    <string id="B9LjhTj6" text="Imperial Studded Leather">
+    <string id="Bv068ziR" text="Northern Wrought Iron Mail">
+    <string id="C2Z43pzq" text="Northern Leather Over Heavy Cloth">
+    <string id="C7oo0zAY" text="Eastern Steppe Robe">
+    <string id="CEj2Rfh5" text="Western Noble Dress">
+    <string id="CIT7Zuxh" text="Pureblood">
+    <string id="Cp5aIHqR" text="Northern Lamellar Vest">
+    <string id="D8xeIXcI" text="Highland Townsmans Tunic">
+    <string id="DJjCCQ59" text="Battanian Savage Armor">
+    <string id="DNIa6a5p" text="Vlandian Militia Veteran Crossbowman">
+    <string id="DYwjfcM8" text="Spiked Kettle Over Imperial Mail">
+    <string id="Da1bV3ph" text="Imperial Padded Coif">
+    <string id="DbNdyJgQ" text="Highland Scaled Harness">
+    <string id="DlHkNiJA" text="Highland Dress">
+    <string id="DlPOte0H" text="Pack Camel">
+    <string id="DuLFJbXJ" text="Eastern Leather With Belt">
+    <string id="E7puv7hi" text="Southern Moccasins">
+    <string id="EELLBAbX" text="Highland Scale Armor">
+    <string id="ESqqwNDd" text="Southern Noble Helmet">
+    <string id="EXasg15J" text="Northern Padded Gambeson">
+    <string id="F54qLieU" text="Aserai Mameluke Guard">
+    <string id="FHu0bGub" text="Northern Visored Cap">
+    <string id="FSGtJ7eX" text="Heavy Nasalhelm Over Imperial Leather">
+    <string id="FSa9qv8i" text="Western Scarf">
+    <string id="FaWA8c50" text="Northern Heavy Coat">
+    <string id="FlikwkEx" text="Imperial Auxiliary Armor With Straps">
+    <string id="FyaygeEx" text="Knobbed Club">
+    <string id="G40DJB7q" text="Southern Helmet With Mail">
+    <string id="GWJV4Vll" text="Leather Bastard Sword Grip with Brass Rings ">
+    <string id="GazIGIJG" text="Western Hood">
+    <string id="GcFAmAaR" text="Eastern Leather Vambraces">
+    <string id="Gs2f3aeh" text="Plated Striped Gauntlets">
+    <string id="Gxual4pG" text="Imperial Helmet with Metal Strips">
+    <string id="H5iWxbbl" text="Ghilman">
+    <string id="HkiLq2ry" text="Highland Shoulder Fur">
+    <string id="IPyPb4Dp" text="Northern Goggled Helmet">
+    <string id="ITUNob5T" text="Heavy Nasalhelm Over Imperial Mail">
+    <string id="ITvet7CV" text="Southern Helmet">
+    <string id="IbdUT6PA" text="Southern Reinforced Scale Shoulders">
+    <string id="Im7wOGaC" text="Northern Belted Tunic">
+    <string id="Isioqvt9" text="Highland Cloth">
+    <string id="ItZt3amR" text="Eastern Brass Lamellar Over Mail">
+    <string id="J1zcabv4" text="Eastern Studded Shoulders">
+    <string id="JEaU5XOP" text="Northern Open Helmet">
+    <string id="JK7uQLqb" text="Northern Leather Vest">
+    <string id="JTrZ8ugB" text="Roundkettle Over Imperial Mail">
+    <string id="JVG0zC4e" text="Aserai Mameluke Heavy Cavalry">
+    <string id="Jpt1WvTM" text="Guard's Kettle Over Laced Coif">
+    <string id="JslRu3rX" text="Crude Eastern Leather Armor">
+    <string id="K4JtuMzP" text="Battania Woodland Cloak">
+    <string id="KHFQdxvL" text="Heavy Northern Tunic">
+    <string id="KZmZ9HXW" text="Brass Scale Shoulders">
+    <string id="KaZY0Ixp" text="Highland Tunic">
+    <string id="KbW3IFOd" text="Two Pronged Brass Crown">
+    <string id="Kcm4b7Qb" text="Winged Brass Guard">
+    <string id="Kj68cfhA" text="Imperial Laminar Shoulders">
+    <string id="KmZHXINa" text="Bronze Nasalhelm Over Imperial Leather">
+    <string id="KrCGcsmJ" text="Eastern Envelope Dress">
+    <string id="LSgDVSfl" text="Western Crowned Helmet">
+    <string id="LWbJKKK1" text="Northern Noble Harness">
+    <string id="LaKFAU1V" text="Imperial Mail Over Leather">
+    <string id="MEOtMRxx" text="Battered Kite Shield">
+    <string id="MTDaLQOV" text="Imperial Long Cape">
+    <string id="MZzQZcCf" text="Eastern Noble Helmet with Feathers">
+    <string id="Mc6IC6UM" text="Buckled Wildsman Armor">
+    <string id="Mgr6qv1j" text="Mercenary Swordsman">
+    <string id="Mr06Juj5" text="Eastern Stitched Leather Coat">
+    <string id="Mt24PoKF" text="Northern Short Lamellar Vest">
+    <string id="MvvlKO0U" text="Iron Feathered Spangenhelm Over Leather">
+    <string id="NVV1j1E4" text="Western Gambeson">
+    <string id="NZLTEI9c" text="Eastern Leather Shoulders">
+    <string id="Nqa2maO2" text="Woven Leather Coat">
+    <string id="OEyuUWji" text="Eastern Wrapped Armguards">
+    <string id="OktZBAVC" text="Southern Brass Scale Shoulders">
+    <string id="OzUsuoDO" text="Northern Helmet">
+    <string id="P4qzEu8D" text="Reinforced Neck Guard">
+    <string id="PgOknaEN" text="Mercenary Crossbowman">
+    <string id="PhodGU5y" text="Woman's Scarf">
+    <string id="Pv3YQMk1" text="Highland Wrapped Headcloth">
+    <string id="Q4sO8AZd" text="Wadar Hotblood">
+    <string id="QMAGJdyN" text="Highland Villager Dress">
+    <string id="QX2pp6jX" text="Imperial Gambeson With Skirts">
+    <string id="QXqd6MLV" text="Brass Bound Fine Leather Covered Two Handed Sword Grip">
+    <string id="QaKohN0V" text="Imperial Mail Over Stripped Leather">
+    <string id="Qazvdg1P" text="Imperial Cloth Coif">
+    <string id="Qo2cc7bF" text="Skene">
+    <string id="R4RT36MH" text="Eastern Helmet">
+    <string id="R74i2pQz" text="Hired Blade">
+    <string id="RBM00063" text="Greased Steel Hardened Barbed Bolts 75 grams">
+    <string id="RBM001d2" text="Segmented Skullcap Over Mail Coif">
+    <string id="RBM00af2" text="Shoulder Strapped Tribal Steppe Shield">
+    <string id="RBM01547" text="Shoulder Strapped Reinforced Targe">
+    <string id="RBM01613" text="Greased Flight Arrows 30 grams">
+    <string id="RBM02678" text="Greased Heavy Needle Bodkin Arrows 110 grams">
+    <string id="RBM031df" text="Reinforced Ironrimmed Kite Shield">
+    <string id="RBM0403b" text="Leather Studdedhelm Over Headcloth">
+    <string id="RBM040be" text="Imperial Lamellar Pauldrons">
+    <string id="RBM042ab" text="Southern Reinforced Sleeveless Mail Armor">
+    <string id="RBM045f0" text="Leather Coat Over Cloth">
+    <string id="RBM051ce" text="Full Helm Over Cloth Headwrap">
+    <string id="RBM05242" text="450 Pound Doubler Belt Crossbow">
+    <string id="RBM06687" text="Nasal Helmet Over Cloth Headwrap">
+    <string id="RBM07188" text="Mahagony Throwing Dart">
+    <string id="RBM07608" text="Needle Bodkin Bolts 90 grams">
+    <string id="RBM085e7" text="Lamellar Pauldrons">
+    <string id="RBM08aac" text="Fur Skirt With Tunic">
+    <string id="RBM09375" text="Shoulder Strapped Ironrimed Kite Shield">
+    <string id="RBM0a0f8" text="Commoners Shirt">
+    <string id="RBM0ac6f" text="Commoners Tunic">
+    <string id="RBM0aea0" text="Fur Coat Over Tunic">
+    <string id="RBM0b25d" text="Steel Hardened Barbed Bolts 120 grams">
+    <string id="RBM0b2e4" text="Full Helm Over Mail Coif">
+    <string id="RBM0bad9" text="Two Handed Sabre Grip">
+    <string id="RBM0c91c" text="Female Head Wrap">
+    <string id="RBM0efd7" text="Greased Barbed Head Arrows 40 grams">
+    <string id="RBM0f2c9" text="Segmented Skullcap Over Padded Coif">
+    <string id="RBM0f8e6" text="Shoulder Strapped Bracketed Heater Shield">
+    <string id="RBM10402" text="Barbed Head Arrows 60 grams">
+    <string id="RBM10632" text="Nahasawi">
+    <string id="RBM107a0" text="Highland Cured Leather Shoulders">
+    <string id="RBM11030" text="Nasal Helmet Over Laced Coif">
+    <string id="RBM13d6f" text="Steppe Hunter">
+    <string id="RBM1420e" text="Swenryn Pony">
+    <string id="RBM154a0" text="Roughspun Keffiyeh">
+    <string id="RBM158ac" text="Mounted Varyag Veteran">
+    <string id="RBM1597d" text="Our plan is to attack with full force and flank with archers.">
+    <string id="RBM15bcc" text="Pointed Skullcap Over Cloth Headwrap">
+    <string id="RBM1661d" text="Shoulder Strapped Reinforced Cavalry Small Shield">
+    <string id="RBM16744" text="Thick Sabre Blade">
+    <string id="RBM1854c" text="Steel Hardened Barbed Bolts 150 grams">
+    <string id="RBM18753" text="Nasal Helmet Over Padded Coif">
+    <string id="RBM18837" text="Shoulder Strapped Fortified Kite Shield">
+    <string id="RBM18856" text="Glintor Pony">
+    <string id="RBM18c83" text="Small Throwing Axes">
+    <string id="RBM19547" text="Decorated Leather Harness over Scale">
+    <string id="RBM19939" text="Deployable Pavise Shield">
+    <string id="RBM1a8c0" text="Gallant Glaive Sister">
+    <string id="RBM1b251" text="Greased Needle Bodkin Bolts 75 grams">
+    <string id="RBM1b5dc" text="Shoulder Strapped Tall Heater Shield">
+    <string id="RBM1baf3" text="Greased Steel Hardened Barbed Arrows 110 grams">
+    <string id="RBM1dca4" text="Large Throwing Axes">
+    <string id="RBM1dcff" text="Our plan is to form a defensive line with archers on flanks.">
+    <string id="RBM1e06c" text="Barbed Head Bolts 50 grams">
+    <string id="RBM1f334" text="Medium Throwing Axes">
+    <string id="RBM1f6e9" text="Imperial Mounted Acritae">
+    <string id="RBM1fa83" text="Imperial Studded Strip Shoulders">
+    <string id="RBM20055" text="90 Pound Composite Bow">
+    <string id="RBM2101d" text="Nasal Helmet With Leather">
+    <string id="RBM21043" text="Battanian Hobby">
+    <string id="RBM22676" text="Greased Steel Hardened Barbed Arrows 100 grams">
+    <string id="RBM22939" text="Thamaskene Steel Hardened Barbed Arrows 80 grams">
+    <string id="RBM23227" text="166 Pound Composite War Bow">
+    <string id="RBM23e7f" text="Ash Throwing Lance">
+    <string id="RBM23fd7" text="Bronze Scale Pauldrons">
+    <string id="RBM252d4" text="Brass Southern Closed Helmet">
+    <string id="RBM25fea" text="Oaken Angon">
+    <string id="RBM26364" text="Brass Lamellar Shoulders">
+    <string id="RBM271c0" text="Iron Spiked Kettle Over Mail">
+    <string id="RBM278e9" text="Kettle Helmet With Leather">
+    <string id="RBM27a6c" text="Fringed Steel Cap With Cheek Guards">
+    <string id="RBM2826d" text="Scratched Loose {ITEMNAME}">
+    <string id="RBM29797" text="140 Pound War Longbow">
+    <string id="RBM2d312" text="Southern Reinforced Short Mail Armor">
+    <string id="RBM2d449" text="Thick Blunt Sabre Blade">
+    <string id="RBM2e9a2" text="Elite Hireling Warbowman">
+    <string id="RBM2f440" text="Mahagony Throwing Lance">
+    <string id="RBM305c7" text="Canterion Charger">
+    <string id="RBM30c3f" text="330 Pound Spanning Belt Crossbow">
+    <string id="RBM31479" text="Askarat">
+    <string id="RBM3259e" text="Northern Decorated Double Hauberk">
+    <string id="RBM32961" text="Pine Throwing Dart">
+    <string id="RBM32e09" text="110 Pound Composite War Bow">
+    <string id="RBM32ea6" text="Damaged {ITEMNAME}">
+    <string id="RBM33127" text="Cervelliere Over Laced Coif">
+    <string id="RBM34025" text="Shoulder Strapped Leather Bound Kite Shield">
+    <string id="RBM34dab" text="Tunic With Rolled Cloth">
+    <string id="RBM357ca" text="Pine Throwing Lance">
+    <string id="RBM362ec" text="Battanian Pony">
+    <string id="RBM367d1" text="Kilt Over Plated Leather">
+    <string id="RBM36c63" text="Needle Bodkin Arrows 60 grams">
+    <string id="RBM38533" text="Thamaskene Steel Hardened Barbed Arrows 125 grams">
+    <string id="RBM3a0dd" text="Shoulder Strapped Makeshift Kite Shield">
+    <string id="RBM3a284" text="Engraved Sabre Guard">
+    <string id="RBM3a94b" text="Kettle Helmet Over Mail">
+    <string id="RBM3ad7b" text="Visored Helmet Over Mail Coif">
+    <string id="RBM3ae88" text="Shoulder Strapped Heavy Heater Shield">
+    <string id="RBM3b70e" text="Iron Roundkettle Over Imperial Leather">
+    <string id="RBM3baca" text="Imperial Scale Armor Over Double Mail">
+    <string id="RBM3d696" text="Hireling Spearman">
+    <string id="RBM3dbb4" text="60 Pound Composite Bow">
+    <string id="RBM3df58" text="Sturgian Native">
+    <string id="RBM3e296" text="Ornate Pauldrons">
+    <string id="RBM3e9cc" text="Merchant's Hat">
+    <string id="RBM3ee2b" text="Greased Steel Hardened Barbed Arrows 80 grams">
+    <string id="RBM3f408" text="Shoulder Strapped Kite Shield">
+    <string id="RBM40224" text="Spiked Helmet With Facemask">
+    <string id="RBM40962" text="Imperial Jewelled Helmet">
+    <string id="RBM41402" text="Pointed Skullcap Over Laced Coif">
+    <string id="RBM422c5" text="Slightly Damaged {ITEMNAME}">
+    <string id="RBM43dd5" text="Merchant's Fur Coat">
+    <string id="RBM441ef" text="100 Pound Composite War Bow">
+    <string id="RBM4485b" text="160 Pound War Longbow">
+    <string id="RBM448bd" text="Shoulder Strapped Knights Kite Shield">
+    <string id="RBM4511b" text="Steel Hardened Barbed Bolts 90 grams">
+    <string id="RBM4526c" text="170 Pound War Longbow">
+    <string id="RBM4531d" text="Greased Needle Bodkin Arrows 60 grams">
+    <string id="RBM45aba" text="Ornate Pauldrons with Cape">
+    <string id="RBM46e4e" text="Shoulder Strapped Makeshift Kite Sparring Shield">
+    <string id="RBM47c50" text="Shoulder Strapped Round Steppe Shield">
+    <string id="RBM47e2e" text="Brass Southern Closed Helmet with Turban">
+    <string id="RBM49669" text="Tournament Medium Lance Head">
+    <string id="RBM4a2c1" text="Long Tunic">
+    <string id="RBM4a62c" text="Tunic With Shoulder Pads">
+    <string id="RBM4ac71" text="150 Pound War Longbow">
+    <string id="RBM4acc8" text="90 Pound Longbow">
+    <string id="RBM4b39a" text="Segmented Skullcap Over Laced Coif">
+    <string id="RBM4c863" text="Northern Light Lamellar Over Mail">
+    <string id="RBM4f10a" text="Steel Hardened Barbed Bolts 75 grams">
+    <string id="RBM4f1ee" text="Light Tunic">
+    <string id="RBM4f6d9" text="166 Pound Tournament Composite Bow">
+    <string id="RBM51e64" text="Needle Bodkin Bolts 75 grams">
+    <string id="RBM53307" text="Ash Javelin">
+    <string id="RBM53aa5" text="Needle Bodkin Arrows 40 grams">
+    <string id="RBM54a43" text="Our plan is to charge head-on with our cavalry then crush disorganized formations.">
+    <string id="RBM56505" text="Segmented Cevelliere Over Mail Coif">
+    <string id="RBM5677a" text="Greased Heavy Needle Bodkin Bolts 120 grams">
+    <string id="RBM568dc" text="Pilgrim's Hood">
+    <string id="RBM577ae" text="Mahagony Javelin">
+    <string id="RBM57aad" text="Spangenhelm With Leather">
+    <string id="RBM59b34" text="Nasal Helmet With Mail">
+    msgstr ""
+    <string id="RBM5a0f3" text="Shoulder Strapped Reinforced Cavalry Kite Shield">
+    <string id="RBM5a6c1" text="Cut Dress With Pouch">
+    <string id="RBM5a8b2" text="Greased Needle Bodkin Arrows 80 grams">
+    <string id="RBM5ab1b" text="Studded Leather Neckguard">
+    <string id="RBM5b51c" text="Caped Leather Harness">
+    <string id="RBM5b52a" text="Straight Sabre Blade">
+    <string id="RBM5d8da" text="Very Heavy Needle Bodkin Arrows 125 grams">
+    <string id="RBM5e239" text="Full Helm Over Arming Coif">
+    <string id="RBM5f751" text="Mastercrafted Southern Scale over Chain Mail">
+    <string id="RBM5f7c8" text="Brass Southern Helmet with Turban">
+    <string id="RBM60192" text="Greased Needle Bodkin Arrows 40 grams">
+    <string id="RBM60a83" text="Mounted Varyag">
+    <string id="RBM625bc" text="Omor Trotter">
+    <string id="RBM630be" text="Fire Pot">
+    <string id="RBM6397e" text="Medium Lance Head">
+    <string id="RBM64fb4" text="120 Pound Composite War Bow">
+    <string id="RBM6508d" text="Lady's Shoes">
+    <string id="RBM65285" text="Shoulder Strapped Light Cavalry Kite Shield">
+    <string id="RBM65550" text="Hireling Crossbowman">
+    <string id="RBM65b27" text="Needle Bodkin Bolts 60 grams">
+    <string id="RBM65bbe" text="Bronze Pauldrons">
+    <string id="RBM668c5" text="125 Pound Composite War Bow">
+    <string id="RBM67251" text="Needle Bodkin Arrows 50 grams">
+    <string id="RBM675fe" text="Scratched {ITEMNAME}">
+    <string id="RBM67995" text="Decorated Leather Harness over Mail">
+    <string id="RBM68918" text="Nasal Helmet Over Mail Coif">
+    <string id="RBM69721" text="Desert Horse">
+    <string id="RBM6a07b" text="Short Sabre Grip">
+    <string id="RBM6affd" text="Shoulder Strapped Reinforced Flat Kite Shield">
+    <string id="RBM6b0e0" text="Pointed Skullcap Over Mail Coif">
+    <string id="RBM6bf06" text="Shoulder Strapped Northern Cavalry Kite Shield">
+    <string id="RBM6ca40" text="Highland Scale Armor Over Cloth">
+    <string id="RBM6d1a6" text="Scholars Robe">
+    <string id="RBM6e95b" text="Darshi Horse">
+    <string id="RBM6f537" text="Shoulder Strapped Small Cavalry Heater Shield">
+    <string id="RBM6f9fc" text="Shoulder Strapped Worn Kite Shield">
+    <string id="RBM708da" text="Needle Bodkin Arrows 100 grams">
+    <string id="RBM71857" text="Shoulder Strapped Reinforced Kite Shield">
+    <string id="RBM718f9" text="Greased Steel Hardened Barbed Bolts 150 grams">
+    <string id="RBM72123" text="Glaive Sister">
+    <string id="RBM72c8d" text="Scale Over Mail Armor">
+    <string id="RBM73070" text="Thamaskene Steel Hardened Barbed Arrows 100 grams">
+    <string id="RBM73285" text="Fur Trimmed Short Tunic">
+    <string id="RBM735fd" text="500 Pound Doubler Belt Crossbow">
+    <string id="RBM76a70" text="Throwing Labryes">
+    <string id="RBM77757" text="Heavy Lance Head">
+    <string id="RBM79018" text="Steel Cap With Cheek Guards">
+    <string id="RBM796c6" text="Mastercrafted Southern Scale Mail">
+    <string id="RBM79748" text="Leather Studdedhelm Over Roughscale">
+    <string id="RBM79fd9" text="Leather Strips Over Padded Robe">
+    <string id="RBM7a767" text="Fringed Decorated Bronze Cap With Cheek Guards">
+    <string id="RBM7b590" text="Sumpter Horse">
+    <string id="RBM7ef33" text="Shoulder Strapped Wide Heater Shield">
+    <string id="RBM7f75f" text="Veteran Mercenary Horse Archer">
+    <string id="RBM7f9ac" text="Barbed Head Arrows 40 grams">
+    <string id="RBM7fb3c" text="Kettle Helmet Over Padded Coif">
+    <string id="RBM7ff64" text="Peaked Helmet Over Laced Coif">
+    <string id="RBM80500" text="Studded Leather Over Aketon">
+    <string id="RBM8106b" text="Shoulder Strapped Studded Bound Kite Shield">
+    <string id="RBM8126a" text="Needle Bodkin Arrows 70 grams">
+    <string id="RBM81f47" text="Peaked Helmet Over Mail Coif">
+    <string id="RBM82c65" text="Pauldrons with Cape">
+    <string id="RBM82c71" text="Shoulder Strapped Reinforced Oaken Kite Shield">
+    <string id="RBM8316f" text="Nasal Helmet Over Padded Cloth">
+    <string id="RBM84756" text="Helmet With Faceguard">
+    <string id="RBM849af" text="Vlandian Light Cavalry">
+    <string id="RBM84c24" text="Robe Over Mail Hauberk">
+    <string id="RBM86576" text="Scratched Rusty {ITEMNAME}">
+    <string id="RBM86a4a" text="Barbed Head Arrows 50 grams">
+    <string id="RBM87664" text="Shoulder Strapped Reinforced Cavalry Shield">
+    <string id="RBM885ae" text="Rouncey">
+    <string id="RBM88cf0" text="Cervelliere Over Arming Coif">
+    <string id="RBM8953d" text="Tournament Light Lance Head">
+    <string id="RBM89f9f" text="Shoulder Strapped Eastern Cavalry Shield">
+    <string id="RBM89fc1" text="Shoulder Strapped Small Heater Shield">
+    <string id="RBM8a7b7" text="Rhomphalia">
+    <string id="RBM8b126" text="Thamaskene Steel Leaf Shaped Pike Head">
+    <string id="RBM8d0fd" text="Needle Bodkin Arrows 80 grams">
+    <string id="RBM8d21b" text="Huge Throwing Axes">
+    <string id="RBM8d54d" text="Visored Helmet Over Padded Coif">
+    <string id="RBM909ab" text="Padded Vambrace">
+    <string id="RBM91c74" text="Southern Reinforced Mail Vest">
+    <string id="RBM91ff0" text="Shoulder Strapped Knights Shield">
+    <string id="RBM92135" text="Fringed Bronze Cap With Cheek Guards">
+    <string id="RBM92381" text="Thamaskene Steel Hardened Barbed Arrows grams 90 grams">
+    <string id="RBM927c3" text="Northern Lamellar Shoulders">
+    <string id="RBM92ba2" text="Kettle Helmet Over Padded Cloth">
+    <string id="RBM92d31" text="Light Menavlion">
+    <string id="RBM9370e" text="130 Pound War Longbow">
+    <string id="RBM93dd2" text="Kettle Hat Over Padded Cloth">
+    <string id="RBM945fb" text="Vlandian Courser">
+    <string id="RBM96a87" text="Decorated Sabre Blade">
+    <string id="RBM96e17" text="Heavy Sabre Blade">
+    <string id="RBM986a0" text="Visored Helmet Over Laced Coif">
+    <string id="RBM988da" text="Light Lance Head">
+    <string id="RBM99f5d" text="Nasalhelm Over Mail">
+    <string id="RBM9a291" text="Knobbed Wide Sabre Guard">
+    <string id="RBM9a7ff" text="Calradian fire bolts">
+    <string id="RBM9b5e4" text="Banded Leather Over Mail">
+    <string id="RBM9b7e6" text="Calradian fire arrows">
+    <string id="RBM9c23c" text="Brigandine Over Mail Shirt">
+    <string id="RBM9e820" text="Fine Steel Sabre Blade">
+    <string id="RBM9f744" text="Pointed Skullcap Over Mail">
+    <string id="RBM9f8ad" text="Iron Rimmed Large Round Shield">
+    <string id="RBMa00cd" text="Crude Large Round Shield">
+    <string id="RBMa1132" text="Full Helm Over Padded Cap">
+    <string id="RBMa2b4f" text="Ironrimed Kite Shield">
+    <string id="RBMa3c5d" text="Hireling Pikeman">
+    <string id="RBMa4b02" text="Small Northern Lamellar Shoulders">
+    <string id="RBMa4e43" text="Revyl Chaser">
+    <string id="RBMa632d" text="Aserai Experienced Archer">
+    <string id="RBMa6dcc" text="Needle Bodkin Arrows 90 grams">
+    <string id="RBMa7287" text="Greased Barbed Head Bolts 50 grams">
+    <string id="RBMa7c1d" text="Highland Scale Over Mail Armor">
+    <string id="RBMa7d2d" text="Aserai Archer">
+    <string id="RBMa802d" text="Fringed Decorated Steel Cap With Cheek Guards">
+    <string id="RBMaab42" text="Padded Cloth With Strips">
+    <string id="RBMab4ae" text="Heavy Menavlion">
+    <string id="RBMabba7" text="Karahan">
+    <string id="RBMabd91" text="Decorated Long Sleeve Bronze Scale Pauldrons">
+    <string id="RBMac8ab" text="Palmatian">
+    <string id="RBMaca34" text="Kettle Helmet With Mail">
+    <string id="RBMad025" text="Rough Fur Over Chain">
+    <string id="RBMadef3" text="Brass Southern Helmet">
+    <string id="RBMadf33" text="Ridged Great Sabre Blade">
+    <string id="RBMae9e8" text="Greased Needle Bodkin Arrows 70 grams">
+    <string id="RBMaf70c" text="Shoulder Strapped Makeshift Horsemans Kite Shield">
+    <string id="RBMafb5f" text="Greased Needle Bodkin Arrows 100 grams">
+    <string id="RBMafc43" text="Bronze Cap With Cheek Guards">
+    <string id="RBMaff6b" text="Greased Needle Bodkin Arrows 90 grams">
+    <string id="RBMb1e9c" text="Mastercrafted Southern Scale over Chain Hauberk">
+    <string id="RBMb2006" text="Flight Arrows 30 grams">
+    <string id="RBMb2101" text="Shoulder Strapped Reinforced Ironrimmed Kite Shield">
+    <string id="RBMb47ed" text="Stitched Leather Over Mail">
+    <string id="RBMb53e3" text="Our plan is to bait them with skirmishers then crush them with full focre.">
+    <string id="RBMb54f4" text="Heavy Nasalhelm Over Laced Cloth">
+    <string id="RBMb59b4" text="120 Pound War Longbow">
+    <string id="RBMb5a70" text="Half Mail And Plate Barding">
+    <string id="RBMb5d53" text="Peaked Helmet Over Mail">
+    <string id="RBMb6007" text="Leather Lamellar Pauldrons">
+    <string id="RBMb62cb" text="Keffiyeh with Silken Band">
+    <string id="RBMb688a" text="Segmented Cevelliere Over Laced Coif">
+    <string id="RBMb6fa2" text="Kettle Helmet Over Padded Cap">
+    <string id="RBMb72be" text="Lamellar Over Mail Armor">
+    <string id="RBMb81cd" text="Rough Leadther Segmented One Handed Grip">
+    <string id="RBMb97a0" text="Bronze Scale Shoulder Guards">
+    <string id="RBMba20d" text="Imperial Light Lamellar Over Mail">
+    <string id="RBMba365" text="Nasal Cervelliere Over Padded Coif">
+    <string id="RBMbb6d4" text="Decorated Leather Harness">
+    <string id="RBMbbab2" text="Gladius">
+    <string id="RBMbc50c" text="Brass Southern Helmet with Leather Flaps">
+    <string id="RBMbd0e3" text="Very Heavy Needle Bodkin Bolts 150 grams">
+    <string id="RBMbd280" text="Shoulder Strapped Flat Heater Shield">
+    <string id="RBMbd64b" text="Broad Sabre Guard">
+    <string id="RBMbda78" text="135 Pound Composite War Bow">
+    <string id="RBMbede4" text="Studded Leather Pauldrons">
+    <string id="RBMbf48d" text="Khuzait Light Lance">
+    <string id="RBMbfdf3" text="Shoulder Strapped Heater Shield With Cutout">
+    <string id="RBMc0608" text="Ruined {ITEMNAME}">
+    <string id="RBMc0b0e" text="Imperial Visored Helmet">
+    <string id="RBMc154f" text="Our plan is to split infantry and crush them from all sides.">
+    <string id="RBMc25e5" text="Shoulder Strapped Kite Sparring Shield">
+    <string id="RBMc2d0d" text="Fur Waistcoat Over Tunic">
+    <string id="RBMc3029" text="Northern Tunic">
+    <string id="RBMc3cff" text="Skirmish from {SIDE_STRING} flank">
+    <string id="RBMc43e6" text="Pine Javelin">
+    <string id="RBMc66d2" text="Southern Reinforced Mail Armor">
+    <string id="RBMc6d79" text="Western Double Mail Hauberk">
+    <string id="RBMc7b13" text="Kettle Hat Over Padded Coif">
+    <string id="RBMc7f68" text="Kettle Helmet Over Laced Coif">
+    <string id="RBMc8678" text="Iron Sabre Blade">
+    <string id="RBMc8c42" text="Ridged Decorated Bronze Cap With Cheek Guards">
+    <string id="RBMc8e52" text="70 Pound Composite Bow">
+    <string id="RBMc9485" text="Bronze Feathered Spangenhelm Over Leather">
+    <string id="RBMc96c3" text="Full Helm Over Laced Coif">
+    <string id="RBMca389" text="Segmented Cevelliere Over Mail">
+    <string id="RBMca5a9" text="410 Pound Doubler Belt Crossbow">
+    <string id="RBMcd445" text="Shoulder Strapped Cavalry Kite Shield">
+    <string id="RBMcde5a" text="Peaked Helmet Over Padded Cloth">
+    <string id="RBMcdec3" text="Heavy Needle Bodkin Bolts 120 grams">
+    <string id="RBMce1d8" text="Nasal Helmet Over Mail">
+    <string id="RBMd057e" text="370 Pound Doubler Belt Crossbow">
+    <string id="RBMd075e" text="Shoulder Strapped Battered Horseman's Kite Shield">
+    <string id="RBMd1eb3" text="Vlandian Medium Cavalry">
+    <string id="RBMd3de0" text="Greased Steel Hardened Barbed Bolts 120 grams">
+    <string id="RBMd45af" text="Greased Barbed Head Arrows 50 grams">
+    <string id="RBMd4701" text="Thamaskene Steel Hardened Barbed Arrows 110 grams">
+    <string id="RBMd5410" text="Mail And Plate Barding">
+    <string id="RBMd545e" text="Mail Mitten">
+    <string id="RBMd66de" text="Long Sleeved Bronze Scale Shoulder Guards">
+    <string id="RBMd6b6e" text="Kettle Hat Over Mail Coif">
+    <string id="RBMd6b88" text="Brass Turbaned Helmet with Leather Flaps">
+    <string id="RBMd7d50" text="Greased Needle Bodkin Bolts 90 grams">
+    <string id="RBMd7e1e" text="200 Pound Tournament Longbow">
+    <string id="RBMd86af" text="Shoulder Strapped Battered Kite Shield">
+    <string id="RBMd893d" text="Shoulder Strapped Wooden Kite Shield">
+    <string id="RBMd8fb0" text="Heavy Cloak">
+    <string id="RBMd9093" text="Shoulder Strapped Decorated Eastern Shield">
+    <string id="RBMd935a" text="Greased Needle Bodkin Arrows 50 grams">
+    <string id="RBMda1d2" text="Greased Steel Hardened Barbed Bolts 90 grams">
+    <string id="RBMdae2b" text="Nothern Two Handed Grip">
+    <string id="RBMdcb33" text="Imperial Bronze Pauldrons with neckguard">
+    <string id="RBMdd12e" text="Reinforced Mail Shoulders">
+    <string id="RBMde9ad" text="Nahasa Camel">
+    <string id="RBMdeeeb" text="Greased Very Heavy Needle Bodkin Arrows 125 grams">
+    <string id="RBMdfeb1" text="250 Pound Spanning Belt Crossbow">
+    <string id="RBMe074a" text="Very Highly Damaged {ITEMNAME}">
+    <string id="RBMe143c" text="Sturgian Trotter">
+    <string id="RBMe20b0" text="Greased Steel Hardened Barbed Arrows 125 grams">
+    <string id="RBMe2176" text="Goggled Helmet Over Mail">
+    <string id="RBMe2d53" text="Cervelliere Over Padded Cap">
+    <string id="RBMe314f" text="Guarded Padded Vambrace">
+    <string id="RBMe40ae" text="Greased Barbed Head Arrows 60 grams">
+    <string id="RBMe43f6" text="Heavy Needle Bodkin Arrows 110 grams">
+    <string id="RBMe693a" text="Reinforced Large Round Shield">
+    <string id="RBMe73dd" text="Cervelliere Over Cloth Headwrap">
+    <string id="RBMe8747" text="Segmented Skullcap Over Padded Cloth">
+    <string id="RBMe87cc" text="Decorated Leather Harness with Padding">
+    <string id="RBMe8e01" text="Shoulder Strapped Small Flat Heater Shield">
+    <string id="RBMe93a4" text="Highland Reinforced Mail Over Tartan">
+    <string id="RBMea59e" text="Fur Armor With Strap">
+    <string id="RBMeaeb3" text="Small Brass Lamellar Shoulders">
+    <string id="RBMeb070" text="Shoulder Strapped Western Riders Kite Shield">
+    <string id="RBMec9b3" text="Saddle Horse">
+    <string id="RBMed2f2" text="Nasal Cervelliere Over Laced Coif">
+    <string id="RBMedd7e" text="Greased Steel Hardened Barbed Arrows grams 90 grams">
+    <string id="RBMee9ca" text="180 Pound War Longbow">
+    <string id="RBMef2af" text="Long Sabre Blade">
+    <string id="RBMef96c" text="100 Pound War Longbow">
+    <string id="RBMeffd9" text="Oaken Throwing Lance">
+    <string id="RBMf0777" text="Roundkettle Over Laced Cloth">
+    <string id="RBMf1252" text="Ridged Decorated Steel Cap With Cheek Guards">
+    <string id="RBMf128a" text="Hireling Elite Pikeman">
+    <string id="RBMf216b" text="Imperial Plate Pauldron">
+    <string id="RBMf30fc" text="Greased Very Heavy Needle Bodkin Bolts 150 grams">
+    <string id="RBMf3c1e" text="Crossbow Sister">
+    <string id="RBMf4602" text="Reinforced Mail Mitten">
+    <string id="RBMf4d2c" text="Spangenhelm With Padded Cloth">
+    <string id="RBMf5fac" text="Heavy Lamellar Over Mail With Scale Skirt">
+    <string id="RBMf62e6" text="Kettle Helmet Over Arming Coif">
+    <string id="RBMf7af1" text="Decorated Bronze Scale Pauldrons">
+    <string id="RBMf7f86" text="Scale Shoulderguards">
+    <string id="RBMf92f1" text="200 Pound War Longbow">
+    <string id="RBMfa736" text="Leather Studdedhelm Over Thinhide">
+    <string id="RBMfab34" text="Visored Helmet Over Padded Cloth">
+    <string id="RBMfae42" text="Segmented Cervelliere Over Padded Cloth">
+    <string id="RBMfb8ac" text="Mercenary Horse Archer">
+    <string id="RBMfb973" text="Greased Needle Bodkin Bolts 60 grams">
+    <string id="RBMfbe09" text="Nasal Cervelliere Over Padded Cap">
+    <string id="RBMfc010" text="Highly Damaged {ITEMNAME}">
+    <string id="RBMfc368" text="Emir's Helmet">
+    <string id="RBMfc5d0" text="Destrier">
+    <string id="RBMfc6c9" text="Nasal Cervelliere Over Mail Coif">
+    <string id="RBMfd706" text="Full Helm Over Padded Cloth">
+    <string id="RBMfde17" text="Heater Shield With Cutout">
+    <string id="RBMfe3ff" text="Short Battanian Cloak">
+    <string id="RBMfe671" text="Imperial Brass Plate Pauldron">
+    <string id="RBMfe6a7" text="Reinforced Ornate Pauldrons over Scale">
+    <string id="RBMff39f" text="290 Pound Spanning Belt Crossbow">
+    <string id="RBMff523" text="Reinforced Ornate Pauldrons">
+    <string id="RBMffcbc" text="Shoulder Strapped Western Riders Kite Sparring Shield">
+    <string id="REYaHXQb" text="Sturgian Cavalry Armor">
+    <string id="RWKafLdU" text="Eastern Curved Boots">
+    <string id="RYP9hzIy" text="Watchman">
+    <string id="RaTK0SBu" text="Western Riders Kite Shield">
+    <string id="Rj0bNOOh" text="Kern">
+    <string id="S0IkfoDo" text="Eastern Plated Leather">
+    <string id="SRWJ8waf" text="Southern Round Sparring Shield">
+    <string id="SXCa9d1n" text="Iron Nasalhelm Over Imperial Coif">
+    <string id="SZrd85Uh" text="Royal Destrier">
+    <string id="SaqVvzyV" text="Mercenary Cavalry">
+    <string id="Sn2O0Ogx" text="Bronze Roundkettle Over Imperial Leather">
+    <string id="T49rswmY" text="Open Southern Helmet">
+    <string id="TAczhIzX" text="Northern Fur Trimmed Tunic">
+    <string id="TDCn5dar" text="Imperial Padded Shoulders">
+    <string id="TpjbgasA" text="Northern Warlord Helmet">
+    <string id="Tqa0r781" text="Archers are skirmishing from flanks.">
+    <string id="Tqa0r782" text="Cavalry is forming a flying wedge in front of infantry.">
+    <string id="Tqa0r783" text="Form flying wedge in front of infantry">
+    <string id="Tqa0r78a" text="{TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\\?}{TROOP_NAMES_END} are skirmishing.">
+    <string id="Tqa0r78b" text="{?IS_RIGHT}Right {TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\\?}{TROOP_NAMES_END} is doing hit and run.{?}{\\?}{?IS_LEFT}Left {TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\\?}{TROOP_NAMES_END} is doing hit and run.{?}{\\?}">
+    <string id="Tqa0r78c" text="Infantry is flanking.">
+    <string id="Tqa0r78d" text="{TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\\?}{TROOP_NAMES_END} are charging at {?IS_PLURAL}different enemy formations{?}an enemy formation{\\?}.">
+    <string id="Tqa0r78e" text="Skirmish">
+    <string id="Tqa0r78f" text="Do hit and run on enemy.">
+    <string id="Tqa0r78g" text="Flank{?IS_GENERAL_SIDE}{?} from {SIDE_STRING} side{\\?}">
+    <string id="Tqa0r78h" text="Charge at enemy">
+    <string id="Tr3x7ynD" text="Highland Plaid Dress">
+    <string id="UEestBsE" text="Northern Bronze Scale Vest">
+    <string id="UVdYqQGj" text="Fringed Decorated Copper Cap With Cheek Guards">
+    <string id="UWPEu577" text="Northern Brass Bracers">
+    <string id="UqdZmdcf" text="War Horse">
+    <string id="UvJDlhMq" text="Eastern Cap">
+    <string id="V7U0fFU9" text="Highland Scale Mail">
+    <string id="VHPPqw9J" text="Western Head Wrap">
+    <string id="VMqzvfDO" text="Eastern Strapped Lamellar Armor">
+    <string id="VXER7AbJ" text="Imperial Lord Helmet">
+    <string id="VluRLqn8" text="Western Riders Kite Sparring Shield">
+    <string id="VpxmlDyY" text="Turndown Leather Boots">
+    <string id="WCbpw1wM" text="Heavy Nasalhelm Over Imperial Padding">
+    <string id="WH7bbK6G" text="Western Padded Coat">
+    <string id="WJbOQSiT" text="Aserai Mameluke Regular">
+    <string id="WNU7kE5N" text="Veteran Guardian">
+    <string id="WST7ftTa" text="Northern Coat Of Plates">
+    <string id="WdZTrPpG" text="Highland Mail Shoulders">
+    <string id="Wh48Wl0C" text="Vlandian Heavy Lance">
+    <string id="WrlIl4nW" text="Western Pike">
+    <string id="X3FAb6Wm" text="Northern Decorated Visored Helmet">
+    <string id="XDsFl200" text="Imperial Lance">
+    <string id="XTqplCsv" text="Northern Hauberk">
+    <string id="XZAAz7NX" text="Empire Short Tunic">
+    <string id="XazcYatD" text="Imperial Nasal Helm">
+    <string id="XoISdMVx" text="Eastern Noble Helmet with Fur">
+    <string id="Xs8a5YxN" text="Southern Lord Helmet">
+    <string id="XyXSx0R8" text="Common Eastern Dress">
+    <string id="YAOfXanz" text="Northern Lord Helmet">
+    <string id="YMtHkAUj" text="Eastern Thick Coat">
+    <string id="YUCzyA8C" text="Aserai Mameluke Cavalry">
+    <string id="Ybq7jZDj" text="Highland Thinhide Coif">
+    <string id="YfB0SJqY" text="White Tabard Over Mail">
+    <string id="Yo56PtJZ" text="Imperial Gambeson">
+    <string id="YteV789y" text="Highland Fur Helmet">
+    <string id="ZEybMjoq" text="Northern Roughhide Cap">
+    <string id="ZJwQmyQR" text="Leather Covered Bastard Sword Grip With Brass Studs">
+    <string id="ZOoxd36t" text="Highland Mercenary Armor">
+    <string id="ZYQrmlKH" text="Highland Chainmail">
+    <string id="ZbmlNZpU" text="Eastern Fur Hat">
+    <string id="Ze9u7Saj" text="Iron Feathered Spangenhelm Over Mail">
+    <string id="ZjAZNjvu" text="Northern Ring Barding">
+    <string id="ZqbyJ5Pl" text="Iron Roundkettle Over Imperial Mail">
+    <string id="ZuOWvXMB" text="Highland Leather Studded Helm">
+    <string id="Zvxydvao" text="Imperial Rich Dress">
+    <string id="a1KxyGOj" text="Northern Dress">
+    <string id="a2XnhQ3V" text="Northern Helmet Closed">
+    <string id="a9b2fKYR" text="Sturgian Berserker">
+    <string id="aDDTouCQ" text="Imperial Padded Cloth">
+    <string id="aEBMmzn6" text="Vlandia Lance">
+    <string id="aGkXbDlr" text="Western Mail Shirt">
+    <string id="aPa3Cp4l" text="Imperial Leather Coif">
+    <string id="aYCvg89I" text="Imperial Robes">
+    <string id="aiER6j1y" text="Battanian Long Tartan">
+    <string id="aq8lbNZo" text="Trailed Southern Helmet">
+    <string id="av4ncLDl" text="Imperial Auxiliary Armor">
+    <string id="bAvyfxIy" text="Guard's Kettle Over Padded Coif">
+    <string id="bGSbaT2n" text="Northern Plated Boots">
+    <string id="bQXR1jzG" text="Eastern Noble Helmet with Neckguard">
+    <string id="bX3P9X7I" text="Large Brass Lamellar Shoulders">
+    <string id="bYn4ad1t" text="Flame">
+    <string id="baDdigZj" text="Northern Style Head Wrap">
+    <string id="baIE2VQW" text="War Camel">
+    <string id="bevik0LU" text="Cut Dress">
+    <string id="brLFIN46" text="Highland Warlord Bracers">
+    <string id="brvgn9Ja" text="Eastern Vendel Helmet">
+    <string id="bvgHgb6E" text="Eastern Mirrored Leather Armor">
+    <string id="cMcGn6n3" text="Expert Guardian">
+    <string id="ccLDacS4" text="Battanian Thoroughbred">
+    <string id="ctkNWKbq" text="Vlandian Light Lance">
+    <string id="dLLD8bVX" text="Rugged Desert Saddle">
+    <string id="dRLIr22v" text="Imperial Stitched Leather">
+    <string id="dqyN7Sbz" text="Imperial Light Lance">
+    <string id="e6WzpsWz" text="Iron Nasalhelm Over Imperial Padding">
+    <string id="ekTny86c" text="Imperial Lamellar Over Leather">
+    <string id="f7RmWqJ2" text="Western Head Scarf">
+    <string id="fqHrMC1v" text="Western Loose Head Scarf">
+    <string id="g7iQsvPw" text="Studded Imperial Neckguard">
+    <string id="gBuGfUg3" text="Karakhuzait Elder">
+    <string id="gGhrQa29" text="Woman's Hood">
+    <string id="gLfxeU17" text="Imperial Guarded Lord Helmet">
+    <string id="gSaKwztg" text="Highland Noble Bracers">
+    <string id="h3vqV5Qy" text="Northern Leather Tabard">
+    <string id="h7VQk4jd" text="Highland Cloak with Shoulder Straps">
+    <string id="hVBKOOY1" text="Brass Studded Angular Two Handed Grip">
+    <string id="htACXBhH" text="Iron Nasalhelm Over Imperial Mail">
+    <string id="hyNitMsQ" text="Highland Fine Steel Blade">
+    <string id="i4CfsNGd" text="Imperial Mail Vest">
+    <string id="i8S2PJB4" text="Highland Gloves">
+    <string id="iCy5h0Y9" text="Northern Lamellar Over Hauberk">
+    <string id="iUjgXGNn" text="Western Corseted Dress">
+    <string id="iZqYAIQy" text="Sturgian Shock Troop">
+    <string id="ibtt8Chp" text="Battanian Kilt over Tartan Trousers">
+    <string id="j5O8mt4I" text="Western Head Wrapping">
+    <string id="jLkVVTJh" text="Eastern Plated Leather Vambraces">
+    <string id="jZTWkSDw" text="Brass Bound Bastard Sword Grip">
+    <string id="jsFgjWOj" text="Red Tabard Over Mail">
+    <string id="k4EiLrU0" text="Sturgian Ulfhednar">
+    <string id="kIMOcPgn" text="Iron Nasalhelm Over Imperial Cloth">
+    <string id="kanUXCLc" text="Highland Villager Tunic">
+    <string id="kshM0xDc" text="Battered Horseman's Kite Shield">
+    <string id="kweDHlz8" text="Western Crowned Plated Helmet">
+    <string id="kyPoQt0f" text="Imperial Simple Leather Armor">
+    <string id="lduchnvD" text="Karakhuzait Rider">
+    <string id="ljE4zLrf" text="Northern Warlord Helmet Over Full Mail">
+    <string id="ln6ZboT7" text="Northern Sloven Leather">
+    <string id="loHYOJA9" text="Northern Lord Helmet With Open Mail Coif">
+    <string id="mAEjSAlV" text="Northern Closed Helmet Over Mail">
+    <string id="mFbFEOVz" text="Northern Fur Cap">
+    <string id="mMGfhc3M" text="Highland Noble Armor">
+    <string id="maYSspDY" text="Roundkettle Over Imperial Cloth">
+    <string id="meC5HTQD" text="Northern Warlord Helmet Over Mail">
+    <string id="mtVcMgWO" text="Bronze Feathered Spangenhelm Over Mail">
+    <string id="nBU3EXp6" text="Highland Shoulder Straps">
+    <string id="nNGCuIUf" text="Imperial Open Mail Coif">
+    <string id="nXajiyWj" text="Battanian Tartan">
+    <string id="nsyTIbtp" text="Knight of Sacred Fire">
+    <string id="o0ZuY9Ux" text="Western Leather Coat">
+    <string id="o24Fpzvu" text="Studded Steppe Leather">
+    <string id="oGVGhYeP" text="Eastern Steppe Armor">
+    <string id="oIOYBIbv" text="Northern Closed Helmet">
+    <string id="ojhEwC8M" text="Northern Brass Lamellar Over Mail">
+    <string id="p949oNWk" text="Coat Of Plates Over Mail">
+    <string id="q3ePGPbF" text="Imperial Cavalry Armor">
+    <string id="qSn0JTfa" text="Southern Wrapped Scarf">
+    <string id="qXb7YoGc" text="Asaligat">
+    <string id="qaraQjXa" text="Roundkettle Over Imperial Padding">
+    <string id="qoT97j7u" text="Bronze Roundkettle">
+    <string id="qw2oyv1j" text="Woodland Chainmail">
+    <string id="r1U1w2zp" text="Brass Bound Fine Leather Arming Sword Grip">
+    <string id="r8b5miDE" text="Guard's Kettle Over Mail Coif">
+    <string id="rOpxDHXL" text="Eastern Leather Lamellar Armor">
+    <string id="rTuNnhWI" text="Southern Shawl">
+    <string id="rXO7ajRX" text="Bronze Roundkettle Over Imperial Mail">
+    <string id="rifv0h0H" text="Northern Cavalry Kite Shield">
+    <string id="rtOJNB6u" text="Guardian Recruit">
+    <string id="sQAXkEQ7" text="Southern Mail Coif">
+    <string id="sfPB9ro3" text="Decorated Northern Hauberk">
+    <string id="siuuhU6b" text="Bronze Nasalhelm Over Imperial Mail">
+    <string id="t7IgyUea" text="Eastern Noble Lance">
+    <string id="tBCm7Qqw" text="Khamseen">
+    <string id="tDYfuUuU" text="Aserai Mameluke Palace Guard">
+    <string id="tYVrECy7" text="Makeshift Horsemans Kite Shield">
+    <string id="ta34CxLs" text="Redshank">
+    <string id="uDrT6v7a" text="Western Cloth Tunic">
+    <string id="uHIVkxVt" text="Northern Bronze Scale Vest Over Gambeson">
+    <string id="uZ1sIlSQ" text="Eastern Plated Leather Vest">
+    <string id="ubplQTXa" text="Southern Ringmail Shoulder">
+    <string id="ueSnrLRy" text="Cossian">
+    <string id="uh4rIbZ9" text="Horseman">
+    <string id="ukQCN90m" text="Eastern Leather Boots">
+    <string id="vNNMGllv" text="Northern Plated Gloves">
+    <string id="vSu1fLNl" text="Highland Furred Cloak">
+    <string id="vU1ibFrY" text="Eastern Reinforced Armor">
+    <string id="vZlMfmng" text="Aserai Mameluke Axeman">
+    <string id="vbOjUu9M" text="Spiked Kettle Over Imperial Padding">
+    <string id="vkuJeNSa" text="Vlandian Militia Crossbowman">
+    <string id="vtoxbHmB" text="Ridged Highland helm">
+    <string id="vwAaIwnD" text="Closed Southern Helmet With Mail">
+    <string id="wEJAab0A" text="Northern Cap">
+    <string id="wEs2uEmb" text="Eastern Rich Coat">
+    <string id="wMO0hoqC" text="Western Common Dress">
+    <string id="wSaoZOr2" text="Pointed Northern Lord Helmet With Feather">
+    <string id="wZ3nKO6j" text="Eastern Leather Pauldrons">
+    <string id="xIFHLI66" text="Karakhuzait Nomad">
+    <string id="xYUHruEl" text="Highland Hood">
+    <string id="xaYwo9tM" text="Mercenary Scout">
+    <string id="xkX9T0yT" text="Loose Wrapped Southern Helmet">
+    <string id="xsO9LNmO" text="Imperial Mail Coif">
+    <string id="yFjmkALW" text="Northern Leather Tabard Over Mail">
+    <string id="yGwxXsIL" text="Steppe War Horse">
+    <string id="ybpZdt9S" text="Northern Layered Cloth">
+    <string id="ydxXW0ZW" text="Northern Helmet Over Leather">
+    <string id="zEQTwpnv" text="Aserai Mameluke Soldier">
+    <string id="zkt4AwSi" text="Knight Helmet With Brass Faceguard">
+<strings>
