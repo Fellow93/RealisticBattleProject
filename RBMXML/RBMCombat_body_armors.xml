@@ -516,7 +516,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="tunic_with_rolled_cloth" name="{=*}Tunic With Rolled Cloth" mesh="armor_tunic_with_rolled_cloth" culture="Culture.empire" weight="0.7" Type="BodyArmor" appearance="1" difficulty="0" subtype="body_armor" value="120">
+	<Item id="tunic_with_rolled_cloth" name="{=RBM34dab}Tunic With Rolled Cloth" mesh="armor_tunic_with_rolled_cloth" culture="Culture.empire" weight="0.7" Type="BodyArmor" appearance="1" difficulty="0" subtype="body_armor" value="120">
 		<ItemComponent>
 			<Armor body_armor="11" leg_armor="11" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="7"/>
 		</ItemComponent>
@@ -1266,25 +1266,25 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="aserai_chain_plate_armor_a" name="{=*}Southern Reinforced Mail Armor" mesh="aserai_chain_plate_armor_a" culture="Culture.aserai" weight="22" Type="BodyArmor" appearance="4" lod_atlas_index="3">
+	<Item id="aserai_chain_plate_armor_a" name="{=RBMc66d2}Southern Reinforced Mail Armor" mesh="aserai_chain_plate_armor_a" culture="Culture.aserai" weight="22" Type="BodyArmor" appearance="4" lod_atlas_index="3">
 		<ItemComponent>
 			<Armor body_armor="60" leg_armor="35" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="40"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="aserai_chain_plate_armor_b" name="{=*}Southern Reinforced Sleeveless Mail Armor" mesh="aserai_chain_plate_armor_b" culture="Culture.aserai" weight="19" Type="BodyArmor" appearance="6" lod_atlas_index="3">
+	<Item id="aserai_chain_plate_armor_b" name="{=RBM042ab}Southern Reinforced Sleeveless Mail Armor" mesh="aserai_chain_plate_armor_b" culture="Culture.aserai" weight="19" Type="BodyArmor" appearance="6" lod_atlas_index="3">
 		<ItemComponent>
 			<Armor body_armor="60" leg_armor="35" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="15"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="aserai_chain_plate_armor_c" name="{=*}Southern Reinforced Mail Vest" mesh="aserai_chain_plate_armor_c" culture="Culture.aserai" weight="15" Type="BodyArmor" appearance="4" lod_atlas_index="3">
+	<Item id="aserai_chain_plate_armor_c" name="{=RBM91c74}Southern Reinforced Mail Vest" mesh="aserai_chain_plate_armor_c" culture="Culture.aserai" weight="15" Type="BodyArmor" appearance="4" lod_atlas_index="3">
 		<ItemComponent>
 			<Armor body_armor="60" leg_armor="12" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="12"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="aserai_chain_plate_armor_d" name="{=*}Southern Reinforced Short Mail Armor" mesh="aserai_chain_plate_armor_d" culture="Culture.aserai" weight="18" Type="BodyArmor" appearance="4" lod_atlas_index="3">
+	<Item id="aserai_chain_plate_armor_d" name="{=RBM2d312}Southern Reinforced Short Mail Armor" mesh="aserai_chain_plate_armor_d" culture="Culture.aserai" weight="18" Type="BodyArmor" appearance="4" lod_atlas_index="3">
 		<ItemComponent>
 			<Armor body_armor="60" leg_armor="12" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="40"/>
 		</ItemComponent>
@@ -1308,7 +1308,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="aserai_scale_armor_on_cloth" name="{=*}Mastercrafted Southern Scale Mail" mesh="aserai_scale_armor_on_cloth" culture="Culture.aserai" weight="18" Type="BodyArmor" appearance="6" lod_atlas_index="3">
+	<Item id="aserai_scale_armor_on_cloth" name="{=RBM796c6}Mastercrafted Southern Scale Mail" mesh="aserai_scale_armor_on_cloth" culture="Culture.aserai" weight="18" Type="BodyArmor" appearance="6" lod_atlas_index="3">
 		<ItemComponent>
 			<Armor body_armor="70" leg_armor="20" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="15"/>
 		</ItemComponent>
@@ -1356,7 +1356,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="aserai_scale_armor_on_chain" name="{=*}Mastercrafted Southern Scale over Chain Mail" mesh="aserai_scale_armor_on_chain" culture="Culture.aserai" weight="22" Type="BodyArmor" appearance="6" lod_atlas_index="3">
+	<Item id="aserai_scale_armor_on_chain" name="{=RBM5f751}Mastercrafted Southern Scale over Chain Mail" mesh="aserai_scale_armor_on_chain" culture="Culture.aserai" weight="22" Type="BodyArmor" appearance="6" lod_atlas_index="3">
 		<ItemComponent>
 			<Armor body_armor="85" leg_armor="30" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="35"/>
 		</ItemComponent>
@@ -1380,7 +1380,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="aserai_full_scale_armor_on_chain" name="{=*}Mastercrafted Southern Scale over Chain Hauberk" mesh="aserai_full_scale_armor_on_chain" culture="Culture.aserai" weight="28" Type="BodyArmor" appearance="7" lod_atlas_index="3">
+	<Item id="aserai_full_scale_armor_on_chain" name="{=RBMb1e9c}Mastercrafted Southern Scale over Chain Hauberk" mesh="aserai_full_scale_armor_on_chain" culture="Culture.aserai" weight="28" Type="BodyArmor" appearance="7" lod_atlas_index="3">
 		<ItemComponent>
 			<Armor body_armor="90" leg_armor="65" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="35"/>
 		</ItemComponent>

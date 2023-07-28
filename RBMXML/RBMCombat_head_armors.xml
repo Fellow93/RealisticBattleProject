@@ -792,7 +792,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="brass_aserai_helmet_b_closed" name="{=*}Brass Southern Closed Helmet with Turban" mesh="brass_aserai_helmet_b_closed" culture="Culture.aserai" weight="2.55" appearance="8" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
+	<Item id="brass_aserai_helmet_b_closed" name="{=RBM47e2e}Brass Southern Closed Helmet with Turban" mesh="brass_aserai_helmet_b_closed" culture="Culture.aserai" weight="2.55" appearance="8" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
 		<ItemComponent>
 			<Armor head_armor="90" body_armor="70" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
@@ -864,25 +864,25 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="brass_aserai_helmet_leather" name="{=*}Brass Southern Helmet with Leather Flaps" mesh="brass_aserai_helmet_leather" culture="Culture.aserai" weight="1.8" appearance="6" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
+	<Item id="brass_aserai_helmet_leather" name="{=RBMbc50c}Brass Southern Helmet with Leather Flaps" mesh="brass_aserai_helmet_leather" culture="Culture.aserai" weight="1.8" appearance="6" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
 		<ItemComponent>
 			<Armor head_armor="75" body_armor="4" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="brass_aserai_helmet_b_leather" name="{=*}Brass Turbaned Helmet with Leather Flaps" mesh="brass_aserai_helmet_b_leather" culture="Culture.aserai" weight="1.9" appearance="7" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
+	<Item id="brass_aserai_helmet_b_leather" name="{=RBMd6b88}Brass Turbaned Helmet with Leather Flaps" mesh="brass_aserai_helmet_b_leather" culture="Culture.aserai" weight="1.9" appearance="7" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
 		<ItemComponent>
 			<Armor head_armor="77" body_armor="4" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="brass_aserai_helmet_open" name="{=*}Brass Southern Helmet" mesh="brass_aserai_helmet_open" culture="Culture.aserai" weight="2.2" appearance="7" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
+	<Item id="brass_aserai_helmet_open" name="{=RBMadef3}Brass Southern Helmet" mesh="brass_aserai_helmet_open" culture="Culture.aserai" weight="2.2" appearance="7" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
 		<ItemComponent>
 			<Armor head_armor="83" body_armor="14" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="brass_aserai_helmet_b_open" name="{=*}Brass Southern Helmet with Turban" mesh="brass_aserai_helmet_b_open" culture="Culture.aserai" weight="2.3" appearance="8" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
+	<Item id="brass_aserai_helmet_b_open" name="{=RBM5f7c8}Brass Southern Helmet with Turban" mesh="brass_aserai_helmet_b_open" culture="Culture.aserai" weight="2.3" appearance="8" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
 		<ItemComponent>
 			<Armor head_armor="85" body_armor="14" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
 		</ItemComponent>
@@ -1392,7 +1392,7 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="brass_aserai_helmet_closed" name="{=*}Brass Southern Closed Helmet" mesh="brass_aserai_helmet_closed" culture="Culture.aserai" weight="2.5" appearance="7" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
+	<Item id="brass_aserai_helmet_closed" name="{=RBM252d4}Brass Southern Closed Helmet" mesh="brass_aserai_helmet_closed" culture="Culture.aserai" weight="2.5" appearance="7" Type="HeadArmor" difficulty="0" subtype="head_armor" is_merchandise="false">
 		<ItemComponent>
 			<Armor head_armor="88" body_armor="64" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
