@@ -2,7 +2,7 @@
 <Items>
   <!-- #region Horses -->
   <!-- #region Tier 0/1 -->
-  <Item id="sumpter_horse" name="{=KFGfTXqE}Sumpter Horse" mesh="horse_brown" item_category="sumpter_horse" difficulty="0" weight="450"  Type="Horse">
+  <Item id="sumpter_horse" name="{=RBM7b590}Sumpter Horse" mesh="horse_brown" item_category="sumpter_horse" difficulty="0" weight="450"  Type="Horse">
     <ItemComponent>
       <Horse monster="Monster.horse" maneuver="41" speed="34" charge_damage="4" body_length="102" is_mountable="true" is_pack_animal="true" extra_health="60" modifier_group="horse">
         <AdditionalMeshes>
@@ -98,7 +98,7 @@
   </Item>
   <!-- #endregion -->
   <!-- #region Tier 2 -->
-  <Item id="aserai_horse" name="{=h7IWO4DV}Nahasawi" mesh="horse_brown" subtype="horse" item_category="horse" culture="Culture.aserai" weight="431" difficulty="50" appearance="0.7" Type="Horse" >
+  <Item id="aserai_horse" name="{=RBM10632}Nahasawi" mesh="horse_brown" subtype="horse" item_category="horse" culture="Culture.aserai" weight="431" difficulty="50" appearance="0.7" Type="Horse" >
     <ItemComponent>
       <Horse monster="Monster.horse" maneuver="56" speed="50" charge_damage="10" body_length="108" is_mountable="true" extra_health="0" skeleton_scale="aserai_horse" modifier_group="horse">
         <AdditionalMeshes>
@@ -133,7 +133,7 @@
     </ItemComponent>
     <Flags Civilian="true" />
   </Item>
-  <Item id="battania_horse" name="{=sgfKrAaZ}Battanian Hobby" mesh="horse_brown" subtype="horse" item_category="horse" culture="Culture.battania" weight="462" difficulty="20" appearance="0.7" Type="Horse" >
+  <Item id="battania_horse" name="{=RBM21043}Battanian Hobby" mesh="horse_brown" subtype="horse" item_category="horse" culture="Culture.battania" weight="462" difficulty="20" appearance="0.7" Type="Horse" >
     <ItemComponent>
       <Horse monster="Monster.horse" maneuver="56" speed="44" charge_damage="10" body_length="98" is_mountable="true" extra_health="50" skeleton_scale="battania_horse">
         <AdditionalMeshes>
@@ -204,7 +204,7 @@
     </ItemComponent>
     <Flags Civilian="true" />
   </Item>
-  <Item id="sturgia_horse" name="{=QwiI8Uho}Sturgian Native" mesh="horse_brown" subtype="horse" item_category="horse" culture="Culture.sturgia" weight="458" difficulty="30" appearance="0.7" Type="Horse" >
+  <Item id="sturgia_horse" name="{=RBM3df58}Sturgian Native" mesh="horse_brown" subtype="horse" item_category="horse" culture="Culture.sturgia" weight="458" difficulty="30" appearance="0.7" Type="Horse" >
     <ItemComponent>
       <Horse monster="Monster.horse" maneuver="62" speed="44" charge_damage="10" body_length="100" is_mountable="true" extra_health="20" skeleton_scale="sturgia_horse">
         <AdditionalMeshes>
@@ -229,7 +229,7 @@
     </ItemComponent>
     <Flags Civilian="true" />
   </Item>
-  <Item id="vlandia_horse" name="{=AIu3kKvz}Rouncey" mesh="horse_brown" subtype="horse" item_category="horse" culture="Culture.vlandia" weight="462" difficulty="40" appearance="0.7" Type="Horse" >
+  <Item id="vlandia_horse" name="{=RBM885ae}Rouncey" mesh="horse_brown" subtype="horse" item_category="horse" culture="Culture.vlandia" weight="462" difficulty="40" appearance="0.7" Type="Horse" >
     <ItemComponent>
       <Horse monster="Monster.horse" maneuver="55" speed="48" charge_damage="12" body_length="109" is_mountable="true" skeleton_scale="vlandia_horse">
         <AdditionalMeshes>
@@ -272,7 +272,7 @@
   </Item>
   <!-- #endregion -->
   <!-- #region Tier 3 -->
-  <Item id="t2_aserai_horse" name="{=gnvIGThE}Darshi Horse" mesh="horse_brown" subtype="horse" item_category="war_horse" culture="Culture.aserai" weight="515" difficulty="90" appearance="1" Type="Horse" >
+  <Item id="t2_aserai_horse" name="{=RBM6e95b}Darshi Horse" mesh="horse_brown" subtype="horse" item_category="war_horse" culture="Culture.aserai" weight="515" difficulty="90" appearance="1" Type="Horse" >
     <ItemComponent>
       <Horse monster="Monster.horse" maneuver="65" speed="56" charge_damage="7" body_length="108" is_mountable="true" extra_health="100" skeleton_scale="aserai_horse" modifier_group="horse">
         <AdditionalMeshes>
@@ -307,7 +307,7 @@
     </ItemComponent>
     <Flags Civilian="true" />
   </Item>
-  <Item id="t2_battania_horse" name="{=tZN9H492}Glintor Pony" mesh="horse_brown" subtype="horse" item_category="war_horse" culture="Culture.battania" weight="542" difficulty="60" appearance="1" Type="Horse" >
+  <Item id="t2_battania_horse" name="{=RBM18856}Glintor Pony" mesh="horse_brown" subtype="horse" item_category="war_horse" culture="Culture.battania" weight="542" difficulty="60" appearance="1" Type="Horse" >
     <ItemComponent>
       <Horse monster="Monster.horse" maneuver="65" speed="52" charge_damage="11" body_length="111" is_mountable="true" extra_health="140" skeleton_scale="battania_horse">
         <AdditionalMeshes>
@@ -325,7 +325,7 @@
     </ItemComponent>
     <Flags Civilian="true" />
   </Item>
-  <Item id="t2_empire_horse" name="{=mVAaWp5U}Canterion Charger" mesh="horse_brown" subtype="horse" item_category="war_horse" culture="Culture.empire" weight="548" difficulty="70" appearance="1" Type="Horse" >
+  <Item id="t2_empire_horse" name="{=RBM305c7}Canterion Charger" mesh="horse_brown" subtype="horse" item_category="war_horse" culture="Culture.empire" weight="548" difficulty="70" appearance="1" Type="Horse" >
     <ItemComponent>
       <Horse monster="Monster.horse" maneuver="70" speed="50" charge_damage="12" body_length="115" is_mountable="true" extra_health="190" skeleton_scale="empire_horse">
         <AdditionalMeshes>
@@ -360,7 +360,7 @@
     </ItemComponent>
     <Flags Civilian="true" />
   </Item>
-  <Item id="t2_khuzait_horse" name="{=PZPphq6H}Steppe Hunter" mesh="horse_brown" item_category="war_horse" culture="Culture.khuzait" subtype="horse" weight="498" difficulty="80" appearance="1" Type="Horse" >
+  <Item id="t2_khuzait_horse" name="{=RBM13d6f}Steppe Hunter" mesh="horse_brown" item_category="war_horse" culture="Culture.khuzait" subtype="horse" weight="498" difficulty="80" appearance="1" Type="Horse" >
     <ItemComponent>
       <Horse monster="Monster.horse" maneuver="77" speed="51" charge_damage="9" body_length="94" is_mountable="true" extra_health="150" skeleton_scale="khuzait_horse">
         <AdditionalMeshes>
@@ -378,7 +378,7 @@
     </ItemComponent>
     <Flags Civilian="true" />
   </Item>
-  <Item id="t2_sturgia_horse" name="{=Ejx5lXjk}Revyl Chaser" mesh="horse_brown" subtype="horse" item_category="war_horse" culture="Culture.sturgia" weight="510" difficulty="70" appearance="1" Type="Horse" >
+  <Item id="t2_sturgia_horse" name="{=RBMa4e43}Revyl Chaser" mesh="horse_brown" subtype="horse" item_category="war_horse" culture="Culture.sturgia" weight="510" difficulty="70" appearance="1" Type="Horse" >
     <ItemComponent>
       <Horse monster="Monster.horse" maneuver="64" speed="54" charge_damage="9" body_length="100" is_mountable="true" extra_health="160" skeleton_scale="sturgia_horse">
         <AdditionalMeshes>
@@ -403,7 +403,7 @@
     </ItemComponent>
     <Flags Civilian="true" />
   </Item>
-  <Item id="t2_vlandia_horse" name="{=MqBSmahz}Vlandian Courser" mesh="horse_brown" subtype="horse" item_category="war_horse" culture="Culture.vlandia" weight="531" difficulty="80" appearance="1" Type="Horse" >
+  <Item id="t2_vlandia_horse" name="{=RBM945fb}Vlandian Courser" mesh="horse_brown" subtype="horse" item_category="war_horse" culture="Culture.vlandia" weight="531" difficulty="80" appearance="1" Type="Horse" >
     <ItemComponent>
       <Horse monster="Monster.horse" maneuver="74" speed="53" charge_damage="12" body_length="109" is_mountable="true" extra_health="140" skeleton_scale="vlandia_horse">
         <AdditionalMeshes>
@@ -861,7 +861,7 @@
   <!-- #New horses 1.9.0 -->
   
   <Item id="aserai_horse_tournament"
-        name="{=h7IWO4DV}Desert Horse"
+        name="{=RBM69721}Desert Horse"
         mesh="horse_brown"
         subtype="horse"
         item_category="horse"
@@ -914,7 +914,7 @@
     <Flags Civilian="true" />
   </Item>
   <Item id="battania_horse_tournament"
-        name="{=sgfKrAaZ}Battanian Pony"
+        name="{=RBM362ec}Battanian Pony"
         mesh="horse_brown"
         subtype="horse"
         item_category="horse"
@@ -1028,7 +1028,7 @@
     <Flags Civilian="true" />
   </Item>
   <Item id="sturgia_horse_tournament"
-        name="{=QwiI8Uho}Sturgian Trotter"
+        name="{=RBMe143c}Sturgian Trotter"
         mesh="horse_brown"
         subtype="horse"
         item_category="horse"
@@ -1068,7 +1068,7 @@
     <Flags Civilian="true" />
   </Item>
   <Item id="vlandia_horse_tournament"
-        name="{=AIu3kKvz}Saddle Horse"
+        name="{=RBMec9b3}Saddle Horse"
         mesh="horse_brown"
         subtype="horse"
         item_category="horse"
@@ -1189,7 +1189,7 @@
   
   <!-- #region Tier 3 -->
   <Item id="t3_aserai_horse"
-        name="{=gnvIGThE}Askarat"
+        name="{=RBM31479}Askarat"
         mesh="horse_brown"
         subtype="horse"
         item_category="noble_horse"
@@ -1241,7 +1241,7 @@
     <Flags Civilian="true" />
   </Item>
   <Item id="t3_battania_horse"
-        name="{=tZN9H492}Swenryn Pony"
+        name="{=RBM1420e}Swenryn Pony"
         mesh="horse_brown"
         subtype="horse"
         item_category="noble_horse"
@@ -1270,7 +1270,7 @@
     <Flags Civilian="true" />
   </Item>
   <Item id="t3_empire_horse"
-        name="{=mVAaWp5U}Palmatian"
+        name="{=RBMac8ab}Palmatian"
         mesh="horse_brown"
         subtype="horse"
         item_category="noble_horse"
@@ -1322,7 +1322,7 @@
     <Flags Civilian="true" />
   </Item>
   <Item id="t3_khuzait_horse"
-        name="{=PZPphq6H}Karahan"
+        name="{=RBMabba7}Karahan"
         mesh="horse_brown"
         item_category="noble_horse"
         culture="Culture.khuzait"
@@ -1352,7 +1352,7 @@
     <Flags Civilian="true" />
   </Item>
   <Item id="t3_sturgia_horse"
-        name="{=Ejx5lXjk}Omor Trotter"
+        name="{=RBM625bc}Omor Trotter"
         mesh="horse_brown"
         subtype="horse"
         item_category="noble_horse"
@@ -1391,7 +1391,7 @@
     <Flags Civilian="true" />
   </Item>
   <Item id="t3_vlandia_horse"
-        name="{=MqBSmahz}Destrier"
+        name="{=RBMfc5d0}Destrier"
         mesh="horse_brown"
         subtype="horse"
         item_category="noble_horse"
@@ -1444,7 +1444,7 @@
   </Item>
   
   <Item id="noble_camel"
-        name="{=Goloz0Vm}Nahasa Camel"
+        name="{=RBMde9ad}Nahasa Camel"
         is_merchandise="false"
         culture="Culture.aserai"
         mesh="camel_mesh"
