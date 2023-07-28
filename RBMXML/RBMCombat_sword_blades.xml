@@ -2309,11 +2309,11 @@
   </CraftingPiece>
   <!-- #endregion -->
   <!-- #gladius -->
-    <CraftingPiece id="dagger_blade_11" name="{=ykTYTbek}Throwing Knife Blade" tier="5" piece_type="Blade" mesh="dagger_blade_11" length="30" weight="0.250">
+    <CraftingPiece id="dagger_blade_11" name="{=ykTYTbek}Throwing Knife Blade" tier="2" piece_type="Blade" mesh="dagger_blade_11" length="30" weight="0.250">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_knife_a" holster_mesh="throwing_dagger_quiver_2" holster_mesh_length="35.8">
-      <Thrust damage_type="Pierce" damage_factor="1.15" />
-      <Swing damage_type="Cut" damage_factor="1.1" />	  
+      <Thrust damage_type="Pierce" damage_factor="0.8" />
+      <Swing damage_type="Cut" damage_factor="0.8" />	  
     </BladeData>
     <Flags>
       <Flag name="Civilian" type="ItemFlags" />
@@ -2327,21 +2327,21 @@
   <!-- #region Dagger Blade Pieces -->
   <CraftingPiece id="dagger_blade_1"
                  name="{=gXUXjtuL}Kama Blade"
-                 tier="1"
+                 tier="5"
                  piece_type="Blade"
                  mesh="dagger_blade_1"
                  length="39"
-                 weight="0.105"
+                 weight="0.305"
                  is_default="true">
 
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
                body_name="bo_knife_a"
-               holster_mesh="">
+               holster_mesh="dagger_blade_6">
       <Thrust damage_type="Pierce"
-              damage_factor="0.6" />
+              damage_factor="1.4" />
       <Swing damage_type="Cut"
-             damage_factor="0.6" />
+             damage_factor="1.1" />
     </BladeData>
     <Flags>
       <Flag name="Civilian"
@@ -2358,16 +2358,16 @@
                  piece_type="Blade"
                  mesh="dagger_blade_2"
                  length="40"
-                 weight="0.255">
+                 weight="0.310">
 
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
                body_name="bo_knife_a"
                holster_mesh="">
       <Thrust damage_type="Pierce"
-              damage_factor="0.7" />
+              damage_factor="0.8" />
       <Swing damage_type="Cut"
-             damage_factor="0.7" />
+             damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="Civilian"
@@ -2384,16 +2384,16 @@
                  piece_type="Blade"
                  mesh="dagger_blade_3"
                  length="47"
-                 weight="0.15">
+                 weight="0.42">
 
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
                body_name="bo_knife_a"
                holster_mesh="">
       <Thrust damage_type="Pierce"
-              damage_factor="0.8" />
+              damage_factor="1" />
       <Swing damage_type="Cut"
-             damage_factor="0.8" />
+             damage_factor="0.9" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse"
@@ -2412,7 +2412,7 @@
                  piece_type="Blade"
                  mesh="dagger_blade_3"
                  length="47"
-                 weight="0.15"
+                 weight="0.4"
                  is_hidden="true">
 
     <BladeData stack_amount="3"
@@ -2420,9 +2420,9 @@
                body_name="bo_knife_a"
                holster_mesh="">
       <Thrust damage_type="Pierce"
-              damage_factor="0.8" />
+              damage_factor="1" />
       <Swing damage_type="Cut"
-             damage_factor="0.8" />
+             damage_factor="0.9" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse"
@@ -2441,16 +2441,16 @@
                  piece_type="Blade"
                  mesh="dagger_blade_4"
                  length="38"
-                 weight="0.15">
+                 weight="0.32">
 
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
                body_name="bo_knife_a"
                holster_mesh="">
       <Thrust damage_type="Pierce"
-              damage_factor="0.8" />
+              damage_factor="1" />
       <Swing damage_type="Cut"
-             damage_factor="0.8" />
+             damage_factor="0.9" />
     </BladeData>
     <Flags>
       <Flag name="Civilian"
@@ -2467,7 +2467,7 @@
                  piece_type="Blade"
                  mesh="dagger_blade_5"
                  length="32"
-                 weight="0.125">
+                 weight="0.270">
 
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
@@ -2476,7 +2476,7 @@
       <Thrust damage_type="Pierce"
               damage_factor="0.6" />
       <Swing damage_type="Cut"
-             damage_factor="0.6" />
+             damage_factor="0.7" />
     </BladeData>
     <Flags>
       <Flag name="Civilian"
@@ -2493,16 +2493,16 @@
                  piece_type="Blade"
                  mesh="dagger_blade_6"
                  length="44.7"
-                 weight="0.17">
+                 weight="0.35">
 
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
                body_name="bo_knife_a"
                holster_mesh="">
       <Thrust damage_type="Pierce"
-              damage_factor="0.8" />
+              damage_factor="1" />
       <Swing damage_type="Cut"
-             damage_factor="0.8" />
+             damage_factor="0.9" />
     </BladeData>
     <Flags>
       <Flag name="Civilian"
@@ -2519,7 +2519,7 @@
                  piece_type="Blade"
                  mesh="dagger_blade_6"
                  length="44.7"
-                 weight="0.17"
+                 weight="0.36"
                  is_hidden="true">
 
     <BladeData stack_amount="3"
@@ -2529,7 +2529,7 @@
       <Thrust damage_type="Pierce"
               damage_factor="0.6" />
       <Swing damage_type="Cut"
-             damage_factor="0.6" />
+             damage_factor="0.7" />
     </BladeData>
     <Flags>
       <Flag name="Civilian"
@@ -2546,16 +2546,16 @@
                  piece_type="Blade"
                  mesh="dagger_blade_7"
                  length="40"
-                 weight="0.225">
+                 weight="0.32">
 
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
                body_name="bo_knife_a"
                holster_mesh="">
       <Thrust damage_type="Pierce"
-              damage_factor="0.7" />
+              damage_factor="0.8" />
       <Swing damage_type="Cut"
-             damage_factor="0.7" />
+             damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="Civilian"
@@ -2572,16 +2572,16 @@
                  piece_type="Blade"
                  mesh="dagger_blade_8"
                  length="37.9"
-                 weight="0.335">
+                 weight="0.3">
 
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
                body_name="bo_knife_a"
                holster_mesh="">
       <Thrust damage_type="Pierce"
-              damage_factor="0.8" />
+              damage_factor="1" />
       <Swing damage_type="Cut"
-             damage_factor="0.8" />
+             damage_factor="0.9" />
     </BladeData>
     <Flags>
       <Flag name="Civilian"
@@ -2598,16 +2598,16 @@
                  piece_type="Blade"
                  mesh="dagger_blade_9"
                  length="43"
-                 weight="0.375">
+                 weight="0.345">
 
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
                body_name="bo_knife_a"
                holster_mesh="">
       <Thrust damage_type="Pierce"
-              damage_factor="0.8" />
+              damage_factor="1" />
       <Swing damage_type="Cut"
-             damage_factor="0.8" />
+             damage_factor="0.9" />
     </BladeData>
     <Flags>
       <Flag name="Civilian"
@@ -2624,7 +2624,7 @@
                  piece_type="Blade"
                  mesh="dagger_blade_10"
                  length="30"
-                 weight="0.375">
+                 weight="0.250">
 
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
@@ -2632,9 +2632,9 @@
                holster_mesh="throwing_dagger_quiver_2"
                holster_mesh_length="35.8">
       <Thrust damage_type="Pierce"
-              damage_factor="0.7" />
+              damage_factor="0.8" />
       <Swing damage_type="Cut"
-             damage_factor="0.7" />
+             damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="Civilian"
@@ -2651,7 +2651,7 @@
                  piece_type="Blade"
                  mesh="dagger_blade_12"
                  length="25.2"
-                 weight="0.375">
+                 weight="0.200">
 
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
@@ -2661,7 +2661,7 @@
       <Thrust damage_type="Pierce"
               damage_factor="0.6" />
       <Swing damage_type="Cut"
-             damage_factor="0.6" />
+             damage_factor="0.7" />
     </BladeData>
     <Flags>
       <Flag name="Civilian"
@@ -2678,7 +2678,7 @@
                  piece_type="Blade"
                  mesh="dagger_blade_13"
                  length="29"
-                 weight="0.375">
+                 weight="0.240">
 
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
@@ -2686,9 +2686,9 @@
                holster_mesh="throwing_dagger_quiver_1"
                holster_mesh_length="35.8">
       <Thrust damage_type="Pierce"
-              damage_factor="0.7" />
+              damage_factor="0.8" />
       <Swing damage_type="Cut"
-             damage_factor="0.7" />
+             damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="Civilian"
@@ -2705,7 +2705,7 @@
                  piece_type="Blade"
                  mesh="dagger_blade_13"
                  length="29"
-                 weight="0.375"
+                 weight="0.240"
                  is_hidden="true">
 
     <BladeData stack_amount="3"
@@ -2714,9 +2714,9 @@
                holster_mesh="throwing_dagger_quiver_1"
                holster_mesh_length="35.8">
       <Thrust damage_type="Pierce"
-              damage_factor="0.7" />
+              damage_factor="0.8" />
       <Swing damage_type="Cut"
-             damage_factor="0.7" />
+             damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="Civilian"
@@ -2733,7 +2733,7 @@
                  piece_type="Blade"
                  mesh="dagger_blade_14"
                  length="35"
-                 weight="0.375">
+                 weight="0.28">
 
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
@@ -2741,9 +2741,9 @@
                holster_mesh="throwing_dagger_quiver_4"
                holster_mesh_length="35.8">
       <Thrust damage_type="Pierce"
-              damage_factor="0.8" />
+              damage_factor="1" />
       <Swing damage_type="Cut"
-             damage_factor="0.8" />
+             damage_factor="0.9" />
     </BladeData>
     <Flags>
       <Flag name="Civilian"
