@@ -12,9 +12,9 @@
 	<string id="str_formation_ai_sergeant_instruction_behavior_text.RBMBehaviorCavalryCharge" text="{=Tqa0r78h}Charge at enemy" />
 	<string id="str_formation_ai_sergeant_instruction_behavior_text.RBMBehaviorArcherFlank" text="{=Tqa0r78j}Skirmish from {SIDE_STRING} flank" />
 	<string id="str_formation_ai_sergeant_instruction_behavior_text.RBMBehaviorEmbolon" text="{=Tqa0r783}Form flying wedge in front of infantry"/>
-	<string id="str_team_ai_tactic_text.RBMTacticAttackSplitArchers" text="{=!}Our plan is to attack with full force and flank with archers." />
-	<string id="str_team_ai_tactic_text.RBMTacticAttackSplitInfantry" text="{=!}Our plan is to split infantry and crush them from all sides." />
-	<string id="str_team_ai_tactic_text.RBMTacticAttackSplitSkirmishers" text="{=!}Our plan is to bait them with skirmishers then crush them with full focre." />
-	<string id="str_team_ai_tactic_text.RBMTacticDefendSplitArchers" text="{=!}Our plan is to form a defensive line with archers on flanks." />
-	<string id="str_team_ai_tactic_text.RBMTacticEmbolon" text="{=!}Our plan is to charge head-on with our cavalry then crush disorganized formations." />
+	<string id="str_team_ai_tactic_text.RBMTacticAttackSplitArchers" text="{=RBM1597d}Our plan is to attack with full force and flank with archers." />
+	<string id="str_team_ai_tactic_text.RBMTacticAttackSplitInfantry" text="{=RBMc154f}Our plan is to split infantry and crush them from all sides." />
+	<string id="str_team_ai_tactic_text.RBMTacticAttackSplitSkirmishers" text="{=RBMb53e3}Our plan is to bait them with skirmishers then crush them with full focre." />
+	<string id="str_team_ai_tactic_text.RBMTacticDefendSplitArchers" text="{=RBM1dcff}Our plan is to form a defensive line with archers on flanks." />
+	<string id="str_team_ai_tactic_text.RBMTacticEmbolon" text="{=RBM54a43}Our plan is to charge head-on with our cavalry then crush disorganized formations." />
 </strings>
