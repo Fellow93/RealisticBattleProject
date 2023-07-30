@@ -1,7 +1,7 @@
 ﻿<Module>
   <Name value="(RBM) Realistic Battle Mod"/>
   <Id value="RBM"/>
-  <Version value="v3.6.3"/>
+  <Version value="v3.6.4"/>
   <SingleplayerModule value="true"/>
   <MultiplayerModule value="false"/>
   <DependedModules>
