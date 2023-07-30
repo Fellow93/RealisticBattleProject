@@ -1322,7 +1322,7 @@
     <Flags Civilian="true" />
   </Item>
   <Item id="t3_khuzait_horse"
-        name="{=J5ofaQnM}Karahan{@Plural}Karahan horses{\@}"
+        name="{=NNUXGwTc}Karahan{@Plural}Karahan horses{\@}"
         mesh="horse_brown"
         item_category="noble_horse"
         culture="Culture.khuzait"
