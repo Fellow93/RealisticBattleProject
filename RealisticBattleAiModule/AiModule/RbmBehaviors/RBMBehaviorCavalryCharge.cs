@@ -285,7 +285,8 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                         Vec2 vec5 = medianPosition3.AsVec2 + vec4 * (_desiredChargeStopDistance + _lastTarget.Formation.Depth);
                         medianPosition3.SetVec2(vec5);
                         _lastReformDestination = medianPosition3;
-                        base.CurrentOrder = MovementOrder.MovementOrderMove(medianPosition3);
+                        //base.CurrentOrder = MovementOrder.MovementOrderMove(medianPosition3);
+                        base.CurrentOrder = MovementOrder.MovementOrderChargeToTarget(_lastTarget.Formation);
                         CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec4);
                         break;
                     }
