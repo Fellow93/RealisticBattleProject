@@ -190,22 +190,22 @@ namespace RBMAI
         }
 
         [HarmonyPatch(typeof(SandboxAgentStatCalculateModel))]
-        [HarmonyPatch("GetSkillEffectsOnAgent")]
-        internal class GetSkillEffectsOnAgentPatch
+        [HarmonyPatch("SetWeaponSkillEffectsOnAgent")]
+        internal class SetWeaponSkillEffectsOnAgentPatch
         {
-            private static bool Prefix(ref SandboxAgentStatCalculateModel __instance, ref Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData rightHandEquippedItem)
+            private static bool Prefix(ref SandboxAgentStatCalculateModel __instance, ref Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedWeaponComponent)
             {
                 CharacterObject characterObject = agent.Character as CharacterObject;
                 float swingSpeedMultiplier = agentDrivenProperties.SwingSpeedMultiplier;
                 float thrustOrRangedReadySpeedMultiplier = agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier;
                 float reloadSpeed = agentDrivenProperties.ReloadSpeed;
-                if (characterObject != null && rightHandEquippedItem != null)
+                if (characterObject != null && equippedWeaponComponent != null)
                 {
-                    int effectiveSkill = __instance.GetEffectiveSkill(agent, rightHandEquippedItem.RelevantSkill);
+                    int effectiveSkill = __instance.GetEffectiveSkill(agent, equippedWeaponComponent.RelevantSkill);
                     ExplainedNumber stat = new ExplainedNumber(swingSpeedMultiplier);
                     ExplainedNumber stat2 = new ExplainedNumber(thrustOrRangedReadySpeedMultiplier);
                     ExplainedNumber stat3 = new ExplainedNumber(reloadSpeed);
-                    if (rightHandEquippedItem.RelevantSkill == DefaultSkills.OneHanded)
+                    if (equippedWeaponComponent.RelevantSkill == DefaultSkills.OneHanded)
                     {
                         if (effectiveSkill > 150)
                         {
@@ -214,7 +214,7 @@ namespace RBMAI
                         SkillHelper.AddSkillBonusForCharacter(DefaultSkills.OneHanded, DefaultSkillEffects.OneHandedSpeed, characterObject, ref stat, effectiveSkill);
                         SkillHelper.AddSkillBonusForCharacter(DefaultSkills.OneHanded, DefaultSkillEffects.OneHandedSpeed, characterObject, ref stat2, effectiveSkill);
                     }
-                    else if (rightHandEquippedItem.RelevantSkill == DefaultSkills.TwoHanded)
+                    else if (equippedWeaponComponent.RelevantSkill == DefaultSkills.TwoHanded)
                     {
                         if (effectiveSkill > 150)
                         {
@@ -223,7 +223,7 @@ namespace RBMAI
                         SkillHelper.AddSkillBonusForCharacter(DefaultSkills.TwoHanded, DefaultSkillEffects.TwoHandedSpeed, characterObject, ref stat, effectiveSkill);
                         SkillHelper.AddSkillBonusForCharacter(DefaultSkills.TwoHanded, DefaultSkillEffects.TwoHandedSpeed, characterObject, ref stat2, effectiveSkill);
                     }
-                    else if (rightHandEquippedItem.RelevantSkill == DefaultSkills.Polearm)
+                    else if (equippedWeaponComponent.RelevantSkill == DefaultSkills.Polearm)
                     {
                         if (effectiveSkill > 150)
                         {
@@ -232,22 +232,22 @@ namespace RBMAI
                         SkillHelper.AddSkillBonusForCharacter(DefaultSkills.Polearm, DefaultSkillEffects.PolearmSpeed, characterObject, ref stat, effectiveSkill);
                         SkillHelper.AddSkillBonusForCharacter(DefaultSkills.Polearm, DefaultSkillEffects.PolearmSpeed, characterObject, ref stat2, effectiveSkill);
                     }
-                    else if (rightHandEquippedItem.RelevantSkill == DefaultSkills.Crossbow)
+                    else if (equippedWeaponComponent.RelevantSkill == DefaultSkills.Crossbow)
                     {
                         SkillHelper.AddSkillBonusForCharacter(DefaultSkills.Crossbow, DefaultSkillEffects.CrossbowReloadSpeed, characterObject, ref stat3, effectiveSkill);
                     }
-                    else if (rightHandEquippedItem.RelevantSkill == DefaultSkills.Throwing)
+                    else if (equippedWeaponComponent.RelevantSkill == DefaultSkills.Throwing)
                     {
                         SkillHelper.AddSkillBonusForCharacter(DefaultSkills.Throwing, DefaultSkillEffects.ThrowingSpeed, characterObject, ref stat2, effectiveSkill);
                     }
-                    if (agent.HasMount)
-                    {
-                        int effectiveSkill2 = __instance.GetEffectiveSkill(agent, DefaultSkills.Riding);
-                        float value = -0.01f * MathF.Max(0f, DefaultSkillEffects.HorseWeaponSpeedPenalty.GetPrimaryValue(effectiveSkill2));
-                        stat.AddFactor(value);
-                        stat2.AddFactor(value);
-                        stat3.AddFactor(value);
-                    }
+                    //if (agent.HasMount)
+                    //{
+                    //    int effectiveSkill2 = __instance.GetEffectiveSkill(agent, DefaultSkills.Riding);
+                    //    float value = -0.01f * MathF.Max(0f, DefaultSkillEffects.MountedWeaponSpeedPenalty.GetPrimaryValue(effectiveSkill2));
+                    //    stat.AddFactor(value);
+                    //    stat2.AddFactor(value);
+                    //    stat3.AddFactor(value);
+                    //}
                     agentDrivenProperties.SwingSpeedMultiplier = stat.ResultNumber;
                     agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier = stat2.ResultNumber;
                     agentDrivenProperties.ReloadSpeed = stat3.ResultNumber;

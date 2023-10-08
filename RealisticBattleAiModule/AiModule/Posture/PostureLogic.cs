@@ -747,7 +747,7 @@ namespace RBMAI
                     for (float currentSpot = 1f; currentSpot > 0.35f; currentSpot -= 0.01f)
                     {
                         float currentSpotMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(character, null, swingSpeed, currentSpot, weaponWeight,
-                            weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex),
+                            weapon.Item, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex),
                             weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).GetRealWeaponLength(), weaponInertia, weaponCOM, 0f, false);
                         if (currentSpotMagnitude > sweetSpotMagnitude)
                         {
@@ -834,7 +834,7 @@ namespace RBMAI
                             }
                         default:
                             {
-                                thrustMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(character, null, thrustWeaponSpeed, weaponWeight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex), 0f, false);
+                                thrustMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(character, null, thrustWeaponSpeed, weaponWeight, weapon.Item, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex), 0f, false);
                                 break;
                             }
                     }
