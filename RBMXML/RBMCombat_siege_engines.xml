@@ -13,22 +13,22 @@
   <SiegeEngineType id="siege_tower_level1"
                    name="{=aXjlMBiE}Siege Tower"
                    description ="{=*}Siege towers allow approaching the walls without being exposed to missiles, and reduce the defender's height advantage."
-                   max_hit_points="8000"
+                   max_hit_points="12000"
                    man_day_cost="16"
                    difficulty="30" />
   <SiegeEngineType id="siege_tower_level2"
                    name="{=6UPgDokE}Advanced Siege Tower"
                    description="{=hhHcHGrO}A Siege tower that is sturdier and has a platform for archers."
                    difficulty="100"
-                   max_hit_points="16000"
+                   max_hit_points="24000"
                    man_day_cost="24" />
   <SiegeEngineType id="ballista"
                    name="{=abbALYlp}Ballista"
                    description="{=atA20r4C}Ballistas are effective against enemy ranged weapons. They can also pick up individual enemies at range."
                    is_ranged="true"
-                   damage="40"
+                   damage="100"
                    max_hit_points="200"
-                   hit_chance="1"
+                   hit_chance="0.5"
                    is_anti_personnel="true"
                    anti_personnel_hit_chance="1"
                    man_day_cost="8"
@@ -38,10 +38,10 @@
                    name="{=NeWvHjCw}Fire Ballista"
                    description="{=4lS8cX6c}Fire ballistas are similar to regular ballistas but fire burning projectiles which are more effective against siege engines."
                    is_ranged="true"
-                   damage="60"
+                   damage="150"
                    difficulty="30"
                    max_hit_points="200"
-                   hit_chance="1"
+                   hit_chance="0.5"
                    is_anti_personnel="true"
                    anti_personnel_hit_chance="1"
                    man_day_cost="8"
@@ -50,26 +50,26 @@
                    name="{=Ew11a1Tx}Catapult"
                    description="{=1bbdz9iS}Catapults are effective against enemy siege engines as well as walls."
                    is_ranged="true"
-                   damage="59"
+                   damage="200"
                    difficulty="40"
                    max_hit_points="700"
                    hit_chance="1"
 		   is_anti_personnel="true"
                    anti_personnel_hit_chance="1"
                    man_day_cost="16"
-                   campaign_rate_of_fire_per_day="15.0" />
+                   campaign_rate_of_fire_per_day="5.0" />
   <SiegeEngineType id="fire_catapult"
                    name="{=Wg2P3acK}Fire Catapult"
                    description="{=nM3ENTEW}Fire catapults are similar to regular ones but fire incendiary projectiles which are more effective against siege engines"
                    is_ranged="true"
-                   damage="70"
+                   damage="300"
                    difficulty="50"
                    max_hit_points="700"
                    hit_chance="1"
 		   is_anti_personnel="true"
                    anti_personnel_hit_chance="1"
                    man_day_cost="16"
-                   campaign_rate_of_fire_per_day="15.0" />
+                   campaign_rate_of_fire_per_day="5.0" />
   <SiegeEngineType id="onager"
                    name="{=GPESFoWD}Onager"
                    description="{=CbnswkEa}Onagers are effective against enemy siege engines as well as walls."
@@ -81,7 +81,7 @@
 		   is_anti_personnel="true"
                    anti_personnel_hit_chance="1"
                    man_day_cost="20"
-                   campaign_rate_of_fire_per_day="15.0" />
+                   campaign_rate_of_fire_per_day="5.0" />
   <SiegeEngineType id="fire_onager"
                    name="{=iLD5Lkto}Fire Onager"
                    description="{=S6odGUh9}Fire Onagers are effective against enemy siege engines as well as walls and hurl incendiary projectiles."
@@ -93,7 +93,7 @@
 		   is_anti_personnel="true"
                    anti_personnel_hit_chance="1"
                    man_day_cost="20"
-                   campaign_rate_of_fire_per_day="15.0" />
+                   campaign_rate_of_fire_per_day="5.0" />
   <SiegeEngineType id="bricole"
                    name="{=TlP31w8l}Bricole"
                    description="{=0bPqoNk9}Bricoles are powerful siege weapons that can be placed on towers."
@@ -116,7 +116,7 @@
                    hit_chance="1"
                    anti_personnel_hit_chance="1"
                    man_day_cost="40"
-                   campaign_rate_of_fire_per_day="7.0" />
+                   campaign_rate_of_fire_per_day="5.0" />
   <SiegeEngineType id="fire_trebuchet"
                    name="{=lFl5Ai1a}Fire Trebuchet"
                    description="{=uvUHbHoW}Fire trebuchets hurl incendiary projectiles instead of regular stones which are more effective against enemy siege weapons and personell."
@@ -127,17 +127,17 @@
                    hit_chance="1"
                    anti_personnel_hit_chance="1"
                    man_day_cost="40"
-                   campaign_rate_of_fire_per_day="7.0" />
+                   campaign_rate_of_fire_per_day="5.0" />
   <SiegeEngineType id="ram"
                    name="{=MaBSSg7I}Battering Ram"
                    description="{=U9MJaX7f}A battering ram can be used to break the gate and open access to the inner courtyard."
                    difficulty="40"
-                   max_hit_points="6000"
+                   max_hit_points="8000"
                    man_day_cost="12" />
   <SiegeEngineType id="improved_ram"
                    name="{=zt0bVSsU}Improved Ram"
                    description="{=8VUZPA6Q}A more powerful version of the regular battering ram."
                    difficulty="110"
-                   max_hit_points="10000"
+                   max_hit_points="13000"
                    man_day_cost="16" />
 </SiegeEngineTypes>
