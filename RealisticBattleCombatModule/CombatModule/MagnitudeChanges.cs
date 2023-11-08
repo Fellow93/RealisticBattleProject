@@ -994,7 +994,7 @@ namespace RBMCombat
                         }
                         if (targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.Javelin)
                         {
-                            int calculatedMissileSpeed = Utilities.assignThrowableMissileSpeed(targetWeapon.Weight, (int)Utilities.throwableCorrectionSpeed, effectiveSkill);
+                            int calculatedMissileSpeed = Utilities.assignThrowableMissileSpeedForMenu(targetWeapon.Weight, (int)Utilities.throwableCorrectionSpeed, effectiveSkill);
 
                             methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "RBM Stats", "", 1, null });
                             methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Relevant Skill: "), effectiveSkill, effectiveSkill });
@@ -1029,7 +1029,7 @@ namespace RBMCombat
                             targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.ThrowingKnife ||
                             targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.Dagger)
                         {
-                            int calculatedMissileSpeed = Utilities.assignThrowableMissileSpeed(targetWeapon.Weight, 0, effectiveSkill);
+                            int calculatedMissileSpeed = Utilities.assignThrowableMissileSpeedForMenu(targetWeapon.Weight, 0, effectiveSkill);
 
                             methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "RBM Stats", "", 1, null });
                             methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Relevant Skill: "), effectiveSkill, effectiveSkill });

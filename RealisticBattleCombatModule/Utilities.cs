@@ -200,10 +200,37 @@ namespace RBMCombat
             return calculatedThrowingSpeed;
         }
 
-        public static int assignThrowableMissileSpeed(float ammoWeight, int correctiveMissileSpeed, float effectiveSkill)
+        public static int assignThrowableMissileSpeedForMenu(float ammoWeight, int correctiveMissileSpeed, float effectiveSkill)
         {
             //float ammoWeight = throwable.GetWeight() / throwable.Amount;
             int calculatedThrowingSpeed = calculateThrowableSpeed(ammoWeight, effectiveSkill);
+            //PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
+            //property.DeclaringType.GetProperty("MissileSpeed");
+            //throwable.CurrentUsageIndex = index;
+            calculatedThrowingSpeed += correctiveMissileSpeed;
+            return calculatedThrowingSpeed;
+            //property.SetValue(throwable.CurrentUsageItem, calculatedThrowingSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+            //throwable.CurrentUsageIndex = 0;
+        }
+
+        public static int assignThrowableMissileSpeed(float ammoWeight, int correctiveMissileSpeed, float effectiveSkill, float equipmentWeight, WeaponClass shieldType)
+        {
+            //float ammoWeight = throwable.GetWeight() / throwable.Amount;
+            float shieldTypeModifier = 1f;
+            float equipmentWeightModifier = 1f;
+            switch ( shieldType ){
+                case WeaponClass.LargeShield:
+                    {
+                        shieldTypeModifier = 1f;
+                        break;
+                    }
+                case WeaponClass.SmallShield:
+                    {
+                        shieldTypeModifier = 1f;
+                        break;
+                    }
+            }
+            int calculatedThrowingSpeed = (int)Math.Round(calculateThrowableSpeed(ammoWeight, effectiveSkill) * shieldTypeModifier * equipmentWeightModifier);
             //PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
             //property.DeclaringType.GetProperty("MissileSpeed");
             //throwable.CurrentUsageIndex = index;
