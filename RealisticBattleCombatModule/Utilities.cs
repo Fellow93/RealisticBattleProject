@@ -217,16 +217,16 @@ namespace RBMCombat
         {
             //float ammoWeight = throwable.GetWeight() / throwable.Amount;
             float shieldTypeModifier = 1f;
-            float equipmentWeightModifier = 1f;
+            float equipmentWeightModifier = (float)Math.Sqrt(MBMath.ClampFloat(1f - (equipmentWeight * 0.015f),0.5f, 1f));
             switch ( shieldType ){
                 case WeaponClass.LargeShield:
                     {
-                        shieldTypeModifier = 1f;
+                        shieldTypeModifier = 0.836f;
                         break;
                     }
                 case WeaponClass.SmallShield:
                     {
-                        shieldTypeModifier = 1f;
+                        shieldTypeModifier = 0.948f;
                         break;
                     }
             }

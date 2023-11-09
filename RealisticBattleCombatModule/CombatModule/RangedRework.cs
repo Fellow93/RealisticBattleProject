@@ -131,7 +131,7 @@ namespace RBMCombat
                                     }
                                 }
                             }
-                            float equipmentWeight = __instance.SpawnEquipment.GetTotalWeightOfArmor(true) + __instance.Equipment.GetTotalWeightOfWeapons();
+                            float equipmentWeight = __instance.SpawnEquipment.GetTotalWeightOfArmor(true); //+ __instance.Equipment.GetTotalWeightOfWeapons();
                             WeaponClass typeOfShieldEquipped = WeaponClass.Undefined;
                             for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                             {
