@@ -1561,9 +1561,10 @@ namespace RBMAI
                     }
                     for (int i = AgentAi.agentsToDropWeapon.Count - 1; i >= 0; i--)
                     {
-                        if (AgentAi.agentsToDropWeapon[i].State == AgentState.Active)
-                        {
-                            ActionCodeType currentActionType = AgentAi.agentsToDropWeapon[i].GetCurrentActionType(1);
+                        //if (AgentAi.agentsToDropWeapon[i].State == AgentState.Active)
+                            if (AgentAi.agentsToDropWeapon[i] != null && AgentAi.agentsToDropWeapon[i].IsActive())
+                            {
+                                ActionCodeType currentActionType = AgentAi.agentsToDropWeapon[i].GetCurrentActionType(1);
                             if (
                                 currentActionType == ActionCodeType.ReleaseMelee ||
                                 currentActionType == ActionCodeType.ReleaseRanged ||
