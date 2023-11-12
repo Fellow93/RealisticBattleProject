@@ -13,7 +13,7 @@ namespace RBMCombat
     {
         public static int numOfHits = 0;
         public static int numOfDurabilityDowngrade = 0;
-        public static float throwableCorrectionSpeed = 5f;
+        public static float throwableCorrectionSpeed = 15f;
 
         public static float swingSpeedTransfer = 4.5454545f;
         public static float thrustSpeedTransfer = 11.7647057f;
@@ -193,9 +193,9 @@ namespace RBMCombat
         public static int calculateThrowableSpeed(float ammoWeight, float effectiveSkill)
         {
             int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt((60f + effectiveSkill * 0.8f) * 2f / ammoWeight));
-            if (calculatedThrowingSpeed > 25)
+            if (calculatedThrowingSpeed > 32)
             {
-                calculatedThrowingSpeed = 25;
+                calculatedThrowingSpeed = 32;
             }
             return calculatedThrowingSpeed;
         }

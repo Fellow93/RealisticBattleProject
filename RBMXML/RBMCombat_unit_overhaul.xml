@@ -4847,7 +4847,7 @@
       <equipment slot="Item0"
                  id="Item.battania_2haxe_1_t2" />
       <equipment slot="Item1"
-                 id="Item.battania_targe_b" />
+                 id="Item.battania_shield_targe_a_shoulder" />
       <equipment slot="Item3"
                  id="Item.highland_throwing_axe_1_t2" />
       <equipment slot="Head"
@@ -4865,7 +4865,7 @@
       <equipment slot="Item0"
                  id="Item.simple_sparth_axe_t2" />
       <equipment slot="Item1"
-                 id="Item.battania_targe_b" />
+                 id="Item.battania_shield_targe_a_shoulder" />
       <equipment slot="Item3"
                  id="Item.highland_throwing_axe_1_t2" />
       <equipment slot="Gloves"
@@ -4883,7 +4883,7 @@
       <equipment slot="Item0"
                  id="Item.battania_2haxe_1_t2" />
       <equipment slot="Item1"
-                 id="Item.battania_targe_b" />
+                 id="Item.battania_shield_targe_a_shoulder" />
       <equipment slot="Item3"
                  id="Item.highland_throwing_axe_1_t2" />
       <equipment slot="Head"
