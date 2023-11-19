@@ -694,6 +694,42 @@ namespace RBMAI
             }
         }
 
+        [HarmonyPatch(typeof(CustomBattleApplyWeatherEffectsModel))]
+        [HarmonyPatch("ApplyWeatherEffects")]
+        public class OverrideApplyWeatherEffectsCustomBattle
+        {
+            private static bool Prefix()
+            {
+                Scene scene = Mission.Current.Scene;
+                if (scene != null)
+                {
+                    Mission.Current.SetBowMissileSpeedModifier(1f);
+                    Mission.Current.SetCrossbowMissileSpeedModifier(1f);
+                    Mission.Current.SetMissileRangeModifier(1f);
+                }
+
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(SandboxApplyWeatherEffectsModel))]
+        [HarmonyPatch("ApplyWeatherEffects")]
+        public class OverrideApplyWeatherEffectsSandbox
+        {
+            private static bool Prefix()
+            {
+                Scene scene = Mission.Current.Scene;
+                if (scene != null)
+                {
+                    Mission.Current.SetBowMissileSpeedModifier(1f);
+                    Mission.Current.SetCrossbowMissileSpeedModifier(1f);
+                    Mission.Current.SetMissileRangeModifier(1f);
+                }
+
+                return false;
+            }
+        }
+
         //[HarmonyPatch(typeof(BannerBearerLogic))]
         //[HarmonyPatch("RespawnAsBannerBearer")]
         //internal class RespawnAsBannerBearerPatch
@@ -730,133 +766,133 @@ namespace RBMAI
         //    }
         //}
 
-    //[HarmonyPatch(typeof(MissionAgentLabelView))]
-    //[HarmonyPatch("SetHighlightForAgents")]
-    //class SetHighlightForAgentsPatch
-    //{
-    //    static bool Prefix( bool highlight, ref bool useSiegeMachineUsers, ref bool useAllTeamAgents, Dictionary<Agent, MetaMesh> ____agentMeshes, MissionAgentLabelView __instance)
-    //    {
-    //        if (__instance.Mission.PlayerTeam?.PlayerOrderController == null)
-    //        {
-    //            bool flag = __instance.Mission.PlayerTeam == null;
-    //            Debug.Print($"PlayerOrderController is null and playerTeamIsNull: {flag}", 0, Debug.DebugColor.White, 17179869184uL);
-    //        }
-    //        if (useSiegeMachineUsers)
-    //        {
-    //            foreach (TaleWorlds.MountAndBlade.SiegeWeapon selectedWeapon in __instance.Mission.PlayerTeam?.PlayerOrderController.SiegeWeaponController.SelectedWeapons)
-    //            {
-    //                foreach (Agent user in selectedWeapon.Users)
-    //                {
-    //                    MetaMesh agentMesh;
-    //                    if (____agentMeshes.TryGetValue(user, out agentMesh))
-    //                    {
-    //                        MethodInfo method = typeof(MissionAgentLabelView).GetMethod("UpdateSelectionVisibility", BindingFlags.NonPublic | BindingFlags.Instance);
-    //                        method.DeclaringType.GetMethod("UpdateSelectionVisibility");
-    //                        method.Invoke(__instance, new object[] { user, agentMesh, highlight });
-    //                    }
+        //[HarmonyPatch(typeof(MissionAgentLabelView))]
+        //[HarmonyPatch("SetHighlightForAgents")]
+        //class SetHighlightForAgentsPatch
+        //{
+        //    static bool Prefix( bool highlight, ref bool useSiegeMachineUsers, ref bool useAllTeamAgents, Dictionary<Agent, MetaMesh> ____agentMeshes, MissionAgentLabelView __instance)
+        //    {
+        //        if (__instance.Mission.PlayerTeam?.PlayerOrderController == null)
+        //        {
+        //            bool flag = __instance.Mission.PlayerTeam == null;
+        //            Debug.Print($"PlayerOrderController is null and playerTeamIsNull: {flag}", 0, Debug.DebugColor.White, 17179869184uL);
+        //        }
+        //        if (useSiegeMachineUsers)
+        //        {
+        //            foreach (TaleWorlds.MountAndBlade.SiegeWeapon selectedWeapon in __instance.Mission.PlayerTeam?.PlayerOrderController.SiegeWeaponController.SelectedWeapons)
+        //            {
+        //                foreach (Agent user in selectedWeapon.Users)
+        //                {
+        //                    MetaMesh agentMesh;
+        //                    if (____agentMeshes.TryGetValue(user, out agentMesh))
+        //                    {
+        //                        MethodInfo method = typeof(MissionAgentLabelView).GetMethod("UpdateSelectionVisibility", BindingFlags.NonPublic | BindingFlags.Instance);
+        //                        method.DeclaringType.GetMethod("UpdateSelectionVisibility");
+        //                        method.Invoke(__instance, new object[] { user, agentMesh, highlight });
+        //                    }
 
-    //                }
-    //            }
-    //            return false;
-    //        }
-    //        if (useAllTeamAgents)
-    //        {
-    //            if (__instance.Mission.PlayerTeam?.PlayerOrderController.Owner == null)
-    //            {
-    //                return false;
-    //            }
-    //            foreach (Agent activeAgent in __instance.Mission.PlayerTeam?.PlayerOrderController.Owner.Team.ActiveAgents)
-    //            {
-    //                MetaMesh agentMesh;
-    //                if (____agentMeshes.TryGetValue(activeAgent, out agentMesh))
-    //                {
-    //                    MethodInfo method = typeof(MissionAgentLabelView).GetMethod("UpdateSelectionVisibility", BindingFlags.NonPublic | BindingFlags.Instance);
-    //                    method.DeclaringType.GetMethod("UpdateSelectionVisibility");
-    //                    method.Invoke(__instance, new object[] { activeAgent, agentMesh, highlight });
-    //                }
-    //            }
-    //            return false;
-    //        }
-    //        foreach (Formation selectedFormation in __instance.Mission.PlayerTeam?.PlayerOrderController.SelectedFormations)
-    //        {
-    //            selectedFormation.ApplyActionOnEachUnit(delegate (Agent agent)
-    //            {
-    //                MetaMesh agentMesh;
-    //                if(____agentMeshes.TryGetValue(agent, out agentMesh))
-    //                {
-    //                    MethodInfo method = typeof(MissionAgentLabelView).GetMethod("UpdateSelectionVisibility", BindingFlags.NonPublic | BindingFlags.Instance);
-    //                    method.DeclaringType.GetMethod("UpdateSelectionVisibility");
-    //                    method.Invoke(__instance, new object[] { agent, agentMesh, highlight });
-    //                }
-    //            });
-    //        }
-    //        return false;
-    //    }
-    //}
+        //                }
+        //            }
+        //            return false;
+        //        }
+        //        if (useAllTeamAgents)
+        //        {
+        //            if (__instance.Mission.PlayerTeam?.PlayerOrderController.Owner == null)
+        //            {
+        //                return false;
+        //            }
+        //            foreach (Agent activeAgent in __instance.Mission.PlayerTeam?.PlayerOrderController.Owner.Team.ActiveAgents)
+        //            {
+        //                MetaMesh agentMesh;
+        //                if (____agentMeshes.TryGetValue(activeAgent, out agentMesh))
+        //                {
+        //                    MethodInfo method = typeof(MissionAgentLabelView).GetMethod("UpdateSelectionVisibility", BindingFlags.NonPublic | BindingFlags.Instance);
+        //                    method.DeclaringType.GetMethod("UpdateSelectionVisibility");
+        //                    method.Invoke(__instance, new object[] { activeAgent, agentMesh, highlight });
+        //                }
+        //            }
+        //            return false;
+        //        }
+        //        foreach (Formation selectedFormation in __instance.Mission.PlayerTeam?.PlayerOrderController.SelectedFormations)
+        //        {
+        //            selectedFormation.ApplyActionOnEachUnit(delegate (Agent agent)
+        //            {
+        //                MetaMesh agentMesh;
+        //                if(____agentMeshes.TryGetValue(agent, out agentMesh))
+        //                {
+        //                    MethodInfo method = typeof(MissionAgentLabelView).GetMethod("UpdateSelectionVisibility", BindingFlags.NonPublic | BindingFlags.Instance);
+        //                    method.DeclaringType.GetMethod("UpdateSelectionVisibility");
+        //                    method.Invoke(__instance, new object[] { agent, agentMesh, highlight });
+        //                }
+        //            });
+        //        }
+        //        return false;
+        //    }
+        //}
 
-    //[HarmonyPatch(typeof(WorldPosition))]
-    //[HarmonyPatch("GetGroundZ")]
-    //class GetGroundZPatch
-    //{
-    //    [HandleProcessCorruptedStateExceptions]
-    //    static bool Prefix(ref WorldPosition __instance, ref Vec3 ____position, ref float __result)
-    //    {
-    //        try
-    //        {
-    //            MethodInfo method = typeof(WorldPosition).GetMethod("ValidateZ", BindingFlags.NonPublic | BindingFlags.Instance);
-    //            method.DeclaringType.GetMethod("ValidateZ");
-    //            method.Invoke(__instance, new object[] { ZValidityState.Valid });
-    //            if (__instance.State >= ZValidityState.Valid)
-    //            {
-    //                __result = ____position.z;
-    //                return true;
-    //            }
-    //            __result = float.NaN;
-    //            return true;
-    //        }
-    //        catch (Exception e)
-    //        {
-    //            __result = 0f;
-    //            return false;
-    //        }
-    //        return true;
-    //    }
-    //}
+        //[HarmonyPatch(typeof(WorldPosition))]
+        //[HarmonyPatch("GetGroundZ")]
+        //class GetGroundZPatch
+        //{
+        //    [HandleProcessCorruptedStateExceptions]
+        //    static bool Prefix(ref WorldPosition __instance, ref Vec3 ____position, ref float __result)
+        //    {
+        //        try
+        //        {
+        //            MethodInfo method = typeof(WorldPosition).GetMethod("ValidateZ", BindingFlags.NonPublic | BindingFlags.Instance);
+        //            method.DeclaringType.GetMethod("ValidateZ");
+        //            method.Invoke(__instance, new object[] { ZValidityState.Valid });
+        //            if (__instance.State >= ZValidityState.Valid)
+        //            {
+        //                __result = ____position.z;
+        //                return true;
+        //            }
+        //            __result = float.NaN;
+        //            return true;
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            __result = 0f;
+        //            return false;
+        //        }
+        //        return true;
+        //    }
+        //}
 
-    //[MBCallback]
-    //[HarmonyPatch(typeof(Agent))]
-    //class OverrideOnWeaponAmmoReload
-    //{
-    //    [HarmonyPrefix]
-    //    [HarmonyPatch("OnWeaponAmmoReload")]
-    //    static bool PrefixOnWeaponAmmoReload(ref Agent __instance, EquipmentIndex slotIndex, EquipmentIndex ammoSlotIndex, short totalAmmo)
-    //    {
-    //        if (__instance.IsMount || __instance.IsPlayerControlled || __instance.Formation == null || __instance.Formation.FormationIndex == FormationClass.Infantry || __instance.Formation.FormationIndex == FormationClass.Cavalry)
-    //        {
-    //            return true;
-    //        }
-    //        bool flag = false;
-    //        if (__instance.Formation != null && __instance.Equipment.HasRangedWeapon(WeaponClass.Arrow) && __instance.Equipment.GetAmmoAmount(WeaponClass.Arrow) <= 2)
-    //        {
-    //            flag = true;
-    //        }
-    //        else if (__instance.Formation != null && __instance.Equipment.HasRangedWeapon(WeaponClass.Bolt) && __instance.Equipment.GetAmmoAmount(WeaponClass.Bolt) <= 2)
-    //        {
-    //            flag = true;
-    //        }
-    //        if (flag)
-    //        {
-    //            if (__instance.Formation != null && __instance.HasMount)
-    //            {
-    //                __instance.Formation = __instance.Team.GetFormation(FormationClass.Cavalry);
-    //            }
-    //            else
-    //            {
-    //                __instance.Formation = __instance.Team.GetFormation(FormationClass.Infantry);
-    //            }
-    //        }
-    //        return true;
-    //    }
-    //}
+        //[MBCallback]
+        //[HarmonyPatch(typeof(Agent))]
+        //class OverrideOnWeaponAmmoReload
+        //{
+        //    [HarmonyPrefix]
+        //    [HarmonyPatch("OnWeaponAmmoReload")]
+        //    static bool PrefixOnWeaponAmmoReload(ref Agent __instance, EquipmentIndex slotIndex, EquipmentIndex ammoSlotIndex, short totalAmmo)
+        //    {
+        //        if (__instance.IsMount || __instance.IsPlayerControlled || __instance.Formation == null || __instance.Formation.FormationIndex == FormationClass.Infantry || __instance.Formation.FormationIndex == FormationClass.Cavalry)
+        //        {
+        //            return true;
+        //        }
+        //        bool flag = false;
+        //        if (__instance.Formation != null && __instance.Equipment.HasRangedWeapon(WeaponClass.Arrow) && __instance.Equipment.GetAmmoAmount(WeaponClass.Arrow) <= 2)
+        //        {
+        //            flag = true;
+        //        }
+        //        else if (__instance.Formation != null && __instance.Equipment.HasRangedWeapon(WeaponClass.Bolt) && __instance.Equipment.GetAmmoAmount(WeaponClass.Bolt) <= 2)
+        //        {
+        //            flag = true;
+        //        }
+        //        if (flag)
+        //        {
+        //            if (__instance.Formation != null && __instance.HasMount)
+        //            {
+        //                __instance.Formation = __instance.Team.GetFormation(FormationClass.Cavalry);
+        //            }
+        //            else
+        //            {
+        //                __instance.Formation = __instance.Team.GetFormation(FormationClass.Infantry);
+        //            }
+        //        }
+        //        return true;
+        //    }
+        //}
     }
 }
