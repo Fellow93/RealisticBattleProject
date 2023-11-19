@@ -85,6 +85,16 @@ namespace RBMAI
                         aggresivnesModifier = 15;
                     }
 
+                    float weaponLengthAgressivnessModifier = 1f;
+                    if(!unit.WieldedWeapon.IsEmpty && unit.WieldedWeapon.CurrentUsageItem != null)
+                    {
+                        float weaponLength = unit.WieldedWeapon.CurrentUsageItem.GetRealWeaponLength();
+                        weaponLengthAgressivnessModifier = 2.5f - weaponLength;
+                        weaponLengthAgressivnessModifier = MBMath.ClampFloat(weaponLengthAgressivnessModifier, 0.9f, 2f);
+                    }
+
+                    aggresivnesModifier = (int)Math.Round(aggresivnesModifier * weaponLengthAgressivnessModifier);
+
                     if (__instance.Captain != null && __instance.Captain.IsPlayerTroop)
                     {
                         if (aggressiveCommand)
@@ -218,14 +228,12 @@ namespace RBMAI
                         Agent tempAgent = unit;
                         agents = new MBList<Agent>(agents.Where(a => a != tempAgent).ToList());
                         int agentsCount = agents.Count();
-                        int attackTogether = 0;
 
                         MBList<Agent> agentsLeft = new MBList<Agent>();
                         MBList<Agent> agentsRight = new MBList<Agent>();
                         agentsLeft = mission.GetNearbyAllyAgents(unitPosition + leftVec * 1.35f, 1.35f, unit.Team, agentsLeft);
                         agentsRight = mission.GetNearbyAllyAgents(unitPosition + rightVec * 1.35f, 1.35f, unit.Team, agentsRight);
 
-                        float attackingTogetherLimit = 10f;
                         int attackingTogether = 0;
                         foreach (Agent agent in agentsLeft)
                         {
