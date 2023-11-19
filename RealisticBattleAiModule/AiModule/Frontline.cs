@@ -72,7 +72,7 @@ namespace RBMAI
                     {
                         return true;
                     }
-                    int aggresivnesModifier = 15;
+                    int aggresivnesModifier = 5;
                     float backStepDistance = 0.35f;
                     if (isAgentInDefensiveOrder)
                     {
@@ -82,18 +82,19 @@ namespace RBMAI
                         enemyAgentsCountCriticalTreshold = 6;
                         backStepDistance = 0.35f;
                         hasShieldBonusNumber = 40;
-                        aggresivnesModifier = 15;
+                        aggresivnesModifier = 5;
                     }
 
-                    float weaponLengthAgressivnessModifier = 1f;
+                    int weaponLengthAgressivnessModifier = 10;
                     if(!unit.WieldedWeapon.IsEmpty && unit.WieldedWeapon.CurrentUsageItem != null)
                     {
                         float weaponLength = unit.WieldedWeapon.CurrentUsageItem.GetRealWeaponLength();
-                        weaponLengthAgressivnessModifier = 2.5f - weaponLength;
-                        weaponLengthAgressivnessModifier = MBMath.ClampFloat(weaponLengthAgressivnessModifier, 0.9f, 2f);
+                        float weaponLengthRelative = (2f - weaponLength) * 2f;
+                        weaponLengthRelative = MBMath.ClampFloat(weaponLengthRelative, 1f, 3f);
+                        weaponLengthAgressivnessModifier = (int)Math.Round(weaponLengthAgressivnessModifier * weaponLengthRelative);
                     }
 
-                    aggresivnesModifier = (int)Math.Round(aggresivnesModifier * weaponLengthAgressivnessModifier);
+                    aggresivnesModifier += weaponLengthAgressivnessModifier;
 
                     if (__instance.Captain != null && __instance.Captain.IsPlayerTroop)
                     {
