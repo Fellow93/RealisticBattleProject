@@ -1528,7 +1528,7 @@ namespace RBMAI
 
                     for (int i = AgentAi.agentsToDropShield.Count - 1; i >= 0; i--)
                     {
-                        if (AgentAi.agentsToDropShield[i].State == AgentState.Active)
+                        if (AgentAi.agentsToDropShield[i] != null && AgentAi.agentsToDropShield[i].IsActive())
                         {
                             ActionCodeType currentActionType = AgentAi.agentsToDropShield[i].GetCurrentActionType(1);
                             if (
