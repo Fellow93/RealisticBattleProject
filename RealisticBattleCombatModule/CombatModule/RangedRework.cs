@@ -173,8 +173,8 @@ namespace RBMCombat
                                 case (int)WeaponClass.Dagger:
                                     {
                                         weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(
-                                            __instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount, 
-                                            0,
+                                            __instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount,
+                                            (int)Utilities.throwableCorrectionSpeed,
                                             effectiveSkillDR,
                                             equipmentWeight,
                                             typeOfShieldEquipped
