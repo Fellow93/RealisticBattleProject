@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using SandBox.GameComponents;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -11,6 +12,7 @@ using TaleWorlds.Core.ViewModelCollection.Information;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
+using static TaleWorlds.MountAndBlade.CompressionInfo;
 
 namespace RBMCombat
 {
@@ -23,7 +25,7 @@ namespace RBMCombat
         [HarmonyPatch("CalculateBaseMeleeBlowMagnitude")]
         public class CalculateBaseMeleeBlowMagnitudePatch
         {
-            public static bool Prefix(ref float __result, in AttackInformation attackInformation, in MissionWeapon weapon, StrikeType strikeType, float progressEffect, float impactPointAsPercent, float exraLinearSpeed, bool doesAttackerHaveMount)
+            public static bool Prefix(ref float __result, in AttackInformation attackInformation, in MissionWeapon weapon, StrikeType strikeType, float progressEffect, float impactPointAsPercent, float exraLinearSpeed)
             {
                 WeaponComponentData currentUsageItem = weapon.CurrentUsageItem;
                 BasicCharacterObject attackerAgentCharacter = attackInformation.AttackerAgentCharacter;
@@ -122,20 +124,20 @@ namespace RBMCombat
                                         thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weapon.Item.Weight, effectiveSkillDR, thrustWeaponSpeed, exraLinearSpeed, attacker.AttackDirection);
                                         break;
                                     }
-                                default:
-                                    {
-                                        thrustMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(attackerAgentCharacter, attackerCaptainCharacter, thrustWeaponSpeed, weapon.Item.Weight, weapon.Item, currentUsageItem, exraLinearSpeed, doesAttackerHaveMount);
-                                        break;
-                                    }
+                                //default:
+                                //    {
+                                //        thrustMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(attackerAgentCharacter, attackerCaptainCharacter, thrustWeaponSpeed, weapon.Item.Weight, weapon.Item, currentUsageItem, exraLinearSpeed, doesAttackerHaveMount);
+                                //        break;
+                                //    }
                             }
 
                             __result = thrustMagnitude;
                             return false;
                         }
                     }
-
-                    __result = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(attackerAgentCharacter, attackerCaptainCharacter, thrustWeaponSpeed, weapon.Item.Weight, weapon.Item, currentUsageItem, exraLinearSpeed, doesAttackerHaveMount);
-                    return false;
+                    return true;
+                    //__result = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(attackerAgentCharacter, attackerCaptainCharacter, thrustWeaponSpeed, weapon.Item.Weight, weapon.Item, currentUsageItem, exraLinearSpeed, doesAttackerHaveMount);
+                    //return false;
                 }
                 exraLinearSpeed *= 1f;
                 float swingSpeed = (float)weapon.GetModifiedSwingSpeedForCurrentUsage() / 4.5454545f * num;
@@ -209,8 +211,9 @@ namespace RBMCombat
                 //}
 
                 float impactPointAsPercent3 = num3 + (float)0 / 4f * (num4 - num3);
-                newValue = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(attackerAgentCharacter, attackerCaptainCharacter, swingSpeed, impactPointAsPercent3, weapon.Item.Weight, weapon.Item, currentUsageItem, currentUsageItem.GetRealWeaponLength(), currentUsageItem.Inertia, currentUsageItem.CenterOfMass, exraLinearSpeed, doesAttackerHaveMount);
-
+                //newValue = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(attackerAgentCharacter, attackerCaptainCharacter, swingSpeed, impactPointAsPercent3, weapon.Item.Weight, weapon.Item, currentUsageItem, currentUsageItem.GetRealWeaponLength(), currentUsageItem.Inertia, currentUsageItem.CenterOfMass, exraLinearSpeed, doesAttackerHaveMount);
+                newValue = CombatStatCalculator.CalculateStrikeMagnitudeForSwing(swingSpeed, impactPointAsPercent3, weapon.Item.Weight,
+                            currentUsageItem.GetRealWeaponLength(), currentUsageItem.Inertia, currentUsageItem.CenterOfMass, exraLinearSpeed);
                 __result = newValue;
                 return false;
             }
@@ -398,11 +401,11 @@ namespace RBMCombat
         [HarmonyPatch("ComputeBlowMagnitudeMissile")]
         private class ComputeBlowMagnitudeMissilePacth
         {
-            private static bool Prefix(in AttackInformation attackInformation, in AttackCollisionData acd, in MissionWeapon weapon, float momentumRemaining, in Vec2 victimVelocity, out float baseMagnitude, out float specialMagnitude)
+            private static bool Prefix(in AttackInformation attackInformation, in AttackCollisionData collisionData, in MissionWeapon weapon, float momentumRemaining, in Vec2 victimVelocity, out float baseMagnitude, out float specialMagnitude)
             {
-                Vec3 missileVelocity = acd.MissileVelocity;
+                Vec3 missileVelocity = collisionData.MissileVelocity;
 
-                float missileTotalDamage = acd.MissileTotalDamage;
+                float missileTotalDamage = collisionData.MissileTotalDamage;
 
                 WeaponComponentData currentUsageItem = weapon.CurrentUsageItem;
                 ItemObject weaponItem;
@@ -424,7 +427,7 @@ namespace RBMCombat
                 {
                     length = missileVelocity.Length;
                 }
-                baseMagnitude = CalculateMissileMagnitude(weapon.CurrentUsageItem.WeaponClass, weaponItem.Weight, length, missileTotalDamage, momentumRemaining, (DamageTypes)acd.DamageType);
+                baseMagnitude = CalculateMissileMagnitude(weapon.CurrentUsageItem.WeaponClass, weaponItem.Weight, length, missileTotalDamage, momentumRemaining, (DamageTypes)collisionData.DamageType);
                 specialMagnitude = baseMagnitude;
 
                 return false;
@@ -555,9 +558,11 @@ namespace RBMCombat
                 float weaponCOM = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass;
                 for (float currentSpot = 1f; currentSpot > 0.35f; currentSpot -= 0.01f)
                 {
-                    float currentSpotMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(currentSelectedChar, null, swingSpeed, currentSpot, weaponWeight,
-                        weapon.Item, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex),
-                        weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).GetRealWeaponLength(), weaponInertia, weaponCOM, 0f, false);
+                    //float currentSpotMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(currentSelectedChar, null, swingSpeed, currentSpot, weaponWeight,
+                    //    weapon.Item, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex),
+                    //    weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).GetRealWeaponLength(), weaponInertia, weaponCOM, 0f, false);
+                    float currentSpotMagnitude = CombatStatCalculator.CalculateStrikeMagnitudeForSwing(swingSpeed, currentSpot, weaponWeight,
+                            weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).GetRealWeaponLength(), weaponInertia, weaponCOM, 0f);
                     if (currentSpotMagnitude > sweetSpotMagnitude)
                     {
                         sweetSpotMagnitude = currentSpotMagnitude;
@@ -642,11 +647,11 @@ namespace RBMCombat
                             thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weaponWeight, effectiveSkillDR, thrustWeaponSpeed, 0f, Agent.UsageDirection.AttackDown);
                             break;
                         }
-                    default:
-                        {
-                            thrustMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(currentSelectedChar, null, thrustWeaponSpeed, weaponWeight, weapon.Item, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex), 0f, false);
-                            break;
-                        }
+                    //default:
+                    //    {
+                    //        thrustMagnitude = SandboxStrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(currentSelectedChar, null, thrustWeaponSpeed, weaponWeight, weapon.Item, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex), 0f, false);
+                    //        break;
+                    //    }
                 }
             }
             return thrustMagnitude;
