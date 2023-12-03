@@ -1483,7 +1483,7 @@ namespace RBMAI
         public override void OnMissionTick(float dt)
         {
             base.OnMissionTick(dt);
-            if (RBMConfig.RBMConfig.postureEnabled)
+            if (RBMConfig.RBMConfig.postureEnabled && Mission.Current.AllowAiTicking)
             {
                 if (currentDt < timeToCalc)
                 {
