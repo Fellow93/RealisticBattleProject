@@ -200,9 +200,9 @@ namespace RBMAI
                         {
                             __result = targetAgent.GetWorldPosition();
                             aiDecision.position = __result;
-                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 10f, 2f, 10f, 20f, 10f);
-                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 0f, 2f, 0f, 20f, 0f);
-                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
+                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 10f, 2f, 10f, 20f, 10f);
+                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 0f, 2f, 0f, 20f, 0f);
+                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
                             return false;
                         }
                         else
@@ -212,9 +212,9 @@ namespace RBMAI
                             {
                                 isTargetArcher = true;
                             }
-                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1.1f, 10f, 0.01f);
-                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
+                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
+                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1.1f, 10f, 0.01f);
+                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
                             if (IsInImportantFrontlineAction(unit))
                             {
                                 __result = aiDecision.position;
@@ -290,9 +290,9 @@ namespace RBMAI
                             {
                                 if (unit != null)
                                 {
-                                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 5f, 2f, 4f, 10f, 6f);
-                                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 4.9f, 1.5f, 1.1f, 10f, 0.01f);
-                                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
+                                    unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 5f, 2f, 4f, 10f, 6f);
+                                    unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 4.9f, 1.5f, 1.1f, 10f, 0.01f);
+                                    unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
 
                                     //Vec2 leftVec = unit.Formation.Direction.LeftVec().Normalized();
                                     //Vec2 rightVec = unit.Formation.Direction.RightVec().Normalized();
@@ -404,9 +404,9 @@ namespace RBMAI
                                 //}
                             }
                         }
-                        unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                        unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1f, 10f, 0.01f);
-                        unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
+                        unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
+                        unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1f, 10f, 0.01f);
+                        unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
                         MBList<Agent> enemyAgents0f = new MBList<Agent>();
                         MBList<Agent> enemyAgents10f = new MBList<Agent>();
                         enemyAgents0f = mission.GetNearbyEnemyAgents(unitPosition, 4.5f, unit.Team, enemyAgents0f);
