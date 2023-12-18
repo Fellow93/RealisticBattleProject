@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.CampaignSystem.Extensions;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -17,9 +16,6 @@ namespace RBMAI
 {
     public static class AgentAi
     {
-        public static Dictionary<Agent, FormationClass> agentsToChangeFormation = new Dictionary<Agent, FormationClass> { };
-        public static MBArrayList<Agent> agentsToDropShield = new MBArrayList<Agent> { };
-        public static MBArrayList<Agent> agentsToDropWeapon = new MBArrayList<Agent> { };
 
         [HarmonyPatch(typeof(AgentStatCalculateModel))]
         [HarmonyPatch("SetAiRelatedProperties")]
@@ -562,115 +558,6 @@ namespace RBMAI
                 }
 
                 return true;
-            }
-        }
-
-        [HarmonyPatch(typeof(Mission))]
-        [HarmonyPatch("OnAgentDismount")]
-        public class OnAgentDismountPatch
-        {
-            private static void Postfix(Agent agent, Mission __instance)
-            {
-                if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
-                {
-                    bool isInfFormationActive = agent.Team.GetFormation(FormationClass.Infantry) != null && agent.Team.GetFormation(FormationClass.Infantry).CountOfUnits > 0;
-                    bool isArcFormationActive = agent.Team.GetFormation(FormationClass.Ranged) != null && agent.Team.GetFormation(FormationClass.Ranged).CountOfUnits > 0;
-                    if (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) || agent.Equipment.HasRangedWeapon(WeaponClass.Bolt))
-                    {
-                        float distanceToInf = -1f;
-                        float distanceToArc = -1f;
-                        if (agent.Formation != null && isInfFormationActive)
-                        {
-                            distanceToInf = agent.Team.GetFormation(FormationClass.Infantry).QuerySystem.MedianPosition.AsVec2.Distance(agent.Formation.QuerySystem.MedianPosition.AsVec2);
-                        }
-                        if (agent.Formation != null && isArcFormationActive)
-                        {
-                            distanceToArc = agent.Team.GetFormation(FormationClass.Ranged).QuerySystem.MedianPosition.AsVec2.Distance(agent.Formation.QuerySystem.MedianPosition.AsVec2);
-                        }
-                        if (distanceToArc > 0f && distanceToArc < distanceToInf)
-                        {
-                            if (agent != null && agent.IsActive())
-                            {
-                                agentsToChangeFormation[agent] = FormationClass.Ranged;
-                                return;
-                            }
-                        }
-                        else if (distanceToInf > 0f && distanceToInf < distanceToArc)
-                        {
-                            if (agent != null && agent.IsActive())
-                            {
-                                agentsToChangeFormation[agent] = FormationClass.Infantry;
-                                return;
-                            }
-                        }
-                        else
-                        {
-                            if (distanceToInf > 0f)
-                            {
-                                if (agent != null && agent.IsActive())
-                                {
-                                    agentsToChangeFormation[agent] = FormationClass.Infantry;
-                                    return;
-                                }
-                            }
-                            else if (distanceToArc > 0f)
-                            {
-                                if (agent != null && agent.IsActive())
-                                {
-                                    agentsToChangeFormation[agent] = FormationClass.Ranged;
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (agent.Formation != null && isInfFormationActive)
-                        {
-                            if (agent != null && agent.IsActive())
-                            {
-                                agentsToChangeFormation[agent] = FormationClass.Infantry;
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(Mission))]
-        [HarmonyPatch("OnAgentMount")]
-        internal class OnAgentMountPatch
-        {
-            private static void Postfix(Agent agent, Mission __instance)
-            {
-                if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
-                {
-                    bool isCavFormationActive = agent.Team.GetFormation(FormationClass.Cavalry) != null && agent.Team.GetFormation(FormationClass.Cavalry).CountOfUnits > 0;
-                    bool isHaFormationActive = agent.Team.GetFormation(FormationClass.HorseArcher) != null && agent.Team.GetFormation(FormationClass.HorseArcher).CountOfUnits > 0;
-                    if (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) || agent.Equipment.HasRangedWeapon(WeaponClass.Bolt))
-                    {
-                        if (agent.Formation != null && isHaFormationActive)
-                        {
-                            if (agent.IsActive())
-                            {
-                                agentsToChangeFormation[agent] = FormationClass.HorseArcher;
-                                return;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (agent.Formation != null && isCavFormationActive)
-                        {
-                            if (agent.IsActive())
-                            {
-                                agentsToChangeFormation[agent] = FormationClass.Cavalry;
-                                return;
-                            }
-                        }
-                    }
-                }
             }
         }
 
