@@ -212,7 +212,7 @@
   </ItemGroup>
   <!-- Post-Build -->
   <PropertyGroup>
-    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_arm_armors.xml" "$(SolutionDir)..\RBM\ModuleData\"
+    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\ModuleData\RBMCombat_arm_armors.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\ModuleData\RBMCombat_axe_pieces.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\ModuleData\RBMCombat_body_armors.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\ModuleData\RBMCombat_item_modifiers.xml" "$(SolutionDir)..\RBM\ModuleData\"
