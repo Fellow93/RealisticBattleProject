@@ -50,7 +50,7 @@ namespace RBMAI.AiModule
                             tempPos.x = tempPos.x + MBRandom.RandomInt(20);
                             tempPos.y = tempPos.y + MBRandom.RandomInt(20);
 
-                            initialPosition = Mission.Current.DeploymentPlan?.GetClosestDeploymentBoundaryPosition(agentTeam.Side, tempPos, DeploymentPlanType.Reinforcement).ToVec3();
+                            initialPosition = Mission.Current.DeploymentPlan?.GetClosestDeploymentBoundaryPosition(agentTeam.Side, tempPos, true, 0).ToVec3();
                             initialDirection = tempPos - formation.CurrentPosition;
                         }
                     }

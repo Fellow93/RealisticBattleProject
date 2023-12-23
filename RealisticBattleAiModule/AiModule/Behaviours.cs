@@ -1310,25 +1310,191 @@ namespace RBMAI
         }
     }
 
+    [HarmonyPatch(typeof(HumanAIComponent))]
+    internal class OverrideHumanAIComponent
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch("SetBehaviorValueSet")]
+        private static bool SetBehaviorValueSet(HumanAIComponent __instance, BehaviorValueSet behaviorValueSet, Agent ___Agent)
+        {
+            if (___Agent != null && ___Agent.Formation != null && behaviorValueSet == BehaviorValueSet.Charge)
+            {
+                if (___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
+                {
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 0.01f, 7f, 4f, 20f, 6f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 0.55f, 2f, 0.55f, 20f, 0.55f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 2f, 7f, 4f, 20f, 5f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 4f, 2f, 0.55f, 30f, 0.55f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 8f, 15f, 10f, 30f, 10f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
+                    return false;
+                }
+                if (___Agent.Formation.QuerySystem.IsCavalryFormation)
+                {
+                    if (___Agent.HasMount)
+                    {
+                        if (RBMAI.Utilities.GetHarnessTier(___Agent) > 3)
+                        {
+                            __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 7f, 4f, 20f, 1f);
+                            __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
+                        }
+                        else
+                        {
+                            __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 1f, 2f, 1f, 20f, 1f);
+                            __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
+                        }
+                    }
+                    else
+                    {
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 7f, 4f, 20f, 1f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
+                    }
+                    //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 1f, 2f, 4f, 20f, 1f);
+                    //unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 1f, 7f, 4f, 20f, 6f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 2f, 7f, 4f, 20f, 5f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 0f, 10f, 3f, 20f, 6f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
+                    return false;
+                }
+                if (___Agent.Formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget)
+                {
+                    if (___Agent.Formation.QuerySystem.IsInfantryFormation)
+                    {
+                        //podmienky: twohandedpolearm v rukach
+                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0f, 40f, 4f, 50f, 6f);
+                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 7f, 1f, 10f, 0.01f);
+                        //if (RBMAI.Utilities.CheckIfTwoHandedPolearmInfantry(unit))
+                        //{
+                        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 3.5f, 5f, 20f, 6f);
+                        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 3.5f, 4f, 20f, 0.01f);
+                        //}
+                        //else {
+                        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
+                        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 2f, 1f, 10f, 0.01f);
+                        //}
+
+                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 5f, 20f, 6f);
+                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 2f, 1f, 20f, 1f);
+                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 2f, 7f, 4f, 20f, 5f);
+                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 40f, 4f, 60f, 0f);
+                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 5f, 7f, 10f, 8, 20f);
+                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 1f, 12f, 1f, 30f, 0f);
+                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
+
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5.5f, 2f, 1f, 10f, 0.01f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0.8f, 20f, 20f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 5f, 40f, 4f, 60f, 0f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 5f, 7f, 10f, 8, 20f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityMelee, 1f, 12f, 1f, 30f, 0f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
+                        return false;
+                    }
+                    if (___Agent.Formation.QuerySystem.IsRangedFormation)
+                    {
+                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0f, 40f, 4f, 50f, 6f);
+                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 7f, 1f, 10f, 0.01f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5.5f, 2f, 4f, 10f, 0.01f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 2f, 0f, 8f, 20f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 5f, 40f, 4f, 60f, 0f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 2f, 15f, 6.5f, 30f, 5.5f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityMelee, 1f, 12f, 1f, 30f, 0f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
+                        return false;
+                    }
+                }
+            }
+            if (___Agent != null && ___Agent.Formation != null && behaviorValueSet == BehaviorValueSet.Follow)
+            {
+                if (___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
+                {
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 7f, 5f, 20f, 5f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 0.55f, 2f, 4f, 20f, 0.55f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0.55f, 7f, 0.55f, 20f, 0.55f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 8f, 2f, 0.55f, 30f, 0.55f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 10f, 15f, 0.065f, 30f, 0.065f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
+                    return false;
+                }
+            }
+            if (___Agent != null && ___Agent.Formation != null && behaviorValueSet == BehaviorValueSet.DefaultMove)
+            {
+                if (___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
+                {
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 15f, 5f, 20f, 5f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 0f, 2f, 0f, 20f, 0f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0.02f, 7f, 0.04f, 20f, 0.03f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 0.01f, 2f, 0.01f, 30f, 0.01f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 1f, 15f, 0.065f, 30f, 0.065f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
+                    return false;
+                }
+                if (Mission.Current.MissionTeamAIType != Mission.MissionTeamAITypeEnum.FieldBattle)
+                {
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 7f, 5f, 20f, 6f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 4f, 3f, 20f, 0.01f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0.02f, 7f, 0.04f, 20f, 0.03f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 10f, 7f, 5f, 30f, 0.05f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 0.02f, 15f, 0.065f, 30f, 0.055f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
+                    return false;
+                }
+                if (___Agent.Formation != null)
+                {
+                    if (___Agent.Formation.GetReadonlyMovementOrderReference().OrderEnum == MovementOrder.MovementOrderEnum.FallBack)
+                    {
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 7f, 5f, 20f, 6f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 0f, 4f, 0f, 20f, 0f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 10f, 7f, 5f, 30f, 0.05f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 0.02f, 15f, 0.065f, 30f, 0.055f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
+                        return false;
+                    }
+                    else
+                    {
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 7f, 5f, 20f, 6f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 5f, 3f, 20f, 0.01f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0.02f, 7f, 0.04f, 20f, 0.03f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 10f, 7f, 5f, 30f, 0.05f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 0.02f, 15f, 0.065f, 30f, 0.055f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 9f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+    }
+
     [HarmonyPatch(typeof(MovementOrder))]
     internal class OverrideMovementOrder
     {
-        //internal enum MovementOrderEnum
-        //{
-        //    Invalid,
-        //    Attach,
-        //    AttackEntity,
-        //    Charge,
-        //    ChargeToTarget,
-        //    Follow,
-        //    FollowEntity,
-        //    Guard,
-        //    Move,
-        //    Retreat,
-        //    Stop,
-        //    Advance,
-        //    FallBack
-        //}
+        internal enum MovementOrderEnum
+        {
+            Invalid,
+            Attach,
+            AttackEntity,
+            Charge,
+            ChargeToTarget,
+            Follow,
+            FollowEntity,
+            Guard,
+            Move,
+            Retreat,
+            Stop,
+            Advance,
+            FallBack
+        }
 
         //[HarmonyPrefix]
         //[HarmonyPatch("SetChargeBehaviorValues")]

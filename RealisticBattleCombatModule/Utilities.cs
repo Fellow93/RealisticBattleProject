@@ -13,7 +13,7 @@ namespace RBMCombat
     {
         public static int numOfHits = 0;
         public static int numOfDurabilityDowngrade = 0;
-        public static float throwableCorrectionSpeed = 5f;
+        public static float throwableCorrectionSpeed = 15f;
 
         public static float swingSpeedTransfer = 4.5454545f;
         public static float thrustSpeedTransfer = 11.7647057f;
@@ -193,17 +193,44 @@ namespace RBMCombat
         public static int calculateThrowableSpeed(float ammoWeight, float effectiveSkill)
         {
             int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt((60f + effectiveSkill * 0.8f) * 2f / ammoWeight));
-            if (calculatedThrowingSpeed > 25)
+            if (calculatedThrowingSpeed > 32)
             {
-                calculatedThrowingSpeed = 25;
+                calculatedThrowingSpeed = 32;
             }
             return calculatedThrowingSpeed;
         }
 
-        public static int assignThrowableMissileSpeed(float ammoWeight, int correctiveMissileSpeed, float effectiveSkill)
+        public static int assignThrowableMissileSpeedForMenu(float ammoWeight, int correctiveMissileSpeed, float effectiveSkill)
         {
             //float ammoWeight = throwable.GetWeight() / throwable.Amount;
             int calculatedThrowingSpeed = calculateThrowableSpeed(ammoWeight, effectiveSkill);
+            //PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
+            //property.DeclaringType.GetProperty("MissileSpeed");
+            //throwable.CurrentUsageIndex = index;
+            calculatedThrowingSpeed += correctiveMissileSpeed;
+            return calculatedThrowingSpeed;
+            //property.SetValue(throwable.CurrentUsageItem, calculatedThrowingSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+            //throwable.CurrentUsageIndex = 0;
+        }
+
+        public static int assignThrowableMissileSpeed(float ammoWeight, int correctiveMissileSpeed, float effectiveSkill, float equipmentWeight, WeaponClass shieldType)
+        {
+            //float ammoWeight = throwable.GetWeight() / throwable.Amount;
+            float shieldTypeModifier = 1f;
+            float equipmentWeightModifier = (float)Math.Sqrt(MBMath.ClampFloat(1f - (equipmentWeight * 0.015f),0.5f, 1f));
+            switch ( shieldType ){
+                case WeaponClass.LargeShield:
+                    {
+                        shieldTypeModifier = 0.836f;
+                        break;
+                    }
+                case WeaponClass.SmallShield:
+                    {
+                        shieldTypeModifier = 0.948f;
+                        break;
+                    }
+            }
+            int calculatedThrowingSpeed = (int)Math.Round(calculateThrowableSpeed(ammoWeight, effectiveSkill) * shieldTypeModifier * equipmentWeightModifier);
             //PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
             //property.DeclaringType.GetProperty("MissileSpeed");
             //throwable.CurrentUsageIndex = index;

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
+using TaleWorlds.LinQuick;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.GauntletUI.Mission.Singleplayer;
 using TaleWorlds.MountAndBlade.ViewModelCollection.HUD.FormationMarker;
@@ -385,6 +386,9 @@ namespace RBMAI
                 agentDamage.Clear();
                 RBMAiPatcher.DoPatching();
                 AgentAi.OnTickAsAIPatch.itemPickupDistanceStorage.Clear();
+                PostureLogic.agentsToChangeFormation.Clear();
+                PostureLogic.agentsToDropWeapon.Clear();
+                PostureLogic.agentsToDropShield.Clear();
                 if (Mission.Current.Teams.Any())
                 {
                     if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
@@ -463,11 +467,21 @@ namespace RBMAI
             private static bool PrefixGetTacticWeight(ref TacticCoordinatedRetreat __instance, ref float __result)
             {
                 //__result = 100f;
-                if (__instance.Team.QuerySystem.InfantryRatio <= 0.1f && __instance.Team.QuerySystem.RangedRatio <= 0.1f)
+                if (__instance.Team.QuerySystem.RemainingPowerRatio < 0.15f || (__instance.Team.QuerySystem.InfantryRatio <= 0.1f && __instance.Team.QuerySystem.RangedRatio <= 0.1f))
                 {
                     float power = __instance.Team.QuerySystem.TeamPower;
-                    //float enemyPower = ___team.QuerySystem.EnemyTeams.Sum((TeamQuerySystem et) => et.TeamPower);
-                    float enemyPower = __instance.Team.QuerySystem.GetLocalEnemyPower(__instance.Team.QuerySystem.AveragePosition);
+                    float enemyPower=0.01f;
+                    if(Mission.Current != null)
+                    {
+                        if (__instance.Team.IsAttacker)
+                        {
+                            enemyPower = Mission.Current.Teams.Where(team => team.IsDefender).Sum(et => et.QuerySystem.TeamPower);
+                        }
+                        else
+                        {
+                            enemyPower = Mission.Current.Teams.Where(team => team.IsAttacker).Sum(et => et.QuerySystem.TeamPower);
+                        }
+                    }
                     if (power / enemyPower <= 0.15f)
                     {
                         foreach (Formation formation in __instance.Team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())

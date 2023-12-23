@@ -72,7 +72,7 @@ namespace RBMAI
                     {
                         return true;
                     }
-                    int aggresivnesModifier = 15;
+                    int aggresivnesModifier = 5;
                     float backStepDistance = 0.35f;
                     if (isAgentInDefensiveOrder)
                     {
@@ -82,8 +82,19 @@ namespace RBMAI
                         enemyAgentsCountCriticalTreshold = 6;
                         backStepDistance = 0.35f;
                         hasShieldBonusNumber = 40;
-                        aggresivnesModifier = 15;
+                        aggresivnesModifier = 5;
                     }
+
+                    int weaponLengthAgressivnessModifier = 10;
+                    if(!unit.WieldedWeapon.IsEmpty && unit.WieldedWeapon.CurrentUsageItem != null)
+                    {
+                        float weaponLength = unit.WieldedWeapon.CurrentUsageItem.GetRealWeaponLength();
+                        float weaponLengthRelative = (2f - weaponLength) * 2f;
+                        weaponLengthRelative = MBMath.ClampFloat(weaponLengthRelative, 1f, 3f);
+                        weaponLengthAgressivnessModifier = (int)Math.Round(weaponLengthAgressivnessModifier * weaponLengthRelative);
+                    }
+
+                    aggresivnesModifier += weaponLengthAgressivnessModifier;
 
                     if (__instance.Captain != null && __instance.Captain.IsPlayerTroop)
                     {
@@ -189,9 +200,9 @@ namespace RBMAI
                         {
                             __result = targetAgent.GetWorldPosition();
                             aiDecision.position = __result;
-                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 10f, 2f, 10f, 20f, 10f);
-                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 0f, 2f, 0f, 20f, 0f);
-                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
+                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 10f, 2f, 10f, 20f, 10f);
+                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 0f, 2f, 0f, 20f, 0f);
+                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
                             return false;
                         }
                         else
@@ -201,9 +212,9 @@ namespace RBMAI
                             {
                                 isTargetArcher = true;
                             }
-                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1.1f, 10f, 0.01f);
-                            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
+                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
+                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1.1f, 10f, 0.01f);
+                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
                             if (IsInImportantFrontlineAction(unit))
                             {
                                 __result = aiDecision.position;
@@ -218,14 +229,12 @@ namespace RBMAI
                         Agent tempAgent = unit;
                         agents = new MBList<Agent>(agents.Where(a => a != tempAgent).ToList());
                         int agentsCount = agents.Count();
-                        int attackTogether = 0;
 
                         MBList<Agent> agentsLeft = new MBList<Agent>();
                         MBList<Agent> agentsRight = new MBList<Agent>();
                         agentsLeft = mission.GetNearbyAllyAgents(unitPosition + leftVec * 1.35f, 1.35f, unit.Team, agentsLeft);
                         agentsRight = mission.GetNearbyAllyAgents(unitPosition + rightVec * 1.35f, 1.35f, unit.Team, agentsRight);
 
-                        float attackingTogetherLimit = 10f;
                         int attackingTogether = 0;
                         foreach (Agent agent in agentsLeft)
                         {
@@ -281,9 +290,9 @@ namespace RBMAI
                             {
                                 if (unit != null)
                                 {
-                                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 5f, 2f, 4f, 10f, 6f);
-                                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 4.9f, 1.5f, 1.1f, 10f, 0.01f);
-                                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
+                                    unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 5f, 2f, 4f, 10f, 6f);
+                                    unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 4.9f, 1.5f, 1.1f, 10f, 0.01f);
+                                    unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
 
                                     //Vec2 leftVec = unit.Formation.Direction.LeftVec().Normalized();
                                     //Vec2 rightVec = unit.Formation.Direction.RightVec().Normalized();
@@ -395,9 +404,9 @@ namespace RBMAI
                                 //}
                             }
                         }
-                        unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                        unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1f, 10f, 0.01f);
-                        unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
+                        unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
+                        unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1f, 10f, 0.01f);
+                        unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
                         MBList<Agent> enemyAgents0f = new MBList<Agent>();
                         MBList<Agent> enemyAgents10f = new MBList<Agent>();
                         enemyAgents0f = mission.GetNearbyEnemyAgents(unitPosition, 4.5f, unit.Team, enemyAgents0f);
@@ -608,95 +617,95 @@ namespace RBMAI
                 }
             }
 
-            [HarmonyPrefix]
-            [HarmonyPatch("GetOrderPositionOfUnitAux")]
-            private static bool PrefixGetOrderPositionOfUnitAux(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ____detachedUnits, ref WorldPosition __result)
-            {
-                //if (Mission.Current.IsFieldBattle && unit != null && (__instance.QuerySystem.IsInfantryFormation) && (__instance.AI != null || __instance.IsAIControlled == false) && __instance.AI.ActiveBehavior != null)
-                //{
-                //    bool isAdvance =  (__instance.AI.ActiveBehavior.GetType().Name.Contains("Advance"));
-                //    if (isAdvance)
-                //    {
-                //        float distance = unit.GetWorldPosition().AsVec2.Distance(__instance.QuerySystem.AveragePosition);
-                //        if (__instance.OrderPositionIsValid && distance > 60f)
-                //        {
-                //            WorldPosition pos = unit.GetWorldPosition();
-                //            pos.SetVec2(__instance.QuerySystem.AveragePosition);
-                //            __result = pos;
-                //            return false;
-                //        }
-                //    }
-                //}
-                //if (__instance.IsCavalry())
-                //{
-                //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0.01f, 7f, 0.01f, 110f, 1f);
-                //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 0.01f, 7f, 0.01f, 20f, 0.01f);
-                //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 7f, 10f, 20f, 1f);
-                //    //__instance.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
-                //    //{
-                //    //    if (MathF.Min(MathF.Max(MathF.Ceiling(((float)agent.Character.Level - 5f) / 5f), 0), 6) > 3)
-                //    //    {
-                //    //        agent.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0.01f, 7f, 0.01f, 20f, 1f);
-                //    //        agent.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 7f, 10f, 20f, 0.01f);
-                //    //    }
-                //    //});
-                //}
-                //if (!Mission.Current.IsFieldBattle && unit != null && (__instance.QuerySystem.IsInfantryFormation) && (__instance.AI != null || __instance.IsAIControlled == false) && __instance.AI.ActiveBehavior != null)
-                //{
-                //    if (__instance.QuerySystem.ClosestEnemyFormation != null)
-                //    {
-                //        if (__instance.OrderPositionIsValid && __instance.OrderPosition.Distance(__instance.QuerySystem.AveragePosition) < 9f)
-                //        //if(__instance.QuerySystem.ClosestEnemyFormation.AveragePosition.Distance(__instance.QuerySystem.AveragePosition) < 25f)
-                //        {
-                //            //InformationManager.DisplayMessage(new InformationMessage(__instance.AI.ActiveBehavior.GetType().Name + " " + __instance.MovementOrder.OrderType.ToString()));
-                //            //bool exludedWhenAiControl = !(__instance.IsAIControlled && (__instance.AI.ActiveBehavior.GetType().Name.Contains("Regroup") || __instance.AI.ActiveBehavior.GetType().Name.Contains("Advance")));
-                //            //bool exludedWhenPlayerControl = !(!__instance.IsAIControlled && (__instance.GetReadonlyMovementOrderReference().OrderType.ToString().Contains("Advance")));
+            //[HarmonyPrefix]
+            //[HarmonyPatch("GetOrderPositionOfUnitAux")]
+            //private static bool PrefixGetOrderPositionOfUnitAux(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ____detachedUnits, ref WorldPosition __result)
+            //{
+            //if (Mission.Current.IsFieldBattle && unit != null && (__instance.QuerySystem.IsInfantryFormation) && (__instance.AI != null || __instance.IsAIControlled == false) && __instance.AI.ActiveBehavior != null)
+            //{
+            //    bool isAdvance =  (__instance.AI.ActiveBehavior.GetType().Name.Contains("Advance"));
+            //    if (isAdvance)
+            //    {
+            //        float distance = unit.GetWorldPosition().AsVec2.Distance(__instance.QuerySystem.AveragePosition);
+            //        if (__instance.OrderPositionIsValid && distance > 60f)
+            //        {
+            //            WorldPosition pos = unit.GetWorldPosition();
+            //            pos.SetVec2(__instance.QuerySystem.AveragePosition);
+            //            __result = pos;
+            //            return false;
+            //        }
+            //    }
+            //}
+            //if (__instance.IsCavalry())
+            //{
+            //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0.01f, 7f, 0.01f, 110f, 1f);
+            //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 0.01f, 7f, 0.01f, 20f, 0.01f);
+            //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 7f, 10f, 20f, 1f);
+            //    //__instance.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+            //    //{
+            //    //    if (MathF.Min(MathF.Max(MathF.Ceiling(((float)agent.Character.Level - 5f) / 5f), 0), 6) > 3)
+            //    //    {
+            //    //        agent.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0.01f, 7f, 0.01f, 20f, 1f);
+            //    //        agent.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 7f, 10f, 20f, 0.01f);
+            //    //    }
+            //    //});
+            //}
+            //if (!Mission.Current.IsFieldBattle && unit != null && (__instance.QuerySystem.IsInfantryFormation) && (__instance.AI != null || __instance.IsAIControlled == false) && __instance.AI.ActiveBehavior != null)
+            //{
+            //    if (__instance.QuerySystem.ClosestEnemyFormation != null)
+            //    {
+            //        if (__instance.OrderPositionIsValid && __instance.OrderPosition.Distance(__instance.QuerySystem.AveragePosition) < 9f)
+            //        //if(__instance.QuerySystem.ClosestEnemyFormation.AveragePosition.Distance(__instance.QuerySystem.AveragePosition) < 25f)
+            //        {
+            //            //InformationManager.DisplayMessage(new InformationMessage(__instance.AI.ActiveBehavior.GetType().Name + " " + __instance.MovementOrder.OrderType.ToString()));
+            //            //bool exludedWhenAiControl = !(__instance.IsAIControlled && (__instance.AI.ActiveBehavior.GetType().Name.Contains("Regroup") || __instance.AI.ActiveBehavior.GetType().Name.Contains("Advance")));
+            //            //bool exludedWhenPlayerControl = !(!__instance.IsAIControlled && (__instance.GetReadonlyMovementOrderReference().OrderType.ToString().Contains("Advance")));
 
-                //            if (!____detachedUnits.Contains(unit))
-                //            {
-                //                Mission mission = Mission.Current;
-                //                if (mission.Mode != MissionMode.Deployment)
-                //                {
-                //                    var targetAgent = unit.GetTargetAgent();
-                //                    if (targetAgent != null)
-                //                    {
-                //                        Vec2 unitPosition = unit.GetWorldPosition().AsVec2;
-                //                        //Vec2 direction = (targetAgent.GetWorldPosition().AsVec2 - unitPosition).Normalized();
-                //                        Vec2 direction = unit.LookDirection.AsVec2;
+            //            if (!____detachedUnits.Contains(unit))
+            //            {
+            //                Mission mission = Mission.Current;
+            //                if (mission.Mode != MissionMode.Deployment)
+            //                {
+            //                    var targetAgent = unit.GetTargetAgent();
+            //                    if (targetAgent != null)
+            //                    {
+            //                        Vec2 unitPosition = unit.GetWorldPosition().AsVec2;
+            //                        //Vec2 direction = (targetAgent.GetWorldPosition().AsVec2 - unitPosition).Normalized();
+            //                        Vec2 direction = unit.LookDirection.AsVec2;
 
-                //                        IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unitPosition + direction * 0.8f, 1f, unit.Team);
-                //                        if (agents.Count() > 2)
-                //                        {
-                //                            int relevantAgentCount = 0;
-                //                            foreach (Agent agent in agents)
-                //                            {
-                //                                if (Math.Abs(unit.VisualPosition.Z - agent.VisualPosition.Z) < 0.1f && unit.Formation == agent.Formation)
-                //                                {
-                //                                    relevantAgentCount++;
-                //                                }
-                //                            }
+            //                        IEnumerable<Agent> agents = mission.GetNearbyAllyAgents(unitPosition + direction * 0.8f, 1f, unit.Team);
+            //                        if (agents.Count() > 2)
+            //                        {
+            //                            int relevantAgentCount = 0;
+            //                            foreach (Agent agent in agents)
+            //                            {
+            //                                if (Math.Abs(unit.VisualPosition.Z - agent.VisualPosition.Z) < 0.1f && unit.Formation == agent.Formation)
+            //                                {
+            //                                    relevantAgentCount++;
+            //                                }
+            //                            }
 
-                //                            if (relevantAgentCount > 2)
-                //                            {
-                //                                //if (MBRandom.RandomInt(100) == 0)
-                //                                //{
-                //                                //    return true;
-                //                                //}
-                //                                //else
-                //                                //{
-                //                                __result = unit.GetWorldPosition();
-                //                                return false;
-                //                                //}
-                //                            }
-                //                        }
-                //                    }
-                //                }
-                //            }
-                //        }
-                //    }
-                //}
-                return true;
-            }
+            //                            if (relevantAgentCount > 2)
+            //                            {
+            //                                //if (MBRandom.RandomInt(100) == 0)
+            //                                //{
+            //                                //    return true;
+            //                                //}
+            //                                //else
+            //                                //{
+            //                                __result = unit.GetWorldPosition();
+            //                                return false;
+            //                                //}
+            //                            }
+            //                        }
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+            //        return true;
+            //    }
         }
     }
 

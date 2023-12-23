@@ -131,25 +131,54 @@ namespace RBMCombat
                                     }
                                 }
                             }
+                            float equipmentWeight = __instance.SpawnEquipment.GetTotalWeightOfArmor(true); //+ __instance.Equipment.GetTotalWeightOfWeapons();
+                            WeaponClass typeOfShieldEquipped = WeaponClass.Undefined;
+                            for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                            {
+                                if (__instance.Equipment != null && !__instance.Equipment[equipmentIndex].IsEmpty && __instance.Equipment[equipmentIndex].IsShield())
+                                {
+                                    typeOfShieldEquipped = __instance.Equipment[equipmentIndex].CurrentUsageItem.WeaponClass;
 
+                                }
+                            }
                             switch (weaponStatsData[i].WeaponClass)
                             {
                                 case (int)WeaponClass.OneHandedPolearm:
                                 case (int)WeaponClass.LowGripPolearm:
                                     {
-                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount, (int)Utilities.throwableCorrectionSpeed, effectiveSkillDR);
+                                        float ammoWeight = __instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount;
+                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(
+                                            ammoWeight, 
+                                            (int)Utilities.throwableCorrectionSpeed,
+                                            effectiveSkillDR,
+                                            equipmentWeight,
+                                            typeOfShieldEquipped
+                                            );
                                         break;
                                     }
                                 case (int)WeaponClass.Javelin:
                                     {
-                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount, (int)Utilities.throwableCorrectionSpeed, effectiveSkillDR);
+                                        float ammoWeight = __instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount;
+                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(
+                                            ammoWeight,
+                                            (int)Utilities.throwableCorrectionSpeed,
+                                            effectiveSkillDR,
+                                            equipmentWeight,
+                                            typeOfShieldEquipped
+                                            );
                                         break;
                                     }
                                 case (int)WeaponClass.ThrowingAxe:
                                 case (int)WeaponClass.ThrowingKnife:
                                 case (int)WeaponClass.Dagger:
                                     {
-                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(__instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount, 0, effectiveSkillDR);
+                                        weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(
+                                            __instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount,
+                                            (int)Utilities.throwableCorrectionSpeed,
+                                            effectiveSkillDR,
+                                            equipmentWeight,
+                                            typeOfShieldEquipped
+                                            );
                                         break;
                                     }
                                 case (int)WeaponClass.Stone:

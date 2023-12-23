@@ -125,7 +125,7 @@ namespace RBMCombat
 
                 if (!isFallDamage)
                 {
-                    float adjustedArmor = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateAdjustedArmorForBlow(armorAmountFloat, attackerAgentCharacter, attackerCaptainCharacter, victimAgentCharacter, victimCaptainCharacter, attackerWeapon);
+                    float adjustedArmor = MissionGameModels.Current.StrikeMagnitudeModel.CalculateAdjustedArmorForBlow(armorAmountFloat, attackerAgentCharacter, attackerCaptainCharacter, victimAgentCharacter, victimCaptainCharacter, attackerWeapon);
                     armorAmount = adjustedArmor;
                 }
                 //float num2 = (float)armorAmount;
@@ -1197,7 +1197,7 @@ namespace RBMCombat
                 {
                     float horseBodyPartArmor = attacker.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Chest);
                     //b.SelfInflictedDamage = MathF.Ceiling(b.BaseMagnitude / 6f);
-                    b.SelfInflictedDamage = MBMath.ClampInt(MathF.Ceiling(Game.Current.BasicModels.StrikeMagnitudeModel.ComputeRawDamage(DamageTypes.Blunt, b.BaseMagnitude / 6f, horseBodyPartArmor, 1f)), 0, 2000);
+                    b.SelfInflictedDamage = MBMath.ClampInt(MathF.Ceiling(MissionGameModels.Current.StrikeMagnitudeModel.ComputeRawDamage(DamageTypes.Blunt, b.BaseMagnitude / 6f, horseBodyPartArmor, 1f)), 0, 2000);
                     attacker.CreateBlowFromBlowAsReflection(in b, in collisionData, out var outBlow, out var outCollisionData);
                     attacker.RegisterBlow(outBlow, in outCollisionData);
                 }
