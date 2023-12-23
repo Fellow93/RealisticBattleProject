@@ -60,7 +60,7 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="padded_vambrace" name="{=MamotK0a}Padded Vambrace" mesh="padded_vambrace_a" culture="Culture.vlandia" weight="0.1" appearance="1" Type="HandArmor" difficulty="0">
+	<Item id="padded_vambrace" name="{=RBMMamotK0a}Padded Vambrace" mesh="padded_vambrace_a" culture="Culture.vlandia" weight="0.1" appearance="1" Type="HandArmor" difficulty="0">
 		<ItemComponent>
 			<Armor arm_armor="26" modifier_group="cloth" material_type="Cloth"/>
 		</ItemComponent>
@@ -72,7 +72,7 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="guarded_padded_vambrace" name="{=whvMZZba}Guarded Padded Vambrace" mesh="padded_vambrace_a_handguard" culture="Culture.aserai" weight="0.6" appearance="1" Type="HandArmor" difficulty="0">
+	<Item id="guarded_padded_vambrace" name="{=RBM504eefCC}Guarded Padded Vambrace" mesh="padded_vambrace_a_handguard" culture="Culture.aserai" weight="0.6" appearance="1" Type="HandArmor" difficulty="0">
 		<ItemComponent>
 			<Armor arm_armor="29" modifier_group="cloth" material_type="Cloth"/>
 		</ItemComponent>
@@ -120,7 +120,7 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="reinforced_leather_vambraces" name="{=CXnhFf1t}Reinforced Leather Vambraces" mesh="crossbow_armor_leather_hand_b" culture="Culture.vlandia" weight="1" appearance="2" Type="HandArmor">
+	<Item id="reinforced_leather_vambraces" name="{=RBM1002309}Reinforced Leather Vambraces" mesh="crossbow_armor_leather_hand_b" culture="Culture.vlandia" weight="1" appearance="2" Type="HandArmor">
 		<ItemComponent>
 			<Armor arm_armor="40" modifier_group="plate" material_type="Plate" covers_hands="false"/>
 		</ItemComponent>
@@ -144,13 +144,13 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="mail_mitten" name="{=g51zVsKU}Mail Mitten" mesh="mail_mitten_c" culture="Culture.vlandia" weight="1.4" appearance="1.6" Type="HandArmor" difficulty="0">
+	<Item id="mail_mitten" name="{=RBMg51zVsKU}Mail Mitten" mesh="mail_mitten_c" culture="Culture.vlandia" weight="1.4" appearance="1.6" Type="HandArmor" difficulty="0">
 		<ItemComponent>
 			<Armor arm_armor="45" modifier_group="chain" material_type="Chainmail" covers_hands="true"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="reinforced_mail_mitten" name="{=dPQGxmJ7}Reinforced Mail Mitten" mesh="mail_mitten_b" culture="Culture.vlandia" weight="1.6" appearance="3" Type="HandArmor" difficulty="0">
+	<Item id="reinforced_mail_mitten" name="{=RBMdPQGxmJ7}Reinforced Mail Mitten" mesh="mail_mitten_b" culture="Culture.vlandia" weight="1.6" appearance="3" Type="HandArmor" difficulty="0">
 		<ItemComponent>
 			<Armor arm_armor="48" modifier_group="chain" material_type="Chainmail" covers_hands="true"/>
 		</ItemComponent>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Items>
-	<Item id="ladys_shoe" name="{=RU2EppgI}Lady's Shoes" mesh="woman_shoe_a" culture="Culture.empire" weight="0.6" appearance="1" Type="LegArmor" value="250">
+	<Item id="ladys_shoe" name="{=RBMRU2EppgI}Lady's Shoes" mesh="woman_shoe_a" culture="Culture.empire" weight="0.6" appearance="1" Type="LegArmor" value="250">
 		<ItemComponent>
 			<Armor leg_armor="14" covers_legs="false" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
@@ -60,7 +60,7 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="highland_boots" name="{=42KNket2}Highland Boots" mesh="pict_armor_boot" culture="Culture.battania" weight="1" appearance="1" Type="LegArmor" difficulty="0">
+	<Item id="highland_boots" name="{=RBM42KNket2}Highland Boots" mesh="pict_armor_boot" culture="Culture.battania" weight="1" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
 			<Armor leg_armor="26" covers_legs="true" modifier_group="leather" material_type="Leather"/>
 		</ItemComponent>
@@ -114,7 +114,7 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="highland_leg_wrappings" name="{=cCaHNMwf}Highland Leg Wrappings" mesh="battania_boot_a" culture="Culture.battania" weight="1" appearance="1" Type="LegArmor" difficulty="0">
+	<Item id="highland_leg_wrappings" name="{=RBMcCaHNMwf}Highland Leg Wrappings" mesh="battania_boot_a" culture="Culture.battania" weight="1" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
 			<Armor leg_armor="30" covers_legs="true" modifier_group="cloth" material_type="Cloth"/>
 		</ItemComponent>
@@ -144,7 +144,7 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="battania_leather_boots" name="{=hTRaPvRa}Highland Leather Boots" mesh="battania_leather_boots_a" culture="Culture.battania" weight="1" appearance="1" Type="LegArmor" difficulty="0">
+	<Item id="battania_leather_boots" name="{=RBMhTRaPvRa}Highland Leather Boots" mesh="battania_leather_boots_a" culture="Culture.battania" weight="1" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
 			<Armor leg_armor="32" covers_legs="true" modifier_group="leather" material_type="Leather"/>
 		</ItemComponent>
@@ -162,7 +162,7 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="battania_fur_boots" name="{=vwVFF1XJ}Highland Fur Boots" mesh="battania_fur_boot_a" culture="Culture.battania" weight="1.5" appearance="1" Type="LegArmor" difficulty="0">
+	<Item id="battania_fur_boots" name="{=RBMvwVFF1XJ}Highland Fur Boots" mesh="battania_fur_boot_a" culture="Culture.battania" weight="1.5" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
 			<Armor leg_armor="35" covers_legs="true" modifier_group="leather" material_type="Leather"/>
 		</ItemComponent>
@@ -204,13 +204,13 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="decorated_imperial_boots" name="{=gXbmGrGL}Decorated Imperial Boots" mesh="empire_plate_armor_boots" culture="Culture.empire" weight="2.3" appearance="3" Type="LegArmor">
+	<Item id="decorated_imperial_boots" name="{=RBM0bE90176}Decorated Imperial Boots" mesh="empire_plate_armor_boots" culture="Culture.empire" weight="2.3" appearance="3" Type="LegArmor">
 		<ItemComponent>
 			<Armor leg_armor="44" covers_legs="true" modifier_group="plate" material_type="Plate"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="battania_warlord_boots" name="{=eTKxlDl1}Highland Warlord Boots" mesh="battania_warlord_boots" culture="Culture.battania" weight="2.6" appearance="3" Type="LegArmor" difficulty="0">
+	<Item id="battania_warlord_boots" name="{=RBMeTKxlDl1}Highland Warlord Boots" mesh="battania_warlord_boots" culture="Culture.battania" weight="2.6" appearance="3" Type="LegArmor" difficulty="0">
 		<ItemComponent>
 			<Armor leg_armor="46" covers_legs="true" modifier_group="plate" material_type="Plate"/>
 		</ItemComponent>

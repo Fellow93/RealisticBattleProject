@@ -636,7 +636,7 @@
     </Materials>
   </CraftingPiece>  
   
-  <CraftingPiece id="khuzait_blade_1" name="{=Ld1nfdj4}Fine Steel Sabre Blade" tier="4" piece_type="Blade" mesh="khuzait_blade_1" culture="Culture.khuzait" length="92.4" weight="0.62">
+  <CraftingPiece id="khuzait_blade_1" name="{=RBMLd1nfdj4}Fine Steel Sabre Blade" tier="4" piece_type="Blade" mesh="khuzait_blade_1" culture="Culture.khuzait" length="92.4" weight="0.62">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="khuzait_blade_1_scabbard_1">
       <Thrust damage_type="Pierce" damage_factor="0.8" />
@@ -649,7 +649,7 @@
       <Material id="Iron5" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_blade_2" name="{=C2hTDlWq}Heavy Sabre Blade" tier="4" piece_type="Blade" mesh="khuzait_blade_2" culture="Culture.khuzait" length="94.6" weight="0.64">
+  <CraftingPiece id="khuzait_blade_2" name="{=RBMC2hTDlWq}Heavy Sabre Blade" tier="4" piece_type="Blade" mesh="khuzait_blade_2" culture="Culture.khuzait" length="94.6" weight="0.64">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="khuzait_blade_2_scabbard_2">
       <Thrust damage_type="Pierce" damage_factor="0.8" />
@@ -662,7 +662,7 @@
       <Material id="Iron5" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_blade_3" name="{=OHHpwD0F}Straight Sabre Blade" tier="3" piece_type="Blade" mesh="khuzait_blade_3" culture="Culture.khuzait" length="90.2" weight="0.61">
+  <CraftingPiece id="khuzait_blade_3" name="{=RBMOHHpwD0F}Straight Sabre Blade" tier="3" piece_type="Blade" mesh="khuzait_blade_3" culture="Culture.khuzait" length="90.2" weight="0.61">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="khuzait_blade_3_scabbard_3">
       <Thrust damage_type="Pierce" damage_factor="0.7" />
@@ -675,7 +675,7 @@
       <Material id="Iron4" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_blade_5" name="{=CODGBskg}Long Sabre Blade" tier="3" piece_type="Blade" mesh="khuzait_blade_5" culture="Culture.khuzait" length="101.2" weight="0.67">
+  <CraftingPiece id="khuzait_blade_5" name="{=RBMCODGBskg}Long Sabre Blade" tier="3" piece_type="Blade" mesh="khuzait_blade_5" culture="Culture.khuzait" length="101.2" weight="0.67">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="khuzait_blade_5_scabbard_5">
       <Thrust damage_type="Pierce" damage_factor="0.7" />
@@ -685,7 +685,7 @@
       <Material id="Iron4" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_blade_7" name="{=wQGWxeCc}Thick Sabre Blade" tier="2" piece_type="Blade" mesh="khuzait_blade_7" culture="Culture.khuzait" length="82.5" weight="0.56">
+  <CraftingPiece id="khuzait_blade_7" name="{=RBMwQGWxeCc}Thick Sabre Blade" tier="2" piece_type="Blade" mesh="khuzait_blade_7" culture="Culture.khuzait" length="82.5" weight="0.56">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed">
       <Thrust damage_type="Pierce" damage_factor="0.6" />
@@ -698,7 +698,7 @@
       <Material id="Iron3" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_blade_7_blunt" name="{=lz8rSkzE}Thick Blunt Sabre Blade" tier="2" piece_type="Blade" mesh="khuzait_blade_7" culture="Culture.khuzait" length="82.5" weight="0.56" is_hidden="true">
+  <CraftingPiece id="khuzait_blade_7_blunt" name="{=RBMlz8rSkzE}Thick Blunt Sabre Blade" tier="2" piece_type="Blade" mesh="khuzait_blade_7" culture="Culture.khuzait" length="82.5" weight="0.56" is_hidden="true">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed">
       <Thrust damage_type="Pierce" damage_factor="0.6" />
@@ -1117,7 +1117,7 @@
     </Materials>
   </CraftingPiece>
   
-  <CraftingPiece id="khuzait_blade_6" name="{=czhTpYo8}Iron Sabre Blade" tier="2" piece_type="Blade" mesh="khuzait_blade_6" culture="Culture.khuzait" length="82.5" weight="0.66">
+  <CraftingPiece id="khuzait_blade_6" name="{=RBMczhTpYo8}Iron Sabre Blade" tier="2" piece_type="Blade" mesh="khuzait_blade_6" culture="Culture.khuzait" length="82.5" weight="0.66">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed">
       <Thrust damage_type="Pierce" damage_factor="0.6" />
@@ -1481,7 +1481,7 @@
       <Material id="Iron2" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_blade_8" name="{=19a3jJ1s}Ridged Great Sabre Blade" tier="4" piece_type="Blade" mesh="khuzait_blade_8" culture="Culture.khuzait" length="99" weight="0.72">
+  <CraftingPiece id="khuzait_blade_8" name="{=RBM19a3jJ1s}Ridged Great Sabre Blade" tier="4" piece_type="Blade" mesh="khuzait_blade_8" culture="Culture.khuzait" length="99" weight="0.72">
 
     <BuildData previous_piece_offset="-0.25" />
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="khuzait_blade_8_scabbard_8">
@@ -1726,7 +1726,7 @@
       <Material id="Iron6" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_noble_blade_1" name="{=PqoJ1ZeB}Decorated Sabre Blade" tier="5" piece_type="Blade" mesh="khuzait_noble_blade_1" culture="Culture.khuzait" length="89.5" weight="0.66">
+  <CraftingPiece id="khuzait_noble_blade_1" name="{=RBMPqoJ1ZeB}Decorated Sabre Blade" tier="5" piece_type="Blade" mesh="khuzait_noble_blade_1" culture="Culture.khuzait" length="89.5" weight="0.66">
 
     <BuildData previous_piece_offset="-0.25" />
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="khuzait_noble_blade_1_scabbard_1">

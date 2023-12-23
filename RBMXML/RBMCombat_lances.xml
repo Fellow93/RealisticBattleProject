@@ -37,7 +37,7 @@
     </Pieces>
   </CraftedItem>
   <CraftedItem id="khuzait_lance_1_t3"
-               name="{=UWvOndG0}Khuzait Light Lance"
+               name="{=RBMUWvOndG0}Khuzait Light Lance"
                crafting_template="TwoHandedPolearm"
                culture="Culture.khuzait">
     <Pieces>
@@ -87,7 +87,7 @@
     </Pieces>
   </CraftedItem>
   <CraftedItem id="sturgia_lance_1_t4"
-               name="{=J4fgemze}Sturgian Lance"
+               name="{=RBM5690C816}Sturgian Lance"
                crafting_template="TwoHandedPolearm"
                culture="Culture.sturgia">
     <Pieces>
@@ -103,7 +103,7 @@
     </Pieces>
   </CraftedItem>
   <CraftedItem id="khuzait_lance_2_t4"
-               name="{=inr9Mt1i}Khuzait Lance"
+               name="{=RBM62a3571e}Khuzait Lance"
                crafting_template="TwoHandedPolearm"
                culture="Culture.khuzait">
     <Pieces>
@@ -137,7 +137,7 @@
     </Pieces>
   </CraftedItem>
   <CraftedItem id="sturgia_lance_2_t5"
-               name="{=6eO6QDoE}Sturgian Heavy Lance"
+               name="{=RBM5Bd3970}Sturgian Heavy Lance"
                crafting_template="TwoHandedPolearm"
                culture="Culture.sturgia">
     <Pieces>
@@ -245,7 +245,7 @@
     </Pieces>
   </CraftedItem>
   
-  <CraftedItem id="battania_polearm_1_t5" name="{=V4b2ZRTH}Rhomphalia" crafting_template="TwoHandedPolearm" culture="Culture.battania">
+  <CraftedItem id="battania_polearm_1_t5" name="{=RBMV4b2ZRTH}Rhomphalia" crafting_template="TwoHandedPolearm" culture="Culture.battania">
     <Pieces>
       <Piece id="battania_blade_7" Type="Blade" scale_factor="150" />
       <Piece id="sturgian_guard_6" Type="Guard" scale_factor="150" />
@@ -592,7 +592,7 @@
   </CraftedItem>
   <!-- #endregion -->
   <!-- Pilum -->
-    <CraftedItem id="imperial_throwing_spear_1_t4" name="{=v3lIxLvX}Pila" crafting_template="Javelin" culture="Culture.empire" modifier_group="spear_dart_throwing">
+    <CraftedItem id="imperial_throwing_spear_1_t4" name="{=RBM9c2bEfb9}Pila" crafting_template="Javelin" culture="Culture.empire" modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_38" Type="Blade" scale_factor="280" />
       <Piece id="default_polearm_guard" Type="Guard" scale_factor="100" />
@@ -743,7 +743,7 @@
     </Pieces>
   </CraftedItem>
   
-  <CraftedItem id="empire_polearm_1_t4" name="{=7LmUe8fQ}Light Menavlion" crafting_template="Pike" culture="Culture.empire">
+  <CraftedItem id="empire_polearm_1_t4" name="{=RBM7LmUe8fQ}Light Menavlion" crafting_template="Pike" culture="Culture.empire">
     <Pieces>
       <Piece id="spear_blade_7" Type="Blade" scale_factor="100" />
       <Piece id="default_polearm_guard" Type="Guard" scale_factor="100" />
@@ -753,7 +753,7 @@
   </CraftedItem> 
   
   <CraftedItem id="empire_polearm_2_t5"
-               name="{=UunjXpgb}Heavy Menavlion"
+               name="{=RBMUunjXpgb}Heavy Menavlion"
                crafting_template="Pike"
                culture="Culture.empire">
     <Pieces>
