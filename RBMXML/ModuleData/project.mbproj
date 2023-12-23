@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="solution">
+  <outputDirectory>..\MBModule\MBModule\</outputDirectory>
+  <XMLDirectory>..\WOTS\Modules\RBM\</XMLDirectory>
+  <ModuleAssemblyDirectory>..\WOTS\bin\</ModuleAssemblyDirectory>
+  <file id="soln_combat_system" name="ModuleData/RBM_native_parameters_tweaks.xml" type="native_parameters" />
+  <file id="soln_item_holsters" name="ModuleData/RBM_bow_shields.xml" type="item_holster" />
+  <file id="soln_combat_system" name="ModuleData/RBM_spear_combat_parameters.xml" type="animation_combat_parameters" />
+  <file id="soln_managed_core_paramaters" name="ModuleData/RBM_spear_managed_core_paramaters.xml" type="managed_core_parameters" />
+  <file id="soln_item_usage_sets" name="ModuleData/RBMCombat_axe_grip.xml" type="item_usage_set" />
+</base>
