@@ -15140,7 +15140,7 @@
                 level="19"
                 occupation="Soldier"
                 culture="Culture.empire"
-                name="{=MVHawAEp}Hidden Hand">
+                name="{=RBMMVHawAEp}Hidden Soldati">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
