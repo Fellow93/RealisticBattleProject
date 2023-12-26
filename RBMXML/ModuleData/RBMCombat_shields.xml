@@ -200,7 +200,7 @@
 		</ItemComponent>
 		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandPrimaryItemBone="true"/>
 	</Item>
-	<Item id="sturgia_old_shield_b" name="{=*}Crude Large Round Shield" body_name="bo_cap_sturgia_old_shield" shield_body_name="bo_sturgia_old_shield" recalculate_body="false" mesh="sturgia_old_shield_b" using_tableau="true" weight="7.3" appearance="1" Type="Shield" item_holsters="shield_round:shield_4" has_lower_holster_priority="true" holster_position_shift="0,0,0.01" difficulty="0" culture="Culture.sturgia">
+	<Item id="sturgia_old_shield_b" name="{=RBM9ZAZbxqO}Crude Large Round Shield" body_name="bo_cap_sturgia_old_shield" shield_body_name="bo_sturgia_old_shield" recalculate_body="false" mesh="sturgia_old_shield_b" using_tableau="true" weight="7.3" appearance="1" Type="Shield" item_holsters="shield_round:shield_4" has_lower_holster_priority="true" holster_position_shift="0,0,0.01" difficulty="0" culture="Culture.sturgia">
 		<ItemComponent>
 			<Weapon weapon_class="LargeShield" body_armor="3" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="hand_shield" position="-0.02, 0.0, 0.0" rotation="-15.0,-90.0,-10.0" weapon_length="70" center_of_mass="0, 0, 0" hit_points="480">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
