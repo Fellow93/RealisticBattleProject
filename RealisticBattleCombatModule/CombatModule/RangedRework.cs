@@ -333,7 +333,8 @@ namespace RBMCombat
                         int msModifier = 0;
                         if (missionWeapon.ItemModifier != null)
                         {
-                            msModifier = missionWeapon.ItemModifier.ModifyHitPoints(50) - 50;
+                            //msModifier = missionWeapon.ItemModifier.ModifyHitPoints(50) - 50;
+                            msModifier = missionWeapon.ItemModifier.HitPoints;
                         }
 
                         calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon.CurrentUsageItem.ItemUsage, missionWeapon.CurrentUsageItem.MissileSpeed + msModifier); //rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight());
