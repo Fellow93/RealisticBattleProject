@@ -867,7 +867,12 @@ namespace RBMCombat
                         float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill);
                         if (targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.Bow)
                         {
-                            int drawWeight = targetWeapon.GetModifiedMissileSpeedForUsage(targetWeaponUsageIndex);
+                            int msModifier = 0;
+                            if (targetWeapon.ItemModifier != null)
+                            {
+                                msModifier = targetWeapon.ItemModifier.HitPoints;
+                            }
+                            int drawWeight = targetWeapon.GetModifiedMissileSpeedForUsage(targetWeaponUsageIndex) + msModifier;
                             float ammoWeightIdealModifier;
                             if (targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ItemUsage.Equals("bow"))
                             {
@@ -886,6 +891,7 @@ namespace RBMCombat
 
                             methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Ideal Ammo Weight Range/Damage, grams: "), MathF.Round(ammoWeightIdeal * 1000f), MathF.Round(ammoWeightIdeal * 1000f) });
                             methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Initial Missile Speed, m/s: "), calculatedMissileSpeed, calculatedMissileSpeed });
+                            methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Draw weight with modifier: "), drawWeight, drawWeight });
 
                             //pierceArrows
                             bool shouldBreakNextTime = false;
@@ -937,7 +943,12 @@ namespace RBMCombat
                         }
                         if (targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.Crossbow)
                         {
-                            int drawWeight = targetWeapon.GetModifiedMissileSpeedForUsage(targetWeaponUsageIndex);
+                            int msModifier = 0;
+                            if (targetWeapon.ItemModifier != null)
+                            {
+                                msModifier = targetWeapon.ItemModifier.HitPoints;
+                            }
+                            int drawWeight = targetWeapon.GetModifiedMissileSpeedForUsage(targetWeaponUsageIndex) + msModifier;
                             float ammoWeightIdealModifier = 4000f;
 
                             float ammoWeightIdeal = MathF.Clamp(drawWeight / ammoWeightIdealModifier, 0f, 0.150f);
@@ -948,6 +959,7 @@ namespace RBMCombat
 
                             methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Ideal Ammo Weight Range/Damage, grams: "), MathF.Round(ammoWeightIdeal * 1000f), MathF.Round(ammoWeightIdeal * 1000f) });
                             methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Initial Missile Speed, m/s: "), calculatedMissileSpeed, calculatedMissileSpeed });
+                            methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Draw weight with modifier: "), drawWeight, drawWeight });
 
                             //pierce bolts
                             bool shouldBreakNextTime = false;
