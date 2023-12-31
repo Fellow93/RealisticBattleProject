@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 using SandBox.Missions.MissionLogics;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TaleWorlds.CampaignSystem.Encounters;
@@ -317,8 +319,24 @@ namespace RBMAI.AiModule
         {
             private static bool Prefix(ref PlayerEncounter __instance, ref MapEvent ____mapEvent, ref CampaignBattleResult ____campaignBattleResult, ref bool __result)
             {
-                if (____campaignBattleResult != null && ____campaignBattleResult.PlayerVictory && ____campaignBattleResult.BattleResolved)
+                if (____mapEvent != null && ____mapEvent.IsFieldBattle && ____campaignBattleResult != null && ____campaignBattleResult.PlayerVictory && ____campaignBattleResult.BattleResolved)
                 {
+                    //OnTroopWounded(_selectedSimulationTroopDescriptor);
+                    List<UniqueTroopDescriptor> troopsList = null;
+                    ____mapEvent.GetMapEventSide(____mapEvent.DefeatedSide).GetAllTroops(ref troopsList);
+                    foreach (UniqueTroopDescriptor troop in troopsList)
+                    {
+                        if (troop.IsValid)
+                        {
+                            try
+                            {
+                                ____mapEvent.GetMapEventSide(____mapEvent.DefeatedSide).OnTroopWounded(troop);
+                            }
+                            catch(Exception e) { 
+                               e.ToString();
+                            }
+                        }
+                    }
                     __result = false;
                     return false;
                 }
