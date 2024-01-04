@@ -45,9 +45,9 @@
   <string id="RBM10402" text="返し付きの矢、60グラム"/>
   <string id="RBM36c63" text="細いボドキン矢、60グラム"/>
   <string id="RBM8126a" text="細いボドキン矢、70グラム"/>
-  <string id="RBM51e64" text="細いボドキン矢、75グラム"/>
+  <string id="RBM51e64" text="細いボドキンボルト、75グラム"/>
   <string id="RBM8d0fd" text="細いボドキン矢、80グラム"/>
-  <string id="RBM07608" text="細いボドキン矢、90グラム"/>
+  <string id="RBM07608" text="細いボドキンボルト、90グラム"/>
   <string id="RBMa6dcc" text="細いボドキン矢、90グラム"/>
   <string id="RBM708da" text="細いボドキン矢、100グラム"/>
   <string id="RBMe43f6" text="重く細いボドキン矢、110グラム"/>
@@ -64,13 +64,13 @@
   <string id="RBMe40ae" text="油を塗った返し付きの矢、60グラム"/>
   <string id="RBM4531d" text="油を塗った細いボドキン矢、60グラム"/>
   <string id="RBMae9e8" text="油を塗った細いボドキン矢、70グラム"/>
-  <string id="RBM1b251" text="油を塗った細いボドキン矢、75グラム"/>
+  <string id="RBM1b251" text="油を塗った細いボドキンボルト、75グラム"/>
   <string id="RBM5a8b2" text="油を塗った細いボドキン矢、80グラム"/>
   <string id="RBMd7d50" text="油を塗った細いボドキンボルト、90グラム"/>
   <string id="RBMaff6b" text="油を塗った細いボドキン矢、90グラム"/>
   <string id="RBMafb5f" text="油を塗った細いボドキン矢、100グラム"/>
   <string id="RBM02678" text="油を塗った細いボドキン矢、110グラム"/>
-  <string id="RBM5677a" text="油を塗った細いボドキン矢、120グラム"/>
+  <string id="RBM5677a" text="油を塗った細いボドキンボルト、120グラム"/>
   <string id="RBMdeeeb" text="油を塗ったかなり重い細いボドキン矢、125グラム"/>
   <string id="RBMf30fc" text="油を塗った非常に重く細いボドキンボルト、150グラム"/>
   <string id="RBM22939" text="焼入れタマスケン鋼の返し付きの矢、80グラム"/>
