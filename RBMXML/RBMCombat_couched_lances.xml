@@ -45,17 +45,16 @@
 			<Material id="Iron4"
 			          count="1"/>
 		</Materials>
-		<Flags>
-    </Flags>
 	</CraftingPiece>
 	<CraftingPiece id="spear_blade_20_blunt"
-	               name="{=uwG8iwBc}Tournament Medium Lance Head"
+	               name="{=NRhAqB5a}Tournament Medium Lance Head"
 	               tier="5"
 	               piece_type="Blade"
 	               mesh="spear_blade_20"
 	               length="46"
 	               weight="0.1"
-	               excluded_item_usage_features="swing">
+	               excluded_item_usage_features="swing"
+	               is_hidden="true">
 		<BladeData stack_amount="3"
 		           physics_material="wood_weapon"
 		           body_name="bo_spear_b">
@@ -66,8 +65,6 @@
 			<Material id="Iron4"
 			          count="1"/>
 		</Materials>
-		<Flags>
-    </Flags>
 	</CraftingPiece>
 	<CraftingPiece id="spear_blade_38"
 	               name="{=nr3K4od2}Pilum Head"
@@ -137,13 +134,14 @@
 		</Materials>
 	</CraftingPiece>
 	<CraftingPiece id="spear_blade_33_blunt"
-	               name="{=R62maL2H}Bill Head"
+	               name="{=EjJl6bA4}Blunt Bill Head"
 	               tier="2"
 	               piece_type="Blade"
 	               mesh="spear_blade_33"
 	               length="35.5"
 	               weight="0.3296"
-	               excluded_item_usage_features="shield:thrust">
+	               excluded_item_usage_features="shield:thrust"
+	               is_hidden="true">
 		<BladeData stack_amount="3"
 		           physics_material="wood_weapon"
 		           body_name="bo_spear_b">
@@ -215,8 +213,6 @@
 			<Material id="Iron5"
 			          count="1"/>
 		</Materials>
-		<Flags>
-    </Flags>
 	</CraftingPiece>
 	<CraftingPiece id="spear_blade_8"
 	               name="{=CdBAvJdP}Kontos Head"
@@ -273,21 +269,20 @@
 			<Thrust damage_type="Pierce"
 			        damage_factor="1.1"/>
 		</BladeData>
-		<Flags>	  
-    </Flags>
 		<Materials>
 			<Material id="Iron3"
 			          count="3"/>
 		</Materials>
 	</CraftingPiece>
 	<CraftingPiece id="spear_blade_35_blunt"
-	               name="{=ZUp9mm79}Jagged Spear Head"
+	               name="{=c6aNuaDP}Jagged Blunt Spear Head"
 	               tier="5"
 	               piece_type="Blade"
 	               mesh="spear_blade_35"
 	               length="41"
 	               weight="0.3256"
-	               excluded_item_usage_features="swing">
+	               excluded_item_usage_features="swing"
+	               is_hidden="true">
 		<BladeData stack_amount="2"
 		           physics_material="wood_weapon"
 		           body_name="bo_spear_b"
@@ -297,8 +292,6 @@
 			<Thrust damage_type="Pierce"
 			        damage_factor="1.1"/>
 		</BladeData>
-		<Flags>  
-    </Flags>
 		<Materials>
 			<Material id="Iron3"
 			          count="3"/>
@@ -455,13 +448,14 @@
 		</Materials>
 	</CraftingPiece>
 	<CraftingPiece id="spear_blade_15_blunt"
-	               name="{=Y4tIQnS4}Short Simple Spear Head"
+	               name="{=hbv5aCRX}Short Simple Blunt Spear Head"
 	               tier="2"
 	               piece_type="Blade"
 	               mesh="spear_blade_15"
 	               length="22.862"
 	               weight="0.300"
-	               excluded_item_usage_features="swing">
+	               excluded_item_usage_features="swing"
+	               is_hidden="true">
 		<BladeData stack_amount="4"
 		           physics_material="wood_weapon"
 		           body_name="bo_spear_b"
@@ -563,12 +557,13 @@
 		</Materials>
 	</CraftingPiece>
 	<CraftingPiece id="spear_blade_19_blunt"
-	               name="{=OBeOZ27b}Glaive Head"
+	               name="{=TqXFwLYL}Blunt Glaive Head"
 	               tier="5"
 	               piece_type="Blade"
 	               mesh="spear_blade_19"
 	               length="37.4"
-	               weight="0.3">
+	               weight="0.3"
+	               is_hidden="true">
 		<BladeData stack_amount="3"
 		           physics_material="wood_weapon"
 		           body_name="bo_spear_b">
@@ -673,7 +668,8 @@
 	               culture="Culture.battania"
 	               length="75"
 	               weight="0.6"
-	               excluded_item_usage_features="shield:thrust">
+	               excluded_item_usage_features="shield:thrust"
+	               is_hidden="true">
 		<BladeData stack_amount="3"
 		           physics_material="metal_weapon"
 		           body_name="bo_sword_one_handed">
@@ -728,17 +724,16 @@
 			<Material id="Iron3"
 			          count="2"/>
 		</Materials>
-		<Flags>
-    </Flags>
 	</CraftingPiece>
 	<CraftingPiece id="spear_blade_23_blunt"
-	               name="{=OryiZr9d}Tournament Light Lance Head"
+	               name="{=pAqWQWJs}Tournament Light Lance Head"
 	               tier="4"
 	               piece_type="Blade"
 	               mesh="spear_blade_23"
 	               length="42"
 	               weight="0.1"
-	               excluded_item_usage_features="swing">
+	               excluded_item_usage_features="swing"
+	               is_hidden="true">
 		<BladeData stack_amount="3"
 		           physics_material="wood_weapon"
 		           body_name="bo_spear_b">
@@ -749,8 +744,6 @@
 			<Material id="Iron3"
 			          count="2"/>
 		</Materials>
-		<Flags>
-    </Flags>
 	</CraftingPiece>
 	<CraftingPiece id="spear_blade_7"
 	               name="{=dXRt8jY4}Menavlion Head"
@@ -1035,6 +1028,10 @@
 			<Swing damage_type="Cut"
 			       damage_factor="0.2"/>
 		</BladeData>
+		<Materials>
+			<Material id="Iron3"
+			          count="4"/>
+		</Materials>
 	</CraftingPiece>
 	<CraftingPiece id="spear_blade_21"
 	               name="{=GMwWb6SE}Wooden Spear Head"
@@ -1043,7 +1040,8 @@
 	               mesh="spear_blade_21"
 	               length="23.5"
 	               weight="0.1"
-	               excluded_item_usage_features="shield:thrust">
+	               excluded_item_usage_features="shield:thrust"
+	               CraftingCost="75">
 		<!--WOOD-->
 		<BladeData stack_amount="3"
 		           physics_material="wood_weapon"
@@ -1112,7 +1110,8 @@
 	               piece_type="Handle"
 	               mesh="spear_handle_5"
 	               length="229"
-	               weight="0.595">
+	               weight="0.595"
+	               CraftingCost="110">
 		<BuildData piece_offset="-11"/>
 		<Materials>
 			<Material id="Wood"
@@ -1125,7 +1124,8 @@
 	               piece_type="Handle"
 	               mesh="spear_handle_6"
 	               length="250"
-	               weight="0.65">
+	               weight="0.65"
+	               CraftingCost="120">
 		<BuildData piece_offset="-13"/>
 		<Materials>
 			<Material id="Wood"
@@ -1151,7 +1151,8 @@
 	               piece_type="Handle"
 	               mesh="spear_handle_27"
 	               length="290"
-	               weight="0.754">
+	               weight="0.754"
+	               is_default="true">
 		<BuildData piece_offset="-15"/>
 		<Materials>
 			<Material id="Wood"
@@ -1165,7 +1166,8 @@
 	               mesh="spear_handle_3"
 	               length="179"
 	               weight="0.465"
-	               excluded_item_usage_features="long">
+	               excluded_item_usage_features="long"
+	               CraftingCost="100">
 		<BuildData piece_offset="-8"/>
 		<Materials>
 			<Material id="Wood"
@@ -1220,7 +1222,8 @@
 	               piece_type="Handle"
 	               mesh="spear_handle_8"
 	               length="230"
-	               weight="0.65">
+	               weight="0.65"
+				   CraftingCost="110">
 		<BuildData piece_offset="10.0"/>
 		<Materials>
 			<Material id="Wood"
@@ -1286,7 +1289,8 @@
 	               mesh="spear_handle_7"
 	               length="295"
 	               weight="2.36"
-	               excluded_item_usage_features="swing">
+	               excluded_item_usage_features="swing"
+	               CraftingCost="150">
 		<BuildData piece_offset="70.0"/>
 		<Materials>
 			<Material id="Wood"
@@ -1340,7 +1344,8 @@
 	               piece_type="Handle"
 	               mesh="spear_handle_13"
 	               length="228"
-	               weight="2.088">
+	               weight="2.088"
+	               CraftingCost="110">
 		<BuildData piece_offset="40.0"/>
 		<Materials>
 			<Material id="Wood"
@@ -1394,6 +1399,7 @@
 	               length="149"
 	               weight="0.5"
 	               excluded_item_usage_features="long"
+	               CraftingCost="100"
 	               is_default="true">
 		<BuildData piece_offset="14.9"/>
 		<Materials>
@@ -1410,7 +1416,9 @@
 	               mesh="spear_handle_2"
 	               length="85.1"
 	               weight="0.17"
-	               excluded_item_usage_features="long">
+	               excluded_item_usage_features="long"
+	               CraftingCost="80"
+	               is_default="true">
 		<BuildData piece_offset="0.0"/>
 		<Materials>
 			<Material id="Wood"
@@ -1424,7 +1432,12 @@
 	               mesh="spear_handle_9"
 	               length="82.3"
 	               weight="0.213"
-	               excluded_item_usage_features="long">
+	               excluded_item_usage_features="long"
+	               CraftingCost="80">
+		<Materials>
+			<Material id="Wood"
+			          count="1"/>
+		</Materials>
 	</CraftingPiece>
 	<CraftingPiece id="spear_handle_10"
 	               name="{=aaEv3sBU}Oaken Javelin Shaft"
@@ -1433,7 +1446,8 @@
 	               mesh="spear_handle_10"
 	               length="86.7"
 	               weight="0.258"
-	               excluded_item_usage_features="long">
+	               excluded_item_usage_features="long"
+	               CraftingCost="80">
 		<Materials>
 			<Material id="Wood"
 			          count="1"/>
@@ -1446,7 +1460,8 @@
 	               mesh="spear_handle_11"
 	               length="90"
 	               weight="0.234"
-	               excluded_item_usage_features="long">
+	               excluded_item_usage_features="long"
+	               CraftingCost="80">
 		<Materials>
 			<Material id="Wood"
 			          count="1"/>
@@ -1459,7 +1474,8 @@
 	               mesh="spear_handle_12"
 	               length="90"
 	               weight="0.18"
-	               excluded_item_usage_features="long">
+	               excluded_item_usage_features="long"
+	               CraftingCost="90">
 		<Materials>
 			<Material id="Wood"
 			          count="1"/>
