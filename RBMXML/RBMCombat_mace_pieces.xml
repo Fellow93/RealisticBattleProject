@@ -340,7 +340,7 @@
 		</Materials>
 	</CraftingPiece>
 	<CraftingPiece id="mace_head_6"
-	               name="{=FyaygeEx}Knobbed Club"
+	               name="{=knobbedclubcraftingpiece}Knobbed Club"
 	               tier="2"
 	               piece_type="Blade"
 	               mesh="mace_head_6"
@@ -1056,6 +1056,7 @@
 	               length="78"
 	               weight="0.34"
 	               item_holster_pos_shift="0,0,0.05">
+		<BuildData piece_offset="17"/>
 		<Materials>
 			<Material id="Wood"
 			          count="1"/>
@@ -1071,6 +1072,7 @@
 	               length="78"
 	               weight="0.32"
 	               item_holster_pos_shift="0,0,0.05">
+		<BuildData piece_offset="17"/>
 		<Materials>
 			<Material id="Wood"
 			          count="1"/>
