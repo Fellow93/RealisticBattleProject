@@ -1067,7 +1067,8 @@
 	               mesh="axe_craft_4_head"
 	               distance_to_next_piece="5.787"
 	               distance_to_previous_piece="1.483"
-	               weight="0.226">
+	               weight="0.226"
+	               is_default="true">
 		<BuildData piece_offset="5.0"/>
 		<BladeData stack_amount="2"
 		           blade_length="10.566"
@@ -1533,7 +1534,8 @@
 	               piece_type="Handle"
 	               mesh="axe_craft_28_handle"
 	               length="45"
-	               weight="0.134">
+	               weight="0.134"
+	               is_default="true">
 		<BuildData piece_offset="20.0"
 		           next_piece_offset="0"/>
 		<Materials>

@@ -3700,7 +3700,8 @@
 	               piece_type="Blade"
 	               mesh="dagger_blade_12"
 	               length="25.2"
-	               weight="0.200">
+	               weight="0.200"
+	               is_default="true">
 		<BladeData stack_amount="3"
 		           physics_material="metal_weapon"
 		           body_name="bo_knife_a"
