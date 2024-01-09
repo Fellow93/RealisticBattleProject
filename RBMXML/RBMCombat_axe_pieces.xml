@@ -285,7 +285,7 @@
 		</Materials>
 	</CraftingPiece>
 	<CraftingPiece id="axe_craft_30_head_blunt"
-	               name="{=M9ACQeD6}Large Ascia Head"
+	               name="{=M9ACQeD6}Large Blunt Ascia Head"
 	               tier="2"
 	               piece_type="Blade"
 	               mesh="axe_craft_30_head"
