@@ -172,8 +172,11 @@ namespace RBMCombat
                                 case (int)WeaponClass.ThrowingKnife:
                                 case (int)WeaponClass.Dagger:
                                     {
+                                        //weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(
+                                        //__instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount,
+                                        float ammoWeight = __instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount;
                                         weaponStatsData[i].MissileSpeed = Utilities.assignThrowableMissileSpeed(
-                                            __instance.Equipment[equipmentSlot].GetWeight() / __instance.Equipment[equipmentSlot].Amount,
+                                            ammoWeight,
                                             (int)Utilities.throwableCorrectionSpeed,
                                             effectiveSkillDR,
                                             equipmentWeight,
