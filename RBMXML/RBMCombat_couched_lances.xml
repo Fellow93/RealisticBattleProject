@@ -525,6 +525,7 @@
 	               length="45"
 	               weight="0.4096"
 	               excluded_item_usage_features="swing">
+		<BuildData previous_piece_offset="-11"/>
 		<BladeData stack_amount="3"
 		           physics_material="wood_weapon"
 		           body_name="bo_spear_b">
@@ -753,6 +754,7 @@
 	               length="30"
 	               weight="0.3656"
 	               excluded_item_usage_features="swing">
+		<BuildData previous_piece_offset="-11"/>
 		<BladeData stack_amount="3"
 		           physics_material="wood_weapon"
 		           body_name="bo_spear_b">
