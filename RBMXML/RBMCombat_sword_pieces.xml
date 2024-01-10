@@ -2100,7 +2100,7 @@
 	               mesh="cleaver_grip_8"
 	               culture="Culture.aserai"
 	               length="26.4"
-	               weight="0.165">
+	               weight="0.12">
 		<BuildData piece_offset="-2.18"
 		           previous_piece_offset="0.2"
 		           next_piece_offset="0.2"/>
