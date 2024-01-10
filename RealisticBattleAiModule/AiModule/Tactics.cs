@@ -467,7 +467,7 @@ namespace RBMAI
             private static bool PrefixGetTacticWeight(ref TacticCoordinatedRetreat __instance, ref float __result)
             {
                 //__result = 100f;
-                if (__instance.Team.QuerySystem.RemainingPowerRatio < 0.15f || (__instance.Team.QuerySystem.InfantryRatio <= 0.1f && __instance.Team.QuerySystem.RangedRatio <= 0.1f))
+                if (__instance.Team.QuerySystem.RemainingPowerRatio < 0.07f || (__instance.Team.QuerySystem.InfantryRatio <= 0.1f && __instance.Team.QuerySystem.RangedRatio <= 0.1f))
                 {
                     float power = __instance.Team.QuerySystem.TeamPower;
                     float enemyPower=0.01f;
