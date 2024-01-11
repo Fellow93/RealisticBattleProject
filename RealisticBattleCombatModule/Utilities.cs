@@ -13,7 +13,7 @@ namespace RBMCombat
     {
         public static int numOfHits = 0;
         public static int numOfDurabilityDowngrade = 0;
-        public static float throwableCorrectionSpeed = 15f;
+        public static float throwableCorrectionSpeed = 7f;
 
         public static float swingSpeedTransfer = 4.5454545f;
         public static float thrustSpeedTransfer = 11.7647057f;
@@ -192,7 +192,7 @@ namespace RBMCombat
 
         public static int calculateThrowableSpeed(float ammoWeight, float effectiveSkill)
         {
-            int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt((60f + effectiveSkill * 0.8f) * 2f / ammoWeight));
+            int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt((60f + effectiveSkill * 1f) * 2f / ammoWeight));
             if (calculatedThrowingSpeed > 32)
             {
                 calculatedThrowingSpeed = 32;
@@ -217,16 +217,16 @@ namespace RBMCombat
         {
             //float ammoWeight = throwable.GetWeight() / throwable.Amount;
             float shieldTypeModifier = 1f;
-            float equipmentWeightModifier = (float)Math.Sqrt(MBMath.ClampFloat(1f - (equipmentWeight * 0.015f),0.5f, 1f));
+            float equipmentWeightModifier = (float)Math.Sqrt(MBMath.ClampFloat(1f - (equipmentWeight * 0.012f),0.5f, 1f));
             switch ( shieldType ){
                 case WeaponClass.LargeShield:
                     {
-                        shieldTypeModifier = 0.836f;
+                        shieldTypeModifier = 0.87f;
                         break;
                     }
                 case WeaponClass.SmallShield:
                     {
-                        shieldTypeModifier = 0.948f;
+                        shieldTypeModifier = 0.96f;
                         break;
                     }
             }

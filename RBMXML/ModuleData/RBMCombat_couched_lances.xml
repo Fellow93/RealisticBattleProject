@@ -329,9 +329,9 @@
   
   <!-- #region Used Lance Blade Pieces -->
 
-  <CraftingPiece id="spear_blade_23" name="{=RBMOryiZr9d}Light Lance Head" tier="5" piece_type="Blade" mesh="spear_blade_23" length="42" weight="0.1" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_23" name="{=RBMOryiZr9d}Light Lance Head" tier="4" piece_type="Blade" mesh="spear_blade_23" length="42" weight="0.1" excluded_item_usage_features="swing">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="1.3" />
+      <Thrust damage_type="Pierce" damage_factor="1.0" />
     </BladeData>
     <Materials>
       <Material id="Iron3" count="2" />
@@ -340,9 +340,9 @@
     </Flags>
   </CraftingPiece>
   
-  <CraftingPiece id="spear_blade_23_blunt" name="{=RBMOryiZr9d}Tournament Light Lance Head" tier="5" piece_type="Blade" mesh="spear_blade_23" length="42" weight="0.1" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_23_blunt" name="{=RBMOryiZr9d}Tournament Light Lance Head" tier="4" piece_type="Blade" mesh="spear_blade_23" length="42" weight="0.1" excluded_item_usage_features="swing">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="1.3" />
+      <Thrust damage_type="Pierce" damage_factor="1.0" />
     </BladeData>
     <Materials>
       <Material id="Iron3" count="2" />
@@ -353,7 +353,7 @@
 
   <CraftingPiece id="spear_blade_20" name="{=RBMuwG8iwBc}Medium Lance Head" tier="5" piece_type="Blade" mesh="spear_blade_20" length="46" weight="0.1" excluded_item_usage_features="swing">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="1.35" />
+      <Thrust damage_type="Pierce" damage_factor="1.05" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="1" />
@@ -364,7 +364,7 @@
   
   <CraftingPiece id="spear_blade_20_blunt" name="{=RBMuwG8iwBc}Tournament Medium Lance Head" tier="5" piece_type="Blade" mesh="spear_blade_20" length="46" weight="0.1" excluded_item_usage_features="swing">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="1.35" />
+      <Thrust damage_type="Pierce" damage_factor="1.05" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="1" />
@@ -375,7 +375,7 @@
 
   <CraftingPiece id="spear_blade_5" name="{=RBMQwfDN06p}Heavy Lance Head" tier="5" piece_type="Blade" mesh="spear_blade_5" length="52.242" weight="0.1" excluded_item_usage_features="swing">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="1.4" />
+      <Thrust damage_type="Pierce" damage_factor="1.1" />
     </BladeData>
     <Materials>
       <Material id="Iron5" count="1" />

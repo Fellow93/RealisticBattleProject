@@ -258,7 +258,11 @@ namespace RBMCombat
                 case WeaponClass.ThrowingKnife:
                 case WeaponClass.Dagger:
                     {
-                        missileSpeed -= 0f; //5f
+                        missileSpeed -= Utilities.throwableCorrectionSpeed;
+                        if (missileSpeed < 5.0f)
+                        {
+                            missileSpeed = 5f;
+                        }
                         break;
                     }
                 case WeaponClass.Javelin:
@@ -1046,7 +1050,8 @@ namespace RBMCombat
                             targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.ThrowingKnife ||
                             targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass == WeaponClass.Dagger)
                         {
-                            int calculatedMissileSpeed = Utilities.assignThrowableMissileSpeedForMenu(targetWeapon.Weight, 0, effectiveSkill);
+                            //int calculatedMissileSpeed = Utilities.assignThrowableMissileSpeedForMenu(targetWeapon.Weight, 0, effectiveSkill);
+                            int calculatedMissileSpeed = Utilities.assignThrowableMissileSpeedForMenu(targetWeapon.Weight, (int)Utilities.throwableCorrectionSpeed, effectiveSkill);
 
                             methodCreateProperty.Invoke(__instance, new object[] { __instance.TargetItemProperties, "RBM Stats", "", 1, null });
                             methodAddIntProperty.Invoke(__instance, new object[] { new TextObject("Relevant Skill: "), effectiveSkill, effectiveSkill });
