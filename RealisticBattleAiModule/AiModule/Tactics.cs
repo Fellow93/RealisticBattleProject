@@ -507,7 +507,9 @@ namespace RBMAI
                 }
                 if (__instance.Team.IsDefender)
                 {
-                    if (__instance.Team.IsDefender && originalDefenderPower > 0f && (defenderPower / originalDefenderPower <= 0.15f))
+                    if (__instance.Team.IsDefender && originalDefenderPower > 0f && 
+                        (defenderPower / originalDefenderPower <= 0.15f) && 
+                        __instance.Team.QuerySystem.RemainingPowerRatio < 0.5f)
                     {
                         foreach (Formation formation in __instance.Team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
                         {
@@ -520,7 +522,9 @@ namespace RBMAI
                 }
                 else
                 {
-                    if (__instance.Team.IsAttacker && originalAttackerPower > 0f && (attackerPower / originalAttackerPower <= 0.15f))
+                    if (__instance.Team.IsAttacker && originalAttackerPower > 0f && 
+                        (attackerPower / originalAttackerPower <= 0.15f) && 
+                        __instance.Team.QuerySystem.RemainingPowerRatio < 0.5f)
                     {
                         foreach (Formation formation in __instance.Team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
                         {
