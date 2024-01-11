@@ -53,7 +53,10 @@ namespace RBMAI
                     int aiDecisionCooldownTime = 3;
                     AIDecision aiDecision;
                     //unit.ClearTargetFrame();
-
+                    //if (unit.ImmediateEnemy == null)
+                    //{
+                    //    return true;
+                    //}
                     bool isTargetArcher = false;
                     bool isAgentInDefensiveOrder = __instance.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall ||
                         __instance.ArrangementOrder == ArrangementOrder.ArrangementOrderCircle ||
