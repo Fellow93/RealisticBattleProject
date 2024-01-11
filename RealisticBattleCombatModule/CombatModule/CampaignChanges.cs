@@ -18,7 +18,6 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.CampaignSystem.ComponentInterfaces.CombatXpModel;
-using static TaleWorlds.CampaignSystem.ComponentInterfaces.MilitaryPowerModel;
 using static TaleWorlds.CampaignSystem.MapEvents.MapEvent;
 
 namespace RBMCombat
@@ -140,6 +139,17 @@ namespace RBMCombat
                     shotDifficulty = 14.4f;
                 }
                 __result = MBMath.Lerp(1.25f, 3.0f, (shotDifficulty - 1f) / 13.4f);
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(StoryMode.Extensions.Extensions))]
+        [HarmonyPatch("IsTrainingField")]
+        private class IsTrainingFieldPatch
+        {
+            private static bool Prefix(ref bool __result)
+            {
+                __result = false;
                 return false;
             }
         }
