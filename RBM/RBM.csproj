@@ -270,7 +270,7 @@
   </ItemGroup>
   <!-- Post-Build -->
   <PropertyGroup>
-    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBM_native_parameters_tweaks.xml" "$(SolutionDir)..\RBM\ModuleData\"
+    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\ModuleData\RBM_native_parameters_tweaks.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\ModuleData\RBM_spear_managed_core_parameters.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\ModuleData\RBM_spear_combat_parameters.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\ModuleData\RBM_bow_shields.xml" "$(SolutionDir)..\RBM\ModuleData\"
