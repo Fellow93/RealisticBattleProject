@@ -376,6 +376,9 @@ namespace RBMAI
         //    }
         //}
 
+        private static float originalDefenderPower = 0f;
+        private static float originalAttackerPower = 0f;
+
         [HarmonyPatch(typeof(MissionCombatantsLogic))]
         [HarmonyPatch("EarlyStart")]
         public class EarlyStartPatch
@@ -389,12 +392,15 @@ namespace RBMAI
                 PostureLogic.agentsToChangeFormation.Clear();
                 PostureLogic.agentsToDropWeapon.Clear();
                 PostureLogic.agentsToDropShield.Clear();
+                originalDefenderPower = 0f;
+                originalAttackerPower = 0f;
                 if (Mission.Current.Teams.Any())
                 {
                     if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
                     {
                         foreach (Team team in Mission.Current.Teams.Where((Team t) => t.HasTeamAi).ToList())
                         {
+                            
                             if (team.Side == BattleSideEnum.Attacker)
                             {
                                 team.ClearTacticOptions();
@@ -467,22 +473,43 @@ namespace RBMAI
             private static bool PrefixGetTacticWeight(ref TacticCoordinatedRetreat __instance, ref float __result)
             {
                 //__result = 100f;
-                if (__instance.Team.QuerySystem.RemainingPowerRatio < 0.07f || (__instance.Team.QuerySystem.InfantryRatio <= 0.1f && __instance.Team.QuerySystem.RangedRatio <= 0.1f))
+                float defenderPower = 0f;
+                float attackerPower = 0f;
+
+                if (Mission.Current != null)
                 {
-                    float power = __instance.Team.QuerySystem.TeamPower;
-                    float enemyPower=0.01f;
-                    if(Mission.Current != null)
+                    defenderPower = Mission.Current.Teams.Where(team => team.IsDefender).Sum(team =>
                     {
-                        if (__instance.Team.IsAttacker)
+                        float power = team.QuerySystem.BattlePowerLogic.GetTotalTeamPower(team);
+                        foreach (Formation formation in team.FormationsIncludingSpecialAndEmpty)
                         {
-                            enemyPower = Mission.Current.Teams.Where(team => team.IsDefender).Sum(et => et.QuerySystem.TeamPower);
+                            power -= team.QuerySystem.CasualtyHandler.GetCasualtyPowerLossOfFormation(formation);
                         }
-                        else
+                        return power;
+                    });
+                    attackerPower = Mission.Current.Teams.Where(team => team.IsAttacker).Sum(team =>
+                    {
+                        float power = team.QuerySystem.BattlePowerLogic.GetTotalTeamPower(team);
+                        foreach (Formation formation in team.FormationsIncludingSpecialAndEmpty)
                         {
-                            enemyPower = Mission.Current.Teams.Where(team => team.IsAttacker).Sum(et => et.QuerySystem.TeamPower);
+                            power -= team.QuerySystem.CasualtyHandler.GetCasualtyPowerLossOfFormation(formation);
                         }
+                        return power;
+                    });
+                    if (originalDefenderPower == 0f)
+                    {
+                        originalDefenderPower = defenderPower;
                     }
-                    if (power / enemyPower <= 0.15f)
+                    if (originalAttackerPower == 0f)
+                    {
+                        originalAttackerPower = attackerPower;
+                    }
+                }
+                if (__instance.Team.IsDefender)
+                {
+                    if (__instance.Team.IsDefender && originalDefenderPower > 0f && 
+                        (defenderPower / originalDefenderPower <= 0.15f) && 
+                        __instance.Team.QuerySystem.RemainingPowerRatio < 0.5f)
                     {
                         foreach (Formation formation in __instance.Team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
                         {
@@ -492,16 +519,39 @@ namespace RBMAI
                         __result = 1000f;
                         return false;
                     }
-                    else
-                    {
-                        __result = 0f;
-                    }
                 }
                 else
                 {
-                    __result = 0f;
+                    if (__instance.Team.IsAttacker && originalAttackerPower > 0f && 
+                        (attackerPower / originalAttackerPower <= 0.15f) && 
+                        __instance.Team.QuerySystem.RemainingPowerRatio < 0.5f)
+                    {
+                        foreach (Formation formation in __instance.Team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
+                        {
+                            formation.AI.ResetBehaviorWeights();
+                            formation.AI.SetBehaviorWeight<BehaviorRetreat>(100f);
+                        }
+                        __result = 1000f;
+                        return false;
+                    }
                 }
+                __result = 0f;
                 return false;
+                //if (originalEnemyPower > 0f && enemyPower / originalEnemyPower <= 0.15f)
+                //{
+                //    foreach (Formation formation in __instance.Team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
+                //    {
+                //        formation.AI.ResetBehaviorWeights();
+                //        formation.AI.SetBehaviorWeight<BehaviorRetreat>(100f);
+                //    }
+                //    __result = 1000f;
+                //    return false;
+                //}
+                //else
+                //{
+                //    __result = 0f;
+                //}
+                //return false;
             }
         }
 
