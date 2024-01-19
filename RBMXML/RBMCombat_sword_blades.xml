@@ -1019,6 +1019,10 @@
 			<Swing damage_type="Cut"
 			       damage_factor="1"/>
 		</BladeData>
+		<Flags>
+			<Flag name="Civilian"
+			      type="ItemFlags"/>
+		</Flags>
 		<Materials>
 			<Material id="Iron4"
 			          count="3"/>
@@ -1957,10 +1961,6 @@
 			<Swing damage_type="Cut"
 			       damage_factor="0.6"/>
 		</BladeData>
-		<Flags>
-			<Flag name="Civilian"
-			      type="ItemFlags"/>
-		</Flags>
 		<Materials>
 			<Material id="Iron2"
 			          count="3"/>
@@ -1984,10 +1984,6 @@
 			<Swing damage_type="Cut"
 			       damage_factor="0.8"/>
 		</BladeData>
-		<Flags>
-			<Flag name="Civilian"
-			      type="ItemFlags"/>
-		</Flags>
 		<Materials>
 			<Material id="Iron3"
 			          count="2"/>
@@ -2011,10 +2007,6 @@
 			<Swing damage_type="Cut"
 			       damage_factor="1.5"/>
 		</BladeData>
-		<Flags>
-			<Flag name="Civilian"
-			      type="ItemFlags"/>
-		</Flags>
 		<Materials>
 			<Material id="Iron6"
 			          count="2"/>
@@ -2038,10 +2030,6 @@
 			<Swing damage_type="Cut"
 			       damage_factor="0.6"/>
 		</BladeData>
-		<Flags>
-			<Flag name="Civilian"
-			      type="ItemFlags"/>
-		</Flags>
 		<Materials>
 			<Material id="Iron2"
 			          count="3"/>
@@ -2132,8 +2120,8 @@
 		<BladeData stack_amount="3"
 		           physics_material="metal_weapon"
 		           body_name="bo_sword_one_handed">
-			<Thrust damage_type="Pierce"
-			        damage_factor="0.8"/>
+			<!-- <Thrust damage_type="Pierce"
+			        damage_factor="0.8"/> -->
 			<Swing damage_type="Cut"
 			       damage_factor="1.3"/>
 		</BladeData>
@@ -2303,10 +2291,6 @@
 			<Swing damage_type="Cut"
 			       damage_factor="1.4"/>
 		</BladeData>
-		<Flags>
-			<Flag name="Civilian"
-			      type="ItemFlags"/>
-		</Flags>
 		<Materials>
 			<Material id="Iron5"
 			          count="3"/>
@@ -2434,10 +2418,6 @@
 			<Swing damage_type="Cut"
 			       damage_factor="1.5"/>
 		</BladeData>
-		<Flags>
-			<Flag name="Civilian"
-			      type="ItemFlags"/>
-		</Flags>
 		<Materials>
 			<Material id="Iron6"
 			          count="2"/>
@@ -2461,10 +2441,6 @@
 			<Swing damage_type="Cut"
 			       damage_factor="1.6"/>
 		</BladeData>
-		<Flags>
-			<Flag name="Civilian"
-			      type="ItemFlags"/>
-		</Flags>
 		<Materials>
 			<Material id="Iron6"
 			          count="3"/>
@@ -2800,10 +2776,6 @@
 			<Swing damage_type="Cut"
 			       damage_factor="0.4"/>
 		</BladeData>
-		<Flags>
-			<Flag name="Civilian"
-			      type="ItemFlags"/>
-		</Flags>
 		<Materials>
 			<Material id="Iron2"
 			          count="3"/>
@@ -2826,10 +2798,6 @@
 			<Swing damage_type="Cut"
 			       damage_factor="0.4"/>
 		</BladeData>
-		<Flags>
-			<Flag name="Civilian"
-			      type="ItemFlags"/>
-		</Flags>
 		<Materials>
 			<Material id="Iron2"
 			          count="3"/>
@@ -2852,10 +2820,6 @@
 			<Swing damage_type="Cut"
 			       damage_factor="1"/>
 		</BladeData>
-		<Flags>
-			<Flag name="Civilian"
-			      type="ItemFlags"/>
-		</Flags>
 		<Materials>
 			<Material id="Iron4"
 			          count="3"/>
@@ -2878,10 +2842,6 @@
 			<Swing damage_type="Cut"
 			       damage_factor="1"/>
 		</BladeData>
-		<Flags>
-			<Flag name="Civilian"
-			      type="ItemFlags"/>
-		</Flags>
 		<Materials>
 			<Material id="Iron5"
 			          count="3"/>
@@ -3061,10 +3021,6 @@
 			<Swing damage_type="Cut"
 			       damage_factor="0.6"/>
 		</BladeData>
-		<Flags>
-			<Flag name="Civilian"
-			      type="ItemFlags"/>
-		</Flags>
 		<Materials>
 			<Material id="Iron3"
 			          count="2"/>
@@ -3337,12 +3293,13 @@
 	               mesh="battania_noble_blade_2"
 	               culture="Culture.battania"
 	               length="93.2"
-	               weight="0.6"
-	               excluded_item_usage_features="thrust">
+	               weight="0.6">
 		<BladeData stack_amount="3"
 		           physics_material="metal_weapon"
 		           body_name="bo_sword_one_handed"
 		           holster_mesh="battania_noble_blade_2_scabbard_2">
+			<Thrust damage_type="Pierce"
+			       damage_factor="0.8"/>
 			<Swing damage_type="Cut"
 			       damage_factor="1.7"/>
 		</BladeData>
