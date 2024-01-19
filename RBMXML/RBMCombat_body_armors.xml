@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Items>
 	<Item id="long_desert_robe"
 	      name="{=bKBa7ahF}Long Simple Robe"
@@ -6,8 +6,8 @@
 	      culture="Culture.aserai"
 	      weight="0.6"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
+				   
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="5"
@@ -27,8 +27,8 @@
 	      culture="Culture.aserai"
 	      weight="14"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
+				   
 		<ItemComponent>
 			<Armor body_armor="13"
 			       leg_armor="13"
@@ -49,8 +49,7 @@
 	      weight="1.8"
 	      difficulty="0"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
@@ -69,8 +68,7 @@
 	      culture="Culture.aserai"
 	      weight="0.8"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
@@ -89,8 +87,7 @@
 	      culture="Culture.aserai"
 	      weight="1"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="8"
 			       leg_armor="8"
@@ -109,8 +106,7 @@
 	      culture="Culture.aserai"
 	      weight="0.5"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="5"
@@ -130,8 +126,7 @@
 	      culture="Culture.aserai"
 	      weight="0.7"
 	      appearance="3"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
@@ -151,8 +146,7 @@
 	      culture="Culture.aserai"
 	      weight="0.9"
 	      appearance="2"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="9"
 			       leg_armor="9"
@@ -172,8 +166,7 @@
 	      culture="Culture.aserai"
 	      weight="0.8"
 	      appearance="3"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
@@ -193,8 +186,7 @@
 	      culture="Culture.aserai"
 	      weight="0.8"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="11"
 			       leg_armor="11"
@@ -213,8 +205,7 @@
 	      culture="Culture.aserai"
 	      weight="1.1"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="8"
 			       leg_armor="8"
@@ -233,8 +224,7 @@
 	      culture="Culture.aserai"
 	      weight="0.9"
 	      appearance="2"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
@@ -253,8 +243,7 @@
 	      culture="Culture.aserai"
 	      weight="1"
 	      appearance="0.6"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
@@ -273,8 +262,7 @@
 	      culture="Culture.aserai"
 	      weight="1.1"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
@@ -293,8 +281,7 @@
 	      culture="Culture.aserai"
 	      weight="1.1"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
@@ -313,8 +300,7 @@
 	      culture="Culture.aserai"
 	      weight="0.9"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
@@ -333,8 +319,7 @@
 	      culture="Culture.aserai"
 	      weight="0.4"
 	      appearance="4"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
@@ -407,7 +392,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="leather_strips_over_padded_robe"
-	      name="{=iVataLxL}Leather Strips Over Padded Robe"
+	      name="{=iVataLxL}Leather Strips over Padded Robe"
 	      lod_atlas_index="9"
 	      subtype="body_armor"
 	      mesh="sarranid_gambeson_v1"
@@ -425,7 +410,8 @@
 			       modifier_group="cloth"
 			       material_type="Cloth"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags Civilian="true"
+		       UseTeamColor="true"/>
 	</Item>
 	<Item id="aserai_robe_c_chain"
 	      name="{=gSWtpl8a}Robe over Mail Shirt"
@@ -442,10 +428,9 @@
 			       has_gender_variations="true"
 			       covers_body="true"
 			       modifier_group="cloth"
-			       material_type="Cloth"/>
+			       material_type="Chainmail"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"
-		       Civilian="true"/>
+		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="long_padded_robe"
 	      name="{=0SsLGsXk}Long Padded Robe"
@@ -522,12 +507,12 @@
 			       has_gender_variations="true"
 			       covers_body="true"
 			       modifier_group="cloth"
-			       material_type="Cloth"/>
+			       material_type="Chainmail"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="desert_robe_over_mail"
-	      name="{=k71X3WNK}Robe Over Mail Hauberk"
+	      name="{=k71X3WNK}Robe over Mail Hauberk"
 	      lod_atlas_index="8"
 	      mesh="aserai_chain_tunic_a"
 	      culture="Culture.aserai"
@@ -542,11 +527,10 @@
 			       modifier_group="chain"
 			       material_type="Chainmail"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"
-		       Civilian="true"/>
+		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="desert_lamellar"
-	      name="Lamellar Over Mail Armor"
+	      name="{=xlLoyxXT}Lamellar Armor over Mail"
 	      subtype="body_armor"
 	      mesh="aserai_cavalry_armor"
 	      culture="Culture.aserai"
@@ -566,10 +550,10 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="sturgia_cavalry_armor"
-	      name="{=REYaHXQb}Sturgian Cavalry Armor"
+	      name="{=ALbtxxyC}Cavalry Lamellar Armor"
 	      subtype="body_armor"
 	      mesh="sturgia_cavalry_armor"
-	      culture="Culture.sturgia"
+	      culture="Culture.aserai"
 	      weight="19.4"
 	      difficulty="0"
 	      appearance="1.5"
@@ -586,7 +570,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="desert_scale_armor"
-	      name="Scale Over Mail Armor"
+	      name="{=VkRIefyW}Scale Armor over Mail"
 	      lod_atlas_index="3"
 	      mesh="aserai_scale_armor_b"
 	      culture="Culture.aserai"
@@ -604,7 +588,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="stitched_leather_over_mail"
-	      name="{=omLMiX89}Stitched Leather Over Mail"
+	      name="{=omLMiX89}Stitched Leather over Mail"
 	      lod_atlas_index="7"
 	      mesh="aserai_plated_skirt"
 	      culture="Culture.aserai"
@@ -642,7 +626,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="aserai_armor_02"
-	      name="{=eDMDUUfw}Aserai Chain Mail"
+	      name="{=blEEEOdy}Southern Chain Mail"
 	      lod_atlas_index="3"
 	      mesh="aserai_armor_02"
 	      culture="Culture.aserai"
@@ -660,7 +644,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="aserai_armor_02_b"
-	      name="{=DyXDcO36}Aserai Decorated Chain Mail"
+	      name="{=dAgxHUsJ}Southern Decorated Chain Mail"
 	      lod_atlas_index="3"
 	      mesh="aserai_armor_02_b"
 	      culture="Culture.aserai"
@@ -678,7 +662,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="aserai_scale_armor_on_cloth"
-	      name="{=*}Mastercrafted Southern Scale Mail"
+	      name="{=JbV0WoO7}Mastercrafted Southern Scale Mail"
 	      lod_atlas_index="3"
 	      mesh="aserai_scale_armor_on_cloth"
 	      culture="Culture.aserai"
@@ -696,7 +680,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="aserai_full_scale_armor_on_chain"
-	      name="{=*}Mastercrafted Southern Scale over Chain Hauberk"
+	      name="{=U7WGaQ45}Mastercrafted Southern Scale over Chain Hauberk"
 	      lod_atlas_index="3"
 	      mesh="aserai_full_scale_armor_on_chain"
 	      culture="Culture.aserai"
@@ -714,7 +698,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="aserai_scale_armor_on_chain"
-	      name="{=*}Mastercrafted Southern Scale over Chain Mail"
+	      name="{=2VZ10uRa}Mastercrafted Southern Scale over Chain Mail"
 	      lod_atlas_index="3"
 	      mesh="aserai_scale_armor_on_chain"
 	      culture="Culture.aserai"
@@ -732,7 +716,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="aserai_chain_plate_armor_a"
-	      name="{=*}Southern Reinforced Mail Armor"
+	      name="{=YTST4rdh}Southern Reinforced Mail Armor"
 	      lod_atlas_index="3"
 	      mesh="aserai_chain_plate_armor_a"
 	      culture="Culture.aserai"
@@ -750,7 +734,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="aserai_chain_plate_armor_b"
-	      name="{=*}Southern Reinforced Sleeveless Mail Armor"
+	      name="{=EvW5Xzt2}Southern Reinforced Sleeveless Mail Armor"
 	      lod_atlas_index="3"
 	      mesh="aserai_chain_plate_armor_b"
 	      culture="Culture.aserai"
@@ -768,7 +752,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="aserai_chain_plate_armor_c"
-	      name="{=*}Southern Reinforced Mail Vest"
+	      name="{=Mm1QAtPx}Southern Reinforced Mail Vest"
 	      lod_atlas_index="3"
 	      mesh="aserai_chain_plate_armor_c"
 	      culture="Culture.aserai"
@@ -786,7 +770,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="aserai_chain_plate_armor_d"
-	      name="{=*}Southern Reinforced Short Mail Armor"
+	      name="{=zVieddxB}Southern Reinforced Short Mail Armor"
 	      lod_atlas_index="3"
 	      mesh="aserai_chain_plate_armor_d"
 	      culture="Culture.aserai"
@@ -857,7 +841,8 @@
 			       material_type="Leather"/>
 		</ItemComponent>
 		<Flags DoesNotHideChest="true"
-		       UseTeamColor="true"/>
+		       UseTeamColor="true"
+		       Civilian="true"/>
 	</Item>
 	<Item id="armored_baggy_trunks"
 	      name="{=w6j8Oaai}Armored Baggy Trunks"
@@ -918,7 +903,8 @@
 			       modifier_group="leather"
 			       material_type="Leather"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true"
+		       Civilian="true"/>
 	</Item>
 	<Item id="burlap_waistcoat"
 	      name="{=mkoMUmLh}Burlap Waistcoat"
@@ -928,8 +914,7 @@
 	      weight="0.4"
 	      difficulty="0"
 	      appearance="0.3"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
@@ -963,18 +948,17 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="battania_dress_a"
-	      name="{=6Wkq14uk}Highland Peasant Dress"
+	      name="{=RUvI70xS}Plaid Dress"
 	      mesh="battania_dress_a"
 	      culture="Culture.battania"
 	      weight="0.9"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="8"
 			       leg_armor="8"
 			       arm_armor="6"
-			       has_gender_variations="false"
+			       has_gender_variations="true"
 			       covers_body="false"
 			       body_mesh_type="shoulders"
 			       modifier_group="cloth_unarmoured"
@@ -984,18 +968,17 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="battania_dress_b"
-	      name="{=DlHkNiJA}Highland Dress"
+	      name="{=yfjqWrUx}Woodland Commoner Dress"
 	      mesh="battania_dress_b"
 	      culture="Culture.battania"
 	      weight="0.8"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="8"
 			       leg_armor="8"
 			       arm_armor="6"
-			       has_gender_variations="false"
+			       has_gender_variations="true"
 			       covers_body="false"
 			       body_mesh_type="shoulders"
 			       modifier_group="cloth_unarmoured"
@@ -1005,18 +988,17 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="battania_dress_c"
-	      name="{=Tr3x7ynD}Highland Plaid Dress"
+	      name="{=DMciP5z3}Tartan Long Dress"
 	      mesh="battania_dress_c"
 	      culture="Culture.battania"
 	      weight="0.7"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="8"
 			       leg_armor="8"
 			       arm_armor="6"
-			       has_gender_variations="false"
+			       has_gender_variations="true"
 			       covers_body="true"
 			       modifier_group="cloth_unarmoured"
 			       material_type="Cloth"/>
@@ -1025,7 +1007,7 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="battania_civil_a"
-	      name="{=KaZY0Ixp}Highland Tunic"
+	      name="{=l5JDrvbW}Tartan Tunic"
 	      mesh="battania_civil_a"
 	      culture="Culture.battania"
 	      weight="0.6"
@@ -1043,7 +1025,7 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="battania_civil_b"
-	      name="{=kanUXCLc}Highland Villager Tunic"
+	      name="{=qH5VV8In}Villager Leather Tunic"
 	      mesh="battania_civil_b"
 	      culture="Culture.battania"
 	      weight="0.4"
@@ -1061,7 +1043,7 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="battania_civil_c"
-	      name="{=D8xeIXcI}Highland Townsmans Tunic"
+	      name="{=mT1bvZxM}Townsman Luxury Coat"
 	      mesh="battania_civil_c"
 	      culture="Culture.battania"
 	      weight="0.6"
@@ -1079,13 +1061,12 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="battania_female_civil_a"
-	      name="{=DlHkNiJA}Highland Dress"
+	      name="{=7CPMZKVY}Tartan Dress"
 	      mesh="battania_female_civil_a"
 	      culture="Culture.battania"
 	      weight="0.7"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="8"
 			       leg_armor="8"
@@ -1099,13 +1080,12 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="battania_female_civil_b"
-	      name="{=QMAGJdyN}Highland Villager Dress"
+	      name="{=MXpeQ7jp}Villager Thick Dress"
 	      mesh="battania_female_civil_b"
 	      culture="Culture.battania"
 	      weight="0.7"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="8"
 			       leg_armor="8"
@@ -1119,7 +1099,7 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="fur_armor_with_strap"
-	      name="{=eWf7bFGo}Fur Armor With Strap"
+	      name="{=eWf7bFGo}Fur Armor with Strap"
 	      mesh="pict_armor_b"
 	      subtype="body_armor"
 	      culture="Culture.battania"
@@ -1179,7 +1159,7 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="highland_cloth"
-	      name="{=Isioqvt9}Highland Cloth"
+	      name="{=j1pFE61w}Woodland Cloth Armor"
 	      subtype="body_armor"
 	      mesh="battania_cloth_armor_a"
 	      culture="Culture.battania"
@@ -1200,7 +1180,7 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="battanian_savage_armor"
-	      name="{=DJjCCQ59}Battanian Savage Armor"
+	      name="{=63jCqJPA}Wildling Armor"
 	      subtype="body_armor"
 	      mesh="battanian_savage_armor"
 	      culture="Culture.battania"
@@ -1222,7 +1202,7 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="western_scale_mail"
-	      name="{=V7U0fFU9}Highland Scale Mail"
+	      name="{=qrCVMyEk}Rough Scale Mail"
 	      mesh="vlandia_scale_armor"
 	      culture="Culture.battania"
 	      weight="14"
@@ -1239,7 +1219,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="kilt_over_plated_leather"
-	      name="{=fptsl0Qn}Kilt Over Plated Leather"
+	      name="{=fptsl0Qn}Kilt over Plated Leather"
 	      mesh="leather_armor_kilt"
 	      subtype="body_armor"
 	      culture="Culture.battania"
@@ -1258,7 +1238,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="battania_woodland_chainmail"
-	      name="{=qw2oyv1j}Woodland Chainmail"
+	      name="{=CcWpkREW}Heavy Mail Shirt with Wide Belt"
 	      subtype="body_armor"
 	      mesh="battania_woodland_chainmail"
 	      culture="Culture.battania"
@@ -1297,7 +1277,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="battania_mercenary_armor"
-	      name="{=ZOoxd36t}Highland Mercenary Armor"
+	      name="{=sAml91Z3}Luxury Brigandine"
 	      subtype="body_armor"
 	      mesh="battania_mercenary_armor"
 	      culture="Culture.battania"
@@ -1317,7 +1297,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="scale_armor"
-	      name="{=EELLBAbX}Highland Scale Armor"
+	      name="{=4eOHPops}Rugged Scale Armor"
 	      subtype="body_armor"
 	      mesh="battania_scale_armor_a"
 	      culture="Culture.battania"
@@ -1337,7 +1317,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="battanian_chainmail_armor_a"
-	      name="{=ZYQrmlKH}Highland Chainmail"
+	      name="{=6fA31IxF}Heavy Mail Vest"
 	      subtype="body_armor"
 	      mesh="battanian_chainmail_armor_a"
 	      culture="Culture.battania"
@@ -1377,7 +1357,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="battanian_chainmail_armor_c"
-	      name="{=MTB2BunA}Highland Reinforced Mail Over Tartan"
+	      name="{=MTB2BunA}Highland Reinforced Mail over Tartan"
 	      subtype="body_armor"
 	      mesh="battanian_chainmail_armor_c"
 	      culture="Culture.battania"
@@ -1389,16 +1369,15 @@
 			<Armor body_armor="45"
 			       leg_armor="20"
 			       arm_armor="15"
-			       has_gender_variations="false"
+			       has_gender_variations="true"
 			       covers_body="true"
 			       modifier_group="chain"
 			       material_type="Chainmail"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"
-		       Civilian="true"/>
+		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="battanian_chainmail_armor_d"
-	      name="{=WbjNNE8Z}Highland Reinforced Fian Mail"
+	      name="{=Gcrqt90P}Highland Reinforced Mail"
 	      subtype="body_armor"
 	      mesh="battanian_chainmail_armor_d"
 	      culture="Culture.battania"
@@ -1418,7 +1397,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="battania_noble_armor"
-	      name="{=mMGfhc3M}Highland Noble Armor"
+	      name="{=p9cQARqf}Highborn Mail Armor"
 	      subtype="body_armor"
 	      mesh="battania_noble_armor"
 	      culture="Culture.battania"
@@ -1438,7 +1417,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="battania_warlord_armor"
-	      name="{=Auwoehal}Highland Warlord Armor"
+	      name="{=erlrhK2a}Scale Warlord Armor"
 	      subtype="body_armor"
 	      mesh="battania_warlord_armor"
 	      culture="Culture.battania"
@@ -1458,7 +1437,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="battanian_scale_armor_a"
-	      name="Highland Scale Over Mail Armor"
+	      name="{=QlvnKQbc}Highland Scale Armor over Mail Armor"
 	      subtype="body_armor"
 	      mesh="battanian_scale_armor_a"
 	      culture="Culture.battania"
@@ -1478,7 +1457,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="battanian_scale_armor_b"
-	      name="{=oJKXjRJ3}Highland Scale Armor Over Cloth"
+	      name="{=oJKXjRJ3}Highland Scale Armor over Cloth"
 	      subtype="body_armor"
 	      mesh="battanian_scale_armor_b"
 	      culture="Culture.battania"
@@ -1498,7 +1477,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="battania_light_armor_a"
-	      name="{=AkItuVRh}Battanian Tartan with Chest Plate"
+	      name="{=aSJbMKdb}Highland Tartan with Chest Plate"
 	      subtype="body_armor"
 	      mesh="battania_light_armor_a"
 	      culture="Culture.battania"
@@ -1516,11 +1495,10 @@
 			       modifier_group="cloth"
 			       material_type="Cloth"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"
-		       Civilian="true"/>
+		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="battania_light_armor_b"
-	      name="{=nXajiyWj}Battanian Tartan"
+	      name="{=zG4Ms3f4}Highland Tartan"
 	      subtype="body_armor"
 	      mesh="battania_light_armor_b"
 	      culture="Culture.battania"
@@ -1538,10 +1516,11 @@
 			       modifier_group="cloth"
 			       material_type="Cloth"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true"
+		       Civilian="true"/>
 	</Item>
 	<Item id="battania_light_armor_c"
-	      name="{=aiER6j1y}Battanian Long Tartan"
+	      name="{=kaR27kWL}Highland Long Tartan"
 	      subtype="body_armor"
 	      mesh="battania_light_armor_c"
 	      culture="Culture.battania"
@@ -1558,10 +1537,11 @@
 			       modifier_group="chain"
 			       material_type="Chainmail"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true"
+		       Civilian="true"/>
 	</Item>
 	<Item id="battania_light_armor_d"
-	      name="{=ibtt8Chp}Battanian Kilt over Tartan Trousers"
+	      name="{=hab2DsOW}Highland Kilt over Tartan Trousers"
 	      subtype="body_armor"
 	      mesh="battania_light_armor_d"
 	      culture="Culture.battania"
@@ -1579,7 +1559,8 @@
 			       material_type="Chainmail"/>
 		</ItemComponent>
 		<Flags DoesNotHideChest="true"
-		       UseTeamColor="true"/>
+		       UseTeamColor="true"
+		       Civilian="true"/>
 	</Item>
 	<Item id="battania_light_armor_e"
 	      name="{=yDykmlS7}Tartan Toga"
@@ -1626,14 +1607,13 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="steppe_armor"
-	      name="{=oGVGhYeP}Eastern Steppe Armor"
+	      name="{=xQUi0F0k}Striped Coat"
 	      mesh="armor_hun_a"
 	      culture="Culture.khuzait"
 	      subtype="body_armor"
 	      weight="0.6"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="11"
 			       leg_armor="11"
@@ -1646,15 +1626,14 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="steppe_robe"
-	      name="{=C7oo0zAY}Eastern Steppe Robe"
+	      name="{=HVJ9ax8Z}Steppe Robe"
 	      mesh="mongol_cloth_a"
 	      culture="Culture.khuzait"
 	      subtype="body_armor"
 	      weight="0.4"
 	      difficulty="0"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="5"
@@ -1687,18 +1666,17 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="khuzait_dress"
-	      name="{=XyXSx0R8}Common Eastern Dress"
+	      name="{=7uJkrHeg}Aproned Feminine Coat"
 	      mesh="khuzait_dress"
 	      culture="Culture.khuzait"
 	      weight="0.8"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="8"
 			       leg_armor="8"
 			       arm_armor="6"
-			       has_gender_variations="false"
+			       has_gender_variations="true"
 			       covers_body="true"
 			       modifier_group="cloth_unarmoured"
 			       material_type="Cloth"/>
@@ -1707,18 +1685,17 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="khuzait_dress_b"
-	      name="{=7sgW3eHd}Eastern Dress with Fur"
+	      name="{=NMSEAA4A}Dress with Fur"
 	      mesh="khuzait_dress_b"
 	      culture="Culture.khuzait"
 	      weight="0.9"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="13"
 			       leg_armor="13"
 			       arm_armor="5"
-			       has_gender_variations="false"
+			       has_gender_variations="true"
 			       covers_body="true"
 			       modifier_group="cloth_unarmoured"
 			       material_type="Cloth"/>
@@ -1727,18 +1704,17 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="steppe_dress"
-	      name="{=KrCGcsmJ}Eastern Envelope Dress"
+	      name="{=QfqwaRZ2}Envelope Dress"
 	      mesh="female_khuzait_dress"
 	      culture="Culture.khuzait"
 	      weight="0.6"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="5"
 			       arm_armor="5"
-			       has_gender_variations="false"
+			       has_gender_variations="true"
 			       covers_body="true"
 			       modifier_group="cloth_unarmoured"
 			       material_type="Cloth"/>
@@ -1747,7 +1723,7 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="khuzait_civil_coat"
-	      name="{=wEs2uEmb}Eastern Rich Coat"
+	      name="{=6VW6zVa3}Luxury Coat"
 	      mesh="khuzait_civil_coat"
 	      culture="Culture.khuzait"
 	      weight="2.7"
@@ -1766,7 +1742,7 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="khuzait_civil_coat_b"
-	      name="{=YMtHkAUj}Eastern Thick Coat"
+	      name="{=S1XL4KJh}Luxury Thick Coat"
 	      mesh="khuzait_civil_coat_b"
 	      culture="Culture.khuzait"
 	      weight="2.7"
@@ -1800,12 +1776,12 @@
 			       has_gender_variations="false"
 			       covers_body="true"
 			       modifier_group="cloth"
-			       material_type="Cloth"/>
+			       material_type="Leather"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="studded_steppe_leather"
-	      name="{=o24Fpzvu}Studded Steppe Leather"
+	      name="{=Qd0tQLpA}Studded Leather Armor"
 	      subtype="body_armor"
 	      mesh="khuzait_leather_armor"
 	      culture="Culture.khuzait"
@@ -1843,7 +1819,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="crude_leather_armor"
-	      name="{=JslRu3rX}Crude Eastern Leather Armor"
+	      name="{=j2IVY6G6}Crude Hide Armor"
 	      mesh="bandit_5"
 	      culture="Culture.khuzait"
 	      weight="2.4"
@@ -1858,10 +1834,10 @@
 			       modifier_group="leather"
 			       material_type="Leather"/>
 		</ItemComponent>
-		<Flags/>
+		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="khuzait_belt_leather"
-	      name="{=DuLFJbXJ}Eastern Leather With Belt"
+	      name="{=4B2i8oxo}Coat with Mirrored Belt"
 	      mesh="khuzait_belt_leather"
 	      culture="Culture.khuzait"
 	      weight="2.4"
@@ -1880,7 +1856,7 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="khuzait_fortified_armor"
-	      name="{=vU1ibFrY}Eastern Reinforced Armor"
+	      name="{=KVG0Tzaa}Reinforced Mirror Armor"
 	      mesh="khuzait_fortified_armor"
 	      culture="Culture.khuzait"
 	      weight="2.4"
@@ -1899,7 +1875,7 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="khuzait_sturdy_armor"
-	      name="{=bvgHgb6E}Eastern Mirrored Leather Armor"
+	      name="{=1WLiLoL5}Mirrored Leather Armor"
 	      mesh="khuzait_sturdy_armor"
 	      culture="Culture.khuzait"
 	      weight="2.4"
@@ -1917,7 +1893,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="eastern_stitched_leather_coat"
-	      name="{=Mr06Juj5}Eastern Stitched Leather Coat"
+	      name="{=PeozdF9h}Stitched Cured Leather Coat"
 	      mesh="khuzait_leather_plate"
 	      culture="Culture.khuzait"
 	      weight="13.9"
@@ -1934,7 +1910,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="leather_lamellar_armor"
-	      name="{=rOpxDHXL}Eastern Leather Lamellar Armor"
+	      name="{=cjhhuTZD}Cured Leather Lamellar Armor"
 	      mesh="leather_lamellar_armor"
 	      culture="Culture.khuzait"
 	      weight="2.6"
@@ -1951,7 +1927,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="studded_leather_over_aketon"
-	      name="{=dS4zm0UT}Studded Leather Over Aketon"
+	      name="{=dS4zm0UT}Studded Leather over Aketon"
 	      mesh="crossbow_armor_leather"
 	      culture="Culture.khuzait"
 	      weight="3.8"
@@ -1968,7 +1944,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="eastern_lamellar_armor"
-	      name="{=6qaNQAND}Eastern Lamellar Armor"
+	      name="{=tG1Q8r2u}Lancer Lamellar Armor"
 	      mesh="metal_lamellar_armor"
 	      culture="Culture.khuzait"
 	      weight="16"
@@ -1982,11 +1958,10 @@
 			       modifier_group="plate"
 			       material_type="Plate"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"
-		       Civilian="true"/>
+		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="khuzait_lamellar_strapped"
-	      name="{=VMqzvfDO}Eastern Strapped Lamellar Armor"
+	      name="{=jimBaHvz}Reinforced Leather Armor"
 	      mesh="khuzait_lamellar_strap"
 	      culture="Culture.khuzait"
 	      weight="15"
@@ -2004,7 +1979,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="eastern_plated_leather_vest"
-	      name="{=uZ1sIlSQ}Eastern Plated Leather Vest"
+	      name="{=BbhGL8XT}Brigandine Vest"
 	      mesh="plated_leather_armor_a"
 	      culture="Culture.khuzait"
 	      weight="10"
@@ -2021,7 +1996,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="brass_lamellar_over_mail"
-	      name="{=ItZt3amR}Eastern Brass Lamellar Over Mail"
+	      name="{=CIDdPt1I}Bronze Lamellar over Mail"
 	      mesh="brass_lamellar"
 	      culture="Culture.khuzait"
 	      weight="23"
@@ -2038,7 +2013,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="eastern_plated_leather"
-	      name="{=S0IkfoDo}Eastern Plated Leather"
+	      name="{=FDEIHpIN}Mirrored Brigandine Armor"
 	      mesh="plated_leather_armor_b"
 	      culture="Culture.khuzait"
 	      weight="18"
@@ -2080,8 +2055,7 @@
 	      weight="0.6"
 	      difficulty="0"
 	      appearance="0.3"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="5"
@@ -2094,14 +2068,13 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="cloth_tunic"
-	      name="{=uDrT6v7a}Western Cloth Tunic"
+	      name="{=OJIRIm4j}Simple Cloth Tunic"
 	      mesh="clothing_a"
 	      culture="Culture.vlandia"
 	      subtype="body_armor"
 	      weight="0.4"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="5"
@@ -2119,8 +2092,7 @@
 	      culture="Culture.vlandia"
 	      weight="0.6"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="8"
 			       leg_armor="8"
@@ -2140,8 +2112,7 @@
 	      weight="0.4"
 	      difficulty="0"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="5"
@@ -2154,18 +2125,17 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="vlandian_noble_woman_dress"
-	      name="{=CEj2Rfh5}Western Noble Dress"
+	      name="{=pbxbCnVy}Silken Noble Dress"
 	      mesh="vlandian_noble_woman_dress"
 	      culture="Culture.vlandia"
 	      weight="0.6"
 	      appearance="4"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="5"
 			       arm_armor="5"
-			       has_gender_variations="false"
+			       has_gender_variations="true"
 			       covers_body="false"
 			       body_mesh_type="shoulders"
 			       modifier_group="cloth_unarmoured"
@@ -2175,18 +2145,17 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="vlandian_woman_dress"
-	      name="{=wMO0hoqC}Western Common Dress"
+	      name="{=qPm3xaiP}Aproned Dress"
 	      mesh="vlandian_woman_dress"
 	      culture="Culture.vlandia"
 	      weight="0.7"
 	      appearance="2"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="6"
 			       arm_armor="5"
-			       has_gender_variations="false"
+			       has_gender_variations="true"
 			       covers_body="false"
 			       body_mesh_type="shoulders"
 			       modifier_group="cloth_unarmoured"
@@ -2196,18 +2165,17 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="vlandian_corset_dress"
-	      name="{=iUjgXGNn}Western Corseted Dress"
+	      name="{=4eSEJor3}Corseted Dress"
 	      mesh="vlandian_corset_dress"
 	      culture="Culture.vlandia"
 	      weight="0.5"
 	      appearance="3"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="6"
 			       arm_armor="5"
-			       has_gender_variations="false"
+			       has_gender_variations="true"
 			       covers_body="true"
 			       modifier_group="cloth_unarmoured"
 			       material_type="Cloth"/>
@@ -2216,13 +2184,12 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="monk_robe"
-	      name="{=QuaE76ua}Scholars Robe"
+	      name="{=QuaE76ua}Scholar Robe"
 	      mesh="monk_robe"
 	      culture="Culture.vlandia"
 	      weight="0.5"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="6"
@@ -2253,7 +2220,7 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="padded_coat"
-	      name="{=WH7bbK6G}Western Padded Coat"
+	      name="{=QbfOXJas}Padded Footman Coat"
 	      subtype="body_armor"
 	      mesh="padded_coat_a"
 	      culture="Culture.vlandia"
@@ -2273,7 +2240,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="leather_coat_over_cloth"
-	      name="{=wKucIANJ}Leather Coat Over Cloth"
+	      name="{=wKucIANJ}Leather Coat over Cloth"
 	      mesh="walker_costume_b"
 	      subtype="body_armor"
 	      culture="Culture.vlandia"
@@ -2294,7 +2261,7 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="gambeson_b"
-	      name="{=NVV1j1E4}Western Gambeson"
+	      name="{=aQN4Dlx2}Aketon"
 	      mesh="gambeson_b"
 	      culture="Culture.vlandia"
 	      weight="2"
@@ -2309,13 +2276,14 @@
 			       modifier_group="cloth"
 			       material_type="Cloth"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags Civilian="true"
+		       UseTeamColor="true"/>
 	</Item>
 	<Item id="aketon"
-	      name="{=21U7JTFv}Western Aketon"
+	      name="{=7b8Cwogx}Heavy Aketon"
 	      mesh="crossbow_armor"
 	      culture="Culture.vlandia"
-	      weight="12.4"
+	      weight="2.4"
 	      appearance="1"
 	      Type="BodyArmor">
 		<ItemComponent>
@@ -2329,7 +2297,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="leather_coat"
-	      name="{=o0ZuY9Ux}Western Leather Coat"
+	      name="{=ZqTFQeai}Leather Tunic"
 	      subtype="body_armor"
 	      mesh="leather_coat"
 	      culture="Culture.vlandia"
@@ -2450,7 +2418,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="vlandia_chainmail"
-	      name="{=8TbraEGR}Western Chainmail"
+	      name="{=atSRQkCE}Heavy Mail Hauberk"
 	      mesh="vlandia_chainmail_a"
 	      culture="Culture.vlandia"
 	      weight="10"
@@ -2468,7 +2436,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="hauberk"
-	      name="Western Double Mail Hauberk"
+	      name="{=CZvGrvzY}Double Mail Hauberk"
 	      subtype="body_armor"
 	      mesh="mail_hauberk"
 	      culture="Culture.vlandia"
@@ -2485,10 +2453,10 @@
 			       modifier_group="chain"
 			       material_type="Chainmail"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="false"/>
 	</Item>
 	<Item id="white_coat_over_mail"
-	      name="{=YfB0SJqY}White Tabard Over Mail"
+	      name="{=YxglkaXU}White Tabard over Mail Hauberk"
 	      subtype="body_armor"
 	      mesh="templar_a_white"
 	      culture="Culture.vlandia"
@@ -2505,11 +2473,10 @@
 			       modifier_group="chain"
 			       material_type="Chainmail"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"
-		       Civilian="true"/>
+		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="red_coat_over_mail"
-	      name="{=jsFgjWOj}Red Tabard Over Mail"
+	      name="{=aM2EPdXj}Red Tabard over Mail Hauberk"
 	      subtype="body_armor"
 	      mesh="templar_a_red"
 	      culture="Culture.vlandia"
@@ -2526,7 +2493,6 @@
 			       modifier_group="chain"
 			       material_type="Chainmail"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
 	</Item>
 	<Item id="veteran_mercenary_armor"
 	      name="{=EezWSI6v}Fortified Mercenary Armor"
@@ -2549,7 +2515,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="mail_shirt"
-	      name="{=aGkXbDlr}Western Mail Shirt"
+	      name="{=GzgUzrFY}Mail Shirt"
 	      mesh="armor_roman_mail_shirt"
 	      culture="Culture.vlandia"
 	      subtype="body_armor"
@@ -2568,7 +2534,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="plated_leather_coat"
-	      name="{=8ulJswRY}Plated Leather Coat"
+	      name="{=OvlG2Vu1}Rough Brigandine"
 	      subtype="body_armor"
 	      mesh="cop_a"
 	      culture="Culture.vlandia"
@@ -2588,7 +2554,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="coat_of_plates_over_mail"
-	      name="{=p949oNWk}Coat Of Plates Over Mail"
+	      name="{=PtfbqMeg}Brigandine over Mail"
 	      mesh="tunic_ironplate_armor"
 	      subtype="body_armor"
 	      culture="Culture.vlandia"
@@ -2607,7 +2573,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="banded_leather_over_mail"
-	      name="{=iAWzr8Q0}Banded Leather Over Mail"
+	      name="{=iAWzr8Q0}Banded Leather over Mail"
 	      mesh="vlandia_leather_armor"
 	      culture="Culture.vlandia"
 	      weight="8.6"
@@ -2624,15 +2590,14 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="northern_tunic"
-	      name="{=7yGwvnUA}Northern Tunic"
+	      name="{=W58TN2g5}Varyag Tunic"
 	      subtype="body_armor"
 	      mesh="sturgia_costume_j"
 	      culture="Culture.sturgia"
 	      weight="0.4"
 	      difficulty="0"
 	      appearance="0.6"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="5"
@@ -2646,15 +2611,14 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="nordic_tunic"
-	      name="{=8cM840mh}Northern Luxery Tunic"
+	      name="{=9aehD627}Luxury Tunic"
 	      subtype="body_armor"
 	      mesh="sturgia_costume_a"
 	      culture="Culture.sturgia"
 	      weight="0.6"
 	      difficulty="0"
 	      appearance="0.6"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
@@ -2668,15 +2632,14 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="tundra_tunic"
-	      name="{=Im7wOGaC}Northern Belted Tunic"
+	      name="{=ya4i8G3y}Belted Tunic"
 	      subtype="body_armor"
 	      mesh="fur_vaegir_b"
 	      culture="Culture.sturgia"
 	      weight="0.3"
 	      difficulty="0"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="8"
 			       leg_armor="8"
@@ -2698,8 +2661,7 @@
 	      weight="0.4"
 	      difficulty="0"
 	      appearance="0.3"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="9"
 			       leg_armor="9"
@@ -2712,18 +2674,17 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="northern_dress"
-	      name="{=a1KxyGOj}Northern Dress"
+	      name="{=DUp0MKZQ}Cold Weather Dress"
 	      mesh="female_peasant_dress_d"
 	      culture="Culture.sturgia"
 	      weight="0.7"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="6"
 			       arm_armor="5"
-			       has_gender_variations="false"
+			       has_gender_variations="true"
 			       covers_body="true"
 			       modifier_group="cloth_unarmoured"
 			       material_type="Cloth"/>
@@ -2737,13 +2698,12 @@
 	      culture="Culture.sturgia"
 	      weight="0.6"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="5"
 			       arm_armor="5"
-			       has_gender_variations="false"
+			       has_gender_variations="true"
 			       covers_body="false"
 			       body_mesh_type="shoulders"
 			       modifier_group="cloth_unarmoured"
@@ -2753,17 +2713,17 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="cut_dress"
-	      name="{=bevik0LU}Cut Dress"
+	      name="{=mzc6SKeH}Frilled Dress"
 	      mesh="female_tavern_wench_dress_a"
 	      culture="Culture.sturgia"
 	      weight="0.6"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="6"
-			       has_gender_variations="false"
+				   arm_armor="0"
+			       has_gender_variations="true"
 			       covers_body="false"
 			       modifier_group="cloth_unarmoured"
 			       material_type="Cloth"/>
@@ -2772,17 +2732,16 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="cut_dress_with_pouch"
-	      name="{=deA729dQ}Cut Dress With Pouch"
+	      name="{=deA729dQ}Cut Dress with Pouch"
 	      mesh="female_tavern_wench_dress_b"
 	      culture="Culture.sturgia"
 	      weight="0.5"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
-			       has_gender_variations="false"
+			       has_gender_variations="true"
 			       covers_body="false"
 			       modifier_group="cloth_unarmoured"
 			       material_type="Cloth"/>
@@ -2796,13 +2755,12 @@
 	      culture="Culture.sturgia"
 	      weight="0.5"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="5"
 			       arm_armor="5"
-			       has_gender_variations="false"
+			       has_gender_variations="true"
 			       covers_body="true"
 			       modifier_group="cloth_unarmoured"
 			       material_type="Cloth"/>
@@ -2816,13 +2774,12 @@
 	      culture="Culture.sturgia"
 	      weight="0.5"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="5"
 			       arm_armor="5"
-			       has_gender_variations="false"
+			       has_gender_variations="true"
 			       covers_body="true"
 			       modifier_group="cloth_unarmoured"
 			       material_type="Cloth"/>
@@ -2831,13 +2788,12 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="heavy_nordic_tunic"
-	      name="{=KHFQdxvL}Heavy Northern Tunic"
+	      name="{=CAO0bycV}Heavy Tunic"
 	      mesh="sturgia_costume_e"
 	      culture="Culture.sturgia"
 	      weight="1"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="11"
 			       leg_armor="11"
@@ -2851,15 +2807,14 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="light_tunic"
-	      name="{=7yGwvnUA}Light Tunic"
+	      name="{=JCdVJYnQ}Light Tunic"
 	      subtype="body_armor"
 	      mesh="sturgia_light_armor_a"
 	      culture="Culture.sturgia"
 	      weight="0.4"
 	      difficulty="0"
 	      appearance="0.6"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="13"
 			       leg_armor="13"
@@ -2873,15 +2828,14 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="fur_trimmed_tunic"
-	      name="{=TAczhIzX}Northern Fur Trimmed Tunic"
+	      name="{=SvYpE52J}Fur Trimmed Tunic"
 	      subtype="body_armor"
 	      mesh="sturgia_light_armor_c"
 	      culture="Culture.sturgia"
 	      weight="0.8"
 	      difficulty="0"
 	      appearance="0.6"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="8"
 			       leg_armor="8"
@@ -2895,15 +2849,14 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="fur_trimmed_short_tunic"
-	      name="{=7yGwvnUA}Fur Trimmed Short Tunic"
+	      name="{=VaqBBaQu}Fur Trimmed Short Tunic"
 	      subtype="body_armor"
 	      mesh="sturgia_light_armor_d"
 	      culture="Culture.sturgia"
 	      weight="0.4"
 	      difficulty="0"
 	      appearance="0.6"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="5"
@@ -2924,8 +2877,7 @@
 	      weight="0.6"
 	      difficulty="0"
 	      appearance="0.6"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="8"
 			       leg_armor="8"
@@ -2939,20 +2891,20 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="sturgia_light_tunic"
-	      name="{=7yGwvnUA}Long Tunic"
+	      name="{=lB4UF1GT}Long Tunic"
 	      subtype="body_armor"
 	      mesh="sturgia_light_armor_b"
 	      culture="Culture.sturgia"
 	      weight="0.4"
 	      difficulty="0"
 	      appearance="0.6"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="5"
 			       arm_armor="5"
 			       has_gender_variations="true"
+			       covers_body="true"
 			       modifier_group="cloth_unarmoured"
 			       material_type="Cloth"/>
 		</ItemComponent>
@@ -2960,7 +2912,7 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="nordic_sloven_leather"
-	      name="{=ln6ZboT7}Northern Sloven Leather"
+	      name="{=FRWm800F}Sloven Leather"
 	      mesh="nordic_sloven_c"
 	      culture="Culture.sturgia"
 	      weight="2.9"
@@ -2978,15 +2930,14 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="heavy_nordic_coat"
-	      name="{=FaWA8c50}Northern Heavy Coat"
+	      name="{=SsCM14Xu}Sleeved Heavy Tunic"
 	      subtype="body_armor"
 	      mesh="sturgia_costume_d"
 	      culture="Culture.sturgia"
 	      weight="0.9"
 	      difficulty="0"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="11"
 			       leg_armor="11"
@@ -3000,7 +2951,7 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="northern_padded_gambeson"
-	      name="{=EXasg15J}Northern Padded Gambeson"
+	      name="{=fwxHsC1h}Short Gambeson over Tunic"
 	      mesh="sturgia_costume_c"
 	      culture="Culture.sturgia"
 	      weight="1.5"
@@ -3019,7 +2970,7 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="northern_padded_cloth"
-	      name="{=3BGHFFsL}Northern Padded Cloth"
+	      name="{=vCywYDmp}Light Padded Armor"
 	      subtype="body_armor"
 	      mesh="sturgia_costume_g"
 	      culture="Culture.sturgia"
@@ -3040,7 +2991,7 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="nordic_padded_cloth"
-	      name="{=ybpZdt9S}Northern Layered Cloth"
+	      name="{=WLJOnehi}Reinforced Thick Tunic"
 	      mesh="sturgia_costume_l"
 	      culture="Culture.sturgia"
 	      weight="1.1"
@@ -3059,7 +3010,7 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="northern_leather_vest"
-	      name="{=JK7uQLqb}Northern Leather Vest"
+	      name="{=C8bVbM65}Tunic with Leather Vest"
 	      mesh="sturgia_costume_m"
 	      culture="Culture.sturgia"
 	      weight="0.9"
@@ -3098,7 +3049,7 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="nordic_sloven"
-	      name="{=C2Z43pzq}Northern Leather Over Heavy Cloth"
+	      name="{=c7wcTevc}Leather Armor over Heavy Cloth"
 	      subtype="body_armor"
 	      mesh="nordic_sloven_b"
 	      culture="Culture.sturgia"
@@ -3139,7 +3090,7 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="northern_leather_tabard"
-	      name="{=h3vqV5Qy}Northern Leather Tabard"
+	      name="{=0a6Vz7wi}Leather Tabard"
 	      mesh="sturgia_leather_brass"
 	      culture="Culture.sturgia"
 	      weight="1.7"
@@ -3156,7 +3107,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="northern_lamellar_armor"
-	      name="{=12PL4971}Northern Lamellar Armor"
+	      name="{=hXB6gvD2}Light Lamellar Shirt"
 	      subtype="body_armor"
 	      mesh="sturgia_costume_h"
 	      culture="Culture.sturgia"
@@ -3176,7 +3127,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="decorated_nordic_hauberk"
-	      name="{=sfPB9ro3}Decorated Northern Hauberk"
+	      name="{=bAidg8fV}Huscarl Decorated Mail Shirt"
 	      subtype="body_armor"
 	      mesh="sturgia_costume_f"
 	      culture="Culture.sturgia"
@@ -3193,11 +3144,10 @@
 			       modifier_group="chain"
 			       material_type="Chainmail"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"
-		       Civilian="true"/>
+		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="nordic_sloven_over_mail"
-	      name="{=yFjmkALW}Northern Leather Tabard Over Mail"
+	      name="{=6XxiMU52}Leather Tabard over Mail"
 	      mesh="nordic_sloven_a"
 	      culture="Culture.sturgia"
 	      weight="8.4"
@@ -3215,7 +3165,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="nordic_hauberk"
-	      name="{=XTqplCsv}Northern Hauberk"
+	      name="{=1jX7yxSW}Huscarl Mail Shirt"
 	      subtype="body_armor"
 	      mesh="sturgia_costume_b"
 	      culture="Culture.sturgia"
@@ -3254,7 +3204,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="northern_coat_of_plates"
-	      name="{=WST7ftTa}Northern Coat Of Plates"
+	      name="{=w4RuDABQ}Coat Of Plates"
 	      mesh="sturgia_plate_armor"
 	      culture="Culture.sturgia"
 	      weight="20"
@@ -3271,7 +3221,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="nordic_lamellar_armor"
-	      name="{=uHIVkxVt}Northern Bronze Scale Vest Over Gambeson"
+	      name="{=wRZ3LExm}Bronze Scale Vest over Gambeson"
 	      subtype="body_armor"
 	      mesh="sturgia_costume_i"
 	      culture="Culture.sturgia"
@@ -3291,7 +3241,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="nordic_lamellar_vest"
-	      name="{=UEestBsE}Northern Bronze Scale Vest"
+	      name="{=QaTkvy56}Bronze Scale Vest"
 	      mesh="sturgia_costume_k"
 	      culture="Culture.sturgia"
 	      weight="12"
@@ -3309,7 +3259,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="sturgian_fortified_armor"
-	      name="Brigandine Over Mail Shirt"
+	      name="{=KwbnODoT}Brigandine over Hauberk"
 	      subtype="body_armor"
 	      mesh="sturgian_fortified_armor"
 	      culture="Culture.vlandia"
@@ -3329,7 +3279,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="northern_brass_lamellar_over_mail"
-	      name="{=ojhEwC8M}Northern Brass Lamellar Over Mail"
+	      name="{=MFYaL8FL}Heavy Lamellar over Mail"
 	      mesh="brass_lamellar_white"
 	      culture="Culture.sturgia"
 	      weight="23.6"
@@ -3346,7 +3296,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="sturgian_lamellar_base"
-	      name="Northern Light Lamellar Over Mail"
+	      name="{=TeIcf3Cd}Light Lamellar over Mail"
 	      mesh="sturgian_lamellar_base"
 	      culture="Culture.sturgia"
 	      weight="21.5"
@@ -3363,7 +3313,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="sturgian_lamellar_fortified"
-	      name="{=iCy5h0Y9}Northern Lamellar Over Hauberk"
+	      name="{=D358wBWJ}Heavy Lamellar over Hauberk"
 	      mesh="sturgian_lamellar_fortified"
 	      culture="Culture.sturgia"
 	      weight="26"
@@ -3380,7 +3330,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="sturgian_chainmale_longsleeve"
-	      name="Northern Decorated Double Hauberk"
+	      name="{=4cHMe6H2}Decorated Double Hauberk"
 	      subtype="body_armor"
 	      mesh="sturgian_chainmale_longsleeve"
 	      culture="Culture.sturgia"
@@ -3400,7 +3350,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="sturgian_chainmale_shortsleeve"
-	      name="{=Bv068ziR}Northern Wrought Iron Mail"
+	      name="{=eHyxxxoK}Huscarl Hauberk"
 	      subtype="body_armor"
 	      mesh="sturgian_chainmale_shortsleeve"
 	      culture="Culture.sturgia"
@@ -3420,7 +3370,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="sturgian_lamellar_gambeson_heavy"
-	      name="{=Cp5aIHqR}Northern Lamellar Vest"
+	      name="{=luoXhz19}Heavy Lamellar Vest"
 	      subtype="body_armor"
 	      mesh="sturgian_lamellar_gambeson_heavy"
 	      culture="Culture.sturgia"
@@ -3440,7 +3390,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="sturgian_lamellar_gambeson"
-	      name="{=Mt24PoKF}Northern Short Lamellar Vest"
+	      name="{=luoXhz19}Short Lamellar Vest"
 	      subtype="body_armor"
 	      mesh="sturgian_lamellar_gambeson"
 	      culture="Culture.sturgia"
@@ -3457,8 +3407,7 @@
 			       modifier_group="plate"
 			       material_type="Plate"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"
-		       Civilian="true"/>
+		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="peasant_costume"
 	      name="{=gbRVBOLH}Commoner Clothes"
@@ -3466,8 +3415,7 @@
 	      culture="Culture.empire"
 	      weight="0.5"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
@@ -3486,8 +3434,7 @@
 	      culture="Culture.empire"
 	      weight="0.4"
 	      appearance="2"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="5"
@@ -3507,8 +3454,7 @@
 	      weight="0.4"
 	      difficulty="0"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="5"
 			       leg_armor="5"
@@ -3528,8 +3474,7 @@
 	      weight="0.4"
 	      difficulty="0"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="8"
 			       leg_armor="8"
@@ -3542,18 +3487,17 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="vlandian_dress"
-	      name="{=Zvxydvao}Imperial Rich Dress"
+	      name="{=eRZK8Kbp}Rich Dress"
 	      mesh="vlandian_dress"
 	      culture="Culture.empire"
 	      weight="0.5"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
 			       arm_armor="5"
-			       has_gender_variations="false"
+			       has_gender_variations="true"
 			       covers_body="true"
 			       modifier_group="cloth_unarmoured"
 			       material_type="Cloth"/>
@@ -3567,13 +3511,12 @@
 	      culture="Culture.empire"
 	      weight="0.7"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="5"
 			       arm_armor="6"
-			       has_gender_variations="false"
+			       has_gender_variations="true"
 			       covers_body="true"
 			       modifier_group="cloth_unarmoured"
 			       material_type="Cloth"/>
@@ -3587,13 +3530,12 @@
 	      culture="Culture.empire"
 	      weight="0.6"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
 			       arm_armor="6"
-			       has_gender_variations="false"
+			       has_gender_variations="true"
 			       covers_body="true"
 			       modifier_group="cloth_unarmoured"
 			       material_type="Cloth"/>
@@ -3609,8 +3551,7 @@
 	      weight="0.6"
 	      difficulty="0"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="8"
 			       leg_armor="8"
@@ -3623,13 +3564,12 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="tunic_with_shoulder_pads"
-	      name="{=y3oIzUEp}Tunic With Shoulder Pads"
+	      name="{=y3oIzUEp}Tunic with Shoulder Pads"
 	      mesh="roman_cloth_tunic_b"
 	      culture="Culture.empire"
 	      weight="0.6"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
@@ -3638,18 +3578,18 @@
 			       modifier_group="cloth_unarmoured"
 			       material_type="Cloth"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true"
+		       Civilian="true"/>
 	</Item>
 	<Item id="tunic_with_rolled_cloth"
-	      name="{=*}Tunic With Rolled Cloth"
+	      name="{=QaysED62}Tunic with Rolled Cloth"
 	      mesh="armor_tunic_with_rolled_cloth"
 	      culture="Culture.empire"
 	      subtype="body_armor"
 	      weight="0.7"
 	      difficulty="0"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="11"
 			       leg_armor="11"
@@ -3662,13 +3602,12 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="imperial_robes"
-	      name="{=aYCvg89I}Imperial Robes"
+	      name="{=R45H8quo}Toga"
 	      mesh="empire_outfit_a"
 	      culture="Culture.empire"
 	      weight="0.9"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="8"
 			       leg_armor="8"
@@ -3682,7 +3621,7 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="padded_cloth_with_strips"
-	      name="{=JKRQ8RDA}Padded Cloth With Strips"
+	      name="{=JKRQ8RDA}Padded Cloth with Strips"
 	      mesh="empire_armor_a"
 	      culture="Culture.empire"
 	      subtype="body_armor"
@@ -3740,7 +3679,7 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="imperial_padded_cloth"
-	      name="{=aDDTouCQ}Imperial Padded Cloth"
+	      name="{=CqMQXzUd}Infantryman Rough Gambeson"
 	      mesh="empire_fabric_armor"
 	      culture="Culture.empire"
 	      weight="2.8"
@@ -3754,10 +3693,11 @@
 			       modifier_group="cloth"
 			       material_type="Cloth"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags Civilian="true"
+		       UseTeamColor="true"/>
 	</Item>
 	<Item id="khuzait_leather_stitched"
-	      name="{=dRLIr22v}Imperial Stitched Leather"
+	      name="{=z7oMeRl3}Thick Brigandine Vest"
 	      mesh="khuzait_leather_stitch_a"
 	      culture="Culture.empire"
 	      weight="2.5"
@@ -3776,7 +3716,7 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="empire_warrior_padded_armor_a"
-	      name="{=Yo56PtJZ}Imperial Gambeson"
+	      name="{=aJLikenm}Infantryman Gambeson"
 	      mesh="empire_warrior_padded_armor_a"
 	      culture="Culture.empire"
 	      weight="2.1"
@@ -3790,10 +3730,11 @@
 			       modifier_group="cloth"
 			       material_type="Cloth"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags Civilian="true"
+		       UseTeamColor="true"/>
 	</Item>
 	<Item id="empire_warrior_padded_armor_c"
-	      name="{=QX2pp6jX}Imperial Gambeson With Skirts"
+	      name="{=cEhDJAQp}Infantryman Gambeson with Skirts"
 	      mesh="empire_warrior_padded_armor_c"
 	      culture="Culture.empire"
 	      weight="2"
@@ -3807,10 +3748,11 @@
 			       modifier_group="cloth"
 			       material_type="Cloth"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags Civilian="true"
+		       UseTeamColor="true"/>
 	</Item>
 	<Item id="empire_warrior_padded_armor_d"
-	      name="{=5h1qpdoa}Imperial Gambeson With Straps"
+	      name="{=CLTk2CMs}Infantryman Gambeson with Straps"
 	      mesh="empire_warrior_padded_armor_d"
 	      culture="Culture.empire"
 	      weight="1.6"
@@ -3824,10 +3766,11 @@
 			       modifier_group="cloth"
 			       material_type="Cloth"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags Civilian="true"
+		       UseTeamColor="true"/>
 	</Item>
 	<Item id="empire_warrior_padded_armor_e"
-	      name="{=1UZGbygw}Imperial Long Gambeson"
+	      name="{=1BXuUR3s}Infantryman Long Gambeson"
 	      mesh="empire_warrior_padded_armor_e"
 	      culture="Culture.empire"
 	      weight="1.5"
@@ -3845,7 +3788,7 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="empire_warrior_padded_armor_f"
-	      name="{=av4ncLDl}Imperial Auxiliary Armor"
+	      name="{=GTaxqBcv}Auxiliary Armor"
 	      mesh="empire_warrior_padded_armor_f"
 	      culture="Culture.empire"
 	      weight="1.9"
@@ -3862,7 +3805,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="empire_warrior_padded_armor_g"
-	      name="{=FlikwkEx}Imperial Auxiliary Armor With Straps"
+	      name="{=T2POVRtg}Auxiliary Armor with Straps"
 	      mesh="empire_warrior_padded_armor_g"
 	      culture="Culture.empire"
 	      weight="2"
@@ -3879,7 +3822,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="eastern_studded_leather"
-	      name="{=B9LjhTj6}Imperial Studded Leather"
+	      name="{=n7e0y95m}Cured Studded Leather Armor"
 	      mesh="khuzait_leather_armor_b"
 	      culture="Culture.empire"
 	      weight="3"
@@ -3896,7 +3839,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="basic_imperial_leather_armor"
-	      name="{=kyPoQt0f}Imperial Simple Leather Armor"
+	      name="{=LSaIs3DB}Leather Armor"
 	      mesh="empire_leather_armor"
 	      culture="Culture.empire"
 	      weight="3.1"
@@ -3913,7 +3856,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="woven_leather_coat"
-	      name="{=Nqa2maO2}Woven Leather Coat"
+	      name="{=wE7RWmIF}Boarskin Leather Coat"
 	      mesh="vlandia_leather_stripes"
 	      culture="Culture.empire"
 	      weight="5.1"
@@ -3930,7 +3873,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="empire_warrior_padded_armor_b"
-	      name="{=3hOPlGlS}Imperial Gambeson Over Leather Jacket"
+	      name="{=XNQPPIaA}Infantryman Gambeson over Leather Jacket"
 	      mesh="empire_warrior_padded_armor_b"
 	      culture="Culture.empire"
 	      weight="1.8"
@@ -3944,10 +3887,11 @@
 			       modifier_group="cloth"
 			       material_type="Cloth"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags Civilian="true"
+		       UseTeamColor="true"/>
 	</Item>
 	<Item id="imperial_mail_over_stripped_leather"
-	      name="{=QaKohN0V}Imperial Mail Over Stripped Leather"
+	      name="{=zadVVah1}Infantryman Mail over Striped Leather"
 	      mesh="empire_armor_d"
 	      culture="Culture.empire"
 	      subtype="body_armor"
@@ -3966,7 +3910,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="empire_horseman_armor"
-	      name="{=q3ePGPbF}Imperial Cavalry Armor"
+	      name="{=wJ4Y9IFc}Cavalryman Mail Shirt"
 	      subtype="body_armor"
 	      mesh="empire_horseman_armor"
 	      culture="Culture.empire"
@@ -3986,11 +3930,11 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="imperial_mail_over_leather"
-	      name="{=LaKFAU1V}Imperial Mail Over Leather"
+	      name="{=l5PPS5lG}Infantryman Mail over Leather"
 	      mesh="empire_armor_c"
 	      culture="Culture.empire"
 	      weight="8.6"
-	      appearance="1.3"
+	      appearance="10.1"
 	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="43"
@@ -4003,7 +3947,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="imperial_mail_vest"
-	      name="{=i4CfsNGd}Imperial Mail Vest"
+	      name="{=Kr8b1bxY}Infantryman Mail Vest"
 	      mesh="empire_armor_e"
 	      culture="Culture.empire"
 	      subtype="body_armor"
@@ -4022,7 +3966,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="imperial_scale_armor"
-	      name="Imperial Scale Armor Over Double Mail"
+	      name="{=VQSdhQE3}Heavy Scale Armor over Double Mail"
 	      mesh="imperial_lamellar_b"
 	      subtype="body_armor"
 	      culture="Culture.empire"
@@ -4038,10 +3982,10 @@
 			       modifier_group="plate"
 			       material_type="Plate"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags/>
 	</Item>
 	<Item id="imperial_lamellar_over_leather"
-	      name="{=ekTny86c}Imperial Lamellar Over Leather"
+	      name="{=x3lcf2Do}Luxury Lamellar Vest over Leather"
 	      mesh="empire_plate_armor"
 	      culture="Culture.empire"
 	      weight="15"
@@ -4058,7 +4002,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="lamellar_with_scale_skirt"
-	      name="Heavy Lamellar Over Mail With Scale Skirt"
+	      name="{=zGXZJFOb}Heavy Lamellar over Mail with Scale Skirt"
 	      mesh="imperial_lamellar_c"
 	      culture="Culture.empire"
 	      weight="34"
@@ -4094,7 +4038,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="imperial_lamellar"
-	      name="Imperial Light Lamellar Over Mail"
+	      name="{=LMo6MaQS}Light Lamellar over Mail Armor"
 	      mesh="imperial_lamellar_a"
 	      subtype="body_armor"
 	      culture="Culture.empire"
@@ -4129,8 +4073,7 @@
 			       modifier_group="chain"
 			       material_type="Chainmail"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"
-		       Civilian="true"/>
+		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="empire_legion_b"
 	      name="{=7HbspP6x}Ornate Legionary Scale Mail"
@@ -4149,8 +4092,7 @@
 			       modifier_group="plate"
 			       material_type="Plate"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"
-		       Civilian="true"/>
+		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="empire_plate_vest_armor"
 	      name="{=TOf8dVcn}Ornate Scale Armor"
@@ -4252,8 +4194,7 @@
 	      weight="0.5"
 	      difficulty="0"
 	      appearance="0.1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="5"
 			       leg_armor="5"
@@ -4271,12 +4212,11 @@
 	      name="{=F9GB8lMZ}Tattered Rags"
 	      subtype="body_armor"
 	      mesh="battania_cloth_armor_b"
-	      culture="Culture.battania"
+	      culture="Culture.looters"
 	      weight="0.3"
 	      difficulty="0"
 	      appearance="0.3"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
@@ -4290,14 +4230,13 @@
 		       DoesNotHideChest="true"/>
 	</Item>
 	<Item id="bandit_leather_water_flask"
-	      name="{=8hDoWBIa}Commoners Shirt"
+	      name="{=8hDoWBIa}Commoner Shirt"
 	      mesh="bandit_leather_water_flask"
 	      culture="Culture.looters"
 	      weight="0.5"
 	      difficulty="0"
 	      appearance="0.1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
@@ -4318,8 +4257,7 @@
 	      weight="0.5"
 	      difficulty="0"
 	      appearance="0.1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="5"
@@ -4334,14 +4272,13 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="bandit_envelope_dress_v1"
-	      name="{=jbxeZs8K}Commoners Tunic"
+	      name="{=jbxeZs8K}Commoner Tunic"
 	      mesh="bandit_envelope_dress_v1"
 	      culture="Culture.looters"
 	      weight="0.6"
 	      difficulty="0"
 	      appearance="0.3"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="8"
 			       leg_armor="8"
@@ -4362,8 +4299,7 @@
 	      weight="0.5"
 	      difficulty="0"
 	      appearance="0.1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="6"
 			       leg_armor="5"
@@ -4383,8 +4319,7 @@
 	      weight="0.9"
 	      difficulty="0"
 	      appearance="0.1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="11"
 			       leg_armor="11"
@@ -4403,8 +4338,7 @@
 	      weight="1"
 	      difficulty="0"
 	      appearance="0.1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="11"
 			       leg_armor="5"
@@ -4417,14 +4351,13 @@
 		       DoesNotHideChest="true"/>
 	</Item>
 	<Item id="empire_short_dress"
-	      name="{=XZAAz7NX}Empire Short Tunic"
+	      name="{=KdbHrcQx}Short Tunic"
 	      mesh="empire_short_dress"
 	      culture="Culture.empire"
 	      weight="1"
 	      difficulty="0"
 	      appearance="0.1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="8"
 			       leg_armor="3"
@@ -4458,7 +4391,7 @@
 		       DoesNotHideChest="true"/>
 	</Item>
 	<Item id="fur_skirt_with_tunic"
-	      name="{=qT6jIu3v}Fur Skirt With Tunic"
+	      name="{=qT6jIu3v}Fur Skirt with Tunic"
 	      subtype="body_armor"
 	      mesh="fur_vaegir_half_tunic"
 	      culture="Culture.looters"
@@ -4485,8 +4418,7 @@
 	      weight="0.9"
 	      difficulty="0"
 	      appearance="0.3"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
@@ -4499,7 +4431,7 @@
 		       Civilian="true"/>
 	</Item>
 	<Item id="fur_waistcoat_over_tunic"
-	      name="{=XH9f3yOX}Fur Waistcoat Over Tunic"
+	      name="{=XH9f3yOX}Fur Waistcoat over Tunic"
 	      subtype="body_armor"
 	      mesh="fur_vaegir_short"
 	      culture="Culture.looters"
@@ -4538,7 +4470,7 @@
 		<Flags UseTeamColor="true"/>
 	</Item>
 	<Item id="fur_coat_over_tunic"
-	      name="{=dVekhkIU}Fur Coat Over Tunic"
+	      name="{=dVekhkIU}Fur Coat over Tunic"
 	      mesh="fur_vaegir_c"
 	      culture="Culture.looters"
 	      weight="2.1"
@@ -4563,8 +4495,7 @@
 	      weight="0.9"
 	      difficulty="0"
 	      appearance="0.3"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="11"
 			       leg_armor="11"
@@ -4667,7 +4598,7 @@
 		       DoesNotHideChest="true"/>
 	</Item>
 	<Item id="rough_fur_over_chain"
-	      name="{=KIxX6dH2}Rough Fur Over Chain"
+	      name="{=ZMPw2IPy}Rough Fur over Mail"
 	      mesh="bandit_3_b"
 	      culture="Culture.looters"
 	      weight="14"
@@ -4684,7 +4615,7 @@
 		<Flags/>
 	</Item>
 	<Item id="buckled_wildsman_armor"
-	      name="{=Mc6IC6UM}Buckled Wildsman Armor"
+	      name="{=puNpMCgX}Buckled Mail Armor"
 	      mesh="bandit_2"
 	      subtype="body_armor"
 	      culture="Culture.looters"
@@ -4708,8 +4639,7 @@
 	      culture="Culture.neutral_culture"
 	      weight="0.8"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
@@ -4727,8 +4657,7 @@
 	      culture="Culture.neutral_culture"
 	      weight="0.7"
 	      appearance="1"
-	      Type="BodyArmor"
-	      value="120">
+	      Type="BodyArmor">
 		<ItemComponent>
 			<Armor body_armor="7"
 			       leg_armor="7"
@@ -4741,7 +4670,7 @@
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="merchants_fur_coat"
-	      name="{=2KQbV4To}Merchant's Fur Coat"
+	      name="{=2KQbV4To}Merchant Fur Coat"
 	      mesh="costume_merchant_v4"
 	      culture="Culture.neutral_culture"
 	      weight="2.9"
