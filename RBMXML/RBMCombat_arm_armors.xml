@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Items>
 	<Item id="guarded_padded_vambrace"
-	      name="{=whvMZZba}Guarded Padded Vambrace"
+	      name="{=whvMZZba}Guarded Padded Vambraces"
 	      mesh="padded_vambrace_a_handguard"
 	      culture="Culture.aserai"
 	      weight="0.6"
@@ -29,7 +29,8 @@
 			       modifier_group="cloth"
 			       material_type="Cloth"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true"
+		       UseTeamColor="true"/>
 	</Item>
 	<Item id="armwraps"
 	      name="{=oEJnxsQ1}Armwraps"
@@ -51,6 +52,7 @@
 	      mesh="battania_armwraps_b"
 	      culture="Culture.battania"
 	      weight="0.4"
+	      difficulty="0"
 	      appearance="0.4"
 	      Type="HandArmor">
 		<ItemComponent>
@@ -66,8 +68,7 @@
 	      culture="Culture.battania"
 	      weight="0.6"
 	      appearance="0.3"
-	      Type="HandArmor"
-	      difficulty="0">
+	      Type="HandArmor">
 		<ItemComponent>
 			<Armor arm_armor="21"
 			       covers_hands="false"
@@ -112,8 +113,7 @@
 	      culture="Culture.battania"
 	      weight="0.5"
 	      appearance="1"
-	      Type="HandArmor"
-	      difficulty="0">
+	      Type="HandArmor">
 		<ItemComponent>
 			<Armor arm_armor="24"
 			       covers_hands="false"
@@ -123,7 +123,7 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="battania_noble_bracers"
-	      name="{=gSaKwztg}Highland Noble Bracers"
+	      name="{=wLAL9NRB}Fian Bracers"
 	      mesh="battania_noble_bracers"
 	      culture="Culture.battania"
 	      weight="0.6"
@@ -139,7 +139,7 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="highland_gloves"
-	      name="{=i8S2PJB4}Highland Gloves"
+	      name="{=4HcrY0S2}Fur Rimmed Leather Gloves"
 	      mesh="pict_armor_glove"
 	      culture="Culture.battania"
 	      weight="0.8"
@@ -155,10 +155,11 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="battania_warlord_bracers"
-	      name="{=brLFIN46}Highland Warlord Bracers"
+	      name="{=I0vRCZ7U}Scale Warlord Bracers"
 	      mesh="battania_warlord_bracers"
 	      culture="Culture.battania"
 	      weight="1.5"
+	      difficulty="0"
 	      appearance="3"
 	      Type="HandArmor">
 		<ItemComponent>
@@ -170,7 +171,7 @@
 		<Flags/>
 	</Item>
 	<Item id="eastern_wrapped_armguards"
-	      name="{=OEyuUWji}Eastern Wrapped Armguards"
+	      name="{=b2EDkbhD}Wrapped Armguards"
 	      mesh="plated_leather_armor_glove_a"
 	      culture="Culture.khuzait"
 	      weight="0.3"
@@ -185,7 +186,7 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="steppe_leather_vambraces"
-	      name="{=GcFAmAaR}Eastern Leather Vambraces"
+	      name="{=LoUxaFeE}Leather Vambraces"
 	      mesh="khuzait_leather_armor_hand"
 	      culture="Culture.khuzait"
 	      weight="0.5"
@@ -231,7 +232,7 @@
 		<Flags/>
 	</Item>
 	<Item id="eastern_plated_leather_vambraces"
-	      name="{=jLkVVTJh}Eastern Plated Leather Vambraces"
+	      name="{=mvTueU1y}Plated Leather Vambraces"
 	      mesh="plated_leather_armor_glove_b"
 	      culture="Culture.khuzait"
 	      weight="1.7"
@@ -246,7 +247,7 @@
 		<Flags/>
 	</Item>
 	<Item id="mail_mitten"
-	      name="{=g51zVsKU}Mail Mitten"
+	      name="{=g51zVsKU}Mail Mittens"
 	      mesh="mail_mitten_c"
 	      culture="Culture.vlandia"
 	      weight="1.4"
@@ -262,7 +263,7 @@
 		<Flags/>
 	</Item>
 	<Item id="reinforced_mail_mitten"
-	      name="{=dPQGxmJ7}Reinforced Mail Mitten"
+	      name="{=dPQGxmJ7}Reinforced Mail Mittens"
 	      mesh="mail_mitten_b"
 	      culture="Culture.vlandia"
 	      weight="1.6"
@@ -293,10 +294,10 @@
 		<Flags/>
 	</Item>
 	<Item id="reinforced_leather_vambraces"
-	      name="{=CXnhFf1t}Reinforced Leather Vambraces"
+	      name="{=2Ilvjlz9}Splint Vambraces"
 	      mesh="crossbow_armor_leather_hand_b"
 	      culture="Culture.vlandia"
-	      weight="1"
+	      weight="1.0"
 	      appearance="2"
 	      Type="HandArmor">
 		<ItemComponent>
@@ -323,7 +324,7 @@
 		<Flags/>
 	</Item>
 	<Item id="northern_plated_gloves"
-	      name="{=vNNMGllv}Northern Plated Gloves"
+	      name="{=G8FQ2exX}Plate Reinforced Gloves"
 	      mesh="sturgia_plate_gauntlet"
 	      culture="Culture.sturgia"
 	      weight="1.5"
@@ -338,7 +339,7 @@
 		<Flags/>
 	</Item>
 	<Item id="northern_brass_bracers"
-	      name="{=UWPEu577}Northern Brass Bracers"
+	      name="{=Xrb43Fv4}Bronze Bracers"
 	      mesh="sturgia_leather_brass_bracer"
 	      culture="Culture.sturgia"
 	      weight="1.3"
@@ -350,7 +351,7 @@
 			       modifier_group="plate"
 			       material_type="Plate"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags/>
 	</Item>
 	<Item id="woven_leather_bracers"
 	      name="{=fUmehyHq}Woven Leather Bracers"
@@ -384,7 +385,7 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="plated_strip_gauntlets"
-	      name="{=Gs2f3aeh}Plated Striped Gauntlets"
+	      name="{=ulaMq9HL}Plated Striped Vambraces"
 	      mesh="empire_plated_gauntlets"
 	      culture="Culture.empire"
 	      weight="1.4"
@@ -426,7 +427,7 @@
 			       modifier_group="plate"
 			       material_type="Plate"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags/>
 	</Item>
 	<Item id="lordly_padded_mitten"
 	      name="{=t01v8qW7}Lordly Padded Mittens"
@@ -463,7 +464,7 @@
 	<Item id="leather_gloves"
 	      name="{=lIJ1EVBh}Leather Gloves"
 	      mesh="crossbow_armor_hand"
-	      culture="Culture.vlandia"
+	      culture="Culture.neutral_culture"
 	      weight="0.4"
 	      appearance="1"
 	      Type="HandArmor">
@@ -476,9 +477,9 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="padded_vambrace"
-	      name="{=MamotK0a}Padded Vambrace"
+	      name="{=MamotK0a}Padded Vambraces"
 	      mesh="padded_vambrace_a"
-	      culture="Culture.vlandia"
+	      culture="Culture.neutral_culture"
 	      weight="0.1"
 	      difficulty="0"
 	      appearance="1"
