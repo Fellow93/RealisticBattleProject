@@ -828,6 +828,10 @@
 			<Swing damage_type="Cut"
 			       damage_factor="0.2"/>
 		</BladeData>
+		<Flags>
+			<Flag name="Civilian"
+			      type="ItemFlags"/>
+		</Flags>
 		<Materials>
 			<Material id="Iron1"
 			          count="2"/>
@@ -1014,6 +1018,29 @@
 			          count="2"/>
 		</Materials>
 	</CraftingPiece>
+	<CraftingPiece id="spear_blade_34"
+	               name="{=V9Kbq6vj}Blunt Practice Tip"
+	               tier="1"
+	               piece_type="Blade"
+	               mesh="spear_blade_34"
+	               length="18.3"
+	               weight="0.4">
+		<BladeData stack_amount="3"
+		           physics_material="wood_weapon"
+		           body_name="bo_spear_b">
+			<Thrust damage_type="Blunt"
+			        damage_factor="0.5"/>
+			<Swing damage_type="Blunt"
+			       damage_factor="0.5"/>
+		</BladeData>
+		<Materials>
+			<Material id="Iron2"
+			          count="2"/>
+		</Materials>
+		<Flags>
+			<Flag name="NoBlood"/>
+		</Flags>
+	</CraftingPiece>
 	<!-- #endregion -->
 	<!-- #region Polearm Blade Pieces -->
 	<CraftingPiece id="spear_blade_12"
@@ -1184,7 +1211,8 @@
 	               length="190"
 	               weight="0.494"
 	               excluded_item_usage_features="long"
-	               item_holster_pos_shift="0,0,0.10">
+	               item_holster_pos_shift="0,0,0.10"
+	               CraftingCost="100">
 		<BuildData piece_offset="-9"/>
 		<Materials>
 			<Material id="Wood"
