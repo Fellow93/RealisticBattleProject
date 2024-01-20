@@ -12,8 +12,9 @@
 	<!-- #endregion -->
 	<Item multiplayer_item="false"
 	      id="bandit_saddle_desert"
-	      name="{=dLLD8bVX}Rugged Desert Saddle"
+	      name="{=Qqdl6fbM}Rugged Bedouin Saddle"
 	      mesh="bandit_saddle_desert"
+	      culture="Culture.aserai"
 	      subtype="body_armor"
 	      weight="7"
 	      difficulty="0"
@@ -23,6 +24,7 @@
 			<Armor body_armor="6"
 			       mane_cover_type="none"
 			       family_type="1"
+				   reins_mesh="bandit_saddle_desert_rein"
 			       material_type="Cloth"
 			       head_armor="5"
 			       arm_armor="5"
@@ -44,6 +46,7 @@
 			<Armor body_armor="5"
 			       mane_cover_type="none"
 			       family_type="1"
+			       reins_mesh="bandit_saddle_a_rein"
 			       material_type="Cloth"
 			       head_armor="5"
 			       arm_armor="5"
@@ -54,8 +57,9 @@
 	</Item>
 	<Item multiplayer_item="false"
 	      id="bandit_saddle_highland"
-	      name="{=ZFde57gC}Rugged Highland Saddle"
+	      name="{=CHxRDUN1}Rugged Fur Saddle"
 	      mesh="bandit_saddle_highland"
+	      culture="Culture.battania"
 	      subtype="body_armor"
 	      weight="8"
 	      difficulty="0"
@@ -65,6 +69,7 @@
 			<Armor body_armor="5"
 			       mane_cover_type="none"
 			       family_type="1"
+			       reins_mesh="bandit_saddle_highland_rein"
 			       material_type="Cloth"
 			       head_armor="5"
 			       arm_armor="5"
@@ -95,8 +100,9 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="halfchain_barding"
-	      name="{=Yms2FQ7g}Halfchain Barding"
+	      name="{=iquQ9dro}Half Mail Barding"
 	      mesh="horse_harness_vlandia_b_clotest"
+	      culture="Culture.vlandia"
 	      weight="16"
 	      appearance="0.6"
 	      Type="HorseHarness">
@@ -117,7 +123,7 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="celtic_frost"
-	      name="{=XkwOTdVQ}Celtic Frost"
+	      name="{=avXZdUvi}Fur Saddle"
 	      mesh="horse_harness_saxon_new"
 	      is_merchandise="false"
 	      weight="10"
@@ -131,7 +137,7 @@
 			       reins_mesh="horse_harness_saxon_new_rein"
 			       charge_bonus="0"
 			       family_type="1"
-			       material_type="Chainmail"
+			       material_type="Leather"
 			       head_armor="15"
 			       arm_armor="5"
 			       leg_armor="10"
@@ -140,14 +146,16 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="chain_barding"
-	      name="{=aHQCG5Tn}Chain Barding"
+	      name="{=HJriXlcb}Reinforced Chainmail Barding"
 	      mesh="horse_harness_vlandia_a_clotest"
+	      culture="Culture.vlandia"
 	      weight="26"
 	      appearance="0.5"
 	      Type="HorseHarness">
 		<ItemComponent>
 			<Armor body_armor="40"
 			       mane_cover_type="all"
+			       tail_cover_type="all"
 			       maneuver_bonus="0"
 			       speed_bonus="0"
 			       reins_mesh="horse_harness_vlandia_a_rein"
@@ -170,7 +178,8 @@
 	      Type="HorseHarness">
 		<ItemComponent>
 			<Armor body_armor="5"
-			       mane_cover_type="all"
+			       mane_cover_type="none"
+			       tail_cover_type="none"
 			       maneuver_bonus="0"
 			       speed_bonus="0"
 			       reins_mesh="horse_harness_a_new_rein"
@@ -193,7 +202,8 @@
 	      Type="HorseHarness">
 		<ItemComponent>
 			<Armor body_armor="5"
-			       mane_cover_type="all"
+			       mane_cover_type="none"
+			       tail_cover_type="none"
 			       maneuver_bonus="0"
 			       speed_bonus="0"
 			       reins_mesh="horse_harness_roman_b_new_rein"
@@ -209,7 +219,7 @@
 	</Item>
 	<Item multiplayer_item="false"
 	      id="chain_horse_harness"
-	      name="{=GTWUtUFj}Chain Horse Harness"
+	      name="{=JkxPt29i}Chain Mail Horse Armor"
 	      mesh="horse_harness_e"
 	      subtype="body_armor"
 	      weight="24"
@@ -221,6 +231,7 @@
 			       hair_cover_type="all"
 			       covers_head="true"
 			       mane_cover_type="all"
+			       tail_cover_type="all"
 			       maneuver_bonus="0"
 			       speed_bonus="0"
 			       reins_mesh="horse_harness_e_rein"
@@ -238,6 +249,7 @@
 	      id="stripped_leather_harness"
 	      name="{=Yh7Dorsr}Striped Leather Harness"
 	      mesh="horse_harness_imperial_a_clotest"
+	      culture="Culture.empire"
 	      subtype="body_armor"
 	      weight="8"
 	      difficulty="0"
@@ -259,6 +271,7 @@
 	<Item id="imperial_riding_harness"
 	      name="{=NUmDuEqI}Imperial Riding Harness"
 	      mesh="horse_harness_a_new"
+	      culture="Culture.empire"
 	      weight="6"
 	      appearance="1"
 	      Type="HorseHarness">
@@ -277,8 +290,9 @@
 	</Item>
 	<Item multiplayer_item="false"
 	      id="half_scale_barding"
-	      name="{=CgG2aRyh}Half Scale Barding"
+	      name="{=i2QlHUVW}Cataphract Half Scale Barding"
 	      mesh="horse_harness_imperial_c_clotest"
+	      culture="Culture.empire"
 	      subtype="body_armor"
 	      weight="17"
 	      difficulty="0"
@@ -299,8 +313,9 @@
 	</Item>
 	<Item multiplayer_item="false"
 	      id="imperial_scale_barding"
-	      name="{=zmEnxUpL}Imperial Scale Barding"
+	      name="{=ds1nrqNv}Cataphract Scale Barding"
 	      mesh="horse_harness_imperial_b_clotest"
+	      culture="Culture.empire"
 	      subtype="body_armor"
 	      weight="30"
 	      difficulty="0"
@@ -321,8 +336,9 @@
 	</Item>
 	<Item multiplayer_item="false"
 	      id="studded_steppe_barding"
-	      name="{=lspv3mUE}Studded Steppe Barding"
+	      name="{=LzlQUcak}Reinforced Mail Barding"
 	      mesh="horse_harness_khuzait_c_clotest"
+	      culture="Culture.khuzait"
 	      subtype="body_armor"
 	      weight="23"
 	      difficulty="0"
@@ -343,8 +359,9 @@
 	</Item>
 	<Item multiplayer_item="false"
 	      id="desert_cloth_harness"
-	      name="{=2Q0m5CG0}Desert Cloth Harness"
+	      name="{=aqrJqQqx}Bedouin Cloth Saddle"
 	      mesh="horse_harness_aserai_a_clotest"
+	      culture="Culture.aserai"
 	      subtype="body_armor"
 	      weight="7.3"
 	      difficulty="0"
@@ -365,7 +382,7 @@
 	</Item>
 	<Item multiplayer_item="false"
 	      id="aseran_village_harness"
-	      name="{=AloILntx}Southern Common Harness"
+	      name="{=zPbDZ9VA}Bedouin Common Saddle"
 	      mesh="horse_harness_aserai_b_clotest"
 	      subtype="body_armor"
 	      weight="6.1"
@@ -387,8 +404,9 @@
 	</Item>
 	<Item multiplayer_item="false"
 	      id="half_mail_and_plate_barding"
-	      name="{=hCBCLp0e}Half Mail And Plate Barding"
+	      name="{=NRB3V6yP}Reinforced Half Plate Barding"
 	      mesh="horse_harness_aserai_d_clotest"
+	      culture="Culture.aserai"
 	      subtype="body_armor"
 	      weight="16"
 	      difficulty="0"
@@ -409,8 +427,9 @@
 	</Item>
 	<Item multiplayer_item="false"
 	      id="mail_and_plate_barding"
-	      name="{=gKhpLiyg}Mail And Plate Barding"
+	      name="{=Vj4ZBxm5}Reinforced Plate Barding"
 	      mesh="horse_harness_aserai_c_clotest"
+	      culture="Culture.aserai"
 	      subtype="body_armor"
 	      weight="26.8"
 	      difficulty="0"
@@ -431,8 +450,9 @@
 	</Item>
 	<Item multiplayer_item="false"
 	      id="steppe_harness"
-	      name="{=vw9qbiER}Steppe Harness"
+	      name="{=OaQE1Frx}Steppe Saddle"
 	      mesh="horse_harness_khuzait_b_clotest"
+	      culture="Culture.khuzait"
 	      subtype="body_armor"
 	      weight="8.5"
 	      difficulty="0"
@@ -455,6 +475,7 @@
 	      id="steppe_fur_harness"
 	      name="{=EfRKaKs0}Steppe Fur Harness"
 	      mesh="horse_harness_khuzait_a_clotest"
+	      culture="Culture.khuzait"
 	      subtype="body_armor"
 	      weight="8.2"
 	      difficulty="0"
@@ -475,8 +496,9 @@
 	</Item>
 	<Item multiplayer_item="false"
 	      id="steppe_half_barding"
-	      name="{=0rzKQbWy}Steppe Half Barding"
+	      name="{=qNNja5IF}Lamellar Half Barding"
 	      mesh="horse_harness_khuzait_d_clotest"
+	      culture="Culture.khuzait"
 	      subtype="body_armor"
 	      weight="11"
 	      difficulty="0"
@@ -496,8 +518,9 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="northern_light_harness"
-	      name="{=8Oi89KRn}Northern Light Harness"
+	      name="{=uRqm1nJ7}Light Saddle"
 	      mesh="horse_harness_roman_b_new"
+		  culture="Culture.sturgia"
 	      weight="7.2"
 	      appearance="1"
 	      Type="HorseHarness">
@@ -515,8 +538,9 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="northern_noble_harness"
-	      name="{=LWbJKKK1}Northern Noble Harness"
+	      name="{=lZZOQsxc}Rough Cavalry Saddle"
 	      mesh="horse_harness_sturgia_b_clotest"
+	      culture="Culture.sturgia"
 	      weight="8.9"
 	      appearance="1"
 	      Type="HorseHarness">
@@ -534,8 +558,9 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="northern_ring_barding"
-	      name="{=ZjAZNjvu}Northern Ring Barding"
+	      name="{=MI65uuKB}Ring Mail Barding"
 	      mesh="horse_harness_sturgia_a_clotest"
+	      culture="Culture.sturgia"
 	      weight="15.2"
 	      appearance="0.9"
 	      Type="HorseHarness">
@@ -555,6 +580,7 @@
 	<Item id="battania_horse_harness"
 	      name="{=33aaUcaX}Battania Horse Harness"
 	      mesh="battania_horse_harness"
+	      culture="Culture.battania"
 	      weight="10.3"
 	      appearance="1"
 	      Type="HorseHarness">
@@ -571,8 +597,9 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="battania_horse_harness_halfscaled"
-	      name="{=85q9uY76}Highland Half Scaled Harness"
+	      name="{=W8r7A7qH}Half Scaled Barding"
 	      mesh="battania_horse_harness_halfscaled"
+	      culture="Culture.battania"
 	      weight="15"
 	      appearance="1"
 	      Type="HorseHarness">
@@ -589,8 +616,9 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="battania_horse_harness_scaled"
-	      name="{=DbNdyJgQ}Highland Scaled Harness"
+	      name="{=amqJbdDV}Scale Barding"
 	      mesh="battania_horse_harness_scaled"
+	      culture="Culture.battania"
 	      weight="20.6"
 	      appearance="0.65"
 	      Type="HorseHarness">
