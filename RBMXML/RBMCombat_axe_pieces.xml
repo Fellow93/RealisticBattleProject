@@ -1329,7 +1329,7 @@
 	               length="116"
 	               weight="0.503"
 	               excluded_item_usage_features="widegrip">
-		<BuildData piece_offset="8"
+		<BuildData piece_offset="10"
 		           next_piece_offset="1"/>
 		<Materials>
 			<Material id="Wood"
@@ -1344,7 +1344,7 @@
 	               length="132"
 	               weight="0.793"
 	               excluded_item_usage_features="widegrip">
-		<BuildData piece_offset="10"
+		<BuildData piece_offset="14"
 		           next_piece_offset="2.5"/>
 		<Materials>
 			<Material id="Wood"
@@ -1362,7 +1362,7 @@
 	               weight="0.590"
 	               item_holster_pos_shift="0,0,-0.1"
 	               CraftingCost="75">
-		<BuildData piece_offset="24"
+		<BuildData piece_offset="26"
 		           next_piece_offset="1.42"/>
 		<Materials>
 			<Material id="Wood"
@@ -1379,7 +1379,7 @@
 	               length="157.3"
 	               weight="0.644"
 	               item_holster_pos_shift="0,0,-0.1">
-		<BuildData piece_offset="24"
+		<BuildData piece_offset="26"
 		           next_piece_offset="1.122"/>
 		<Materials>
 			<Material id="Wood"
@@ -1396,7 +1396,7 @@
 	               length="157.5"
 	               weight="0.677"
 	               item_holster_pos_shift="0,0,-0.1">
-		<BuildData piece_offset="24"
+		<BuildData piece_offset="26"
 		           next_piece_offset="1.6"/>
 		<Materials>
 			<Material id="Wood"
@@ -1411,8 +1411,9 @@
 	               piece_type="Handle"
 	               mesh="axe_craft_30_handle"
 	               length="130"
-	               weight="0.516">
-		<BuildData piece_offset="20"
+	               weight="0.516"
+	               excluded_item_usage_features="widegrip">
+		<BuildData piece_offset="14"
 		           next_piece_offset="1.835"/>
 		<Materials>
 			<Material id="Wood"
@@ -1429,7 +1430,7 @@
 	               item_holster_pos_shift="0,0,0.15"
 	               excluded_item_usage_features="widegrip"
 	               is_default="true">
-		<BuildData piece_offset="20.1"
+		<BuildData piece_offset="10"
 		           next_piece_offset="1.1"/>
 		<Materials>
 			<Material id="Wood"
@@ -1442,8 +1443,9 @@
 	               piece_type="Handle"
 	               mesh="axe_craft_29_handle"
 	               length="120"
-	               weight="0.516">
-		<BuildData piece_offset="20"
+	               weight="0.516"
+	               excluded_item_usage_features="widegrip">
+		<BuildData piece_offset="12"
 		           next_piece_offset="1.835"/>
 		<Materials>
 			<Material id="Wood"
@@ -1519,7 +1521,7 @@
 	               length="124.3"
 	               weight="0.570"
 	               excluded_item_usage_features="widegrip">
-		<BuildData piece_offset="23.87"
+		<BuildData piece_offset="12"
 		           next_piece_offset="1.5"/>
 		<Materials>
 			<Material id="Wood"
