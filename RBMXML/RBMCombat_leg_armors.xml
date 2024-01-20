@@ -1,13 +1,12 @@
-﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Items>
 	<Item id="southern_moccasins"
-	      name="{=E7puv7hi}Southern Moccasins"
+	      name="{=SxqSJK8h}Moccasins"
 	      mesh="aserai_female_costume_shoe"
 	      culture="Culture.aserai"
 	      weight="0.5"
 	      appearance="1"
-	      Type="LegArmor"
-	      value="283">
+	      Type="LegArmor">
 		<ItemComponent>
 			<Armor leg_armor="16"
 			       covers_legs="false"
@@ -32,7 +31,7 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="highland_leg_wrappings"
-	      name="{=cCaHNMwf}Highland Leg Wrappings"
+	      name="{=xqE9aycc}Woodland Leg Wrappings"
 	      mesh="battania_boot_a"
 	      culture="Culture.battania"
 	      weight="1"
@@ -63,7 +62,7 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="battania_leather_boots"
-	      name="{=hTRaPvRa}Highland Leather Boots"
+	      name="{=4Ygp7P0Y}Highborn Leather Boots"
 	      mesh="battania_leather_boots_a"
 	      culture="Culture.battania"
 	      weight="1"
@@ -95,7 +94,7 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="battania_fur_boots"
-	      name="{=vwVFF1XJ}Highland Fur Boots"
+	      name="{=jVK5B86k}Fur Boots"
 	      mesh="battania_fur_boot_a"
 	      culture="Culture.battania"
 	      weight="1.5"
@@ -111,7 +110,7 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="highland_boots"
-	      name="{=42KNket2}Highland Boots"
+	      name="{=FQqaVHq2}Forester Boots"
 	      mesh="pict_armor_boot"
 	      culture="Culture.battania"
 	      weight="1"
@@ -157,7 +156,7 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="turndown_leather_boots"
-	      name="{=VpxmlDyY}Turndown Leather Boots"
+	      name="{=xwWYJb5A}Folded Leather Boots"
 	      mesh="sea_raider_leather_boot"
 	      culture="Culture.battania"
 	      weight="0.9"
@@ -172,7 +171,7 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="battania_warlord_boots"
-	      name="{=eTKxlDl1}Highland Warlord Boots"
+	      name="{=UuWPfE1x}Scaled Boots"
 	      mesh="battania_warlord_boots"
 	      culture="Culture.battania"
 	      weight="2.6"
@@ -188,7 +187,7 @@
 		<Flags/>
 	</Item>
 	<Item id="eastern_leather_boots"
-	      name="{=ukQCN90m}Eastern Leather Boots"
+	      name="{=Ga5mCiLp}Leather Riding Boots"
 	      mesh="plated_leather_armor_boot"
 	      culture="Culture.khuzait"
 	      weight="1.1"
@@ -203,7 +202,7 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="khuzait_curved_boots"
-	      name="{=RWKafLdU}Eastern Curved Boots"
+	      name="{=D9JrTpwU}Curved Boots"
 	      mesh="khuzait_leather_boots"
 	      culture="Culture.khuzait"
 	      weight="0.9"
@@ -233,7 +232,7 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="steppe_leather_boots"
-	      name="{=6Ls9naf4}Eastern Steppe Leather Boots"
+	      name="{=VpxHysbZ}Sturdy Leather Boots"
 	      mesh="khuzait_leather_armor_foot"
 	      culture="Culture.khuzait"
 	      weight="0.8"
@@ -265,7 +264,7 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="leather_boots"
-	      name="{=ukQCN90m}Eastern Leather Boots"
+	      name="{=IOOTPpYj}Fur Rimmed Curved Boots"
 	      mesh="boot_f"
 	      culture="Culture.khuzait"
 	      weight="0.8"
@@ -385,7 +384,8 @@
 			       modifier_group="leather"
 			       material_type="Leather"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true"
+		       UseTeamColor="true"/>
 	</Item>
 	<Item id="sturgia_boots_d"
 	      name="{=FptcHNb9}Wrapped Boots"
@@ -400,10 +400,11 @@
 			       modifier_group="leather"
 			       material_type="Leather"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true"
+		       UseTeamColor="true"/>
 	</Item>
 	<Item id="northern_plated_boots"
-	      name="{=bGSbaT2n}Northern Plated Boots"
+	      name="{=18ZFPXsO}Huscarl Plated Boots"
 	      mesh="sturgia_plate_boot"
 	      culture="Culture.sturgia"
 	      weight="2.9"
@@ -448,7 +449,7 @@
 		<Flags Civilian="true"/>
 	</Item>
 	<Item id="empire_horseman_boots"
-	      name="{=AwARTy44}Imperial Horseman Boots"
+	      name="{=uvSXUgT8}Horseman Boots"
 	      mesh="empire_horseman_boots"
 	      culture="Culture.empire"
 	      weight="0.8"
@@ -495,7 +496,7 @@
 		<Flags/>
 	</Item>
 	<Item id="decorated_imperial_boots"
-	      name="{=gXbmGrGL}Decorated Imperial Boots"
+	      name="{=XXGZLTN6}Decorated Plate Boots"
 	      mesh="empire_plate_armor_boots"
 	      culture="Culture.empire"
 	      weight="2.3"
@@ -507,7 +508,7 @@
 			       modifier_group="plate"
 			       material_type="Plate"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags/>
 	</Item>
 	<Item id="lamellar_plate_boots"
 	      name="{=9cHyHQ7a}Lamellar Plate Boots"
@@ -526,13 +527,12 @@
 		<Flags/>
 	</Item>
 	<Item id="ladys_shoe"
-	      name="{=RU2EppgI}Lady's Shoes"
+	      name="{=RU2EppgI}Ladies Shoes"
 	      mesh="woman_shoe_a"
-	      culture="Culture.empire"
+	      culture="Culture.neutral_culture"
 	      weight="0.6"
 	      appearance="1"
-	      Type="LegArmor"
-	      value="250">
+	      Type="LegArmor">
 		<ItemComponent>
 			<Armor leg_armor="14"
 			       covers_legs="false"
@@ -544,7 +544,7 @@
 	<Item id="leather_shoes"
 	      name="{=Kgnm0FkE}Leather Shoes"
 	      mesh="boot_e"
-	      culture="Culture.empire"
+	      culture="Culture.neutral_culture"
 	      weight="0.7"
 	      difficulty="0"
 	      appearance="0.3"
@@ -560,7 +560,7 @@
 	<Item id="ragged_boots"
 	      name="{=Szuxa9Bs}Ragged Boots"
 	      mesh="sneak_costume_foot"
-	      culture="Culture.battania"
+	      culture="Culture.neutral_culture"
 	      weight="0.8"
 	      difficulty="0"
 	      appearance="0.3"
@@ -576,7 +576,7 @@
 	<Item id="strapped_shoes"
 	      name="{=LOPavWRp}Strapped Shoes"
 	      mesh="strapped_shoes"
-	      culture="Culture.vlandia"
+	      culture="Culture.neutral_culture"
 	      weight="0.7"
 	      difficulty="0"
 	      appearance="1"
