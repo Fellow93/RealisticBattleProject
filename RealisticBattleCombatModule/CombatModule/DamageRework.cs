@@ -517,7 +517,7 @@ namespace RBMCombat
                                         }
                                     case DamageTypes.Blunt:
                                         {
-                                            dmgMultiplier *= 1.5f;
+                                            dmgMultiplier *= 3f;
                                             break;
                                         }
                                     default:
@@ -544,7 +544,7 @@ namespace RBMCombat
                                         }
                                     case DamageTypes.Blunt:
                                         {
-                                            dmgMultiplier *= 1.5f;
+                                            dmgMultiplier *= 2.5f;
                                             break;
                                         }
                                     default:

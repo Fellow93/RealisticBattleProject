@@ -1036,6 +1036,7 @@ namespace RBMCombat
 
         private static float WeaponTypeDamage(RBMCombatConfigWeaponType weaponTypeFactors, float magnitude, float armorReduction, DamageTypes damageType, float armorEffectiveness, BasicCharacterObject player, bool isPlayerVictim, float weaponDamageFactor, out float penetratedDamage, out float bluntTraumaAfterArmor, float partialPenetrationThreshold = 2f)
         {
+            float hyperRealism = 0.1f;
             float damage = 0f;
             float armorThresholdModifier = RBMConfig.RBMConfig.armorThresholdModifier / weaponDamageFactor;
             switch (damageType)
@@ -1051,11 +1052,12 @@ namespace RBMCombat
                         {
                             bluntFraction = (magnitude - penetratedDamage) / magnitude;
                         }
-                        damage += penetratedDamage;
+                        //damage += penetratedDamage;
+                        damage += penetratedDamage * (penetratedDamage * hyperRealism);
 
                         float bluntTrauma = magnitude * (0.7f * RBMConfig.RBMConfig.maceBluntModifier) * bluntFraction;
                         bluntTraumaAfterArmor = Math.Max(0f, bluntTrauma * armorReduction);
-                        damage += bluntTraumaAfterArmor;
+                        damage += bluntTraumaAfterArmor * 0.5f;
 
                         break;
                     }
@@ -1067,11 +1069,12 @@ namespace RBMCombat
                         {
                             bluntFraction = (magnitude - penetratedDamage) / magnitude;
                         }
-                        damage += penetratedDamage;
+                        //damage += penetratedDamage;
+                        damage += penetratedDamage * (penetratedDamage * hyperRealism);
 
                         float bluntTrauma = magnitude * (weaponTypeFactors.ExtraBluntFactorCut + RBMConfig.RBMConfig.bluntTraumaBonus) * bluntFraction;
                         bluntTraumaAfterArmor = Math.Max(0f, bluntTrauma * armorReduction);
-                        damage += bluntTraumaAfterArmor;
+                        damage += bluntTraumaAfterArmor * 0.5f;
 
                         if (RBMConfig.RBMConfig.armorPenetrationMessage)
                         {
@@ -1107,11 +1110,12 @@ namespace RBMCombat
                             bluntFraction = (magnitude - (penetratedDamage + partialPenetration)) / magnitude;
                         }
                         penetratedDamage += partialPenetration;
-                        damage += penetratedDamage;
+                        //damage += penetratedDamage;
+                        damage += penetratedDamage * (penetratedDamage * hyperRealism);
 
                         float bluntTrauma = magnitude * (weaponTypeFactors.ExtraBluntFactorPierce + RBMConfig.RBMConfig.bluntTraumaBonus) * bluntFraction;
                         bluntTraumaAfterArmor = Math.Max(0f, bluntTrauma * armorReduction);
-                        damage += bluntTraumaAfterArmor;
+                        damage += bluntTraumaAfterArmor * 0.5f;
 
                         if (RBMConfig.RBMConfig.armorPenetrationMessage)
                         {
