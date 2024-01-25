@@ -1053,7 +1053,7 @@ namespace RBMCombat
                             bluntFraction = (magnitude - penetratedDamage) / magnitude;
                         }
                         //damage += penetratedDamage;
-                        damage += penetratedDamage * (penetratedDamage * hyperRealism);
+                        damage += MathF.Clamp(penetratedDamage * (penetratedDamage * hyperRealism),0f,200f);
 
                         float bluntTrauma = magnitude * (0.7f * RBMConfig.RBMConfig.maceBluntModifier) * bluntFraction;
                         bluntTraumaAfterArmor = Math.Max(0f, bluntTrauma * armorReduction);
@@ -1070,7 +1070,7 @@ namespace RBMCombat
                             bluntFraction = (magnitude - penetratedDamage) / magnitude;
                         }
                         //damage += penetratedDamage;
-                        damage += penetratedDamage * (penetratedDamage * hyperRealism);
+                        damage += MathF.Clamp(penetratedDamage * (penetratedDamage * hyperRealism), 0f, 200f);
 
                         float bluntTrauma = magnitude * (weaponTypeFactors.ExtraBluntFactorCut + RBMConfig.RBMConfig.bluntTraumaBonus) * bluntFraction;
                         bluntTraumaAfterArmor = Math.Max(0f, bluntTrauma * armorReduction);
@@ -1111,7 +1111,7 @@ namespace RBMCombat
                         }
                         penetratedDamage += partialPenetration;
                         //damage += penetratedDamage;
-                        damage += penetratedDamage * (penetratedDamage * hyperRealism);
+                        damage += MathF.Clamp(penetratedDamage * (penetratedDamage * hyperRealism), 0f, 200f);
 
                         float bluntTrauma = magnitude * (weaponTypeFactors.ExtraBluntFactorPierce + RBMConfig.RBMConfig.bluntTraumaBonus) * bluntFraction;
                         bluntTraumaAfterArmor = Math.Max(0f, bluntTrauma * armorReduction);
