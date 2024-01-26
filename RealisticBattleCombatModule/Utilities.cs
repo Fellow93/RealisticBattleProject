@@ -225,7 +225,7 @@ namespace RBMCombat
                     }
                 case "cla_bomb":
                     {
-                        // early bolt action , ammo should weight 25g, kinetic energy should be 5000J
+                        // Just a throw
                         double potentialEnergy = 150f;
                         calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / ammoWeight));
                         break;
