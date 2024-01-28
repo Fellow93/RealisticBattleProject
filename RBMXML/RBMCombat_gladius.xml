@@ -16,7 +16,7 @@
 		</Pieces>
 	</CraftedItem>
 	<CraftedItem id="gladius_b"
-	             name="Gladius"
+	             name="{=AOZbTGOS}Gladius"
 	             crafting_template="Dagger"
 	             culture="Culture.empire"
 	             modifier_group="sword">
@@ -103,7 +103,7 @@
 		</Pieces>
 	</CraftedItem>
 	<CraftedItem id="battania_mace_1_t2"
-	             name="{=FyaygeEx}Knobbed Club"
+	             name="{=knobbedclubweapon}Knobbed Club"
 	             crafting_template="Mace"
 	             culture="Culture.battania">
 		<Pieces>
@@ -363,7 +363,7 @@
 		</Pieces>
 	</CraftedItem>
 	<CraftedItem id="highland_throwing_axe_1_t2"
-	             name="Throwing Labryes"
+	             name="{=GrfnpDxu}Throwing Labryes"
 	             crafting_template="ThrowingAxe"
 	             culture="Culture.battania">
 		<Pieces>
@@ -376,7 +376,7 @@
 		</Pieces>
 	</CraftedItem>
 	<CraftedItem id="southern_throwing_axe_1_t4"
-	             name="Huge Throwing Axes"
+	             name="{=X31qND4N}Huge Throwing Axes"
 	             crafting_template="ThrowingAxe"
 	             culture="Culture.aserai">
 		<Pieces>
@@ -389,7 +389,7 @@
 		</Pieces>
 	</CraftedItem>
 	<CraftedItem id="northern_throwing_axe_1_t1"
-	             name="Large Throwing Axes"
+	             name="{=WWRKeqwD}Large Throwing Axes"
 	             crafting_template="ThrowingAxe"
 	             culture="Culture.sturgia">
 		<Pieces>
@@ -402,7 +402,7 @@
 		</Pieces>
 	</CraftedItem>
 	<CraftedItem id="woodland_throwing_axe_1_t1"
-	             name="Medium Throwing Axes"
+	             name="{=GrfnpDxu}Medium Throwing Axes"
 	             crafting_template="ThrowingAxe"
 	             culture="Culture.battania">
 		<Pieces>
@@ -415,7 +415,7 @@
 		</Pieces>
 	</CraftedItem>
 	<CraftedItem id="western_throwing_axe_1_t1"
-	             name="Small Throwing Axes"
+	             name="{=F4xD8gjJ}Small Throwing Axes"
 	             crafting_template="ThrowingAxe"
 	             culture="Culture.vlandia">
 		<Pieces>
