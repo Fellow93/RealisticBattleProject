@@ -1617,8 +1617,14 @@ namespace RBMAI
                 }
                 else
                 {
+                    MBArrayList<Agent> inactiveAgents = new MBArrayList<Agent>();
                     foreach (KeyValuePair<Agent, Posture> entry in AgentPostures.values)
                     {
+                        if(entry.Key != null && !entry.Key.IsActive())
+                        {
+                            inactiveAgents.Add(entry.Key);
+                            continue;
+                        }
                         if (entry.Value.posture < entry.Value.maxPosture)
                         {
                             if (RBMConfig.RBMConfig.postureGUIEnabled)
@@ -1641,6 +1647,11 @@ namespace RBMAI
                             entry.Value.posture += entry.Value.regenPerTick * 30f;
                         }
                     }
+                    foreach(Agent agent in inactiveAgents)
+                    {
+                        AgentPostures.values.Remove(agent);
+                    }
+                    inactiveAgents.Clear();
 
                     foreach (KeyValuePair<Agent, FormationClass> entry in agentsToChangeFormation)
                     {
@@ -1652,6 +1663,8 @@ namespace RBMAI
                     }
                     agentsToChangeFormation.Clear();
 
+                    //shield drop
+                    MBArrayList<Agent> agentsAbleToDropShield = new MBArrayList<Agent> { };
                     for (int i = agentsToDropShield.Count - 1; i >= 0; i--)
                     {
                         if (agentsToDropShield[i] != null && agentsToDropShield[i].IsActive())
@@ -1667,30 +1680,36 @@ namespace RBMAI
                             }
                             else
                             {
-                                for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.ExtraWeaponSlot; equipmentIndex++)
-                                {
-                                    MissionWeapon weapon2 = agentsToDropShield[i].Equipment[equipmentIndex];
-                                    if (!weapon2.IsEmpty && (weapon2.IsShield()))
-                                    {
-                                        agentsToDropShield[i].DropItem(equipmentIndex);
-                                        agentsToDropShield[i].UpdateAgentProperties();
-                                        agentsToDropShield.Remove(agentsToDropShield[i]);
-                                        break;
-                                    }
-                                }
+                                agentsAbleToDropShield.Add(agentsToDropShield[i]);
                             }
                         }
                         else
                         {
-                            agentsToDropShield.Remove(agentsToDropShield[i]);
+                            agentsAbleToDropShield.Add(agentsToDropShield[i]);
                         }
                     }
+                    foreach(Agent agent in agentsAbleToDropShield)
+                    {
+                        if (agent != null && agent.IsActive())
+                        {
+                            EquipmentIndex ei = agent.GetWieldedItemIndex(Agent.HandIndex.OffHand);
+                            if (ei != EquipmentIndex.None)
+                            {
+                                agent.DropItem(ei);
+                                agent.UpdateAgentProperties();
+                            }
+                        }
+                        agentsToDropShield.Remove(agent);
+                    }
+                    agentsAbleToDropShield.Clear();
+
+                    //weapon drop
+                    MBArrayList<Agent> agentsAbleToDropWeapon = new MBArrayList<Agent> { };
                     for (int i = agentsToDropWeapon.Count - 1; i >= 0; i--)
                     {
-                        //if (AgentAi.agentsToDropWeapon[i].State == AgentState.Active)
-                            if (agentsToDropWeapon[i] != null && agentsToDropWeapon[i].IsActive())
-                            {
-                                ActionCodeType currentActionType = agentsToDropWeapon[i].GetCurrentActionType(1);
+                        if (agentsToDropWeapon[i] != null && agentsToDropWeapon[i].IsActive())
+                        {
+                            ActionCodeType currentActionType = agentsToDropWeapon[i].GetCurrentActionType(1);
                             if (
                                 currentActionType == ActionCodeType.ReleaseMelee ||
                                 currentActionType == ActionCodeType.ReleaseRanged ||
@@ -1701,20 +1720,28 @@ namespace RBMAI
                             }
                             else
                             {
-                                EquipmentIndex ei = agentsToDropWeapon[i].GetWieldedItemIndex(Agent.HandIndex.MainHand);
-                                if (ei != EquipmentIndex.None)
-                                {
-                                    agentsToDropWeapon[i].DropItem(ei);
-                                    agentsToDropWeapon[i].UpdateAgentProperties();
-                                    agentsToDropWeapon.Remove(agentsToDropWeapon[i]);
-                                }
+                                agentsAbleToDropWeapon.Add(agentsToDropWeapon[i]);
                             }
                         }
                         else
                         {
-                            agentsToDropWeapon.Remove(agentsToDropWeapon[i]);
+                            agentsAbleToDropWeapon.Add(agentsToDropWeapon[i]);
                         }
                     }
+                    foreach (Agent agent in agentsAbleToDropWeapon)
+                    {
+                        if (agent != null && agent.IsActive())
+                        {
+                            EquipmentIndex ei = agent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                            if (ei != EquipmentIndex.None)
+                            {
+                                agent.DropItem(ei);
+                                agent.UpdateAgentProperties();
+                            }
+                        }
+                        agentsToDropWeapon.Remove(agent);
+                    }
+                    agentsAbleToDropWeapon.Clear();
 
                     currentDt = 0f;
                 }
