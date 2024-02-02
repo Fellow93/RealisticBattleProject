@@ -192,6 +192,8 @@ namespace RBMAI
                 }
                 agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, 1f);
                 //agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, 0f);
+
+                agentDrivenProperties.MissileSpeedMultiplier = 1f;
             }
         }
 
