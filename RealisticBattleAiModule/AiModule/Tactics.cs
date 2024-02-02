@@ -15,21 +15,7 @@ namespace RBMAI
 {
     public static class Tactics
     {
-        public class AIDecision
-        {
-            public int cooldown = 0;
-            public WorldPosition position = WorldPosition.Invalid;
-            public int customMaxCoolDown = -1;
-            public AIDecisionType decisionType = AIDecisionType.None;
-
-            public enum AIDecisionType
-            {
-                None,
-                FrontlineBackStep,
-                FlankAllyLeft,
-                FlankAllyRight,
-            }
-        }
+        
 
         public class AgentDamageDone
         {
@@ -38,7 +24,6 @@ namespace RBMAI
             public bool isAttacker = false;
         }
 
-        public static Dictionary<Agent, AIDecision> aiDecisionCooldownDict = new Dictionary<Agent, AIDecision>();
         public static Dictionary<Agent, AgentDamageDone> agentDamage = new Dictionary<Agent, AgentDamageDone>();
 
         [HarmonyPatch(typeof(Mission))]
@@ -385,7 +370,7 @@ namespace RBMAI
         {
             public static void Postfix(ref IBattleCombatant ____attackerLeaderBattleCombatant, ref IBattleCombatant ____defenderLeaderBattleCombatant)
             {
-                aiDecisionCooldownDict.Clear();
+                Frontline.aiDecisionCooldownDict.Clear();
                 agentDamage.Clear();
                 RBMAiPatcher.DoPatching();
                 AgentAi.OnTickAsAIPatch.itemPickupDistanceStorage.Clear();

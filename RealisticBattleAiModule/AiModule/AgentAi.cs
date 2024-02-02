@@ -121,6 +121,16 @@ namespace RBMAI
                     agentDrivenProperties.AiShooterError = 0.025f - (0.020f * effectiveSkillLevel);
                 }
 
+                if (RBMConfig.RBMConfig.postureEnabled)
+                {
+                    Posture posture = null;
+                    AgentPostures.values.TryGetValue(agent, out posture);
+                    if (agent != null && posture != null && posture.maxPostureLossCount >= 1)
+                    {
+                        agentDrivenProperties.WeaponInaccuracy += posture.maxPostureLossCount * ( agentDrivenProperties.WeaponInaccuracy * 0.4f);
+                    }
+                }
+
                 if (agent.IsAIControlled)
                 {
                     agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
