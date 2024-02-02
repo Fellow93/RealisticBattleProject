@@ -327,6 +327,10 @@ namespace RBMAI
         {
             public static void Postfix()
             {
+                AgentPostures.values.Clear();
+                PostureLogic.agentsToDropShield.Clear();
+                PostureLogic.agentsToDropWeapon.Clear();
+                PostureLogic.agentsToChangeFormation.Clear();
                 RBMAiPatcher.DoPatching();
                 agentDamage.Clear();
             }
@@ -377,6 +381,7 @@ namespace RBMAI
                 PostureLogic.agentsToChangeFormation.Clear();
                 PostureLogic.agentsToDropWeapon.Clear();
                 PostureLogic.agentsToDropShield.Clear();
+                AgentPostures.values.Clear();
                 originalDefenderPower = 0f;
                 originalAttackerPower = 0f;
                 if (Mission.Current.Teams.Any())

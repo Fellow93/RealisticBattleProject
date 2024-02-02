@@ -42,7 +42,10 @@ namespace RBMAI
         {
             private static void Prefix(ref Agent __instance)
             {
-                AgentPostures.values[__instance] = new Posture();
+                if (__instance.IsHuman)
+                {
+                    AgentPostures.values[__instance] = new Posture();
+                }
             }
         }
 
@@ -145,8 +148,21 @@ namespace RBMAI
         }
 
         [HarmonyPatch(typeof(MissionState))]
-        [HarmonyPatch("FinishMissionLoading")]
-        public class FinishMissionLoadingPatch
+        [HarmonyPatch("LoadMission")]
+        public class LoadMissionPatch
+        {
+            private static void Postfix()
+            {
+                AgentPostures.values.Clear();
+                agentsToDropShield.Clear();
+                agentsToDropWeapon.Clear();
+                agentsToChangeFormation.Clear();
+            }
+        }
+
+        [HarmonyPatch(typeof(MissionState))]
+        [HarmonyPatch("OnDeactivate")]
+        public class OnDeactivatePatch
         {
             private static void Postfix()
             {
@@ -1620,7 +1636,7 @@ namespace RBMAI
                     MBArrayList<Agent> inactiveAgents = new MBArrayList<Agent>();
                     foreach (KeyValuePair<Agent, Posture> entry in AgentPostures.values)
                     {
-                        if(entry.Key != null && !entry.Key.IsActive())
+                        if(entry.Key != null && entry.Key.Mission != null && !entry.Key.IsActive())
                         {
                             inactiveAgents.Add(entry.Key);
                             continue;
@@ -1655,7 +1671,7 @@ namespace RBMAI
 
                     foreach (KeyValuePair<Agent, FormationClass> entry in agentsToChangeFormation)
                     {
-                        if (entry.Key != null && entry.Key.IsActive() && entry.Key.Team != null)
+                        if (entry.Key != null && entry.Key.Mission != null && entry.Key.IsActive() && entry.Key.Team != null)
                         {
                             entry.Key.Formation = entry.Key.Team.GetFormation(entry.Value);
                             entry.Key.DisableScriptedMovement();
@@ -1667,7 +1683,7 @@ namespace RBMAI
                     MBArrayList<Agent> agentsAbleToDropShield = new MBArrayList<Agent> { };
                     for (int i = agentsToDropShield.Count - 1; i >= 0; i--)
                     {
-                        if (agentsToDropShield[i] != null && agentsToDropShield[i].IsActive())
+                        if (agentsToDropShield[i] != null && agentsToDropShield[i].Mission != null && agentsToDropShield[i].IsActive())
                         {
                             ActionCodeType currentActionType = agentsToDropShield[i].GetCurrentActionType(1);
                             if (
@@ -1690,7 +1706,7 @@ namespace RBMAI
                     }
                     foreach(Agent agent in agentsAbleToDropShield)
                     {
-                        if (agent != null && agent.IsActive())
+                        if (agent != null && agent.Mission != null && agent.IsActive())
                         {
                             EquipmentIndex ei = agent.GetWieldedItemIndex(Agent.HandIndex.OffHand);
                             if (ei != EquipmentIndex.None)
@@ -1707,7 +1723,7 @@ namespace RBMAI
                     MBArrayList<Agent> agentsAbleToDropWeapon = new MBArrayList<Agent> { };
                     for (int i = agentsToDropWeapon.Count - 1; i >= 0; i--)
                     {
-                        if (agentsToDropWeapon[i] != null && agentsToDropWeapon[i].IsActive())
+                        if (agentsToDropWeapon[i] != null && agentsToDropWeapon[i].Mission != null && agentsToDropWeapon[i].IsActive())
                         {
                             ActionCodeType currentActionType = agentsToDropWeapon[i].GetCurrentActionType(1);
                             if (
@@ -1730,7 +1746,7 @@ namespace RBMAI
                     }
                     foreach (Agent agent in agentsAbleToDropWeapon)
                     {
-                        if (agent != null && agent.IsActive())
+                        if (agent != null && agent.Mission != null && agent.IsActive())
                         {
                             EquipmentIndex ei = agent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
                             if (ei != EquipmentIndex.None)
