@@ -110,6 +110,44 @@ namespace RBMAI.AiModule
                     }
                     else
                     {
+                        foreach (Formation formation in Mission.Current.Teams.Defender.FormationsIncludingEmpty)
+                        {
+                            if (formation != null && formation.QuerySystem != null && formation.QuerySystem.IsRangedFormation)
+                            {
+                                WorldPosition medianPosition = formation.QuerySystem.MedianPosition;
+                                WorldPosition averagePosition = new WorldPosition(Mission.Current.Scene, formation.QuerySystem.AveragePosition.ToVec3());
+                                if (medianPosition.IsValid)
+                                {
+                                    if(formation.OrderPosition.IsValid && formation.OrderPosition.Distance(medianPosition.AsVec2) > 15f)
+                                    {
+                                        formation.SetMovementOrder(MovementOrder.MovementOrderMove(medianPosition));
+                                        return false;
+                                    }
+                                }
+                                else if (averagePosition.IsValid)
+                                {
+                                    if (formation.OrderPosition.IsValid && formation.OrderPosition.Distance(averagePosition.AsVec2) > 15f)
+                                    {
+                                        formation.SetMovementOrder(MovementOrder.MovementOrderMove(averagePosition));
+                                        return false;
+                                    }
+                                }
+                                else
+                                {
+                                    foreach (Formation lastOptionFormation in Mission.Current.Teams.Defender.FormationsIncludingEmpty)
+                                    {
+                                        if (lastOptionFormation != null && lastOptionFormation.QuerySystem != null && lastOptionFormation.QuerySystem.MedianPosition.IsValid)
+                                        {
+                                            if (formation.OrderPosition.IsValid && formation.OrderPosition.Distance(lastOptionFormation.QuerySystem.MedianPosition.AsVec2) > 15f)
+                                            {
+                                                formation.SetMovementOrder(MovementOrder.MovementOrderMove(lastOptionFormation.QuerySystem.MedianPosition));
+                                                return false;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         return false;
                     }
                 }
