@@ -204,9 +204,12 @@ namespace RBMAI
                         {
                             __result = targetAgent.GetWorldPosition();
                             aiDecision.position = __result;
-                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 10f, 2f, 10f, 20f, 10f);
-                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 0f, 2f, 0f, 20f, 0f);
-                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
+                            if (!unit.IsRangedCached)
+                            {
+                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 10f, 2f, 10f, 20f, 10f);
+                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 0f, 2f, 0f, 20f, 0f);
+                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
+                            }
                             return false;
                         }
                         else
@@ -216,9 +219,12 @@ namespace RBMAI
                             {
                                 isTargetArcher = true;
                             }
-                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1.1f, 10f, 0.01f);
-                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
+                            if (!unit.IsRangedCached)
+                            {
+                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
+                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1.1f, 10f, 0.01f);
+                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
+                            }
                             if (IsInImportantFrontlineAction(unit))
                             {
                                 aiDecision.position = WorldPosition.Invalid;
@@ -286,9 +292,12 @@ namespace RBMAI
                             {
                                 if (unit != null)
                                 {
-                                    unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 5f, 2f, 4f, 10f, 6f);
-                                    unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 4.9f, 1.5f, 1.1f, 10f, 0.01f);
-                                    unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0.8f);
+                                    if (!unit.IsRangedCached)
+                                    {
+                                        unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 5f, 2f, 4f, 10f, 6f);
+                                        unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 4.9f, 1.5f, 1.1f, 10f, 0.01f);
+                                        unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0.8f);
+                                    }
 
                                     //Vec2 leftVec = unit.Formation.Direction.LeftVec().Normalized();
                                     //Vec2 rightVec = unit.Formation.Direction.RightVec().Normalized();
@@ -398,9 +407,12 @@ namespace RBMAI
                             }
                         }
                         float currentTime = mission.CurrentTime;
-                        unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                        unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1f, 10f, 0.01f);
-                        unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 8f, 0f, 20f, 0f);
+                        if (!unit.IsRangedCached)
+                        {
+                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
+                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1f, 10f, 0.01f);
+                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 8f, 0f, 20f, 0f);
+                        }
                         MBList<Agent> enemyAgents0f = new MBList<Agent>();
                         MBList<Agent> enemyAgents10f = new MBList<Agent>();
                         enemyAgents0f = mission.GetNearbyEnemyAgents(unitPosition, 4.5f, unit.Team, enemyAgents0f);
