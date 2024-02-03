@@ -114,11 +114,11 @@ namespace RBMAI
                 float num4 = 1f - effectiveSkillLevel;
                 if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Crossbow)
                 {
-                    agentDrivenProperties.AiShooterError = 0.030f - (0.007f * effectiveSkillLevel);
+                    agentDrivenProperties.AiShooterError = 0.020f - (0.007f * effectiveSkillLevel);
                 }
                 else
                 {
-                    agentDrivenProperties.AiShooterError = 0.025f - (0.020f * effectiveSkillLevel);
+                    agentDrivenProperties.AiShooterError = 0.015f - (0.020f * effectiveSkillLevel);
                 }
 
                 if (RBMConfig.RBMConfig.postureEnabled)
@@ -134,7 +134,7 @@ namespace RBMAI
                 if (agent.IsAIControlled)
                 {
                     agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
-                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 1.33f;
+                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 1.5f;
                 }
 
                 agentDrivenProperties.AiRangerLeadErrorMin = (float)((0.0 - (double)num4) * 0.349999994039536) + 0.3f;
