@@ -386,8 +386,10 @@ namespace RBMAI
                                     {
                                         if (MBRandom.RandomInt(unitPower) == 0)
                                         {
-                                            aiDecision.position = WorldPosition.Invalid;
-                                            return true;
+                                            __result = getNearbyAllyWorldPosition(mission, unitPosition, unit);
+                                            aiDecision.position = __result; return false;
+                                            //aiDecision.position = WorldPosition.Invalid;
+                                            //return true;
                                         }
                                         else
                                         {
@@ -597,6 +599,8 @@ namespace RBMAI
                             }
                             else if (randInt < unitPower)
                             {
+                                //__result = getNearbyAllyWorldPosition(mission, unitPosition, unit);
+                                //aiDecision.position = __result; return false;
                                 aiDecision.position = WorldPosition.Invalid;
                                 return true;
                             }
