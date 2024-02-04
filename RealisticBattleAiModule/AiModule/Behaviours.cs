@@ -1101,7 +1101,7 @@ namespace RBMAI
         {
             if(Mission.Current.SceneName.Contains("arena"))
             {
-                if(___Agent != null && ___Agent.IsRangedCached)
+                if(___Agent != null && ___Agent.SpawnEquipment!= null && ___Agent.IsRangedCached)
                 {
                     __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
                     __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5.5f, 3f, 4f, 10f, 0.01f);
