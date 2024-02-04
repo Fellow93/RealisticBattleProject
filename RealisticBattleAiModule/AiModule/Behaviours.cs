@@ -3,9 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using TaleWorlds.CampaignSystem;
-using TaleWorlds.CampaignSystem.MapEvents;
-using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -1095,384 +1092,122 @@ namespace RBMAI
         }
     }
 
-    [HarmonyPatch(typeof(BehaviorCharge))]
-    internal class OverrideBehaviorCharge
-    {
-        public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
-        public static Dictionary<Formation, float> timeToMoveStorage = new Dictionary<Formation, float> { };
-
-        [HarmonyPrefix]
-        [HarmonyPatch("CalculateCurrentOrder")]
-        private static bool PrefixCalculateCurrentOrder(ref BehaviorCharge __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
-        {
-            if (__instance.Formation != null && !(__instance.Formation.Team.IsPlayerTeam || __instance.Formation.Team.IsPlayerAlly) && Campaign.Current != null && MobileParty.MainParty != null && MobileParty.MainParty.MapEvent != null &&
-                MapEvent.PlayerMapEvent.DefenderSide.LeaderParty.MobileParty != null  &&
-                MapEvent.PlayerMapEvent.AttackerSide.LeaderParty.MobileParty != null )
-            {
-                MobileParty defender = MapEvent.PlayerMapEvent.DefenderSide.LeaderParty.MobileParty;
-                MobileParty attacker = MapEvent.PlayerMapEvent.AttackerSide.LeaderParty.MobileParty;
-                if (defender.IsBandit || attacker.IsBandit)
-                {
-                    return true;
-                }
-            }
-            if (__instance.Formation != null && (__instance.Formation.QuerySystem.IsInfantryFormation || __instance.Formation.QuerySystem.IsRangedFormation) && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
-            {
-                Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
-
-                if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && __instance.Formation.QuerySystem.IsInfantryFormation && !RBMAI.Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
-                {
-                    Formation enemyCav = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
-
-                    if (enemyCav != null && !enemyCav.QuerySystem.IsCavalryFormation)
-                    {
-                        enemyCav = null;
-                    }
-
-                    float cavDist = 0f;
-                    float signDist = 1f;
-
-                    if (significantEnemy != null)
-                    {
-                        Vec2 signDirection = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
-                        signDist = signDirection.Normalize();
-                    }
-
-                    if (enemyCav != null)
-                    {
-                        Vec2 cavDirection = enemyCav.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
-                        cavDist = cavDirection.Normalize();
-                    }
-                    bool isOnlyCavReamining = RBMAI.Utilities.CheckIfOnlyCavRemaining(__instance.Formation);
-                    if ((enemyCav != null) && (cavDist <= signDist) && (enemyCav.CountOfUnits > __instance.Formation.CountOfUnits / 10) && ((signDist > 35f || significantEnemy == enemyCav) || isOnlyCavReamining))
-                    {
-                        if (isOnlyCavReamining)
-                        {
-                            Vec2 vec = enemyCav.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
-                            WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
-
-                            WorldPosition storedPosition = WorldPosition.Invalid;
-                            positionsStorage.TryGetValue(__instance.Formation, out storedPosition);
-
-                            if (!storedPosition.IsValid)
-                            {
-                                positionsStorage.Add(__instance.Formation, positionNew);
-                                ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
-                            }
-                            else
-                            {
-                                float storedPositonDistance = (storedPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2).Normalize();
-                                if (storedPositonDistance > (__instance.Formation.Depth / 2f) + 10f)
-                                {
-                                    positionsStorage.Remove(__instance.Formation);
-                                    positionsStorage.Add(__instance.Formation, positionNew);
-                                    ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
-                                }
-                                else
-                                {
-                                    ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
-                                }
-                            }
-                            if (cavDist > 85f)
-                            {
-                                ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
-                            }
-                            //__instance.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent) {
-                            //    if (RBMAI.Utilities.CheckIfCanBrace(agent))
-                            //    {
-                            //        agent.SetFiringOrder(1);
-                            //    }
-                            //    else
-                            //    {
-                            //        agent.SetFiringOrder(0);
-                            //    }
-                            //});
-                            //if (cavDist > 150f)
-                            //{
-                            //    positionsStorage.Remove(__instance.Formation);
-                            //}
-                            __instance.Formation.ArrangementOrder = ArrangementOrderLine;
-                            return false;
-                        }
-                        else
-                        {
-                            if (!(__instance.Formation.AI?.Side == FormationAI.BehaviorSide.Left || __instance.Formation.AI?.Side == FormationAI.BehaviorSide.Right) && enemyCav.TargetFormation == __instance.Formation)
-                            {
-                                Vec2 vec = enemyCav.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
-                                WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
-
-                                WorldPosition storedPosition = WorldPosition.Invalid;
-                                positionsStorage.TryGetValue(__instance.Formation, out storedPosition);
-
-                                if (!storedPosition.IsValid)
-                                {
-                                    positionsStorage.Add(__instance.Formation, positionNew);
-                                    ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
-                                }
-                                else
-                                {
-                                    float storedPositonDistance = (storedPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2).Normalize();
-                                    if (storedPositonDistance > (__instance.Formation.Depth / 2f) + 10f)
-                                    {
-                                        positionsStorage.Remove(__instance.Formation);
-                                        positionsStorage.Add(__instance.Formation, positionNew);
-                                        ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
-                                    }
-                                    else
-                                    {
-                                        ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
-                                    }
-                                }
-                                if (cavDist > 85f)
-                                {
-                                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
-                                }
-                                //__instance.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent) {
-                                //    if (RBMAI.Utilities.CheckIfCanBrace(agent))
-                                //    {
-                                //        agent.SetFiringOrder(1);
-                                //    }
-                                //    else
-                                //    {
-                                //        agent.SetFiringOrder(0);
-                                //    }
-                                //});
-                                __instance.Formation.ArrangementOrder = ArrangementOrderLine;
-                                return false;
-                            }
-                        }
-                        positionsStorage.Remove(__instance.Formation);
-                    }
-                    else if (significantEnemy != null && !significantEnemy.QuerySystem.IsRangedFormation && signDist < 50f && RBMAI.Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.38f))
-                    {
-                        WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
-                        positionNew.SetVec2(positionNew.AsVec2 - __instance.Formation.Direction * 7f);
-
-                        WorldPosition storedPosition = WorldPosition.Invalid;
-                        positionsStorage.TryGetValue(__instance.Formation, out storedPosition);
-
-                        if (!storedPosition.IsValid)
-                        {
-                            positionsStorage.Add(__instance.Formation, positionNew);
-                            ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
-                        }
-                        else
-                        {
-                            ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
-                        }
-                        __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
-                        return false;
-                        //__instance.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent) {
-                        //    agent.SetMaximumSpeedLimit(0.1f, true);
-                        //});
-                    }
-                    positionsStorage.Remove(__instance.Formation);
-                }
-
-                if (significantEnemy != null)
-                {
-                    __instance.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
-                    ____currentOrder = MovementOrder.MovementOrderChargeToTarget(significantEnemy);
-                    if (__instance.Formation.TargetFormation != null && __instance.Formation.TargetFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall
-                        && RBMAI.Utilities.ShouldFormationCopyShieldWall(__instance.Formation))
-                    {
-                        __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderShieldWall;
-                    }
-                    else if (__instance.Formation.TargetFormation != null && __instance.Formation.TargetFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderLine)
-                    {
-                        __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
-                    }
-                    else if (__instance.Formation.TargetFormation != null && __instance.Formation.TargetFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose)
-                    {
-                        __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
-                    }
-                    return false;
-                }
-            }
-
-            if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
-            {
-                __instance.Formation.SetTargetFormation(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
-            }
-            ____currentOrder = MovementOrder.MovementOrderCharge;
-            return false;
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch("GetAiWeight")]
-        private static void PrefixGetAiWeight(ref BehaviorCharge __instance, ref float __result)
-        {
-            if (__instance.Formation != null && __instance.Formation.QuerySystem.IsRangedCavalryFormation)
-            {
-                __result = __result * 0.2f;
-            }
-            //__result = __result;
-        }
-    }
-
     [HarmonyPatch(typeof(HumanAIComponent))]
     internal class OverrideHumanAIComponent
     {
-        [HarmonyPrefix]
+        [HarmonyPostfix]
         [HarmonyPatch("SetBehaviorValueSet")]
-        private static bool SetBehaviorValueSet(HumanAIComponent __instance, BehaviorValueSet behaviorValueSet, Agent ___Agent)
+        private static void SetBehaviorValueSet(HumanAIComponent __instance, BehaviorValueSet behaviorValueSet, Agent ___Agent)
         {
-            if (___Agent != null && ___Agent.Formation != null && behaviorValueSet == BehaviorValueSet.Charge)
+            if(Mission.Current.SceneName.Contains("arena"))
             {
-                if (___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
+                if(___Agent != null && ___Agent.IsRangedCached)
                 {
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 0.01f, 7f, 4f, 20f, 6f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 0.55f, 2f, 0.55f, 20f, 0.55f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 2f, 7f, 4f, 20f, 5f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 4f, 2f, 0.55f, 30f, 0.55f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 8f, 15f, 10f, 30f, 10f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-                    return false;
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5.5f, 3f, 4f, 10f, 0.01f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 3f, 2f, 10f, 20f);
                 }
-                if (___Agent.Formation.QuerySystem.IsCavalryFormation)
+            }
+            if(___Agent != null && ___Agent.Formation != null)
+            {
+                if (behaviorValueSet == BehaviorValueSet.Charge)
                 {
-                    if (___Agent.HasMount)
+                    if (___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
                     {
-                        if (RBMAI.Utilities.GetHarnessTier(___Agent) > 3)
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 0.01f, 7f, 4f, 20f, 6f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 0.55f, 2f, 0.55f, 20f, 0.55f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 4f, 2f, 0.55f, 30f, 0.55f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 8f, 15f, 10f, 30f, 10f);
+                        return;
+                    }
+                    if (___Agent.Formation.QuerySystem.IsCavalryFormation)
+                    {
+                        if (___Agent.HasMount)
                         {
-                            __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 7f, 4f, 20f, 1f);
-                            __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
+                            if (RBMAI.Utilities.GetHarnessTier(___Agent) > 3)
+                            {
+                                __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 7f, 4f, 20f, 1f);
+                                __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
+                            }
+                            else
+                            {
+                                __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 1f, 2f, 1f, 20f, 1f);
+                                __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
+                            }
                         }
                         else
                         {
-                            __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 1f, 2f, 1f, 20f, 1f);
                             __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
                         }
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 1f, 7f, 4f, 20f, 6f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 2f, 7f, 4f, 20f, 5f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 0f, 10f, 3f, 20f, 6f);
+                        return;
                     }
-                    else
+                    if (___Agent.Formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || ___Agent.Formation.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge)
                     {
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 7f, 4f, 20f, 1f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
+                        if (___Agent.Formation.QuerySystem.IsInfantryFormation)
+                        {
+                            __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
+                            __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5.5f, 2f, 1f, 10f, 0.01f);
+                            __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0.8f, 20f, 20f);
+                        }
+                        if (___Agent.Formation.QuerySystem.IsRangedFormation)
+                        {
+                            __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
+                            __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5.5f, 3f, 4f, 10f, 0.01f);
+                            __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 3f, 2f, 10f, 20f);
+                        }
+                        return;
                     }
-                    //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 1f, 2f, 4f, 20f, 1f);
-                    //unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 1f, 7f, 4f, 20f, 6f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 2f, 7f, 4f, 20f, 5f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 0f, 10f, 3f, 20f, 6f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-                    return false;
                 }
-                if (___Agent.Formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget)
+                if (behaviorValueSet == BehaviorValueSet.Follow)
                 {
-                    if (___Agent.Formation.QuerySystem.IsInfantryFormation)
+                    if (___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
                     {
-                        //podmienky: twohandedpolearm v rukach
-                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0f, 40f, 4f, 50f, 6f);
-                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 7f, 1f, 10f, 0.01f);
-                        //if (RBMAI.Utilities.CheckIfTwoHandedPolearmInfantry(unit))
-                        //{
-                        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 3.5f, 5f, 20f, 6f);
-                        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 3.5f, 4f, 20f, 0.01f);
-                        //}
-                        //else {
-                        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                        //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 2f, 1f, 10f, 0.01f);
-                        //}
-
-                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 5f, 20f, 6f);
-                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 2f, 1f, 20f, 1f);
-                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 2f, 7f, 4f, 20f, 5f);
-                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 40f, 4f, 60f, 0f);
-                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 5f, 7f, 10f, 8, 20f);
-                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 1f, 12f, 1f, 30f, 0f);
-                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5.5f, 2f, 1f, 10f, 0.01f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0.8f, 20f, 20f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 5f, 40f, 4f, 60f, 0f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 5f, 7f, 10f, 8, 20f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityMelee, 1f, 12f, 1f, 30f, 0f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-                        return false;
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 0.55f, 2f, 4f, 20f, 0.55f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0.55f, 7f, 0.55f, 20f, 0.55f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 8f, 2f, 0.55f, 30f, 0.55f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 10f, 15f, 0.065f, 30f, 0.065f);
+                        return;
                     }
-                    if (___Agent.Formation.QuerySystem.IsRangedFormation)
+                }
+                if (behaviorValueSet == BehaviorValueSet.DefaultMove)
+                {
+                    if (___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
                     {
-                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0f, 40f, 4f, 50f, 6f);
-                        //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 7f, 1f, 10f, 0.01f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5.5f, 2f, 4f, 10f, 0.01f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 2f, 0f, 8f, 20f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 5f, 40f, 4f, 60f, 0f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 2f, 15f, 6.5f, 30f, 5.5f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityMelee, 1f, 12f, 1f, 30f, 0f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-                        return false;
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 15f, 5f, 20f, 5f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 0f, 2f, 0f, 20f, 0f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 0.01f, 2f, 0.01f, 30f, 0.01f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 1f, 15f, 0.065f, 30f, 0.065f);
+                        return;
                     }
-                }
-            }
-            if (___Agent != null && ___Agent.Formation != null && behaviorValueSet == BehaviorValueSet.Follow)
-            {
-                if (___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
-                {
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 7f, 5f, 20f, 5f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 0.55f, 2f, 4f, 20f, 0.55f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0.55f, 7f, 0.55f, 20f, 0.55f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 8f, 2f, 0.55f, 30f, 0.55f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 10f, 15f, 0.065f, 30f, 0.065f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-                    return false;
-                }
-            }
-            if (___Agent != null && ___Agent.Formation != null && behaviorValueSet == BehaviorValueSet.DefaultMove)
-            {
-                if (___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
-                {
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 15f, 5f, 20f, 5f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 0f, 2f, 0f, 20f, 0f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0.02f, 7f, 0.04f, 20f, 0.03f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 0.01f, 2f, 0.01f, 30f, 0.01f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 1f, 15f, 0.065f, 30f, 0.065f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-                    return false;
-                }
-                if (Mission.Current.MissionTeamAIType != Mission.MissionTeamAITypeEnum.FieldBattle)
-                {
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 7f, 5f, 20f, 6f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 4f, 3f, 20f, 0.01f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0.02f, 7f, 0.04f, 20f, 0.03f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 10f, 7f, 5f, 30f, 0.05f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 0.02f, 15f, 0.065f, 30f, 0.055f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
-                    __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-                    return false;
-                }
-                if (___Agent.Formation != null)
-                {
+                    if (Mission.Current.IsSiegeBattle || Mission.Current.IsSallyOutBattle)
+                    {
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 4f, 3f, 20f, 0.01f);
+                        return;
+                    }
                     if (___Agent.Formation.GetReadonlyMovementOrderReference().OrderEnum == MovementOrder.MovementOrderEnum.FallBack)
                     {
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 7f, 5f, 20f, 6f);
                         __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 0f, 4f, 0f, 20f, 0f);
                         __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 10f, 7f, 5f, 30f, 0.05f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 0.02f, 15f, 0.065f, 30f, 0.055f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-                        return false;
                     }
                     else
                     {
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 7f, 5f, 20f, 6f);
                         __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 5f, 3f, 20f, 0.01f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0.02f, 7f, 0.04f, 20f, 0.03f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 10f, 7f, 5f, 30f, 0.05f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 0.02f, 15f, 0.065f, 30f, 0.055f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 9f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-                        return false;
+                    }
+                    return;
+                }
+                if (Mission.Current.IsSiegeBattle || Mission.Current.IsSallyOutBattle)
+                {
+                    if (___Agent.Formation.QuerySystem.IsRangedFormation)
+                    {
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 5f, 5f, 15f, 0.01f);
+                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0.02f, 5f, 0.04f, 15f, 0.03f);
+                        return;
                     }
                 }
             }
-            return true;
         }
     }
 
@@ -2368,8 +2103,8 @@ namespace RBMAI
         [HarmonyPatch("SwitchUnitLocations")]
         private static bool PrefixSwitchUnitLocations(ref BehaviorRegroup __instance, IFormationUnit firstUnit, IFormationUnit secondUnit)
         {
-            if(firstUnit != null && ((Agent)firstUnit).Formation != null && ((Agent)firstUnit).State == AgentState.Active && 
-                secondUnit != null && ((Agent)secondUnit).Formation != null && ((Agent)secondUnit).State == AgentState.Active )
+            if(firstUnit != null && ((Agent)firstUnit).Formation != null && ((Agent)firstUnit).IsActive() && 
+                secondUnit != null && ((Agent)secondUnit).Formation != null && ((Agent)secondUnit).IsActive() )
             {
                 return true;
             }

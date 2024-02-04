@@ -181,6 +181,56 @@ namespace RBMCombat
                         calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight + 0.04f)));
                         break;
                     }
+                case "cla_musket":
+                    {
+                        // arquebus , ammo should weight 40g+, kinetic energy should be 1300-1750J
+                        double potentialEnergy = drawWeight;
+                        calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
+                        break;
+                    }
+                case "cla_flint_rifle":
+                    {
+                        // flintlock musket , ammo should weight 18g-25g, kinetic energy should be 2300-3000J
+                        double potentialEnergy = drawWeight;
+                        calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
+                        break;
+                    }
+                case "cla_pistol":
+                    {
+                        // early flintlock pistol , ammo should weight 14g, kinetic energy should be 700+J
+                        double potentialEnergy = drawWeight;
+                        calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
+                        break;
+                    }
+                case "cla_revolver":
+                    {
+                        // wild west revolver , ammo should weight 16.5g, kinetic energy should be 850+J
+                        double potentialEnergy = drawWeight;
+                        calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
+                        break;
+                    }
+                case "cla_cannon":
+                    {
+                        // early hand cannon , ammo should weight 50g, kinetic energy should be 300-500J
+                        double potentialEnergy = drawWeight;
+                        calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
+                        break;
+                    }
+                case "cla_bolt_rifle":
+                    {
+                        // early bolt action , ammo should weight 25g, kinetic energy should be 5000J
+                        double potentialEnergy = drawWeight;
+                        calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
+                        break;
+                    }
+                case "cla_bomb":
+                    {
+                        // Just a throw
+                        double potentialEnergy = 150f;
+                        calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / ammoWeight));
+                        break;
+                    }
+
                 default:
                     {
                         calculatedMissileSpeed = 10;

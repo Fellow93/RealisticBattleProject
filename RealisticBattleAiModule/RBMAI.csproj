@@ -190,6 +190,7 @@
     <Compile Include="AiModule\RbmBehaviors\RBMBehaviorHorseArcherSkirmish.cs" />
     <Compile Include="AiModule\RbmBehaviors\RBMBehaviorInfantryAttackFlank.cs" />
     <Compile Include="AiModule\RbmBehaviors\RBMBehaviorForwardSkirmish.cs" />
+    <Compile Include="AiModule\RbmBehaviors\BehaviorChargePatch.cs" />
     <Compile Include="AiModule\RbmTactics\RBMTacticAttackSplitArchers.cs" />
     <Compile Include="AiModule\RbmTactics\RBMTacticDefendSplitInfantry.cs" />
     <Compile Include="AiModule\RbmTactics\RBMTacticDefendSplitArchers.cs" />

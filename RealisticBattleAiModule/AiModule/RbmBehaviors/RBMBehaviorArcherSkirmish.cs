@@ -50,6 +50,18 @@ namespace RBMAI
             bool flag = false;
             Vec2 vec;
             Vec2 vec2;
+            if(base.Formation.Team.QuerySystem.RangedRatio >= 0.90f)
+            {
+                //if (base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation == null)
+                //{
+                    base.CurrentOrder = MovementOrder.MovementOrderCharge;
+                //}
+                //else
+                //{
+                //    base.CurrentOrder = MovementOrder.MovementOrderChargeToTarget(base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                //}
+                return;
+            }
             if (base.Formation.CountOfUnits <= 1)
             {
                 vec = base.Formation.Direction;

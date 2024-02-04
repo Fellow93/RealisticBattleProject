@@ -1238,12 +1238,12 @@ namespace RBMCombat
         {
             private static bool Prefix(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
             {
-                if (affectedAgent != null && blow.InflictedDamage > 1f && affectedAgent.State == AgentState.Active && attackCollisionData.CollisionResult == CombatCollisionResult.StrikeAgent && !blow.IsFallDamage)
+                if (affectedAgent != null && blow.InflictedDamage > 1f && affectedAgent.IsActive() && attackCollisionData.CollisionResult == CombatCollisionResult.StrikeAgent && !blow.IsFallDamage)
                 {
                     Utilities.initiateCheckForArmor(ref affectedAgent, attackCollisionData, blow, affectorAgent, attackerWeapon);
                     Utilities.numOfHits++;
                 }
-                if (affectedAgent.Character != null && affectorAgent != null && affectorAgent.Character != null && affectedAgent.State == AgentState.Active)
+                if (affectedAgent.Character != null && affectorAgent != null && affectorAgent.Character != null && affectedAgent.IsActive())
                 {
                     bool isFatal = affectedAgent.Health - (float)blow.InflictedDamage < 1f;
                     bool isTeamKill;
@@ -1271,7 +1271,7 @@ namespace RBMCombat
         {
             private static bool Prefix(Agent affectedAgent, Agent affectorAgent, in MissionWeapon affectorWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
             {
-                if (affectedAgent != null && affectedAgent.State == AgentState.Active && blow.InflictedDamage > 1f && attackCollisionData.CollisionResult == CombatCollisionResult.StrikeAgent && !blow.IsFallDamage)
+                if (affectedAgent != null && affectedAgent.IsActive() && blow.InflictedDamage > 1f && attackCollisionData.CollisionResult == CombatCollisionResult.StrikeAgent && !blow.IsFallDamage)
                 {
                     Utilities.initiateCheckForArmor(ref affectedAgent, attackCollisionData, blow, affectorAgent, affectorWeapon);
                     Utilities.numOfHits++;

@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,7 +7,6 @@ using TaleWorlds.CampaignSystem.TournamentGames;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
-using TaleWorlds.MountAndBlade.ComponentInterfaces;
 using static TaleWorlds.Core.ItemObject;
 using static TaleWorlds.MountAndBlade.Agent;
 
@@ -42,7 +42,10 @@ namespace RBMAI
         {
             private static void Prefix(ref Agent __instance)
             {
-                AgentPostures.values[__instance] = new Posture();
+                if (__instance.IsHuman)
+                {
+                    AgentPostures.values[__instance] = new Posture();
+                }
             }
         }
 
@@ -145,8 +148,21 @@ namespace RBMAI
         }
 
         [HarmonyPatch(typeof(MissionState))]
-        [HarmonyPatch("FinishMissionLoading")]
-        public class FinishMissionLoadingPatch
+        [HarmonyPatch("LoadMission")]
+        public class LoadMissionPatch
+        {
+            private static void Postfix()
+            {
+                AgentPostures.values.Clear();
+                agentsToDropShield.Clear();
+                agentsToDropWeapon.Clear();
+                agentsToChangeFormation.Clear();
+            }
+        }
+
+        [HarmonyPatch(typeof(MissionState))]
+        [HarmonyPatch("OnDeactivate")]
+        public class OnDeactivatePatch
         {
             private static void Postfix()
             {
@@ -161,6 +177,26 @@ namespace RBMAI
         [HarmonyPatch("CreateMeleeBlow")]
         private class CreateMeleeBlowPatch
         {
+            public static void ResetPostureForAgent(ref Posture posture, float postureResetModifier, Agent agent)
+            {
+                if(posture != null)
+                {
+                    if(agent != null && posture.maxPostureLossCount >= 1)
+                    {
+                        agent.AgentDrivenProperties.WeaponInaccuracy *= posture.maxPostureLossCount * 1.1f;
+                    }
+                    float currentTime = Mission.Current.CurrentTime;
+                    int restCount = posture.lastPostureLossTime > 0 ? MathF.Floor((currentTime - posture.lastPostureLossTime) / 20f) : 0;
+                    posture.maxPostureLossCount = posture.maxPostureLossCount - restCount;
+                    if (posture.maxPostureLossCount < 10)
+                    {
+                        posture.maxPostureLossCount += 1;
+                    }
+                    posture.posture = posture.maxPosture * (postureResetModifier * (1f - (0.05f * posture.maxPostureLossCount)));
+                    posture.lastPostureLossTime = Mission.Current.CurrentTime;
+                }
+            }
+
             private static void Postfix(ref Mission __instance, ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
             {
                 if ((new StackTrace()).GetFrame(3).GetMethod().Name.Contains("MeleeHit") && victimAgent != null && victimAgent.IsHuman)
@@ -231,9 +267,10 @@ namespace RBMAI
                                                 makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
                                             }
                                         }
-                                        defenderPosture.posture = defenderPosture.maxPosture * postureResetModifier;
+                                        ResetPostureForAgent(ref defenderPosture, postureResetModifier, victimAgent);
                                         addPosturedamageVisual(attackerAgent, victimAgent);
                                     }
+                                    // //defenderPosture.lastPostureLossTime = Mission.Current.CurrentTime;
                                 }
                                 if (attackerPosture != null)
                                 {
@@ -249,7 +286,7 @@ namespace RBMAI
                                             {
                                                 agentsToDropWeapon.Add(attackerAgent);
                                             }
-                                            attackerPosture.posture = attackerPosture.maxPosture * postureResetModifier;
+                                            ResetPostureForAgent(ref attackerPosture, postureResetModifier, attackerAgent);
                                             addPosturedamageVisual(attackerAgent, victimAgent);
                                         }
                                         else
@@ -257,6 +294,7 @@ namespace RBMAI
                                             attackerPosture.posture = 0f;
                                         }
                                     }
+                                    //attackerPosture.lastPostureLossTime = Mission.Current.CurrentTime;
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                 }
                             }
@@ -295,9 +333,10 @@ namespace RBMAI
                                                 makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
                                             }
                                         }
-                                        defenderPosture.posture = defenderPosture.maxPosture * postureResetModifier;
+                                        ResetPostureForAgent(ref defenderPosture, postureResetModifier, victimAgent);
                                         addPosturedamageVisual(attackerAgent, victimAgent);
                                     }
+                                     //defenderPosture.lastPostureLossTime = Mission.Current.CurrentTime;
                                 }
                                 if (attackerPosture != null)
                                 {
@@ -330,9 +369,10 @@ namespace RBMAI
                                         {
                                             makePostureRiposteBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
                                         }
-                                        attackerPosture.posture = attackerPosture.maxPosture * postureResetModifier;
+                                        ResetPostureForAgent(ref attackerPosture, postureResetModifier, attackerAgent);
                                         addPosturedamageVisual(attackerAgent, victimAgent);
                                     }
+                                    //attackerPosture.lastPostureLossTime = Mission.Current.CurrentTime;
                                 }
                             }
                             else if (victimAgent.IsHuman && attackerAgent.IsHuman && collisionData.CollisionResult == CombatCollisionResult.StrikeAgent)
@@ -368,9 +408,10 @@ namespace RBMAI
                                                 makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
                                             }
                                         }
-                                        defenderPosture.posture = defenderPosture.maxPosture * postureResetModifier;
+                                        ResetPostureForAgent(ref defenderPosture, postureResetModifier, victimAgent);
                                         addPosturedamageVisual(attackerAgent, victimAgent);
                                     }
+                                     //defenderPosture.lastPostureLossTime = Mission.Current.CurrentTime;
                                 }
                                 if (attackerPosture != null)
                                 {
@@ -425,9 +466,10 @@ namespace RBMAI
 
                                             }
                                         }
-                                        defenderPosture.posture = defenderPosture.maxPosture * shieldPostureResetModifier;
+                                        ResetPostureForAgent(ref defenderPosture, shieldPostureResetModifier, victimAgent);
                                         addPosturedamageVisual(attackerAgent, victimAgent);
                                     }
+                                     //defenderPosture.lastPostureLossTime = Mission.Current.CurrentTime;
                                 }
                                 if (attackerPosture != null)
                                 {
@@ -476,9 +518,10 @@ namespace RBMAI
                                                 makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
                                             }
                                         }
-                                        defenderPosture.posture = defenderPosture.maxPosture * shieldPostureResetModifier;
+                                        ResetPostureForAgent(ref defenderPosture, shieldPostureResetModifier, victimAgent);
                                         addPosturedamageVisual(attackerAgent, victimAgent);
                                     }
+                                     //defenderPosture.lastPostureLossTime = Mission.Current.CurrentTime;
                                 }
                                 if (attackerPosture != null)
                                 {
@@ -527,9 +570,10 @@ namespace RBMAI
                                                 makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
                                             }
                                         }
-                                        defenderPosture.posture = defenderPosture.maxPosture * shieldPostureResetModifier;
+                                        ResetPostureForAgent(ref defenderPosture, shieldPostureResetModifier, victimAgent);
                                         addPosturedamageVisual(attackerAgent, victimAgent);
                                     }
+                                     //defenderPosture.lastPostureLossTime = Mission.Current.CurrentTime;
                                 }
                                 if (attackerPosture != null)
                                 {
@@ -552,7 +596,7 @@ namespace RBMAI
                                                 {
                                                     agentsToDropWeapon.Add(attackerAgent);
                                                 }
-                                                attackerPosture.posture = attackerPosture.maxPosture * postureResetModifier;
+                                                ResetPostureForAgent(ref attackerPosture, postureResetModifier, attackerAgent);
                                                 addPosturedamageVisual(attackerAgent, victimAgent);
                                             }
                                             else
@@ -560,9 +604,10 @@ namespace RBMAI
                                                 makePostureRiposteBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
                                             }
                                         }
-                                        attackerPosture.posture = attackerPosture.maxPosture * postureResetModifier;
+                                        ResetPostureForAgent(ref attackerPosture, postureResetModifier, attackerAgent);
                                         addPosturedamageVisual(attackerAgent, victimAgent);
                                     }
+                                    //attackerPosture.lastPostureLossTime = Mission.Current.CurrentTime;
                                 }
                             }
                         }
@@ -583,9 +628,10 @@ namespace RBMAI
                                         }
                                         makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.NonTipThrust);
                                     }
-                                    defenderPosture.posture = defenderPosture.maxPosture * postureResetModifier;
+                                    ResetPostureForAgent(ref defenderPosture, postureResetModifier, victimAgent);
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                 }
+                                 //defenderPosture.lastPostureLossTime = Mission.Current.CurrentTime;
                             }
                             if (attackerPosture != null)
                             {
@@ -600,7 +646,7 @@ namespace RBMAI
                                         InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, chamber block " + MathF.Floor(healthDamage) + " damage crushed through", Color.FromUint(4282569842u)));
                                     }
                                     makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
-                                    attackerPosture.posture = attackerPosture.maxPosture * postureResetModifier;
+                                    ResetPostureForAgent(ref attackerPosture, postureResetModifier, attackerAgent);
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                 }
                                 else
@@ -611,9 +657,10 @@ namespace RBMAI
                                         InformationManager.DisplayMessage(new InformationMessage("Chamber block " + MathF.Floor(healthDamage) + " damage crushed through", Color.FromUint(4282569842u)));
                                     }
                                     makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                    attackerPosture.posture = attackerPosture.maxPosture * postureResetModifier;
+                                    ResetPostureForAgent(ref attackerPosture, postureResetModifier, attackerAgent);
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                 }
+                                //attackerPosture.lastPostureLossTime = Mission.Current.CurrentTime;
                             }
                         }
                     }
@@ -640,7 +687,7 @@ namespace RBMAI
             {
                 if (RBMConfig.RBMConfig.postureEnabled)
                 {
-                    if (victimAgent.IsPlayerControlled || attackerAgent.IsPlayerControlled)
+                    if (victimAgent != null && attackerAgent != null && (victimAgent.IsPlayerControlled || attackerAgent.IsPlayerControlled))
                     {
                         Agent enemyAgent = null;
                         if (victimAgent.IsPlayerControlled)
@@ -834,11 +881,11 @@ namespace RBMAI
                                 thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weaponWeight, effectiveSkillDR, thrustWeaponSpeed, 0f, Agent.UsageDirection.AttackDown);
                                 break;
                             }
-                        //default:
-                        //    {
-                        //        //thrustMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(character, null, thrustWeaponSpeed, weaponWeight, weapon.Item, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex), 0f, false);
-                        //        //break;
-                        //    }
+                            //default:
+                            //    {
+                            //        //thrustMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(character, null, thrustWeaponSpeed, weaponWeight, weapon.Item, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex), 0f, false);
+                            //        //break;
+                            //    }
                     }
                 }
                 return thrustMagnitude;
@@ -938,6 +985,15 @@ namespace RBMAI
 
             private static float calculateDefenderPostureDamage(Agent defenderAgent, Agent attackerAgent, float absoluteDamageModifier, float actionTypeDamageModifier, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier)
             {
+
+                //Posture defenderPosture = null;
+                //AgentPostures.values.TryGetValue(defenderAgent, out defenderPosture);
+
+                //if(defenderPosture != null)
+                //{
+                //     //defenderPosture.lastPostureLossTime = Mission.Current.CurrentTime;
+                //}
+
                 float result = 0f;
                 float defenderPostureDamageModifier = 1f; // terms and conditions may apply
 
@@ -1133,6 +1189,7 @@ namespace RBMAI
 
             private static float calculateAttackerPostureDamage(Agent defenderAgent, Agent attackerAgent, float absoluteDamageModifier, float actionTypeDamageModifier, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier)
             {
+                
                 float result = 0f;
                 float postureDamageModifier = 1f; // terms and conditions may apply
 
@@ -1408,6 +1465,88 @@ namespace RBMAI
                     missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, null, newBLow, ref collisionData, in attackerWeapon);
                 }
             }
+
+            public static float calculateRangedPostureLoss(float fixedPS, float dynamicPS, Agent shooterAgent, WeaponClass wc ){
+                SkillObject attackerWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(wc);
+
+                float attackerEffectiveWeaponSkill = 0;
+                float attackerEffectiveStrengthSkill = 0;
+
+                float fixedPostureLoss = fixedPS;
+                float dynamicPostureLoss = dynamicPS;
+
+                if (attackerWeaponSkill != null)
+                {
+                    attackerEffectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(shooterAgent, attackerWeaponSkill);
+                }
+                if (shooterAgent.HasMount)
+                {
+                    attackerEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(shooterAgent, DefaultSkills.Riding);
+                }
+                else
+                {
+                    attackerEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(shooterAgent, DefaultSkills.Athletics);
+                }
+
+                dynamicPostureLoss -= MBMath.Lerp(0f, 1f, 1f - (attackerEffectiveWeaponSkill / 200f)) * (dynamicPS * 0.5f);
+                dynamicPostureLoss -= MBMath.Lerp(0f, 1f, 1f - (attackerEffectiveStrengthSkill / 200f)) * (dynamicPS * 0.5f);
+
+                return fixedPostureLoss + dynamicPostureLoss;
+            }
+
+            [HarmonyPatch(typeof(Mission))]
+            [HarmonyPatch("OnAgentShootMissile")]
+            [UsedImplicitly]
+            [MBCallback]
+            private class OverrideOnAgentShootMissile
+            {
+
+                private static void Postfix(ref Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
+                {
+                    if (RBMConfig.RBMConfig.postureEnabled)
+                    {
+                        MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
+                        WeaponClass wc = missionWeapon.CurrentUsageItem.WeaponClass;
+                        Posture shooterPosture = null;
+                        AgentPostures.values.TryGetValue(shooterAgent, out shooterPosture);
+                        if(shooterPosture != null)
+                        {
+                            float currentTime = Mission.Current.CurrentTime;
+                            switch (wc)
+                                {
+                                case WeaponClass.Bow:
+                                    {
+                                        shooterPosture.posture = shooterPosture.posture - calculateRangedPostureLoss(35f, 25f, shooterAgent, wc);
+                                        break;
+                                    }
+                                case WeaponClass.Crossbow:
+                                    {
+                                        shooterPosture.posture = shooterPosture.posture - calculateRangedPostureLoss(5f, 5f, shooterAgent, wc);
+                                        break;
+                                    }
+                                case WeaponClass.Javelin:
+                                    {
+                                        shooterPosture.posture = shooterPosture.posture - calculateRangedPostureLoss(25f, 25f, shooterAgent, wc);
+                                        break;
+                                    }
+                                case WeaponClass.ThrowingAxe:
+                                case WeaponClass.ThrowingKnife:
+                                    {
+                                        
+                                        shooterPosture.posture = shooterPosture.posture - calculateRangedPostureLoss(25f, 25f, shooterAgent, wc);
+                                        break;
+                                    }
+                            }
+                            if (shooterPosture.posture < 0f)
+                            {
+                                float postureResetModifier = 0.5f;
+                                ResetPostureForAgent(ref shooterPosture, postureResetModifier, shooterAgent);
+                            }
+                            //shooterPosture.lastPostureLossTime = currentTime;
+                        }
+                    }
+                }
+            }
         }
 
         [HarmonyPatch(typeof(Agent))]
@@ -1494,8 +1633,14 @@ namespace RBMAI
                 }
                 else
                 {
+                    MBArrayList<Agent> inactiveAgents = new MBArrayList<Agent>();
                     foreach (KeyValuePair<Agent, Posture> entry in AgentPostures.values)
                     {
+                        if(entry.Key != null && entry.Key.Mission != null && !entry.Key.IsActive())
+                        {
+                            inactiveAgents.Add(entry.Key);
+                            continue;
+                        }
                         if (entry.Value.posture < entry.Value.maxPosture)
                         {
                             if (RBMConfig.RBMConfig.postureGUIEnabled)
@@ -1518,10 +1663,15 @@ namespace RBMAI
                             entry.Value.posture += entry.Value.regenPerTick * 30f;
                         }
                     }
+                    foreach(Agent agent in inactiveAgents)
+                    {
+                        AgentPostures.values.Remove(agent);
+                    }
+                    inactiveAgents.Clear();
 
                     foreach (KeyValuePair<Agent, FormationClass> entry in agentsToChangeFormation)
                     {
-                        if (entry.Key != null && entry.Key.IsActive() && entry.Key.Team != null)
+                        if (entry.Key != null && entry.Key.Mission != null && entry.Key.IsActive() && entry.Key.Team != null)
                         {
                             entry.Key.Formation = entry.Key.Team.GetFormation(entry.Value);
                             entry.Key.DisableScriptedMovement();
@@ -1529,9 +1679,11 @@ namespace RBMAI
                     }
                     agentsToChangeFormation.Clear();
 
+                    //shield drop
+                    MBArrayList<Agent> agentsAbleToDropShield = new MBArrayList<Agent> { };
                     for (int i = agentsToDropShield.Count - 1; i >= 0; i--)
                     {
-                        if (agentsToDropShield[i] != null && agentsToDropShield[i].IsActive())
+                        if (agentsToDropShield[i] != null && agentsToDropShield[i].Mission != null && agentsToDropShield[i].IsActive())
                         {
                             ActionCodeType currentActionType = agentsToDropShield[i].GetCurrentActionType(1);
                             if (
@@ -1544,30 +1696,36 @@ namespace RBMAI
                             }
                             else
                             {
-                                for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.ExtraWeaponSlot; equipmentIndex++)
-                                {
-                                    MissionWeapon weapon2 = agentsToDropShield[i].Equipment[equipmentIndex];
-                                    if (!weapon2.IsEmpty && (weapon2.IsShield()))
-                                    {
-                                        agentsToDropShield[i].DropItem(equipmentIndex);
-                                        agentsToDropShield[i].UpdateAgentProperties();
-                                        agentsToDropShield.Remove(agentsToDropShield[i]);
-                                        break;
-                                    }
-                                }
+                                agentsAbleToDropShield.Add(agentsToDropShield[i]);
                             }
                         }
                         else
                         {
-                            agentsToDropShield.Remove(agentsToDropShield[i]);
+                            agentsAbleToDropShield.Add(agentsToDropShield[i]);
                         }
                     }
+                    foreach(Agent agent in agentsAbleToDropShield)
+                    {
+                        if (agent != null && agent.Mission != null && agent.IsActive())
+                        {
+                            EquipmentIndex ei = agent.GetWieldedItemIndex(Agent.HandIndex.OffHand);
+                            if (ei != EquipmentIndex.None)
+                            {
+                                agent.DropItem(ei);
+                                agent.UpdateAgentProperties();
+                            }
+                        }
+                        agentsToDropShield.Remove(agent);
+                    }
+                    agentsAbleToDropShield.Clear();
+
+                    //weapon drop
+                    MBArrayList<Agent> agentsAbleToDropWeapon = new MBArrayList<Agent> { };
                     for (int i = agentsToDropWeapon.Count - 1; i >= 0; i--)
                     {
-                        //if (AgentAi.agentsToDropWeapon[i].State == AgentState.Active)
-                            if (agentsToDropWeapon[i] != null && agentsToDropWeapon[i].IsActive())
-                            {
-                                ActionCodeType currentActionType = agentsToDropWeapon[i].GetCurrentActionType(1);
+                        if (agentsToDropWeapon[i] != null && agentsToDropWeapon[i].Mission != null && agentsToDropWeapon[i].IsActive())
+                        {
+                            ActionCodeType currentActionType = agentsToDropWeapon[i].GetCurrentActionType(1);
                             if (
                                 currentActionType == ActionCodeType.ReleaseMelee ||
                                 currentActionType == ActionCodeType.ReleaseRanged ||
@@ -1578,20 +1736,28 @@ namespace RBMAI
                             }
                             else
                             {
-                                EquipmentIndex ei = agentsToDropWeapon[i].GetWieldedItemIndex(Agent.HandIndex.MainHand);
-                                if (ei != EquipmentIndex.None)
-                                {
-                                    agentsToDropWeapon[i].DropItem(ei);
-                                    agentsToDropWeapon[i].UpdateAgentProperties();
-                                    agentsToDropWeapon.Remove(agentsToDropWeapon[i]);
-                                }
+                                agentsAbleToDropWeapon.Add(agentsToDropWeapon[i]);
                             }
                         }
                         else
                         {
-                            agentsToDropWeapon.Remove(agentsToDropWeapon[i]);
+                            agentsAbleToDropWeapon.Add(agentsToDropWeapon[i]);
                         }
                     }
+                    foreach (Agent agent in agentsAbleToDropWeapon)
+                    {
+                        if (agent != null && agent.Mission != null && agent.IsActive())
+                        {
+                            EquipmentIndex ei = agent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                            if (ei != EquipmentIndex.None)
+                            {
+                                agent.DropItem(ei);
+                                agent.UpdateAgentProperties();
+                            }
+                        }
+                        agentsToDropWeapon.Remove(agent);
+                    }
+                    agentsAbleToDropWeapon.Clear();
 
                     currentDt = 0f;
                 }
