@@ -304,6 +304,12 @@ namespace RBMCombat
                         missileTotalDamage *= 0.01f;
                         break;
                     }
+                case WeaponClass.Cartridge:
+                    {
+                        missileTotalDamage -= 100f;
+                        missileTotalDamage *= 0.01f;
+                        break;
+                    }
             }
 
             float physicalDamage = ((missileSpeed * missileSpeed) * (weaponWeight)) / 2;
@@ -312,6 +318,7 @@ namespace RBMCombat
             {
                 case WeaponClass.Boulder:
                 case WeaponClass.Stone:
+                case WeaponClass.Cartridge:
                     {
                         physicalDamage = (missileSpeed * missileSpeed * (weaponWeight) * 0.5f);
                         break;
@@ -387,6 +394,7 @@ namespace RBMCombat
                 baseMagnitude = (physicalDamage * momentumRemaining) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
             }
             if (weaponClass == WeaponClass.Arrow ||
+                weaponClass == WeaponClass.Cartridge ||
                 weaponClass == WeaponClass.Bolt)
             {
                 if (damageType == DamageTypes.Cut || damageType == DamageTypes.Pierce)
