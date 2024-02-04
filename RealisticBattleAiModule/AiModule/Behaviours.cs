@@ -1099,6 +1099,15 @@ namespace RBMAI
         [HarmonyPatch("SetBehaviorValueSet")]
         private static void SetBehaviorValueSet(HumanAIComponent __instance, BehaviorValueSet behaviorValueSet, Agent ___Agent)
         {
+            if(Mission.Current.SceneName.Contains("arena"))
+            {
+                if(___Agent != null && ___Agent.IsRangedCached)
+                {
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5.5f, 3f, 4f, 10f, 0.01f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 3f, 2f, 10f, 20f);
+                }
+            }
             if(___Agent != null && ___Agent.Formation != null)
             {
                 if (behaviorValueSet == BehaviorValueSet.Charge)
