@@ -904,7 +904,7 @@ namespace RBMCombat
                                 }
                             case "ThrowingAxe":
                                 {
-                                    localInflictedDamage *= 3f;
+                                    localInflictedDamage *= 10f;
                                     break;
                                 }
                             case "OneHandedPolearm":

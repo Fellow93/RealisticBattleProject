@@ -115,12 +115,21 @@ namespace RBMAI
                 if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Crossbow)
                 {
                     agentDrivenProperties.AiShooterError = 0.020f - (0.007f * effectiveSkillLevel);
+                    agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
+                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 1.5f;
+                }
+                else if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Bow)
+                {
+                    agentDrivenProperties.AiShooterError = 0.015f - (0.020f * effectiveSkillLevel);
+                    agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
+                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 1.5f;
                 }
                 else
                 {
                     agentDrivenProperties.AiShooterError = 0.015f - (0.020f * effectiveSkillLevel);
+                    agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.1f;
+                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 0.5f;
                 }
-
                 if (RBMConfig.RBMConfig.postureEnabled)
                 {
                     Posture posture = null;
@@ -131,11 +140,11 @@ namespace RBMAI
                     }
                 }
 
-                if (agent.IsAIControlled)
-                {
-                    agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
-                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 1.5f;
-                }
+                //if (agent.IsAIControlled)
+                //{
+                //    agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
+                //    agentDrivenProperties.WeaponBestAccuracyWaitTime = 1.5f;
+                //}
 
                 agentDrivenProperties.AiRangerLeadErrorMin = (float)((0.0 - (double)num4) * 0.349999994039536) + 0.3f;
                 agentDrivenProperties.AiRangerLeadErrorMax = num4 * 0.2f + 0.3f;
