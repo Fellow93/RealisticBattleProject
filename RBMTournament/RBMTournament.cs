@@ -405,16 +405,75 @@ namespace RBMTournament
                 return troops;
             }
 
-            public static List<CharacterObject> FillTroopListFromCulture(CultureObject culture)
+            public static void AddTroopsFromCulture(CultureObject culture, ref List<CharacterObject> troops)
             {
-                List<CharacterObject> troops = new List<CharacterObject>();
                 foreach (CharacterObject character in CharacterObject.All)
                 {
                     if (character.Occupation == Occupation.Soldier && character.Culture == culture && !character.HiddenInEncylopedia)
                     {
-                        troops.Add(character);
+                        if (!character.Name.Contains("Conspiracy"))
+                        {
+                            troops.Add(character);
+                        }
                     }
                 }
+            }
+
+            public static void AddTroopsFromSubCulture(CultureCode code, ref List<CharacterObject> troops)
+            {
+                foreach (CharacterObject character in CharacterObject.All)
+                {
+                    if (character.Occupation == Occupation.Soldier && character.Culture.GetCultureCode() == code && !character.HiddenInEncylopedia)
+                    {
+                        if (!character.Name.Contains("Conspiracy"))
+                        {
+                            troops.Add(character);
+                        }
+                    }
+                }
+            }
+
+            public static void AddMercenaryTroops(ref List<CharacterObject> troops)
+            {
+                foreach (CharacterObject character in CharacterObject.All)
+                {
+                    if (character.Occupation == Occupation.Mercenary && !character.HiddenInEncylopedia)
+                    {
+                        if (!character.Name.Contains("Conspiracy"))
+                        {
+                            troops.Add(character);
+                        }
+                    }
+                }
+            }
+
+
+            public static List<CharacterObject> FillTroopListFromCulture(CultureObject culture)
+            {
+                List<CharacterObject> troops = new List<CharacterObject>();
+
+                AddTroopsFromCulture(culture, ref troops);
+
+                switch (culture.GetCultureCode())
+                {
+                    case CultureCode.Sturgia:
+                        {
+                            AddTroopsFromSubCulture(CultureCode.Nord, ref troops);
+                            break;
+                        }
+                    case CultureCode.Battania:
+                        {
+                            AddTroopsFromSubCulture(CultureCode.Vakken, ref troops);
+                            break;
+                        }
+                    case CultureCode.Aserai:
+                        {
+                            AddTroopsFromSubCulture(CultureCode.Darshi, ref troops);
+                            break;
+                        }
+                }
+                
+                AddMercenaryTroops(ref troops);
 
                 return troops;
             }
