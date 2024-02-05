@@ -445,16 +445,16 @@
         <string id="RBMCB97qhVM" text="Mule{@Plural}mules{\\@}" />
         <string id="DlPOte0H" text="Pack Camel{@Plural}pack camels{\\@}" />
         <string id="h7IWO4DV" text="Nahasawi{@Plural}Nahasawi horses{\\@}" />
-        <string id="RBMsgfKrAaZ" text="Battanian Hobby{@Plural}Battanian hobbies{\\@}" />
+        <string id="RBMDTP3fPHI" text="Battanian Hobby{@Plural}Battanian hobbies{\\@}" />
         <string id="RBMIOt4KTHs" text="Midlands Palfrey{@Plural}Midlands palfreys{\\@}" />
         <string id="RBM18Dd6282" text="Steppe Horse{@Plural}steppe horses{\\@}" />
         <string id="QwiI8Uho" text="Sturgian Native{@Plural}Sturgian native horses{\\@}" />
         <string id="RBM0cAaDb83" text="Rouncey{@Plural}rouncey horses{\\@}" />
         <string id="RBMCQBiJLgv" text="Camel{@Plural}camels{\\@}" />
         <string id="gnvIGThE" text="Darshi Horse{@Plural}Darshi horses{\\@}" />
-        <string id="RBMtZN9H492" text="Glintor Pony{@Plural}Glintor ponies{\\@}" />
-        <string id="RBMmVAaWp5U" text="Canterion Charger{@Plural}Canterion chargers{\\@}" />
-        <string id="RBMPZPphq6H" text="Steppe Hunter{@Plural}Steppe hunters{\\@}" />
+        <string id="RBM0wm6vE7x" text="Glintor Pony{@Plural}Glintor ponies{\\@}" />
+        <string id="RBMBdGggupO" text="Canterion Charger{@Plural}Canterion chargers{\\@}" />
+        <string id="RBMIAoNEjGk" text="Steppe Hunter{@Plural}Steppe hunters{\\@}" />
         <string id="RBM33784728" text="Revyl Chaser" />
         <string id="MqBSmahz" text="Valanby Courser{@Plural}Valanby coursers{\\@}" />
         <string id="baIE2VQW" text="War Camel{@Plural}war camels{\\@}" />
@@ -471,20 +471,20 @@
         <string id="RBMUqdZmdcf" text="War Horse{@Plural}war horses{\\@}" />
         <string id="RBMyGwxXsIL" text="Steppe Charger{@Plural}Steppe Chargers{\\@}" />
         <string id="24xuA5G2" text="Desert War Horse{@Plural}desert war horses{\\@}" />
-        <string id="h7IWO4DV" text="Desert Horse{@Plural}desert horses{\\@}" />
+        <string id="RBMoFdnWlKN" text="Desert Horse{@Plural}desert horses{\\@}" />
         <string id="RBMsgfKrAaZ" text="Battanian Pony{@Plural}Battanian ponies{\\@}" />
-        <string id="RBMIOt4KTHs" text="Midlands Palfrey{@Plural}Midland palfreys{\\@}" />
+        <string id="RBMyrmJ1eLo" text="Midlands Palfrey{@Plural}Midland palfreys{\\@}" />
         <string id="RBM2bB6e89A" text="Steppe Horse{@Plural}steppe horses{\\@}" />
-        <string id="QwiI8Uho" text="Sturgian Trotter{@Plural}Sturgian trotters{\\@}" />
+        <string id="RBMVJUYXAQS" text="Sturgian Trotter{@Plural}Sturgian trotters{\\@}" />
         <string id="RBM0e3E2f9d" text="Saddle Horse{@Plural}saddle horses{\\@}" />
         <string id="RBM2D54dbD4" text="Camel{@Plural}camels{\\@}" />
-        <string id="KFGfTXqE" text="Saddle Horse{@Plural}saddle horses{\\@}" />
-        <string id="gnvIGThE" text="Askarat{@Plural}Askarat horses{\\@}" />
+        <string id="RBM2TbPbN6Y" text="Saddle Horse{@Plural}saddle horses{\\@}" />
+        <string id="RBMelEuYul4" text="Askarat{@Plural}Askarat horses{\\@}" />
         <string id="RBMtZN9H492" text="Swenryn Pony{@Plural}Swenryn ponies{\\@}" />
         <string id="RBMmVAaWp5U" text="Palmatian{@Plural}Palmatian horses{\\@}" />
         <string id="RBMPZPphq6H" text="Karahan{@Plural}Karahan horses{\\@}" />
         <string id="RBMEjx5lXjk" text="Omor Trotter{@Plural}Omor trotters{\\@}" />
-        <string id="MqBSmahz" text="Destrier{@Plural}destriers{\\@}" />
+        <string id="RBMl6gPL2WF" text="Destrier{@Plural}destriers{\\@}" />
         <string id="RBMGoloz0Vm" text="Nahasa Camel{@Plural}Nahasa camels{\\@}" />
         <string id="RBMtBCm7Qqw" text="Khamseen{@Plural}Khamseen horses{\\@}" />
         <string id="dLLD8bVX" text="Rugged Desert Saddle" />

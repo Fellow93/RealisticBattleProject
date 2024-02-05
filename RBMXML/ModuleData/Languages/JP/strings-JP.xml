@@ -445,16 +445,16 @@
   <string id="RBMCB97qhVM" text="ロバ{@Plural}頭のロバ{\@}"/>
   <string id="DlPOte0H" text="荷駄ラクダ{@Plural}頭の荷駄ラクダ{\@}"/>
   <string id="h7IWO4DV" text="ナハサ馬{@Plural}頭のナハサ馬{\@}"/>
-  <string id="RBMsgfKrAaZ" text="バッタニアンホビー{@Plural}頭のバッタニアンホビー{\@}"/>
+  <string id="RBMDTP3fPHI" text="バッタニアンホビー{@Plural}頭のバッタニアンホビー{\@}"/>
   <string id="RBMIOt4KTHs" text="ミッドランドパルフリー{@Plural}頭のミッドランドパルフリー{\@}"/>
   <string id="RBM18Dd6282" text="ステップ馬{@Plural}頭のステップ馬{\@}"/>
   <string id="QwiI8Uho" text="スタルジアンネイティブ{@Plural}頭のスタルジアンネイティブ{\@}"/>
   <string id="RBM0cAaDb83" text="ラウンシー{@Plural}頭のラウンシー{\@}"/>
   <string id="RBMCQBiJLgv" text="ラクダ{@Plural}頭のラクダ{\@}"/>
   <string id="gnvIGThE" text="ダルシー馬{@Plural}頭のダルシー馬{\@}"/>
-  <string id="RBMtZN9H492" text="グリントルポニー{@Plural}頭のグリントルポニー{\@}"/>
-  <string id="RBMmVAaWp5U" text="カンテリオーンチャージャー{@Plural}頭のカンテリオーンチャージャー{\@}"/>
-  <string id="RBMPZPphq6H" text="ステップハンター{@Plural}頭のステップハンター{\@}"/>
+  <string id="RBM0wm6vE7x" text="グリントルポニー{@Plural}頭のグリントルポニー{\@}"/>
+  <string id="RBMBdGggupO" text="カンテリオーンチャージャー{@Plural}頭のカンテリオーンチャージャー{\@}"/>
+  <string id="RBMIAoNEjGk" text="ステップハンター{@Plural}頭のステップハンター{\@}"/>
   <string id="RBM33784728" text="レヴィルチェイサー{@Plural}頭のレヴィルチェイサー{\@}"/>
   <string id="MqBSmahz" text="ヴァランビィコーサー{@Plural}頭のヴァランビィコーサー{\@}"/>
   <string id="baIE2VQW" text="ウォーキャメル{@Plural}頭のウォーキャメル{\@}"/>
@@ -471,20 +471,20 @@
   <string id="RBMUqdZmdcf" text="ウォーホース{@Plural}頭のウォーホース{\@}"/>
   <string id="RBMyGwxXsIL" text="ステップチャージャー{@Plural}頭のステップチャージャー{\@}"/>
   <string id="24xuA5G2" text="デザートウォーホース{@Plural}頭のデザートウォーホース{\@}"/>
-  <string id="h7IWO4DV" text="デザートホース{@Plural}頭のデザートホース{\@}"/>
+  <string id="RBMoFdnWlKN" text="デザートホース{@Plural}頭のデザートホース{\@}"/>
   <string id="RBMsgfKrAaZ" text="バッタニアンポニー{@Plural}頭のバッタニアンポニー{\@}"/>
-  <string id="RBMIOt4KTHs" text="ミッドランドパルフリー{@Plural}頭のミッドランドパルフリー{\@}"/>
+  <string id="RBMyrmJ1eLo" text="ミッドランドパルフリー{@Plural}頭のミッドランドパルフリー{\@}"/>
   <string id="RBM2bB6e89A" text="ステップ馬{@Plural}頭のステップ馬{\@}"/>
-  <string id="QwiI8Uho" text="スタルジアントロッター{@Plural}頭のスタルジアントロッター{\@}"/>
+  <string id="RBMVJUYXAQS" text="スタルジアントロッター{@Plural}頭のスタルジアントロッター{\@}"/>
   <string id="RBM0e3E2f9d" text="乗用馬{@Plural}頭の乗用馬{\@}"/>
   <string id="RBM2D54dbD4" text="ラクダ{@Plural}頭のラクダ{\@}"/>
-  <string id="KFGfTXqE" text="乗用馬{@Plural}頭の乗用馬{\@}"/>
-  <string id="gnvIGThE" text="アスカル馬{@Plural}頭のアスカル馬{\@}"/>
+  <string id="RBM2TbPbN6Y" text="乗用馬{@Plural}頭の乗用馬{\@}"/>
+  <string id="RBMelEuYul4" text="アスカル馬{@Plural}頭のアスカル馬{\@}"/>
   <string id="RBMtZN9H492" text="スウェンリンポニー{@Plural}頭のスウェンリンポニー{\@}"/>
   <string id="RBMmVAaWp5U" text="パルマティア馬{@Plural}頭のパルマティア馬{\@}"/>
   <string id="RBMPZPphq6H" text="カラハーン{@Plural}頭のカラハーン馬{\@}"/>
   <string id="RBMEjx5lXjk" text="オモールトロッター{@Plural}頭のオモールトロッター{\@}"/>
-  <string id="MqBSmahz" text="デストリエ{@Plural}頭のデストリエ{\@}"/>
+  <string id="RBMl6gPL2WF" text="デストリエ{@Plural}頭のデストリエ{\@}"/>
   <string id="RBMGoloz0Vm" text="ナハサラクダ{@Plural}頭のナハサラクダ{\@}"/>
   <string id="RBMtBCm7Qqw" text="『春の砂嵐』{@Plural}頭の『春の砂嵐』{\@}"/>
   <string id="dLLD8bVX" text="擦り切れた砂漠の鞍"/>
