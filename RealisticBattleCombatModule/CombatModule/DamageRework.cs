@@ -1089,7 +1089,7 @@ namespace RBMCombat
 
                                     //collisionData = newdata;
 
-                                    __result.BlowFlag |= BlowFlags.KnockBack;
+                                    //__result.BlowFlag |= BlowFlags.NonTipThrust;
                                 }
                                 break;
                         }
@@ -1132,7 +1132,7 @@ namespace RBMCombat
                     }
                 }
 
-                if ((collisionData.CollisionResult == CombatCollisionResult.Parried && !collisionData.AttackBlockedWithShield) || (collisionData.AttackBlockedWithShield && !collisionData.CorrectSideShieldBlock))
+                if ((collisionData.CollisionResult == CombatCollisionResult.Blocked && !collisionData.AttackBlockedWithShield) || (collisionData.AttackBlockedWithShield && !collisionData.CorrectSideShieldBlock))
                 {
                     switch (weaponType)
                     {
