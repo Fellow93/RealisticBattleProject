@@ -7,6 +7,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
+using static RBMAI.Frontline;
 using static TaleWorlds.MountAndBlade.HumanAIComponent;
 
 namespace RBMAI
@@ -49,7 +50,7 @@ namespace RBMAI
         public static bool normalCommand = true;
         public static bool aggressiveCommand = false;
 
-        public static bool IsInImportantFrontlineAction(Agent agent)
+        public static bool IsActivelyAttacking(Agent agent)
         {
             //switch (agent.AttackDirection)
             //{
@@ -65,7 +66,7 @@ namespace RBMAI
             return false;
             Agent.ActionCodeType currentActionType = agent.GetCurrentActionType(1);
             if (
-                currentActionType == Agent.ActionCodeType.ReleaseMelee ||
+                currentActionType == Agent.ActionCodeType.ReadyMelee ||
                 currentActionType == Agent.ActionCodeType.ReleaseRanged ||
                 currentActionType == Agent.ActionCodeType.ReleaseThrowing)
             {
@@ -77,6 +78,13 @@ namespace RBMAI
             }
         }
 
+        public static void ResetAiDecision(ref AIDecision aiDecision)
+        {
+            aiDecision.decisionType = AIDecision.AIDecisionType.None;
+            aiDecision.cooldown = 0;
+            aiDecision.customMaxCoolDown = -1;
+        }
+
         [HarmonyPatch(typeof(Formation))]
         private class OverrideFormation
         {
@@ -85,7 +93,7 @@ namespace RBMAI
             private static bool PrefixGetOrderPositionOfUnit(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ____detachedUnits, ref WorldPosition __result)
             {
                 Mission mission = Mission.Current;
-                if (__instance.CountOfUnits <= 30) { return true; } // frontline system disabled for small formations
+                if (__instance.Team.ActiveAgents.Count()* __instance.Team.QuerySystem.InfantryRatio <= 30) { return true; } // frontline system disabled for small infantry battles
                 if (mission != null && mission.IsFieldBattle && unit != null && (__instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation) && !____detachedUnits.Contains(unit))
                 {
                     AIDecision aiDecision;
@@ -112,6 +120,7 @@ namespace RBMAI
                         hasShieldBonusNumber = 40;
                         aggresivnesModifier = 5;
                     }
+                    float weaponLengthModifier = unit.WieldedWeapon.CurrentUsageItem != null ? (unit.WieldedWeapon.CurrentUsageItem.GetRealWeaponLength() + 0.5f) : 1f;
 
                     int weaponLengthAgressivnessModifier = 10;
                     if (!unit.WieldedWeapon.IsEmpty && unit.WieldedWeapon.CurrentUsageItem != null)
@@ -169,9 +178,7 @@ namespace RBMAI
                                 }
                                 else
                                 {
-                                    aiDecision.decisionType = AIDecision.AIDecisionType.None;
-                                    aiDecision.customMaxCoolDown = -1;
-                                    aiDecision.cooldown = 0;
+                                    ResetAiDecision(ref aiDecision);
                                 }
                             }
                             else
@@ -188,9 +195,7 @@ namespace RBMAI
                                 }
                                 else
                                 {
-                                    aiDecision.decisionType = AIDecision.AIDecisionType.None;
-                                    aiDecision.cooldown = 0;
-                                    aiDecision.customMaxCoolDown = -1;
+                                    ResetAiDecision(ref aiDecision);
                                 }
                             }
                         }
@@ -206,8 +211,8 @@ namespace RBMAI
                             aiDecision.position = __result;
                             if (!unit.IsRangedCached)
                             {
-                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 10f, 2f, 10f, 20f, 10f);
-                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 0f, 2f, 0f, 20f, 0f);
+                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 5f, weaponLengthModifier, 10f, 20f, 10f);
+                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5f, weaponLengthModifier, 0f, 20f, 0f);
                                 unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
                             }
                             return false;
@@ -221,15 +226,15 @@ namespace RBMAI
                             }
                             if (!unit.IsRangedCached)
                             {
-                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1.1f, 10f, 0.01f);
-                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 8f, 0.8f, 20f, 20f);
+                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, weaponLengthModifier, 4f, 10f, 6f);
+                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5f, weaponLengthModifier, 1f, 10f, 0.01f);
+                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 6f, 0.8f, 10f, 6f);
                             }
-                            if (IsInImportantFrontlineAction(unit))
-                            {
-                                aiDecision.position = WorldPosition.Invalid;
-                                return true;
-                            }
+                            //if (IsInImportantFrontlineAction(unit))
+                            //{
+                            //    aiDecision.position = WorldPosition.Invalid;
+                            //    return true;
+                            //}
                         }
                         //}
 
@@ -292,12 +297,12 @@ namespace RBMAI
                             {
                                 if (unit != null)
                                 {
-                                    if (!unit.IsRangedCached)
-                                    {
-                                        unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 5f, 2f, 4f, 10f, 6f);
-                                        unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 4.9f, 1.5f, 1.1f, 10f, 0.01f);
-                                        unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0.8f);
-                                    }
+                                    //if (!unit.IsRangedCached)
+                                    //{
+                                    //    unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 5f, 2f, 4f, 10f, 6f);
+                                    //    unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5f, 2f, 1.1f, 10f, 0.01f);
+                                    //    unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0.8f);
+                                    //}
 
                                     //Vec2 leftVec = unit.Formation.Direction.LeftVec().Normalized();
                                     //Vec2 rightVec = unit.Formation.Direction.RightVec().Normalized();
@@ -379,6 +384,12 @@ namespace RBMAI
                                     }
                                     if (randInt < (unitPower / 3f + defensivnesModifier))
                                     {
+                                        if (!unit.IsRangedCached)
+                                        {
+                                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, weaponLengthModifier, 4f, 10f, 6f);
+                                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 4f, weaponLengthModifier, 1f, 10f, 0.01f);
+                                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 8f, 0f, 20f, 0f);
+                                        }
                                         __result = getNearbyAllyWorldPosition(mission, unitPosition, unit);
                                         aiDecision.position = __result; return false;
                                     }
@@ -386,13 +397,23 @@ namespace RBMAI
                                     {
                                         if (MBRandom.RandomInt(unitPower) == 0)
                                         {
+                                            if (!unit.IsRangedCached)
+                                            {
+                                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, weaponLengthModifier, 4f, 10f, 6f);
+                                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 4f, weaponLengthModifier, 1f, 10f, 0.01f);
+                                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 8f, 0f, 20f, 0f);
+                                            }
                                             __result = getNearbyAllyWorldPosition(mission, unitPosition, unit);
                                             aiDecision.position = __result; return false;
-                                            //aiDecision.position = WorldPosition.Invalid;
-                                            //return true;
                                         }
                                         else
                                         {
+                                            if (!unit.IsRangedCached)
+                                            {
+                                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, weaponLengthModifier, 4f, 10f, 6f);
+                                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 4f, weaponLengthModifier, 1f, 10f, 0.01f);
+                                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 8f, 0f, 20f, 0f);
+                                            }
                                             WorldPosition backPosition = unit.GetWorldPosition();
                                             backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * (backStepDistance + 0.5f));
                                             __result = backPosition;
@@ -408,41 +429,35 @@ namespace RBMAI
                                 }
                             }
                         }
-                        float currentTime = mission.CurrentTime;
-                        if (!unit.IsRangedCached)
-                        {
-                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5f, 1.5f, 1f, 10f, 0.01f);
-                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 8f, 0f, 20f, 0f);
-                        }
-                        MBList<Agent> enemyAgents0f = new MBList<Agent>();
-                        MBList<Agent> enemyAgents10f = new MBList<Agent>();
-                        enemyAgents0f = mission.GetNearbyEnemyAgents(unitPosition, 4.5f, unit.Team, enemyAgents0f);
+
+                        MBList<Agent> enemyAgentsImmidiate = new MBList<Agent>();
+                        MBList<Agent> enemyAgentsClose = new MBList<Agent>();
+                        enemyAgentsImmidiate = mission.GetNearbyEnemyAgents(unitPosition, 4.5f, unit.Team, enemyAgentsImmidiate);
                         //IEnumerable<Agent> enemyAgentsImmidiate = null;
 
                         int enemyAgentsImmidiateCount = 0;
-                        int enemyAgents10fCount = 0;
-                        int powerSumImmidiate = (int)Math.Floor(RBMAI.Utilities.GetPowerOfAgentsSum(enemyAgents0f));
+                        int enemyAgentsCloseCount = 0;
+                        int powerSumImmidiate = (int)Math.Floor(RBMAI.Utilities.GetPowerOfAgentsSum(enemyAgentsImmidiate));
+                        int powerSumClose = (int)Math.Floor(RBMAI.Utilities.GetPowerOfAgentsSum(enemyAgentsClose));
 
                         if (!isTargetArcher)
                         {
-                            enemyAgents10f = mission.GetNearbyEnemyAgents(unitPosition + direction * 4.5f, 2.25f, unit.Team, enemyAgents10f);
-                            //enemyAgentsImmidiate = mission.GetNearbyEnemyAgents(unitPosition, 3f, unit.Team);
+                            enemyAgentsClose = mission.GetNearbyEnemyAgents(unitPosition + direction * 4.5f, 4.5f / 2f, unit.Team, enemyAgentsClose);
 
-                            enemyAgentsImmidiateCount = enemyAgents0f.Count();
-                            enemyAgents10fCount = enemyAgents10f.Count();
+                            enemyAgentsImmidiateCount = enemyAgentsImmidiate.Count();
+                            enemyAgentsCloseCount = enemyAgentsClose.Count();
                         }
                         else
                         {
                             enemyAgentsImmidiateCount = 0;
-                            enemyAgents10fCount = 0;
+                            enemyAgentsCloseCount = 0;
                         }
                         if(attackingTogether == 50)
                         {
                             enemyAgentsCountCriticalTreshold *= 1;
                             enemyAgentsCountDangerousTreshold *= 1;
                         }
-                        if (enemyAgentsImmidiateCount > enemyAgentsCountTreshold || enemyAgents10fCount > enemyAgentsCountTreshold)
+                        if (enemyAgentsImmidiateCount > enemyAgentsCountTreshold || enemyAgentsCloseCount > enemyAgentsCountTreshold)
                         {
                             //unit.LookDirection = direction.ToVec3();
                             //unit.SetDirectionChangeTendency(10f);
@@ -480,9 +495,10 @@ namespace RBMAI
                                 int randImmidiate = MBRandom.RandomInt(powerSumImmidiate);
                                 if (unitPower * 2 < randImmidiate)
                                 {
-                                    if (IsInImportantFrontlineAction(unit))
+                                    if (IsActivelyAttacking(unit))
                                     {
                                         aiDecision.position = WorldPosition.Invalid;
+                                        ResetAiDecision(ref aiDecision);
                                         return true;
                                     }
                                     WorldPosition backPosition = unit.GetWorldPosition();
@@ -498,9 +514,10 @@ namespace RBMAI
                                 //int randImmidiate = MBRandom.RandomInt(powerSumImmidiate);
                                 //if(unitPower / 2 < randImmidiate)
                                 //{
-                                if (IsInImportantFrontlineAction(unit))
+                                if (IsActivelyAttacking(unit))
                                 {
                                     aiDecision.position = WorldPosition.Invalid;
+                                    ResetAiDecision(ref aiDecision);
                                     return true;
                                 }
                                 if (rnd.Next(3) == 0)
@@ -526,10 +543,11 @@ namespace RBMAI
                                         //int randImmidiate = MBRandom.RandomInt(powerSumImmidiate);
                                         //if (unitPower / 2 < randImmidiate)
                                         //{
-                                        if (IsInImportantFrontlineAction(unit))
+                                        if (IsActivelyAttacking(unit))
                                         {
-                                            aiDecision.customMaxCoolDown = 0;
-                                            return false;
+                                            aiDecision.position = WorldPosition.Invalid;
+                                            ResetAiDecision(ref aiDecision);
+                                            return true;
                                         }
                                         if (rnd.Next(2) == 0)
                                         {
@@ -546,9 +564,10 @@ namespace RBMAI
                                         }
                                         //}
                                     }
-                                    if (IsInImportantFrontlineAction(unit))
+                                    if (IsActivelyAttacking(unit))
                                     {
                                         aiDecision.position = WorldPosition.Invalid;
+                                        ResetAiDecision(ref aiDecision);
                                         return true;
                                     }
                                     __result = getNearbyAllyWorldPosition(mission, unitPosition, unit);
@@ -558,9 +577,10 @@ namespace RBMAI
                                 {
                                     if (MBRandom.RandomInt((int)(unitPower / 4)) == 0)
                                     {
-                                        if (IsInImportantFrontlineAction(unit))
+                                        if (IsActivelyAttacking(unit))
                                         {
                                             aiDecision.position = WorldPosition.Invalid;
+                                            ResetAiDecision(ref aiDecision);
                                             return true;
                                         }
                                         if (rnd.Next(2) == 0)
@@ -576,9 +596,10 @@ namespace RBMAI
                                     }
                                     else
                                     {
-                                        if (IsInImportantFrontlineAction(unit))
+                                        if (IsActivelyAttacking(unit))
                                         {
                                             aiDecision.position = WorldPosition.Invalid;
+                                            ResetAiDecision(ref aiDecision);
                                             return true;
                                         }
                                         if (rnd.Next(2) == 0)
