@@ -31,9 +31,7 @@ namespace RBMCombat
             public static bool Prefix(ref float __result, in AttackInformation attackInformation, in MissionWeapon weapon, StrikeType strikeType, float progressEffect, float impactPointAsPercent, float exraLinearSpeed)
             {
                 WeaponComponentData currentUsageItem = weapon.CurrentUsageItem;
-                BasicCharacterObject attackerAgentCharacter = attackInformation.AttackerAgentCharacter;
-                BasicCharacterObject attackerCaptainCharacter = attackInformation.AttackerCaptainCharacter;
-
+                WeaponClass weaponClass = currentUsageItem.WeaponClass;
 
                 if (strikeType == StrikeType.Thrust)
                 {
@@ -62,20 +60,31 @@ namespace RBMCombat
                         if (attacker != null)
                         {
                             bool isNonTipHit = false;
-                            if (attacker.AttackDirection == Agent.UsageDirection.AttackUp)
+                            
+                            if(weaponClass == WeaponClass.OneHandedSword || 
+                                weaponClass == WeaponClass.Dagger ||
+                                weaponClass == WeaponClass.TwoHandedSword)
                             {
-                                if (impactPointAsPercent < 0.9f)
+                                //if full blade weapon change things elsewhere
+                            }
+                            else
+                            {
+                                if (attacker.AttackDirection == Agent.UsageDirection.AttackUp)
                                 {
-                                    isNonTipHit = true;
+                                    if (impactPointAsPercent < 0.9f)
+                                    {
+                                        isNonTipHit = true;
+                                    }
+                                }
+                                else if (attacker.AttackDirection == Agent.UsageDirection.AttackDown)
+                                {
+                                    if (impactPointAsPercent < 0.7f)
+                                    {
+                                        isNonTipHit = true;
+                                    }
                                 }
                             }
-                            else if (attacker.AttackDirection == Agent.UsageDirection.AttackDown)
-                            {
-                                if (impactPointAsPercent < 0.7f)
-                                {
-                                    isNonTipHit = true;
-                                }
-                            }
+                            
                             SkillObject skill = weapon.CurrentUsageItem.RelevantSkill;
                             int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attacker, skill);
                             float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
