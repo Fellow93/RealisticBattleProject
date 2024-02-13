@@ -159,7 +159,7 @@ namespace RBMCombat
                     isBash = true;
                     damageType = DamageTypes.Blunt;
                 }
-
+                bool isThrustCut = false;
                 if (attackerWeapon.WeaponClass == WeaponClass.OneHandedSword ||
                                 attackerWeapon.WeaponClass == WeaponClass.Dagger ||
                                 attackerWeapon.WeaponClass == WeaponClass.TwoHandedSword)
@@ -170,7 +170,8 @@ namespace RBMCombat
                         if(!Utilities.ThurstWithTip(in attackCollisionData, attacker.WieldedWeapon))
                         {
                             damageType = DamageTypes.Cut;
-                            magnitude = magnitude * 0.5f;
+                            magnitude = magnitude * 0.2f;
+                            isThrustCut = true;
                             //InformationManager.DisplayMessage(new InformationMessage("Thrust Cut", Color.FromUint(4289612505u)));
                         }
                     }
@@ -209,7 +210,7 @@ namespace RBMCombat
                 //    }
                 //}
 
-                if (victim != null && victim.IsHuman && attackCollisionData.VictimHitBodyPart == BoneBodyPartType.Head)
+                if (victim != null && victim.IsHuman && attackCollisionData.VictimHitBodyPart == BoneBodyPartType.Head && !isThrustCut)
                 {
                     float dotProduct = Vec3.DotProduct(attackCollisionData.WeaponBlowDir, victim.LookFrame.rotation.f);
                     float dotProductTrehsold = -0.75f;
