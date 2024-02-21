@@ -21,6 +21,9 @@ namespace RBMCombat
         public static CharacterObject currentSelectedChar = null;
         public static int equipmentSetindex = 0;
 
+        public static int tipHits = 0;
+        public static int nonTipHits = 0;
+
         [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
         [HarmonyPatch("CalculateBaseMeleeBlowMagnitude")]
         public class CalculateBaseMeleeBlowMagnitudePatch
@@ -28,33 +31,62 @@ namespace RBMCombat
             public static bool Prefix(ref float __result, in AttackInformation attackInformation, in MissionWeapon weapon, StrikeType strikeType, float progressEffect, float impactPointAsPercent, float exraLinearSpeed)
             {
                 WeaponComponentData currentUsageItem = weapon.CurrentUsageItem;
-                BasicCharacterObject attackerAgentCharacter = attackInformation.AttackerAgentCharacter;
-                BasicCharacterObject attackerCaptainCharacter = attackInformation.AttackerCaptainCharacter;
-                if (progressEffect < 0.5f)
+                WeaponClass weaponClass = currentUsageItem.WeaponClass;
+
+                if (strikeType == StrikeType.Thrust)
                 {
-                    progressEffect = 0.5f;
+                    if (progressEffect < 0.1f)
+                    {
+                        progressEffect = 0.1f;
+                    }
                 }
-                float num = MathF.Sqrt(progressEffect);
+                else
+                {
+                    if (progressEffect < 0.5f)
+                    {
+                        progressEffect = 0.5f;
+                    }
+                }
+                float accelerationProgress = MathF.Sqrt(progressEffect);
                 if (strikeType == StrikeType.Thrust)
                 {
                     exraLinearSpeed *= 1f;
-                    float thrustWeaponSpeed = (float)weapon.GetModifiedThrustSpeedForCurrentUsage() / 11.7647057f * num;
+                    float thrustWeaponSpeed = (float)weapon.GetModifiedThrustSpeedForCurrentUsage() / 11.7647057f * accelerationProgress;
 
                     if (weapon.Item != null && weapon.CurrentUsageItem != null)
                     {
-                        Agent attacker = null;
-                        foreach (Agent agent in Mission.Current.Agents)
-                        {
-                            if (attackInformation.AttackerAgentOrigin == agent.Origin)
-                            {
-                                attacker = agent;
-                            }
-                        }
+                        Agent attacker = attackInformation.AttackerAgent;
 
                         if (attacker != null)
                         {
+                            bool isNonTipHit = false;
+                            
+                            if(weaponClass == WeaponClass.OneHandedSword || 
+                                weaponClass == WeaponClass.Dagger ||
+                                weaponClass == WeaponClass.TwoHandedSword)
+                            {
+                                //if full blade weapon change things elsewhere
+                            }
+                            else
+                            {
+                                if (attacker.AttackDirection == Agent.UsageDirection.AttackUp)
+                                {
+                                    if (impactPointAsPercent < 0.9f)
+                                    {
+                                        isNonTipHit = true;
+                                    }
+                                }
+                                else if (attacker.AttackDirection == Agent.UsageDirection.AttackDown)
+                                {
+                                    if (impactPointAsPercent < 0.7f)
+                                    {
+                                        isNonTipHit = true;
+                                    }
+                                }
+                            }
+                            
                             SkillObject skill = weapon.CurrentUsageItem.RelevantSkill;
-                            int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgent, skill);
+                            int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attacker, skill);
                             float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
                             switch (weapon.CurrentUsageItem.WeaponClass)
                             {
@@ -69,7 +101,7 @@ namespace RBMCombat
                                         float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
 
                                         thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.Inertia, weapon.CurrentUsageItem.CenterOfMass);
-                                        thrustWeaponSpeed = thrustWeaponSpeed * 0.75f * thrustskillModifier * num;
+                                        thrustWeaponSpeed = thrustWeaponSpeed * 0.75f * thrustskillModifier * accelerationProgress;
                                         break;
                                     }
                                 case WeaponClass.TwoHandedPolearm:
@@ -79,7 +111,7 @@ namespace RBMCombat
                                         float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
 
                                         thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.Inertia, weapon.CurrentUsageItem.CenterOfMass);
-                                        thrustWeaponSpeed = thrustWeaponSpeed * 0.65f * thrustskillModifier * num;
+                                        thrustWeaponSpeed = thrustWeaponSpeed * 0.65f * thrustskillModifier * accelerationProgress;
                                         break;
                                     }
                                 case WeaponClass.TwoHandedAxe:
@@ -89,7 +121,7 @@ namespace RBMCombat
                                         float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
 
                                         thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.Inertia, weapon.CurrentUsageItem.CenterOfMass);
-                                        thrustWeaponSpeed = thrustWeaponSpeed * 0.9f * thrustskillModifier * num;
+                                        thrustWeaponSpeed = thrustWeaponSpeed * 0.9f * thrustskillModifier * accelerationProgress;
                                         break;
                                     }
                                 case WeaponClass.OneHandedSword:
@@ -101,7 +133,7 @@ namespace RBMCombat
                                         float handlingskillModifier = 1f + (effectiveSkillDR / 800f);
 
                                         thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.Inertia, weapon.CurrentUsageItem.CenterOfMass);
-                                        thrustWeaponSpeed = thrustWeaponSpeed * 0.7f * thrustskillModifier * num;
+                                        thrustWeaponSpeed = thrustWeaponSpeed * 0.7f * thrustskillModifier * accelerationProgress;
                                         break;
                                     }
                             }
@@ -130,7 +162,12 @@ namespace RBMCombat
                                 //        break;
                                 //    }
                             }
+                            //InformationManager.DisplayMessage(new InformationMessage("isNonTipHit : " + isNonTipHit, Color.FromUint(4289612505u)));
 
+                            if (isNonTipHit)
+                            {
+                                thrustMagnitude *= 0.2f;
+                            }
                             __result = thrustMagnitude;
                             return false;
                         }
@@ -140,20 +177,13 @@ namespace RBMCombat
                     //return false;
                 }
                 exraLinearSpeed *= 1f;
-                float swingSpeed = (float)weapon.GetModifiedSwingSpeedForCurrentUsage() / 4.5454545f * num;
+                float swingSpeed = (float)weapon.GetModifiedSwingSpeedForCurrentUsage() / 4.5454545f * accelerationProgress;
 
                 if (weapon.Item != null && weapon.CurrentUsageItem != null)
                 {
-                    Agent attacker = null;
-                    foreach (Agent agent in Mission.Current.Agents)
-                    {
-                        if (attackInformation.AttackerAgentOrigin == agent.Origin)
-                        {
-                            attacker = agent;
-                        }
-                    }
+                    Agent attacker = attackInformation.AttackerAgent;
                     SkillObject skill = weapon.CurrentUsageItem.RelevantSkill;
-                    int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgent, skill);
+                    int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attacker, skill);
                     float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
                     switch (weapon.CurrentUsageItem.WeaponClass)
                     {
@@ -164,21 +194,21 @@ namespace RBMCombat
                         case WeaponClass.TwoHandedMace:
                             {
                                 float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
-                                swingSpeed = swingSpeed * 0.83f * swingskillModifier * num;
+                                swingSpeed = swingSpeed * 0.83f * swingskillModifier * accelerationProgress;
                                 break;
                             }
                         case WeaponClass.TwoHandedPolearm:
                             {
                                 float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
 
-                                swingSpeed = swingSpeed * 0.83f * swingskillModifier * num;
+                                swingSpeed = swingSpeed * 0.83f * swingskillModifier * accelerationProgress;
                                 break;
                             }
                         case WeaponClass.TwoHandedAxe:
                             {
                                 float swingskillModifier = 1f + (effectiveSkillDR / 800f);
 
-                                swingSpeed = swingSpeed * 0.75f * swingskillModifier * num;
+                                swingSpeed = swingSpeed * 0.75f * swingskillModifier * accelerationProgress;
                                 break;
                             }
                         case WeaponClass.OneHandedSword:
@@ -187,7 +217,7 @@ namespace RBMCombat
                             {
                                 float swingskillModifier = 1f + (effectiveSkillDR / 800f);
 
-                                swingSpeed = swingSpeed * 0.83f * swingskillModifier * num;
+                                swingSpeed = swingSpeed * 0.83f * swingskillModifier * accelerationProgress;
                                 break;
                             }
                     }

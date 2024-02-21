@@ -18,6 +18,36 @@ namespace RBMCombat
         public static float swingSpeedTransfer = 4.5454545f;
         public static float thrustSpeedTransfer = 11.7647057f;
 
+        public static bool ThurstWithTip(in AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
+        {
+            WeaponComponentData currentUsageItem = attackerWeapon.CurrentUsageItem;
+            if (attackerWeapon.Item != null && currentUsageItem != null && attackerWeapon.Item.WeaponDesign != null &&
+                attackerWeapon.Item.WeaponDesign.UsedPieces != null && attackerWeapon.Item.WeaponDesign.UsedPieces.Length > 0)
+            {
+                bool isSwordType = false;
+                if (attackerWeapon.CurrentUsageItem != null)
+                    switch (attackerWeapon.CurrentUsageItem.WeaponClass)
+                    {
+                        case WeaponClass.Dagger:
+                        case WeaponClass.OneHandedSword:
+                        case WeaponClass.TwoHandedSword:
+                            {
+                                isSwordType = true;
+                                break;
+                            }
+                    }
+                float bladeLength = attackerWeapon.Item.WeaponDesign.UsedPieces[0].ScaledBladeLength + (isSwordType ? 0f : 0.15f);
+                float realWeaponLength = currentUsageItem.GetRealWeaponLength();
+                float impactPointAsPercent = collisionData.CollisionDistanceOnWeapon / realWeaponLength;
+                if (impactPointAsPercent < 0.85f)
+                {
+                    return false;
+                }
+                return true;
+            }
+            return true;
+        }
+
         public static bool HitWithWeaponBlade(in AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
         {
             WeaponComponentData currentUsageItem = attackerWeapon.CurrentUsageItem;

@@ -128,7 +128,7 @@ namespace RBMAI
                 {
                     agentDrivenProperties.AiShooterError = 0.015f - (0.020f * effectiveSkillLevel);
                     agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.1f;
-                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 0.5f;
+                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 0.1f;
                 }
                 if (RBMConfig.RBMConfig.postureEnabled)
                 {

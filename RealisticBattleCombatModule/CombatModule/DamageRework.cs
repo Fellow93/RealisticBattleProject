@@ -3,6 +3,7 @@ using SandBox.GameComponents;
 using SandBox.Missions.MissionLogics;
 using System;
 using System.Reflection;
+using TaleWorlds.CampaignSystem.ViewModelCollection.WeaponCrafting.WeaponDesign;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -158,6 +159,23 @@ namespace RBMCombat
                     isBash = true;
                     damageType = DamageTypes.Blunt;
                 }
+                bool isThrustCut = false;
+                if (attackerWeapon.WeaponClass == WeaponClass.OneHandedSword ||
+                                attackerWeapon.WeaponClass == WeaponClass.Dagger ||
+                                attackerWeapon.WeaponClass == WeaponClass.TwoHandedSword)
+                {
+                    if(attacker != null && attackCollisionData.StrikeType == (int)StrikeType.Thrust)
+                    {
+
+                        if(!Utilities.ThurstWithTip(in attackCollisionData, attacker.WieldedWeapon))
+                        {
+                            damageType = DamageTypes.Cut;
+                            magnitude = magnitude * 1f;
+                            isThrustCut = true;
+                            //InformationManager.DisplayMessage(new InformationMessage("Thrust Cut", Color.FromUint(4289612505u)));
+                        }
+                    }
+                }
 
                 //Agent victim = null;
                 //foreach (Agent agent in Mission.Current.Agents)
@@ -192,10 +210,10 @@ namespace RBMCombat
                 //    }
                 //}
 
-                if (victim != null && victim.IsHuman && attackCollisionData.VictimHitBodyPart == BoneBodyPartType.Head)
+                if (victim != null && victim.IsHuman && attackCollisionData.VictimHitBodyPart == BoneBodyPartType.Head && !isThrustCut)
                 {
                     float dotProduct = Vec3.DotProduct(attackCollisionData.WeaponBlowDir, victim.LookFrame.rotation.f);
-                    float dotProductTrehsold = -0.7f;
+                    float dotProductTrehsold = -0.75f;
                     if (attackCollisionData.StrikeType == (int)StrikeType.Swing)
                     {
                         dotProductTrehsold = -0.8f;
@@ -584,6 +602,10 @@ namespace RBMCombat
                     weaponDamageFactor = (float)Math.Sqrt((attackCollisionData.StrikeType == (int)StrikeType.Thrust)
                         ? Utilities.getThrustDamageFactor(attackerWeapon, itemModifier)
                         : Utilities.getSwingDamageFactor(attackerWeapon, itemModifier));
+                    if(attackCollisionData.StrikeType == (int)StrikeType.Thrust && damageType == DamageTypes.Cut)
+                    {
+                        weaponDamageFactor = (float)Math.Sqrt(Utilities.getSwingDamageFactor(attackerWeapon, itemModifier));
+                    }
                 }
                 inflictedDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(weaponType, damageType, magnitude, armorAmount, victimAgentAbsorbedDamageRatio, out _, out _, weaponDamageFactor, player, isPlayerVictim)), 0, 2000);
                 inflictedDamage = MathF.Floor(inflictedDamage * dmgMultiplier);
@@ -1089,7 +1111,7 @@ namespace RBMCombat
 
                                     //collisionData = newdata;
 
-                                    __result.BlowFlag |= BlowFlags.KnockBack;
+                                    //__result.BlowFlag |= BlowFlags.NonTipThrust;
                                 }
                                 break;
                         }
@@ -1132,7 +1154,7 @@ namespace RBMCombat
                     }
                 }
 
-                if ((collisionData.CollisionResult == CombatCollisionResult.Parried && !collisionData.AttackBlockedWithShield) || (collisionData.AttackBlockedWithShield && !collisionData.CorrectSideShieldBlock))
+                if ((collisionData.CollisionResult == CombatCollisionResult.Blocked && !collisionData.AttackBlockedWithShield) || (collisionData.AttackBlockedWithShield && !collisionData.CorrectSideShieldBlock))
                 {
                     switch (weaponType)
                     {
