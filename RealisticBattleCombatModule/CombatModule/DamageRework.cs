@@ -160,19 +160,22 @@ namespace RBMCombat
                     damageType = DamageTypes.Blunt;
                 }
                 bool isThrustCut = false;
-                if (attackerWeapon.WeaponClass == WeaponClass.OneHandedSword ||
-                                attackerWeapon.WeaponClass == WeaponClass.Dagger ||
-                                attackerWeapon.WeaponClass == WeaponClass.TwoHandedSword)
+                if(attackerWeapon != null && attacker != null)
                 {
-                    if(attacker != null && attackCollisionData.StrikeType == (int)StrikeType.Thrust)
+                    if (attackerWeapon.WeaponClass == WeaponClass.OneHandedSword ||
+                               attackerWeapon.WeaponClass == WeaponClass.Dagger ||
+                               attackerWeapon.WeaponClass == WeaponClass.TwoHandedSword)
                     {
-
-                        if(!Utilities.ThurstWithTip(in attackCollisionData, attacker.WieldedWeapon))
+                        if (attackCollisionData.StrikeType == (int)StrikeType.Thrust)
                         {
-                            damageType = DamageTypes.Cut;
-                            magnitude = magnitude * 1f;
-                            isThrustCut = true;
-                            //InformationManager.DisplayMessage(new InformationMessage("Thrust Cut", Color.FromUint(4289612505u)));
+
+                            if (!Utilities.ThurstWithTip(in attackCollisionData, attacker.WieldedWeapon))
+                            {
+                                damageType = DamageTypes.Cut;
+                                magnitude = magnitude * 1f;
+                                isThrustCut = true;
+                                //InformationManager.DisplayMessage(new InformationMessage("Thrust Cut", Color.FromUint(4289612505u)));
+                            }
                         }
                     }
                 }
