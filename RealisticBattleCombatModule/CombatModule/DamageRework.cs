@@ -170,7 +170,7 @@ namespace RBMCombat
                         if(!Utilities.ThurstWithTip(in attackCollisionData, attacker.WieldedWeapon))
                         {
                             damageType = DamageTypes.Cut;
-                            magnitude = magnitude * 0.75f;
+                            magnitude = magnitude * 1f;
                             isThrustCut = true;
                             //InformationManager.DisplayMessage(new InformationMessage("Thrust Cut", Color.FromUint(4289612505u)));
                         }
