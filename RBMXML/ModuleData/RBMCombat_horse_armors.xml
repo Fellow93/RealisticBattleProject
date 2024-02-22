@@ -45,7 +45,7 @@
   </Item>
   <Item multiplayer_item="false"
         id="bandit_saddle_highland"
-        name="{=ZFde57gC}Rugged Highland Saddle"
+        name="{=RBMZFde57gC}Rugged Highland Saddle"
         mesh="bandit_saddle_highland"
         subtype="body_armor"
         weight="8"
@@ -86,7 +86,7 @@
     <Flags Civilian="true" />
   </Item>
   <Item id="halfchain_barding"
-        name="{=Yms2FQ7g}Halfchain Barding"
+        name="{=RBMYms2FQ7g}Halfchain Barding"
         mesh="horse_harness_vlandia_b_clotest"
         weight="16"
         appearance="0.6"
@@ -108,7 +108,7 @@
     <Flags Civilian="true" />
   </Item>
   <Item id="chain_barding"
-        name="{=aHQCG5Tn}Chain Barding"
+        name="{=RBMaHQCG5Tn}Chain Barding"
         mesh="horse_harness_vlandia_a_clotest"
         weight="26"
         appearance="0.5"
@@ -131,7 +131,7 @@
   </Item>
   <Item multiplayer_item="false"
         id="chain_horse_harness"
-        name="{=GTWUtUFj}Chain Horse Harness"
+        name="{=RBMGTWUtUFj}Chain Horse Harness"
         mesh="horse_harness_e"
         subtype="body_armor"
         weight="24"
@@ -199,7 +199,7 @@
   </Item>
   <Item multiplayer_item="false"
         id="half_scale_barding"
-        name="{=CgG2aRyh}Half Scale Barding"
+        name="{=RBMCgG2aRyh}Half Scale Barding"
         mesh="horse_harness_imperial_c_clotest"
         subtype="body_armor"
         weight="17"
@@ -221,7 +221,7 @@
   </Item>
   <Item multiplayer_item="false"
         id="imperial_scale_barding"
-        name="{=zmEnxUpL}Imperial Scale Barding"
+        name="{=RBMzmEnxUpL}Imperial Scale Barding"
         mesh="horse_harness_imperial_b_clotest"
         subtype="body_armor"
         weight="30"
@@ -243,7 +243,7 @@
   </Item>
   <Item multiplayer_item="false"
         id="studded_steppe_barding"
-        name="{=lspv3mUE}Studded Steppe Barding"
+        name="{=RBMlspv3mUE}Studded Steppe Barding"
         mesh="horse_harness_khuzait_c_clotest"
         subtype="body_armor"
         weight="23"
@@ -265,7 +265,7 @@
   </Item>
   <Item multiplayer_item="false"
         id="desert_cloth_harness"
-        name="{=2Q0m5CG0}Desert Cloth Harness"
+        name="{=RBM2Q0m5CG0}Desert Cloth Harness"
         mesh="horse_harness_aserai_a_clotest"
         subtype="body_armor"
         weight="7.3"
@@ -309,7 +309,7 @@
   </Item>
   <Item multiplayer_item="false"
         id="half_mail_and_plate_barding"
-        name="{=hCBCLp0e}Half Mail And Plate Barding"
+        name="{=RBMhCBCLp0e}Half Mail And Plate Barding"
         mesh="horse_harness_aserai_d_clotest"
         subtype="body_armor"
         weight="16"
@@ -331,7 +331,7 @@
   </Item>
   <Item multiplayer_item="false"
         id="mail_and_plate_barding"
-        name="{=gKhpLiyg}Mail And Plate Barding"
+        name="{=RBMgKhpLiyg}Mail And Plate Barding"
         mesh="horse_harness_aserai_c_clotest"
         subtype="body_armor"
         weight="26.8"
@@ -353,7 +353,7 @@
   </Item>
   <Item multiplayer_item="false"
         id="steppe_harness"
-        name="{=vw9qbiER}Steppe Harness"
+        name="{=RBMvw9qbiER}Steppe Harness"
         mesh="horse_harness_khuzait_b_clotest"
         subtype="body_armor"
         weight="8.5"
@@ -397,7 +397,7 @@
   </Item>
   <Item multiplayer_item="false"
         id="steppe_half_barding"
-        name="{=0rzKQbWy}Steppe Half Barding"
+        name="{=RBM0rzKQbWy}Steppe Half Barding"
         mesh="horse_harness_khuzait_d_clotest"
         subtype="body_armor"
         weight="11"

@@ -37,7 +37,7 @@
     </Pieces>
   </CraftedItem>
   <CraftedItem id="khuzait_lance_1_t3"
-               name="{=UWvOndG0}Khuzait Light Lance"
+               name="{=RBMUWvOndG0}Khuzait Light Lance"
                crafting_template="TwoHandedPolearm"
                culture="Culture.khuzait">
     <Pieces>
@@ -87,7 +87,7 @@
     </Pieces>
   </CraftedItem>
   <CraftedItem id="sturgia_lance_1_t4"
-               name="{=J4fgemze}Sturgian Lance"
+               name="{=RBM5690C816}Sturgian Lance"
                crafting_template="TwoHandedPolearm"
                culture="Culture.sturgia">
     <Pieces>
@@ -103,7 +103,7 @@
     </Pieces>
   </CraftedItem>
   <CraftedItem id="khuzait_lance_2_t4"
-               name="{=inr9Mt1i}Khuzait Lance"
+               name="{=RBM62a3571e}Khuzait Lance"
                crafting_template="TwoHandedPolearm"
                culture="Culture.khuzait">
     <Pieces>
@@ -137,7 +137,7 @@
     </Pieces>
   </CraftedItem>
   <CraftedItem id="sturgia_lance_2_t5"
-               name="{=6eO6QDoE}Sturgian Heavy Lance"
+               name="{=RBM5Bd3970}Sturgian Heavy Lance"
                crafting_template="TwoHandedPolearm"
                culture="Culture.sturgia">
     <Pieces>
@@ -245,7 +245,7 @@
     </Pieces>
   </CraftedItem>
   
-  <CraftedItem id="battania_polearm_1_t5" name="{=V4b2ZRTH}Rhomphalia" crafting_template="TwoHandedPolearm" culture="Culture.battania">
+  <CraftedItem id="battania_polearm_1_t5" name="{=RBMV4b2ZRTH}Rhomphalia" crafting_template="TwoHandedPolearm" culture="Culture.battania">
     <Pieces>
       <Piece id="battania_blade_7" Type="Blade" scale_factor="150" />
       <Piece id="sturgian_guard_6" Type="Guard" scale_factor="150" />
@@ -383,7 +383,7 @@
 <!-- #region Used Javelins -->
   <!-- #Pine -->
   <CraftedItem id="western_javelin_1_t2"
-               name="Pine Throwing Dart"
+               name="{=RBM32961}Pine Throwing Dart"
                crafting_template="Javelin"
 			   modifier_group="spear_dart_throwing">
     <Pieces>
@@ -403,7 +403,7 @@
   </CraftedItem>
   
   <CraftedItem id="northern_javelin_1_t2"
-               name="Pine Javelin"
+               name="{=RBMc43e6}Pine Javelin"
                crafting_template="Javelin"
                culture="Culture.sturgia"
 			   modifier_group="spear_dart_throwing">
@@ -425,7 +425,7 @@
   <!-- #endregion -->
   <!-- Ash -->
   <CraftedItem id="western_javelin_2_t3"
-               name="Pine Throwing Lance"
+               name="{=RBM357ca}Pine Throwing Lance"
                crafting_template="Javelin"
                culture="Culture.vlandia"
 			   modifier_group="spear_dart_throwing">
@@ -446,7 +446,7 @@
   </CraftedItem>
   
   <CraftedItem id="generic_javelin_1_t3"
-               name="Ash Throwing Lance"
+               name="{=RBM23e7f}Ash Throwing Lance"
                crafting_template="Javelin"
 			   modifier_group="spear_dart_throwing">
     <Pieces>
@@ -465,7 +465,7 @@
     </Pieces>
   </CraftedItem>
     <CraftedItem id="northern_javelin_2_t3"
-               name="Ash Javelin"
+               name="{=RBM53307}Ash Javelin"
                crafting_template="Javelin"
                culture="Culture.battania"
 			   modifier_group="spear_dart_throwing">
@@ -487,7 +487,7 @@
   <!-- #endregion -->
   <!-- Oak -->
   <CraftedItem id="western_javelin_3_t4"
-               name="Oaken Throwing Lance"
+               name="{=RBMeffd9}Oaken Throwing Lance"
                crafting_template="Javelin"
                culture="Culture.vlandia"
 			   modifier_group="spear_dart_throwing">
@@ -507,7 +507,7 @@
     </Pieces>
   </CraftedItem>
   <CraftedItem id="northern_javelin_3_t4"
-               name="Oaken Angon"
+               name="{=RBM25fea}Oaken Angon"
                crafting_template="Javelin"
                culture="Culture.sturgia"
 			   modifier_group="spear_dart_throwing">
@@ -529,7 +529,7 @@
 
   <!-- Mahagony -->
   <CraftedItem id="eastern_javelin_1_t2"
-               name="Mahagony Throwing Dart"
+               name="{=RBM07188}Mahagony Throwing Dart"
                crafting_template="Javelin"
                culture="Culture.khuzait"
 			   modifier_group="spear_dart_throwing">
@@ -550,7 +550,7 @@
   </CraftedItem>  
   
   <CraftedItem id="eastern_javelin_2_t3"
-               name="Mahagony Javelin"
+               name="{=RBM577ae}Mahagony Javelin"
                crafting_template="Javelin"
                culture="Culture.khuzait"
 			   modifier_group="spear_dart_throwing">
@@ -571,7 +571,7 @@
   </CraftedItem>  
   
   <CraftedItem id="eastern_javelin_3_t4"
-               name="Mahagony Throwing Lance"
+               name="{=RBM2f440}Mahagony Throwing Lance"
                crafting_template="Javelin"
                culture="Culture.aserai"
 			   modifier_group="spear_dart_throwing">
@@ -592,7 +592,7 @@
   </CraftedItem>
   <!-- #endregion -->
   <!-- Pilum -->
-    <CraftedItem id="imperial_throwing_spear_1_t4" name="{=v3lIxLvX}Pila" crafting_template="Javelin" culture="Culture.empire" modifier_group="spear_dart_throwing">
+    <CraftedItem id="imperial_throwing_spear_1_t4" name="{=RBM9c2bEfb9}Pila" crafting_template="Javelin" culture="Culture.empire" modifier_group="spear_dart_throwing">
     <Pieces>
       <Piece id="spear_blade_38" Type="Blade" scale_factor="280" />
       <Piece id="default_polearm_guard" Type="Guard" scale_factor="100" />
@@ -743,7 +743,7 @@
     </Pieces>
   </CraftedItem>
   
-  <CraftedItem id="empire_polearm_1_t4" name="{=7LmUe8fQ}Light Menavlion" crafting_template="Pike" culture="Culture.empire">
+  <CraftedItem id="empire_polearm_1_t4" name="{=RBM7LmUe8fQ}Light Menavlion" crafting_template="Pike" culture="Culture.empire">
     <Pieces>
       <Piece id="spear_blade_7" Type="Blade" scale_factor="100" />
       <Piece id="default_polearm_guard" Type="Guard" scale_factor="100" />
@@ -753,7 +753,7 @@
   </CraftedItem> 
   
   <CraftedItem id="empire_polearm_2_t5"
-               name="{=UunjXpgb}Heavy Menavlion"
+               name="{=RBMUunjXpgb}Heavy Menavlion"
                crafting_template="Pike"
                culture="Culture.empire">
     <Pieces>

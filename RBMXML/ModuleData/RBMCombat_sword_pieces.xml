@@ -194,7 +194,7 @@
       <Material id="Iron1" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_guard_7" name="{=euI3vluL}Broad Sabre Guard" tier="4" piece_type="Guard" mesh="khuzait_guard_7" culture="Culture.khuzait" length="0.55" weight="0.15">
+  <CraftingPiece id="khuzait_guard_7" name="{=RBMeuI3vluL}Broad Sabre Guard" tier="4" piece_type="Guard" mesh="khuzait_guard_7" culture="Culture.khuzait" length="0.55" weight="0.15">
 
     <BuildData next_piece_offset="0.2" />
     <StatContributions armor_bonus="3" />
@@ -418,7 +418,7 @@
       <Material id="Iron5" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_noble_guard_2" name="{=DiAHIRxm}Engraved Sabre Guard" tier="5" piece_type="Guard" mesh="khuzait_noble_guard_2" culture="Culture.khuzait" length="2.1" weight="0.19">
+  <CraftingPiece id="khuzait_noble_guard_2" name="{=RBMDiAHIRxm}Engraved Sabre Guard" tier="5" piece_type="Guard" mesh="khuzait_noble_guard_2" culture="Culture.khuzait" length="2.1" weight="0.19">
 
     <BuildData next_piece_offset="0.2" />
     <StatContributions armor_bonus="5" />
@@ -532,7 +532,7 @@
       <Material id="Iron5" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_noble_guard_3" name="{=wXUjru6o}Knobbed Wide Sabre Guard" tier="5" piece_type="Guard" mesh="khuzait_noble_guard_3" culture="Culture.khuzait" length="2.9" weight="0.19">
+  <CraftingPiece id="khuzait_noble_guard_3" name="{=RBMwXUjru6o}Knobbed Wide Sabre Guard" tier="5" piece_type="Guard" mesh="khuzait_noble_guard_3" culture="Culture.khuzait" length="2.9" weight="0.19">
 
     <BuildData next_piece_offset="0.2" />
     <StatContributions armor_bonus="5" />
@@ -757,7 +757,7 @@
       <Material id="Iron5" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_grip_7" name="{=3ZyRhmke}Short Sabre Grip" tier="2" piece_type="Handle" mesh="khuzait_grip_7" culture="Culture.khuzait" length="15.1" weight="0.1">
+  <CraftingPiece id="khuzait_grip_7" name="{=RBM3ZyRhmke}Short Sabre Grip" tier="2" piece_type="Handle" mesh="khuzait_grip_7" culture="Culture.khuzait" length="15.1" weight="0.1">
 
     <BuildData piece_offset="-0.04" previous_piece_offset="0.2" next_piece_offset="0" />
     <Materials>
@@ -799,7 +799,7 @@
       <Material id="Iron2" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="sturgian_grip_4" name="{=wHMdRIl6}Rough Leadther Segmented One Handed Grip" tier="2" piece_type="Handle" mesh="sturgian_grip_4" culture="Culture.sturgia" length="15.1" weight="0.1">
+  <CraftingPiece id="sturgian_grip_4" name="{=RBMwHMdRIl6}Rough Leadther Segmented One Handed Grip" tier="2" piece_type="Handle" mesh="sturgian_grip_4" culture="Culture.sturgia" length="15.1" weight="0.1">
 
     <BuildData piece_offset="-0.04" previous_piece_offset="0.2" next_piece_offset="0.1" />
     <Materials>
@@ -912,7 +912,7 @@
       <Material id="Iron2" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_grip_16" name="{=Q9Gfv68h}Two Handed Sabre Grip" tier="2" piece_type="Handle" mesh="khuzait_grip_16" culture="Culture.khuzait" length="27" weight="0.1">
+  <CraftingPiece id="khuzait_grip_16" name="{=RBMQ9Gfv68h}Two Handed Sabre Grip" tier="2" piece_type="Handle" mesh="khuzait_grip_16" culture="Culture.khuzait" length="27" weight="0.1">
 
     <BuildData piece_offset="-0.04" previous_piece_offset="0.2" next_piece_offset="0" />
     <Materials>
@@ -1052,7 +1052,7 @@
       <Material id="Iron3" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="sturgian_grip_22" name="{=YKXNxxvY}Nothern Two Handed Grip" tier="3" piece_type="Handle" mesh="sturgian_grip_22" culture="Culture.sturgia" length="25" weight="0.1">
+  <CraftingPiece id="sturgian_grip_22" name="{=RBMYKXNxxvY}Nothern Two Handed Grip" tier="3" piece_type="Handle" mesh="sturgian_grip_22" culture="Culture.sturgia" length="25" weight="0.1">
 
     <BuildData piece_offset="0" previous_piece_offset="0.3" next_piece_offset="0.4" />
     <Materials>
