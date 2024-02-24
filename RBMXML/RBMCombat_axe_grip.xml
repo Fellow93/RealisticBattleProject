@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <item_usage_sets>
   <item_usage_set id="twohanded_widegrip_axe"
                   equip_sound="event:/mission/combat/equip/sword_equip"
@@ -58,6 +58,7 @@
                   action="act_rider_stand_spear_4"
                   require_free_left_hand="True"
                   required_mount_action="act_horse_stand_4" />
+
       <rider_idle mount_id="camel"
                   pace="1"
                   action="act_camel_rider_idle_spear_1"
@@ -82,7 +83,7 @@
                   pace="1"
                   action="act_camel_rider_idle_spear_5"
                   require_free_left_hand="True"
-                  required_mount_action="act_camel_idle_5"/>
+                  required_mount_action="act_camel_idle_5" />
       <rider_idle mount_id="camel"
                   pace="1"
                   action="act_camel_rider_stand_spear_1"
@@ -107,7 +108,7 @@
                   pace="1"
                   action="act_camel_rider_stand_spear_5"
                   require_free_left_hand="True"
-                  required_mount_action="act_camel_stand_5"/>
+                  required_mount_action="act_camel_stand_5" />
       <rider_idle mount_id="horse"
                   pace="0"
                   action="act_rider_stand_polearm_pace_0"
@@ -177,7 +178,7 @@
              end_hand_position="0.1,0,0"
              end_hand_rotation="0,-144"
              end_arm_rotation="0,-72"
-             end_arm_length="1.0"/>
+             end_arm_length="1.0" />
       <usage style="attack_up"
              ready_action="act_ready_overswing_staff"
              ready_from_up_action="act_ready_from_up_overswing_staff"
@@ -197,7 +198,7 @@
              end_hand_position="0.1,0,0"
              end_hand_rotation="0,-144"
              end_arm_rotation="0,-72"
-             end_arm_length="0.5"/>
+             end_arm_length="0.5" />
       <usage style="attack_up"
              ready_action="act_ready_overswing_staff_left_stance"
              ready_from_up_action="act_ready_from_up_overswing_staff_left_stance"
@@ -218,14 +219,14 @@
              end_hand_position="-0.1,0,0"
              end_hand_rotation="0,-144"
              end_arm_rotation="0,-72"
-             end_arm_length="0.5"/>
+             end_arm_length="0.5" />
       <usage style="attack_left"
              ready_action="act_ready_slashleft_staff_horseback"
              ready_from_left_action="act_ready_from_left_slashleft_staff_horseback"
              quick_release_action="act_quick_release_slashleft_staff_horseback"
-             release_action="act_release_slashleft_staff_horseback"
+             release_action="act_quick_release_slashleft_staff_horseback"
              quick_blocked_action="act_quick_blocked_slashleft_staff_horseback"
-             blocked_action="act_blocked_slashleft_staff_horseback"
+             blocked_action="act_quick_blocked_slashleft_staff_horseback"
              is_mounted="True"
              require_free_left_hand="True"
              strike_type="swing"
@@ -236,7 +237,7 @@
              end_hand_position="0,0,-0.2"
              end_hand_rotation="-90,-180"
              end_arm_rotation="-72,0"
-             end_arm_length="0.7"/>
+             end_arm_length="0.7" />
       <usage style="attack_left"
              ready_action="act_ready_slashleft_staff"
              ready_from_up_action="act_ready_from_up_slashleft_staff"
@@ -255,7 +256,7 @@
              end_hand_position="0,0,-0.2"
              end_hand_rotation="-90,-180"
              end_arm_rotation="-72,0"
-             end_arm_length="0.6"/>
+             end_arm_length="0.6" />
       <usage style="attack_left"
              ready_action="act_ready_slashleft_staff_left_stance"
              ready_from_up_action="act_ready_from_up_slashleft_staff_left_stance"
@@ -275,14 +276,14 @@
              end_hand_position="0,0,-0.2"
              end_hand_rotation="-90,-180"
              end_arm_rotation="-72,0"
-             end_arm_length="0.6"/>
+             end_arm_length="0.6" />
       <usage style="attack_right"
              ready_action="act_ready_slashright_staff_horseback"
              ready_from_right_action="act_ready_from_right_slashright_staff_horseback"
              quick_release_action="act_quick_release_slashright_staff_horseback"
-             release_action="act_release_slashright_staff_horseback"
+             release_action="act_quick_release_slashright_staff_horseback"
              quick_blocked_action="act_quick_blocked_slashright_staff_horseback"
-             blocked_action="act_blocked_slashright_staff_horseback"
+             blocked_action="act_quick_blocked_slashright_staff_horseback"
              is_mounted="True"
              require_free_left_hand="True"
              strike_type="swing"
@@ -293,7 +294,7 @@
              end_hand_position="0,0,-0.2"
              end_hand_rotation="90,-180"
              end_arm_rotation="72,0"
-             end_arm_length="0.7"/>
+             end_arm_length="0.7" />
       <usage style="attack_right"
              ready_action="act_ready_slashright_staff"
              ready_from_up_action="act_ready_from_up_slashright_staff"
@@ -312,7 +313,7 @@
              end_hand_position="0,0,-0.2"
              end_hand_rotation="90,-180"
              end_arm_rotation="72,0"
-             end_arm_length="0.6"/>
+             end_arm_length="0.6" />
       <usage style="attack_right"
              ready_action="act_ready_slashright_staff_left_stance"
              ready_from_up_action="act_ready_from_up_slashright_staff_left_stance"
@@ -332,7 +333,7 @@
              end_hand_position="0,0,-0.2"
              end_hand_rotation="90,-180"
              end_arm_rotation="72,0"
-             end_arm_length="0.6"/>
+             end_arm_length="0.6" />
       <usage style="defend_up"
              defend_action="act_defend_up_staff_passive"
              defend_active_action="act_defend_up_staff_active"
@@ -342,7 +343,7 @@
              begin_hand_position="0.3,0.25,0.4"
              begin_hand_rotation="-80,0"
              begin_arm_rotation="0,0"
-             begin_arm_length="0"/>
+             begin_arm_length="0" />
       <usage style="defend_up"
              defend_action="act_defend_up_staff_passive_left_stance"
              defend_active_action="act_defend_up_staff_active_left_stance"
@@ -353,7 +354,7 @@
              begin_hand_position="0.3,0.25,0.4"
              begin_hand_rotation="-80,0"
              begin_arm_rotation="0,0"
-             begin_arm_length="0"/>
+             begin_arm_length="0" />
       <usage style="defend_up"
              defend_action="act_defend_up_staff_passive"
              defend_active_action="act_defend_up_staff_active"
@@ -363,7 +364,7 @@
              begin_hand_position="0.3,0.25,0.4"
              begin_hand_rotation="-80,0"
              begin_arm_rotation="0,0"
-             begin_arm_length="0"/>
+             begin_arm_length="0" />
       <usage style="defend_down"
              defend_action="act_defend_forward_staff_passive"
              defend_active_action="act_defend_forward_staff_active"
@@ -373,7 +374,7 @@
              begin_hand_position="0.3,0.25,-0.4"
              begin_hand_rotation="-80,0"
              begin_arm_rotation="0,0"
-             begin_arm_length="0"/>
+             begin_arm_length="0" />
       <usage style="defend_down"
              defend_action="act_defend_forward_staff_passive_left_stance"
              defend_active_action="act_defend_forward_staff_active_left_stance"
@@ -384,7 +385,7 @@
              begin_hand_position="0.3,0.25,-0.4"
              begin_hand_rotation="-80,0"
              begin_arm_rotation="0,0"
-             begin_arm_length="0"/>
+             begin_arm_length="0" />
       <usage style="defend_down"
              defend_action="act_defend_forward_staff_passive"
              defend_active_action="act_defend_forward_staff_active"
@@ -394,7 +395,7 @@
              begin_hand_position="0.3,0.25,-0.4"
              begin_hand_rotation="-80,0"
              begin_arm_rotation="0,0"
-             begin_arm_length="0"/>
+             begin_arm_length="0" />
       <usage style="defend_left"
              defend_action="act_defend_left_staff_passive"
              defend_active_action="act_defend_left_staff_active"
@@ -404,7 +405,7 @@
              begin_hand_position="0,0,-0.35"
              begin_hand_rotation="0,0"
              begin_arm_rotation="50,0"
-             begin_arm_length="0.3"/>
+             begin_arm_length="0.3" />
       <usage style="defend_left"
              defend_action="act_defend_left_staff_passive_left_stance"
              defend_active_action="act_defend_left_staff_active_left_stance"
@@ -415,7 +416,7 @@
              begin_hand_position="0,0,-0.35"
              begin_hand_rotation="0,0"
              begin_arm_rotation="50,0"
-             begin_arm_length="0.3"/>
+             begin_arm_length="0.3" />
       <usage style="defend_left"
              defend_action="act_defend_left_staff_passive"
              defend_active_action="act_defend_left_staff_active"
@@ -425,7 +426,7 @@
              begin_hand_position="0,0,-0.35"
              begin_hand_rotation="0,0"
              begin_arm_rotation="50,0"
-             begin_arm_length="0.3"/>
+             begin_arm_length="0.3" />
       <usage style="defend_right"
              defend_action="act_defend_right_staff_passive"
              defend_active_action="act_defend_right_staff_active"
@@ -435,7 +436,7 @@
              begin_hand_position="0,0,-0.35"
              begin_hand_rotation="0,0"
              begin_arm_rotation="-50,0"
-             begin_arm_length="0.3"/>
+             begin_arm_length="0.3" />
       <usage style="defend_right"
              defend_action="act_defend_right_staff_passive_left_stance"
              defend_active_action="act_defend_right_staff_active_left_stance"
@@ -446,7 +447,7 @@
              begin_hand_position="0,0,-0.35"
              begin_hand_rotation="0,0"
              begin_arm_rotation="-50,0"
-             begin_arm_length="0.3"/>
+             begin_arm_length="0.3" />
       <usage style="defend_right"
              defend_action="act_defend_right_staff_passive"
              defend_active_action="act_defend_right_staff_active"
@@ -456,7 +457,7 @@
              begin_hand_position="0,0,-0.35"
              begin_hand_rotation="0,0"
              begin_arm_rotation="-50,0"
-             begin_arm_length="0.3"/>
+             begin_arm_length="0.3" />
     </usages>
     <guards>
       <guard style="up"
@@ -574,14 +575,14 @@
              end_hand_position="0.1,0,0"
              end_hand_rotation="0,-144"
              end_arm_rotation="0,-72"
-             end_arm_length="0.5"/>
+             end_arm_length="0.5" />
       <usage style="attack_left"
              ready_action="act_ready_slashleft_staff_horseback"
              ready_from_left_action="act_ready_from_left_slashleft_staff_horseback"
              quick_release_action="act_quick_release_slashleft_staff_horseback"
-             release_action="act_release_slashleft_staff_horseback"
+             release_action="act_quick_release_slashleft_staff_horseback"
              quick_blocked_action="act_quick_blocked_slashleft_staff_horseback"
-             blocked_action="act_blocked_slashleft_staff_horseback"
+             blocked_action="act_quick_blocked_slashleft_staff_horseback"
              is_mounted="True"
              require_free_left_hand="True"
              strike_type="swing"
@@ -592,14 +593,14 @@
              end_hand_position="0,0,-0.2"
              end_hand_rotation="-90,-180"
              end_arm_rotation="-72,0"
-             end_arm_length="0.6"/>
+             end_arm_length="0.6" />
       <usage style="attack_right"
              ready_action="act_ready_slashright_staff_horseback"
              ready_from_right_action="act_ready_from_right_slashright_staff_horseback"
              quick_release_action="act_quick_release_slashright_staff_horseback"
-             release_action="act_release_slashright_staff_horseback"
+             release_action="act_quick_release_slashright_staff_horseback"
              quick_blocked_action="act_quick_blocked_slashright_staff_horseback"
-             blocked_action="act_blocked_slashright_staff_horseback"
+             blocked_action="act_quick_blocked_slashright_staff_horseback"
              is_mounted="True"
              require_free_left_hand="True"
              strike_type="swing"
@@ -610,7 +611,7 @@
              end_hand_position="0,0,-0.2"
              end_hand_rotation="90,-180"
              end_arm_rotation="72,0"
-             end_arm_length="0.6"/>
+             end_arm_length="0.6" />
       <usage style="defend_up"
              defend_action="act_defend_up_2h_passive"
              defend_active_action="act_defend_up_2h_active"
