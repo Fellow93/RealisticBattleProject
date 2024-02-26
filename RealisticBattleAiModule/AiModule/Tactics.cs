@@ -3,6 +3,7 @@ using SandBox.Missions.MissionLogics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.LinQuick;
@@ -468,29 +469,48 @@ namespace RBMAI
 
                 if (Mission.Current != null)
                 {
+                    if(originalDefenderPower == 0f)
+                    {
+                        originalDefenderPower = Mission.Current.Teams.Where(team => team.IsDefender).Sum(team =>
+                        {
+                            float power = team.QuerySystem.BattlePowerLogic.GetTotalTeamPower(team);
+                            return power;
+                        });
+                    }
+
+                    if (originalAttackerPower == 0f)
+                    {
+                        originalAttackerPower = Mission.Current.Teams.Where(team => team.IsAttacker).Sum(team =>
+                        {
+                            float power = team.QuerySystem.BattlePowerLogic.GetTotalTeamPower(team);
+                            return power;
+                        });
+                    }
+                    
                     defenderPower = Mission.Current.Teams.Where(team => team.IsDefender).Sum(team =>
                     {
-                        float power = team.QuerySystem.BattlePowerLogic.GetTotalTeamPower(team);
-                        foreach (Formation formation in team.FormationsIncludingSpecialAndEmpty)
+                        float power = 0f;
+                        foreach (Agent agent in team.ActiveAgents)
                         {
-                            power -= team.QuerySystem.CasualtyHandler.GetCasualtyPowerLossOfFormation(formation);
+                            power += agent.CharacterPowerCached;
                         }
                         return power;
                     });
                     attackerPower = Mission.Current.Teams.Where(team => team.IsAttacker).Sum(team =>
                     {
-                        float power = team.QuerySystem.BattlePowerLogic.GetTotalTeamPower(team);
-                        foreach (Formation formation in team.FormationsIncludingSpecialAndEmpty)
+                        float power = 0f;
+                        foreach (Agent agent in team.ActiveAgents)
                         {
-                            power -= team.QuerySystem.CasualtyHandler.GetCasualtyPowerLossOfFormation(formation);
+                            power += agent.CharacterPowerCached;
                         }
                         return power;
                     });
-                    if (originalDefenderPower == 0f)
+
+                    if (originalDefenderPower < defenderPower)
                     {
                         originalDefenderPower = defenderPower;
                     }
-                    if (originalAttackerPower == 0f)
+                    if (originalAttackerPower < attackerPower)
                     {
                         originalAttackerPower = attackerPower;
                     }
