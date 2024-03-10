@@ -144,7 +144,7 @@
       <Material id="Iron4" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="mace_head_6" name="{=FyaygeEx}Knobbed Club" tier="2" piece_type="Blade" mesh="mace_head_6" length="11.4" weight="0.28" full_scale="true" excluded_item_usage_features="thrust">
+  <CraftingPiece id="mace_head_6" name="{=knobbedclubcraftingpiece}Knobbed Club" tier="2" piece_type="Blade" mesh="mace_head_6" length="11.4" weight="0.28" full_scale="true" excluded_item_usage_features="thrust">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="0.5" />
@@ -173,6 +173,10 @@
     <Materials>
       <Material id="Iron2" count="2" />
     </Materials>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags"/>
+    </Flags>
   </CraftingPiece>
 
   <CraftingPiece id="mace_head_31"
@@ -366,6 +370,10 @@
     <Materials>
       <Material id="Wood" count="2" />
     </Materials>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags"/>
+    </Flags>
   </CraftingPiece>
   <CraftingPiece id="sickle_blade_1" name="{=vxqrW5GN}Sickle Blade" tier="1" piece_type="Blade" mesh="sickle_blade_1" length="38.5" weight="0.1" full_scale="true" excluded_item_usage_features="thrust">
 
@@ -375,6 +383,10 @@
     <Materials>
       <Material id="Iron1" count="2" />
     </Materials>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags"/>
+    </Flags>
   </CraftingPiece>
   <CraftingPiece id="mace_head_3" name="{=1yEQNTG1}Long Shestopyor Head" tier="4" piece_type="Blade" mesh="mace_head_3" length="18.181" weight="0.49" full_scale="true" excluded_item_usage_features="thrust">
 
@@ -612,12 +624,14 @@
       <Material id="Wood" count="1" />
       <Material id="Iron3" count="1" />
     </Materials>
+		<BuildData piece_offset="17"/>
   </CraftingPiece>
   <CraftingPiece id="mace_handle_12" name="{=qZYeu55z}Long Iron Bottomed Mace Handle" tier="3" piece_type="Handle" mesh="mace_handle_12" length="78" weight="0.32" item_holster_pos_shift="0,0,0.05">
     <Materials>
       <Material id="Wood" count="1" />
       <Material id="Iron3" count="1" />
     </Materials>
+		<BuildData piece_offset="17"/>
   </CraftingPiece>
   <CraftingPiece id="mace_handle_14" name="{=57DBqJd1}Leather Wrapped Thick Mace Handle" tier="2" piece_type="Handle" mesh="mace_handle_14" length="45" weight="0.2" item_holster_pos_shift="0,0,0.05">
 
@@ -662,6 +676,10 @@
       <Material id="Iron2" count="1" />
       <Material id="Wood" count="1" />
     </Materials>
+    <Flags>
+      <Flag name="Civilian"
+            type="ItemFlags"/>
+    </Flags>
   </CraftingPiece>
   <!-- #endregion -->
 </CraftingPieces>

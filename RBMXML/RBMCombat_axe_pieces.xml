@@ -607,7 +607,7 @@
   </CraftingPiece>
   <!-- #endregion -->
   <!-- #region Used Throwing Axe Blade Pieces -->
-  <CraftingPiece id="axe_craft_4_head" name="{=fdR6zYiP}Franziska Head" tier="4" piece_type="Blade" mesh="axe_craft_4_head" distance_to_next_piece="5.787" distance_to_previous_piece="1.483" weight="0.226">
+  <CraftingPiece id="axe_craft_4_head" name="{=fdR6zYiP}Franziska Head" tier="4" piece_type="Blade" mesh="axe_craft_4_head" distance_to_next_piece="5.787" distance_to_previous_piece="1.483" weight="0.226" is_default="true">
     <BuildData piece_offset="5.0" />
     <BladeData stack_amount="2" blade_length="10.566" blade_width="19.257" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
       <Swing damage_type="Cut" damage_factor="1.1" />
@@ -733,7 +733,7 @@
   </CraftingPiece>
   <CraftingPiece id="axe_craft_24_handle" name="{=SraI0yxb}Hardened Long Oaken Handle" tier="5" piece_type="Handle" mesh="axe_craft_24_handle" length="110" weight="0.296">
 
-    <BuildData piece_offset="30" next_piece_offset="1.5" />
+    <BuildData piece_offset="21" next_piece_offset="1.5" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
@@ -768,20 +768,20 @@
   <!-- #endregion -->
   <!-- #region Used 2h Axe Handle Pieces -->
   <CraftingPiece id="axe_craft_8_handle" name="{=XxhFx0yw}Short Leather Wrapped Great Axe Handle" tier="3" piece_type="Handle" mesh="axe_craft_8_handle" length="116" weight="0.503" excluded_item_usage_features="widegrip">
-    <BuildData piece_offset="8" next_piece_offset="1" />
+    <BuildData piece_offset="10" next_piece_offset="1" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="axe_craft_10_handle" name="{=l13RibeF}Steel Reinforced Great Axe Handle" tier="4" piece_type="Handle" mesh="axe_craft_10_handle" length="132" weight="0.793" excluded_item_usage_features="widegrip">
-    <BuildData piece_offset="10" next_piece_offset="2.5" />
+    <BuildData piece_offset="14" next_piece_offset="2.5" />
     <Materials>
       <Material id="Wood" count="1" />
       <Material id="Iron4" count="1" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="axe_craft_1_handle" name="{=1T0XBYlc}Hardened Oaken Two Handed Axe Handle" tier="5" piece_type="Handle" mesh="axe_craft_1_handle" length="157.6" weight="0.590" item_holster_pos_shift="0,0,-0.1" CraftingCost="75">
-    <BuildData piece_offset="24" next_piece_offset="1.42" />
+    <BuildData piece_offset="26" next_piece_offset="1.42" />
     <Materials>
       <Material id="Wood" count="1" />
       <Material id="Iron5" count="1" />
@@ -792,14 +792,14 @@
     </Flags>
   </CraftingPiece>
   <CraftingPiece id="axe_craft_6_handle" name="{=OJ7iPw5M}Reinforced Hardened Ash Great Axe Handle" tier="4" piece_type="Handle" mesh="axe_craft_6_handle" length="157.3" weight="0.644" item_holster_pos_shift="0,0,-0.1">
-    <BuildData piece_offset="24" next_piece_offset="1.122" />
+    <BuildData piece_offset="26" next_piece_offset="1.122" />
     <Materials>
       <Material id="Wood" count="1" />
       <Material id="Iron4" count="1" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="axe_craft_4_handle" name="{=bfueDx6s}Heavily Reinforced Oaken Great Axe Handle" tier="5" piece_type="Handle" mesh="axe_craft_4_handle" length="157.5" weight="0.677" item_holster_pos_shift="0,0,-0.1">
-    <BuildData piece_offset="24" next_piece_offset="1.6" />
+    <BuildData piece_offset="26" next_piece_offset="1.6" />
     <Materials>
       <Material id="Wood" count="1" />
       <Material id="Iron5" count="1" />
@@ -810,21 +810,21 @@
     </Flags>
   </CraftingPiece>
   <CraftingPiece id="axe_craft_30_handle" name="{=KeTioaJE}Leather Wrapped Mahogany Great Axe Handle" tier="2" piece_type="Handle" mesh="axe_craft_30_handle" length="130" weight="0.516">
-    <BuildData piece_offset="20" next_piece_offset="1.835" />
+    <BuildData piece_offset="14" next_piece_offset="1.835" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="axe_craft_14_handle" name="{=22f2NR2N}Long Gnarled Ash Shaft" tier="1" piece_type="Handle" mesh="axe_craft_14_handle" length="115" weight="0.433" item_holster_pos_shift="0,0,0.15" excluded_item_usage_features="widegrip" is_default="true">
 
-    <BuildData piece_offset="20.1" next_piece_offset="1.1" />
+    <BuildData piece_offset="10" next_piece_offset="1.1" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_29_handle" name="{=Qqb0VZ1a}Leather Wrapped Two Handed Ash Shaft" tier="3" piece_type="Handle" mesh="axe_craft_29_handle" length="120" weight="0.516">
+  <CraftingPiece id="axe_craft_29_handle" name="{=Qqb0VZ1a}Leather Wrapped Two Handed Ash Shaft" tier="3" piece_type="Handle" mesh="axe_craft_29_handle" length="120" weight="0.516" excluded_item_usage_features="widegrip">
 
-    <BuildData piece_offset="20" next_piece_offset="1.835" />
+    <BuildData piece_offset="12" next_piece_offset="1.835" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
@@ -850,7 +850,7 @@
       <Material id="Iron3" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_28_handle" name="{=bQzz8mc3}Simple Pinewood Throwing Axe Handle" tier="1" piece_type="Handle" mesh="axe_craft_28_handle" length="45" weight="0.134">
+  <CraftingPiece id="axe_craft_28_handle" name="{=bQzz8mc3}Simple Pinewood Throwing Axe Handle" tier="1" piece_type="Handle" mesh="axe_craft_28_handle" length="45" weight="0.134" is_default="true">
     <BuildData piece_offset="20.0" next_piece_offset="0" />
     <Materials>
       <Material id="Wood" count="1" />
@@ -860,7 +860,7 @@
   <!-- #region Axe Handle Pieces -->
   <CraftingPiece id="axe_craft_7_handle" name="{=xKGpbQjJ}Long Mahogany Shaft With Leather Wrapping" tier="4" piece_type="Handle" mesh="axe_craft_7_handle" length="124.3" weight="0.570" excluded_item_usage_features="widegrip">
 
-    <BuildData piece_offset="23.87" next_piece_offset="1.5" />
+    <BuildData piece_offset="12" next_piece_offset="1.5" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>

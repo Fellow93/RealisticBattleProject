@@ -81,6 +81,11 @@
                   required_mount_action="act_camel_idle_4" />
       <rider_idle mount_id="camel"
                   pace="1"
+                  action="act_camel_rider_idle_spear_5"
+                  require_free_left_hand="True"
+                  required_mount_action="act_camel_idle_5" />
+      <rider_idle mount_id="camel"
+                  pace="1"
                   action="act_camel_rider_stand_spear_1"
                   require_free_left_hand="True"
                   required_mount_action="act_camel_stand_1" />
@@ -100,6 +105,11 @@
                   require_free_left_hand="True"
                   required_mount_action="act_camel_stand_4" />
 
+      <rider_idle mount_id="camel"
+                  pace="1"
+                  action="act_camel_rider_stand_spear_5"
+                  require_free_left_hand="True"
+                  required_mount_action="act_camel_stand_5" />
       <rider_idle mount_id="horse"
                   pace="0"
                   action="act_rider_stand_polearm_pace_0"
