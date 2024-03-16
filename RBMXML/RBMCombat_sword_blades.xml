@@ -1163,10 +1163,6 @@
       <Thrust damage_type="Pierce" damage_factor="0.55" />
       <Swing damage_type="Cut" damage_factor="0.6" />
     </BladeData>
-    <Flags>
-      <Flag name="Civilian"
-            type="ItemFlags" />
-    </Flags>
     <Materials>
       <Material id="Iron2" count="3" />
     </Materials>
@@ -1190,10 +1186,6 @@
       <Swing damage_type="Cut"
              damage_factor="0.8" />
     </BladeData>
-    <Flags>
-      <Flag name="Civilian"
-            type="ItemFlags" />
-    </Flags>
     <Materials>
       <Material id="Iron3"
                 count="2" />
@@ -1217,10 +1209,6 @@
       <Swing damage_type="Cut"
              damage_factor="1.5" />
     </BladeData>
-    <Flags>
-      <Flag name="Civilian"
-            type="ItemFlags" />
-    </Flags>
     <Materials>
       <Material id="Iron6"
                 count="2" />
@@ -1244,10 +1232,6 @@
       <Swing damage_type="Cut"
              damage_factor="0.6" />
     </BladeData>
-    <Flags>
-      <Flag name="Civilian"
-            type="ItemFlags" />
-    </Flags>
     <Materials>
       <Material id="Iron2"
                 count="3" />
@@ -1680,10 +1664,6 @@
       <Thrust damage_type="Pierce" damage_factor="1.1" />
       <Swing damage_type="Cut" damage_factor="1.4" />
     </BladeData>
-    <Flags>
-      <Flag name="Civilian"
-            type="ItemFlags" />
-    </Flags>
     <Materials>
       <Material id="Iron5" count="3" />
     </Materials>
@@ -1721,10 +1701,6 @@
       <Thrust damage_type="Pierce" damage_factor="1.1" />
       <Swing damage_type="Cut" damage_factor="1.5" />
     </BladeData>
-    <Flags>
-      <Flag name="Civilian"
-            type="ItemFlags" />
-    </Flags>
     <Materials>
       <Material id="Iron6" count="2" />
     </Materials>
@@ -1736,10 +1712,6 @@
       <Thrust damage_type="Pierce" damage_factor="1" />
       <Swing damage_type="Cut" damage_factor="1.6" />
     </BladeData>
-    <Flags>
-      <Flag name="Civilian"
-            type="ItemFlags" />
-    </Flags>
     <Materials>
       <Material id="Iron6" count="3" />
     </Materials>
@@ -1936,14 +1908,10 @@
   <CraftingPiece id="empire_blade_3_blunt" name="{=wsVbMK6L}Tournament Flat Blade" tier="1" piece_type="Blade" mesh="empire_blade_3" culture="Culture.empire" length="91.3" weight="0.64">
 
     <BuildData previous_piece_offset="-0.4" />
-    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="empire_noble_blade_2_scabbard_2">
+    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="empire_blade_1_scabbard_1">
       <Thrust damage_type="Pierce" damage_factor="0.65" />
       <Swing damage_type="Cut" damage_factor="0.4" />
     </BladeData>
-    <Flags>
-      <Flag name="Civilian"
-            type="ItemFlags" />
-    </Flags>
     <Materials>
       <Material id="Iron2" count="3" />
     </Materials>
@@ -1954,10 +1922,6 @@
       <Thrust damage_type="Pierce" damage_factor="0.65" />
       <Swing damage_type="Cut" damage_factor="0.4" />
     </BladeData>
-    <Flags>
-      <Flag name="Civilian"
-            type="ItemFlags" />
-    </Flags>
     <Materials>
       <Material id="Iron2" count="3" />
     </Materials>
@@ -1968,10 +1932,6 @@
       <Thrust damage_type="Pierce" damage_factor="0.7" />
       <Swing damage_type="Cut" damage_factor="1" />
     </BladeData>
-    <Flags>
-      <Flag name="Civilian"
-            type="ItemFlags" />
-    </Flags>
     <Materials>
       <Material id="Iron4" count="3" />
     </Materials>
@@ -1982,10 +1942,6 @@
       <Thrust damage_type="Pierce" damage_factor="1" />
       <Swing damage_type="Cut" damage_factor="1" />
     </BladeData>
-    <Flags>
-      <Flag name="Civilian"
-            type="ItemFlags" />
-    </Flags>
     <Materials>
       <Material id="Iron5" count="3" />
     </Materials>
@@ -2129,10 +2085,6 @@
       <Thrust damage_type="Pierce" damage_factor="0.7" />
       <Swing damage_type="Cut" damage_factor="0.6" />
     </BladeData>
-    <Flags>
-      <Flag name="Civilian"
-            type="ItemFlags" />
-    </Flags>
     <Materials>
       <Material id="Iron3" count="2" />
     </Materials>
@@ -2269,10 +2221,11 @@
       <Material id="Iron4" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="battania_noble_blade_2" name="{=Izstbt9y}Highland Decorated Blade" tier="5" piece_type="Blade" mesh="battania_noble_blade_2" culture="Culture.battania" length="93.2" weight="0.6" excluded_item_usage_features="thrust">
+  <CraftingPiece id="battania_noble_blade_2" name="{=Izstbt9y}Highland Decorated Blade" tier="5" piece_type="Blade" mesh="battania_noble_blade_2" culture="Culture.battania" length="93.2" weight="0.6">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="battania_noble_blade_2_scabbard_2">
       <Swing damage_type="Cut" damage_factor="1.7" />
+      <Thrust damage_type="Pierce" damage_factor="0.8"/>
     </BladeData>
     <Flags>
       <Flag name="BonusAgainstShield" />
@@ -2683,34 +2636,6 @@
                  mesh="dagger_blade_13"
                  length="29"
                  weight="0.240">
-
-    <BladeData stack_amount="3"
-               physics_material="metal_weapon"
-               body_name="bo_knife_a"
-               holster_mesh="throwing_dagger_quiver_1"
-               holster_mesh_length="35.8">
-      <Thrust damage_type="Pierce"
-              damage_factor="0.8" />
-      <Swing damage_type="Cut"
-             damage_factor="0.8" />
-    </BladeData>
-    <Flags>
-      <Flag name="Civilian"
-            type="ItemFlags" />
-    </Flags>
-    <Materials>
-      <Material id="Iron3"
-                count="2" />
-    </Materials>
-  </CraftingPiece>
-  <CraftingPiece id="dagger_blade_13_blunt"
-                 name="{=GFBFgA7R}Broad Blunt Dagger Blade"
-                 tier="2"
-                 piece_type="Blade"
-                 mesh="dagger_blade_13"
-                 length="29"
-                 weight="0.240"
-                 is_hidden="true">
 
     <BladeData stack_amount="3"
                physics_material="metal_weapon"

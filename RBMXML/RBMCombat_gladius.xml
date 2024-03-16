@@ -59,7 +59,7 @@
                crafting_template="ThrowingAxe"
                culture="Culture.sturgia">
     <Pieces>
-      <Piece id="axe_craft_13_head"
+      <Piece id="axe_craft_4_head"
              Type="Blade"
              scale_factor="200" />
       <Piece id="axe_craft_11_handle"
@@ -85,7 +85,7 @@
                crafting_template="ThrowingAxe"
                culture="Culture.vlandia">
     <Pieces>
-      <Piece id="axe_craft_4_head"
+      <Piece id="axe_craft_13_head"
              Type="Blade" 
              scale_factor="100" />
       <Piece id="axe_craft_11_handle"

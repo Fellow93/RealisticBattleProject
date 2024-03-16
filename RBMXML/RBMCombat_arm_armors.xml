@@ -131,7 +131,7 @@
 		<ItemComponent>
 			<Armor arm_armor="41" modifier_group="plate" material_type="Plate" covers_hands="false"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags/>
 	</Item>
 	<Item id="plated_strip_gauntlets" name="{=ulaMq9HL}Plated Striped Vambraces" mesh="empire_plated_gauntlets" culture="Culture.empire" weight="1.4" appearance="1.3" Type="HandArmor">
 		<ItemComponent>
@@ -167,9 +167,9 @@
 		<ItemComponent>
 			<Armor arm_armor="50" modifier_group="plate" material_type="Plate" covers_hands="true"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags/>
 	</Item>
-	<Item id="northern_plated_gloves" name="{=vNNMGllv}Northern Plated Gloves" mesh="sturgia_plate_gauntlet" culture="Culture.sturgia" weight="1.5" appearance="2" Type="HandArmor">
+	<Item id="northern_plated_gloves" name="{=G8FQ2exX}Plate Reinforced Gloves" mesh="sturgia_plate_gauntlet" culture="Culture.sturgia" weight="1.5" appearance="2" Type="HandArmor">
 		<ItemComponent>
 			<Armor arm_armor="56" modifier_group="plate" material_type="Plate" covers_hands="true"/>
 		</ItemComponent>
