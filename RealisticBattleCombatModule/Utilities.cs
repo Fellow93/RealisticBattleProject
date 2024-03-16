@@ -1249,7 +1249,8 @@ namespace RBMCombat
             float thrustStrengthWithWeaponWeight = weaponWeight + (armStrength * (1f + skillModifier));
 
             float thrustEnergyCap = MathF.Clamp(0.5f * thrustStrength * (thrustSpeed * thrustSpeed) * 1.5f, 0f, 180f);
-            float thrustEnergy = 0.5f * thrustStrengthWithWeaponWeight * (combinedSpeed * combinedSpeed);
+            float thrustEnergy = (0.5f * thrustStrength * (thrustSpeed * thrustSpeed)) + (0.5f * weaponWeight * (combinedSpeed * combinedSpeed));
+            //float thrustEnergy = 0.5f * thrustStrengthWithWeaponWeight * (combinedSpeed * combinedSpeed);
             if (thrustEnergy > thrustEnergyCap)
             {
                 thrustEnergy = thrustEnergyCap;
@@ -1292,7 +1293,8 @@ namespace RBMCombat
 
             float thrustEnergyCap = MathF.Clamp(0.5f * thrustStrength * (thrustSpeed * thrustSpeed) * 1.5f, 0f, 250f);
 
-            float thrustEnergy = 0.5f * thrustStrengthWithWeaponWeight * (combinedSpeed * combinedSpeed);
+            float thrustEnergy = (0.5f * thrustStrength * (thrustSpeed * thrustSpeed)) + (0.5f * weaponWeight * (combinedSpeed * combinedSpeed));
+            //float thrustEnergy = 0.5f * thrustStrengthWithWeaponWeight * (combinedSpeed * combinedSpeed);
             if (thrustEnergy > thrustEnergyCap)
             {
                 thrustEnergy = thrustEnergyCap;
