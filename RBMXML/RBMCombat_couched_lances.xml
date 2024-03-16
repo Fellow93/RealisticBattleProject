@@ -164,7 +164,7 @@
     <BladeData stack_amount="2" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_5_1" holster_body_name="bo_throwing_spear_quiver_5_1" holster_mesh_length="96.7">
       <Thrust damage_type="Pierce" damage_factor="1.1" />
     </BladeData>
-    <Flags>      
+    <Flags>	  
     </Flags>
     <Materials>
       <Material id="Iron3" count="3" />
@@ -175,7 +175,7 @@
     <BladeData stack_amount="2" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_5_1" holster_body_name="bo_throwing_spear_quiver_5_1" holster_mesh_length="96.7">
       <Thrust damage_type="Pierce" damage_factor="1.1" />
     </BladeData>
-    <Flags>      
+    <Flags>  
     </Flags>
     <Materials>
       <Material id="Iron3" count="3" />
@@ -196,7 +196,7 @@
 <!-- #endregion cut polearms -->
 <CraftingPiece id="spear_blade_43" name="{=wait0O6m}Warrazor Head" tier="5" piece_type="Blade" mesh="spear_blade_43" length="64.4" weight="0.6" excluded_item_usage_features="shield">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
-      <Thrust damage_type="Pierce" damage_factor="0.4" />
+	  <Thrust damage_type="Pierce" damage_factor="0.4" />
       <Swing damage_type="Cut" damage_factor="1.3" />
     </BladeData>
     <Materials>
