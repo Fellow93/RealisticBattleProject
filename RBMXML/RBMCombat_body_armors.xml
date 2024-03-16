@@ -1248,12 +1248,6 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="aserai_brass_plate_a" name="{=bxzrU99N}Southern Mail Shirt with Brass Plates" mesh="aserai_brass_plate_a" culture="Culture.aserai" weight="18" Type="BodyArmor" appearance="4" lod_atlas_index="3">
-		<ItemComponent>
-			<Armor body_armor="55" leg_armor="37" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="46"/>
-		</ItemComponent>
-		<Flags UseTeamColor="true"/>
-	</Item>
 	<Item id="dummy_armor_max" name="{=wSUN0Dmo}Dummy Max Armor" mesh="vlandia_scale_armor" culture="Culture.looters" weight="40" Type="BodyArmor" is_merchandise="false">
 		<ItemComponent>
 			<Armor body_armor="55" leg_armor="55" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="55" head_armor="55"/>

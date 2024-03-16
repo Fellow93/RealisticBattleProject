@@ -1166,7 +1166,7 @@
 	</Item>
 	<Item id="southern_noble_helmet" name="{=Z95RglmZ}Noble Steel Cap" mesh="aserai_lord_helmet_b" culture="Culture.aserai" weight="3.5" appearance="5.4" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
-			<Armor head_armor="95" body_armor="12" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
+			<Armor head_armor="97" body_armor="12" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
