@@ -539,6 +539,25 @@
       <UsablePiece piece_id="spear_handle_27" />
 
       <UsablePiece piece_id="default_polearm_guard" />
+      <UsablePiece piece_id="spear_banner_1" />
+      <UsablePiece piece_id="spear_banner_2" />
+      <UsablePiece piece_id="spear_banner_3" />
+      <UsablePiece piece_id="spear_banner_4" />
+      <UsablePiece piece_id="spear_banner_5" />
+      <UsablePiece piece_id="spear_banner_6" />
+      <UsablePiece piece_id="spear_banner_9" />
+      <UsablePiece piece_id="spear_banner_10" />
+      <UsablePiece piece_id="spear_banner_12" />
+      <UsablePiece piece_id="spear_banner_15" />
+      <UsablePiece piece_id="spear_banner_16" />
+      <UsablePiece piece_id="spear_banner_17" />
+      <UsablePiece piece_id="spear_banner_18" />
+      <UsablePiece piece_id="spear_banner_19" />
+      <UsablePiece piece_id="spear_banner_20" />
+      <UsablePiece piece_id="spear_banner_21" />
+      <UsablePiece piece_id="spear_banner_22" />
+      <UsablePiece piece_id="spear_banner_23" />
+      <UsablePiece piece_id="spear_banner_24" />
       <UsablePiece piece_id="spear_guard_1" />
       <UsablePiece piece_id="spear_guard_2" />
       <UsablePiece piece_id="spear_guard_3" />
@@ -581,26 +600,6 @@
       <UsablePiece piece_id="mp_spear_guard_20" />
 
       <UsablePiece piece_id="default_polearm_pommel" />
-	  
-	  <UsablePiece piece_id="spear_banner_1" />
-	  <UsablePiece piece_id="spear_banner_2" />
-	  <UsablePiece piece_id="spear_banner_3" />
-      <UsablePiece piece_id="spear_banner_4" />
-	  <UsablePiece piece_id="spear_banner_5" />
-	  <UsablePiece piece_id="spear_banner_6" />
-      <UsablePiece piece_id="spear_banner_9" />
-	  <UsablePiece piece_id="spear_banner_10" />
-	  <UsablePiece piece_id="spear_banner_12" />
-	  <UsablePiece piece_id="spear_banner_15" />
-	  <UsablePiece piece_id="spear_banner_16" />
-	  <UsablePiece piece_id="spear_banner_17" />
-	  <UsablePiece piece_id="spear_banner_18" />
-	  <UsablePiece piece_id="spear_banner_19" />
-	  <UsablePiece piece_id="spear_banner_20" />
-	  <UsablePiece piece_id="spear_banner_21" />
-	  <UsablePiece piece_id="spear_banner_22" />
-	  <UsablePiece piece_id="spear_banner_23" />
-	  <UsablePiece piece_id="spear_banner_24" />
 	  
       <UsablePiece piece_id="spear_pommel_1" />
       <UsablePiece piece_id="spear_pommel_2" />
@@ -679,6 +678,8 @@
                    mp_piece="true" />
       <UsablePiece piece_id="mp_khuzait_long_spear_blade"
                    mp_piece="true" />
+      <UsablePiece piece_id="mp_khuzait_long_infantry_spear_blade"
+                   mp_piece="true"/>
       <UsablePiece piece_id="mp_khuzait_cavalry_spear_blade"
                    mp_piece="true" />
       <UsablePiece piece_id="mp_khuzait_long_spear_handle"
@@ -719,6 +720,8 @@
                    mp_piece="true" />
       <UsablePiece piece_id="mp_battania_long_spear_blade"
                    mp_piece="true" />
+      <UsablePiece piece_id="mp_battania_long_infantry_spear_blade"
+                   mp_piece="true"/>
       <UsablePiece piece_id="mp_battania_cavalry_spear_blade"
                    mp_piece="true" />
       <UsablePiece piece_id="mp_battania_long_spear_handle"
@@ -733,6 +736,8 @@
                    mp_piece="true" />
       <UsablePiece piece_id="mp_sturgia_long_spear_blade"
                    mp_piece="true" />
+      <UsablePiece piece_id="mp_sturgia_long_infantry_spear_blade"
+                   mp_piece="true"/>
       <UsablePiece piece_id="mp_sturgia_long_spear_handle"
                    mp_piece="true" />
       <UsablePiece piece_id="mp_sturgia_great_spear_blade"

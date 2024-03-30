@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Items>
-  <CraftedItem id="gladius_b" name="{=RBMbbab2}Gladius" crafting_template="Dagger" culture="Culture.empire" modifier_group="sword">
+  <CraftedItem id="gladius_b" name="{=RBMAOZbTGOS}Gladius" crafting_template="Dagger" culture="Culture.empire" modifier_group="sword">
     <Pieces>
       <Piece id="dagger_blade_1" Type="Blade" scale_factor="170" />
       <Piece id="aserai_dagger_guard_1" Type="Guard" scale_factor="110" />
@@ -27,7 +27,7 @@
     <!-- #region Used Throwing Axes -->
   <!-- #region Tier 2 -->
   <CraftedItem id="highland_throwing_axe_1_t2"
-               name="{=RBM76a70}Throwing Labryes"
+               name="{=RBMGrfnpDxu}Throwing Labryes"
                crafting_template="ThrowingAxe"
                culture="Culture.battania">
     <Pieces>
@@ -42,7 +42,7 @@
   <!-- #endregion -->
   <!-- #region Tier 4 -->
   <CraftedItem id="southern_throwing_axe_1_t4"
-               name="{=RBM8d21b}Huge Throwing Axes"
+               name="{=RBMX31qND4N}Huge Throwing Axes"
                crafting_template="ThrowingAxe"
                culture="Culture.aserai">
     <Pieces>
@@ -55,7 +55,7 @@
     </Pieces>
   </CraftedItem>
   <CraftedItem id="northern_throwing_axe_1_t1"
-               name="{=RBM1dca4}Large Throwing Axes"
+               name="{=RBMWWRKeqwD}Large Throwing Axes"
                crafting_template="ThrowingAxe"
                culture="Culture.sturgia">
     <Pieces>
@@ -68,7 +68,7 @@
     </Pieces>
   </CraftedItem>
   <CraftedItem id="woodland_throwing_axe_1_t1"
-               name="{=RBM1f334}Medium Throwing Axes"
+               name="{=RBMrfnpDxu2}Medium Throwing Axes"
                crafting_template="ThrowingAxe"
                culture="Culture.battania">
     <Pieces>
@@ -81,7 +81,7 @@
     </Pieces>
   </CraftedItem>
   <CraftedItem id="western_throwing_axe_1_t1"
-               name="{=RBM18c83}Small Throwing Axes"
+               name="{=RBMF4xD8gjJ}Small Throwing Axes"
                crafting_template="ThrowingAxe"
                culture="Culture.vlandia">
     <Pieces>
@@ -165,7 +165,7 @@
     </Pieces>
   </CraftedItem>
   <CraftedItem id="battania_mace_1_t2"
-               name="{=FyaygeEx}Knobbed Club"
+               name="{=knobbedclubweapon}Knobbed Club"
                crafting_template="Mace"
                culture="Culture.battania">
     <Pieces>

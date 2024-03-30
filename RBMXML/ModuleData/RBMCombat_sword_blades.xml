@@ -61,7 +61,7 @@
   <CraftingPiece id="empire_blade_3" name="{=kuROzU1J}Simple Warsword Blade" tier="1" piece_type="Blade" mesh="empire_blade_3" culture="Culture.empire" length="91.3" weight="0.62" is_default="true">
 
     <BuildData previous_piece_offset="-0.4" />
-    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="empire_blade_1_scabbard_1">
+    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="empire_blade_3_scabbard_3">
       <Thrust damage_type="Pierce" damage_factor="0.65" />
       <Swing damage_type="Cut" damage_factor="0.4" />
     </BladeData>
@@ -110,7 +110,7 @@
   </CraftingPiece>
   <CraftingPiece id="vlandian_blade_3_blunt" name="{=PvB0pW1Q}Wide Fullered Blunt Blade" tier="1" piece_type="Blade" mesh="vlandian_blade_3" culture="Culture.vlandia" length="100.1" weight="0.65" is_hidden="true">
 
-    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="vlandian_blade_4_scabbard_4">
+    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="vlandian_blade_2_scabbard_2">
       <Thrust damage_type="Pierce" damage_factor="0.65" />
       <Swing damage_type="Cut" damage_factor="0.4" />
     </BladeData>
@@ -347,7 +347,7 @@
   </CraftingPiece>
   <CraftingPiece id="aserai_blade_3_blunt" name="{=NkV2CAmL}Iron Blunt Scimitar Blade" tier="2" piece_type="Blade" mesh="aserai_blade_3" culture="Culture.aserai" length="93.2" weight="0.64" is_hidden="true">
 
-    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="aserai_blade_3_scabbard_3">
+    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="aserai_blade_3blunt_scabbard_3">
       <Thrust damage_type="Pierce" damage_factor="0.6" />
       <Swing damage_type="Cut" damage_factor="0.8" />
     </BladeData>
@@ -636,7 +636,7 @@
     </Materials>
   </CraftingPiece>  
   
-  <CraftingPiece id="khuzait_blade_1" name="{=RBMLd1nfdj4}Fine Steel Sabre Blade" tier="4" piece_type="Blade" mesh="khuzait_blade_1" culture="Culture.khuzait" length="92.4" weight="0.62">
+  <CraftingPiece id="khuzait_blade_1" name="{=Ld1nfdj4}Fine Steel Saber Blade" tier="4" piece_type="Blade" mesh="khuzait_blade_1" culture="Culture.khuzait" length="92.4" weight="0.62">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="khuzait_blade_1_scabbard_1">
       <Thrust damage_type="Pierce" damage_factor="0.8" />
@@ -649,7 +649,7 @@
       <Material id="Iron5" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_blade_2" name="{=RBMC2hTDlWq}Heavy Sabre Blade" tier="4" piece_type="Blade" mesh="khuzait_blade_2" culture="Culture.khuzait" length="94.6" weight="0.64">
+  <CraftingPiece id="khuzait_blade_2" name="{=C2hTDlWq}Heavy Saber Blade" tier="4" piece_type="Blade" mesh="khuzait_blade_2" culture="Culture.khuzait" length="94.6" weight="0.64">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="khuzait_blade_2_scabbard_2">
       <Thrust damage_type="Pierce" damage_factor="0.8" />
@@ -662,7 +662,7 @@
       <Material id="Iron5" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_blade_3" name="{=RBMOHHpwD0F}Straight Sabre Blade" tier="3" piece_type="Blade" mesh="khuzait_blade_3" culture="Culture.khuzait" length="90.2" weight="0.61">
+  <CraftingPiece id="khuzait_blade_3" name="{=OHHpwD0F}Straight Saber Blade" tier="3" piece_type="Blade" mesh="khuzait_blade_3" culture="Culture.khuzait" length="90.2" weight="0.61">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="khuzait_blade_3_scabbard_3">
       <Thrust damage_type="Pierce" damage_factor="0.7" />
@@ -675,7 +675,7 @@
       <Material id="Iron4" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_blade_5" name="{=RBMCODGBskg}Long Sabre Blade" tier="3" piece_type="Blade" mesh="khuzait_blade_5" culture="Culture.khuzait" length="101.2" weight="0.67">
+  <CraftingPiece id="khuzait_blade_5" name="{=CODGBskg}Long Saber Blade" tier="3" piece_type="Blade" mesh="khuzait_blade_5" culture="Culture.khuzait" length="101.2" weight="0.67">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="khuzait_blade_5_scabbard_5">
       <Thrust damage_type="Pierce" damage_factor="0.7" />
@@ -684,8 +684,11 @@
     <Materials>
       <Material id="Iron4" count="3" />
     </Materials>
+    <Flags>
+      <Flag name="Civilian" type="ItemFlags" />
+    </Flags>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_blade_7" name="{=RBMwQGWxeCc}Thick Sabre Blade" tier="2" piece_type="Blade" mesh="khuzait_blade_7" culture="Culture.khuzait" length="82.5" weight="0.56">
+  <CraftingPiece id="khuzait_blade_7" name="{=wQGWxeCc}Thick Saber Blade" tier="2" piece_type="Blade" mesh="khuzait_blade_7" culture="Culture.khuzait" length="82.5" weight="0.56">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed">
       <Thrust damage_type="Pierce" damage_factor="0.6" />
@@ -698,7 +701,7 @@
       <Material id="Iron3" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_blade_7_blunt" name="{=RBMlz8rSkzE}Thick Blunt Sabre Blade" tier="2" piece_type="Blade" mesh="khuzait_blade_7" culture="Culture.khuzait" length="82.5" weight="0.56" is_hidden="true">
+  <CraftingPiece id="khuzait_blade_7_blunt" name="{=lz8rSkzE}Thick Blunt Saber Blade" tier="2" piece_type="Blade" mesh="khuzait_blade_7" culture="Culture.khuzait" length="82.5" weight="0.56" is_hidden="true">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed">
       <Thrust damage_type="Pierce" damage_factor="0.6" />
@@ -1117,7 +1120,7 @@
     </Materials>
   </CraftingPiece>
   
-  <CraftingPiece id="khuzait_blade_6" name="{=RBMczhTpYo8}Iron Sabre Blade" tier="2" piece_type="Blade" mesh="khuzait_blade_6" culture="Culture.khuzait" length="82.5" weight="0.66">
+  <CraftingPiece id="khuzait_blade_6" name="{=czhTpYo8}Iron Saber Blade" tier="2" piece_type="Blade" mesh="khuzait_blade_6" culture="Culture.khuzait" length="82.5" weight="0.66">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed">
       <Thrust damage_type="Pierce" damage_factor="0.6" />
@@ -1146,7 +1149,7 @@
   </CraftingPiece>
   <CraftingPiece id="cleaver_blade_4" name="{=gTzMtKYu}Star Falchion Blade Head" tier="3" piece_type="Blade" mesh="cleaver_blade_4" culture="Culture.vlandia" length="96.8" weight="1.15" excluded_item_usage_features="thrust">
 
-    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="cleaver_blade_4">
+    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed">
       <Swing damage_type="Cut" damage_factor="1.1" />
     </BladeData>
     <Materials>
@@ -1463,7 +1466,7 @@
   </CraftingPiece>
   <CraftingPiece id="cleaver_blade_1" name="{=hRfqLq4V}Falchion Blade" tier="3" piece_type="Blade" mesh="cleaver_blade_1" culture="Culture.aserai" length="97.9" weight="0.92">
 
-    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="cleaver_blade_1">
+    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed">
       <Thrust damage_type="Pierce" damage_factor="0.7" />
       <Swing damage_type="Cut" damage_factor="1" />
     </BladeData>
@@ -1473,15 +1476,15 @@
   </CraftingPiece>
   <CraftingPiece id="cleaver_blade_3" name="{=G8Fb2RPa}Pointed Falchion Blade" tier="4" piece_type="Blade" mesh="cleaver_blade_3" culture="Culture.aserai" length="101" weight="0.92" excluded_item_usage_features="thrust">
 
-    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="cleaver_blade_3">
-      <Thrust damage_type="Pierce" damage_factor="0.8" />
+    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed">
+      <!--<Thrust damage_type="Pierce" damage_factor="0.8" />-->
       <Swing damage_type="Cut" damage_factor="1.3" />
     </BladeData>
     <Materials>
       <Material id="Iron2" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_blade_8" name="{=RBM19a3jJ1s}Ridged Great Sabre Blade" tier="4" piece_type="Blade" mesh="khuzait_blade_8" culture="Culture.khuzait" length="99" weight="0.72">
+  <CraftingPiece id="khuzait_blade_8" name="{=19a3jJ1s}Ridged Great Saber Blade" tier="4" piece_type="Blade" mesh="khuzait_blade_8" culture="Culture.khuzait" length="99" weight="0.72">
 
     <BuildData previous_piece_offset="-0.25" />
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="khuzait_blade_8_scabbard_8">
@@ -1726,7 +1729,7 @@
       <Material id="Iron6" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_noble_blade_1" name="{=RBMPqoJ1ZeB}Decorated Sabre Blade" tier="5" piece_type="Blade" mesh="khuzait_noble_blade_1" culture="Culture.khuzait" length="89.5" weight="0.66">
+  <CraftingPiece id="khuzait_noble_blade_1" name="{=PqoJ1ZeB}Decorated Saber Blade" tier="5" piece_type="Blade" mesh="khuzait_noble_blade_1" culture="Culture.khuzait" length="89.5" weight="0.66">
 
     <BuildData previous_piece_offset="-0.25" />
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="khuzait_noble_blade_1_scabbard_1">
@@ -1781,7 +1784,7 @@
       <Material id="Iron6" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="battania_blade_3_fine_steel" name="{=hyNitMsQ}Highland Fine Steel Blade" tier="4" piece_type="Blade" mesh="battania_blade_3_fine_steel" culture="Culture.battania" length="80.8" weight="0.66">
+  <CraftingPiece id="battania_blade_3_fine_steel" name="{=finesteelbladecraftingpiece}Highland Fine Steel Blade" tier="4" piece_type="Blade" mesh="battania_blade_3_fine_steel" culture="Culture.battania" length="80.8" weight="0.66">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="battania_blade_3_scabbard_3">
       <Thrust damage_type="Pierce" damage_factor="0.9" />
@@ -1835,7 +1838,7 @@
   </CraftingPiece>
   <CraftingPiece id="cleaver_blade_5" name="{=2mo4gsuh}War Razor Blade" tier="4" piece_type="Blade" mesh="cleaver_blade_5" culture="Culture.vlandia" length="103.4" weight="0.79">
 
-    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="cleaver_blade_5">
+    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed">
       <Thrust damage_type="Pierce" damage_factor="0.9" />
       <Swing damage_type="Cut" damage_factor="1.1" />
     </BladeData>
@@ -1910,7 +1913,7 @@
   
   <CraftingPiece id="cleaver_blade_2" name="{=YkWqmDEK}Broad Falchion Blade Head" tier="3" piece_type="Blade" mesh="cleaver_blade_2" culture="Culture.aserai" length="100.1" weight="1.0">
 
-    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="cleaver_blade_2">
+    <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed">
       <Thrust damage_type="Pierce" damage_factor="0.7" />
       <Swing damage_type="Cut" damage_factor="1" />
     </BladeData>
@@ -2337,7 +2340,7 @@
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
                body_name="bo_knife_a"
-               holster_mesh="dagger_blade_6">
+               holster_mesh="dagger_blade_1_scabbard_1">
       <Thrust damage_type="Pierce"
               damage_factor="1.4" />
       <Swing damage_type="Cut"
@@ -2363,7 +2366,7 @@
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
                body_name="bo_knife_a"
-               holster_mesh="">
+               holster_mesh="dagger_blade_2_scabbard_1">
       <Thrust damage_type="Pierce"
               damage_factor="0.8" />
       <Swing damage_type="Cut"
@@ -2389,7 +2392,7 @@
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
                body_name="bo_knife_a"
-               holster_mesh="">
+               holster_mesh="dagger_blade_3_scabbard_1">
       <Thrust damage_type="Pierce"
               damage_factor="1" />
       <Swing damage_type="Cut"
@@ -2418,7 +2421,7 @@
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
                body_name="bo_knife_a"
-               holster_mesh="">
+               holster_mesh="dagger_blade_3_scabbard_1">
       <Thrust damage_type="Pierce"
               damage_factor="1" />
       <Swing damage_type="Cut"
@@ -2446,7 +2449,7 @@
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
                body_name="bo_knife_a"
-               holster_mesh="">
+               holster_mesh="dagger_blade_4_scabbard_1">
       <Thrust damage_type="Pierce"
               damage_factor="1" />
       <Swing damage_type="Cut"
@@ -2472,7 +2475,7 @@
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
                body_name="bo_knife_a"
-               holster_mesh="">
+               holster_mesh="dagger_blade_5_scabbard_1">
       <Thrust damage_type="Pierce"
               damage_factor="0.6" />
       <Swing damage_type="Cut"
@@ -2498,7 +2501,7 @@
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
                body_name="bo_knife_a"
-               holster_mesh="">
+               holster_mesh="dagger_blade_6_scabbard_2">
       <Thrust damage_type="Pierce"
               damage_factor="1" />
       <Swing damage_type="Cut"
@@ -2525,7 +2528,7 @@
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
                body_name="bo_knife_a"
-               holster_mesh="">
+               holster_mesh="dagger_blade_6_scabbard_1">
       <Thrust damage_type="Pierce"
               damage_factor="0.6" />
       <Swing damage_type="Cut"
@@ -2551,7 +2554,7 @@
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
                body_name="bo_knife_a"
-               holster_mesh="">
+               holster_mesh="dagger_blade_7_scabbard_1">
       <Thrust damage_type="Pierce"
               damage_factor="0.8" />
       <Swing damage_type="Cut"
@@ -2577,7 +2580,7 @@
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
                body_name="bo_knife_a"
-               holster_mesh="">
+               holster_mesh="dagger_blade_8_scabbard_1">
       <Thrust damage_type="Pierce"
               damage_factor="1" />
       <Swing damage_type="Cut"
@@ -2603,7 +2606,7 @@
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
                body_name="bo_knife_a"
-               holster_mesh="">
+               holster_mesh="dagger_blade_9_scabbard_1">
       <Thrust damage_type="Pierce"
               damage_factor="1" />
       <Swing damage_type="Cut"
@@ -2651,7 +2654,8 @@
                  piece_type="Blade"
                  mesh="dagger_blade_12"
                  length="25.2"
-                 weight="0.200">
+                 weight="0.200"
+                 is_default="true">
 
     <BladeData stack_amount="3"
                physics_material="metal_weapon"

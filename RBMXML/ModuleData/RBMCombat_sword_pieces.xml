@@ -194,7 +194,7 @@
       <Material id="Iron1" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_guard_7" name="{=RBMeuI3vluL}Broad Sabre Guard" tier="4" piece_type="Guard" mesh="khuzait_guard_7" culture="Culture.khuzait" length="0.55" weight="0.15">
+  <CraftingPiece id="khuzait_guard_7" name="{=euI3vluL}Broad Saber Guard" tier="4" piece_type="Guard" mesh="khuzait_guard_7" culture="Culture.khuzait" length="0.55" weight="0.15">
 
     <BuildData next_piece_offset="0.2" />
     <StatContributions armor_bonus="3" />
@@ -418,7 +418,7 @@
       <Material id="Iron5" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_noble_guard_2" name="{=RBMDiAHIRxm}Engraved Sabre Guard" tier="5" piece_type="Guard" mesh="khuzait_noble_guard_2" culture="Culture.khuzait" length="2.1" weight="0.19">
+  <CraftingPiece id="khuzait_noble_guard_2" name="{=DiAHIRxm}Engraved Saber Guard" tier="5" piece_type="Guard" mesh="khuzait_noble_guard_2" culture="Culture.khuzait" length="2.1" weight="0.19">
 
     <BuildData next_piece_offset="0.2" />
     <StatContributions armor_bonus="5" />
@@ -532,7 +532,7 @@
       <Material id="Iron5" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_noble_guard_3" name="{=RBMwXUjru6o}Knobbed Wide Sabre Guard" tier="5" piece_type="Guard" mesh="khuzait_noble_guard_3" culture="Culture.khuzait" length="2.9" weight="0.19">
+  <CraftingPiece id="khuzait_noble_guard_3" name="{=wXUjru6o}Knobbed Wide Saber Guard" tier="5" piece_type="Guard" mesh="khuzait_noble_guard_3" culture="Culture.khuzait" length="2.9" weight="0.19">
 
     <BuildData next_piece_offset="0.2" />
     <StatContributions armor_bonus="5" />
@@ -556,7 +556,7 @@
       <Material id="Iron4" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="vlandian_guard_3" name="{=Kcm4b7Qb}Winged Brass Guard" tier="4" piece_type="Guard" mesh="vlandian_guard_3" culture="Culture.vlandia" length="1.803" weight="0.15">
+  <CraftingPiece id="vlandian_guard_3" name="{=HlFpG5xw}Winged Bronze Guard" tier="4" piece_type="Guard" mesh="vlandian_guard_3" culture="Culture.vlandia" length="1.803" weight="0.15">
 
     <BuildData next_piece_offset="0.2" />
     <StatContributions armor_bonus="4" />
@@ -620,7 +620,7 @@
       <Material id="Iron5" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="wood_guard_1" name="{=dlnciENS}Wooden Guard" tier="1" piece_type="Guard" mesh="wood_guard_1" length="1.2" weight="0.020" CraftingCost="150">
+  <CraftingPiece id="wood_guard_1" name="{=dlnciENS}Wooden Guard" tier="1" piece_type="Guard" mesh="wood_guard_1" length="1.2" weight="0.020" CraftingCost="150" is_hidden="true">
     <!--WOOD-->
 
     <BuildData next_piece_offset="0.5" />
@@ -640,7 +640,7 @@
   </CraftingPiece>
   <CraftingPiece id="vlandian_grip_21" name="{=CE1IQiEU}Spiral Fine Leather Arming Sword Grip" tier="3" piece_type="Handle" mesh="vlandian_grip_21" culture="Culture.vlandia" length="15.4" weight="0.15">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.358" />
+    <BuildData piece_offset="0" previous_piece_offset="0.358" />
     <Materials>
       <Material id="Iron3" count="1" />
     </Materials>
@@ -659,9 +659,9 @@
       <Material id="Iron4" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="vlandian_grip_20" name="{=QXqd6MLV}Brass Bound Fine Leather Covered Two Handed Sword Grip" tier="4" piece_type="Handle" mesh="vlandian_grip_20" culture="Culture.vlandia" length="19.8" weight="0.15">
+  <CraftingPiece id="vlandian_grip_20" name="{=tq5XGebt}Bronze Bound Fine Leather Covered Two Handed Sword Grip" tier="4" piece_type="Handle" mesh="vlandian_grip_20" culture="Culture.vlandia" length="19.8" weight="0.15">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.358" />
+    <BuildData piece_offset="-4.5" previous_piece_offset="0.358" />
     <Materials>
       <Material id="Iron4" count="1" />
     </Materials>
@@ -738,7 +738,7 @@
   </CraftingPiece>
   <CraftingPiece id="aserai_grip_25" name="{=fRVQzcoY}Rough Thick Leather Wrapped One Handed Grip" tier="4" piece_type="Handle" mesh="aserai_grip_25" culture="Culture.aserai" length="16.1" weight="0.17">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.1" next_piece_offset="0.1" />
+    <BuildData piece_offset="0" previous_piece_offset="0.1" next_piece_offset="0.1" />
     <Materials>
       <Material id="Iron4" count="2" />
     </Materials>
@@ -757,7 +757,7 @@
       <Material id="Iron5" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_grip_7" name="{=RBM3ZyRhmke}Short Sabre Grip" tier="2" piece_type="Handle" mesh="khuzait_grip_7" culture="Culture.khuzait" length="15.1" weight="0.1">
+  <CraftingPiece id="khuzait_grip_7" name="{=3ZyRhmke}Short Saber Grip" tier="2" piece_type="Handle" mesh="khuzait_grip_7" culture="Culture.khuzait" length="15.1" weight="0.1">
 
     <BuildData piece_offset="-0.04" previous_piece_offset="0.2" next_piece_offset="0" />
     <Materials>
@@ -799,7 +799,7 @@
       <Material id="Iron2" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="sturgian_grip_4" name="{=RBMwHMdRIl6}Rough Leadther Segmented One Handed Grip" tier="2" piece_type="Handle" mesh="sturgian_grip_4" culture="Culture.sturgia" length="15.1" weight="0.1">
+  <CraftingPiece id="sturgian_grip_4" name="{=wHMdRIl6}Rough Leather Segmented One Handed Grip" tier="2" piece_type="Handle" mesh="sturgian_grip_4" culture="Culture.sturgia" length="15.1" weight="0.1">
 
     <BuildData piece_offset="-0.04" previous_piece_offset="0.2" next_piece_offset="0.1" />
     <Materials>
@@ -829,7 +829,7 @@
   </CraftingPiece>
   <CraftingPiece id="sturgian_grip_36" name="{=ZKsIpbg6}Half Leather Covered Wire Bound Two Handed Grip" tier="5" piece_type="Handle" mesh="sturgian_grip_36" culture="Culture.sturgia" length="19.8" weight="0.2">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="-0.2" next_piece_offset="0.6" />
+    <BuildData piece_offset="0" previous_piece_offset="-0.2" next_piece_offset="0.6" />
     <Materials>
       <Material id="Iron5" count="3" />
     </Materials>
@@ -912,7 +912,7 @@
       <Material id="Iron2" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="khuzait_grip_16" name="{=RBMQ9Gfv68h}Two Handed Sabre Grip" tier="2" piece_type="Handle" mesh="khuzait_grip_16" culture="Culture.khuzait" length="27" weight="0.1">
+  <CraftingPiece id="khuzait_grip_16" name="{=Q9Gfv68h}Two Handed Saber Grip" tier="2" piece_type="Handle" mesh="khuzait_grip_16" culture="Culture.khuzait" length="27" weight="0.1">
 
     <BuildData piece_offset="-0.04" previous_piece_offset="0.2" next_piece_offset="0" />
     <Materials>
@@ -956,35 +956,35 @@
   </CraftingPiece>
   <CraftingPiece id="khuzait_noble_grip_3" name="{=YDG2spCf}Eastern Leather Noble Grip" tier="4" piece_type="Handle" mesh="khuzait_noble_grip_3" culture="Culture.khuzait" length="15" weight="0.15">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.35" next_piece_offset="0.5" />
+    <BuildData piece_offset="0" previous_piece_offset="0.35" next_piece_offset="0.5" />
     <Materials>
       <Material id="Iron2" count="1" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="vlandian_noble_grip_2" name="{=4TvA6YaC}Marbled Arming Sword Grip" tier="4" piece_type="Handle" mesh="vlandian_noble_grip_2" culture="Culture.vlandia" length="17.5" weight="0.15">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.358" />
+    <BuildData piece_offset="0" previous_piece_offset="0.358" />
     <Materials>
       <Material id="Iron4" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="aserai_grip_24" name="{=GWJV4Vll}Leather Bastard Sword Grip with Brass Rings " tier="4" piece_type="Handle" mesh="aserai_grip_24" culture="Culture.aserai" length="16.8" weight="0.17">
+  <CraftingPiece id="aserai_grip_24" name="{=vYS4m95c}Leather Bastard Sword Grip with Bronze Rings " tier="4" piece_type="Handle" mesh="aserai_grip_24" culture="Culture.aserai" length="16.8" weight="0.17">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.1" next_piece_offset="0.1" />
+    <BuildData piece_offset="0" previous_piece_offset="0.1" next_piece_offset="0.1" />
     <Materials>
       <Material id="Iron4" count="2" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="vlandian_noble_grip_3" name="{=3VoW9qZs}Gold Bound Arming Sword Grip" tier="5" piece_type="Handle" mesh="vlandian_noble_grip_3" culture="Culture.vlandia" length="17.5" weight="0.15">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.358" />
+    <BuildData piece_offset="0" previous_piece_offset="0.358" />
     <Materials>
       <Material id="Iron5" count="2" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="vlandian_noble_grip_4" name="{=TKQl9boE}Golden Decorated Fine Arming Sword Grip" tier="5" piece_type="Handle" mesh="vlandian_noble_grip_4" culture="Culture.vlandia" length="15" weight="0.15">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.358" />
+    <BuildData piece_offset="0" previous_piece_offset="0.358" />
     <Materials>
       <Material id="Iron5" count="1" />
     </Materials>
@@ -998,35 +998,35 @@
   </CraftingPiece>
   <CraftingPiece id="aserai_noble_grip_1" name="{=p1Uz3dqs}Riveted Decorated Red Kaskara Grip" tier="5" piece_type="Handle" mesh="aserai_noble_grip_1" culture="Culture.aserai" length="15" weight="0.17">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.1" next_piece_offset="0.1" />
+    <BuildData piece_offset="0" previous_piece_offset="0.1" next_piece_offset="0.1" />
     <Materials>
       <Material id="Iron5" count="1" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="aserai_noble_grip_4" name="{=Wl1m0LbL}Silver Inlaid Engraved Reinforced Grip" tier="5" piece_type="Handle" mesh="aserai_noble_grip_4" culture="Culture.aserai" length="16.2" weight="0.17">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.1" next_piece_offset="0.1" />
+    <BuildData piece_offset="0" previous_piece_offset="0.1" next_piece_offset="0.1" />
     <Materials>
       <Material id="Iron5" count="1" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="khuzait_noble_grip_2" name="{=bPUXlfs8}Decorated Eastern Ild Grip" tier="5" piece_type="Handle" mesh="khuzait_noble_grip_2" culture="Culture.khuzait" length="15" weight="0.15">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.35" next_piece_offset="0.5" />
+    <BuildData piece_offset="0" previous_piece_offset="0.35" next_piece_offset="0.5" />
     <Materials>
       <Material id="Iron5" count="1" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="sturgian_noble_grip_1" name="{=HF2WJagx}Decorated Leather Wrapped Warsword Grip" tier="5" piece_type="Handle" mesh="sturgian_noble_grip_1" culture="Culture.sturgia" length="17.8" weight="0.2">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.2" next_piece_offset="0.3" />
+    <BuildData piece_offset="0" previous_piece_offset="0.2" next_piece_offset="0.3" />
     <Materials>
       <Material id="Iron5" count="2" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="sturgian_noble_grip_2" name="{=Nk924YlG}Decorated Fine Steel One Handed Grip" tier="5" piece_type="Handle" mesh="sturgian_noble_grip_2" culture="Culture.sturgia" length="15" weight="0.2">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.2" next_piece_offset="0.3" />
+    <BuildData piece_offset="0" previous_piece_offset="0.2" next_piece_offset="0.3" />
     <Materials>
       <Material id="Iron5" count="2" />
     </Materials>
@@ -1052,7 +1052,7 @@
       <Material id="Iron3" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="sturgian_grip_22" name="{=RBMYKXNxxvY}Nothern Two Handed Grip" tier="3" piece_type="Handle" mesh="sturgian_grip_22" culture="Culture.sturgia" length="25" weight="0.1">
+  <CraftingPiece id="sturgian_grip_22" name="{=YKXNxxvY}Northern Two Handed Grip" tier="3" piece_type="Handle" mesh="sturgian_grip_22" culture="Culture.sturgia" length="25" weight="0.1">
 
     <BuildData piece_offset="0" previous_piece_offset="0.3" next_piece_offset="0.4" />
     <Materials>
@@ -1068,7 +1068,7 @@
   </CraftingPiece>
   <CraftingPiece id="khuzait_grip_17" name="{=MJRzaazz}Steel Bound Plated Two Handed Grip" tier="4" piece_type="Handle" mesh="khuzait_grip_17" culture="Culture.khuzait" length="25" weight="0.17">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.35" next_piece_offset="0" />
+    <BuildData piece_offset="-5" previous_piece_offset="0.35" next_piece_offset="0" />
     <Materials>
       <Material id="Iron4" count="3" />
     </Materials>
@@ -1320,6 +1320,12 @@
   <CraftingPiece id="sturgian_grip_29" name="{=Zp625kEP}Northern Wood Grip Two Handed" tier="2" piece_type="Handle" mesh="sturgian_grip_29" culture="Culture.sturgia" length="25" weight="0.12" CraftingCost="75">
 
     <BuildData piece_offset="-0.27" previous_piece_offset="0.4" next_piece_offset="0.2" />
+    <Materials>
+      <Material id="Iron2"
+                count="1"/>
+      <Material id="Wood"
+                count="1"/>
+    </Materials>
   </CraftingPiece>
   <CraftingPiece id="sturgian_grip_30" name="{=m2Xz2K5v}Northern Fur Two Handed Grip" tier="2" piece_type="Handle" mesh="sturgian_grip_30" culture="Culture.sturgia" length="27.3" weight="0.11">
 
@@ -1365,21 +1371,21 @@
   </CraftingPiece>
   <CraftingPiece id="sturgian_grip_37" name="{=ZKrpvDu6}Half Wrapped Steel Reinforced Bastard Sword Grip" tier="4" piece_type="Handle" mesh="sturgian_grip_37" culture="Culture.sturgia" length="16.6" weight="0.2">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.2" next_piece_offset="0.3" />
+    <BuildData piece_offset="0" previous_piece_offset="0.2" next_piece_offset="0.3" />
     <Materials>
       <Material id="Iron4" count="2" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="sturgian_noble_grip_3" name="{=ueCf3sde}Leather Wrapped Thin One Handed Grip" tier="3" piece_type="Handle" mesh="sturgian_noble_grip_3" culture="Culture.sturgia" length="15" weight="0.2">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.2" next_piece_offset="0.3" />
+    <BuildData piece_offset="0" previous_piece_offset="0.2" next_piece_offset="0.3" />
     <Materials>
       <Material id="Iron3" count="1" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="sturgian_noble_grip_4" name="{=9T2KA9sk}Gold Bound Decorated Steel Grip" tier="5" piece_type="Handle" mesh="sturgian_noble_grip_4" culture="Culture.sturgia" length="15.7" weight="0.2">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.2" next_piece_offset="0.3" />
+    <BuildData piece_offset="0" previous_piece_offset="0.2" next_piece_offset="0.3" />
     <Materials>
       <Material id="Iron5" count="1" />
     </Materials>
@@ -1442,35 +1448,35 @@
   </CraftingPiece>
   <CraftingPiece id="khuzait_grip_18" name="{=GA4AaQQk}Reinforced One Handed Wooden Grip" tier="3" piece_type="Handle" mesh="khuzait_grip_18" culture="Culture.khuzait" length="17.7" weight="0.18">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.35" next_piece_offset="0" />
+    <BuildData piece_offset="0" previous_piece_offset="0.35" next_piece_offset="0" />
     <Materials>
       <Material id="Iron3" count="1" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="khuzait_grip_19" name="{=rkEbLbYf}Eastern Reinforced Leather Long Grip" tier="4" piece_type="Handle" mesh="khuzait_grip_19" culture="Culture.khuzait" length="19" weight="0.15">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.35" next_piece_offset="0" />
+    <BuildData piece_offset="-4" previous_piece_offset="0.35" next_piece_offset="0" />
     <Materials>
       <Material id="Iron4" count="2" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="khuzait_grip_20" name="{=yMWzpgjz}Thread Wrapped Angular Two Handed Grip" tier="3" piece_type="Handle" mesh="khuzait_grip_20" culture="Culture.khuzait" length="20.6" weight="0.15">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.35" next_piece_offset="0.5" />
+    <BuildData piece_offset="-4" previous_piece_offset="0.35" next_piece_offset="0.5" />
     <Materials>
       <Material id="Iron3" count="2" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="khuzait_noble_grip_1" name="{=Ft5A2Eb4}Eastern Leather Covered Reinforced Two Handed Grip" tier="4" piece_type="Handle" mesh="khuzait_noble_grip_1" culture="Culture.khuzait" length="25.2" weight="0.15">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.35" next_piece_offset="0" />
+    <BuildData piece_offset="0" previous_piece_offset="0.35" next_piece_offset="0" />
     <Materials>
       <Material id="Iron4" count="2" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="khuzait_noble_grip_4" name="{=uKu7rTrW}Tight Wrapped Narrow One Handed Grip" tier="4" piece_type="Handle" mesh="khuzait_noble_grip_4" culture="Culture.khuzait" length="15" weight="0.15">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.35" next_piece_offset="0.5" />
+    <BuildData piece_offset="0" previous_piece_offset="0.35" next_piece_offset="0.5" />
     <Materials>
       <Material id="Iron4" count="1" />
     </Materials>
@@ -1554,28 +1560,28 @@
   </CraftingPiece>
   <CraftingPiece id="vlandian_grip_19" name="{=aVBGVt7N}Tapered Horn Grip" tier="4" piece_type="Handle" mesh="vlandian_grip_19" culture="Culture.vlandia" length="18" weight="0.15">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.358" />
+    <BuildData piece_offset="0" previous_piece_offset="0.358" />
     <Materials>
       <Material id="Iron2" count="1" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="vlandian_grip_22" name="{=6PD2rBbf}Tapered Leather Covered One Handed Horn Grip" tier="4" piece_type="Handle" mesh="vlandian_grip_22" culture="Culture.vlandia" length="17.2" weight="0.15">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.358" next_piece_offset="0.2" />
+    <BuildData piece_offset="0" previous_piece_offset="0.358" next_piece_offset="0.2" />
     <Materials>
       <Material id="Iron2" count="1" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="vlandian_grip_24" name="{=g60SQjOR}Leather Wrapped Horn Longsword Grip" tier="3" piece_type="Handle" mesh="vlandian_grip_24" culture="Culture.vlandia" length="17.1" weight="0.15">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.358" />
+    <BuildData piece_offset="0" previous_piece_offset="0.358" />
     <Materials>
       <Material id="Iron3" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="vlandian_noble_grip_1" name="{=r1U1w2zp}Brass Bound Fine Leather Arming Sword Grip" tier="4" piece_type="Handle" mesh="vlandian_noble_grip_1" culture="Culture.vlandia" length="17.5" weight="0.15">
+  <CraftingPiece id="vlandian_noble_grip_1" name="{=nxyf3OHZ}Bronze Bound Fine Leather Arming Sword Grip" tier="4" piece_type="Handle" mesh="vlandian_noble_grip_1" culture="Culture.vlandia" length="17.5" weight="0.15">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.358" />
+    <BuildData piece_offset="0" previous_piece_offset="0.358" />
     <Materials>
       <Material id="Iron4" count="1" />
     </Materials>
@@ -1729,37 +1735,37 @@
       <Material id="Iron4" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="aserai_grip_26" name="{=jZTWkSDw}Brass Bound Bastard Sword Grip" tier="4" piece_type="Handle" mesh="aserai_grip_26" culture="Culture.aserai" length="18.6" weight="0.17">
+  <CraftingPiece id="aserai_grip_26" name="{=k2HEOuHV}Bronze Bound Bastard Sword Grip" tier="4" piece_type="Handle" mesh="aserai_grip_26" culture="Culture.aserai" length="18.6" weight="0.17">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.1" next_piece_offset="0.1" />
+    <BuildData piece_offset="0" previous_piece_offset="0.1" next_piece_offset="0.1" />
     <Materials>
       <Material id="Iron4" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="aserai_grip_27" name="{=ZJwQmyQR}Leather Covered Bastard Sword Grip With Brass Studs" tier="4" piece_type="Handle" mesh="aserai_grip_27" culture="Culture.aserai" length="17.8" weight="0.17">
+  <CraftingPiece id="aserai_grip_27" name="{=Z98LPAz7}Leather Covered Bastard Sword Grip With Bronze Studs" tier="4" piece_type="Handle" mesh="aserai_grip_27" culture="Culture.aserai" length="17.8" weight="0.17">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.1" next_piece_offset="0.1" />
+    <BuildData piece_offset="0" previous_piece_offset="0.1" next_piece_offset="0.1" />
     <Materials>
       <Material id="Iron4" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="aserai_grip_28" name="{=hVBKOOY1}Brass Studded Angular Two Handed Grip" tier="4" piece_type="Handle" mesh="aserai_grip_28" culture="Culture.aserai" length="20.5" weight="0.17">
+  <CraftingPiece id="aserai_grip_28" name="{=DPa0JB1U}Bronze Studded Angular Two Handed Grip" tier="4" piece_type="Handle" mesh="aserai_grip_28" culture="Culture.aserai" length="20.5" weight="0.17">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.1" next_piece_offset="0.1" />
+    <BuildData piece_offset="-5" previous_piece_offset="0.1" next_piece_offset="0.1" />
     <Materials>
       <Material id="Iron4" count="1" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="aserai_noble_grip_2" name="{=uIciSK8t}Decorated Round Southern Noble Grip" tier="5" piece_type="Handle" mesh="aserai_noble_grip_2" culture="Culture.aserai" length="15" weight="0.17">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.1" next_piece_offset="0.1" />
+    <BuildData piece_offset="0" previous_piece_offset="0.1" next_piece_offset="0.1" />
     <Materials>
       <Material id="Iron5" count="1" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="aserai_noble_grip_3" name="{=jupH2NfE}Gold Inlaid Angular Bastard Sword Grip" tier="5" piece_type="Handle" mesh="aserai_noble_grip_3" culture="Culture.aserai" length="17" weight="0.17">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.1" next_piece_offset="0.1" />
+    <BuildData piece_offset="0" previous_piece_offset="0.1" next_piece_offset="0.1" />
     <Materials>
       <Material id="Iron5" count="2" />
     </Materials>
@@ -1787,14 +1793,14 @@
   </CraftingPiece>
   <CraftingPiece id="battania_grip_10" name="{=cbHjFPEb}Highland Fine Leather Bastard Sword Grip" tier="4" piece_type="Handle" mesh="battania_grip_10" culture="Culture.battania" length="17.7" weight="0.17">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.1" next_piece_offset="0.1" />
+    <BuildData piece_offset="0" previous_piece_offset="0.1" next_piece_offset="0.1" />
     <Materials>
       <Material id="Iron4" count="1" />
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="battania_noble_grip_1" name="{=d2kOHsY7}Decorated Broadsword Grip" tier="4" piece_type="Handle" mesh="battania_noble_grip_1" culture="Culture.battania" length="14.7" weight="0.17">
 
-    <BuildData piece_offset="-6.75" previous_piece_offset="0.1" next_piece_offset="0.1" />
+    <BuildData piece_offset="0" previous_piece_offset="0.1" next_piece_offset="0.1" />
     <Materials>
       <Material id="Iron4" count="1" />
     </Materials>

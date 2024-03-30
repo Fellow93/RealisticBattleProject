@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Items>
-	<Item id="ladys_shoe" name="{=RBMRU2EppgI}Lady's Shoes" mesh="woman_shoe_a" culture="Culture.empire" weight="0.6" appearance="1" Type="LegArmor" value="250">
+	<Item id="ladys_shoe" name="{=RU2EppgI}Ladies Shoes" mesh="woman_shoe_a" culture="Culture.neutral_culture" weight="0.6" appearance="1" Type="LegArmor">
 		<ItemComponent>
 			<Armor leg_armor="14" covers_legs="false" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="southern_moccasins" name="{=E7puv7hi}Southern Moccasins" mesh="aserai_female_costume_shoe" culture="Culture.aserai" weight="0.5" appearance="1" Type="LegArmor" value="283">
+	<Item id="southern_moccasins" name="{=SxqSJK8h}Moccasins" mesh="aserai_female_costume_shoe" culture="Culture.aserai" weight="0.5" appearance="1" Type="LegArmor">
 		<ItemComponent>
 			<Armor leg_armor="16" covers_legs="false" modifier_group="cloth_unarmoured" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="leather_shoes" name="{=Kgnm0FkE}Leather Shoes" mesh="boot_e" culture="Culture.empire" weight="0.7" appearance="0.3" Type="LegArmor" difficulty="0">
+	<Item id="leather_shoes" name="{=Kgnm0FkE}Leather Shoes" mesh="boot_e" culture="Culture.neutral_culture" weight="0.7" appearance="0.3" Type="LegArmor" difficulty="0">
 		<ItemComponent>
 			<Armor leg_armor="19" covers_legs="true" modifier_group="leather" material_type="Leather"/>
 		</ItemComponent>
@@ -28,9 +28,9 @@
 		<ItemComponent>
 			<Armor leg_armor="20" covers_legs="true" modifier_group="leather" material_type="Leather"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="strapped_shoes" name="{=LOPavWRp}Strapped Shoes" mesh="strapped_shoes" culture="Culture.vlandia" weight="0.7" appearance="1" Type="LegArmor" difficulty="0">
+	<Item id="strapped_shoes" name="{=LOPavWRp}Strapped Shoes" mesh="strapped_shoes" culture="Culture.neutral_culture" weight="0.7" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
 			<Armor leg_armor="22" covers_legs="true" modifier_group="cloth" material_type="Cloth"/>
 		</ItemComponent>
@@ -40,7 +40,7 @@
 		<ItemComponent>
 			<Armor leg_armor="23" covers_legs="true" modifier_group="leather" material_type="Leather"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
 	<Item id="folded_town_boots" name="{=oH8iFEv7}Folded Town Boots" mesh="casual_01_boots" culture="Culture.empire" weight="1" appearance="1" Type="LegArmor">
 		<ItemComponent>
@@ -48,19 +48,19 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="turndown_leather_boots" name="{=VpxmlDyY}Turndown Leather Boots" mesh="sea_raider_leather_boot" culture="Culture.battania" weight="0.9" appearance="1" Type="LegArmor">
+	<Item id="turndown_leather_boots" name="{=xwWYJb5A}Folded Leather Boots" mesh="sea_raider_leather_boot" culture="Culture.battania" weight="0.9" appearance="1" Type="LegArmor">
 		<ItemComponent>
 			<Armor leg_armor="25" covers_legs="true" modifier_group="leather" material_type="Leather"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="ragged_boots" name="{=Szuxa9Bs}Ragged Boots" mesh="sneak_costume_foot" culture="Culture.battania" weight="0.8" appearance="0.3" Type="LegArmor" difficulty="0">
+	<Item id="ragged_boots" name="{=Szuxa9Bs}Ragged Boots" mesh="sneak_costume_foot" culture="Culture.neutral_culture" weight="0.8" appearance="0.3" Type="LegArmor" difficulty="0">
 		<ItemComponent>
 			<Armor leg_armor="26" covers_legs="true" modifier_group="cloth" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="highland_boots" name="{=RBM42KNket2}Highland Boots" mesh="pict_armor_boot" culture="Culture.battania" weight="1" appearance="1" Type="LegArmor" difficulty="0">
+	<Item id="highland_boots" name="{=FQqaVHq2}Forester Boots" mesh="pict_armor_boot" culture="Culture.battania" weight="1" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
 			<Armor leg_armor="26" covers_legs="true" modifier_group="leather" material_type="Leather"/>
 		</ItemComponent>
@@ -78,13 +78,13 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="khuzait_curved_boots" name="{=RWKafLdU}Eastern Curved Boots" mesh="khuzait_leather_boots" culture="Culture.khuzait" weight="0.9" appearance="1" Type="LegArmor">
+	<Item id="khuzait_curved_boots" name="{=D9JrTpwU}Curved Boots" mesh="khuzait_leather_boots" culture="Culture.khuzait" weight="0.9" appearance="1" Type="LegArmor">
 		<ItemComponent>
 			<Armor leg_armor="28" covers_legs="true" modifier_group="leather" material_type="Leather"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="empire_horseman_boots" name="{=AwARTy44}Imperial Horseman Boots" mesh="empire_horseman_boots" culture="Culture.empire" weight="0.8" appearance="1.3" Type="LegArmor" difficulty="0">
+	<Item id="empire_horseman_boots" name="{=uvSXUgT8}Horseman Boots" mesh="empire_horseman_boots" culture="Culture.empire" weight="0.8" appearance="1.3" Type="LegArmor" difficulty="0">
 		<ItemComponent>
 			<Armor leg_armor="28" covers_legs="true" modifier_group="leather" material_type="Leather"/>
 		</ItemComponent>
@@ -96,13 +96,13 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="eastern_leather_boots" name="{=ukQCN90m}Eastern Leather Boots" mesh="plated_leather_armor_boot" culture="Culture.khuzait" weight="1.1" appearance="1" Type="LegArmor">
+	<Item id="eastern_leather_boots" name="{=Ga5mCiLp}Leather Riding Boots" mesh="plated_leather_armor_boot" culture="Culture.khuzait" weight="1.1" appearance="1" Type="LegArmor">
 		<ItemComponent>
 			<Armor leg_armor="29" covers_legs="true" modifier_group="leather" material_type="Leather"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="steppe_leather_boots" name="{=6Ls9naf4}Eastern Steppe Leather Boots" mesh="khuzait_leather_armor_foot" culture="Culture.khuzait" weight="0.8" appearance="1" Type="LegArmor" difficulty="0">
+	<Item id="steppe_leather_boots" name="{=VpxHysbZ}Sturdy Leather Boots" mesh="khuzait_leather_armor_foot" culture="Culture.khuzait" weight="0.8" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
 			<Armor leg_armor="29" covers_legs="true" modifier_group="leather" material_type="Leather"/>
 		</ItemComponent>
@@ -114,7 +114,7 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="highland_leg_wrappings" name="{=RBMcCaHNMwf}Highland Leg Wrappings" mesh="battania_boot_a" culture="Culture.battania" weight="1" appearance="1" Type="LegArmor" difficulty="0">
+	<Item id="highland_leg_wrappings" name="{=xqE9aycc}Woodland Leg Wrappings" mesh="battania_boot_a" culture="Culture.battania" weight="1" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
 			<Armor leg_armor="30" covers_legs="true" modifier_group="cloth" material_type="Cloth"/>
 		</ItemComponent>
@@ -138,13 +138,13 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="leather_boots" name="{=ukQCN90m}Eastern Leather Boots" mesh="boot_f" culture="Culture.khuzait" weight="0.8" appearance="1" Type="LegArmor" difficulty="0">
+	<Item id="leather_boots" name="{=IOOTPpYj}Fur Rimmed Curved Boots" mesh="boot_f" culture="Culture.khuzait" weight="0.8" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
 			<Armor leg_armor="30" covers_legs="true" modifier_group="leather" material_type="Leather"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="battania_leather_boots" name="{=RBMhTRaPvRa}Highland Leather Boots" mesh="battania_leather_boots_a" culture="Culture.battania" weight="1" appearance="1" Type="LegArmor" difficulty="0">
+	<Item id="battania_leather_boots" name="{=4Ygp7P0Y}Highborn Leather Boots" mesh="battania_leather_boots_a" culture="Culture.battania" weight="1" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
 			<Armor leg_armor="32" covers_legs="true" modifier_group="leather" material_type="Leather"/>
 		</ItemComponent>
@@ -162,7 +162,7 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="battania_fur_boots" name="{=RBMvwVFF1XJ}Highland Fur Boots" mesh="battania_fur_boot_a" culture="Culture.battania" weight="1.5" appearance="1" Type="LegArmor" difficulty="0">
+	<Item id="battania_fur_boots" name="{=jVK5B86k}Fur Boots" mesh="battania_fur_boot_a" culture="Culture.battania" weight="1.5" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
 			<Armor leg_armor="35" covers_legs="true" modifier_group="leather" material_type="Leather"/>
 		</ItemComponent>
@@ -204,19 +204,19 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="decorated_imperial_boots" name="{=RBM0bE90176}Decorated Imperial Boots" mesh="empire_plate_armor_boots" culture="Culture.empire" weight="2.3" appearance="3" Type="LegArmor">
+	<Item id="decorated_imperial_boots" name="{=XXGZLTN6}Decorated Plate Boots" mesh="empire_plate_armor_boots" culture="Culture.empire" weight="2.3" appearance="3" Type="LegArmor">
 		<ItemComponent>
 			<Armor leg_armor="44" covers_legs="true" modifier_group="plate" material_type="Plate"/>
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="battania_warlord_boots" name="{=RBMeTKxlDl1}Highland Warlord Boots" mesh="battania_warlord_boots" culture="Culture.battania" weight="2.6" appearance="3" Type="LegArmor" difficulty="0">
+	<Item id="battania_warlord_boots" name="{=UuWPfE1x}Scaled Boots" mesh="battania_warlord_boots" culture="Culture.battania" weight="2.6" appearance="3" Type="LegArmor" difficulty="0">
 		<ItemComponent>
 			<Armor leg_armor="46" covers_legs="true" modifier_group="plate" material_type="Plate"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="northern_plated_boots" name="{=bGSbaT2n}Northern Plated Boots" mesh="sturgia_plate_boot" culture="Culture.sturgia" weight="2.9" appearance="3" Type="LegArmor">
+	<Item id="northern_plated_boots" name="{=18ZFPXsO}Huscarl Plated Boots" mesh="sturgia_plate_boot" culture="Culture.sturgia" weight="2.9" appearance="3" Type="LegArmor">
 		<ItemComponent>
 			<Armor leg_armor="60" covers_legs="true" modifier_group="plate" material_type="Plate"/>
 		</ItemComponent>
