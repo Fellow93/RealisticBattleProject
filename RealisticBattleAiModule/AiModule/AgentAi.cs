@@ -116,7 +116,7 @@ namespace RBMAI
                 {
                     agentDrivenProperties.AiShooterError = 0.020f - (0.007f * effectiveSkillLevel);
                     agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
-                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 1.5f;
+                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 0f;
                 }
                 else if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Bow)
                 {
