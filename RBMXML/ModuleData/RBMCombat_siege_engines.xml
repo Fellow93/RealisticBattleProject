@@ -12,7 +12,7 @@
                    is_constructible="false" />
   <SiegeEngineType id="siege_tower_level1"
                    name="{=aXjlMBiE}Siege Tower"
-                   description ="{=*}Siege towers allow approaching the walls without being exposed to missiles, and reduce the defender's height advantage."
+                   description ="{=jWjnpW52}Siege towers allow approaching the walls without being exposed to missiles, and reduce the defender's height advantage."
                    max_hit_points="12000"
                    man_day_cost="16"
                    difficulty="30" />

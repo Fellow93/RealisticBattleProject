@@ -2211,7 +2211,7 @@
   <NPCCharacter id="aserai_skirmisher"
                 default_group="Ranged"
                 level="16"
-                name="Aserai Archer"
+                name="{=RBMa7d2d}Aserai Archer"
                 occupation="Soldier"
                 culture="Culture.aserai">
     <face>
@@ -2306,7 +2306,7 @@
   <NPCCharacter id="aserai_archer"
                 default_group="Ranged"
                 level="21"
-                name="Aserai Experienced Archer"
+                name="{=RBMa632d}Aserai Experienced Archer"
                 occupation="Soldier"
                 culture="Culture.aserai">
     <face>
@@ -5891,7 +5891,7 @@
   <NPCCharacter id="archer"
                 default_group="Ranged"
                 level="11"
-                name="{=ieiqOaZp}Archer"
+                name="{=RBMieiqOaZp}Archer"
                 occupation="Townsfolk"
                 culture="Culture.empire">
     <face>
@@ -6147,7 +6147,7 @@
   <NPCCharacter id="imperial_vigla_recruit"
                 default_group="Cavalry"
                 level="11"
-                name="{=n41jlEa3}Imperial Mounted Acritae"
+                name="{=RBMFdB4C38e}Imperial Mounted Acritae"
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.empire">
@@ -10401,7 +10401,7 @@
   <NPCCharacter id="varyag"
                 default_group="Cavalry"
                 level="16"
-                name="{=4C4WiTb2}Mounted Varyag"
+                name="{=RBM4C4WiTb2}Mounted Varyag"
                 upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 culture="Culture.sturgia">
@@ -10495,7 +10495,7 @@
   <NPCCharacter id="varyag_veteran"
                 default_group="Cavalry"
                 level="21"
-                name="{=QGPAEtj7}Mounted Varyag Veteran"
+                name="{=RBMQGPAEtj7}Mounted Varyag Veteran"
                 upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.sturgia">
@@ -11993,7 +11993,7 @@
   <NPCCharacter id="vlandian_spearman"
                 default_group="Cavalry"
                 level="16"
-                name="Vlandian Light Cavalry"
+                name="{=RBM849af}Vlandian Light Cavalry"
                 upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 culture="Culture.vlandia">
@@ -12649,7 +12649,7 @@
   <NPCCharacter id="vlandian_light_cavalry"
                 default_group="Cavalry"
                 level="21"
-                name="Vlandian Medium Cavalry"
+                name="{=RBMd1eb3}Vlandian Medium Cavalry"
                 upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 culture="Culture.vlandia">
@@ -15140,7 +15140,7 @@
                 level="19"
                 occupation="Soldier"
                 culture="Culture.empire"
-                name="{=MVHawAEp}Hidden Hand">
+                name="{=RBMMVHawAEp}Hidden Soldati">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -17419,7 +17419,7 @@
                 is_hero="false"
                 is_basic_troop="true"
                 level="16"
-                name="{=r8npO8hG}Crossbow Sister"
+                name="{=RBMr8npO8hG}Crossbow Sister"
                 occupation="Mercenary"
                 culture="Culture.empire">
     <face>
@@ -17590,7 +17590,7 @@
                 default_group="HorseArcher"
                 is_hero="false"
                 level="26"
-                name="{=ifL3F7E2}Gallant Glaive Sister"
+                name="{=RBMifL3F7E2}Gallant Glaive Sister"
                 occupation="Mercenary"
                 culture="Culture.empire"
 				upgrade_requires="ItemCategory.war_horse">
@@ -17689,7 +17689,7 @@
                 default_group="Ranged"
                 is_hero="false"
                 level="26"
-                name="{=0gi5Fp8c}Glaive Sister"
+                name="{=RBM0gi5Fp8c}Glaive Sister"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
@@ -18069,7 +18069,7 @@
                 default_group="HorseArcher"
                 is_hero="false"
                 level="21"
-                name="{=xl6QstMW}Mercenary Horse Archer"
+                name="{=RBMxl6QstMW}Mercenary Horse Archer"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture"
 				upgrade_requires="ItemCategory.war_horse">
@@ -18170,7 +18170,7 @@
                 default_group="HorseArcher"
                 is_hero="false"
                 level="26"
-                name="{=kyt087eN}Veteran Mercenary Horse Archer"
+                name="{=RBMkyt087eN}Veteran Mercenary Horse Archer"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture"
 				upgrade_requires="ItemCategory.war_horse">
@@ -18360,7 +18360,7 @@
   <NPCCharacter id="western_mercenary_t4"
                 default_group="Infantry"
                 level="21"
-                name="{=n89z19Dv}Hireling Pikeman"
+                name="{=RBMn89z19Dv}Hireling Pikeman"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
@@ -18449,7 +18449,7 @@
   <NPCCharacter id="western_mercenary_t5"
                 default_group="Infantry"
                 level="26"
-                name="{=7WV17e5Q}Hireling Elite Pikeman"
+                name="{=RBM7WV17e5Q}Hireling Elite Pikeman"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
@@ -18536,7 +18536,7 @@
                 default_group="Ranged"
                 is_hero="false"
                 level="21"
-                name="{=QfVe3IVw}Hireling Crossbowman"
+                name="{=RBMQfVe3IVw}Hireling Crossbowman"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
@@ -18632,7 +18632,7 @@
                 default_group="Ranged"
                 is_hero="false"
                 level="26"
-                name="{=DxtSIxyZ}Elite Hireling Warbowman"
+                name="{=RBMDxtSIxyZ}Elite Hireling Warbowman"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>

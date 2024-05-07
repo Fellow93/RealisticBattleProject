@@ -66,7 +66,7 @@
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="pilgrim_hood" name="{=VXFwEF3M}Pilgrim's Hood" mesh="sneak_costume_head" culture="Culture.empire" weight="0.2" appearance="0.3" Type="headArmor" difficulty="0">
+	<Item id="pilgrim_hood" name="{=RBMVXFwEF3M}Pilgrim's Hood" mesh="sneak_costume_head" culture="Culture.empire" weight="0.2" appearance="0.3" Type="headArmor" difficulty="0">
 		<ItemComponent>
 			<Armor head_armor="7" body_armor="5" has_gender_variations="false" hair_cover_type="all" modifier_group="cloth_unarmoured" material_type="Cloth" beard_cover_type="type3"/>
 		</ItemComponent>
@@ -492,7 +492,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="cervelliere_over_laced_coif" name="{=bfFNYaiU}Cervelliere Over Laced Coif" mesh="vlandia_helmet_n_c" culture="Culture.vlandia" weight="1.1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="cervelliere_over_laced_coif" name="{=RBMbfFNYaiU}Cervelliere Over Laced Coif" mesh="vlandia_helmet_n_c" culture="Culture.vlandia" weight="1.1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="48" body_armor="0" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
@@ -546,7 +546,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="nasal_cervelliere_over_padded_cap" name="{=4BfbPgkY}Nasal Cervelliere Over Padded Cap" mesh="vlandia_helmet_o_e" culture="Culture.vlandia" weight="1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="nasal_cervelliere_over_padded_cap" name="{=RBM4BfbPgkY}Nasal Cervelliere Over Padded Cap" mesh="vlandia_helmet_o_e" culture="Culture.vlandia" weight="1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="54" body_armor="12" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate"/>
 		</ItemComponent>
@@ -558,7 +558,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="battania_earmuff_helmet_b_brnz" name="{=PyeZ22FL}Bronze Cap With Cheek Guards" mesh="battania_earmuff_helmet_b_brnz" culture="Culture.battania" weight="3" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="battania_earmuff_helmet_b_brnz" name="{=RBMPyeZ22FL}Bronze Cap With Cheek Guards" mesh="battania_earmuff_helmet_b_brnz" culture="Culture.battania" weight="3" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="61" body_armor="0" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
@@ -582,7 +582,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="battania_earmuff_helmet_a_brnz" name="{=HBaSQlSJ}Fringed Bronze Cap With Cheek Guards" mesh="battania_earmuff_helmet_a_brnz" culture="Culture.battania" weight="3.2" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="battania_earmuff_helmet_a_brnz" name="{=RBMHBaSQlSJ}Fringed Bronze Cap With Cheek Guards" mesh="battania_earmuff_helmet_a_brnz" culture="Culture.battania" weight="3.2" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="65" body_armor="0" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
@@ -600,7 +600,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="roundkettle_over_laced_cloth" name="{=9BENgwRK}Roundkettle Over Laced Cloth" mesh="empire_helmet_j_c" culture="Culture.empire" weight="1.3" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="roundkettle_over_laced_cloth" name="{=RBM9BENgwRK}Roundkettle Over Laced Cloth" mesh="empire_helmet_j_c" culture="Culture.empire" weight="1.3" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="65" body_armor="0" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate"/>
 		</ItemComponent>
@@ -624,7 +624,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="spangenhelm_with_leather" name="{=3Z91Nxbf}Spangenhelm With Leather" mesh="spangenhelm_a" culture="Culture.sturgia" weight="1.2" appearance="1.6" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="spangenhelm_with_leather" name="{=RBM3Z91Nxbf}Spangenhelm With Leather" mesh="spangenhelm_a" culture="Culture.sturgia" weight="1.2" appearance="1.6" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="67" body_armor="0" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
@@ -636,13 +636,13 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="battania_earmuff_helmet_d_brnz" name="{=RDbqA36B}Ridged Decorated Bronze Cap With Cheek Guards" mesh="battania_earmuff_helmet_d_brnz" culture="Culture.battania" weight="3.3" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="battania_earmuff_helmet_d_brnz" name="{=RBMRDbqA36B}Ridged Decorated Bronze Cap With Cheek Guards" mesh="battania_earmuff_helmet_d_brnz" culture="Culture.battania" weight="3.3" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="71" body_armor="0" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="battania_earmuff_helmet_c_brnz" name="{=KoyU5yeY}Fringed Decorated Bronze Cap With Cheek Guards" mesh="battania_earmuff_helmet_c_brnz" culture="Culture.battania" weight="3.3" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="battania_earmuff_helmet_c_brnz" name="{=RBMKoyU5yeY}Fringed Decorated Bronze Cap With Cheek Guards" mesh="battania_earmuff_helmet_c_brnz" culture="Culture.battania" weight="3.3" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="73" body_armor="0" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
@@ -654,7 +654,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="battania_earmuff_helmet_b" name="{=HvjviTTW}Steel Cap With Cheek Guards" mesh="battania_earmuff_helmet_b" culture="Culture.battania" weight="2.9" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="battania_earmuff_helmet_b" name="{=RBMHvjviTTW}Steel Cap With Cheek Guards" mesh="battania_earmuff_helmet_b" culture="Culture.battania" weight="2.9" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="74" body_armor="0" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
@@ -690,7 +690,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="battania_earmuff_helmet_a" name="{=HkwJao2z}Fringed Steel Cap With Cheek Guards" mesh="battania_earmuff_helmet_a" culture="Culture.battania" weight="3" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="battania_earmuff_helmet_a" name="{=RBMHkwJao2z}Fringed Steel Cap With Cheek Guards" mesh="battania_earmuff_helmet_a" culture="Culture.battania" weight="3" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="79" body_armor="0" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
@@ -708,13 +708,13 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="kettle_helmet_over_padded_cloth" name="{=VcbEaV7T}Kettle Helmet Over Padded Cloth" mesh="vlandia_helmet_h_y" culture="Culture.vlandia" weight="1.1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="kettle_helmet_over_padded_cloth" name="{=RBMVcbEaV7T}Kettle Helmet Over Padded Cloth" mesh="vlandia_helmet_h_y" culture="Culture.vlandia" weight="1.1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="83" body_armor="0" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="kettle_hat_over_padded_coif" name="{=2MdVVkVL}Kettle Hat Over Padded Coif" mesh="vlandia_helmet_i_b" culture="Culture.vlandia" weight="1.4" appearance="1" Type="HeadArmor">
+	<Item id="kettle_hat_over_padded_coif" name="{=RBM2MdVVkVL}Kettle Hat Over Padded Coif" mesh="vlandia_helmet_i_b" culture="Culture.vlandia" weight="1.4" appearance="1" Type="HeadArmor">
 		<ItemComponent>
 			<Armor head_armor="84" body_armor="5" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
 		</ItemComponent>
@@ -768,7 +768,7 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="battania_earmuff_helmet_c" name="{=1zFYpSSY}Fringed Decorated Steel Cap With Cheek Guards" mesh="battania_earmuff_helmet_c" culture="Culture.battania" weight="3.1" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="battania_earmuff_helmet_c" name="{=RBM1zFYpSSY}Fringed Decorated Steel Cap With Cheek Guards" mesh="battania_earmuff_helmet_c" culture="Culture.battania" weight="3.1" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="89" body_armor="0" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
@@ -846,13 +846,13 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="kettle_hat_over_mail_coif" name="{=tMLH04n4}Kettle Hat Over Mail Coif" mesh="vlandia_helmet_i_a" culture="Culture.vlandia" weight="2.9" appearance="1" Type="HeadArmor">
+	<Item id="kettle_hat_over_mail_coif" name="{=RBMtMLH04n4}Kettle Hat Over Mail Coif" mesh="vlandia_helmet_i_a" culture="Culture.vlandia" weight="2.9" appearance="1" Type="HeadArmor">
 		<ItemComponent>
 			<Armor head_armor="105" body_armor="0" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="kettle_helmet_over_mail" name="{=zZ2G7uIO}Kettle Helmet over Mail" mesh="vlandia_helmet_h_v" culture="Culture.vlandia" weight="3.1" appearance="2" Type="HeadArmor">
+	<Item id="kettle_helmet_over_mail" name="{=RBMzZ2G7uIO}Kettle Helmet over Mail" mesh="vlandia_helmet_h_v" culture="Culture.vlandia" weight="3.1" appearance="2" Type="HeadArmor">
 		<ItemComponent>
 			<Armor head_armor="107" body_armor="12" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
@@ -930,7 +930,7 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="nasal_cervelliere_over_laced_coif" name="{=h6UXvU3B}Nasal Cervelliere Over Laced Coif" mesh="vlandia_helmet_o_c" culture="Culture.vlandia" weight="1.1" appearance="1" Type="HeadArmor">
+	<Item id="nasal_cervelliere_over_laced_coif" name="{=RBMa2644a5e}Nasal Cervelliere Over Laced Coif" mesh="vlandia_helmet_o_c" culture="Culture.vlandia" weight="1.1" appearance="1" Type="HeadArmor">
 		<ItemComponent>
 			<Armor head_armor="59" body_armor="12" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
 		</ItemComponent>
@@ -960,7 +960,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="nasal_helmet_over_padded_cloth" name="{=bubcrmTC}Nasal Helmet Over Padded Cloth" mesh="vlandia_helmet_p_y" culture="Culture.vlandia" weight="1.2" appearance="1" Type="HeadArmor">
+	<Item id="nasal_helmet_over_padded_cloth" name="{=RBMbubcrmTC}Nasal Helmet Over Padded Cloth" mesh="vlandia_helmet_p_y" culture="Culture.vlandia" weight="1.2" appearance="1" Type="HeadArmor">
 		<ItemComponent>
 			<Armor head_armor="57" body_armor="12" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
@@ -984,7 +984,7 @@
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="nasal_helmet_over_laced_coif" name="{=FWFDkjBk}Nasal Helmet Over Laced Coif" mesh="vlandia_helmet_p_c" culture="Culture.vlandia" weight="1.3" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="nasal_helmet_over_laced_coif" name="{=RBMFWFDkjBk}Nasal Helmet Over Laced Coif" mesh="vlandia_helmet_p_c" culture="Culture.vlandia" weight="1.3" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="60" body_armor="12" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
@@ -1038,7 +1038,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="segmented_skullcap_over_laced_coif" name="{=VylHwqVq}Segmented Skullcap Over Laced Coif" mesh="vlandia_helmet_r_c" culture="Culture.vlandia" weight="1.2" appearance="1" Type="HeadArmor">
+	<Item id="segmented_skullcap_over_laced_coif" name="{=RBMVylHwqVq}Segmented Skullcap Over Laced Coif" mesh="vlandia_helmet_r_c" culture="Culture.vlandia" weight="1.2" appearance="1" Type="HeadArmor">
 		<ItemComponent>
 			<Armor head_armor="73" body_armor="12" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
@@ -1140,7 +1140,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="battania_earmuff_helmet_d" name="{=wQY1oqdK}Ridged Decorated Steel Cap With Cheek Guards" mesh="battania_earmuff_helmet_d" culture="Culture.battania" weight="3.2" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="battania_earmuff_helmet_d" name="{=RBM35A3889F}Ridged Decorated Steel Cap With Cheek Guards" mesh="battania_earmuff_helmet_d" culture="Culture.battania" weight="3.2" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="92" body_armor="12" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
@@ -1266,7 +1266,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="nasal_helmet_over_cloth_headwrap" name="{=olamAwhb}Nasal Helmet Over Cloth Headwrap" mesh="vlandia_helmet_p_d" culture="Culture.vlandia" weight="1.1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="nasal_helmet_over_cloth_headwrap" name="{=RBMolamAwhb}Nasal Helmet Over Cloth Headwrap" mesh="vlandia_helmet_p_d" culture="Culture.vlandia" weight="1.1" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="56" body_armor="16" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
@@ -1458,25 +1458,25 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="visored_helmet_over_padded_cloth" name="{=A8MJWbhf}Visored Helmet Over Padded Cloth" mesh="vlandia_helmet_m_y" culture="Culture.vlandia" weight="2.3" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="visored_helmet_over_padded_cloth" name="{=RBMA8MJWbhf}Visored Helmet Over Padded Cloth" mesh="vlandia_helmet_m_y" culture="Culture.vlandia" weight="2.3" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="83" body_armor="75" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="visored_helmet_over_padded_coif" name="{=agqzAXa9}Visored Helmet Over Padded Coif" mesh="vlandia_helmet_m_b" culture="Culture.vlandia" weight="2.5" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="visored_helmet_over_padded_coif" name="{=RBMagqzAXa9}Visored Helmet Over Padded Coif" mesh="vlandia_helmet_m_b" culture="Culture.vlandia" weight="2.5" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="89" body_armor="75" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="spiked_helmet_with_facemask" name="{=5n4rWI9T}Spiked Helmet With Facemask" mesh="khuzait_helmet_f" culture="Culture.khuzait" weight="4.5" appearance="2.4" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="spiked_helmet_with_facemask" name="{=RBM5n4rWI9T}Spiked Helmet With Facemask" mesh="khuzait_helmet_f" culture="Culture.khuzait" weight="4.5" appearance="2.4" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="119" body_armor="90" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags Civilian="true" UseTeamColor="true"/>
 	</Item>
-	<Item id="visored_helmet_over_mail_coif" name="{=d8DrtmwP}Visored Helmet Over Mail Coif" mesh="vlandia_helmet_m_a" culture="Culture.vlandia" weight="3.6" appearance="1" Type="HeadArmor">
+	<Item id="visored_helmet_over_mail_coif" name="{=RBMd8DrtmwP}Visored Helmet Over Mail Coif" mesh="vlandia_helmet_m_a" culture="Culture.vlandia" weight="3.6" appearance="1" Type="HeadArmor">
 		<ItemComponent>
 			<Armor head_armor="109" body_armor="75" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
 		</ItemComponent>
@@ -1488,37 +1488,37 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="full_helm_over_laced_coif" name="{=wEfZyccm}Full Helm Over Laced Coif" mesh="vlandia_helmet_s_c" culture="Culture.vlandia" weight="3.5" appearance="2" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="full_helm_over_laced_coif" name="{=RBMwEfZyccm}Full Helm Over Laced Coif" mesh="vlandia_helmet_s_c" culture="Culture.vlandia" weight="3.5" appearance="2" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="111" body_armor="113" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="full_helm_over_cloth_headwrap" name="{=SYvBTD0p}Full Helm Over Cloth Headwrap" mesh="vlandia_helmet_s_d" culture="Culture.vlandia" weight="3.2" appearance="2" Type="HeadArmor">
+	<Item id="full_helm_over_cloth_headwrap" name="{=RBMSYvBTD0p}Full Helm Over Cloth Headwrap" mesh="vlandia_helmet_s_d" culture="Culture.vlandia" weight="3.2" appearance="2" Type="HeadArmor">
 		<ItemComponent>
 			<Armor head_armor="113" body_armor="116" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="full_helm_over_arming_coif" name="{=WYytQbvS}Full Helm Over Arming Coif" mesh="vlandia_helmet_s_f" culture="Culture.vlandia" weight="3" appearance="1" Type="HeadArmor">
+	<Item id="full_helm_over_arming_coif" name="{=RBMWYytQbvS}Full Helm Over Arming Coif" mesh="vlandia_helmet_s_f" culture="Culture.vlandia" weight="3" appearance="1" Type="HeadArmor">
 		<ItemComponent>
 			<Armor head_armor="109" body_armor="116" has_gender_variations="false" hair_cover_type="type2" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="full_helm_over_padded_cloth" name="{=xnoAJwoy}Full Helm Over Padded Cloth" mesh="vlandia_helmet_s_y" culture="Culture.vlandia" weight="3.1" appearance="2" Type="HeadArmor">
+	<Item id="full_helm_over_padded_cloth" name="{=RBMxnoAJwoy}Full Helm Over Padded Cloth" mesh="vlandia_helmet_s_y" culture="Culture.vlandia" weight="3.1" appearance="2" Type="HeadArmor">
 		<ItemComponent>
 			<Armor head_armor="116" body_armor="116" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="full_helm_over_padded_cap" name="{=qVj5NqrL}Full Helm Over Padded Cap" mesh="vlandia_helmet_s_e" culture="Culture.vlandia" weight="3.1" appearance="2" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="full_helm_over_padded_cap" name="{=RBMqVj5NqrL}Full Helm Over Padded Cap" mesh="vlandia_helmet_s_e" culture="Culture.vlandia" weight="3.1" appearance="2" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="108" body_armor="116" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type3"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="full_helm_over_mail_coif" name="{=FsDZC8Yl}Full Helm Over Mail Coif" mesh="vlandia_helmet_s_a" culture="Culture.vlandia" weight="4.5" appearance="2" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="full_helm_over_mail_coif" name="{=RBMFsDZC8Yl}Full Helm Over Mail Coif" mesh="vlandia_helmet_s_a" culture="Culture.vlandia" weight="4.5" appearance="2" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="140" body_armor="116" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>

@@ -219,7 +219,7 @@
   </ItemGroup>
   <!-- Post-Build -->
   <PropertyGroup>
-    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBMAI_module_strings.xml" "$(SolutionDir)..\RBM\ModuleData\"
+    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\ModuleData\RBMAI_module_strings.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\CombatUI.xml" "$(SolutionDir)..\RBM\GUI\Prefabs\"
 xcopy /d /y "$(SolutionDir)RBMXML\GUI\Brushes\CombatUI.xml" "$(SolutionDir)..\RBM\GUI\Brushes\"
 xcopy /d /y "$(SolutionDir)SceneXmls\scene_positions\" "$(SolutionDir)..\RBM\ModuleData\scene_positions\"

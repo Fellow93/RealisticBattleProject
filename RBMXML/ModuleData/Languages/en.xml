@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base>
+    <tags>
+        <tag language="English"/>
+    </tags>
+    <strings>
+        <string id="Tqa0r78a" text="{TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\\?}{TROOP_NAMES_END} are skirmishing." />
+        <string id="Tqa0r78b" text="{?IS_RIGHT}Right {TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\\?}{TROOP_NAMES_END} is doing hit and run.{?}{\\?}{?IS_LEFT}Left {TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\\?}{TROOP_NAMES_END} is doing hit and run.{?}{\\?}" />
+        <string id="Tqa0r78c" text="Infantry is flanking." />
+        <string id="Tqa0r78d" text="{TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\\?}{TROOP_NAMES_END} are charging at {?IS_PLURAL}different enemy formations{?}an enemy formation{\\?}." />
+        <string id="Tqa0r781" text="Archers are skirmishing from flanks." />
+        <string id="Tqa0r782" text="Cavalry is forming a flying wedge in front of infantry." />
+        <string id="Tqa0r78e" text="Skirmish" />
+        <string id="Tqa0r78f" text="Do hit and run on enemy." />
+        <string id="Tqa0r78g" text="Flank{?IS_GENERAL_SIDE}{?} from {SIDE_STRING} side{\\?}" />
+        <string id="Tqa0r78h" text="Charge at enemy" />
+        <string id="RBM83DFaFd4" text="Skirmish from {SIDE_STRING} flank" />
+        <string id="Tqa0r783" text="Form flying wedge in front of infantry" />
+        <string id="RBM2327cc95" text="Our plan is to attack with full force and flank with archers." />
+        <string id="RBM86330Dcc" text="Our plan is to split infantry and crush them from all sides." />
+        <string id="RBMD582df2e" text="Our plan is to bait them with skirmishers then crush them with full focre." />
+        <string id="RBM24Ef50F5" text="Our plan is to form a defensive line with archers on flanks." />
+        <string id="RBM14ecD61c" text="Our plan is to charge head-on with our cavalry then crush disorganized formations." />
+        <string id="wLAL9NRB" text="Fur Rimmed Noble Bracers" />
+        <string id="vNNMGllv" text="Northern Plated Gloves" />
+        <string id="RBMb2006" text="Flight Arrows 30 grams" />
+        <string id="RBM7f9ac" text="Barbed Head Arrows 40 grams" />
+        <string id="RBM53aa5" text="Needle Bodkin Arrows 40 grams" />
+        <string id="RBM1e06c" text="Barbed Head Bolts 50 grams" />
+        <string id="RBM67251" text="Needle Bodkin Arrows 50 grams" />
+        <string id="RBM86a4a" text="Barbed Head Arrows 50 grams" />
+        <string id="RBM65b27" text="Needle Bodkin Bolts 60 grams" />
+        <string id="RBM10402" text="Barbed Head Arrows 60 grams" />
+        <string id="RBM36c63" text="Needle Bodkin Arrows 60 grams" />
+        <string id="RBM8126a" text="Needle Bodkin Arrows 70 grams" />
+        <string id="RBM51e64" text="Needle Bodkin Bolts 75 grams" />
+        <string id="RBM8d0fd" text="Needle Bodkin Arrows 80 grams" />
+        <string id="RBM07608" text="Needle Bodkin Bolts 90 grams" />
+        <string id="RBMa6dcc" text="Needle Bodkin Arrows 90 grams" />
+        <string id="RBM708da" text="Needle Bodkin Arrows 100 grams" />
+        <string id="RBMe43f6" text="Heavy Needle Bodkin Arrows 110 grams" />
+        <string id="RBMcdec3" text="Heavy Needle Bodkin Bolts 120 grams" />
+        <string id="RBM5d8da" text="Very Heavy Needle Bodkin Arrows 125 grams" />
+        <string id="RBMbd0e3" text="Very Heavy Needle Bodkin Bolts 150 grams" />
+        <string id="RBM01613" text="Greased Flight Arrows 30 grams" />
+        <string id="RBM0efd7" text="Greased Barbed Head Arrows 40 grams" />
+        <string id="RBM60192" text="Greased Needle Bodkin Arrows 40 grams" />
+        <string id="RBMa7287" text="Greased Barbed Head Bolts 50 grams" />
+        <string id="RBMd935a" text="Greased Needle Bodkin Arrows 50 grams" />
+        <string id="RBMd45af" text="Greased Barbed Head Arrows 50 grams" />
+        <string id="RBMfb973" text="Greased Needle Bodkin Bolts 60 grams" />
+        <string id="RBMe40ae" text="Greased Barbed Head Arrows 60 grams" />
+        <string id="RBM4531d" text="Greased Needle Bodkin Arrows 60 grams" />
+        <string id="RBMae9e8" text="Greased Needle Bodkin Arrows 70 grams" />
+        <string id="RBM1b251" text="Greased Needle Bodkin Bolts 75 grams" />
+        <string id="RBM5a8b2" text="Greased Needle Bodkin Arrows 80 grams" />
+        <string id="RBMd7d50" text="Greased Needle Bodkin Bolts 90 grams" />
+        <string id="RBMaff6b" text="Greased Needle Bodkin Arrows 90 grams" />
+        <string id="RBMafb5f" text="Greased Needle Bodkin Arrows 100 grams" />
+        <string id="RBM02678" text="Greased Heavy Needle Bodkin Arrows 110 grams" />
+        <string id="RBM5677a" text="Greased Heavy Needle Bodkin Bolts 120 grams" />
+        <string id="RBMdeeeb" text="Greased Very Heavy Needle Bodkin Arrows 125 grams" />
+        <string id="RBMf30fc" text="Greased Very Heavy Needle Bodkin Bolts 150 grams" />
+        <string id="RBM22939" text="Thamaskene Steel Hardened Barbed Arrows 80 grams" />
+        <string id="RBM92381" text="Thamaskene Steel Hardened Barbed Arrows grams 90 grams" />
+        <string id="RBM73070" text="Thamaskene Steel Hardened Barbed Arrows 100 grams" />
+        <string id="RBMd4701" text="Thamaskene Steel Hardened Barbed Arrows 110 grams" />
+        <string id="RBM38533" text="Thamaskene Steel Hardened Barbed Arrows 125 grams" />
+        <string id="RBM4f10a" text="Steel Hardened Barbed Bolts 75 grams" />
+        <string id="RBM4511b" text="Steel Hardened Barbed Bolts 90 grams" />
+        <string id="RBM0b25d" text="Steel Hardened Barbed Bolts 120 grams" />
+        <string id="RBM1854c" text="Steel Hardened Barbed Bolts 150 grams" />
+        <string id="RBM3ee2b" text="Greased Steel Hardened Barbed Arrows 80 grams" />
+        <string id="RBMedd7e" text="Greased Steel Hardened Barbed Arrows grams 90 grams" />
+        <string id="RBM22676" text="Greased Steel Hardened Barbed Arrows 100 grams" />
+        <string id="RBM1baf3" text="Greased Steel Hardened Barbed Arrows 110 grams" />
+        <string id="RBMe20b0" text="Greased Steel Hardened Barbed Arrows 125 grams" />
+        <string id="RBM00063" text="Greased Steel Hardened Barbed Bolts 75 grams" />
+        <string id="RBMda1d2" text="Greased Steel Hardened Barbed Bolts 90 grams" />
+        <string id="RBMd3de0" text="Greased Steel Hardened Barbed Bolts 120 grams" />
+        <string id="RBM718f9" text="Greased Steel Hardened Barbed Bolts 150 grams" />
+        <string id="RBM9b7e6" text="Calradian fire arrows" />
+        <string id="RBM9a7ff" text="Calradian fire bolts" />
+        <string id="RBMqT6jIu3v" text="Fur Skirt With Tunic" />
+        <string id="RBMdVekhkIU" text="Fur Coat Over Tunic" />
+        <string id="RBMXH9f3yOX" text="Fur Waistcoat Over Tunic" />
+        <string id="RBMeWf7bFGo" text="Fur Armor With Strap" />
+        <string id="RBMwKucIANJ" text="Leather Coat Over Cloth" />
+        <string id="RBMce712Ba1" text="Heavy Aketon" />
+        <string id="RBMJKRQ8RDA" text="Padded Cloth With Strips" />
+        <string id="RBMiVataLxL" text="Leather Strips Over Padded Robe" />
+        <string id="RBMdS4zm0UT" text="Studded Leather Over Aketon" />
+        <string id="RBMf6FFFFaB" text="Light Lamellar Shirt" />
+        <string id="RBMluoXhz19" text="Short Lamellar Vest" />
+        <string id="RBMomLMiX89" text="Stitched Leather Over Mail" />
+        <string id="RBM182e2B19" text="Kilt Over Plated Leather" />
+        <string id="RBMMTB2BunA" text="Highland Reinforced Mail Over Tartan" />
+        <string id="RBMk71X3WNK" text="Robe Over Mail Hauberk" />
+        <string id="RBM4Ea274bf" text="Banded Leather Over Mail" />
+        <string id="RBMoJKXjRJ3" text="Highland Scale Armor Over Cloth" />
+        <string id="RBM4BFF1323" text="Double Mail Hauberk" />
+        <string id="RBM6D8c943E" text="Decorated Double Hauberk" />
+        <string id="RBM0aDCd610" text="Light Lamellar over Mail Armor" />
+        <string id="RBMTeIcf3Cd" text="Light Lamellar over Mail" />
+        <string id="RBMVkRIefyW" text="Scale Armor over Mail" />
+        <string id="RBMxlLoyxXT" text="Lamellar Armor over Mail" />
+        <string id="RBMzGXZJFOb" text="Heavy Lamellar over Mail with Scale Skirt" />
+        <string id="RBMVQSdhQE3" text="Heavy Scale Armor over Double Mail" />
+        <string id="RBMOryiZr9d" text="Light Lance Head" />
+        <string id="RBMpAqWQWJs" text="Tournament Light Lance Head" />
+        <string id="RBMuwG8iwBc" text="Medium Lance Head" />
+        <string id="RBMNRhAqB5a" text="Tournament Medium Lance Head" />
+        <string id="RBMQwfDN06p" text="Heavy Lance Head" />
+        <string id="RBMTKVxb6QD" text="Thamaskene Steel Leaf Shaped Pike Head" />
+        <string id="RBMAOZbTGOS" text="Gladius" />
+        <string id="RBMGrfnpDxu" text="Throwing Labryes" />
+        <string id="RBMX31qND4N" text="Huge Throwing Axes" />
+        <string id="RBMWWRKeqwD" text="Large Throwing Axes" />
+        <string id="RBMrfnpDxu2" text="Medium Throwing Axes" />
+        <string id="RBMF4xD8gjJ" text="Small Throwing Axes" />
+        <string id="RBMVXFwEF3M" text="Pilgrim's Hood" />
+        <string id="RBMbfFNYaiU" text="Cervelliere Over Laced Coif" />
+        <string id="RBM4BfbPgkY" text="Nasal Cervelliere Over Padded Cap" />
+        <string id="RBMPyeZ22FL" text="Bronze Cap With Cheek Guards" />
+        <string id="RBMHBaSQlSJ" text="Fringed Bronze Cap With Cheek Guards" />
+        <string id="RBM9BENgwRK" text="Roundkettle Over Laced Cloth" />
+        <string id="RBM3Z91Nxbf" text="Spangenhelm With Leather" />
+        <string id="RBMRDbqA36B" text="Ridged Decorated Bronze Cap With Cheek Guards" />
+        <string id="RBMKoyU5yeY" text="Fringed Decorated Bronze Cap With Cheek Guards" />
+        <string id="RBMHvjviTTW" text="Steel Cap With Cheek Guards" />
+        <string id="RBMHkwJao2z" text="Fringed Steel Cap With Cheek Guards" />
+        <string id="RBMVcbEaV7T" text="Kettle Helmet Over Padded Cloth" />
+        <string id="RBM2MdVVkVL" text="Kettle Hat Over Padded Coif" />
+        <string id="RBM1zFYpSSY" text="Fringed Decorated Steel Cap With Cheek Guards" />
+        <string id="RBMtMLH04n4" text="Kettle Hat Over Mail Coif" />
+        <string id="RBMzZ2G7uIO" text="Kettle Helmet over Mail" />
+        <string id="RBM0ce180d7" text="Noble Guard Helmet" />
+        <string id="RBMa2644a5e" text="Nasal Cervelliere Over Laced Coif" />
+        <string id="RBMbubcrmTC" text="Nasal Helmet Over Padded Cloth" />
+        <string id="RBMFWFDkjBk" text="Nasal Helmet Over Laced Coif" />
+        <string id="RBMVylHwqVq" text="Segmented Skullcap Over Laced Coif" />
+        <string id="RBM35A3889F" text="Ridged Decorated Steel Cap With Cheek Guards" />
+        <string id="RBMolamAwhb" text="Nasal Helmet Over Cloth Headwrap" />
+        <string id="RBMA8MJWbhf" text="Visored Helmet Over Padded Cloth" />
+        <string id="RBMagqzAXa9" text="Visored Helmet Over Padded Coif" />
+        <string id="RBM5n4rWI9T" text="Spiked Helmet With Facemask" />
+        <string id="RBMd8DrtmwP" text="Visored Helmet Over Mail Coif" />
+        <string id="RBMwEfZyccm" text="Full Helm Over Laced Coif" />
+        <string id="RBMSYvBTD0p" text="Full Helm Over Cloth Headwrap" />
+        <string id="RBMWYytQbvS" text="Full Helm Over Arming Coif" />
+        <string id="RBMxnoAJwoy" text="Full Helm Over Padded Cloth" />
+        <string id="RBMqVj5NqrL" text="Full Helm Over Padded Cap" />
+        <string id="RBMFsDZC8Yl" text="Full Helm Over Mail Coif" />
+        <string id="KFGfTXqE" text="Sumpter Horse{@Plural}sumpter horses{\\@}" />
+        <string id="0s4IP7jB" text="Work Horse{@Plural}work horses{\\@}" />
+        <string id="RBMCB97qhVM" text="Mule{@Plural}mules{\\@}" />
+        <string id="DlPOte0H" text="Pack Camel{@Plural}pack camels{\\@}" />
+        <string id="h7IWO4DV" text="Nahasawi{@Plural}Nahasawi horses{\\@}" />
+        <string id="RBMDTP3fPHI" text="Battanian Hobby{@Plural}Battanian hobbies{\\@}" />
+        <string id="RBMIOt4KTHs" text="Midlands Palfrey{@Plural}Midlands palfreys{\\@}" />
+        <string id="RBM18Dd6282" text="Steppe Horse{@Plural}steppe horses{\\@}" />
+        <string id="QwiI8Uho" text="Sturgian Native{@Plural}Sturgian native horses{\\@}" />
+        <string id="RBM0cAaDb83" text="Rouncey{@Plural}rouncey horses{\\@}" />
+        <string id="RBMCQBiJLgv" text="Camel{@Plural}camels{\\@}" />
+        <string id="gnvIGThE" text="Darshi Horse{@Plural}Darshi horses{\\@}" />
+        <string id="RBM0wm6vE7x" text="Glintor Pony{@Plural}Glintor ponies{\\@}" />
+        <string id="RBMBdGggupO" text="Canterion Charger{@Plural}Canterion chargers{\\@}" />
+        <string id="RBMIAoNEjGk" text="Steppe Hunter{@Plural}Steppe hunters{\\@}" />
+        <string id="RBM33784728" text="Revyl Chaser" />
+        <string id="MqBSmahz" text="Valanby Courser{@Plural}Valanby coursers{\\@}" />
+        <string id="baIE2VQW" text="War Camel{@Plural}war camels{\\@}" />
+        <string id="RBMh5kfaD4v" text="Charger{@Plural}chargers{\\@}" />
+        <string id="Q4sO8AZd" text="Wadar Hotblood{@Plural}Wadar Hotbloods{\\@}" />
+        <string id="RBMueSnrLRy" text="Cossian{@Plural}Cossian horses{\\@}" />
+        <string id="qXb7YoGc" text="Asaligat{@Plural}Asaligat horses{\\@}" />
+        <string id="RBMjhgVsWKr" text="Tyal Horse{@Plural}Tyal horses{\\@}" />
+        <string id="RBMSZrd85Uh" text="Royal Destrier{@Plural}Royal Destriers{\\@}" />
+        <string id="RBM1107c3E0" text="Husnphree{@Plural}Husnphree camels{\\@}" />
+        <string id="ccLDacS4" text="Battanian Thoroughbred{@Plural}Battanian thoroughbreds{\\@}" />
+        <string id="CIT7Zuxh" text="Pureblood{@Plural}pureblood horses{\\@}" />
+        <string id="1aOuyULB" text="Storm Charger{@Plural}Storm Chargers{\\@}" />
+        <string id="RBMUqdZmdcf" text="War Horse{@Plural}war horses{\\@}" />
+        <string id="RBMyGwxXsIL" text="Steppe Charger{@Plural}Steppe Chargers{\\@}" />
+        <string id="24xuA5G2" text="Desert War Horse{@Plural}desert war horses{\\@}" />
+        <string id="RBMoFdnWlKN" text="Desert Horse{@Plural}desert horses{\\@}" />
+        <string id="RBMsgfKrAaZ" text="Battanian Pony{@Plural}Battanian ponies{\\@}" />
+        <string id="RBMyrmJ1eLo" text="Midlands Palfrey{@Plural}Midland palfreys{\\@}" />
+        <string id="RBM2bB6e89A" text="Steppe Horse{@Plural}steppe horses{\\@}" />
+        <string id="RBMVJUYXAQS" text="Sturgian Trotter{@Plural}Sturgian trotters{\\@}" />
+        <string id="RBM0e3E2f9d" text="Saddle Horse{@Plural}saddle horses{\\@}" />
+        <string id="RBM2D54dbD4" text="Camel{@Plural}camels{\\@}" />
+        <string id="RBM2TbPbN6Y" text="Saddle Horse{@Plural}saddle horses{\\@}" />
+        <string id="RBMelEuYul4" text="Askarat{@Plural}Askarat horses{\\@}" />
+        <string id="RBMtZN9H492" text="Swenryn Pony{@Plural}Swenryn ponies{\\@}" />
+        <string id="RBMmVAaWp5U" text="Palmatian{@Plural}Palmatian horses{\\@}" />
+        <string id="RBMPZPphq6H" text="Karahan{@Plural}Karahan horses{\\@}" />
+        <string id="RBMEjx5lXjk" text="Omor Trotter{@Plural}Omor trotters{\\@}" />
+        <string id="RBMl6gPL2WF" text="Destrier{@Plural}destriers{\\@}" />
+        <string id="RBMGoloz0Vm" text="Nahasa Camel{@Plural}Nahasa camels{\\@}" />
+        <string id="RBMtBCm7Qqw" text="Khamseen{@Plural}Khamseen horses{\\@}" />
+        <string id="RBM55DfA110" text="Lamellar Barding" />
+        <string id="RBM32ea6" text="Damaged" />
+        <string id="RBMfc010" text="Highly Damaged" />
+        <string id="RBMc0608" text="Ruined" />
+        <string id="RBM675fe" text="Scratched" />
+        <string id="RBM2826d" text="Scratched Loose" />
+        <string id="RBM86576" text="Scratched Rusty" />
+        <string id="RBM422c5" text="Slightly Damaged" />
+        <string id="RBMe074a" text="Very Highly Damaged" />
+        <string id="ctkNWKbq" text="Vlandian Light Lance" />
+        <string id="dqyN7Sbz" text="Imperial Light Lance" />
+        <string id="RBMUWvOndG0" text="Khuzait Light Lance" />
+        <string id="aEBMmzn6" text="Vlandia Lance" />
+        <string id="XDsFl200" text="Imperial Lance" />
+        <string id="RBM5690C816" text="Sturgian Lance" />
+        <string id="RBM62a3571e" text="Khuzait Lance" />
+        <string id="Wh48Wl0C" text="Vlandian Heavy Lance" />
+        <string id="RBM5Bd3970" text="Sturgian Heavy Lance" />
+        <string id="t7IgyUea" text="Eastern Noble Lance" />
+        <string id="2FubBDYB" text="Eastern Polesword" />
+        <string id="RBMV4b2ZRTH" text="Rhomphalia" />
+        <string id="RBM32961" text="Pine Throwing Dart" />
+        <string id="RBMc43e6" text="Pine Javelin" />
+        <string id="RBM357ca" text="Pine Throwing Lance" />
+        <string id="RBM23e7f" text="Ash Throwing Lance" />
+        <string id="RBM53307" text="Ash Javelin" />
+        <string id="RBMeffd9" text="Oaken Throwing Lance" />
+        <string id="RBM25fea" text="Oaken Angon" />
+        <string id="RBM07188" text="Mahagony Throwing Dart" />
+        <string id="RBM577ae" text="Mahagony Javelin" />
+        <string id="RBM2f440" text="Mahagony Throwing Lance" />
+        <string id="RBM9c2bEfb9" text="Pila" />
+        <string id="WrlIl4nW" text="Western Pike" />
+        <string id="RBM7LmUe8fQ" text="Light Menavlion" />
+        <string id="RBMUunjXpgb" text="Heavy Menavlion" />
+        <string id="RBM735fd" text="500 Pound Doubler Belt Crossbow" />
+        <string id="RBM05242" text="450 Pound Doubler Belt Crossbow" />
+        <string id="RBMca5a9" text="410 Pound Doubler Belt Crossbow" />
+        <string id="RBMd057e" text="370 Pound Doubler Belt Crossbow" />
+        <string id="RBM30c3f" text="330 Pound Spanning Belt Crossbow" />
+        <string id="RBMff39f" text="290 Pound Spanning Belt Crossbow" />
+        <string id="RBMdfeb1" text="250 Pound Spanning Belt Crossbow" />
+        <string id="RBMf92f1" text="200 Pound War Longbow" />
+        <string id="RBMd7e1e" text="200 Pound Tournament Longbow" />
+        <string id="RBMee9ca" text="180 Pound War Longbow" />
+        <string id="RBM4526c" text="170 Pound War Longbow" />
+        <string id="RBM23227" text="166 Pound Composite War Bow" />
+        <string id="RBM4f6d9" text="166 Pound Tournament Composite Bow" />
+        <string id="RBM4485b" text="160 Pound War Longbow" />
+        <string id="RBM4ac71" text="150 Pound War Longbow" />
+        <string id="RBM29797" text="140 Pound War Longbow" />
+        <string id="RBMbda78" text="135 Pound Composite War Bow" />
+        <string id="RBM9370e" text="130 Pound War Longbow" />
+        <string id="RBM668c5" text="125 Pound Composite War Bow" />
+        <string id="RBMb59b4" text="120 Pound War Longbow" />
+        <string id="RBM64fb4" text="120 Pound Composite War Bow" />
+        <string id="RBM32e09" text="110 Pound Composite War Bow" />
+        <string id="RBM441ef" text="100 Pound Composite War Bow" />
+        <string id="RBMef96c" text="100 Pound War Longbow" />
+        <string id="RBM4acc8" text="90 Pound Longbow" />
+        <string id="RBM20055" text="90 Pound Composite Bow" />
+        <string id="RBMc8e52" text="70 Pound Composite Bow" />
+        <string id="RBM3dbb4" text="60 Pound Composite Bow" />
+        <string id="SRWJ8waf" text="Southern Round Sparring Shield" />
+        <string id="6SxJ9cpN" text="Southern Round Shield" />
+        <string id="RBMwAcc9SX4" text="Highland Skirmisher Shield" />
+        <string id="RBMprzGGaVm" text="Iron Reinforced Highland Skirmisher Shield" />
+        <string id="RBM18588129" text="Bronze Reinforced Highland Skirmisher Shield" />
+        <string id="AZg2woNV" text="Northern Round Sparring Shield" />
+        <string id="RBM9ZAZbxqO" text="Crude Large Round Shield" />
+        <string id="6YCbEaHK" text="Northern Round Shield" />
+        <string id="6Cc4zpeQ" text="Reinforced Southern Round Shield" />
+        <string id="RBMe693a" text="Reinforced Large Round Shield" />
+        <string id="RBM9f8ad" text="Iron Rimmed Large Round Shield" />
+        <string id="kshM0xDc" text="Battered Horseman's Kite Shield" />
+        <string id="tYVrECy7" text="Makeshift Horsemans Kite Shield" />
+        <string id="rifv0h0H" text="Northern Cavalry Kite Shield" />
+        <string id="RBMtxgUxMYw" text="Heater Shield With Cutout" />
+        <string id="VluRLqn8" text="Western Riders Kite Sparring Shield" />
+        <string id="RaTK0SBu" text="Western Riders Kite Shield" />
+        <string id="RBMdWr3nuBq" text="Reinforced Ironrimmed Kite Shield" />
+        <string id="MEOtMRxx" text="Battered Kite Shield" />
+        <string id="RBMWpdmIlU5" text="Ironrimed Kite Shield" />
+        <string id="RBM01547" text="Shoulder Strapped Reinforced Targe" />
+        <string id="RBM47c50" text="Shoulder Strapped Round Steppe Shield" />
+        <string id="RBM89f9f" text="Shoulder Strapped Eastern Cavalry Shield" />
+        <string id="RBM00af2" text="Shoulder Strapped Tribal Steppe Shield" />
+        <string id="RBMd9093" text="Shoulder Strapped Decorated Eastern Shield" />
+        <string id="RBM6f537" text="Shoulder Strapped Small Cavalry Heater Shield" />
+        <string id="RBMe8e01" text="Shoulder Strapped Small Flat Heater Shield" />
+        <string id="RBM89fc1" text="Shoulder Strapped Small Heater Shield" />
+        <string id="RBMd075e" text="Shoulder Strapped Battered Horseman's Kite Shield" />
+        <string id="RBMd893d" text="Shoulder Strapped Wooden Kite Shield" />
+        <string id="RBMaf70c" text="Shoulder Strapped Makeshift Horsemans Kite Shield" />
+        <string id="RBM65285" text="Shoulder Strapped Light Cavalry Kite Shield" />
+        <string id="RBMcd445" text="Shoulder Strapped Cavalry Kite Shield" />
+        <string id="RBM1661d" text="Shoulder Strapped Reinforced Cavalry Small Shield" />
+        <string id="RBM6bf06" text="Shoulder Strapped Northern Cavalry Kite Shield" />
+        <string id="RBM87664" text="Shoulder Strapped Reinforced Cavalry Shield" />
+        <string id="RBM5a0f3" text="Shoulder Strapped Reinforced Cavalry Kite Shield" />
+        <string id="RBMbfdf3" text="Shoulder Strapped Heater Shield With Cutout" />
+        <string id="RBMffcbc" text="Shoulder Strapped Western Riders Kite Sparring Shield" />
+        <string id="RBMeb070" text="Shoulder Strapped Western Riders Kite Shield" />
+        <string id="RBMb2101" text="Shoulder Strapped Reinforced Ironrimmed Kite Shield" />
+        <string id="RBMbd280" text="Shoulder Strapped Flat Heater Shield" />
+        <string id="RBM7ef33" text="Shoulder Strapped Wide Heater Shield" />
+        <string id="RBM91ff0" text="Shoulder Strapped Knights Shield" />
+        <string id="RBM0f8e6" text="Shoulder Strapped Bracketed Heater Shield" />
+        <string id="RBM3ae88" text="Shoulder Strapped Heavy Heater Shield" />
+        <string id="RBM1b5dc" text="Shoulder Strapped Tall Heater Shield" />
+        <string id="RBMd86af" text="Shoulder Strapped Battered Kite Shield" />
+        <string id="RBMc25e5" text="Shoulder Strapped Kite Sparring Shield" />
+        <string id="RBM09375" text="Shoulder Strapped Ironrimed Kite Shield" />
+        <string id="RBM6affd" text="Shoulder Strapped Reinforced Flat Kite Shield" />
+        <string id="RBM3f408" text="Shoulder Strapped Kite Shield" />
+        <string id="RBM8106b" text="Shoulder Strapped Studded Bound Kite Shield" />
+        <string id="RBM18837" text="Shoulder Strapped Fortified Kite Shield" />
+        <string id="RBM448bd" text="Shoulder Strapped Knights Kite Shield" />
+        <string id="RBM19939" text="Deployable Pavise Shield" />
+        <string id="RBM6f9fc" text="Shoulder Strapped Worn Kite Shield" />
+        <string id="RBM34025" text="Shoulder Strapped Leather Bound Kite Shield" />
+        <string id="RBM71857" text="Shoulder Strapped Reinforced Kite Shield" />
+        <string id="RBM82c71" text="Shoulder Strapped Reinforced Oaken Kite Shield" />
+        <string id="RBM46e4e" text="Shoulder Strapped Makeshift Kite Sparring Shield" />
+        <string id="RBM3a0dd" text="Shoulder Strapped Makeshift Kite Shield" />
+        <string id="RBM330415D2" text="Fire Pot" />
+        <string id="RBMa7d2d" text="Aserai Archer" />
+        <string id="RBMa632d" text="Aserai Experienced Archer" />
+        <string id="zEQTwpnv" text="Aserai Mameluke Soldier" />
+        <string id="WJbOQSiT" text="Aserai Mameluke Regular" />
+        <string id="YUCzyA8C" text="Aserai Mameluke Cavalry" />
+        <string id="JVG0zC4e" text="Aserai Mameluke Heavy Cavalry" />
+        <string id="vZlMfmng" text="Aserai Mameluke Axeman" />
+        <string id="F54qLieU" text="Aserai Mameluke Guard" />
+        <string id="tDYfuUuU" text="Aserai Mameluke Palace Guard" />
+        <string id="uh4rIbZ9" text="Horseman" />
+        <string id="RBMieiqOaZp" text="Archer" />
+        <string id="RBMFdB4C38e" text="Imperial Mounted Acritae" />
+        <string id="iZqYAIQy" text="Sturgian Shock Troop" />
+        <string id="1i0Ttr8H" text="Son of Boyar" />
+        <string id="RBM4C4WiTb2" text="Mounted Varyag" />
+        <string id="RBMQGPAEtj7" text="Mounted Varyag Veteran" />
+        <string id="a9b2fKYR" text="Sturgian Berserker" />
+        <string id="k4EiLrU0" text="Sturgian Ulfhednar" />
+        <string id="RBM849af" text="Vlandian Light Cavalry" />
+        <string id="RBMd1eb3" text="Vlandian Medium Cavalry" />
+        <string id="H5iWxbbl" text="Ghilman" />
+        <string id="Qo2cc7bF" text="Skene" />
+        <string id="Rj0bNOOh" text="Kern" />
+        <string id="ta34CxLs" text="Redshank" />
+        <string id="RBMMVHawAEp" text="Hidden Soldati" />
+        <string id="rtOJNB6u" text="Guardian Recruit" />
+        <string id="cMcGn6n3" text="Expert Guardian" />
+        <string id="WNU7kE5N" text="Veteran Guardian" />
+        <string id="80plewQ1" text="Spark" />
+        <string id="bYn4ad1t" text="Flame" />
+        <string id="nsyTIbtp" text="Knight of Sacred Fire" />
+        <string id="xIFHLI66" text="Karakhuzait Nomad" />
+        <string id="lduchnvD" text="Karakhuzait Rider" />
+        <string id="gBuGfUg3" text="Karakhuzait Elder" />
+        <string id="RYP9hzIy" text="Watchman" />
+        <string id="0GKH29JG" text="Mercenary Guard" />
+        <string id="xaYwo9tM" text="Mercenary Scout" />
+        <string id="Mgr6qv1j" text="Mercenary Swordsman" />
+        <string id="PgOknaEN" text="Mercenary Crossbowman" />
+        <string id="AssCCFew" text="Mercenary Horseman" />
+        <string id="R74i2pQz" text="Hired Blade" />
+        <string id="SaqVvzyV" text="Mercenary Cavalry" />
+        <string id="RBMr8npO8hG" text="Crossbow Sister" />
+        <string id="RBMifL3F7E2" text="Gallant Glaive Sister" />
+        <string id="RBM0gi5Fp8c" text="Glaive Sister" />
+        <string id="RBMxl6QstMW" text="Mercenary Horse Archer" />
+        <string id="RBMkyt087eN" text="Veteran Mercenary Horse Archer" />
+        <string id="RBMF7FAB1f6" text="Hireling Spearman" />
+        <string id="RBMn89z19Dv" text="Hireling Pikeman" />
+        <string id="RBM7WV17e5Q" text="Hireling Elite Pikeman" />
+        <string id="RBMQfVe3IVw" text="Hireling Crossbowman" />
+        <string id="RBMDxtSIxyZ" text="Elite Hireling Warbowman" />
+        <string id="vkuJeNSa" text="Vlandian Militia Crossbowman" />
+        <string id="DNIa6a5p" text="Vlandian Militia Veteran Crossbowman" />
+    </strings>
+</base>
