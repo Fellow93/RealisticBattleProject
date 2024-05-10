@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\RBM\bin\Win64_Shipping_Client\</OutputPath>
+    <OutputPath>..\..\RBM_Spears\bin\Win64_Shipping_Client\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -270,13 +270,13 @@
   </ItemGroup>
   <!-- Post-Build -->
   <PropertyGroup>
-    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBM_native_parameters_tweaks.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBM_spear_managed_core_parameters.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBM_spear_combat_parameters.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBM_bow_shields.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\project.mbproj" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\" "$(SolutionDir)..\RBM\GUI\Prefabs\"
-xcopy /d /y "$(SolutionDir)RBMXML\GUI\Brushes\" "$(SolutionDir)..\RBM\GUI\Brushes\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBM_native_parameters_tweaks.xml" "$(SolutionDir)..\RBM_Spears\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBM_spear_managed_core_parameters.xml" "$(SolutionDir)..\RBM_Spears\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBM_spear_combat_parameters.xml" "$(SolutionDir)..\RBM_Spears\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBM_bow_shields.xml" "$(SolutionDir)..\RBM_Spears\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\project.mbproj" "$(SolutionDir)..\RBM_Spears\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\" "$(SolutionDir)..\RBM_Spears\GUI\Prefabs\"
+xcopy /d /y "$(SolutionDir)RBMXML\GUI\Brushes\" "$(SolutionDir)..\RBM_Spears\GUI\Brushes\"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>

@@ -19,10 +19,10 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\RBM\bin\Win64_Shipping_Client\</OutputPath>
+    <OutputPath>..\..\RBM_Spears\bin\Win64_Shipping_Client\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>1</WarningLevel>
     <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <!-- Release Configuration Properties -->
@@ -219,11 +219,11 @@
   </ItemGroup>
   <!-- Post-Build -->
   <PropertyGroup>
-    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBMAI_module_strings.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\CombatUI.xml" "$(SolutionDir)..\RBM\GUI\Prefabs\"
-xcopy /d /y "$(SolutionDir)RBMXML\GUI\Brushes\CombatUI.xml" "$(SolutionDir)..\RBM\GUI\Brushes\"
-xcopy /d /y "$(SolutionDir)SceneXmls\scene_positions\" "$(SolutionDir)..\RBM\ModuleData\scene_positions\"
-xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\BattleStats.xml" "$(SolutionDir)..\RBM\GUI\Prefabs\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBMAI_module_strings.xml" "$(SolutionDir)..\RBM_Spears\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\CombatUI.xml" "$(SolutionDir)..\RBM_Spears\GUI\Prefabs\"
+xcopy /d /y "$(SolutionDir)RBMXML\GUI\Brushes\CombatUI.xml" "$(SolutionDir)..\RBM_Spears\GUI\Brushes\"
+xcopy /d /y "$(SolutionDir)SceneXmls\scene_positions\" "$(SolutionDir)..\RBM_Spears\ModuleData\scene_positions\"
+xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\BattleStats.xml" "$(SolutionDir)..\RBM_Spears\GUI\Prefabs\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

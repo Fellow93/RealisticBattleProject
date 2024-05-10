@@ -1,6 +1,6 @@
 ﻿<Module>
-  <Name value="(RBM) Realistic Battle Mod"/>
-  <Id value="RBM"/>
+  <Name value="(RBM) Realistic Battle Mod Spears Prefered"/>
+  <Id value="RBM_Spears"/>
   <Version value="v3.8.2"/>
   <SingleplayerModule value="true"/>
   <MultiplayerModule value="false"/>
@@ -12,7 +12,7 @@
   </DependedModules>
   <SubModules>
     <SubModule>
-      <Name value="RBM"/>
+      <Name value="RBM_Spears"/>
       <DLLName value="RBM.dll"/>
       <SubModuleClassType value="RBM.SubModule"/>
       <Tags>
