@@ -2221,11 +2221,10 @@
       <Material id="Iron4" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="battania_noble_blade_2" name="{=Izstbt9y}Highland Decorated Blade" tier="5" piece_type="Blade" mesh="battania_noble_blade_2" culture="Culture.battania" length="93.2" weight="0.6">
+  <CraftingPiece id="battania_noble_blade_2" name="{=Izstbt9y}Highland Decorated Blade" tier="5" piece_type="Blade" mesh="battania_noble_blade_2" culture="Culture.battania" length="93.2" weight="0.6" excluded_item_usage_features="thrust">
 
     <BladeData stack_amount="3" physics_material="metal_weapon" body_name="bo_sword_one_handed" holster_mesh="battania_noble_blade_2_scabbard_2">
       <Swing damage_type="Cut" damage_factor="1.7" />
-      <Thrust damage_type="Pierce" damage_factor="0.8"/>
     </BladeData>
     <Flags>
       <Flag name="BonusAgainstShield" />
