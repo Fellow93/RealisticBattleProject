@@ -638,6 +638,26 @@ namespace RBMAI
             }
         }
 
+        [HarmonyPatch(typeof(DefaultItemPickupModel), "GetItemScoreForAgent")]
+        public class DefaultItemPickupModelPatch
+        {
+            public static void Postfix(ref float __result, SpawnedItemEntity item, Agent agent)
+            {
+                if (!item.WeaponCopy.Item.ItemFlags.HasAnyFlag(ItemFlags.CannotBePickedUp))
+                {
+                    for (EquipmentIndex index = EquipmentIndex.WeaponItemBeginSlot; index < EquipmentIndex.ExtraWeaponSlot; index++)
+                    {
+                        WeaponComponentData primaryWeapon = agent.SpawnEquipment[index].Item.PrimaryWeapon;
+                        
+                        if (!agent.SpawnEquipment[index].IsEmpty && !primaryWeapon.IsConsumable && !primaryWeapon.IsShield && primaryWeapon.WeaponClass == item.WeaponCopy.Item.PrimaryWeapon.WeaponClass)
+                        {
+                            __result = 100f;
+                        }
+                    }
+                }
+            }
+        }
+
         //[HarmonyPatch(typeof(BannerBearerLogic))]
         //[HarmonyPatch("RespawnAsBannerBearer")]
         //internal class RespawnAsBannerBearerPatch
