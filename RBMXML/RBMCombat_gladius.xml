@@ -433,4 +433,22 @@
              scale_factor="45"/>
     </Pieces>
   </CraftedItem>
+
+	<CraftedItem
+		id="battania_2haxe_1_t2"
+		name="{=bNABNs8O}Square Bit Two Handed Axe"
+		crafting_template="TwoHandedAxe"
+		culture="Culture.battania"
+		modifier_group="axe">
+		<Pieces>
+			<Piece
+				id="axe_craft_14_head"
+				Type="Blade"
+				scale_factor="100" />
+			<Piece
+				id="axe_craft_30_handle"
+				Type="Handle"
+				scale_factor="140" />
+		</Pieces>
+	</CraftedItem>
 </Items>
