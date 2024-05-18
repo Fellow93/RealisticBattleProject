@@ -1895,7 +1895,7 @@
       <skill id="Crossbow"
              value="0" />
       <skill id="Throwing"
-             value="5" />
+             value="20" />
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.aserai_tribesman" />
@@ -1907,6 +1907,8 @@
                  id="Item.eastern_spear_1_t2" />
       <equipment slot="Item1"
                  id="Item.oval_shield" />
+      <equipment slot="Item2"
+                 id="Item.eastern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.desert_cap" />
       <equipment slot="Body"
@@ -1935,8 +1937,10 @@
                  id="Item.eastern_spear_1_t2" />
       <equipment slot="Item1"
                  id="Item.oval_shield" />
+      <equipment slot="Item2"
+                 id="Item.eastern_javelin_1_t2" />
       <equipment slot="Head"
-                 id="Item.desert_cap" />
+                 id="Item.trailed_desert_helmet" />
       <equipment slot="Body"
                  id="Item.patched_gambeson" />
       <equipment slot="Leg"
@@ -1949,6 +1953,8 @@
                  id="Item.eastern_spear_1_t2" />
       <equipment slot="Item1"
                  id="Item.oval_shield" />
+      <equipment slot="Item2"
+                 id="Item.eastern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.desert_cap" />
       <equipment slot="Body"
@@ -1957,6 +1963,8 @@
                  id="Item.sturgia_boots_d" />
       <equipment slot="Gloves"
                  id="Item.ragged_armwraps" />
+      <equipment slot="Cape"
+                 id="Item.wrapped_scarf" />
       </EquipmentRoster>
       <EquipmentSet id="aserai_troop_civilian_template_t1"
                     civilian="true" />
@@ -2025,7 +2033,7 @@
       <equipment slot="Item3"
                  id="Item.eastern_javelin_1_t2" />
       <equipment slot="Head"
-                 id="Item.desert_cap" />
+                 id="Item.trailed_desert_helmet" />
       <equipment slot="Body"
                  id="Item.leather_strips_over_padded_robe" />
       <equipment slot="Leg"
@@ -3877,7 +3885,7 @@
       <skill id="OneHanded"
              value="20" />
       <skill id="TwoHanded"
-             value="10" />
+             value="20" />
       <skill id="Polearm"
              value="20" />
       <skill id="Bow"
@@ -3885,7 +3893,7 @@
       <skill id="Crossbow"
              value="0" />
       <skill id="Throwing"
-             value="10" />
+             value="20" />
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.battanian_clanwarrior" />
@@ -3899,26 +3907,6 @@
                  id="Item.battania_large_shield_c" />
       <equipment slot="Body"
                  id="Item.patched_gambeson" />
-      <equipment slot="Cape"
-                 id="Item.battania_civil_cloak" />
-      <equipment slot="Leg"
-                 id="Item.sturgia_boots_d" />
-      <equipment slot="Head"
-                 id="Item.thinhide_coif" />
-      <equipment slot="Gloves"
-                 id="Item.ragged_armwraps" />
-      </EquipmentRoster>
-      <EquipmentRoster>
-      <equipment slot="Item0"
-                 id="Item.highland_spear_t2" />
-      <equipment slot="Item1"
-                 id="Item.battania_large_shield_c" />
-      <equipment slot="Cape"
-                 id="Item.battania_cloak" />
-      <equipment slot="Body"
-                 id="Item.patched_gambeson" />
-      <equipment slot="Cape"
-                 id="Item.battania_cloak_furr" />
       <equipment slot="Leg"
                  id="Item.sturgia_boots_d" />
       <equipment slot="Gloves"
@@ -3933,8 +3921,6 @@
                  id="Item.battania_large_shield_c" />
       <equipment slot="Body"
                  id="Item.patched_gambeson" />
-      <equipment slot="Cape"
-                 id="Item.battania_civil_cloak" />
       <equipment slot="Leg"
                  id="Item.sturgia_boots_d" />
       <equipment slot="Gloves"
@@ -3947,16 +3933,32 @@
                  id="Item.highland_spear_t2" />
       <equipment slot="Item1"
                  id="Item.battania_large_shield_c" />
+      <equipment slot="Item3"
+                 id="Item.western_throwing_axe_1_t1" />
       <equipment slot="Body"
                  id="Item.patched_gambeson" />
-      <equipment slot="Cape"
-                 id="Item.battania_civil_cloak" />
       <equipment slot="Leg"
                  id="Item.sturgia_boots_d" />
       <equipment slot="Gloves"
                  id="Item.ragged_armwraps" />
       <equipment slot="Head"
                  id="Item.thinhide_coif" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.battania_2haxe_1_t2" />
+      <equipment slot="Item1"
+                 id="Item.battania_large_shield_c" />
+      <equipment slot="Item3"
+                 id="Item.western_throwing_axe_1_t1" />
+      <equipment slot="Body"
+                 id="Item.patched_gambeson" />
+      <equipment slot="Leg"
+                 id="Item.sturgia_boots_d" />
+      <equipment slot="Head"
+                 id="Item.thinhide_coif" />
+      <equipment slot="Gloves"
+                 id="Item.ragged_armwraps" />
       </EquipmentRoster>
       <EquipmentSet id="battania_troop_civilian_template_t1"
                     civilian="true" />
@@ -5974,7 +5976,7 @@
       <skill id="Crossbow"
              value="5" />
       <skill id="Throwing"
-             value="10" />
+             value="20" />
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.imperial_infantryman" />
@@ -5997,9 +5999,27 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
+                 id="Item.empire_sword_1_t2" />
+      <equipment slot="Item1"
+                 id="Item.old_kite_sparring_shield_shoulder" />
+      <equipment slot="Item2"
+                 id="Item.northern_javelin_1_t2" />
+      <equipment slot="Head"
+                 id="Item.imperial_padded_coif" />
+      <equipment slot="Body"
+                 id="Item.patched_gambeson" />
+      <equipment slot="Leg"
+                 id="Item.sturgia_boots_d" />
+      <equipment slot="Gloves"
+                 id="Item.ragged_armwraps" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
                  id="Item.imperial_spear_t2" />
       <equipment slot="Item1"
                  id="Item.old_kite_sparring_shield_shoulder" />
+      <equipment slot="Item2"
+                 id="Item.northern_javelin_1_t2" />
       <equipment slot="Head"
                  id="Item.imperial_padded_coif" />
       <equipment slot="Body"
@@ -6019,7 +6039,7 @@
       <equipment slot="Leg"
                  id="Item.sturgia_boots_d" />
       <equipment slot="Head"
-                 id="Item.imperial_padded_coif" />
+                 id="Item.imperial_open_mail_coif" />
       <equipment slot="Gloves"
                  id="Item.ragged_armwraps" />
       </EquipmentRoster>
@@ -7872,11 +7892,11 @@
       <skill id="Polearm"
              value="20" />
       <skill id="Bow"
-             value="5" />
+             value="20" />
       <skill id="Crossbow"
              value="5" />
       <skill id="Throwing"
-             value="5" />
+             value="20" />
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.khuzait_tribal_warrior" />
@@ -7902,12 +7922,14 @@
                  id="Item.eastern_spear_1_t2" />
       <equipment slot="Item1"
                  id="Item.eastern_wicker_shield" />
+      <equipment slot="Item2"
+                 id="Item.eastern_javelin_1_t2" />
       <equipment slot="Body"
                  id="Item.patched_gambeson" />
       <equipment slot="Leg"
                  id="Item.sturgia_boots_d" />
       <equipment slot="Head"
-                 id="Item.nomad_padded_hood" />
+                 id="Item.steppe_helmet" />
       <equipment slot="Gloves"
                  id="Item.ragged_armwraps" />
       </EquipmentRoster>
@@ -7916,6 +7938,8 @@
                  id="Item.eastern_spear_1_t2" />
       <equipment slot="Item1"
                  id="Item.eastern_wicker_shield" />
+      <equipment slot="Item2"
+                 id="Item.eastern_javelin_1_t2" />
       <equipment slot="Body"
                  id="Item.patched_gambeson" />
       <equipment slot="Leg"
@@ -8001,7 +8025,7 @@
       <equipment slot="Body"
                  id="Item.khuzait_sturdy_armor" />
       <equipment slot="Head"
-                 id="Item.nomad_padded_hood" />
+                 id="Item.steppe_helmet" />
       <equipment slot="Leg"
                  id="Item.eastern_leather_boots" />
       <equipment slot="Gloves"
@@ -9783,7 +9807,7 @@
     </face>
     <skills>
       <skill id="Athletics"
-             value="20" />
+             value="25" />
       <skill id="Riding"
              value="5" />
       <skill id="OneHanded"
@@ -9791,13 +9815,13 @@
       <skill id="TwoHanded"
              value="10" />
       <skill id="Polearm"
-             value="20" />
+             value="25" />
       <skill id="Bow"
              value="5" />
       <skill id="Crossbow"
              value="0" />
       <skill id="Throwing"
-             value="10" />
+             value="20" />
     </skills>
     <upgrade_targets>
       <upgrade_target id="NPCCharacter.sturgian_warrior" />
@@ -9823,6 +9847,8 @@
                  id="Item.sturgia_old_shield_b" />
       <equipment slot="Item1"
                  id="Item.northern_spear_1_t2" />
+      <equipment slot="Item3"
+                 id="Item.woodland_throwing_axe_1_t1" />
       <equipment slot="Body"
                  id="Item.patched_gambeson" />
       <equipment slot="Leg"
@@ -9844,7 +9870,7 @@
       <equipment slot="Leg"
                  id="Item.sturgia_boots_d" />
       <equipment slot="Head"
-                 id="Item.nordic_fur_cap" />
+                 id="Item.nasal_helmet" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -9859,6 +9885,8 @@
                  id="Item.nordic_fur_cap" />
       <equipment slot="Gloves"
                  id="Item.ragged_armwraps" />
+      <equipment slot="Cape"
+                 id="Item.battania_shoulder_furr" />
       </EquipmentRoster>
       <EquipmentSet id="sturgia_troop_civilian_template_t1"
                     civilian="true" />
@@ -11824,7 +11852,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_2_t2" />
+                 id="Item.simple_pike_t2" />
       <equipment slot="Item1"
                  id="Item.worn_kite_shield_shoulder" />
       <equipment slot="Head"
@@ -11838,7 +11866,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_2_t2" />
+                 id="Item.vlandia_sword_1_t2" />
       <equipment slot="Item1"
                  id="Item.worn_kite_shield_shoulder" />
       <equipment slot="Body"
@@ -11862,7 +11890,7 @@
       <equipment slot="Leg"
                  id="Item.sturgia_boots_d" />
       <equipment slot="Head"
-                 id="Item.leather_cap" />
+                 id="Item.padded_cap" />
       <equipment slot="Gloves"
                  id="Item.ragged_armwraps" />
       <equipment slot="Cape"
@@ -11878,7 +11906,7 @@
       <equipment slot="Leg"
                  id="Item.sturgia_boots_d" />
       <equipment slot="Head"
-                 id="Item.padded_cap" />
+                 id="Item.leather_cap" />
       <equipment slot="Gloves"
                  id="Item.ragged_armwraps" />
       <equipment slot="Cape"
@@ -11980,7 +12008,7 @@
       <equipment slot="Leg"
                  id="Item.empire_horseman_boots" />
       <equipment slot="Head"
-                 id="Item.padded_leather_cape" />
+                 id="Item.segmented_cervelliere_over_laced_coif" />
       <equipment slot="Gloves"
                  id="Item.buttoned_leather_bracers" />
       <equipment slot="Cape"

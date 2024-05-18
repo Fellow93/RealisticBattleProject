@@ -176,12 +176,12 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
                 {
                     if (isDoubleFlank)
                     {
-                        if (j < infCount / 8)
+                        if (j < infCount / 6)
                         {
                             //agent.Formation.TransferUnits(Formations.ToList()[flankersIndex], 1);
                             agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[leftflankersIndex];
                         }
-                        else if (j < infCount / 4)
+                        else if (j < infCount / 3)
                         {
                             //agent.Formation.TransferUnits(Formations.ToList()[0], 1);
                             agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[rightflankersIndex];
@@ -194,7 +194,7 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
                     }
                     else
                     {
-                        if (j < infCount / 4)
+                        if (j < infCount / 3)
                         {
                             //agent.Formation.TransferUnits(Formations.ToList()[flankersIndex], 1);
                             agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[flankersIndex];
@@ -212,12 +212,12 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
                 {
                     if (isDoubleFlank)
                     {
-                        if (j < infCount / 8)
+                        if (j < infCount / 6)
                         {
                             //agent.Formation.TransferUnits(Formations.ToList()[flankersIndex], 1);
                             agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[leftflankersIndex];
                         }
-                        else if (j < infCount / 4)
+                        else if (j < infCount / 3)
                         {
                             //agent.Formation.TransferUnits(Formations.ToList()[0], 1);
                             agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[rightflankersIndex];
@@ -230,7 +230,7 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
                     }
                     else
                     {
-                        if (j < infCount / 4)
+                        if (j < infCount / 3)
                         {
                             //agent.Formation.TransferUnits(Formations.ToList()[flankersIndex], 1);
                             agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[flankersIndex];
