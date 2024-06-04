@@ -2,12 +2,13 @@
 {
     // MBTargetEnemyStatus.TargetEnemyStatusVM
     using TaleWorlds.Library;
+    using TaleWorlds.Localization;
 
     public class PostureVisualVM : ViewModel
     {
         private string enemyName = "";
 
-        private string postureLabel = "Posture";
+        private string postureLabel = new TextObject("{=RBM_AI_023}Posture").ToString();
 
         private bool showEnemyStatus = false;
 

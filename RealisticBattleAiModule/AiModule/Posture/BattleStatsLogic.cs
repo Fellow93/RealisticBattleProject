@@ -2,6 +2,7 @@
 using TaleWorlds.Core;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.View.Screens;
 using static RBMAI.Tactics;
@@ -91,14 +92,14 @@ namespace RBMAI
             //InformationManager.DisplayMessage(new InformationMessage("DEF HA :" + haDamageDone));
             //InformationManager.DisplayMessage(new InformationMessage("DEF CAV:" + cavDamageDone));
             //InformationManager.DisplayMessage(new InformationMessage("DEF INF:" + infDamageDone));
-            _dataSource.Atkarc = "ATK ARC:" + atkarc;
-            _dataSource.Atkha = "ATK HA :" + atkha;
-            _dataSource.Atkcav = "ATK CAV:" + atkcav;
-            _dataSource.Atkinf = "ATK INF:" + atkinf;
-            _dataSource.Defarc = "DEF ARC:" + defarc;
-            _dataSource.Defha = "DEF HA :" + defha;
-            _dataSource.Defcav = "DEF CAV:" + defcav;
-            _dataSource.Definf = "DEF INF:" + definf;
+            _dataSource.Atkarc = new TextObject("{=RBM_AI_001}ATK ARC:").ToString() + atkarc;
+            _dataSource.Atkha = new TextObject("{=RBM_AI_002}ATK HA :").ToString() + atkha;
+            _dataSource.Atkcav = new TextObject("{=RBM_AI_003}ATK CAV:").ToString() + atkcav;
+            _dataSource.Atkinf = new TextObject("{=RBM_AI_004}ATK INF:").ToString() + atkinf;
+            _dataSource.Defarc = new TextObject("{=RBM_AI_005}DEF ARC:").ToString() + defarc;
+            _dataSource.Defha = new TextObject("{=RBM_AI_006}DEF HA :").ToString() + defha;
+            _dataSource.Defcav = new TextObject("{=RBM_AI_007}DEF CAV:").ToString() + defcav;
+            _dataSource.Definf = new TextObject("{=RBM_AI_008}DEF INF:").ToString() + definf;
         }
     }
 }
