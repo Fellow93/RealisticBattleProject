@@ -60,7 +60,7 @@
 		<FillBar WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="210" SuggestedHeight="8"   HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="45"  Brush="EnemyPostureBarBrush" InitialAmount="@EnemyPosture"  MaxAmount="@EnemyPostureMax" IsVertical="false" IsVisible="@ShowEnemyStatus" />
 	  
 		<!-- Agent Posture Info -->
-		<TextWidget Brush="EnemyName" HorizontalAlignment="Right" VerticalAlignment="Bottom" SuggestedWidth="100" MarginBottom="68" MarginRight="180" Text="@PostureLabel" IsVisible="@ShowPlayerPostureStatus" />
+		<TextWidget Brush="EnemyName" HorizontalAlignment="Left" VerticalAlignment="Bottom" SuggestedWidth="100" MarginBottom="68" MarginLeft="1649" Text="@PostureLabel" IsVisible="@ShowPlayerPostureStatus" />
         <AgentHealthWidget Id="HeroPostureWidget" Health="@PlayerPosture" MaxHealth="@PlayerPostureMax" HealthBar="Canvas\FillBar" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!Mission.MainAgentHUD.HeroHealthBar.Frame.Width" SuggestedHeight="!Mission.MainAgentHUD.HeroHealthBar.Frame.Height" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="15" MarginRight="40" ShowHealthBar="@ShowPlayerPostureStatus" HealthDropContainer="Canvas\HealthDropContainer" HealthDropBrush="Mission.MainAgentHUD.HeroHealthBar.FillChange">
           <Children>
             <Widget Id="Canvas" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!Mission.MainAgentHUD.HeroHealthBar.Canvas.Width" SuggestedHeight="!Mission.MainAgentHUD.HeroHealthBar.Canvas.Height" HorizontalAlignment="Left" VerticalAlignment="Center" Sprite="General\Mission\hero_canvas">
