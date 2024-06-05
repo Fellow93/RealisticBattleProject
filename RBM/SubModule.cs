@@ -117,7 +117,7 @@ namespace RBM
                             Frontline.normalCommand = !Frontline.normalCommand;
                             Frontline.aggressiveCommand = !Frontline.normalCommand;
                             Frontline.defensiveCommand = !Frontline.normalCommand;
-                            InformationManager.DisplayMessage(new InformationMessage("Normal", Color.FromUint(4282569842u)));
+                            InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=8UBfIenN}Normal").ToString(), Color.FromUint(4282569842u)));
                         }
                         if (missionScreen.InputManager.IsKeyPressed(InputKey.Numpad1))
                         {
@@ -125,14 +125,14 @@ namespace RBM
                             Frontline.normalCommand = !Frontline.aggressiveCommand;
                             Frontline.defensiveCommand = !Frontline.aggressiveCommand;
 
-                            InformationManager.DisplayMessage(new InformationMessage("Aggressive", Color.FromUint(4282569842u)));
+                            InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=4Hdcxk0a}Aggressive").ToString(), Color.FromUint(4282569842u)));
                         }
                         if (missionScreen.InputManager.IsKeyPressed(InputKey.Numpad3))
                         {
                             Frontline.defensiveCommand = !Frontline.defensiveCommand;
                             Frontline.normalCommand = !Frontline.defensiveCommand;
                             Frontline.aggressiveCommand = !Frontline.defensiveCommand;
-                            InformationManager.DisplayMessage(new InformationMessage("Defensive", Color.FromUint(4282569842u)));
+                            InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=A3T5z4Mv}Defensive").ToString(), Color.FromUint(4282569842u)));
                         }
                     }
                 }
