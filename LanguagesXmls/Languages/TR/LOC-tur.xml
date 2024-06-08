@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="Türkçe" />
+  </tags>
+  <strings>
+	<!-- AI Module Strings -->
+	<string id="RBM_AI_001" text="SAL OKÇ:" />
+	<string id="RBM_AI_002" text="SAL AO :" />
+	<string id="RBM_AI_003" text="SAL SÜV:" />
+	<string id="RBM_AI_004" text="SAL PİY:" />
+	<string id="RBM_AI_005" text="SAV OKÇ:" />
+	<string id="RBM_AI_006" text="SAV AO :" />
+	<string id="RBM_AI_007" text="SAV SÜV:" />
+	<string id="RBM_AI_008" text="SAV PİY:" />
+	<string id="RBM_AI_009" text="Dayanıklılığın bitti: Dengeni kaybettin, {DMG} ezici hasar aldın" />
+	<string id="RBM_AI_010" text="Düşmanın dayanıklılığı bitti: Dengesini kaybetti, {DMG} ezici hasar aldı" />
+	<string id="RBM_AI_011" text="Dayanıklılığın bitti: Dengeni kaybettin, mükemmel savuşturdun, {DMG} ezici hasar aldın" />
+	<string id="RBM_AI_012" text="Düşmanın dayanıklılığı bitti: Dengesi bozuldu, mükemmel savuşturdu, {DMG} ezici hasar aldı" />
+	<string id="RBM_AI_013" text="Dayanıklılık bitti: Denge bozuldu, mükemmel savuşturma" />
+	<string id="RBM_AI_014" text="Dayanıklılık bitti: Denge bozuldu, yanlış yön bloklandı" />
+	<string id="RBM_AI_015" text="Dayanıklılık bitti: Denge bozuldu, doğru yön bloklandı" />
+	<string id="RBM_AI_016" text="Dayanıklılığın bitti: Dengen bozuldu, mükemmel savuşturdun, doğru yönü blokladın" />
+	<string id="RBM_AI_017" text="Dayanıklılığın bitti: Dengen bozuldu, mükemmel savuşturdu, doğru yönü blokladı" />
+	<string id="RBM_AI_018" text="Dayanıklılık bitti: Denge bozuldu, yarım bloklama" />
+	<string id="RBM_AI_019" text="Dayanıklılık bitti: Denge bozuldu, yarım bloklama {DMG} ezici hasar" />
+	<string id="RBM_AI_020" text="Yarım bloklama, {DMG} ezici hasar" />
+	<string id="RBM_AI_021" text="{DMG1} küt silah hasarı, {DMG2} zırh temas hasarı aldın" />
+	<string id="RBM_AI_022" text="{DMG1} küt silah hasarı, {DMG2} zırh temas hasarı verdin" />
+	<string id="RBM_AI_023" text="Dayanıklılık" />
+	<!-- Combat Module Strings -->
+	<string id="RBM_COM_001" text="{TYPE}yla vurdun" />
+	<string id="RBM_COM_002" text="{TYPE}{.n}{.den} darbe aldın" />
+	<string id="RBM_COM_003" text="Silahın kabzası" />
+	<string id="RBM_COM_004" text="Silahın kabza başı" />
+	<string id="RBM_COM_005" text="Yüzüne vurdun!" />
+	<string id="RBM_COM_006" text="Yüzüne vurdu!" />
+	<string id="RBM_COM_007" text="Omuz altına vurdun!" />
+	<string id="RBM_COM_008" text="Omuz altına vurdu!" />
+	<string id="RBM_COM_009" text="İdeal Mesafe/Hasar Mühimmat Ağırlığı (gr): " />
+	<string id="RBM_COM_010" text="Fırlatma İlk Hızı (m/s): " />
+	<string id="RBM_COM_011" text="Ölçekli Ağırlık: " />
+	<string id="RBM_COM_012" text="Menzilli Delici Hasar" />
+	<string id="RBM_COM_013" text="Menzilli Kesici Hasar" />
+	<string id="RBM_COM_014" text="İlgili Beceri Seviyesi: " />
+	<string id="RBM_COM_015" text="Menzilli Hasar" />
+	<string id="RBM_COM_016" text="Savurma Hasarı Faktörü:" />
+	<string id="RBM_COM_017" text="Saplama Hasarı Faktörü:" />
+	<string id="RBM_COM_018" text="Zayıf Savurma Noktası (%): " />
+	<string id="RBM_COM_019" text="RBM Geliştirici İstatistikleri" />
+	<string id="RBM_COM_020" text="Savurma Hızı (m/s): " />
+	<string id="RBM_COM_021" text="Saplama Hızı (m/s): " />
+	<string id="RBM_COM_022" text="Kalkan Zırhı: " />
+	<string id="RBM_COM_023" text="Yüz Zırhı" />
+	<string id="RBM_COM_024" text="Boyun Zırhı" />
+	<string id="RBM_COM_025" text="Omuz Zırhı" />
+	<string id="RBM_COM_026" text="Karın Zırhı" />
+	<string id="RBM_COM_027" text="Alt Omuz Zırhı" />
+	<string id="RBM_COM_028" text="Z-Zırh" />
+	<string id="RBM_COM_029" text="T-Temas Eden Hasar" />
+	<string id="RBM_COM_030" text="N-Nüfuz Eden Hasar" />
+	<string id="RBM_COM_031" text="K-Küt Silah Hasarı" />
+	<string id="RBM_COM_032" text="Z" />
+	<string id="RBM_COM_033" text="T" />
+	<string id="RBM_COM_034" text="N" />
+	<string id="RBM_COM_035" text="K" />
+	<string id="RBM_COM_036" text="RBM İstatistikleri" />
+	<string id="RBM_COM_037" text="Detay" />
+	<!-- Config Module Strings -->
+	<string id="RBM_CON_001" text="Pasif" />
+	<string id="RBM_CON_002" text="Aktif (Önerilir)" />
+	<string id="RBM_CON_003" text="Birlik Revizyonu" />
+	<string id="RBM_CON_004" text="Native" />
+	<string id="RBM_CON_005" text="Gerçekçi" />
+	<string id="RBM_CON_006" text="Yarı Gerçekçi" />
+	<string id="RBM_CON_007" text="Menzilli Yenileme Hızı" />
+	<string id="RBM_CON_008" text="Pasif Omuz Kalkanları" />
+	<string id="RBM_CON_009" text="Daha İyi Ok Görselleri" />
+	<string id="RBM_CON_010" text="Zırh Durumu Arayüzü" />
+	<string id="RBM_CON_011" text="Gerçekçi Okçuluk" />
+	<string id="RBM_CON_012" text="Dayanıklılık Sistemi" />
+	<string id="RBM_CON_013" text="Oyuncu Dayanıklılık Çarpanı" />
+	<string id="RBM_CON_014" text="Dayanıklılık Arayüzü" />
+	<string id="RBM_CON_015" text="Native Yapay Zeka Blok/Savuşturma/Saldırı" />
+	<string id="RBM_CON_016" text="RBM Yakın Dövüş" />
+	<string id="RBM_CON_017" text="Modül Durumu" />
+	<string id="RBM_CON_018" text="RBM Yapay Zeka" />
+	<string id="RBM_CON_019" text="RBM Turnuva" />
+	<string id="RBM_CON_020" text="RBM Ayarları" />
+	<!-- Tournament Module Strings -->
+	<string id="RBM_TOU_001" text="Ana turnuva" />
+	<string id="RBM_TOU_002" text="Alt seviye turnuva: {TIER}. seviye" />
+	<string id="RBM_TOU_003" text="Tebrikler, ödülünü başarıyla {Name} öğesiyle değiştirdin, döndürdüğün:{Roll} gereken: {Need}" />
+	<string id="RBM_TOU_004" text="{Name} ile değiştirmeyi kaçırdın, döndürdüğün:{Roll} gereken: {Need}" />
+	<!-- module_strings.xml Strings -->
+	<string id="RBM_STR_001" text="{?IS_RIGHT}Sağ {TROOP_NAMES_BEGIN}{?IS_PLURAL} ve {?}{\?}{TROOP_NAMES_END} vur-kaç yapıyor.{?}{\?}{?IS_LEFT}Sol {TROOP_NAMES_BEGIN}{?IS_PLURAL} ve {?}{\?}{TROOP_NAMES_END} vur-kaç yapıyor.{?}{\?}" />
+	<string id="RBM_STR_002" text="Piyadeler savaşıyor." />
+	<string id="RBM_STR_003" text="Okçular kanatlardan savaşıyor." />
+	<string id="RBM_STR_004" text="Süvariler, piyadelerin önünde hareketli bir duvar örüyor." />
+	<string id="RBM_STR_005" text="Çatışmaya gir" />
+	<string id="RBM_STR_006" text="Düşmana vur-kaç yap." />
+	<string id="RBM_STR_007" text="Düşmana saldır" />
+	<string id="RBM_STR_008" text="{SIDE_STRING} kanattan saldır" />
+	<string id="RBM_STR_009" text="Piyadelerin önünde hareketli bir duvar ör" />
+	<string id="RBM_STR_010" text="Planımız tüm gücümüzle saldırmak ve kanatlardan okçularla desteklemek." />
+	<string id="RBM_STR_011" text="Planımız piyadeyi parçalara ayırmak ve düşmanı her taraftan ezmek." />
+	<string id="RBM_STR_012" text="Planımız düşmanı akıncılarla yemlemek ve sonra tüm gücümüzle onları ezmek." />
+	<string id="RBM_STR_013" text="Planımız kanatlardaki okçularımızla savunma çemberi oluşturmak." />
+	<string id="RBM_STR_014" text="Planımız süvarilerimizle kafa kafaya hücum etmek ve ardından düşmanın dağınık düzenini ezmek." />
+	<!-- RBMCombat_arrow_visuals.xml Strings -->
+	<string id="RBM_ARR_001" text="Menzilli Ok 30 gr" />
+	<string id="RBM_ARR_002" text="Diken Uçlu Ok 40 gr" />
+	<string id="RBM_ARR_003" text="İnce Temrenli Ok 40 gr" />
+	<string id="RBM_ARR_004" text="Diken Uçlu Kundaklı Yay Oku 50 gr" />
+	<string id="RBM_ARR_005" text="İnce Temrenli Ok 50 gr" />
+	<string id="RBM_ARR_006" text="Diken Uçlu Ok 50 gr" />
+	<string id="RBM_ARR_007" text="İnce Temrenli Kundaklı Yay Oku 60 gr" />
+	<string id="RBM_ARR_008" text="Diken Uçlu Ok 60 gr" />
+	<string id="RBM_ARR_009" text="İnce Temrenli Ok 60 gr" />
+	<string id="RBM_ARR_010" text="Diken Uçlu Ok 70 gr" />
+	<string id="RBM_ARR_011" text="İnce Temrenli Kundaklı Yay Oku 75 gr" />
+	<string id="RBM_ARR_012" text="İnce Temrenli Ok 80 gr" />
+	<string id="RBM_ARR_013" text="İnce Temrenli Kundaklı Yay Oku 90 gr" />
+	<string id="RBM_ARR_014" text="İnce Temrenli Ok 90 gr" />
+	<string id="RBM_ARR_015" text="İnce Temrenli Ok 100 gr" />
+	<string id="RBM_ARR_016" text="Ağır İnce Temrenli Ok 110 gr" />
+	<string id="RBM_ARR_017" text="Ağır İnce Temrenli Kundaklı Yay Oku 120 gr" />
+	<string id="RBM_ARR_018" text="Çok Ağır İnce Temrenli Ok 125 gr" />
+	<string id="RBM_ARR_019" text="Çok Ağır İnce Temrenli Kundaklı Yay Oku 150 gr" />
+	<string id="RBM_ARR_020" text="Yağlanmış Menzilli Ok 30 gr" />
+	<string id="RBM_ARR_021" text="Yağlanmış Diken Uçlu Ok 40 gr" />
+	<string id="RBM_ARR_022" text="Yağlanmış İnce Temrenli Ok 40 gr" />
+	<string id="RBM_ARR_023" text="Yağlanmış Diken Uçlu Kundaklı Yay Oku 50 gr" />
+	<string id="RBM_ARR_024" text="Yağlanmış İnce Temrenli Ok 50 gr" />
+	<string id="RBM_ARR_025" text="Yağlanmış Diken Uçlu Ok 50 gr" />
+	<string id="RBM_ARR_026" text="Yağlanmış İnce Temrenli Kundaklı Yay Oku 60 gr" />
+	<string id="RBM_ARR_027" text="Yağlanmış Diken Uçlu Ok 60 gr" />
+	<string id="RBM_ARR_028" text="Yağlanmış İnce Temrenli Ok 60 gr" />
+	<string id="RBM_ARR_029" text="Yağlanmış İnce Temrenli Ok 70 gr" />
+	<string id="RBM_ARR_030" text="Yağlanmış İnce Temrenli Kundaklı Yay Oku 75 gr" />
+	<string id="RBM_ARR_031" text="Yağlanmış İnce Temrenli Ok 80 gr" />
+	<string id="RBM_ARR_032" text="Yağlanmış İnce Temrenli Kundaklı Yay Oku 90 gr" />
+	<string id="RBM_ARR_033" text="Yağlanmış İnce Temrenli Ok 90 gr" />
+	<string id="RBM_ARR_034" text="Yağlanmış İnce Temrenli Ok 100 gr" />
+	<string id="RBM_ARR_035" text="Yağlanmış Ağır İnce Temrenli Ok 110 gr" />
+	<string id="RBM_ARR_036" text="Yağlanmış Ağır İnce Temrenli Kundaklı Yay Oku 120 gr" />
+	<string id="RBM_ARR_037" text="Yağlanmış Çok Ağır İnce Temrenli Ok 125 gr" />
+	<string id="RBM_ARR_038" text="Yağlanmış Çok Ağır İnce Temrenli Kundaklı Yay Oku 150 gr" />
+	<string id="RBM_ARR_039" text="Tamasken Çeliğiyle Sertleştirilmiş Dikenli Ok 80 gr" />
+	<string id="RBM_ARR_040" text="Tamasken Çeliğiyle Sertleştirilmiş Dikenli Ok 90 gr" />
+	<string id="RBM_ARR_041" text="Tamasken Çeliğiyle Sertleştirilmiş Dikenli Ok 100 gr" />
+	<string id="RBM_ARR_042" text="Tamasken Çeliğiyle Sertleştirilmiş Dikenli Ok 110 gr" />
+	<string id="RBM_ARR_043" text="Tamasken Çeliğiyle Sertleştirilmiş Dikenli Ok 125 gr" />
+	<string id="RBM_ARR_044" text="Çelikle Sertleştirilmiş Dikenli Kundaklı Yay Oku 75 gr" />
+	<string id="RBM_ARR_045" text="Çelikle Sertleştirilmiş Dikenli Kundaklı Yay Oku 90 gr" />
+	<string id="RBM_ARR_046" text="Çelikle Sertleştirilmiş Dikenli Kundaklı Yay Oku 120 gr" />
+	<string id="RBM_ARR_047" text="Çelikle Sertleştirilmiş Dikenli Kundaklı Yay Oku 150 gr" />
+	<string id="RBM_ARR_048" text="Yağlanmış Çelikle Sertleştirilmiş Dikenli Ok 80 gr" />
+	<string id="RBM_ARR_049" text="Yağlanmış Çelikle Sertleştirilmiş Dikenli Ok 90 gr" />
+	<string id="RBM_ARR_050" text="Yağlanmış Çelikle Sertleştirilmiş Dikenli Ok 100 gr" />
+	<string id="RBM_ARR_051" text="Yağlanmış Çelikle Sertleştirilmiş Dikenli Ok 110 gr" />
+	<string id="RBM_ARR_052" text="Yağlanmış Çelikle Sertleştirilmiş Dikenli Ok 125 gr" />
+	<string id="RBM_ARR_053" text="Yağlanmış Çelikle Sertleştirilmiş Dikenli Kundaklı Yay Oku 75 gr" />
+	<string id="RBM_ARR_054" text="Yağlanmış Çelikle Sertleştirilmiş Dikenli Kundaklı Yay Oku 90 gr" />
+	<string id="RBM_ARR_055" text="Yağlanmış Çelikle Sertleştirilmiş Dikenli Kundaklı Yay Oku 120 gr" />
+	<string id="RBM_ARR_056" text="Yağlanmış Çelikle Sertleştirilmiş Dikenli Kundaklı Yay Oku 150 gr" />
+	<string id="RBM_ARR_057" text="Kalradya Ateşli Oku" />
+	<string id="RBM_ARR_058" text="Kalradya Ateşli Kundaklı Yay Oku" />
+	<!-- RBMCombat_body_armors.xml Strings -->
+	<string id="RBM_ARM_001" text="Çift Zincir Zırh Yelek" />
+	<string id="RBM_ARM_002" text="Zincir Üzeri Hafif Katmanlı Zırh" />
+	<string id="RBM_ARM_003" text="Zincir Üzeri Hafif Katmanlı Yelek" />
+	<string id="RBM_ARM_004" text="Zincir Üzeri Pullu Zırh" />
+	<string id="RBM_ARM_005" text="Zincir Üzeri Katmanlı Zırh" />
+	<string id="RBM_ARM_006" text="Zincir Üzeri Ağır Katmanlı Pullu Etek" />
+	<!-- RBMCombat_couched_lances.xml Strings -->
+	<string id="RBM_CLA_001" text="Hafif Kargı Başı" />
+	<string id="RBM_CLA_002" text="Turnuva Hafif Kargı Başı" />
+	<string id="RBM_CLA_003" text="Orta Kargı Başı" />
+	<string id="RBM_CLA_004" text="Turnuva Orta Kargı Başı" />
+	<string id="RBM_CLA_005" text="Ağır Kargı Başı" />
+	<!-- RBMCombat_gladius.xml Strings -->
+	<string id="RBM_GLA_001" text="Gladyus" />
+	<string id="RBM_GLA_002" text="Dev Fırlatma Baltası" />
+	<string id="RBM_GLA_003" text="Büyük Fırlatma Baltası" />
+	<string id="RBM_GLA_004" text="Orta Boy Fırlatma Baltası" />
+	<string id="RBM_GLA_005" text="Küçük Fırlatma Baltası" />
+	<!-- RBMCombat_head_armors.xml Strings -->
+	<string id="RBM_HEA_001" text="Soylu Muhafız Miğferi" />
+	<!-- RBMCombat_horse_armors.xml Strings -->
+	<string id="RBM_HAR_001" text="Katmanlı At Zırhı" />
+	<!-- RBMCombat_item_modifiers.xml Strings -->
+	<string id="RBM_MOD_001" text="Hasarlı" />
+	<string id="RBM_MOD_002" text="Ağır Hasarlı" />
+	<string id="RBM_MOD_003" text="Mahvolmuş" />
+	<string id="RBM_MOD_004" text="Çizilmiş" />
+	<string id="RBM_MOD_005" text="Çizilmiş Gevşek" />
+	<string id="RBM_MOD_006" text="Çizilmiş Paslı" />
+	<string id="RBM_MOD_007" text="Hafif Hasarlı" />
+	<string id="RBM_MOD_008" text="Çok Ağır Hasarlı" />
+	<!-- RBMCombat_lances.xml Strings -->
+	<string id="RBM_LAN_001" text="Çam Fırlatma Dartı" />
+	<string id="RBM_LAN_002" text="Çam Cirit" />
+	<string id="RBM_LAN_003" text="Çam Fırlatma Mızrağı" />
+	<string id="RBM_LAN_004" text="Dişbudak Fırlatma Mızrağı" />
+	<string id="RBM_LAN_005" text="Dişbudak Cirit" />
+	<string id="RBM_LAN_006" text="Meşe Fırlatma Mızrağı" />
+	<string id="RBM_LAN_007" text="Meşe Angon" />
+	<string id="RBM_LAN_008" text="Maun Fırlatma Dartı" />
+	<string id="RBM_LAN_009" text="Maun Cirit" />
+	<string id="RBM_LAN_010" text="Maun Fırlatma Mızrağı" />
+	<string id="RBM_LAN_011" text="Hafif Vlandiya Kargısı" />
+	<string id="RBM_LAN_012" text="Hafif İmparatorluk Kargısı" />
+	<string id="RBM_LAN_013" text="Hafif Kuzait Kargısı" />
+	<string id="RBM_LAN_014" text="Vlandiya Kargısı" />
+	<string id="RBM_LAN_015" text="İmparatorluk Kargısı" />
+	<string id="RBM_LAN_016" text="Doğu İşi Soylu Kargısı" />
+	<string id="RBM_LAN_017" text="Doğu İşi Gönderli Kılıç" />
+	<string id="RBM_LAN_018" text="Batı İşi Uzun Mızrak" />
+	<string id="RBM_LAN_019" text="Hafif Menavlion" />
+	<!-- RBMCombat_ranged.xml Strings -->
+	<string id="RBM_RAN_001" text="Çift Kirişli Kundaklı Yay 227 kg" />
+	<string id="RBM_RAN_002" text="Çift Kirişli Kundaklı Yay 204 kg" />
+	<string id="RBM_RAN_003" text="Çift Kirişli Kundaklı Yay 186 kg" />
+	<string id="RBM_RAN_004" text="Çift Kirişli Kundaklı Yay 168 kg" />
+	<string id="RBM_RAN_005" text="Geniş Kirişli Kundaklı Yay 150 kg" />
+	<string id="RBM_RAN_006" text="Geniş Kirişli Kundaklı Yay 131 kg" />
+	<string id="RBM_RAN_007" text="Geniş Kirişli Kundaklı Yay 113 kg" />
+	<string id="RBM_RAN_008" text="Uzun Savaş Yayı 91 kg" />
+	<string id="RBM_RAN_009" text="Uzun Turnuva Yayı 91 kg" />
+	<string id="RBM_RAN_010" text="Uzun Savaş Yayı 82 kg" />
+	<string id="RBM_RAN_011" text="Uzun Savaş Yayı 77 kg" />
+	<string id="RBM_RAN_012" text="Bileşik Savaş Yayı 75 kg" />
+	<string id="RBM_RAN_013" text="Bileşik Turnuva Yayı 75 kg" />
+	<string id="RBM_RAN_014" text="Uzun Savaş Yayı 73 kg" />
+	<string id="RBM_RAN_015" text="Uzun Savaş Yayı 68 kg" />
+	<string id="RBM_RAN_016" text="Uzun Savaş Yayı 64 kg" />
+	<string id="RBM_RAN_017" text="Bileşik Savaş Yayı 61 kg" />
+	<string id="RBM_RAN_018" text="Uzun Savaş Yayı 59 kg" />
+	<string id="RBM_RAN_019" text="Bileşik Savaş Yayı 57 kg" />
+	<string id="RBM_RAN_020" text="Uzun Savaş Yayı 54 kg" />
+	<string id="RBM_RAN_021" text="Bileşik Savaş Yayı 54 kg" />
+	<string id="RBM_RAN_022" text="Bileşik Savaş Yayı 50 kg" />
+	<string id="RBM_RAN_023" text="Bileşik Savaş Yayı 45 kg" />
+	<string id="RBM_RAN_024" text="Uzun Savaş Yayı 45 kg" />
+	<string id="RBM_RAN_025" text="Uzun Yay 41 kg" />
+	<string id="RBM_RAN_026" text="Bileşik Yay 41 kg" />
+	<string id="RBM_RAN_027" text="Bileşik Yay 32 kg" />
+	<string id="RBM_RAN_028" text="Bileşik Yay 27 kg" />
+	<!-- RBMCombat_shields.xml Strings -->
+	<string id="RBM_SHI_001" text="Omuz Askılı Güçlendirilmiş Küçük Kalkan" />
+	<string id="RBM_SHI_002" text="Omuz Askılı Yuvarlak Bozkır Kalkanı" />
+	<string id="RBM_SHI_003" text="Omuz Askılı Doğu İşi Süvari Kalkanı" />
+	<string id="RBM_SHI_004" text="Omuz Askılı Kabile Bozkır Kalkanı" />
+	<string id="RBM_SHI_005" text="Omuz Askılı Bezemeli Doğu İşi Kalkan" />
+	<string id="RBM_SHI_006" text="Omuz Askılı Küçük Süvari Üçgen Kalkanı" />
+	<string id="RBM_SHI_007" text="Omuz Askılı Küçük Yassı Üçgen Kalkan" />
+	<string id="RBM_SHI_008" text="Omuz Askılı Küçük Üçgen Kalkan" />
+	<string id="RBM_SHI_009" text="Omuz Askılı Ezilmiş Süvari Yelken Kalkanı" />
+	<string id="RBM_SHI_010" text="Omuz Askılı Tahta Yelken Kalkan" />
+	<string id="RBM_SHI_011" text="Omuz Askılı Derme Çatma Atlı Yelken Kalkanı" />
+	<string id="RBM_SHI_012" text="Omuz Askılı Hafif Süvari Yelken Kalkanı" />
+	<string id="RBM_SHI_013" text="Omuz Askılı Süvari Yelken Kalkanı" />
+	<string id="RBM_SHI_014" text="Omuz Askılı Güçlendirilmiş Küçük Süvari Kalkanı" />
+	<string id="RBM_SHI_015" text="Omuz Askılı Kuzey İşi Süvari Yelken Kalkanı" />
+	<string id="RBM_SHI_016" text="Omuz Askılı Güçlendirilmiş Süvari Kalkanı" />
+	<string id="RBM_SHI_017" text="Omuz Askılı Güçlendirilmiş Süvari Yelken Kalkanı" />
+	<string id="RBM_SHI_018" text="Omuz Askılı Kesikli Üçgen Kalkan" />
+	<string id="RBM_SHI_019" text="Omuz Askılı Batı İşi Süvari Yelken İdman Kalkanı" />
+	<string id="RBM_SHI_020" text="Omuz Askılı Batı İşi Süvari Yelken Kalkanı" />
+	<string id="RBM_SHI_021" text="Omuz Askılı Güçlendirilmiş Demir Kenarlı Yelken Kalkan" />
+	<string id="RBM_SHI_022" text="Omuz Askılı Yassı Üçgen Kalkan" />
+	<string id="RBM_SHI_023" text="Omuz Askılı Geniş Üçgen Kalkan" />
+	<string id="RBM_SHI_024" text="Omuz Askılı Şövalye Kalkanı" />
+	<string id="RBM_SHI_025" text="Omuz Askılı Destekli Üçgen Kalkan" />
+	<string id="RBM_SHI_026" text="Omuz Askılı Ağır Üçgen Kalkan" />
+	<string id="RBM_SHI_027" text="Omuz Askılı Uzun Üçgen Kalkan" />
+	<string id="RBM_SHI_028" text="Omuz Askılı Ezilmiş Yelken Kalkan" />
+	<string id="RBM_SHI_029" text="Omuz Askılı Yelken İdman Kalkanı" />
+	<string id="RBM_SHI_030" text="Omuz Askılı Demir Kenarlı Yelken Kalkan" />
+	<string id="RBM_SHI_031" text="Omuz Askılı Güçlendirilmiş Yassı Yelken Kalkan" />
+	<string id="RBM_SHI_032" text="Omuz Askılı Yelken Kalkan" />
+	<string id="RBM_SHI_033" text="Omuz Askılı Çivili Yelken Kalkan" />
+	<string id="RBM_SHI_034" text="Omuz Askılı Kuvvetlendirilmiş Yelken Kalkan" />
+	<string id="RBM_SHI_035" text="Omuz Askılı Şövalye Yelken Kalkanı" />
+	<string id="RBM_SHI_036" text="Konuşlandırılabilir Uzun Kalkan" />
+	<string id="RBM_SHI_037" text="Omuz Askılı Yıpranmış Yelken Kalkan" />
+	<string id="RBM_SHI_038" text="Omuz Askılı Deri Kaplamalı Yelken Kalkan" />
+	<string id="RBM_SHI_039" text="Omuz Askılı Güçlendirilmiş Yelken Kalkan" />
+	<string id="RBM_SHI_040" text="Omuz Askılı Güçlendirilmiş Meşe Yelken Kalkan" />
+	<string id="RBM_SHI_041" text="Omuz Askılı Derme Çatma Yelken İdman Kalkanı" />
+	<string id="RBM_SHI_042" text="Omuz Askılı Derme Çatma Yelken Kalkan" />
+	<string id="RBM_SHI_043" text="Güney İşi Yuvarlak İdman Kalkanı" />
+	<string id="RBM_SHI_044" text="Güney İşi Yuvarlak Kalkan" />
+	<string id="RBM_SHI_045" text="Kuzey İşi Yuvarlak İdman Kalkanı" />
+	<string id="RBM_SHI_046" text="Kuzey İşi Yuvarlak Kalkan" />
+	<string id="RBM_SHI_047" text="Kuzey İşi Süvari Yelken Kalkanı" />
+	<string id="RBM_SHI_048" text="Batı İşi İdman Süvari Yelken Kalkanı" />
+	<string id="RBM_SHI_049" text="Batı İşi Süvari Yelken Kalkanı" />
+	<string id="RBM_SHI_050" text="Ezilmiş Yelken Kalkan" />
+	<!-- RBMCombat_unit_overhaul.xml Strings -->
+	<string id="RBM_OVH_001" text="Deneyimli Aseray Okçusu" />
+	<string id="RBM_OVH_002" text="Vlandiya Orta Süvarisi" />
+	<string id="RBM_OVH_003" text="Kuzait Giyimli Kukla" />
+	<string id="RBM_OVH_004" text="İmparatorluk Silahlı Kukla" />
+	<string id="RBM_OVH_005" text="Vlandiya Silahlı Kukla" />
+	<string id="RBM_OVH_006" text="Aseray Silahlı Kukla" />
+	<string id="RBM_OVH_007" text="Sturgiya Silahlı Kukla" />
+	<string id="RBM_OVH_008" text="Batanya Silahlı Kukla" />
+	<string id="RBM_OVH_009" text="Kuzait Silahlı Kukla" />
+	<string id="RBM_OVH_010" text="Atlı" />
+	<string id="RBM_OVH_011" text="Sturgiya Şok Askeri" />
+	<string id="RBM_OVH_012" text="Boyarın Oğlu" />
+	<string id="RBM_OVH_013" text="Sturgiyalı Ayıboğan" />
+	<string id="RBM_OVH_014" text="Sturgiyalı Ulfhednar" />
+	<string id="RBM_OVH_015" text="Skene" />
+	<string id="RBM_OVH_016" text="Kern" />
+	<string id="RBM_OVH_017" text="Kızılbacak" />
+	<string id="RBM_OVH_018" text="Acemi Muhafız" />
+	<string id="RBM_OVH_019" text="Uzman Muhafız" />
+	<string id="RBM_OVH_020" text="Kıdemli Muhafız" />
+	<string id="RBM_OVH_021" text="Ateş Şövalyesi" />
+	<string id="RBM_OVH_022" text="Karakuzait Göçebesi" />
+	<string id="RBM_OVH_023" text="Karakuzait Atlısı" />
+	<string id="RBM_OVH_024" text="Karakuzait Büyüğü" />
+	<string id="RBM_OVH_025" text="Bekçi" />
+	<string id="RBM_OVH_026" text="Paralı Muhafız" />
+	<string id="RBM_OVH_027" text="Paralı İzci" />
+	<string id="RBM_OVH_028" text="Kılıçlı Paralı Asker" />
+	<string id="RBM_OVH_029" text="Arbaletli Paralı Asker" />
+	<string id="RBM_OVH_030" text="Atlı Paralı Asker" />
+	<string id="RBM_OVH_031" text="Kiralık Kılıç" />
+	<string id="RBM_OVH_032" text="Paralı Süvari" />
+  </strings>
+</base>
