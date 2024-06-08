@@ -115,7 +115,7 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="battania_noble_bracers" name="{=wLAL9NRB}Fian Bracers" mesh="battania_noble_bracers" culture="Culture.battania" weight="0.6" appearance="3" Type="HandArmor" difficulty="0">
+	<Item id="battania_noble_bracers" name="{=wLAL9NRB}Fur Rimmed Noble Bracers" mesh="battania_noble_bracers" culture="Culture.battania" weight="0.6" appearance="3" Type="HandArmor" difficulty="0">
 		<ItemComponent>
 			<Armor arm_armor="39" modifier_group="leather" material_type="Leather" covers_hands="true"/>
 		</ItemComponent>
@@ -169,7 +169,7 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="northern_plated_gloves" name="{=G8FQ2exX}Plate Reinforced Gloves" mesh="sturgia_plate_gauntlet" culture="Culture.sturgia" weight="1.5" appearance="2" Type="HandArmor">
+	<Item id="northern_plated_gloves" name="{=vNNMGllv}Northern Plated Gloves" mesh="sturgia_plate_gauntlet" culture="Culture.sturgia" weight="1.5" appearance="2" Type="HandArmor">
 		<ItemComponent>
 			<Armor arm_armor="56" modifier_group="plate" material_type="Plate" covers_hands="true"/>
 		</ItemComponent>

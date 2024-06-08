@@ -912,7 +912,7 @@
 		</ItemComponent>
 		<Flags Civilian="true"/>
 	</Item>
-	<Item id="empire_lord_helmet" name="{=RBM_HEA_001}Noble Guard Helmet" mesh="empire_lord_helmet_a" culture="Culture.empire" weight="3.5" appearance="5" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="empire_lord_helmet" name="{=V5qbVfWF}Noble Guard Helmet" mesh="empire_lord_helmet_a" culture="Culture.empire" weight="3.5" appearance="5" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="123" body_armor="10" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type4"/>
 		</ItemComponent>

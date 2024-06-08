@@ -736,7 +736,7 @@
 				
   <ItemModifier modifier_group="ItemModifierGroup.plate"
                 id="plate_damage_70"
-                name="{=RBM_MOD_001}Damaged"
+                name="Damaged"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-30"
@@ -744,7 +744,7 @@
 				
   <ItemModifier modifier_group="ItemModifierGroup.plate"
                 id="plate_damage_60"
-                name="{=RBM_MOD_002}Highly Damaged"
+                name="Highly Damaged"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-40"
@@ -752,7 +752,7 @@
 				
   <ItemModifier modifier_group="ItemModifierGroup.plate"
                 id="plate_damage_50"
-                name="{=RBM_MOD_003}Ruined"
+                name="Ruined"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-50"
@@ -789,7 +789,7 @@
 				
   <ItemModifier modifier_group="ItemModifierGroup.chain"
                 id="chain_damage_95"
-                name="{=RBM_MOD_004}Scratched"
+                name="Scratched"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-5"
@@ -807,7 +807,7 @@
 				
   <ItemModifier modifier_group="ItemModifierGroup.chain"
                 id="chain_damage_85"
-                name="{=RBM_MOD_005}Scratched Loose"
+                name="Scratched Loose"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-15"
@@ -823,7 +823,7 @@
 				
   <ItemModifier modifier_group="ItemModifierGroup.chain"
                 id="chain_damage_75"
-                name="{=RBM_MOD_006}Scratched Rusty"
+                name="Scratched Rusty"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-25"
@@ -831,7 +831,7 @@
 				
   <ItemModifier modifier_group="ItemModifierGroup.chain"
                 id="chain_damage_70"
-                name="{=RBM_MOD_007}Slightly Damaged"
+                name="Slightly Damaged"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-30"
@@ -839,7 +839,7 @@
 				
   <ItemModifier modifier_group="ItemModifierGroup.chain"
                 id="chain_damage_65"
-                name="{=RBM_MOD_001}Damaged"
+                name="Damaged"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-35"
@@ -847,7 +847,7 @@
 				
   <ItemModifier modifier_group="ItemModifierGroup.chain"
                 id="chain_damage_60"
-                name="{=RBM_MOD_002}Highly Damaged"
+                name="Highly Damaged"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-40"
@@ -855,7 +855,7 @@
 				
   <ItemModifier modifier_group="ItemModifierGroup.chain"
                 id="chain_damage_55"
-                name="{=RBM_MOD_008}Very Highly Damaged"
+                name="Very Highly Damaged"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-45"
@@ -863,7 +863,7 @@
 				
   <ItemModifier modifier_group="ItemModifierGroup.chain"
                 id="chain_damage_50"
-                name="{=RBM_MOD_003}Ruined"
+                name="Ruined"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-50"
@@ -918,7 +918,7 @@
 				
   <ItemModifier modifier_group="ItemModifierGroup.leather"
                 id="leather_damage_70"
-                name="{=RBM_MOD_001}Damaged"
+                name="Damaged"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-30"
@@ -926,7 +926,7 @@
 				
   <ItemModifier modifier_group="ItemModifierGroup.leather"
                 id="leather_damage_60"
-                name="{=RBM_MOD_002}Highly Damaged"
+                name="Highly Damaged"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-40"
@@ -934,7 +934,7 @@
 				
   <ItemModifier modifier_group="ItemModifierGroup.leather"
                 id="leather_damage_50"
-                name="{=RBM_MOD_003}Ruined"
+                name="Ruined"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-50"
@@ -990,7 +990,7 @@
 
   <ItemModifier modifier_group="ItemModifierGroup.cloth"
                 id="cloth_damage_70"
-                name="{=RBM_MOD_001}Damaged"
+                name="Damaged"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-30"
@@ -998,7 +998,7 @@
 				
   <ItemModifier modifier_group="ItemModifierGroup.cloth"
                 id="cloth_damage_60"
-                name="{=RBM_MOD_002}Highly Damaged"
+                name="Highly Damaged"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-40"
@@ -1006,7 +1006,7 @@
 				
   <ItemModifier modifier_group="ItemModifierGroup.cloth"
                 id="cloth_damage_50"
-                name="{=RBM_MOD_003}Ruined"
+                name="Ruined"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-50"
@@ -1062,7 +1062,7 @@
 				
   <ItemModifier modifier_group="ItemModifierGroup.cloth_unarmoured"
                 id="cloth_unarmoured_damage_70"
-                name="{=RBM_MOD_001}Damaged"
+                name="Damaged"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-30"
@@ -1070,7 +1070,7 @@
 				
   <ItemModifier modifier_group="ItemModifierGroup.cloth_unarmoured"
                 id="cloth_unarmoured_damage_60"
-                name="{=RBM_MOD_002}Highly Damaged"
+                name="Highly Damaged"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-40"
@@ -1078,7 +1078,7 @@
 				
   <ItemModifier modifier_group="ItemModifierGroup.cloth_unarmoured"
                 id="cloth_unarmoured_damage_50"
-                name="{=RBM_MOD_003}Ruined"
+                name="Ruined"
                 loot_drop_score="0"
                 production_drop_score="0"
                 armor="-50"
