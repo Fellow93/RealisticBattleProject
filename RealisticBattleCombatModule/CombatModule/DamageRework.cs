@@ -7,6 +7,7 @@ using TaleWorlds.CampaignSystem.ViewModelCollection.WeaponCrafting.WeaponDesign;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.Core.ItemObject;
 using static TaleWorlds.MountAndBlade.Agent;
@@ -74,21 +75,23 @@ namespace RBMCombat
             {
                 if (attackerAgent != null && attackCollisionData.StrikeType == (int)StrikeType.Swing && !attackCollisionData.AttackBlockedWithShield && !attackerAgent.WieldedWeapon.IsEmpty && !Utilities.HitWithWeaponBlade(in attackCollisionData, attackerAgent.WieldedWeapon))
                 {
-                    string typeOfHandle = "Handle";
+                    string typeOfHandle = "{=RBM_COM_003}Handle";
                     if (attackerAgent.WieldedWeapon.CurrentUsageItem != null &&
                         (attackerAgent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Dagger ||
                         attackerAgent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.OneHandedSword ||
                         attackerAgent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.TwoHandedSword))
                     {
-                        typeOfHandle = "Pommel";
+                        typeOfHandle = "{=RBM_COM_004}Pommel";
                     }
                     if (attackerAgent != null && attackerAgent.IsPlayerControlled)
                     {
-                        InformationManager.DisplayMessage(new InformationMessage(typeOfHandle + " hit", Color.FromUint(4289612505u)));
+                        MBTextManager.SetTextVariable("TYPE", typeOfHandle);
+                        InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_COM_001}{TYPE} hit").ToString(), Color.FromUint(4289612505u)));
                     }
                     if (victimAgent != null && victimAgent.IsPlayerControlled)
                     {
-                        InformationManager.DisplayMessage(new InformationMessage(typeOfHandle + " hit", Color.FromUint(4289612505u)));
+                        MBTextManager.SetTextVariable("TYPE", typeOfHandle);
+                        InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_COM_002}{TYPE} hit").ToString(), Color.FromUint(4289612505u)));
                     }
                     __result.DamageType = DamageTypes.Blunt;
                 }
@@ -226,11 +229,11 @@ namespace RBMCombat
                     {
                         if (attacker != null && attacker.IsPlayerControlled)
                         {
-                            InformationManager.DisplayMessage(new InformationMessage("Face hit!", Color.FromUint(4289612505u)));
+                            InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_COM_005}Face hit!").ToString(), Color.FromUint(4289612505u)));
                         }
                         if (victim != null && victim.IsPlayerControlled)
                         {
-                            InformationManager.DisplayMessage(new InformationMessage("Face hit!", Color.FromUint(4289612505u)));
+                            InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_COM_006}Face hit!").ToString(), Color.FromUint(4289612505u)));
                         }
                         faceshot = true;
                     }
@@ -289,11 +292,11 @@ namespace RBMCombat
                     {
                         if (attacker != null && attacker.IsPlayerControlled)
                         {
-                            InformationManager.DisplayMessage(new InformationMessage("Under shoulder hit!", Color.FromUint(4289612505u)));
+                            InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_COM_007}Under shoulder hit!").ToString(), Color.FromUint(4289612505u)));
                         }
                         if (victim != null && victim.IsPlayerControlled)
                         {
-                            InformationManager.DisplayMessage(new InformationMessage("Under shoulder hit!", Color.FromUint(4289612505u)));
+                            InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_COM_008}Under shoulder hit!").ToString(), Color.FromUint(4289612505u)));
                         }
                         lowerShoulderHit = true;
                     }

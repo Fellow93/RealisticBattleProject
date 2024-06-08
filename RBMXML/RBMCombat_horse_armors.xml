@@ -256,7 +256,7 @@
   </Item>
   <Item multiplayer_item="false"
         id="studded_steppe_barding"
-        name="{=LzlQUcak}Lamellar Barding"
+        name="{=RBM_HAR_001}Lamellar Barding"
         mesh="horse_harness_khuzait_c_clotest"
         subtype="body_armor"
         weight="23"

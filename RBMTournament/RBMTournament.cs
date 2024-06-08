@@ -15,6 +15,7 @@ using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.TournamentGames;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace RBMTournament
 {
@@ -595,11 +596,12 @@ namespace RBMTournament
                     }
                     if (playerTier >= 5)
                     {
-                        InformationManager.DisplayMessage(new InformationMessage("Main tournament"));
+                        InformationManager.DisplayMessage(new InformationMessage(new  TextObject("{=RBM_TOU_001}Main tournament").ToString()));
                     }
                     else
                     {
-                        InformationManager.DisplayMessage(new InformationMessage("Lower tier tournament: Tier " + playerTier));
+                        MBTextManager.SetTextVariable("TIER", playerTier);
+                        InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_TOU_002}Lower tier tournament: Tier {TIER}").ToString()));
                     }
                     //CultureObject cultureMercenaryObject = Game.Current.ObjectManager.GetObject<CultureObject>("neutral");
                     CultureObject culture = Settlement.CurrentSettlement.Culture;
@@ -761,13 +763,19 @@ namespace RBMTournament
                                 int rollNeeded = 100 - MathF.Round(im.ProductionDropScore);
                                 if (roll >= rollNeeded)
                                 {
-                                    InformationManager.DisplayMessage(new InformationMessage("Congratulations, you successfully rolled for " + im.Name + " item modifier, rolled:" + roll + " needed: " + rollNeeded));
+                                    MBTextManager.SetTextVariable("Name", im.Name);
+                                    MBTextManager.SetTextVariable("Roll", roll);
+                                    MBTextManager.SetTextVariable("Need", rollNeeded);
+                                    InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_TOU_003}Congratulations, you successfully rolled for {Name} item modifier, rolled:{Roll} needed: {Need}").ToString()));
                                     eePrize.SetModifier(im);
                                     break;
                                 }
                                 else
                                 {
-                                    InformationManager.DisplayMessage(new InformationMessage("You missed roll for " + im.Name + " item modifier, rolled:" + roll + " needed: " + rollNeeded));
+                                    MBTextManager.SetTextVariable("Name", im.Name);
+                                    MBTextManager.SetTextVariable("Roll", roll);
+                                    MBTextManager.SetTextVariable("Need", rollNeeded);
+                                    InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_TOU_004}You missed roll for {Name} item modifier, rolled:{Roll} needed: {Need}").ToString()));
                                 }
                             }
                         }

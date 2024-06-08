@@ -581,6 +581,7 @@ namespace RBMCombat
                         PropertyInfo property2 = typeof(WeaponComponentData).GetProperty("MissileSpeed");
                         property2.DeclaringType.GetProperty("MissileSpeed");
                         property2.SetValue(mw.Value.CurrentUsageItem, rangedWeaponStats[mw.Value.GetModifiedItemName().ToString()].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                        if (rangedWeaponStats.ContainsKey(mw.Value.GetModifiedItemName().ToString())) ;
                     }
                 }
                 return true;

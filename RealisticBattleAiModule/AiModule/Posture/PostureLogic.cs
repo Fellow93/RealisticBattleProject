@@ -6,6 +6,7 @@ using System.Diagnostics;
 using TaleWorlds.CampaignSystem.TournamentGames;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.Core.ItemObject;
 using static TaleWorlds.MountAndBlade.Agent;
@@ -238,13 +239,14 @@ namespace RBMAI
                                         EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
                                         if (wieldedItemIndex != EquipmentIndex.None)
                                         {
+                                            MBTextManager.SetTextVariable("DMG", MathF.Floor(healthDamage));
                                             if (victimAgent.IsPlayerControlled)
                                             {
-                                                InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, " + MathF.Floor(healthDamage) + " damage crushed through", Color.FromUint(4282569842u)));
+                                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_009}Posture break: Posture depleted, {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
                                             }
                                             if (attackerAgent.IsPlayerControlled)
                                             {
-                                                InformationManager.DisplayMessage(new InformationMessage("Enemy Posture break: Posture depleted, " + MathF.Floor(healthDamage) + " damage crushed through", Color.FromUint(4282569842u)));
+                                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_010}Enemy Posture break: Posture depleted, {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
                                             }
                                             if (!victimAgent.HasMount)
                                             {
@@ -311,13 +313,14 @@ namespace RBMAI
                                         EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
                                         if (wieldedItemIndex != EquipmentIndex.None)
                                         {
+                                            MBTextManager.SetTextVariable("DMG", MathF.Floor(healthDamage));
                                             if (victimAgent.IsPlayerControlled)
                                             {
-                                                InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, perfect parry, " + MathF.Floor(healthDamage) + " damage crushed through", Color.FromUint(4282569842u)));
+                                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_011}Posture break: Posture depleted, perfect parry, {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
                                             }
                                             if (attackerAgent.IsPlayerControlled)
                                             {
-                                                InformationManager.DisplayMessage(new InformationMessage("Enemy Posture break: Posture depleted, perfect parry, " + MathF.Floor(healthDamage) + " damage crushed through", Color.FromUint(4282569842u)));
+                                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_012}Enemy Posture break: Posture depleted, perfect parry, {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
                                             }
                                             if (postureDmg >= defenderPosture.maxPosture * 0.33f)
                                             {
@@ -347,7 +350,7 @@ namespace RBMAI
                                     {
                                         if (attackerAgent.IsPlayerControlled)
                                         {
-                                            InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, perfect parry", Color.FromUint(4282569842u)));
+                                            InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_013}Posture break: Posture depleted, perfect parry").ToString(), Color.FromUint(4282569842u)));
                                         }
                                         if (!attackerAgent.HasMount)
                                         {
@@ -442,7 +445,7 @@ namespace RBMAI
                                         {
                                             if (victimAgent.IsPlayerControlled)
                                             {
-                                                InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, incorrect side block", Color.FromUint(4282569842u)));
+                                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_014}Posture break: Posture depleted, incorrect side block").ToString(), Color.FromUint(4282569842u)));
                                             }
                                             if (!victimAgent.HasMount)
                                             {
@@ -496,7 +499,7 @@ namespace RBMAI
                                         {
                                             if (victimAgent.IsPlayerControlled)
                                             {
-                                                InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, correct side block", Color.FromUint(4282569842u)));
+                                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_015}Posture break: Posture depleted, correct side block").ToString(), Color.FromUint(4282569842u)));
                                             }
                                             if (!victimAgent.HasMount)
                                             {
@@ -548,7 +551,7 @@ namespace RBMAI
                                         {
                                             if (victimAgent.IsPlayerControlled)
                                             {
-                                                InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, perfect parry, correct side block", Color.FromUint(4282569842u)));
+                                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_016}Posture break: Posture depleted, perfect parry, correct side block").ToString(), Color.FromUint(4282569842u)));
                                             }
                                             if (!victimAgent.HasMount)
                                             {
@@ -584,7 +587,7 @@ namespace RBMAI
                                     {
                                         if (attackerAgent.IsPlayerControlled)
                                         {
-                                            InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, perfect parry, correct side block", Color.FromUint(4282569842u)));
+                                            InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_017}Posture break: Posture depleted, perfect parry, correct side block").ToString(), Color.FromUint(4282569842u)));
                                         }
 
                                         {
@@ -624,7 +627,7 @@ namespace RBMAI
                                     {
                                         if (victimAgent.IsPlayerControlled)
                                         {
-                                            InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, chamber block", Color.FromUint(4282569842u)));
+                                            InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_018}Posture break: Posture depleted, chamber block").ToString(), Color.FromUint(4282569842u)));
                                         }
                                         makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.NonTipThrust);
                                     }
@@ -643,7 +646,8 @@ namespace RBMAI
                                     float healthDamage = calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureDmg, __result, attackerAgent);
                                     if (attackerAgent.IsPlayerControlled)
                                     {
-                                        InformationManager.DisplayMessage(new InformationMessage("Posture break: Posture depleted, chamber block " + MathF.Floor(healthDamage) + " damage crushed through", Color.FromUint(4282569842u)));
+                                        MBTextManager.SetTextVariable("DMG", MathF.Floor(healthDamage));
+                                        InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_019}Posture break: Posture depleted, chamber block {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
                                     }
                                     makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
                                     ResetPostureForAgent(ref attackerPosture, postureResetModifier, attackerAgent);
@@ -654,7 +658,8 @@ namespace RBMAI
                                     float healthDamage = calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureDmg, __result, attackerAgent);
                                     if (attackerAgent.IsPlayerControlled)
                                     {
-                                        InformationManager.DisplayMessage(new InformationMessage("Chamber block " + MathF.Floor(healthDamage) + " damage crushed through", Color.FromUint(4282569842u)));
+                                        MBTextManager.SetTextVariable("DMG", MathF.Floor(healthDamage));
+                                        InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_020}Chamber block {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
                                     }
                                     makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
                                     ResetPostureForAgent(ref attackerPosture, postureResetModifier, attackerAgent);
@@ -732,7 +737,7 @@ namespace RBMAI
                                     AgentPostures.postureVisual._dataSource.EnemyHealthMax = (int)enemyAgent.HealthLimit;
                                     if (enemyAgent.IsMount)
                                     {
-                                        AgentPostures.postureVisual._dataSource.EnemyName = enemyAgent.RiderAgent?.Name + " (Mount)";
+                                        AgentPostures.postureVisual._dataSource.EnemyName = enemyAgent.RiderAgent?.Name + " (" + new TextObject("{=mountnoun}Mount").ToString() + ")";
                                     }
                                     else
                                     {

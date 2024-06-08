@@ -2219,7 +2219,7 @@
   <NPCCharacter id="aserai_skirmisher"
                 default_group="Ranged"
                 level="16"
-                name="Aserai Archer"
+                name="{=yhBagy1Y}Aserai Archer"
                 occupation="Soldier"
                 culture="Culture.aserai">
     <face>
@@ -2314,7 +2314,7 @@
   <NPCCharacter id="aserai_archer"
                 default_group="Ranged"
                 level="21"
-                name="Aserai Experienced Archer"
+                name="{=RBM_OVH_001}Aserai Experienced Archer"
                 occupation="Soldier"
                 culture="Culture.aserai">
     <face>
@@ -2712,7 +2712,7 @@
   <NPCCharacter id="aserai_mameluke_soldier"
                 default_group="Infantry"
                 level="11"
-                name="{=zEQTwpnv}Aserai Mameluke Soldier"
+                name="{=sNXtQchk}Aserai Mamluke Soldier"
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.aserai">
@@ -2803,7 +2803,7 @@
   <NPCCharacter id="aserai_mameluke_regular"
                 default_group="Cavalry"
                 level="16"
-                name="{=WJbOQSiT}Aserai Mameluke Regular"
+                name="{=LsHFY6p5}Aserai Mamluke Regular"
                 upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 culture="Culture.aserai">
@@ -2911,7 +2911,7 @@
   <NPCCharacter id="aserai_mameluke_cavalry"
                 default_group="HorseArcher"
                 level="21"
-                name="{=YUCzyA8C}Aserai Mameluke Cavalry"
+                name="{=TCuNAyPG}Aserai Mamluke Cavalry"
                 upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.aserai">
@@ -3019,7 +3019,7 @@
   <NPCCharacter id="aserai_mameluke_heavy_cavalry"
                 default_group="HorseArcher"
                 level="26"
-                name="{=JVG0zC4e}Aserai Mameluke Heavy Cavalry"
+                name="{=P4lcbA0b}Aserai Mamluke Heavy Cavalry"
                 upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.aserai">
@@ -3125,7 +3125,7 @@
   <NPCCharacter id="aserai_mameluke_axeman"
                 default_group="Infantry"
                 level="16"
-                name="{=vZlMfmng}Aserai Mameluke Axeman"
+                name="{=bKBvFcVf}Aserai Mamluke Axeman"
                 occupation="Soldier"
                 culture="Culture.aserai">
     <face>
@@ -3208,7 +3208,7 @@
   <NPCCharacter id="aserai_mameluke_guard"
                 default_group="Infantry"
                 level="21"
-                name="{=F54qLieU}Aserai Mameluke Guard"
+                name="{=tIDOJvId}Aserai Mamluke Guard"
                 occupation="Soldier"
                 culture="Culture.aserai">
     <face>
@@ -3291,7 +3291,7 @@
   <NPCCharacter id="mamluke_palace_guard"
                 default_group="Infantry"
                 level="26"
-                name="{=tDYfuUuU}Aserai Mameluke Palace Guard"
+                name="{=wrYJBc4g}Aserai Mamluke Palace Guard"
                 occupation="Soldier"
                 culture="Culture.aserai">
     <face>
@@ -5829,7 +5829,7 @@
   <NPCCharacter id="horseman"
                 default_group="Cavalry"
                 level="11"
-                name="{=uh4rIbZ9}Horseman"
+                name="{=RBM_OVH_010}Horseman"
                 occupation="Townsfolk"
                 culture="Culture.empire">
     <face>
@@ -10136,7 +10136,7 @@
   <NPCCharacter id="sturgian_shock_troop"
                 default_group="Infantry"
                 level="26"
-                name="{=iZqYAIQy}Sturgian Shock Troop"
+                name="{=RBM_OVH_011}Sturgian Shock Troop"
                 occupation="Soldier"
                 culture="Culture.sturgia">
     <face>
@@ -10335,7 +10335,7 @@
   <NPCCharacter id="sturgian_warrior_son"
                 default_group="Cavalry"
                 level="11"
-                name="{=1i0Ttr8H}Son of Boyar"
+                name="{=RBM_OVH_012}Son of Boyar"
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.sturgia">
@@ -10429,7 +10429,7 @@
   <NPCCharacter id="varyag"
                 default_group="Cavalry"
                 level="16"
-                name="{=4C4WiTb2}Mounted Varyag"
+                name="{=4C4WiTb2}Varyag"
                 upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 culture="Culture.sturgia">
@@ -10523,7 +10523,7 @@
   <NPCCharacter id="varyag_veteran"
                 default_group="Cavalry"
                 level="21"
-                name="{=QGPAEtj7}Mounted Varyag Veteran"
+                name="{=QGPAEtj7}Varyag Veteran"
                 upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.sturgia">
@@ -11521,7 +11521,7 @@
   <NPCCharacter id="sturgian_berzerker"
                 default_group="Infantry"
                 level="21"
-                name="{=a9b2fKYR}Sturgian Berserker"
+                name="{=RBM_OVH_013}Sturgian Berserker"
                 occupation="Soldier"
                 culture="Culture.sturgia">
     <face>
@@ -11722,7 +11722,7 @@
   <NPCCharacter id="sturgian_ulfhednar"
                 default_group="Infantry"
                 level="26"
-                name="{=k4EiLrU0}Sturgian Ulfhednar"
+                name="{=RBM_OVH_014}Sturgian Ulfhednar"
                 occupation="Soldier"
                 culture="Culture.sturgia">
     <face>
@@ -12021,7 +12021,7 @@
   <NPCCharacter id="vlandian_spearman"
                 default_group="Cavalry"
                 level="16"
-                name="Vlandian Light Cavalry"
+                name="{=AloMryIU}Vlandian Light Cavalry"
                 upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 culture="Culture.vlandia">
@@ -12677,7 +12677,7 @@
   <NPCCharacter id="vlandian_light_cavalry"
                 default_group="Cavalry"
                 level="21"
-                name="Vlandian Medium Cavalry"
+                name="{=RBM_OVH_002}Vlandian Medium Cavalry"
                 upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 culture="Culture.vlandia">
@@ -13783,7 +13783,7 @@
                 occupation="Soldier"
                 upgrade_requires="ItemCategory.horse"
                 culture="Culture.darshi"
-                name="{=H5iWxbbl}Ghilman">
+                name="{=ghilmanUnit}Ghilman">
     <face>
       <face_key_template value="BodyProperty.fighter_aserai" />
     </face>
@@ -13902,7 +13902,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.battania"
-                name="{=Qo2cc7bF}Skene"
+                name="{=RBM_OVH_015}Skene"
                 skill_template="SkillSet.ranged_skirmisher_level11_template_skills">
     <face>
       <face_key_template value="BodyProperty.fighter_battania" />
@@ -13958,7 +13958,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.battania"
-                name="{=Rj0bNOOh}Kern"
+                name="{=RBM_OVH_016}Kern"
                 skill_template="SkillSet.ranged_skirmisher_level16_template_skills">
     <face>
       <face_key_template value="BodyProperty.fighter_battania" />
@@ -14052,7 +14052,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.battania"
-                name="{=ta34CxLs}Redshank"
+                name="{=RBM_OVH_017}Redshank"
                 skill_template="SkillSet.ranged_skirmisher_level26_template_skills">
     <face>
       <face_key_template value="BodyProperty.fighter_battania" />
@@ -15769,7 +15769,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.empire"
-                name="{=rtOJNB6u}Guardian Recruit">
+                name="{=RBM_OVH_018}Guardian Recruit">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -15832,7 +15832,7 @@
                 level="19"
                 occupation="Soldier"
                 culture="Culture.empire"
-                name="{=cMcGn6n3}Expert Guardian">
+                name="{=RBM_OVH_019}Expert Guardian">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -15907,7 +15907,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.empire"
-                name="{=WNU7kE5N}Veteran Guardian">
+                name="{=RBM_OVH_020}Veteran Guardian">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -15982,7 +15982,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.empire"
-                name="{=80plewQ1}Spark">
+                name="{=xJ4koSsx}Spark">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -16031,7 +16031,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.empire"
-                name="{=bYn4ad1t}Flame">
+                name="{=BlZK3wDN}Flame">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -16080,7 +16080,7 @@
                 level="31"
                 occupation="Soldier"
                 culture="Culture.empire"
-                name="{=nsyTIbtp}Knight of Sacred Fire">
+                name="{=RBM_OVH_021}Knight of Sacred Fire">
     <face>
       <face_key_template value="BodyProperty.fighter_empire" />
     </face>
@@ -16301,7 +16301,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.khuzait"
-                name="{=xIFHLI66}Karakhuzait Nomad">
+                name="{=RBM_OVH_022}Karakhuzait Nomad">
     <face>
       <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
@@ -16431,7 +16431,7 @@
                 occupation="Soldier"
                 culture="Culture.khuzait"
                 upgrade_requires="ItemCategory.horse"
-                name="{=lduchnvD}Karakhuzait Rider">
+                name="{=RBM_OVH_023}Karakhuzait Rider">
     <face>
       <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
@@ -16513,7 +16513,7 @@
                 occupation="Soldier"
                 culture="Culture.khuzait"
                 upgrade_requires="ItemCategory.war_horse"
-                name="{=gBuGfUg3}Karakhuzait Elder">
+                name="{=RBM_OVH_024}Karakhuzait Elder">
     <face>
       <face_key_template value="BodyProperty.fighter_khuzait" />
     </face>
@@ -16930,7 +16930,7 @@
                 default_group="Infantry"
                 is_hero="false"
                 level="11"
-                name="{=RYP9hzIy}Watchman"
+                name="{=RBM_OVH_025}Watchman"
                 occupation="Mercenary"
                 is_basic_troop="true"
                 culture="Culture.neutral_culture"
@@ -16985,7 +16985,7 @@
                 default_group="Infantry"
                 is_hero="false"
                 level="16"
-                name="{=0GKH29JG}Mercenary Guard"
+                name="{=RBM_OVH_026}Mercenary Guard"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture"
 				is_hidden_encyclopedia="true">
@@ -17041,7 +17041,7 @@
                 default_group="Cavalry"
                 is_hero="false"
                 level="16"
-                name="{=xaYwo9tM}Mercenary Scout"
+                name="{=RBM_OVH_027}Mercenary Scout"
                 upgrade_requires="ItemCategory.horse"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture"
@@ -17101,7 +17101,7 @@
                 default_group="Infantry"
                 is_hero="false"
                 level="21"
-                name="{=Mgr6qv1j}Mercenary Swordsman"
+                name="{=RBM_OVH_028}Mercenary Swordsman"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture"
 				is_hidden_encyclopedia="true">
@@ -17158,7 +17158,7 @@
                 default_group="Ranged"
                 is_hero="false"
                 level="21"
-                name="{=PgOknaEN}Mercenary Crossbowman"
+                name="{=RBM_OVH_029}Mercenary Crossbowman"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture"
 				is_hidden_encyclopedia="true">
@@ -17215,7 +17215,7 @@
                 default_group="Cavalry"
                 is_hero="false"
                 level="21"
-                name="{=AssCCFew}Mercenary Horseman"
+                name="{=RBM_OVH_030}Mercenary Horseman"
                 upgrade_requires="ItemCategory.horse"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture"
@@ -17277,7 +17277,7 @@
                 default_group="Infantry"
                 is_hero="false"
                 level="26"
-                name="{=R74i2pQz}Hired Blade"
+                name="{=RBM_OVH_031}Hired Blade"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture"
 				is_hidden_encyclopedia="true">
@@ -17385,7 +17385,7 @@
                 default_group="Cavalry"
                 is_hero="false"
                 level="26"
-                name="{=SaqVvzyV}Mercenary Cavalry"
+                name="{=RBM_OVH_032}Mercenary Cavalry"
                 upgrade_requires="ItemCategory.war_horse"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture"
@@ -17447,7 +17447,7 @@
                 is_hero="false"
                 is_basic_troop="true"
                 level="16"
-                name="{=r8npO8hG}Crossbow Sister"
+                name="{=RBM_OVH_033}Crossbow Sister"
                 occupation="Mercenary"
                 culture="Culture.empire">
     <face>
@@ -17618,7 +17618,7 @@
                 default_group="HorseArcher"
                 is_hero="false"
                 level="26"
-                name="{=ifL3F7E2}Gallant Glaive Sister"
+                name="{=RBM_OVH_034}Gallant Glaive Sister"
                 occupation="Mercenary"
                 culture="Culture.empire"
 				upgrade_requires="ItemCategory.war_horse">
@@ -17717,7 +17717,7 @@
                 default_group="Ranged"
                 is_hero="false"
                 level="26"
-                name="{=0gi5Fp8c}Glaive Sister"
+                name="{=RBM_OVH_035}Glaive Sister"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
@@ -18097,7 +18097,7 @@
                 default_group="HorseArcher"
                 is_hero="false"
                 level="21"
-                name="{=xl6QstMW}Mercenary Horse Archer"
+                name="{=RBM_OVH_036}Mercenary Horse Archer"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture"
 				upgrade_requires="ItemCategory.war_horse">
@@ -18198,7 +18198,7 @@
                 default_group="HorseArcher"
                 is_hero="false"
                 level="26"
-                name="{=kyt087eN}Veteran Mercenary Horse Archer"
+                name="{=RBM_OVH_037}Veteran Mercenary Horse Archer"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture"
 				upgrade_requires="ItemCategory.war_horse">
@@ -18296,7 +18296,7 @@
   <NPCCharacter id="western_mercenary"
                 default_group="Infantry"
                 level="16"
-                name="{=J4k9mg65}Hireling Spearman"
+                name="{=RBM_OVH_038}Hireling Spearman"
                 occupation="Mercenary"
                 is_basic_troop="true"
                 is_hero="false"
@@ -18388,7 +18388,7 @@
   <NPCCharacter id="western_mercenary_t4"
                 default_group="Infantry"
                 level="21"
-                name="{=n89z19Dv}Hireling Pikeman"
+                name="{=RBM_OVH_039}Hireling Pikeman"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
@@ -18477,7 +18477,7 @@
   <NPCCharacter id="western_mercenary_t5"
                 default_group="Infantry"
                 level="26"
-                name="{=7WV17e5Q}Hireling Elite Pikeman"
+                name="{=RBM_OVH_040}Hireling Elite Pikeman"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
@@ -18564,7 +18564,7 @@
                 default_group="Ranged"
                 is_hero="false"
                 level="21"
-                name="{=QfVe3IVw}Hireling Crossbowman"
+                name="{=RBM_OVH_041}Hireling Crossbowman"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
@@ -18660,7 +18660,7 @@
                 default_group="Ranged"
                 is_hero="false"
                 level="26"
-                name="{=DxtSIxyZ}Elite Hireling Warbowman"
+                name="{=RBM_OVH_042}Elite Hireling Warbowman"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
@@ -19181,7 +19181,7 @@
   <NPCCharacter id="vlandian_militia_archer"
                 default_group="Ranged"
                 level="16"
-                name="{=vkuJeNSa}Vlandian Militia Crossbowman"
+                name="{=Ah4XG5Fp}Vlandian Militia Crossbowman"
                 occupation="Soldier"
                 culture="Culture.vlandia">
     <face>
@@ -19294,7 +19294,7 @@
   <NPCCharacter id="vlandian_militia_veteran_archer"
                 default_group="Ranged"
                 level="21"
-                name="{=DNIa6a5p}Vlandian Militia Veteran Crossbowman"
+                name="{=zqaGJBYZ}Vlandian Militia Veteran Crossbowman"
                 occupation="Soldier"
                 culture="Culture.vlandia">
     <face>
@@ -21373,7 +21373,7 @@
                 is_hero="false"
                 occupation="Special"
                 culture="Culture.empire"
-                name="{=!}Empire Weapon Dummy">
+                name="{=RBM_OVH_004}Empire Weapon Dummy">
     <face>
       <face_key_template value="BodyProperty.guard" />
     </face>
@@ -21458,7 +21458,7 @@
                 is_hero="false"
                 occupation="Special"
                 culture="Culture.empire"
-                name="{=!}Empire Weapon Dummy">
+                name="{=RBM_OVH_004}Empire Weapon Dummy">
     <face>
       <face_key_template value="BodyProperty.guard" />
     </face>
@@ -21545,7 +21545,7 @@
                 is_hero="false"
                 occupation="Special"
                 culture="Culture.empire"
-                name="{=!}Empire Weapon Dummy"
+                name="{=RBM_OVH_004}Empire Weapon Dummy"
                 skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
     <face>
       <face_key_template value="BodyProperty.guard" />
@@ -21627,7 +21627,7 @@
                 is_hero="false"
                 occupation="Special"
                 culture="Culture.vlandia"
-                name="{=!}Vlandia Weapon Dummy"
+                name="{=RBM_OVH_005}Vlandia Weapon Dummy"
                 skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
     <face>
       <face_key_template value="BodyProperty.guard" />
@@ -21687,7 +21687,7 @@
                 is_hero="false"
                 occupation="Special"
                 culture="Culture.vlandia"
-                name="{=!}Vlandia Weapon Dummy"
+                name="{=RBM_OVH_005}Vlandia Weapon Dummy"
                 skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
     <face>
       <face_key_template value="BodyProperty.guard" />
@@ -21745,7 +21745,7 @@
                 is_hero="false"
                 occupation="Special"
                 culture="Culture.vlandia"
-                name="{=!}Vlandia Weapon Dummy"
+                name="{=RBM_OVH_005}Vlandia Weapon Dummy"
                 skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
     <face>
       <face_key_template value="BodyProperty.guard" />
@@ -21802,7 +21802,7 @@
                 is_hero="false"
                 occupation="Special"
                 culture="Culture.aserai"
-                name="{=!}Aserai Weapon Dummy"
+                name="{=RBM_OVH_006}Aserai Weapon Dummy"
                 skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
     <face>
       <face_key_template value="BodyProperty.guard" />
@@ -21888,7 +21888,7 @@
                 is_hero="false"
                 occupation="Special"
                 culture="Culture.aserai"
-                name="{=!}Aserai Weapon Dummy"
+                name="{=RBM_OVH_006}Aserai Weapon Dummy"
                 skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
     <face>
       <face_key_template value="BodyProperty.guard" />
@@ -21974,7 +21974,7 @@
                 is_hero="false"
                 occupation="Special"
                 culture="Culture.aserai"
-                name="{=!}Aserai Weapon Dummy"
+                name="{=RBM_OVH_006}Aserai Weapon Dummy"
                 skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
     <face>
       <face_key_template value="BodyProperty.guard" />
@@ -22073,7 +22073,7 @@
                 is_hero="false"
                 occupation="Special"
                 culture="Culture.sturgia"
-                name="{=!}Sturgia Weapon Dummy"
+                name="{=RBM_OVH_007}Sturgia Weapon Dummy"
                 skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
     <face>
       <face_key_template value="BodyProperty.guard" />
@@ -22151,7 +22151,7 @@
                 is_hero="false"
                 occupation="Special"
                 culture="Culture.sturgia"
-                name="{=!}Sturgia Weapon Dummy"
+                name="{=RBM_OVH_007}Sturgia Weapon Dummy"
                 skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
     <face>
       <face_key_template value="BodyProperty.guard" />
@@ -22229,7 +22229,7 @@
                 is_hero="false"
                 occupation="Special"
                 culture="Culture.sturgia"
-                name="{=!}Sturgia Weapon Dummy"
+                name="{=RBM_OVH_007}Sturgia Weapon Dummy"
                 skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
     <face>
       <face_key_template value="BodyProperty.guard" />
@@ -22308,7 +22308,7 @@
                 is_hero="false"
                 occupation="Special"
                 culture="Culture.battania"
-                name="{=!}Battania Weapon Dummy"
+                name="{=RBM_OVH_008}Battania Weapon Dummy"
                 skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
     <face>
       <face_key_template value="BodyProperty.guard" />
@@ -22366,7 +22366,7 @@
                 is_hero="false"
                 occupation="Special"
                 culture="Culture.battania"
-                name="{=!}Battania Weapon Dummy"
+                name="{=RBM_OVH_008}Battania Weapon Dummy"
                 skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
     <face>
       <face_key_template value="BodyProperty.guard" />
@@ -22428,7 +22428,7 @@
                 is_hero="false"
                 occupation="Special"
                 culture="Culture.battania"
-                name="{=!}Battania Weapon Dummy"
+                name="{=RBM_OVH_008}Battania Weapon Dummy"
                 skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
     <face>
       <face_key_template value="BodyProperty.guard" />
@@ -22491,7 +22491,7 @@
                 is_hero="false"
                 occupation="Special"
                 culture="Culture.khuzait"
-                name="{=!}Khuzait Gear Dummy"
+                name="{=RBM_OVH_003}Khuzait Gear Dummy"
                 skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
     <face>
       <face_key_template value="BodyProperty.guard" />
@@ -22537,7 +22537,7 @@
                 is_hero="false"
                 occupation="Special"
                 culture="Culture.khuzait"
-                name="{=!}Khuzait Weapon Dummy"
+                name="{=RBM_OVH_009}Khuzait Weapon Dummy"
                 skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
     <face>
       <face_key_template value="BodyProperty.guard" />
@@ -22603,7 +22603,7 @@
                 is_hero="false"
                 occupation="Special"
                 culture="Culture.khuzait"
-                name="{=!}Khuzait Weapon Dummy"
+                name="{=RBM_OVH_009}Khuzait Weapon Dummy"
                 skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
     <face>
       <face_key_template value="BodyProperty.guard" />

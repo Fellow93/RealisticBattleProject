@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="Türkçe" />
+  </tags>
+  <strings>
+	<!-- AI Module Strings -->
+	<string id="RBM_AI_001" text="ATK ARC:" />
+	<string id="RBM_AI_002" text="ATK HA :" />
+	<string id="RBM_AI_003" text="ATK CAV:" />
+	<string id="RBM_AI_004" text="ATK INF:" />
+	<string id="RBM_AI_005" text="DEF ARC:" />
+	<string id="RBM_AI_006" text="DEF HA :" />
+	<string id="RBM_AI_007" text="DEF CAV:" />
+	<string id="RBM_AI_008" text="DEF INF:" />
+	<string id="RBM_AI_009" text="Posture break: Posture depleted, {DMG} damage crushed through" />
+	<string id="RBM_AI_010" text="Enemy Posture break: Posture depleted, {DMG} damage crushed through" />
+	<string id="RBM_AI_011" text="Posture break: Posture depleted, perfect parry, {DMG} damage crushed through" />
+	<string id="RBM_AI_012" text="Enemy Posture break: Posture depleted, perfect parry, {DMG} damage crushed through" />
+	<string id="RBM_AI_013" text="Posture break: Posture depleted, perfect parry" />
+	<string id="RBM_AI_014" text="Posture break: Posture depleted, incorrect side block" />
+	<string id="RBM_AI_015" text="Posture break: Posture depleted, correct side block" />
+	<string id="RBM_AI_016" text="Posture break: Posture depleted, perfect parry, correct side block" />
+	<string id="RBM_AI_017" text="Posture break: Posture depleted, perfect parry, correct side block" />
+	<string id="RBM_AI_018" text="Posture break: Posture depleted, chamber block" />
+	<string id="RBM_AI_019" text="Posture break: Posture depleted, chamber block {DMG} damage crushed through" />
+	<string id="RBM_AI_020" text="Chamber block {DMG} damage crushed through" />
+	<string id="RBM_AI_021" text="You received {DMG1} blunt trauma, {DMG2} armor penetration damage" />
+	<string id="RBM_AI_022" text="You dealt {DMG1} blunt trauma, {DMG2} armor penetration damage" />
+	<string id="RBM_AI_023" text="Posture" />
+	<!-- Combat Module Strings -->
+	<string id="RBM_COM_001" text="{TYPE} hit" />
+	<string id="RBM_COM_002" text="{TYPE} hit" />
+	<string id="RBM_COM_003" text="Handle" />
+	<string id="RBM_COM_004" text="Pommel" />
+	<string id="RBM_COM_005" text="Face hit!" />
+	<string id="RBM_COM_006" text="Face hit!" />
+	<string id="RBM_COM_007" text="Under shoulder hit" />
+	<string id="RBM_COM_008" text="Under shoulder hit" />
+	<string id="RBM_COM_009" text="Ideal Ammo Weight Range/Damage, grams: " />
+	<string id="RBM_COM_010" text="Initial Missile Speed, m/s: " />
+	<string id="RBM_COM_011" text="Draw weight with modifier: " />
+	<string id="RBM_COM_012" text="Missile Damage Pierce" />
+	<string id="RBM_COM_013" text="Missile Damage Cut" />
+	<string id="RBM_COM_014" text="Relevant Skill: " />
+	<string id="RBM_COM_015" text="Missile Damage" />
+	<string id="RBM_COM_016" text="Swing Damage Factor:" />
+	<string id="RBM_COM_017" text="Thrust Damage Factor:" />
+	<string id="RBM_COM_018" text="Swing Sweet Spot, %: " />
+	<string id="RBM_COM_019" text="RBM Developer Stats" />
+	<string id="RBM_COM_020" text="Swing Speed, m/s: " />
+	<string id="RBM_COM_021" text="Thrust Speed, m/s: " />
+	<string id="RBM_COM_022" text="Shield Armor: " />
+	<string id="RBM_COM_023" text="Face Armor" />
+	<string id="RBM_COM_024" text="Neck Armor" />
+	<string id="RBM_COM_025" text="Shoulder Armor" />
+	<string id="RBM_COM_026" text="Abdomen Armor" />
+	<string id="RBM_COM_027" text="Lower Shoulder Armor" />
+	<string id="RBM_COM_028" text="A-Armor" />
+	<string id="RBM_COM_029" text="D-Damage Inflicted" />
+	<string id="RBM_COM_030" text="P-Penetrated Damage" />
+	<string id="RBM_COM_031" text="B-Blunt Force Trauma" />
+	<string id="RBM_COM_032" text="A" />
+	<string id="RBM_COM_033" text="D" />
+	<string id="RBM_COM_034" text="P" />
+	<string id="RBM_COM_035" text="B" />
+	<string id="RBM_COM_036" text="RBM Stats" />
+	<string id="RBM_COM_037" text="Hover" />
+	<!-- Config Module Strings -->
+	<string id="RBM_CON_001" text="Inactive" />
+	<string id="RBM_CON_002" text="Active (Recommended)" />
+	<string id="RBM_CON_003" text="Troop Overhaul" />
+	<string id="RBM_CON_004" text="Vanilla" />
+	<string id="RBM_CON_005" text="Realistic" />
+	<string id="RBM_CON_006" text="Semi-realistic" />
+	<string id="RBM_CON_007" text="Ranged reload speed" />
+	<string id="RBM_CON_008" text="Passive Shoulder Shields" />
+	<string id="RBM_CON_009" text="Better Arrow Visuals" />
+	<string id="RBM_CON_010" text="Armor Status GUI" />
+	<string id="RBM_CON_011" text="Realistic Arrow Arc" />
+	<string id="RBM_CON_012" text="Posture System" />
+	<string id="RBM_CON_013" text="Player Posture Multiplier" />
+	<string id="RBM_CON_014" text="Posture GUI" />
+	<string id="RBM_CON_015" text="Vanilla AI Block/Parry/Attack" />
+	<string id="RBM_CON_016" text="RBM Combat" />
+	<string id="RBM_CON_017" text="Module Status" />
+	<string id="RBM_CON_018" text="RBM AI" />
+	<string id="RBM_CON_019" text="RBM Tournament" />
+	<string id="RBM_CON_020" text="RBM Configuration" />
+	<!-- Tournament Module Strings -->
+	<string id="RBM_TOU_001" text="Main tournament" />
+	<string id="RBM_TOU_002" text="Lower tier tournament: Tier {TIER}" />
+	<string id="RBM_TOU_003" text="Congratulations, you successfully rolled for {Name} item modifier, rolled:{Roll} needed: {Need}" />
+	<string id="RBM_TOU_004" text="You missed roll for {Name} item modifier, rolled:{Roll} needed: {Need}" />
+	<!-- module_strings.xml Strings -->
+	<string id="RBM_STR_001" text="{?IS_RIGHT}Right {TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\?}{TROOP_NAMES_END} is doing hit and run.{?}{\?}{?IS_LEFT}Left {TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\?}{TROOP_NAMES_END} is doing hit and run.{?}{\?}" />
+	<string id="RBM_STR_002" text="Infantry is flanking." />
+	<string id="RBM_STR_003" text="Archers are skirmishing from flanks." />
+	<string id="RBM_STR_004" text="Cavalry is forming a flying wedge in front of infantry." />
+	<string id="RBM_STR_005" text="Skirmish" />
+	<string id="RBM_STR_006" text="Do hit and run on enemy." />
+	<string id="RBM_STR_007" text="Charge at enemy" />
+	<string id="RBM_STR_008" text="Skirmish from {SIDE_STRING} flank" />
+	<string id="RBM_STR_009" text="Form flying wedge in front of infantry" />
+	<string id="RBM_STR_010" text="Our plan is to attack with full force and flank with archers." />
+	<string id="RBM_STR_011" text="Our plan is to split infantry and crush them from all sides." />
+	<string id="RBM_STR_012" text="Our plan is to bait them with skirmishers then crush them with full force." />
+	<string id="RBM_STR_013" text="Our plan is to form a defensive line with archers on flanks." />
+	<string id="RBM_STR_014" text="Our plan is to charge head-on with our cavalry then crush disorganized formations." />
+	<!-- RBMCombat_arrow_visuals.xml Strings -->
+	<string id="RBM_ARR_001" text="Flight Arrows 30 grams" />
+	<string id="RBM_ARR_002" text="Barbed Head Arrows 40 grams" />
+	<string id="RBM_ARR_003" text="Needle Bodkin Arrows 40 grams" />
+	<string id="RBM_ARR_004" text="Barbed Head Bolts 50 grams" />
+	<string id="RBM_ARR_005" text="Needle Bodkin Arrows 50 grams" />
+	<string id="RBM_ARR_006" text="Barbed Head Arrows 50 grams" />
+	<string id="RBM_ARR_007" text="Needle Bodkin Bolts 60 grams" />
+	<string id="RBM_ARR_008" text="Barbed Head Arrows 60 grams" />
+	<string id="RBM_ARR_009" text="Needle Bodkin Arrows 60 grams" />
+	<string id="RBM_ARR_010" text="Needle Bodkin Arrows 70 grams" />
+	<string id="RBM_ARR_011" text="Needle Bodkin Bolts 75 grams" />
+	<string id="RBM_ARR_012" text="Needle Bodkin Arrows 80 grams" />
+	<string id="RBM_ARR_013" text="Needle Bodkin Bolts 90 grams" />
+	<string id="RBM_ARR_014" text="Needle Bodkin Arrows 90 grams" />
+	<string id="RBM_ARR_015" text="Needle Bodkin Arrows 100 grams" />
+	<string id="RBM_ARR_016" text="Heavy Needle Bodkin Arrows 110 grams" />
+	<string id="RBM_ARR_017" text="Heavy Needle Bodkin Bolts 120 grams" />
+	<string id="RBM_ARR_018" text="Very Heavy Needle Bodkin Arrows 125 grams" />
+	<string id="RBM_ARR_019" text="Very Heavy Needle Bodkin Bolts 150 grams" />
+	<string id="RBM_ARR_020" text="Greased Flight Arrows 30 grams" />
+	<string id="RBM_ARR_021" text="Greased Barbed Head Arrows 40 grams" />
+	<string id="RBM_ARR_022" text="Greased Needle Bodkin Arrows 40 grams" />
+	<string id="RBM_ARR_023" text="Greased Barbed Head Bolts 50 grams" />
+	<string id="RBM_ARR_024" text="Greased Needle Bodkin Arrows 50 grams" />
+	<string id="RBM_ARR_025" text="Greased Barbed Head Arrows 50 grams" />
+	<string id="RBM_ARR_026" text="Greased Needle Bodkin Bolts 60 grams" />
+	<string id="RBM_ARR_027" text="Greased Barbed Head Arrows 60 grams" />
+	<string id="RBM_ARR_028" text="Greased Needle Bodkin Arrows 60 grams" />
+	<string id="RBM_ARR_029" text="Greased Needle Bodkin Arrows 70 grams" />
+	<string id="RBM_ARR_030" text="Greased Needle Bodkin Bolts 75 grams" />
+	<string id="RBM_ARR_031" text="Greased Needle Bodkin Arrows 80 grams" />
+	<string id="RBM_ARR_032" text="Greased Needle Bodkin Bolts 90 grams" />
+	<string id="RBM_ARR_033" text="Greased Needle Bodkin Arrows 90 grams" />
+	<string id="RBM_ARR_034" text="Greased Needle Bodkin Arrows 100 grams" />
+	<string id="RBM_ARR_035" text="Greased Heavy Needle Bodkin Arrows 110 grams" />
+	<string id="RBM_ARR_036" text="Greased Heavy Needle Bodkin Bolts 120 grams" />
+	<string id="RBM_ARR_037" text="Greased Very Heavy Needle Bodkin Arrows 125 grams" />
+	<string id="RBM_ARR_038" text="Greased Very Heavy Needle Bodkin Bolts 150 grams" />
+	<string id="RBM_ARR_039" text="Thamaskene Steel Hardened Barbed Arrows 80 grams" />
+	<string id="RBM_ARR_040" text="Thamaskene Steel Hardened Barbed Arrows 90 grams" />
+	<string id="RBM_ARR_041" text="Thamaskene Steel Hardened Barbed Arrows 100 grams" />
+	<string id="RBM_ARR_042" text="Thamaskene Steel Hardened Barbed Arrows 110 grams" />
+	<string id="RBM_ARR_043" text="Thamaskene Steel Hardened Barbed Arrows 125 grams" />
+	<string id="RBM_ARR_044" text="Steel Hardened Barbed Bolts 75 grams" />
+	<string id="RBM_ARR_045" text="Steel Hardened Barbed Bolts 90 grams" />
+	<string id="RBM_ARR_046" text="Steel Hardened Barbed Bolts 120 grams" />
+	<string id="RBM_ARR_047" text="Steel Hardened Barbed Bolts 150 grams" />
+	<string id="RBM_ARR_048" text="Greased Steel Hardened Barbed Arrows 80 grams" />
+	<string id="RBM_ARR_049" text="Greased Steel Hardened Barbed Arrows 90 grams" />
+	<string id="RBM_ARR_050" text="Greased Steel Hardened Barbed Arrows 100 grams" />
+	<string id="RBM_ARR_051" text="Greased Steel Hardened Barbed Arrows 110 grams" />
+	<string id="RBM_ARR_052" text="Greased Steel Hardened Barbed Arrows 125 grams" />
+	<string id="RBM_ARR_053" text="Greased Steel Hardened Barbed Bolts 75 grams" />
+	<string id="RBM_ARR_054" text="Greased Steel Hardened Barbed Bolts 90 grams" />
+	<string id="RBM_ARR_055" text="Greased Steel Hardened Barbed Bolts 120 grams" />
+	<string id="RBM_ARR_056" text="Greased Steel Hardened Barbed Bolts 150 grams" />
+	<string id="RBM_ARR_057" text="Calradian fire arrows" />
+	<string id="RBM_ARR_058" text="Calradian fire bolts" />
+	<!-- RBMCombat_body_armors.xml Strings -->
+	<string id="RBM_ARM_001" text="Double Mail Hauberk" />
+	<string id="RBM_ARM_002" text="Light Lamellar over Mail Armor" />
+	<string id="RBM_ARM_003" text="Light Lamellar over Mail" />
+	<string id="RBM_ARM_004" text="Scale Armor over Mail" />
+	<string id="RBM_ARM_005" text="Lamellar Armor over Mail" />
+	<string id="RBM_ARM_006" text="Heavy Lamellar over Mail with Scale Skirt" />
+	<!-- RBMCombat_couched_lances.xml Strings -->
+	<string id="RBM_CLA_001" text="Light Lance Head" />
+	<string id="RBM_CLA_002" text="Tournament Light Lance Head" />
+	<string id="RBM_CLA_003" text="Medium Lance Head" />
+	<string id="RBM_CLA_004" text="Tournament Medium Lance Head" />
+	<string id="RBM_CLA_005" text="Heavy Lance Head" />
+	<!-- RBMCombat_gladius.xml Strings -->
+	<string id="RBM_GLA_001" text="Gladius" />
+	<string id="RBM_GLA_002" text="Huge Throwing Axes" />
+	<string id="RBM_GLA_003" text="Large Throwing Axes" />
+	<string id="RBM_GLA_004" text="Medium Throwing Axes" />
+	<string id="RBM_GLA_005" text="Small Throwing Axes" />
+	<!-- RBMCombat_head_armors.xml Strings -->
+	<string id="RBM_HEA_001" text="Noble Guard Helmet" />
+	<!-- RBMCombat_horse_armors.xml Strings -->
+	<string id="RBM_HAR_001" text="Lamellar Barding" />
+	<!-- RBMCombat_item_modifiers.xml Strings -->
+	<string id="RBM_MOD_001" text="Damaged" />
+	<string id="RBM_MOD_002" text="Highly Damaged" />
+	<string id="RBM_MOD_003" text="Ruined" />
+	<string id="RBM_MOD_004" text="Scratched" />
+	<string id="RBM_MOD_005" text="Scratched Loose" />
+	<string id="RBM_MOD_006" text="Scratched Rusty" />
+	<string id="RBM_MOD_007" text="Slightly Damaged" />
+	<string id="RBM_MOD_008" text="Very Highly Damaged" />
+	<!-- RBMCombat_lances.xml Strings -->
+	<string id="RBM_LAN_001" text="Pine Throwing Dart" />
+	<string id="RBM_LAN_002" text="Pine Javelin" />
+	<string id="RBM_LAN_003" text="Pine Throwing Lance" />
+	<string id="RBM_LAN_004" text="Ash Throwing Lance" />
+	<string id="RBM_LAN_005" text="Ash Javelin" />
+	<string id="RBM_LAN_006" text="Oaken Throwing Lance" />
+	<string id="RBM_LAN_007" text="Oaken Angon" />
+	<string id="RBM_LAN_008" text="Mahagony Throwing Dart" />
+	<string id="RBM_LAN_009" text="Mahagony Javelin" />
+	<string id="RBM_LAN_010" text="Mahagony Throwing Lance" />
+	<string id="RBM_LAN_011" text="Vlandian Light Lance" />
+	<string id="RBM_LAN_012" text="Imperial Light Lance" />
+	<string id="RBM_LAN_013" text="Khuzait Light Lance" />
+	<string id="RBM_LAN_014" text="Vlandia Lance" />
+	<string id="RBM_LAN_015" text="Imperial Lance" />
+	<string id="RBM_LAN_016" text="Eastern Noble Lance" />
+	<string id="RBM_LAN_017" text="Eastern Polesword" />
+	<string id="RBM_LAN_018" text="Western Pike" />
+	<string id="RBM_LAN_019" text="Light Menavlion" />
+	<!-- RBMCombat_ranged.xml Strings -->
+	<string id="RBM_RAN_001" text="500 Pound Doubler Belt Crossbow" />
+	<string id="RBM_RAN_002" text="450 Pound Doubler Belt Crossbow" />
+	<string id="RBM_RAN_003" text="410 Pound Doubler Belt Crossbow" />
+	<string id="RBM_RAN_004" text="370 Pound Doubler Belt Crossbow" />
+	<string id="RBM_RAN_005" text="330 Pound Spanning Belt Crossbow" />
+	<string id="RBM_RAN_006" text="290 Pound Spanning Belt Crossbow" />
+	<string id="RBM_RAN_007" text="250 Pound Spanning Belt Crossbow" />
+	<string id="RBM_RAN_008" text="200 Pound War Longbow" />
+	<string id="RBM_RAN_009" text="200 Pound Tournament Longbow" />
+	<string id="RBM_RAN_010" text="180 Pound War Longbow" />
+	<string id="RBM_RAN_011" text="170 Pound War Longbow" />
+	<string id="RBM_RAN_012" text="166 Pound Composite War Bow" />
+	<string id="RBM_RAN_013" text="166 Pound Tournament Composite Bow" />
+	<string id="RBM_RAN_014" text="160 Pound War Longbow" />
+	<string id="RBM_RAN_015" text="150 Pound War Longbow" />
+	<string id="RBM_RAN_016" text="140 Pound War Longbow" />
+	<string id="RBM_RAN_017" text="135 Pound Composite War Bow" />
+	<string id="RBM_RAN_018" text="130 Pound War Longbow" />
+	<string id="RBM_RAN_019" text="125 Pound Composite War Bow" />
+	<string id="RBM_RAN_020" text="120 Pound War Longbow" />
+	<string id="RBM_RAN_021" text="120 Pound Composite War Bow" />
+	<string id="RBM_RAN_022" text="110 Pound Composite War Bow" />
+	<string id="RBM_RAN_023" text="100 Pound Composite War Bow" />
+	<string id="RBM_RAN_024" text="100 Pound War Longbow" />
+	<string id="RBM_RAN_025" text="90 Pound Longbow" />
+	<string id="RBM_RAN_026" text="90 Pound Composite Bow" />
+	<string id="RBM_RAN_027" text="70 Pound Composite Bow" />
+	<string id="RBM_RAN_028" text="60 Pound Composite Bow" />
+	<!-- RBMCombat_shields.xml Strings -->
+	<string id="RBM_SHI_001" text="Shoulder Strapped Reinforced Targe" />
+	<string id="RBM_SHI_002" text="Shoulder Strapped Round Steppe Shield" />
+	<string id="RBM_SHI_003" text="Shoulder Strapped Eastern Cavalry Shield" />
+	<string id="RBM_SHI_004" text="Shoulder Strapped Tribal Steppe Shield" />
+	<string id="RBM_SHI_005" text="Shoulder Strapped Decorated Eastern Shield" />
+	<string id="RBM_SHI_006" text="Shoulder Strapped Small Cavalry Heater Shield" />
+	<string id="RBM_SHI_007" text="Shoulder Strapped Small Flat Heater Shield" />
+	<string id="RBM_SHI_008" text="Shoulder Strapped Small Heater Shield" />
+	<string id="RBM_SHI_009" text="Shoulder Strapped Battered Horseman's Kite Shield" />
+	<string id="RBM_SHI_010" text="Shoulder Strapped Wooden Kite Shield" />
+	<string id="RBM_SHI_011" text="Shoulder Strapped Makeshift Horsemans Kite Shield" />
+	<string id="RBM_SHI_012" text="Shoulder Strapped Light Cavalry Kite Shield" />
+	<string id="RBM_SHI_013" text="Shoulder Strapped Cavalry Kite Shield" />
+	<string id="RBM_SHI_014" text="Shoulder Strapped Reinforced Cavalry Small Shield" />
+	<string id="RBM_SHI_015" text="Shoulder Strapped Northern Cavalry Kite Shield" />
+	<string id="RBM_SHI_016" text="Shoulder Strapped Reinforced Cavalry Shield" />
+	<string id="RBM_SHI_017" text="Shoulder Strapped Reinforced Cavalry Kite Shield" />
+	<string id="RBM_SHI_018" text="Shoulder Strapped Heater Shield With Cutout" />
+	<string id="RBM_SHI_019" text="Shoulder Strapped Western Riders Kite Sparring Shield" />
+	<string id="RBM_SHI_020" text="Shoulder Strapped Western Riders Kite Shield" />
+	<string id="RBM_SHI_021" text="Shoulder Strapped Reinforced Ironrimmed Kite Shield" />
+	<string id="RBM_SHI_022" text="Shoulder Strapped Flat Heater Shield" />
+	<string id="RBM_SHI_023" text="Shoulder Strapped Wide Heater Shield" />
+	<string id="RBM_SHI_024" text="Shoulder Strapped Knights Shield" />
+	<string id="RBM_SHI_025" text="Shoulder Strapped Bracketed Heater Shield" />
+	<string id="RBM_SHI_026" text="Shoulder Strapped Heavy Heater Shield" />
+	<string id="RBM_SHI_027" text="Shoulder Strapped Tall Heater Shield" />
+	<string id="RBM_SHI_028" text="Shoulder Strapped Battered Kite Shield" />
+	<string id="RBM_SHI_029" text="Shoulder Strapped Kite Sparring Shield" />
+	<string id="RBM_SHI_030" text="Shoulder Strapped Ironrimed Kite Shield" />
+	<string id="RBM_SHI_031" text="Shoulder Strapped Reinforced Flat Kite Shield" />
+	<string id="RBM_SHI_032" text="Shoulder Strapped Kite Shield" />
+	<string id="RBM_SHI_033" text="Shoulder Strapped Studded Bound Kite Shield" />
+	<string id="RBM_SHI_034" text="Shoulder Strapped Fortified Kite Shield" />
+	<string id="RBM_SHI_035" text="Shoulder Strapped Knights Kite Shield" />
+	<string id="RBM_SHI_036" text="Deployable Pavise Shield" />
+	<string id="RBM_SHI_037" text="Shoulder Strapped Worn Kite Shield" />
+	<string id="RBM_SHI_038" text="Shoulder Strapped Leather Bound Kite Shield" />
+	<string id="RBM_SHI_039" text="Shoulder Strapped Reinforced Kite Shield" />
+	<string id="RBM_SHI_040" text="Shoulder Strapped Reinforced Oaken Kite Shield" />
+	<string id="RBM_SHI_041" text="Shoulder Strapped Makeshift Kite Sparring Shield" />
+	<string id="RBM_SHI_042" text="Shoulder Strapped Makeshift Kite Shield" />
+	<string id="RBM_SHI_043" text="Southern Round Sparring Shield" />
+	<string id="RBM_SHI_044" text="Southern Round Shield" />
+	<string id="RBM_SHI_045" text="Northern Round Sparring Shield" />
+	<string id="RBM_SHI_046" text="Northern Round Shield" />
+	<string id="RBM_SHI_047" text="Northern Cavalry Kite Shield" />
+	<string id="RBM_SHI_048" text="Western Riders Kite Sparring Shield" />
+	<string id="RBM_SHI_049" text="Western Riders Kite Shield" />
+	<string id="RBM_SHI_050" text="Battered Kite Shield" />
+	<!-- RBMCombat_unit_overhaul.xml Strings -->
+	<string id="RBM_OVH_001" text="Aserai Experienced Archer" />
+	<string id="RBM_OVH_002" text="Vlandian Medium Cavalry" />
+	<string id="RBM_OVH_003" text="Khuzait Gear Dummy" />
+	<string id="RBM_OVH_004" text="Empire Weapon Dummy" />
+	<string id="RBM_OVH_005" text="Vlandia Weapon Dummy" />
+	<string id="RBM_OVH_006" text="Aserai Weapon Dummy" />
+	<string id="RBM_OVH_007" text="Sturgia Weapon Dummy" />
+	<string id="RBM_OVH_008" text="Battania Weapon Dummy" />
+	<string id="RBM_OVH_009" text="Khuzait Weapon Dummy" />
+	<string id="RBM_OVH_010" text="Horseman" />
+	<string id="RBM_OVH_011" text="Sturgian Shock Troop" />
+	<string id="RBM_OVH_012" text="Son of Boyar" />
+	<string id="RBM_OVH_013" text="Sturgian Berserker" />
+	<string id="RBM_OVH_014" text="Sturgian Ulfhednar" />
+	<string id="RBM_OVH_015" text="Skene" />
+	<string id="RBM_OVH_016" text="Kern" />
+	<string id="RBM_OVH_017" text="Redshank" />
+	<string id="RBM_OVH_018" text="Guardian Recruit" />
+	<string id="RBM_OVH_019" text="Expert Guardian" />
+	<string id="RBM_OVH_020" text="Veteran Guardian" />
+	<string id="RBM_OVH_021" text="Knight of Sacred Fire" />
+	<string id="RBM_OVH_022" text="Karakhuzait Nomad" />
+	<string id="RBM_OVH_023" text="Karakhuzait Rider" />
+	<string id="RBM_OVH_024" text="Karakhuzait Elder" />
+	<string id="RBM_OVH_025" text="Watchman" />
+	<string id="RBM_OVH_026" text="Mercenary Guard" />
+	<string id="RBM_OVH_027" text="Mercenary Scout" />
+	<string id="RBM_OVH_028" text="Mercenary Swordsman" />
+	<string id="RBM_OVH_029" text="Mercenary Crossbowman" />
+	<string id="RBM_OVH_030" text="Mercenary Horseman" />
+	<string id="RBM_OVH_031" text="Hired Blade" />
+	<string id="RBM_OVH_032" text="Mercenary Cavalry" />
+  </strings>
+</base>
