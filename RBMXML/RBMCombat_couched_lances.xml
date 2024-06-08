@@ -499,7 +499,11 @@
     </Materials>
   </CraftingPiece>
 <!-- Pike -->   
+<<<<<<< Updated upstream
   <CraftingPiece id="spear_blade_41" name="{=TKVxb6QD}Thamaskene Steel Leaf Shaped Pike Head" tier="5" piece_type="Blade" mesh="spear_blade_41" length="53.2" weight="0.4792" excluded_item_usage_features="swing">
+=======
+  <CraftingPiece id="spear_blade_41" name="{=RBM_CLA_006}Thamaskene Steel Leaf Shaped Pike Head" tier="5" piece_type="Blade" mesh="spear_blade_41" length="53.2" weight="0.4792" excluded_item_usage_features="swing">
+>>>>>>> Stashed changes
     <BladeData stack_amount="1" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="1.2" />
     </BladeData>
