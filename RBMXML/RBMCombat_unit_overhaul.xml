@@ -17447,11 +17447,7 @@
                 is_hero="false"
                 is_basic_troop="true"
                 level="16"
-<<<<<<< Updated upstream
                 name="{=r8npO8hG}Crossbow Sister"
-=======
-                name="{=RBM_OVH_033}Crossbow Sister"
->>>>>>> Stashed changes
                 occupation="Mercenary"
                 culture="Culture.empire">
     <face>
@@ -17622,11 +17618,7 @@
                 default_group="HorseArcher"
                 is_hero="false"
                 level="26"
-<<<<<<< Updated upstream
                 name="{=ifL3F7E2}Gallant Glaive Sister"
-=======
-                name="{=RBM_OVH_034}Gallant Glaive Sister"
->>>>>>> Stashed changes
                 occupation="Mercenary"
                 culture="Culture.empire"
 				upgrade_requires="ItemCategory.war_horse">
@@ -17725,11 +17717,7 @@
                 default_group="Ranged"
                 is_hero="false"
                 level="26"
-<<<<<<< Updated upstream
                 name="{=0gi5Fp8c}Glaive Sister"
-=======
-                name="{=RBM_OVH_035}Glaive Sister"
->>>>>>> Stashed changes
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
@@ -18109,11 +18097,7 @@
                 default_group="HorseArcher"
                 is_hero="false"
                 level="21"
-<<<<<<< Updated upstream
                 name="{=xl6QstMW}Mercenary Horse Archer"
-=======
-                name="{=RBM_OVH_036}Mercenary Horse Archer"
->>>>>>> Stashed changes
                 occupation="Mercenary"
                 culture="Culture.neutral_culture"
 				upgrade_requires="ItemCategory.war_horse">
@@ -18214,11 +18198,7 @@
                 default_group="HorseArcher"
                 is_hero="false"
                 level="26"
-<<<<<<< Updated upstream
                 name="{=kyt087eN}Veteran Mercenary Horse Archer"
-=======
-                name="{=RBM_OVH_037}Veteran Mercenary Horse Archer"
->>>>>>> Stashed changes
                 occupation="Mercenary"
                 culture="Culture.neutral_culture"
 				upgrade_requires="ItemCategory.war_horse">
@@ -18316,11 +18296,7 @@
   <NPCCharacter id="western_mercenary"
                 default_group="Infantry"
                 level="16"
-<<<<<<< Updated upstream
                 name="{=J4k9mg65}Hireling Spearman"
-=======
-                name="{=RBM_OVH_038}Hireling Spearman"
->>>>>>> Stashed changes
                 occupation="Mercenary"
                 is_basic_troop="true"
                 is_hero="false"
@@ -18412,11 +18388,7 @@
   <NPCCharacter id="western_mercenary_t4"
                 default_group="Infantry"
                 level="21"
-<<<<<<< Updated upstream
                 name="{=n89z19Dv}Hireling Pikeman"
-=======
-                name="{=RBM_OVH_039}Hireling Pikeman"
->>>>>>> Stashed changes
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
@@ -18505,11 +18477,7 @@
   <NPCCharacter id="western_mercenary_t5"
                 default_group="Infantry"
                 level="26"
-<<<<<<< Updated upstream
                 name="{=7WV17e5Q}Hireling Elite Pikeman"
-=======
-                name="{=RBM_OVH_040}Hireling Elite Pikeman"
->>>>>>> Stashed changes
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
@@ -18596,11 +18564,7 @@
                 default_group="Ranged"
                 is_hero="false"
                 level="21"
-<<<<<<< Updated upstream
                 name="{=QfVe3IVw}Hireling Crossbowman"
-=======
-                name="{=RBM_OVH_041}Hireling Crossbowman"
->>>>>>> Stashed changes
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
@@ -18696,11 +18660,7 @@
                 default_group="Ranged"
                 is_hero="false"
                 level="26"
-<<<<<<< Updated upstream
                 name="{=DxtSIxyZ}Elite Hireling Warbowman"
-=======
-                name="{=RBM_OVH_042}Elite Hireling Warbowman"
->>>>>>> Stashed changes
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>

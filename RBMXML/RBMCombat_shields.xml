@@ -168,11 +168,7 @@
 		</ItemComponent>
 		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandSecondaryItemBone="true" Civilian="true"/>
 	</Item>
-<<<<<<< Updated upstream
 	<Item id="battania_large_shield_c" name="{=wAcc9SX4}Highland Skirmisher Shield" body_name="bo_cap_battania_large_shield_c" shield_body_name="bo_battania_large_shield_c" recalculate_body="false" mesh="battania_large_shield_c" using_tableau="true" weight="3.5" appearance="0.5" Type="Shield" item_holsters="shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="0.0,0.1,0,0" culture="Culture.battania">
-=======
-	<Item id="battania_large_shield_c" name="{=RBM_SHI_051}Highland Skirmisher Shield" body_name="bo_cap_battania_large_shield_c" shield_body_name="bo_battania_large_shield_c" recalculate_body="false" mesh="battania_large_shield_c" using_tableau="true" weight="3.5" appearance="0.5" Type="Shield" item_holsters="shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="0.0,0.1,0,0" culture="Culture.battania">
->>>>>>> Stashed changes
 		<ItemComponent>
 			<Weapon weapon_class="SmallShield" body_armor="4" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="hand_shield" position="0.01, 0.0, -0.01" rotation="254.50,-68.80,8.70" weapon_length="70" center_of_mass="0.0,0.065,0.05" hit_points="590">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
@@ -180,11 +176,7 @@
 		</ItemComponent>
 		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandPrimaryItemBone="true"/>
 	</Item>
-<<<<<<< Updated upstream
 	<Item id="battania_large_shield_a" name="{=przGGaVm}Iron Reinforced Highland Skirmisher Shield" body_name="bo_cap_battania_large_shield_a" shield_body_name="bo_battania_large_shield_a" recalculate_body="false" mesh="battania_large_shield_a" using_tableau="true" weight="3.5" appearance="1.1" Type="Shield" item_holsters="shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="0.0,0.1,0" culture="Culture.battania">
-=======
-	<Item id="battania_large_shield_a" name="{=RBM_SHI_052}Iron Reinforced Highland Skirmisher Shield" body_name="bo_cap_battania_large_shield_a" shield_body_name="bo_battania_large_shield_a" recalculate_body="false" mesh="battania_large_shield_a" using_tableau="true" weight="3.5" appearance="1.1" Type="Shield" item_holsters="shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="0.0,0.1,0" culture="Culture.battania">
->>>>>>> Stashed changes
 		<ItemComponent>
 			<Weapon weapon_class="SmallShield" body_armor="6" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="hand_shield" position="0.05, -0.01, 0.00" rotation="-91.80,-62.90,0.00" weapon_length="70" center_of_mass="0.0,0.065,0.05" hit_points="680">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
@@ -192,11 +184,7 @@
 		</ItemComponent>
 		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandPrimaryItemBone="true"/>
 	</Item>
-<<<<<<< Updated upstream
 	<Item id="battania_large_shield_b" name="{=vsI4M5oq}Bronze Reinforced Highland Skirmisher Shield" body_name="bo_cap_battania_large_shield_b" shield_body_name="bo_battania_large_shield_b" recalculate_body="false" mesh="battania_large_shield_b" using_tableau="true" weight="3.5" appearance="1" Type="Shield" item_holsters="shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="0.0,0.1,0" culture="Culture.battania">
-=======
-	<Item id="battania_large_shield_b" name="{=RBM_SHI_053}Bronze Reinforced Highland Skirmisher Shield" body_name="bo_cap_battania_large_shield_b" shield_body_name="bo_battania_large_shield_b" recalculate_body="false" mesh="battania_large_shield_b" using_tableau="true" weight="3.5" appearance="1" Type="Shield" item_holsters="shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="0.0,0.1,0" culture="Culture.battania">
->>>>>>> Stashed changes
 		<ItemComponent>
 			<Weapon weapon_class="SmallShield" body_armor="5" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="hand_shield" position="0.04, -0.01, 0.0" rotation="254.50,-62.10,8.70" weapon_length="70" center_of_mass="0.0,0.065,0.05" hit_points="630">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
