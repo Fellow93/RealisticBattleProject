@@ -331,7 +331,7 @@
   
   <!-- #region Used Lance Blade Pieces -->
 
-  <CraftingPiece id="spear_blade_23" name="{=OryiZr9d}Light Lance Head" tier="4" piece_type="Blade" mesh="spear_blade_23" length="42" weight="0.1" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_23" name="{=RBM_CLA_001}Light Lance Head" tier="4" piece_type="Blade" mesh="spear_blade_23" length="42" weight="0.1" excluded_item_usage_features="swing">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="1.0" />
     </BladeData>
@@ -342,7 +342,7 @@
     </Flags>
   </CraftingPiece>
   
-  <CraftingPiece id="spear_blade_23_blunt" name="{=pAqWQWJs}Tournament Light Lance Head" tier="4" piece_type="Blade" mesh="spear_blade_23" length="42" weight="0.1" excluded_item_usage_features="swing" is_hidden="true">
+  <CraftingPiece id="spear_blade_23_blunt" name="{=RBM_CLA_002}Tournament Light Lance Head" tier="4" piece_type="Blade" mesh="spear_blade_23" length="42" weight="0.1" excluded_item_usage_features="swing" is_hidden="true">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="1.0" />
     </BladeData>
@@ -353,7 +353,7 @@
     </Flags>
   </CraftingPiece>
 
-  <CraftingPiece id="spear_blade_20" name="{=uwG8iwBc}Medium Lance Head" tier="5" piece_type="Blade" mesh="spear_blade_20" length="46" weight="0.1" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_20" name="{=RBM_CLA_003}Medium Lance Head" tier="5" piece_type="Blade" mesh="spear_blade_20" length="46" weight="0.1" excluded_item_usage_features="swing">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="1.05" />
     </BladeData>
@@ -364,7 +364,7 @@
     </Flags>
   </CraftingPiece>
   
-  <CraftingPiece id="spear_blade_20_blunt" name="{=NRhAqB5a}Tournament Medium Lance Head" tier="5" piece_type="Blade" mesh="spear_blade_20" length="46" weight="0.1" excluded_item_usage_features="swing" is_hidden="true">
+  <CraftingPiece id="spear_blade_20_blunt" name="{=RBM_CLA_004}Tournament Medium Lance Head" tier="5" piece_type="Blade" mesh="spear_blade_20" length="46" weight="0.1" excluded_item_usage_features="swing" is_hidden="true">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="1.05" />
     </BladeData>
@@ -375,7 +375,7 @@
     </Flags>
   </CraftingPiece>
 
-  <CraftingPiece id="spear_blade_5" name="{=QwfDN06p}Heavy Lance Head" tier="5" piece_type="Blade" mesh="spear_blade_5" length="52.242" weight="0.1" excluded_item_usage_features="swing">
+  <CraftingPiece id="spear_blade_5" name="{=RBM_CLA_005}Heavy Lance Head" tier="5" piece_type="Blade" mesh="spear_blade_5" length="52.242" weight="0.1" excluded_item_usage_features="swing">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="1.1" />
     </BladeData>
@@ -499,11 +499,7 @@
     </Materials>
   </CraftingPiece>
 <!-- Pike -->   
-<<<<<<< Updated upstream
-  <CraftingPiece id="spear_blade_41" name="{=TKVxb6QD}Thamaskene Steel Leaf Shaped Pike Head" tier="5" piece_type="Blade" mesh="spear_blade_41" length="53.2" weight="0.4792" excluded_item_usage_features="swing">
-=======
   <CraftingPiece id="spear_blade_41" name="{=RBM_CLA_006}Thamaskene Steel Leaf Shaped Pike Head" tier="5" piece_type="Blade" mesh="spear_blade_41" length="53.2" weight="0.4792" excluded_item_usage_features="swing">
->>>>>>> Stashed changes
     <BladeData stack_amount="1" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="1.2" />
     </BladeData>
