@@ -1344,7 +1344,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="false"/>
 	</Item>
-	<Item id="sturgian_chainmale_longsleeve" name="{=4cHMe6H2}Decorated Hauberk" mesh="sturgian_chainmale_longsleeve" culture="Culture.sturgia" weight="12.3" Type="BodyArmor" appearance="1.6" difficulty="0" subtype="body_armor">
+	<Item id="sturgian_chainmale_longsleeve" name="{=RBM_ARM_007}Decorated Double Hauberk" mesh="sturgian_chainmale_longsleeve" culture="Culture.sturgia" weight="12.3" Type="BodyArmor" appearance="1.6" difficulty="0" subtype="body_armor">
 		<ItemComponent>
 			<Armor body_armor="77" leg_armor="44" covers_body="true" modifier_group="chain" material_type="Chainmail" has_gender_variations="true" arm_armor="44"/>
 		</ItemComponent>
@@ -1464,7 +1464,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="imperial_scale_armor" name="{=VQSdhQE3}Heavy Scale Armor over Mail Hauberk" mesh="imperial_lamellar_b" culture="Culture.empire" weight="35.5" Type="BodyArmor" appearance="3" difficulty="0" subtype="body_armor">
+	<Item id="imperial_scale_armor" name="{=RBM_ARM_008}Heavy Scale Armor over Double Mail" mesh="imperial_lamellar_b" culture="Culture.empire" weight="35.5" Type="BodyArmor" appearance="3" difficulty="0" subtype="body_armor">
 		<ItemComponent>
 			<Armor body_armor="135" leg_armor="122" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="67"/>
 		</ItemComponent>

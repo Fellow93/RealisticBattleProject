@@ -27,7 +27,7 @@
     <!-- #region Used Throwing Axes -->
   <!-- #region Tier 2 -->
   <CraftedItem id="highland_throwing_axe_1_t2"
-               name="{=GrfnpDxu}Highland Throwing Axe"
+               name="{=RBM_GLA_006}Throwing Labryes"
                crafting_template="ThrowingAxe"
                culture="Culture.battania">
     <Pieces>
