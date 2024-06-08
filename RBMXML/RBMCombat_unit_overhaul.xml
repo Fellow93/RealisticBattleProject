@@ -17447,7 +17447,7 @@
                 is_hero="false"
                 is_basic_troop="true"
                 level="16"
-                name="{=r8npO8hG}Sisterhood Follower"
+                name="{=RBM_OVH_033}Crossbow Sister"
                 occupation="Mercenary"
                 culture="Culture.empire">
     <face>
@@ -17618,7 +17618,7 @@
                 default_group="HorseArcher"
                 is_hero="false"
                 level="26"
-                name="{=ifL3F7E2}Gallant Sword Sister"
+                name="{=RBM_OVH_034}Gallant Glaive Sister"
                 occupation="Mercenary"
                 culture="Culture.empire"
 				upgrade_requires="ItemCategory.war_horse">
@@ -17717,7 +17717,7 @@
                 default_group="Ranged"
                 is_hero="false"
                 level="26"
-                name="{=0gi5Fp8c}Veteran Sword Sister"
+                name="{=RBM_OVH_035}Glaive Sister"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
@@ -18097,7 +18097,7 @@
                 default_group="HorseArcher"
                 is_hero="false"
                 level="21"
-                name="{=xl6QstMW}Outrider"
+                name="{=RBM_OVH_036}Mercenary Horse Archer"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture"
 				upgrade_requires="ItemCategory.war_horse">
@@ -18198,7 +18198,7 @@
                 default_group="HorseArcher"
                 is_hero="false"
                 level="26"
-                name="{=kyt087eN}Veteran Outrider"
+                name="{=RBM_OVH_037}Veteran Mercenary Horse Archer"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture"
 				upgrade_requires="ItemCategory.war_horse">
@@ -18296,7 +18296,7 @@
   <NPCCharacter id="western_mercenary"
                 default_group="Infantry"
                 level="16"
-                name="{=J4k9mg65}Hired Spear"
+                name="{=RBM_OVH_038}Hireling Spearman"
                 occupation="Mercenary"
                 is_basic_troop="true"
                 is_hero="false"
@@ -18388,7 +18388,7 @@
   <NPCCharacter id="western_mercenary_t4"
                 default_group="Infantry"
                 level="21"
-                name="{=n89z19Dv}Hired Pike"
+                name="{=RBM_OVH_039}Hireling Pikeman"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
@@ -18477,7 +18477,7 @@
   <NPCCharacter id="western_mercenary_t5"
                 default_group="Infantry"
                 level="26"
-                name="{=7WV17e5Q}Hired Elite Pike"
+                name="{=RBM_OVH_040}Hireling Elite Pikeman"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
@@ -18564,7 +18564,7 @@
                 default_group="Ranged"
                 is_hero="false"
                 level="21"
-                name="{=QfVe3IVw}Hired Crossbow"
+                name="{=RBM_OVH_041}Hireling Crossbowman"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
@@ -18660,7 +18660,7 @@
                 default_group="Ranged"
                 is_hero="false"
                 level="26"
-                name="{=DxtSIxyZ}Elite Hired Crossbow"
+                name="{=RBM_OVH_042}Elite Hireling Warbowman"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>
