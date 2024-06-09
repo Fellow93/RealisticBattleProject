@@ -8,9 +8,6 @@ namespace RBMConfig
 {
     internal class RBMConfigViewModel : ViewModel
     {
-        private string _doneText;
-
-        private string _cancelText;
 
         public TextViewModel ArmorStatusUIEnabledText { get; }
         public SelectorVM<SelectorItemVM> ArmorStatusUIEnabled { get; }
@@ -49,10 +46,22 @@ namespace RBMConfig
         public SelectorVM<SelectorItemVM> RBMTournamentEnabled { get; }
 
         [DataSourceProperty]
-        public string CancelText => _cancelText;
+        public string CancelText
+        {
+            get
+            {
+                return new TextObject("{=3CpNUnVl}Cancel").ToString();
+            }
+        }
 
         [DataSourceProperty]
-        public string DoneText => _doneText;
+        public string DoneText
+        {
+            get
+            {
+                return new TextObject("{=WiNRdfsm}Done").ToString();
+            }
+        }
 
         [DataSourceProperty]
         public string RBMCombatt
@@ -191,8 +200,6 @@ namespace RBMConfig
 
         public RBMConfigViewModel()
         {
-            _doneText = new TextObject("{=WiNRdfsm}Done").ToString();
-            _cancelText = new TextObject("{=3CpNUnVl}Cancel").ToString();
             RefreshValues();
             //RbmConfigData data;
             List<string> troopOverhaulOnOff = new List<string> { new TextObject("{=RBM_CON_001}Inactive").ToString(), new TextObject("{=RBM_CON_002}Active (Recommended)").ToString(), };
