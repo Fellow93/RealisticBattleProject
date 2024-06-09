@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
   <tags>
-    <tag language="Türkçe" />
+    <tag language="Français" />
   </tags>
   <strings>
 	<!-- AI Module Strings -->
@@ -164,8 +164,8 @@
 	<string id="RBM_ARR_054" text="Carreaux barbelés en acier trempé et graissé 90 grammes" />
 	<string id="RBM_ARR_055" text="Carreaux barbelés en acier trempé et graissé 120 grammes" />
 	<string id="RBM_ARR_056" text="Carreaux barbelés en acier trempé et graissé 150 grammes" />
-	<string id="RBM_ARR_057" text="Calradian fire arrows" />
-	<string id="RBM_ARR_058" text="Calradian fire bolts" />
+	<string id="RBM_ARR_057" text="Flèches enflammées calradiennes" />
+	<string id="RBM_ARR_058" text="Carreaux enflammés calradiens" />
 	<!-- RBMCombat_body_armors.xml Strings -->
 	<string id="RBM_ARM_001" text="Double haubert de mailles" />
 	<string id="RBM_ARM_002" text="Armure lamellaire légère sur mailles" />
@@ -173,18 +173,22 @@
 	<string id="RBM_ARM_004" text="Armure d'écailles sur mailles" />
 	<string id="RBM_ARM_005" text="Armure lamellaire sur mailles" />
 	<string id="RBM_ARM_006" text="Lamellaire lourde sur mailles avec jupe d'écailles" />
+	<string id="RBM_ARM_007" text="Double haubert décoré" />
+	<string id="RBM_ARM_008" text="Armure d'écailles lourde sur double mailles" />
 	<!-- RBMCombat_couched_lances.xml Strings -->
 	<string id="RBM_CLA_001" text="Tête de lance légère" />
 	<string id="RBM_CLA_002" text="Tête de lance légère de tournoi" />
 	<string id="RBM_CLA_003" text="Tête de lance moyenne" />
 	<string id="RBM_CLA_004" text="Tête de lance moyenne de tournoi" />
 	<string id="RBM_CLA_005" text="Tête de lance lourde" />
+	<string id="RBM_CLA_006" text="Tête de pique en forme de feuille en acier Thamaskene" />
 	<!-- RBMCombat_gladius.xml Strings -->
 	<string id="RBM_GLA_001" text="Gladius" />
 	<string id="RBM_GLA_002" text="Grands haches de lancer" />
 	<string id="RBM_GLA_003" text="Grandes haches de lancer" />
 	<string id="RBM_GLA_004" text="Haches de lancer moyennes" />
 	<string id="RBM_GLA_005" text="Petites haches de lancer" />
+	<string id="RBM_GLA_006" text="Labrys de lancer" />
 	<!-- RBMCombat_head_armors.xml Strings -->
 	<string id="RBM_HEA_001" text="Casque de garde noble" />
 	<!-- RBMCombat_horse_armors.xml Strings -->
@@ -298,6 +302,9 @@
 	<string id="RBM_SHI_048" text="Bouclier d'entraînement écu de cavalier occidental" />
 	<string id="RBM_SHI_049" text="Bouclier écu de cavalier occidental" />
 	<string id="RBM_SHI_050" text="Bouclier écu éraflé" />
+	<string id="RBM_SHI_051" text="Bouclier d'escarmoucheur des Hautes Terres" />
+	<string id="RBM_SHI_052" text="Bouclier d'escarmoucheur des Hautes Terres renforcé de fer" />
+	<string id="RBM_SHI_053" text="Bouclier d'escarmoucheur des Hautes Terres renforcé de bronze" />
 	<!-- RBMCombat_unit_overhaul.xml Strings -->
 	<string id="RBM_OVH_001" text="Archer expérimenté aseraï" />
 	<string id="RBM_OVH_002" text="Cavalerie moyenne vlandienne" />
@@ -331,5 +338,15 @@
 	<string id="RBM_OVH_030" text="Cavalier mercenaire" />
 	<string id="RBM_OVH_031" text="Lame à louer" />
 	<string id="RBM_OVH_032" text="Cavalerie mercenaire" />
+	<string id="RBM_OVH_033" text="Soeur arbalétrière" />
+	<string id="RBM_OVH_034" text="Soeur de glaive galante" />
+	<string id="RBM_OVH_035" text="Soeur de glaive" />
+	<string id="RBM_OVH_036" text="Archer à cheval mercenaire" />
+	<string id="RBM_OVH_037" text="Archer à cheval mercenaire vétéran" />
+	<string id="RBM_OVH_038" text="Lancier mercenaire" />
+	<string id="RBM_OVH_039" text="Piquier mercenaire" />
+	<string id="RBM_OVH_040" text="Piquier élite mercenaire" />
+	<string id="RBM_OVH_041" text="Arbalétrier mercenaire" />
+	<string id="RBM_OVH_042" text="Archer d'élite mercenaire" />
   </strings>
 </base>
