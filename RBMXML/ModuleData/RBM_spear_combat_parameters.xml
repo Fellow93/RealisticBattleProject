@@ -46,7 +46,7 @@
     <def name="fist_rider_rot_limit_right"
          val="60.0" />
     <def name="throwing_rider_rot_limit_left"
-         val="60" />
+         val="75" />
     <def name="throwing_rider_rot_limit_right"
          val="45" />
 

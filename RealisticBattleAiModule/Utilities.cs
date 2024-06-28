@@ -8,6 +8,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.Core.ItemObject;
 
@@ -1445,19 +1446,19 @@ namespace RBMAI
 
                         if (RBMConfig.RBMConfig.armorPenetrationMessage)
                         {
+                            MBTextManager.SetTextVariable("DMG1", (int)(bluntTraumaAfterArmor));
+                            MBTextManager.SetTextVariable("DMG2", (int)(penetratedDamage));
                             if (player != null)
                             {
                                 if (isPlayerVictim)
                                 {
                                     //InformationManager.DisplayMessage(new InformationMessage("You received"));
-                                    InformationManager.DisplayMessage(new InformationMessage("You received " + (int)(bluntTraumaAfterArmor) +
-                                        " blunt trauma, " + (int)(penetratedDamage) + " armor penetration damage"));
+                                    InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_021}You received {DMG1} blunt trauma, {DMG2} armor penetration damage").ToString()));
                                     //InformationManager.DisplayMessage(new InformationMessage("damage penetrated: " + penetratedDamage));
                                 }
                                 else
                                 {
-                                    InformationManager.DisplayMessage(new InformationMessage("You dealt " + (int)(bluntTraumaAfterArmor) +
-                                        " blunt trauma, " + (int)(penetratedDamage) + " armor penetration damage"));
+                                    InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_022}You dealt {DMG1} blunt trauma, {DMG2} armor penetration damage").ToString()));
                                 }
                             }
                         }
@@ -1485,19 +1486,19 @@ namespace RBMAI
 
                         if (RBMConfig.RBMConfig.armorPenetrationMessage)
                         {
+                            MBTextManager.SetTextVariable("DMG1", (int)(bluntTraumaAfterArmor));
+                            MBTextManager.SetTextVariable("DMG2", (int)(penetratedDamage));
                             if (player != null)
                             {
                                 if (isPlayerVictim)
                                 {
                                     //InformationManager.DisplayMessage(new InformationMessage("You received"));
-                                    InformationManager.DisplayMessage(new InformationMessage("You received " + (int)(bluntTraumaAfterArmor) +
-                                        " blunt trauma, " + (int)(penetratedDamage) + " armor penetration damage"));
+                                    InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_021}You received {DMG1} blunt trauma, {DMG2} armor penetration damage").ToString()));
                                     //InformationManager.DisplayMessage(new InformationMessage("damage penetrated: " + penetratedDamage));
                                 }
                                 else
                                 {
-                                    InformationManager.DisplayMessage(new InformationMessage("You dealt " + (int)(bluntTraumaAfterArmor) +
-                                        " blunt trauma, " + (int)(penetratedDamage) + " armor penetration damage"));
+                                    InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_022}You dealt {DMG1} blunt trauma, {DMG2} armor penetration damage").ToString()));
                                 }
                             }
                         }

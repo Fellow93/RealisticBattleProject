@@ -1,17 +1,18 @@
 ﻿namespace RBMAI
 {
     using TaleWorlds.Library;
+    using TaleWorlds.Localization;
 
     public class BattleStatsVM : ViewModel
     {
-        private string atkarc = "ATK ARC: 0";
-        private string atkha = "ATK HA : 0";
-        private string atkcav = "ATK CAV: 0";
-        private string atkinf = "ATK INF: 0";
-        private string defarc = "DEF ARC: 0";
-        private string defha = "DEF HA : 0";
-        private string defcav = "DEF CAV: 0";
-        private string definf = "DEF INF: 0";
+        private string atkarc = new TextObject("{=RBM_AI_001}ATK ARC:").ToString() + " 0";
+        private string atkha = new TextObject("{=RBM_AI_002}ATK HA :").ToString() + " 0";
+        private string atkcav = new TextObject("{=RBM_AI_003}ATK CAV:").ToString() + " 0";
+        private string atkinf = new TextObject("{=RBM_AI_004}ATK INF:").ToString() + " 0";
+        private string defarc = new TextObject("{=RBM_AI_005}DEF ARC:").ToString() + " 0";
+        private string defha = new TextObject("{=RBM_AI_006}DEF HA :").ToString() + " 0";
+        private string defcav = new TextObject("{=RBM_AI_007}DEF CAV:").ToString() + " 0";
+        private string definf = new TextObject("{=RBM_AI_008}DEF INF:").ToString() + " 0";
 
         [DataSourceProperty]
         public string Atkarc

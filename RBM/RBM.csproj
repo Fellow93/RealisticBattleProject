@@ -276,7 +276,11 @@ xcopy /d /y "$(SolutionDir)RBMXML\ModuleData\RBM_spear_combat_parameters.xml" "$
 xcopy /d /y "$(SolutionDir)RBMXML\ModuleData\RBM_bow_shields.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\ModuleData\project.mbproj" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\" "$(SolutionDir)..\RBM\GUI\Prefabs\"
-xcopy /d /y "$(SolutionDir)RBMXML\GUI\Brushes\" "$(SolutionDir)..\RBM\GUI\Brushes\"</PostBuildEvent>
+xcopy /d /y "$(SolutionDir)RBMXML\GUI\Brushes\" "$(SolutionDir)..\RBM\GUI\Brushes\"
+xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\" "$(SolutionDir)..\RBM\ModuleData\Languages\"
+xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\FR\" "$(SolutionDir)..\RBM\ModuleData\Languages\FR\"
+xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\TR\" "$(SolutionDir)..\RBM\ModuleData\Languages\TR\"
+xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\CNs\" "$(SolutionDir)..\RBM\ModuleData\Languages\CNs\"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData id="Français" name="Français" subtitle_extension="fr" supported_iso="fr,fra,fr-fr,fr-be,fr-ca,fr-ch" text_processor="TaleWorlds.Localization.TextProcessor.LanguageProcessors.FrenchTextProcessor" under_development="false">
+  <LanguageFile xml_path="FR/LOC-fre.xml" />
+</LanguageData>

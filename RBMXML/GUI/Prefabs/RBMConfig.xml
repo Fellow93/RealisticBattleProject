@@ -45,12 +45,12 @@
 								<ListPanel Id="OuterList" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Top" LayoutImp.LayoutMethod="VerticalBottomToTop">
 									<Children>
 									
-										<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Left" VerticalAlignment="Center" Brush="SPOptions.GameKeysGroup.Title.Text" Text="RBM Combat"/>
+										<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Left" VerticalAlignment="Center" Brush="SPOptions.GameKeysGroup.Title.Text" Text="@RBMCombatt"/>
 										
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 											
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="Module Status"/>
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ModuleStatust"/>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -65,7 +65,7 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 											
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="Troop Overhaul"/>
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@TroopOverhault"/>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -80,7 +80,7 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="Ranged reload speed"/>
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@Rangedspeedt"/>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -94,7 +94,7 @@
 										
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="Passive Shoulder Shields"/>
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@PassiveShieldt"/>
 
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
@@ -109,7 +109,7 @@
 										
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="Better Arrow Visuals"/>
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@BetterArrowst"/>
 
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
@@ -125,7 +125,7 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="Armor Status GUI"/>
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ArmorGUIt"/>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -140,7 +140,7 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="Realistic Arrow Arc"/>
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@RealArrowt"/>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -152,12 +152,12 @@
 										  </Children>
 										</ListPanel>
 										
-										<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Left" VerticalAlignment="Center" Brush="SPOptions.GameKeysGroup.Title.Text" Text="RBM AI"/>
+										<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Left" VerticalAlignment="Center" Brush="SPOptions.GameKeysGroup.Title.Text" Text="@RBMAIt"/>
 										
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 											
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="Module Status"/>
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ModuleStatust"/>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -172,7 +172,7 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="Posture System"/>
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@PostureSyst"/>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -187,7 +187,7 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="Player Posture Multiplier"/>
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@Playpost"/>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -202,7 +202,7 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="Posture GUI"/>
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@PostureGUIt"/>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -217,7 +217,7 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="Vanilla AI Block/Parry/Attack"/>
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@Vanillat"/>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -229,12 +229,12 @@
 										  </Children>
 										</ListPanel>
 										
-										<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Left" VerticalAlignment="Center" Brush="SPOptions.GameKeysGroup.Title.Text" Text="RBM Tournament"/>
+										<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Left" VerticalAlignment="Center" Brush="SPOptions.GameKeysGroup.Title.Text" Text="@RBMTournament"/>
 										
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 											
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="Module Status"/>
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ModuleStatust"/>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -287,7 +287,7 @@
 				</ListPanel>
 
 				<!-- Header -->
-				<Standard.TopPanel Parameter.Title="RBM Configuration">
+				<Standard.TopPanel Parameter.Title="@RBMConft">
 					<Children>
 						<ListPanel DoNotAcceptEvents="false" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Center" MarginTop="60" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 							<Children>
