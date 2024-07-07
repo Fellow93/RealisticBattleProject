@@ -1062,7 +1062,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="sturgian_lamellar_gambeson" name="{=luoXhz19}Short Lamellar Vest" mesh="sturgian_lamellar_gambeson" culture="Culture.sturgia" weight="6.2" Type="BodyArmor" appearance="1.8" difficulty="0" subtype="body_armor">
+	<Item id="sturgian_lamellar_gambeson" name="{=RBM_ARM_009}Short Lamellar Vest" mesh="sturgian_lamellar_gambeson" culture="Culture.sturgia" weight="6.2" Type="BodyArmor" appearance="1.8" difficulty="0" subtype="body_armor">
 		<ItemComponent>
 			<Armor body_armor="40" leg_armor="15" covers_body="true" modifier_group="plate" material_type="Plate" has_gender_variations="true" arm_armor="15"/>
 		</ItemComponent>

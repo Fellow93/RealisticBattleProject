@@ -134,7 +134,7 @@
   
   <Item multiplayer_item="false"
         id="pot"
-        name="{=3Wzhxkn1}Fire Pot"
+        name="{=HP1GzM8l}Fire Pot"
         is_merchandise="false"
         body_name="bo_projectile_rock"
         holster_body_name="bo_axe_short"

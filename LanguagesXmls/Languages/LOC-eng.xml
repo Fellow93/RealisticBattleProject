@@ -175,6 +175,7 @@
 	<string id="RBM_ARM_006" text="Heavy Lamellar over Mail with Scale Skirt" />
 	<string id="RBM_ARM_007" text="Decorated Double Hauberk" />
 	<string id="RBM_ARM_008" text="Heavy Scale Armor over Double Mail" />
+	<string id="RBM_ARM_009" text="Short Lamellar Vest" />
 	<!-- RBMCombat_couched_lances.xml Strings -->
 	<string id="RBM_CLA_001" text="Light Lance Head" />
 	<string id="RBM_CLA_002" text="Tournament Light Lance Head" />
@@ -183,12 +184,11 @@
 	<string id="RBM_CLA_005" text="Heavy Lance Head" />
 	<string id="RBM_CLA_006" text="Thamaskene Steel Leaf Shaped Pike Head" />
 	<!-- RBMCombat_gladius.xml Strings -->
-	<string id="RBM_GLA_001" text="Gladius" />
+	<string id="RBM_GLA_001" text="Throwing Labryes" />
 	<string id="RBM_GLA_002" text="Huge Throwing Axes" />
 	<string id="RBM_GLA_003" text="Large Throwing Axes" />
 	<string id="RBM_GLA_004" text="Medium Throwing Axes" />
 	<string id="RBM_GLA_005" text="Small Throwing Axes" />
-	<string id="RBM_GLA_006" text="Throwing Labryes" />
 	<!-- RBMCombat_head_armors.xml Strings -->
 	<string id="RBM_HEA_001" text="Noble Guard Helmet" />
 	<!-- RBMCombat_horse_armors.xml Strings -->
@@ -308,13 +308,13 @@
 	<!-- RBMCombat_unit_overhaul.xml Strings -->
 	<string id="RBM_OVH_001" text="Aserai Experienced Archer" />
 	<string id="RBM_OVH_002" text="Vlandian Medium Cavalry" />
-	<string id="RBM_OVH_003" text="Khuzait Gear Dummy" />
-	<string id="RBM_OVH_004" text="Empire Weapon Dummy" />
-	<string id="RBM_OVH_005" text="Vlandia Weapon Dummy" />
-	<string id="RBM_OVH_006" text="Aserai Weapon Dummy" />
-	<string id="RBM_OVH_007" text="Sturgia Weapon Dummy" />
-	<string id="RBM_OVH_008" text="Battania Weapon Dummy" />
-	<string id="RBM_OVH_009" text="Khuzait Weapon Dummy" />
+	<string id="RBM_OVH_003" text="Mercenary Horse Archer" />
+	<string id="RBM_OVH_004" text="Veteran Mercenary Horse Archer" />
+	<string id="RBM_OVH_005" text="Hireling Spearman" />
+	<string id="RBM_OVH_006" text="Hireling Pikeman" />
+	<string id="RBM_OVH_007" text="Hireling Elite Pikeman" />
+	<string id="RBM_OVH_008" text="Hireling Crossbowman" />
+	<string id="RBM_OVH_009" text="Elite Hireling Warbowman" />
 	<string id="RBM_OVH_010" text="Horseman" />
 	<string id="RBM_OVH_011" text="Sturgian Shock Troop" />
 	<string id="RBM_OVH_012" text="Son of Boyar" />
@@ -341,12 +341,6 @@
 	<string id="RBM_OVH_033" text="Crossbow Sister" />
 	<string id="RBM_OVH_034" text="Gallant Glaive Sister" />
 	<string id="RBM_OVH_035" text="Glaive Sister" />
-	<string id="RBM_OVH_036" text="Mercenary Horse Archer" />
-	<string id="RBM_OVH_037" text="Veteran Mercenary Horse Archer" />
-	<string id="RBM_OVH_038" text="Hireling Spearman" />
-	<string id="RBM_OVH_039" text="Hireling Pikeman" />
-	<string id="RBM_OVH_040" text="Hireling Elite Pikeman" />
-	<string id="RBM_OVH_041" text="Hireling Crossbowman" />
-	<string id="RBM_OVH_042" text="Elite Hireling Warbowman" />
+	<string id="RBM_OVH_036" text="Imperial Mounted Acritae" />
   </strings>
 </base>

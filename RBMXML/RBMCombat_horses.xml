@@ -378,7 +378,7 @@
     </ItemComponent>
     <Flags Civilian="true" />
   </Item>
-  <Item id="t2_sturgia_horse" name="{=Ejx5lXjk}Revyl Chaser" mesh="horse_brown" subtype="horse" item_category="war_horse" culture="Culture.sturgia" weight="510" difficulty="70" appearance="1" Type="Horse" >
+  <Item id="t2_sturgia_horse" name="{=uPrWdLxV}Revyl Chaser" mesh="horse_brown" subtype="horse" item_category="war_horse" culture="Culture.sturgia" weight="510" difficulty="70" appearance="1" Type="Horse" >
     <ItemComponent>
       <Horse monster="Monster.horse" maneuver="64" speed="54" charge_damage="9" body_length="100" is_mountable="true" extra_health="160" skeleton_scale="sturgia_horse">
         <AdditionalMeshes>

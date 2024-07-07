@@ -1,21 +1,20 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
- <tags>
-  <tag language="简体中文"/>
- </tags>
- <strings>
-
-  <!-- AI Module Strings -->
-	<string id="RBM_AI_001" text="射手进攻:" />
-	<string id="RBM_AI_002" text="骑射手进攻:" />
-	<string id="RBM_AI_003" text="骑兵进攻:" />
-	<string id="RBM_AI_004" text="步兵进攻:" />
-	<string id="RBM_AI_005" text="射手防御:" />
-	<string id="RBM_AI_006" text="骑射手防御:" />
-	<string id="RBM_AI_007" text="骑兵防御:" />
-	<string id="RBM_AI_008" text="步兵防御:" />
+  <tags>
+    <tag language="简体中文"/>
+  </tags>
+  <strings>
+	<!-- AI Module Strings -->
+	<string id="RBM_AI_001" text="攻方射手:" />
+	<string id="RBM_AI_002" text="攻方骑射手:" />
+	<string id="RBM_AI_003" text="攻方骑兵:" />
+	<string id="RBM_AI_004" text="攻方步兵:" />
+	<string id="RBM_AI_005" text="守方射手:" />
+	<string id="RBM_AI_006" text="守方骑射手:" />
+	<string id="RBM_AI_007" text="守方骑兵:" />
+	<string id="RBM_AI_008" text="守方步兵:" />
 	<string id="RBM_AI_009" text="架势崩解，受到{DMG}点伤害" />
-	<string id="RBM_AI_010" text="敌方架势崩解，受到{DMG}点伤害" />
+	<string id="RBM_AI_010" text="敌方架势崩解，造成{DMG}点伤害" />
 	<string id="RBM_AI_011" text="架势崩解，完美格挡，受到{DMG}点伤害" />
 	<string id="RBM_AI_012" text="敌方架势崩解，完美格挡，造成{DMG}点伤害" />
 	<string id="RBM_AI_013" text="架势崩解，完美格挡" />
@@ -176,6 +175,7 @@
 	<string id="RBM_ARM_006" text="重型扎甲衬链甲配鳞甲裙" />
 	<string id="RBM_ARM_007" text="装饰双层链铠" />
 	<string id="RBM_ARM_008" text="重型鳞甲衬双层链甲" />
+	<string id="RBM_ARM_009" text="短层状背心" />
 	<!-- RBMCombat_couched_lances.xml Strings -->
 	<string id="RBM_CLA_001" text="轻型骑矛刃" />
 	<string id="RBM_CLA_002" text="轻型骑矛钝刃" />
@@ -184,12 +184,11 @@
 	<string id="RBM_CLA_005" text="重型骑矛刃" />
 	<string id="RBM_CLA_006" text="精炼钢叶形矛刃" />
 	<!-- RBMCombat_gladius.xml Strings -->
-	<string id="RBM_GLA_001" text="帝国短剑" />
+	<string id="RBM_GLA_001" text="双头飞斧" />
 	<string id="RBM_GLA_002" text="巨型飞斧" />
 	<string id="RBM_GLA_003" text="大型飞斧" />
 	<string id="RBM_GLA_004" text="中型飞斧" />
 	<string id="RBM_GLA_005" text="小型飞斧" />
-	<string id="RBM_GLA_006" text="双头飞斧" />
 	<!-- RBMCombat_head_armors.xml Strings -->
 	<string id="RBM_HEA_001" text="贵族守卫头盔" />
 	<!-- RBMCombat_horse_armors.xml Strings -->
@@ -309,13 +308,13 @@
 	<!-- RBMCombat_unit_overhaul.xml Strings -->
 	<string id="RBM_OVH_001" text="阿塞莱资深射手" />
 	<string id="RBM_OVH_002" text="瓦兰迪亚骑兵" />
-	<string id="RBM_OVH_003" text="库赛特装备假人" />
-	<string id="RBM_OVH_004" text="帝国武器假人" />
-	<string id="RBM_OVH_005" text="瓦兰迪亚武器假人" />
-	<string id="RBM_OVH_006" text="阿塞莱武器假人" />
-	<string id="RBM_OVH_007" text="斯特吉亚武器假人" />
-	<string id="RBM_OVH_008" text="巴旦尼亚武器假人" />
-	<string id="RBM_OVH_009" text="库赛特武器假人" />
+	<string id="RBM_OVH_003" text="雇佣骑射手" />
+	<string id="RBM_OVH_004" text="资深雇佣骑射手" />
+	<string id="RBM_OVH_005" text="雇佣长矛手" />
+	<string id="RBM_OVH_006" text="雇佣长枪兵" />
+	<string id="RBM_OVH_007" text="精英雇佣长枪兵" />
+	<string id="RBM_OVH_008" text="雇佣弩手" />
+	<string id="RBM_OVH_009" text="精英雇佣长弓手" />
 	<string id="RBM_OVH_010" text="骑手" />
 	<string id="RBM_OVH_011" text="斯特吉亚冲击步兵" />
 	<string id="RBM_OVH_012" text="斯特吉亚卫队少年" />
@@ -342,12 +341,6 @@
 	<string id="RBM_OVH_033" text="女剑士团追随者" />
 	<string id="RBM_OVH_034" text="侠义女剑士" />
 	<string id="RBM_OVH_035" text="资深女剑士" />
-	<string id="RBM_OVH_036" text="雇佣骑射手" />
-	<string id="RBM_OVH_037" text="资深雇佣骑射手" />
-	<string id="RBM_OVH_038" text="雇佣长矛手" />
-	<string id="RBM_OVH_039" text="雇佣长枪兵" />
-	<string id="RBM_OVH_040" text="精英雇佣长枪兵" />
-	<string id="RBM_OVH_041" text="雇佣弩手" />
-	<string id="RBM_OVH_042" text="精英雇佣长弓手" />
- </strings>
+	<string id="RBM_OVH_036" text="帝国骑兵阿克里塔" />
+  </strings>
 </base>

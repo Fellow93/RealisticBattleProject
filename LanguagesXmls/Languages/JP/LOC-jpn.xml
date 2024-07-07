@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="日本語" />
+  </tags>
+  <strings>
+	<!-- AI Module Strings -->
+	<string id="RBM_AI_001" text="攻撃 アーク:" />
+	<string id="RBM_AI_002" text="攻撃 馬弓兵 :" />
+	<string id="RBM_AI_003" text="攻撃 騎兵:" />
+	<string id="RBM_AI_004" text="攻撃 歩兵:" />
+	<string id="RBM_AI_005" text="守る アーク:" />
+	<string id="RBM_AI_006" text="守る 馬弓兵 :" />
+	<string id="RBM_AI_007" text="守る 騎兵:" />
+	<string id="RBM_AI_008" text="守る 歩兵:" />
+	<string id="RBM_AI_009" text="姿勢を崩した。体幹を失い{DMG}ダメージ" />
+	<string id="RBM_AI_010" text="敵の姿勢を崩した。 体幹を失った敵に{DMG}ダメージ" />
+	<string id="RBM_AI_011" text="姿勢を崩した。完全なタイミングのパリーだが体幹を失い{DMG}ダメージ" />
+	<string id="RBM_AI_012" text="敵の姿勢を崩した。完全なタイミングのパリーだが体幹を失い{DMG}ダメージ" />
+	<string id="RBM_AI_013" text="姿勢を崩した。完全なタイミングのパリーで体幹を失った" />
+	<string id="RBM_AI_014" text="姿勢を崩した。誤った向きの防御で体幹を失った" />
+	<string id="RBM_AI_015" text="姿勢を崩した。適切な方向の防御で体幹を失った" />
+	<string id="RBM_AI_016" text="姿勢を崩した。完全なタイミングと方向のパリーで体幹を失った" />
+	<string id="RBM_AI_017" text="姿勢を崩した。完全なタイミングと方向のパリーで体幹を失った" />
+	<string id="RBM_AI_018" text="姿勢を崩した。チャンバーブロックで体幹を失った" />
+	<string id="RBM_AI_019" text="姿勢を崩した。チャンバーブロックで体幹を失い{DMG}ダメージ" />
+	<string id="RBM_AI_020" text="チャンバーブロックしたが{DMG}ダメージ" />
+	<string id="RBM_AI_021" text="あなたは{DMG1}の鈍的外傷、{DMG2}の装甲貫通ダメージを受けました" />
+	<string id="RBM_AI_022" text="あなたは{DMG1}の鈍的外傷、{DMG2}の装甲貫通ダメージを与えました" />
+	<string id="RBM_AI_023" text="体幹" />
+	<!-- Combat Module Strings -->
+	<string id="RBM_COM_001" text="{TYPE}命中" />
+	<string id="RBM_COM_002" text="{TYPE}命中" />
+	<string id="RBM_COM_003" text="柄が" />
+	<string id="RBM_COM_004" text="柄頭が" />
+	<string id="RBM_COM_005" text="顔面に命中!" />
+	<string id="RBM_COM_006" text="顔面に命中!" />
+	<string id="RBM_COM_007" text="脇の下に命中" />
+	<string id="RBM_COM_008" text="脇の下に命中" />
+	<string id="RBM_COM_009" text="最適弾体重量(グラム): " />
+	<string id="RBM_COM_010" text="初速(m/秒): " />
+	<string id="RBM_COM_011" text="補正後の弓力: " />
+	<string id="RBM_COM_012" text="で弾体の貫通ダメー" />
+	<string id="RBM_COM_013" text="で弾体の斬撃ダメー" />
+	<string id="RBM_COM_014" text="依存スキル: " />
+	<string id="RBM_COM_015" text="で弾体のダメー" />
+	<string id="RBM_COM_016" text="振り攻撃係数:" />
+	<string id="RBM_COM_017" text="突き攻撃係数:" />
+	<string id="RBM_COM_018" text="最適打点の位置(%): " />
+	<string id="RBM_COM_019" text="RBM開発用ステータス" />
+	<string id="RBM_COM_020" text="振り速度(m/秒): " />
+	<string id="RBM_COM_021" text="突き速度(m/秒): " />
+	<string id="RBM_COM_022" text="盾の防御力: " />
+	<string id="RBM_COM_023" text="顔面の防御力" />
+	<string id="RBM_COM_024" text="頸部の防御力" />
+	<string id="RBM_COM_025" text="肩部の防御力" />
+	<string id="RBM_COM_026" text="腹部の防御力" />
+	<string id="RBM_COM_027" text="上腕の防御力" />
+	<string id="RBM_COM_028" text="A=防御力" />
+	<string id="RBM_COM_029" text="B=ダメージ" />
+	<string id="RBM_COM_030" text="C=貫通ダメージ" />
+	<string id="RBM_COM_031" text="D=打撃ダメージ" />
+	<string id="RBM_COM_032" text="A" />
+	<string id="RBM_COM_033" text="B" />
+	<string id="RBM_COM_034" text="C" />
+	<string id="RBM_COM_035" text="D" />
+	<string id="RBM_COM_036" text="RBMステータス" />
+	<string id="RBM_COM_037" text="マウスオーバー" />
+	<!-- Config Module Strings -->
+	<string id="RBM_CON_001" text="無効" />
+	<string id="RBM_CON_002" text="有効 (推奨)" />
+	<string id="RBM_CON_003" text="兵士のオーバーホール" />
+	<string id="RBM_CON_004" text="バニラ" />
+	<string id="RBM_CON_005" text="現実的" />
+	<string id="RBM_CON_006" text="半現実的" />
+	<string id="RBM_CON_007" text="投射武器の装填速度" />
+	<string id="RBM_CON_008" text="背負った盾の防御効果" />
+	<string id="RBM_CON_009" text="矢の外見の向上" />
+	<string id="RBM_CON_010" text="鎧ステータスGUI" />
+	<string id="RBM_CON_011" text="現実的な弾道" />
+	<string id="RBM_CON_012" text="体幹システム" />
+	<string id="RBM_CON_013" text="プレイヤーの体幹倍率" />
+	<string id="RBM_CON_014" text="体幹ゲージ" />
+	<string id="RBM_CON_015" text="バニラのAIの攻撃・防御" />
+	<string id="RBM_CON_016" text="RBMコンバット" />
+	<string id="RBM_CON_017" text="モジュールの状態" />
+	<string id="RBM_CON_018" text="RBM AI" />
+	<string id="RBM_CON_019" text="RBMトーナメント" />
+	<string id="RBM_CON_020" text="RBMコンフィグ" />
+	<!-- Tournament Module Strings -->
+	<string id="RBM_TOU_001" text="本大会" />
+	<string id="RBM_TOU_002" text="Tier {TIER}競技会" />
+	<string id="RBM_TOU_003" text="おめでとう。{Name}の品質ロールに成功した。{Need}以上が必要だったのに対し{Roll}が出た。" />
+	<string id="RBM_TOU_004" text="{Name}の品質ロールに失敗した。{Need}以上が必要だったのに対し、{Roll}が出た。" />
+	<!-- module_strings.xml Strings -->
+	<string id="RBM_STR_001" text="{?IS_RIGHT}右{TROOP_NAMES_BEGIN}{?IS_PLURAL}と{?}{\?}{TROOP_NAMES_END}が一撃離脱戦術を実施中{?}{\?}{?IS_LEFT}左{TROOP_NAMES_BEGIN}{?IS_PLURAL}と{?}{\?}{TROOP_NAMES_END}が一撃離脱戦術を実施中{?}{\?}" />
+	<string id="RBM_STR_002" text="歩兵が側面攻撃を実施中" />
+	<string id="RBM_STR_003" text="射手が側面から牽制中" />
+	<string id="RBM_STR_004" text="騎兵が歩兵の前で楔陣を形成中" />
+	<string id="RBM_STR_005" text="前哨戦" />
+	<string id="RBM_STR_006" text="一撃離脱戦術を実施しろ" />
+	<string id="RBM_STR_007" text="突撃せよ" />
+	<string id="RBM_STR_008" text="{SIDE_STRING}側面から攻撃せよ" />
+	<string id="RBM_STR_009" text="歩兵の前で楔陣を形成せよ" />
+	<string id="RBM_STR_010" text="我々の作戦は、射手に敵側面を攻撃をさせつつ総攻撃を仕掛けることだ。" />
+	<string id="RBM_STR_011" text="我々の作戦は、敵歩兵を分断し、これを両翼からの攻撃で粉砕することだ。" />
+	<string id="RBM_STR_012" text="我々の作戦は、散兵で敵を誘引し、そこに総攻撃を仕掛けて粉砕することだ。" />
+	<string id="RBM_STR_013" text="我々の作戦は、射手で脇を固めつつ防衛線を形成することだ。" />
+	<string id="RBM_STR_014" text="我々の作戦は、騎兵で正面突撃を行い、乱れた敵の隊列を粉砕することだ。" />
+	<!-- RBMCombat_arrow_visuals.xml Strings -->
+	<string id="RBM_ARR_001" text="軽量矢、30グラム"/>
+	<string id="RBM_ARR_002" text="返し付きの矢、40グラム"/>
+	<string id="RBM_ARR_003" text="細いボドキン矢、40グラム"/>
+	<string id="RBM_ARR_004" text="返し付きのボルト、50グラム"/>
+	<string id="RBM_ARR_005" text="細いボドキン矢、50グラム"/>
+	<string id="RBM_ARR_006" text="返し付きの矢、50グラム"/>
+	<string id="RBM_ARR_007" text="細いボドキンボルド、60グラム"/>
+	<string id="RBM_ARR_008" text="返し付きの矢、60グラム"/>
+	<string id="RBM_ARR_009" text="細いボドキン矢、60グラム"/>
+	<string id="RBM_ARR_010" text="細いボドキン矢、70グラム"/>
+	<string id="RBM_ARR_011" text="細いボドキンボルト、75グラム"/>
+	<string id="RBM_ARR_012" text="細いボドキン矢、80グラム"/>
+	<string id="RBM_ARR_013" text="細いボドキンボルト、90グラム"/>
+	<string id="RBM_ARR_014" text="細いボドキン矢、90グラム"/>
+	<string id="RBM_ARR_015" text="細いボドキン矢、100グラム"/>
+	<string id="RBM_ARR_016" text="重く細いボドキン矢、110グラム"/>
+	<string id="RBM_ARR_017" text="重く細いボドキンボルト、120グラム"/>
+	<string id="RBM_ARR_018" text="重い細いボドキン矢、125グラム"/>
+	<string id="RBM_ARR_019" text="とても重く細いボドキンボルト、150グラム"/>
+	<string id="RBM_ARR_020" text="油を塗った軽量矢、30グラム"/>
+	<string id="RBM_ARR_021" text="油を塗った返し付きの矢、40グラム"/>
+	<string id="RBM_ARR_022" text="油を塗った細いボドキン矢、40グラム"/>
+	<string id="RBM_ARR_023" text="油を塗った返し付きのボルト，50グラム"/>
+	<string id="RBM_ARR_024" text="油を塗った細いボドキン矢、50グラム"/>
+	<string id="RBM_ARR_025" text="油を塗った返し付きの矢、50グラム"/>
+	<string id="RBM_ARR_026" text="油を塗った細いボドキンボルト、60グラム"/>
+	<string id="RBM_ARR_027" text="油を塗った返し付きの矢、60グラム"/>
+	<string id="RBM_ARR_028" text="油を塗った細いボドキン矢、60グラム"/>
+	<string id="RBM_ARR_029" text="油を塗った細いボドキン矢、70グラム"/>
+	<string id="RBM_ARR_030" text="油を塗った細いボドキンボルト、75グラム"/>
+	<string id="RBM_ARR_031" text="油を塗った細いボドキン矢、80グラム"/>
+	<string id="RBM_ARR_032" text="油を塗った細いボドキンボルト、90グラム"/>
+	<string id="RBM_ARR_033" text="油を塗った細いボドキン矢、90グラム"/>
+	<string id="RBM_ARR_034" text="油を塗った細いボドキン矢、100グラム"/>
+	<string id="RBM_ARR_035" text="油を塗った細いボドキン矢、110グラム"/>
+	<string id="RBM_ARR_036" text="油を塗った細いボドキンボルト、120グラム"/>
+	<string id="RBM_ARR_037" text="油を塗ったかなり重い細いボドキン矢、125グラム"/>
+	<string id="RBM_ARR_038" text="油を塗った非常に重く細いボドキンボルト、150グラム"/>
+	<string id="RBM_ARR_039" text="焼入れタマスケン鋼の返し付きの矢、80グラム"/>
+	<string id="RBM_ARR_040" text="焼入れタマスケン鋼の返し付きの矢、90グラム"/>
+	<string id="RBM_ARR_041" text="焼入れのタマスケン鋼の返し付きの矢、100グラム"/>
+	<string id="RBM_ARR_042" text="焼入れタマスケン鋼の返し付きの矢、110グラム"/>
+	<string id="RBM_ARR_043" text="焼入れタマスケン鋼の返し付きの矢、125グラム"/>
+	<string id="RBM_ARR_044" text="焼入れ鋼の返し付きのボルト、75グラム"/>
+	<string id="RBM_ARR_045" text="焼入れ鋼の返し付きのボルト、90グラム"/>
+	<string id="RBM_ARR_046" text="焼入れ鋼の返し付きのボルト、120グラム"/>
+	<string id="RBM_ARR_047" text="焼入れ鋼の返し付きのボルト、150グラム"/>
+	<string id="RBM_ARR_048" text="油を塗った焼入れ鋼の返し付きの矢、80グラム"/>
+	<string id="RBM_ARR_049" text="油を塗った焼入れ鋼の返し付きの矢、90グラム"/>
+	<string id="RBM_ARR_050" text="油を塗った焼入れ鋼の返し付きの矢、100グラム"/>
+	<string id="RBM_ARR_051" text="油を塗った焼入れ鋼の返し付きの矢、110グラム"/>
+	<string id="RBM_ARR_052" text="油を塗った焼入れ鋼の返し付きの矢、125グラム"/>
+	<string id="RBM_ARR_053" text="油を塗った焼入れ鋼の返し付きのボルト、75グラム"/>
+	<string id="RBM_ARR_054" text="油を塗った焼入れ鋼の返し付きのボルト、90グラム"/>
+	<string id="RBM_ARR_055" text="油を塗った焼入れ鋼の返し付きのボルト、120グラム"/>
+	<string id="RBM_ARR_056" text="油を塗った焼入れ鋼の返し付きのボルト、150グラム"/>
+	<string id="RBM_ARR_057" text="カルラディアの火矢"/>
+	<string id="RBM_ARR_058" text="カルラディアの火太矢"/>
+	<!-- RBMCombat_body_armors.xml Strings -->
+	<string id="RBM_ARM_001" text="二重編みのホーバーク" />
+	<string id="RBM_ARM_002" text="軽い薄片鎧を重ねた鎖鎧" />
+	<string id="RBM_ARM_003" text="軽い薄片鎧を重ねた鎖鎧" />
+	<string id="RBM_ARM_004" text="鱗鎧を重ねた鎖鎧" />
+	<string id="RBM_ARM_005" text="薄片鎧を重ねた鎖鎧" />
+	<string id="RBM_ARM_006" text="重い薄片鎧を重ねた鱗スカート付きの鎖鎧" />
+	<string id="RBM_ARM_007" text="装飾のある二重編みのホーバーク" />
+	<string id="RBM_ARM_008" text="重い鱗鎧を重ねた二重編みの鎖鎧" />
+	<string id="RBM_ARM_009" text="ショートラメラベスト" />
+	<!-- RBMCombat_couched_lances.xml Strings -->
+	<string id="RBM_CLA_001" text="軽い競技用の馬上槍の穂先" />
+	<string id="RBM_CLA_002" text="軽い競技用の競技用の馬上槍の穂先" />
+	<string id="RBM_CLA_003" text="中量級の馬上槍の穂先" />
+	<string id="RBM_CLA_004" text="中量級の競技用の馬上槍の穂先" />
+	<string id="RBM_CLA_005" text="重い馬上槍の穂先" />
+	<string id="RBM_CLA_006" text="タマスケン鋼の葉型パイクの穂先" />
+	<!-- RBMCombat_gladius.xml Strings -->
+	<string id="RBM_GLA_001" text="投擲ラブルス" />
+	<string id="RBM_GLA_002" text="巨大な投擲斧" />
+	<string id="RBM_GLA_003" text="大型の投擲斧" />
+	<string id="RBM_GLA_004" text="中量級の投擲斧" />
+	<string id="RBM_GLA_005" text="小さい投擲斧" />
+	<!-- RBMCombat_head_armors.xml Strings -->
+	<string id="RBM_HEA_001" text="貴族の保護板付き兜" />
+	<!-- RBMCombat_horse_armors.xml Strings -->
+	<string id="RBM_HAR_001" text="薄片の馬鎧" />
+	<!-- RBMCombat_item_modifiers.xml Strings -->
+	<string id="RBM_MOD_001" text="傷んだ" />
+	<string id="RBM_MOD_002" text="かなり傷んだ" />
+	<string id="RBM_MOD_003" text="壊れた" />
+	<string id="RBM_MOD_004" text="傷のある" />
+	<string id="RBM_MOD_005" text="傷のある緩んだ" />
+	<string id="RBM_MOD_006" text="傷のある錆びた" />
+	<string id="RBM_MOD_007" text="少し傷んだ" />
+	<string id="RBM_MOD_008" text="非常に傷んだ" />
+	<!-- RBMCombat_lances.xml Strings -->
+	<string id="RBM_LAN_001" text="松の投擲矢" />
+	<string id="RBM_LAN_002" text="松のジャベリン" />
+	<string id="RBM_LAN_003" text="松の投擲馬上槍" />
+	<string id="RBM_LAN_004" text="トネリコの投擲馬上槍" />
+	<string id="RBM_LAN_005" text="トネリコのジャベリン" />
+	<string id="RBM_LAN_006" text="樫の投擲馬上槍" />
+	<string id="RBM_LAN_007" text="樫のアンゴン" />
+	<string id="RBM_LAN_008" text="マホガニーの投擲矢" />
+	<string id="RBM_LAN_009" text="マホガニーのジャベリン" />
+	<string id="RBM_LAN_010" text="マホガニーの投擲馬上槍" />
+	<string id="RBM_LAN_011" text="軽いヴランディアの馬上槍" />
+	<string id="RBM_LAN_012" text="軽い帝国の馬上槍" />
+	<string id="RBM_LAN_013" text="クーザイトの軽い馬上槍" />
+	<string id="RBM_LAN_014" text="ヴランディアの馬上槍" />
+	<string id="RBM_LAN_015" text="帝国の馬上槍" />
+	<string id="RBM_LAN_016" text="東方の貴族の馬上槍" />
+	<string id="RBM_LAN_017" text="東方の長柄剣" />
+	<string id="RBM_LAN_018" text="西方のパイク" />
+	<string id="RBM_LAN_019" text="軽いメナウリオン" />
+	<!-- RBMCombat_ranged.xml Strings -->
+	<string id="RBM_RAN_001" text="二重弦のクロスボウ、500ポンド"/>
+	<string id="RBM_RAN_002" text="二重弦のクロスボウ、450ポンド"/>
+	<string id="RBM_RAN_003" text="二重弦のクロスボウ、410ポンド"/>
+	<string id="RBM_RAN_004" text="二重弦のクロスボウ、370ポンド"/>
+	<string id="RBM_RAN_005" text="足掛け式クロスボウ、330ポンド"/>
+	<string id="RBM_RAN_006" text="練習用の足掛け式クロスボウ、290ポンド"/>
+	<string id="RBM_RAN_007" text="練習用の足掛け式クロスボウ、250ポンド"/>
+	<string id="RBM_RAN_008" text="戦長弓、200ポンド"/>
+	<string id="RBM_RAN_009" text="競技用の長弓、200ポンド"/>
+	<string id="RBM_RAN_010" text="戦長弓、180ポンド"/>
+	<string id="RBM_RAN_011" text="戦長弓、170ポンド"/>
+	<string id="RBM_RAN_012" text="戦合成弓、166ポンド"/>
+	<string id="RBM_RAN_013" text="競技用の合成弓、166ポンド"/>
+	<string id="RBM_RAN_014" text="戦長弓、160ポンド"/>
+	<string id="RBM_RAN_015" text="戦長弓、150ポンド"/>
+	<string id="RBM_RAN_016" text="戦長弓、140ポンド"/>
+	<string id="RBM_RAN_017" text="戦合成弓、135ポンド"/>
+	<string id="RBM_RAN_018" text="戦長弓、130ポンド"/>
+	<string id="RBM_RAN_019" text="戦合成弓、125ポンド"/>
+	<string id="RBM_RAN_020" text="戦長弓、120ポンド"/>
+	<string id="RBM_RAN_021" text="戦合成弓、120ポンド"/>
+	<string id="RBM_RAN_022" text="戦合成弓、110ポンド"/>
+	<string id="RBM_RAN_023" text="戦合成弓、100ポンド"/>
+	<string id="RBM_RAN_024" text="戦長弓、100ポンド"/>
+	<string id="RBM_RAN_025" text="長弓、90ポンド"/>
+	<string id="RBM_RAN_026" text="合成弓、90ポンド"/>
+	<string id="RBM_RAN_027" text="合成弓、70ポンド"/>
+	<string id="RBM_RAN_028" text="合成弓、60ポンド"/>
+	<!-- RBMCombat_shields.xml Strings -->
+	<string id="RBM_SHI_001" text="補強された肩紐付きタージ"/>
+	<string id="RBM_SHI_002" text="草原の肩紐付き円盾"/>
+	<string id="RBM_SHI_003" text="東方の騎兵の肩紐付き盾"/>
+	<string id="RBM_SHI_004" text="草原の部族の肩紐付き盾"/>
+	<string id="RBM_SHI_005" text="東方の装飾された肩紐付きの盾"/>
+	<string id="RBM_SHI_006" text="小さな騎兵の肩紐付きヒーターシールド"/>
+	<string id="RBM_SHI_007" text="小さな平坦な肩紐付きヒーターシールド"/>
+	<string id="RBM_SHI_008" text="小さな肩紐付きヒーターシールド"/>
+	<string id="RBM_SHI_009" text="乗馬兵のくたびれた肩紐付きカイトシールド"/>
+	<string id="RBM_SHI_010" text="肩紐付きの木のカイトシールド"/>
+	<string id="RBM_SHI_011" text="乗馬兵の間に合わせの肩紐付きカイトシールド"/>
+	<string id="RBM_SHI_012" text="軽騎兵の肩紐付きカイトシールド"/>
+	<string id="RBM_SHI_013" text="騎兵の肩紐付きカイトシールド"/>
+	<string id="RBM_SHI_014" text="小さな騎兵の補強された肩紐付き盾"/>
+	<string id="RBM_SHI_015" text="北方の騎兵の肩紐付きカイトシールド"/>
+	<string id="RBM_SHI_016" text="騎兵の補強された肩紐付き盾"/>
+	<string id="RBM_SHI_017" text="騎兵の補強された肩紐付きカイトシールド"/>
+	<string id="RBM_SHI_018" text="切り欠きのある肩紐付きヒーターシールド"/>
+	<string id="RBM_SHI_019" text="西方の騎手の練習用の肩紐付きカイトシールド"/>
+	<string id="RBM_SHI_020" text="西方の騎手の肩紐付きカイトシールド"/>
+	<string id="RBM_SHI_021" text="肩紐付きの補強された鉄縁のカイトシールド"/>
+	<string id="RBM_SHI_022" text="肩紐付きの平たいヒーターシールド"/>
+	<string id="RBM_SHI_023" text="肩紐付きの広いヒーターシールド"/>
+	<string id="RBM_SHI_024" text="騎士の肩紐付き盾"/>
+	<string id="RBM_SHI_025" text="肩紐固定のヒーターシールド"/>
+	<string id="RBM_SHI_026" text="重い肩紐付きヒーターシールド"/>
+	<string id="RBM_SHI_027" text="高い肩紐付きヒーターシールド"/>
+	<string id="RBM_SHI_028" text="くたびれた肩紐付きカイトシールド"/>
+	<string id="RBM_SHI_029" text="練習用の肩紐付きカイトシールド"/>
+	<string id="RBM_SHI_030" text="肩紐付きの鉄縁のカイトシールド"/>
+	<string id="RBM_SHI_031" text="肩紐付きの補強された平たいカイトシールド"/>
+	<string id="RBM_SHI_032" text="肩紐付きのカイトシールド"/>
+	<string id="RBM_SHI_033" text="肩紐付きの箍を鋲打ちしたカイトシールド"/>
+	<string id="RBM_SHI_034" text="肩紐付きの装甲を重ねたカイトシールド"/>
+	<string id="RBM_SHI_035" text="騎士の肩紐付きカイトシールド"/>
+	<string id="RBM_SHI_036" text="携帯型パヴィス"/>
+	<string id="RBM_SHI_037" text="使い古しの肩紐付きのカイトシールド"/>
+	<string id="RBM_SHI_038" text="肩紐付きの革縁のカイトシールド"/>
+	<string id="RBM_SHI_039" text="肩紐付き補強されたカイトシールド"/>
+	<string id="RBM_SHI_040" text="肩紐付きの補強された樫のカイトシールド"/>
+	<string id="RBM_SHI_041" text="間に合わせの肩紐付きの練習用カイトシールド"/>
+	<string id="RBM_SHI_042" text="間に合せの肩紐付きのカイトシールド"/>
+	<string id="RBM_SHI_043" text="補強された肩紐付きタージ" />
+	<string id="RBM_SHI_044" text="6SxJ9cpN" />
+	<string id="RBM_SHI_045" text="北方の練習用の円盾" />
+	<string id="RBM_SHI_046" text="北方の円盾" />
+	<string id="RBM_SHI_047" text="北方の騎兵のカイトシールド" />
+	<string id="RBM_SHI_048" text="西方の騎手の練習用のカイトシールド" />
+	<string id="RBM_SHI_049" text="西方の騎手のカイトシールド" />
+	<string id="RBM_SHI_050" text="くたびれたカイトシールド" />
+	<string id="RBM_SHI_051" text="高地の散兵の盾" />
+	<string id="RBM_SHI_052" text="高地散兵の鉄で補強された盾" />
+	<string id="RBM_SHI_053" text="高地散兵の補強された青銅盾" />
+	<!-- RBMCombat_unit_overhaul.xml Strings -->
+	<string id="RBM_OVH_001" text="アセライの熟練射手" />
+	<string id="RBM_OVH_002" text="ヴランディアの中装騎兵" />
+	<string id="RBM_OVH_003" text="傭兵騎馬弓兵" />
+	<string id="RBM_OVH_004" text="ベテラン傭兵騎馬弓兵" />
+	<string id="RBM_OVH_005" text="傭兵団の槍兵" />
+	<string id="RBM_OVH_006" text="傭兵団のパイク兵" />
+	<string id="RBM_OVH_007" text="傭兵団の精鋭パイク兵" />
+	<string id="RBM_OVH_008" text="傭兵団のクロスボウ手" />
+	<string id="RBM_OVH_009" text="傭兵団の精鋭戦弓兵" />
+	<string id="RBM_OVH_010" text="乗馬兵" />
+	<string id="RBM_OVH_011" text="スタルジアの強襲兵" />
+	<string id="RBM_OVH_012" text="スタルジアのボヤールの子息" />
+	<string id="RBM_OVH_013" text="スタルジアのベルセルク" />
+	<string id="RBM_OVH_014" text="スタルジアのウルフヘジン" />
+	<string id="RBM_OVH_015" text="スケーネ" />
+	<string id="RBM_OVH_016" text="カーン" />
+	<string id="RBM_OVH_017" text="跣足傭兵" />
+	<string id="RBM_OVH_018" text="護衛隊の新兵" />
+	<string id="RBM_OVH_019" text="護衛隊の熟練兵" />
+	<string id="RBM_OVH_020" text="護衛隊の歴戦兵" />
+	<string id="RBM_OVH_021" text="聖炎騎士" />
+	<string id="RBM_OVH_022" text="カラフザイト・ノマド" />
+	<string id="RBM_OVH_023" text="カラクザイトライダー" />
+	<string id="RBM_OVH_024" text="カラクザイト長老" />
+	<string id="RBM_OVH_025" text="傭兵団の歩哨兵" />
+	<string id="RBM_OVH_026" text="傭兵団の護衛兵" />
+	<string id="RBM_OVH_027" text="傭兵団の斥候" />
+	<string id="RBM_OVH_028" text="傭兵団の剣士" />
+	<string id="RBM_OVH_029" text="傭兵団のクロスボウ手" />
+	<string id="RBM_OVH_030" text="傭兵団の乗馬兵" />
+	<string id="RBM_OVH_031" text="傭兵団の騎士" />
+	<string id="RBM_OVH_032" text="傭兵団の騎兵" />
+	<string id="RBM_OVH_033" text="剣の乙女のクロスボウ兵" />
+	<string id="RBM_OVH_034" text="剣の乙女のグレイヴ戦士" />
+	<string id="RBM_OVH_035" text="剣の乙女のグレイヴ兵" />
+	<string id="RBM_OVH_036" text="インペリアル騎馬アクリテエ" />
+  </strings>
+</base>

@@ -175,6 +175,7 @@
 	<string id="RBM_ARM_006" text="Lamellaire lourde sur mailles avec jupe d'écailles" />
 	<string id="RBM_ARM_007" text="Double haubert décoré" />
 	<string id="RBM_ARM_008" text="Armure d'écailles lourde sur double mailles" />
+	<string id="RBM_ARM_009" text="Gilet lamellaire court" />
 	<!-- RBMCombat_couched_lances.xml Strings -->
 	<string id="RBM_CLA_001" text="Tête de lance légère" />
 	<string id="RBM_CLA_002" text="Tête de lance légère de tournoi" />
@@ -183,12 +184,11 @@
 	<string id="RBM_CLA_005" text="Tête de lance lourde" />
 	<string id="RBM_CLA_006" text="Tête de pique en forme de feuille en acier Thamaskene" />
 	<!-- RBMCombat_gladius.xml Strings -->
-	<string id="RBM_GLA_001" text="Gladius" />
+	<string id="RBM_GLA_001" text="Labrys de lancer" />
 	<string id="RBM_GLA_002" text="Grands haches de lancer" />
 	<string id="RBM_GLA_003" text="Grandes haches de lancer" />
 	<string id="RBM_GLA_004" text="Haches de lancer moyennes" />
 	<string id="RBM_GLA_005" text="Petites haches de lancer" />
-	<string id="RBM_GLA_006" text="Labrys de lancer" />
 	<!-- RBMCombat_head_armors.xml Strings -->
 	<string id="RBM_HEA_001" text="Casque de garde noble" />
 	<!-- RBMCombat_horse_armors.xml Strings -->
@@ -308,13 +308,13 @@
 	<!-- RBMCombat_unit_overhaul.xml Strings -->
 	<string id="RBM_OVH_001" text="Archer expérimenté aseraï" />
 	<string id="RBM_OVH_002" text="Cavalerie moyenne vlandienne" />
-	<string id="RBM_OVH_003" text="Factice d'équipement Khuzait" />
-	<string id="RBM_OVH_004" text="Mannequin d'arme de l'Empire" />
-	<string id="RBM_OVH_005" text="Mannequin d'arme vlandienne" />
-	<string id="RBM_OVH_006" text="Mannequin d'arme Aserai" />
-	<string id="RBM_OVH_007" text="Mannequin d'arme Sturgia" />
-	<string id="RBM_OVH_008" text="Mannequin d'arme battanian" />
-	<string id="RBM_OVH_009" text="Mannequin d'arme Khuzait" />
+	<string id="RBM_OVH_003" text="Archer à cheval mercenaire" />
+	<string id="RBM_OVH_004" text="Archer à cheval mercenaire vétéran" />
+	<string id="RBM_OVH_005" text="Lancier mercenaire" />
+	<string id="RBM_OVH_006" text="Piquier mercenaire" />
+	<string id="RBM_OVH_007" text="Piquier élite mercenaire" />
+	<string id="RBM_OVH_008" text="Arbalétrier mercenaire" />
+	<string id="RBM_OVH_009" text="Archer d'élite mercenaire" />
 	<string id="RBM_OVH_010" text="Cavalier" />
 	<string id="RBM_OVH_011" text="Troupier de choc sturgien" />
 	<string id="RBM_OVH_012" text="Fils de boyard" />
@@ -341,12 +341,6 @@
 	<string id="RBM_OVH_033" text="Soeur arbalétrière" />
 	<string id="RBM_OVH_034" text="Soeur de glaive galante" />
 	<string id="RBM_OVH_035" text="Soeur de glaive" />
-	<string id="RBM_OVH_036" text="Archer à cheval mercenaire" />
-	<string id="RBM_OVH_037" text="Archer à cheval mercenaire vétéran" />
-	<string id="RBM_OVH_038" text="Lancier mercenaire" />
-	<string id="RBM_OVH_039" text="Piquier mercenaire" />
-	<string id="RBM_OVH_040" text="Piquier élite mercenaire" />
-	<string id="RBM_OVH_041" text="Arbalétrier mercenaire" />
-	<string id="RBM_OVH_042" text="Archer d'élite mercenaire" />
+	<string id="RBM_OVH_036" text="Acritae montés impériaux" />
   </strings>
 </base>

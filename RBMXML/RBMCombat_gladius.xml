@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Items>
-  <CraftedItem id="gladius_b" name="{=RBM_GLA_001}Gladius" crafting_template="Dagger" culture="Culture.empire" modifier_group="sword">
+  <CraftedItem id="gladius_b" name="{=lwxOPEPx}Gladius" crafting_template="Dagger" culture="Culture.empire" modifier_group="sword">
     <Pieces>
       <Piece id="dagger_blade_1" Type="Blade" scale_factor="170" />
       <Piece id="aserai_dagger_guard_1" Type="Guard" scale_factor="110" />
@@ -27,7 +27,7 @@
     <!-- #region Used Throwing Axes -->
   <!-- #region Tier 2 -->
   <CraftedItem id="highland_throwing_axe_1_t2"
-               name="{=RBM_GLA_006}Throwing Labryes"
+               name="{=RBM_GLA_001}Throwing Labryes"
                crafting_template="ThrowingAxe"
                culture="Culture.battania">
     <Pieces>
