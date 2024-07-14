@@ -9,6 +9,7 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
+using static TaleWorlds.Core.ArmorComponent;
 using static TaleWorlds.Core.ItemObject;
 using static TaleWorlds.MountAndBlade.Agent;
 
@@ -125,6 +126,7 @@ namespace RBMCombat
                 BasicCharacterObject victimAgentCharacter = attackInformation.VictimAgentCharacter;
                 BasicCharacterObject victimCaptainCharacter = attackInformation.VictimCaptainCharacter;
 
+
                 float armorAmount = 0f;
 
                 if (!isFallDamage)
@@ -151,11 +153,9 @@ namespace RBMCombat
                         attacker = agent;
                     }
                 }
-                //if(!attacker.WieldedWeapon.IsEmpty && attackCollisionData.StrikeType == (int)StrikeType.Swing && attacker.WieldedWeapon.GetModifiedItemName().Contains("Falx") && Utilities.HitWithWeaponBladeTip(in attackCollisionData, attacker.WieldedWeapon))
-                //{
-                //    damageType = DamageTypes.Pierce;
-                //    //InformationManager.DisplayMessage(new InformationMessage("Falx pierce hit!", Color.FromUint(4289612505u)));
-                //}
+
+                ArmorMaterialTypes armorMaterial = ArmorRework.GetArmorMaterialForBodyPartRBM(victim, attackCollisionData.VictimHitBodyPart);
+
                 bool isBash = false;
                 if (attacker != null && attackCollisionData.StrikeType == (int)StrikeType.Swing && damageType != DamageTypes.Blunt && !attacker.WieldedWeapon.IsEmpty && !Utilities.HitWithWeaponBlade(in attackCollisionData, attacker.WieldedWeapon))
                 {
@@ -307,7 +307,18 @@ namespace RBMCombat
                     if (!victim.SpawnEquipment[EquipmentIndex.Head].IsEmpty)
                     {
                         armorAmount = victim.SpawnEquipment[EquipmentIndex.Head].GetModifiedBodyArmor();
-                        //armorAmount = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateAdjustedArmorForBlow(armorAmountFloat, attackerAgentCharacter, attackerCaptainCharacter, victimAgentCharacter, victimCaptainCharacter, attackerWeapon);
+
+                        if (victim.SpawnEquipment[EquipmentIndex.Head].Item.ArmorComponent != null)
+                        {
+                            armorMaterial = victim.SpawnEquipment[EquipmentIndex.Head].Item.ArmorComponent.MaterialType;
+                            if (victim.SpawnEquipment[EquipmentIndex.Head].Item.ArmorComponent.MaterialType == ArmorMaterialTypes.Plate)
+                            {
+                                if (victim.SpawnEquipment[EquipmentIndex.Head].GetModifiedItemName().Contains("mail") || victim.SpawnEquipment[EquipmentIndex.Head].GetModifiedItemName().Contains("Mail"))
+                                {
+                                    armorMaterial = ArmorMaterialTypes.Chainmail;
+                                }
+                            }
+                        }
                     }
                     else
                     {
@@ -320,7 +331,19 @@ namespace RBMCombat
                     armorAmount = 0f;
                     if (!victim.SpawnEquipment[EquipmentIndex.Body].IsEmpty)
                     {
-                        armorAmount = (victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedArmArmor());
+                        armorAmount = victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedArmArmor();
+
+                        if (victim.SpawnEquipment[EquipmentIndex.Body].Item.ArmorComponent != null)
+                        {
+                            armorMaterial = victim.SpawnEquipment[EquipmentIndex.Body].Item.ArmorComponent.MaterialType;
+                            if (victim.SpawnEquipment[EquipmentIndex.Body].Item.ArmorComponent.MaterialType == ArmorMaterialTypes.Plate)
+                            {
+                                if (victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("mail") || victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Mail"))
+                                {
+                                    armorMaterial = ArmorMaterialTypes.Chainmail;
+                                }
+                            }
+                        }
                     }
                     if (!victim.SpawnEquipment[EquipmentIndex.Cape].IsEmpty)
                     {
@@ -344,6 +367,8 @@ namespace RBMCombat
                         }
                     }
                 }
+
+                //InformationManager.DisplayMessage(new InformationMessage(new TextObject("Armor material: " + armorMaterial.ToString()).ToString(), Color.FromUint(4289612505u)));
 
                 if (attacker != null && victim != null)
                 {
@@ -613,7 +638,15 @@ namespace RBMCombat
                         weaponDamageFactor = (float)Math.Sqrt(Utilities.getSwingDamageFactor(attackerWeapon, itemModifier));
                     }
                 }
-                inflictedDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(weaponType, damageType, magnitude, armorAmount, victimAgentAbsorbedDamageRatio, out _, out _, weaponDamageFactor, player, isPlayerVictim)), 0, 2000);
+
+                ////cloth/leather/mail/plate
+                //if (victim != null)
+                //{
+                //    attackCollisionData.VictimHitBodyPart
+                //    victim.Equipment[EquipmentIndex.]
+                //}
+
+                inflictedDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(weaponType, damageType, magnitude, armorAmount, victimAgentAbsorbedDamageRatio, out _, out _, weaponDamageFactor, player, isPlayerVictim, armorMaterial)), 0, 2000);
                 inflictedDamage = MathF.Floor(inflictedDamage * dmgMultiplier);
 
                 //float dmgWithPerksSkills = MissionGameModels.Current.AgentApplyDamageModel.CalculateDamage(ref attackInformation, ref attackCollisionData, in attackerWeapon, inflictedDamage, out float bonusFromSkills);
@@ -1312,7 +1345,7 @@ namespace RBMCombat
         [HarmonyPatch("HandleBlow")]
         private class HandleBlowPatch
         {
-            private static ArmorComponent.ArmorMaterialTypes GetProtectorArmorMaterialOfBone(Agent agent, sbyte boneIndex)
+            private static ArmorMaterialTypes GetProtectorArmorMaterialOfBone(Agent agent, sbyte boneIndex)
             {
                 if (agent != null && agent.SpawnEquipment != null)
                 {

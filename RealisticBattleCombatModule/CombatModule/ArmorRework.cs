@@ -1,7 +1,9 @@
 ﻿using HarmonyLib;
+using System;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
+using static TaleWorlds.Core.ArmorComponent;
 
 namespace RBMCombat
 {
@@ -18,6 +20,20 @@ namespace RBMCombat
             return num;
         }
 
+        public static ArmorMaterialTypes getHeadArmorMaterial(Agent agent)
+        {
+            ArmorMaterialTypes material = ArmorMaterialTypes.None;
+            EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.Head];
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
+            {
+                if (equipmentElement.Item.ArmorComponent != null)
+                {
+                    return equipmentElement.Item.ArmorComponent.MaterialType;
+                }
+            }
+            return material;
+        }
+
         public static float getNeckArmor(Agent agent)
         {
             float num = 0f;
@@ -27,6 +43,33 @@ namespace RBMCombat
                 num += (float)equipmentElement.GetModifiedArmArmor();
             }
             return num;
+        }
+
+        public static ArmorMaterialTypes getNeckArmorMaterial(Agent agent)
+        {
+            ArmorMaterialTypes material = ArmorMaterialTypes.None;
+            EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.Body];
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
+            {
+                if (equipmentElement.Item.ArmorComponent != null)
+                {
+                    return equipmentElement.Item.ArmorComponent.MaterialType;
+                }
+            }
+            return material;
+        }
+        public static ArmorMaterialTypes getHorseArmorMaterial(Agent agent)
+        {
+            ArmorMaterialTypes material = ArmorMaterialTypes.None;
+            EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+            {
+                if (equipmentElement.Item.ArmorComponent != null)
+                {
+                    return equipmentElement.Item.ArmorComponent.MaterialType;
+                }
+            }
+            return material;
         }
 
         public static float getHorseHeadArmor(Agent agent)
@@ -76,7 +119,6 @@ namespace RBMCombat
                 {
                     num = equipmentElement.ItemModifier.ModifyArmor((int)num);
                 }
-                //num += (float)equipmentElement.GetModifiedBodyArmor();
                 num += 10f;
             }
             return num;
@@ -102,6 +144,38 @@ namespace RBMCombat
             return num;
         }
 
+        public static ArmorMaterialTypes getShoulderArmorMaterial(Agent agent)
+        {
+            ArmorMaterialTypes material = ArmorMaterialTypes.None;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            {
+                EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.Cape)
+                {
+                    if (equipmentElement.Item.ArmorComponent != null)
+                    {
+                        return equipmentElement.Item.ArmorComponent.MaterialType;
+                    }
+                }
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
+                {
+                    if (equipmentElement.Item.ArmorComponent != null)
+                    {
+                        if(equipmentElement.Item.ArmorComponent.MaterialType == ArmorMaterialTypes.Plate)
+                        {
+                            if(equipmentElement.GetModifiedItemName().Contains("mail") || equipmentElement.GetModifiedItemName().Contains("Mail"))
+                            {
+                                return ArmorMaterialTypes.Chainmail;
+                            }
+                        }
+                        return equipmentElement.Item.ArmorComponent.MaterialType;
+                    }
+                }
+            }
+            return material;
+        }
+
         public static float getAbdomenArmor(Agent agent)
         {
             float num = 0f;
@@ -116,7 +190,24 @@ namespace RBMCombat
             return num;
         }
 
-        public static float getMyChestArmor(Agent agent)
+        public static ArmorMaterialTypes getAbdomenArmorMaterial(Agent agent)
+        {
+            ArmorMaterialTypes material = ArmorMaterialTypes.None;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            {
+                EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
+                {
+                    if (equipmentElement.Item.ArmorComponent != null)
+                    {
+                        return equipmentElement.Item.ArmorComponent.MaterialType;
+                    }
+                }
+            }
+            return material;
+        }
+
+        public static float getChestArmor(Agent agent)
         {
             float num = 0f;
             for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
@@ -128,6 +219,22 @@ namespace RBMCombat
                 }
             }
             return num;
+        }
+        public static ArmorMaterialTypes getChestArmorMaterial(Agent agent)
+        {
+            ArmorMaterialTypes material = 0f;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            {
+                EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
+                {
+                    if (equipmentElement.Item.ArmorComponent != null)
+                    {
+                        return equipmentElement.Item.ArmorComponent.MaterialType;
+                    }
+                }
+            }
+            return material;
         }
 
         public static float getArmArmor(Agent agent)
@@ -142,6 +249,23 @@ namespace RBMCombat
                 }
             }
             return num;
+        }
+
+        public static ArmorMaterialTypes getArmArmorMaterial(Agent agent)
+        {
+            ArmorMaterialTypes material = 0f;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            {
+                EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
+                {
+                    if (equipmentElement.Item.ArmorComponent != null)
+                    {
+                        return equipmentElement.Item.ArmorComponent.MaterialType;
+                    }
+                }
+            }
+            return material;
         }
 
         public static float getLegArmor(Agent agent)
@@ -160,6 +284,23 @@ namespace RBMCombat
                 }
             }
             return num;
+        }
+
+        public static ArmorMaterialTypes getLegArmorMaterial(Agent agent)
+        {
+            ArmorMaterialTypes material = 0f;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            {
+                EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.LegArmor)
+                {
+                    if (equipmentElement.Item.ArmorComponent != null)
+                    {
+                        return equipmentElement.Item.ArmorComponent.MaterialType;
+                    }
+                }
+            }
+            return material;
         }
 
         public static float getHeadArmor(Equipment equipment)
@@ -271,7 +412,7 @@ namespace RBMCombat
             return num;
         }
 
-        public static float getMyChestArmor(Equipment equipment)
+        public static float getChestArmor(Equipment equipment)
         {
             float num = 0f;
             for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
@@ -381,13 +522,11 @@ namespace RBMCombat
                         }
                     case BoneBodyPartType.Head:
                         {
-                            //__result = agent.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead);
                             result = getHeadArmor(agent);
                             break;
                         }
                     case BoneBodyPartType.Neck:
                         {
-                            //__result = agent.GetAgentDrivenPropertyValue(DrivenProperty.ArmorHead) * 0.66f;
                             result = getNeckArmor(agent);
                             break;
                         }
@@ -404,7 +543,7 @@ namespace RBMCombat
                         }
                     case BoneBodyPartType.Chest:
                         {
-                            result = getMyChestArmor(agent);
+                            result = getChestArmor(agent);
                             break;
                         }
                     case BoneBodyPartType.ShoulderLeft:
@@ -424,6 +563,73 @@ namespace RBMCombat
                             result = 3f;
                             break;
                         }
+                }
+            }
+            return result;
+        }
+
+        public static ArmorMaterialTypes GetArmorMaterialForBodyPartRBM(Agent agent, BoneBodyPartType bodyPart)
+        {
+            ArmorMaterialTypes result = ArmorMaterialTypes.None;
+            if(agent != null)
+            {
+                if (!agent.IsHuman)
+                {
+                    result = getHorseArmorMaterial(agent);
+                }
+                else
+                {
+                    switch (bodyPart)
+                    {
+                        case BoneBodyPartType.None:
+                            {
+                                result = ArmorMaterialTypes.None;
+                                break;
+                            }
+                        case BoneBodyPartType.Head:
+                            {
+                                result = getHeadArmorMaterial(agent);
+                                break;
+                            }
+                        case BoneBodyPartType.Neck:
+                            {
+                                result = getNeckArmorMaterial(agent);
+                                break;
+                            }
+                        case BoneBodyPartType.Legs:
+                            {
+                                result = getLegArmorMaterial(agent);
+                                break;
+                            }
+                        case BoneBodyPartType.ArmLeft:
+                        case BoneBodyPartType.ArmRight:
+                            {
+                                result = getArmArmorMaterial(agent);
+                                break;
+                            }
+                        case BoneBodyPartType.Chest:
+                            {
+                                result = getChestArmorMaterial(agent);
+                                break;
+                            }
+                        case BoneBodyPartType.ShoulderLeft:
+                        case BoneBodyPartType.ShoulderRight:
+                            {
+                                result = getShoulderArmorMaterial(agent);
+                                break;
+                            }
+                        case BoneBodyPartType.Abdomen:
+                            {
+                                result = getAbdomenArmorMaterial(agent);
+                                break;
+                            }
+                        default:
+                            {
+                                _ = ArmorMaterialTypes.None;
+                                result = ArmorMaterialTypes.None;
+                                break;
+                            }
+                    }
                 }
             }
             return result;
@@ -462,7 +668,7 @@ namespace RBMCombat
                     }
                 case BoneBodyPartType.Chest:
                     {
-                        result = getMyChestArmor(equipment);
+                        result = getChestArmor(equipment);
                         break;
                     }
                 case BoneBodyPartType.ShoulderLeft:
