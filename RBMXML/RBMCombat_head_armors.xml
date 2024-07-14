@@ -782,7 +782,7 @@
 	</Item>
 	<Item id="desert_mail_coif" name="{=RraboU6p}Wrapped Helmet with Mail Coif" mesh="aserai_helmet_j" culture="Culture.aserai" weight="3" appearance="3" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
-			<Armor head_armor="90" body_armor="10" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="type4"/>
+			<Armor head_armor="90" body_armor="10" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Plate" beard_cover_type="type4"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
@@ -824,7 +824,7 @@
 	</Item>
 	<Item id="emirs_helmet" name="{=efW2XbK8}Emir Helmet" mesh="aserai_helmet_r" culture="Culture.aserai" weight="3" appearance="1.5" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
-			<Armor head_armor="94" body_armor="10" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="type3"/>
+			<Armor head_armor="94" body_armor="10" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Plate" beard_cover_type="type3"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
@@ -848,7 +848,7 @@
 	</Item>
 	<Item id="kettle_hat_over_mail_coif" name="{=tMLH04n4}Kettle Hat Over Mail Coif" mesh="vlandia_helmet_i_a" culture="Culture.vlandia" weight="2.9" appearance="1" Type="HeadArmor">
 		<ItemComponent>
-			<Armor head_armor="105" body_armor="0" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
+			<Armor head_armor="105" body_armor="0" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
@@ -1304,7 +1304,7 @@
 	</Item>
 	<Item id="closed_desert_helmet_with_mail" name="{=SVTa5spB}Closed Steel Cap" mesh="aserai_helmet_k" culture="Culture.aserai" weight="3.2" appearance="2.5" Type="HeadArmor">
 		<ItemComponent>
-			<Armor head_armor="67" body_armor="35" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
+			<Armor head_armor="67" body_armor="35" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -1346,7 +1346,7 @@
 	</Item>
 	<Item id="nordic_helmet" name="{=OLkncAaD}Closed Mail Goggled Helmet" mesh="sturgia_masked_helm_a" culture="Culture.sturgia" weight="4.1" appearance="1" Type="HeadArmor">
 		<ItemComponent>
-			<Armor head_armor="86" body_armor="40" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
+			<Armor head_armor="86" body_armor="40" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -1386,9 +1386,9 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="eastern_vendel_helmet" name="{=OrMbh1dn}Heavy Lancer Helmet" mesh="khuzait_helmet_m" culture="Culture.khuzait" weight="4" appearance="3.55" Type="HeadArmor">
+	<Item id="eastern_vendel_helmet" name="{=OrMbh1dn}Heavy Closed Lancer Helmet" mesh="khuzait_helmet_m" culture="Culture.khuzait" weight="4" appearance="3.55" Type="HeadArmor">
 		<ItemComponent>
-			<Armor head_armor="106" body_armor="65" has_gender_variations="false" hair_cover_type="type3" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
+			<Armor head_armor="106" body_armor="65" has_gender_variations="false" hair_cover_type="type3" modifier_group="chain" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -1400,13 +1400,13 @@
 	</Item>
 	<Item id="closed_goggled_helmet" name="{=aYLCCpS4}Northern Closed Warlord Helmet" mesh="sturgia_helmet_l" culture="Culture.sturgia" weight="4.1" appearance="1.6" Type="HeadArmor">
 		<ItemComponent>
-			<Armor head_armor="104" body_armor="64" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
+			<Armor head_armor="104" body_armor="64" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
 	<Item id="goggled_helmet_over_full_mail" name="{=mU5CY4bz}Closed Huscarl Helmet" mesh="sturgia_helmet_e" culture="Culture.sturgia" weight="4.4" appearance="1.6" Type="HeadArmor">
 		<ItemComponent>
-			<Armor head_armor="114" body_armor="74" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
+			<Armor head_armor="114" body_armor="74" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -1430,19 +1430,19 @@
 	</Item>
 	<Item id="decorated_goggled_helmet" name="{=NhDpFjF0}Reinforced Closed Goggled Helmet" mesh="sturgia_helmet_n" culture="Culture.sturgia" weight="4.2" appearance="3" Type="HeadArmor">
 		<ItemComponent>
-			<Armor head_armor="133" body_armor="82" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
+			<Armor head_armor="133" body_armor="82" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
-	<Item id="imperial_goggled_helmet" name="{=xJTfOqD6}Goggled Cataphract Helmet" mesh="imperial_helmet" culture="Culture.empire" weight="4.2" appearance="2.6" Type="HeadArmor">
+	<Item id="imperial_goggled_helmet" name="{=xJTfOqD6}Goggled Closed Cataphract Helmet" mesh="imperial_helmet" culture="Culture.empire" weight="4.2" appearance="2.6" Type="HeadArmor">
 		<ItemComponent>
-			<Armor head_armor="144" body_armor="82" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
+			<Armor head_armor="144" body_armor="82" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="lendman_helmet_over_full_mail" name="{=lawHibbG}Warlord Helmet over Full Mail" mesh="sturgia_helmet_h" culture="Culture.sturgia" weight="4.3" appearance="3" Type="HeadArmor">
+	<Item id="lendman_helmet_over_full_mail" name="{=lawHibbG}Closed Warlord Helmet over Full Mail" mesh="sturgia_helmet_h" culture="Culture.sturgia" weight="4.3" appearance="3" Type="HeadArmor">
 		<ItemComponent>
-			<Armor head_armor="127" body_armor="84" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Chainmail" beard_cover_type="all"/>
+			<Armor head_armor="127" body_armor="84" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>
 		<Flags/>
 	</Item>
@@ -1524,7 +1524,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
-	<Item id="vlandian_faceguard_helmet_a" name="{=axaK9y6E}Closed Knight Helmet" mesh="vlandian_faceguard_helmet_a" culture="Culture.vlandia" weight="2.2" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
+	<Item id="vlandian_faceguard_helmet_a" name="{=axaK9y6E}Knight Helmet with Steel Faceguard" mesh="vlandian_faceguard_helmet_a" culture="Culture.vlandia" weight="2.2" appearance="1" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
 			<Armor head_armor="90" body_armor="90" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="all"/>
 		</ItemComponent>

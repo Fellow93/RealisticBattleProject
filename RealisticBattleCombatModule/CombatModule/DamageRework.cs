@@ -313,7 +313,7 @@ namespace RBMCombat
                             armorMaterial = victim.SpawnEquipment[EquipmentIndex.Head].Item.ArmorComponent.MaterialType;
                             if (victim.SpawnEquipment[EquipmentIndex.Head].Item.ArmorComponent.MaterialType == ArmorMaterialTypes.Plate)
                             {
-                                if (victim.SpawnEquipment[EquipmentIndex.Head].GetModifiedItemName().Contains("mail") || victim.SpawnEquipment[EquipmentIndex.Head].GetModifiedItemName().Contains("Mail"))
+                                if (victim.SpawnEquipment[EquipmentIndex.Head].GetModifiedItemName().Contains("Closed"))
                                 {
                                     armorMaterial = ArmorMaterialTypes.Chainmail;
                                 }
@@ -338,7 +338,12 @@ namespace RBMCombat
                             armorMaterial = victim.SpawnEquipment[EquipmentIndex.Body].Item.ArmorComponent.MaterialType;
                             if (victim.SpawnEquipment[EquipmentIndex.Body].Item.ArmorComponent.MaterialType == ArmorMaterialTypes.Plate)
                             {
-                                if (victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("mail") || victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Mail"))
+                                if (victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Brigandine over Hauberk") || victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Khan's Coat of Plates") || victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Rough Brigandine") || victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Mirrored Brigandine Armor") || victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Rough Scale Mail"))
+                                {
+                                    armorMaterial = ArmorMaterialTypes.Plate;
+                                }
+
+                                else 
                                 {
                                     armorMaterial = ArmorMaterialTypes.Chainmail;
                                 }

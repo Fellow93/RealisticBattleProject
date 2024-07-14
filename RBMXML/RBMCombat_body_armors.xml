@@ -1370,7 +1370,7 @@
 	</Item>
 	<Item id="coat_of_plates_over_mail" name="{=PtfbqMeg}Brigandine over Mail" mesh="tunic_ironplate_armor" culture="Culture.vlandia" weight="20.11" Type="BodyArmor" appearance="3" difficulty="0" subtype="body_armor">
 		<ItemComponent>
-			<Armor body_armor="82" leg_armor="38" covers_body="true" modifier_group="chain" material_type="Chainmail" arm_armor="49"/>
+			<Armor body_armor="82" leg_armor="38" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="49"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
