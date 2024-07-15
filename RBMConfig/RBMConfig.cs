@@ -132,6 +132,11 @@ namespace RBMConfig
             maceBluntModifier = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/MaceBluntModifier").InnerText);
             armorThresholdModifier = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorThresholdModifier").InnerText);
             bluntTraumaBonus = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BluntTraumaBonus").InnerText);
+
+            ThrustMagnitudeModifier = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ThrustMagnitudeModifier").InnerText);
+            OneHandedThrustDamageBonus = 1f/ThrustMagnitudeModifier;
+            TwoHandedThrustDamageBonus = 1f / ThrustMagnitudeModifier;
+
             foreach (XmlNode weaponTypeNode in xmlConfig.SelectSingleNode("/Config/RBMCombat/WeaponTypes").ChildNodes)
             {
                 RBMCombatConfigWeaponType weaponTypeFactors = new RBMCombatConfigWeaponType();
@@ -214,6 +219,7 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/MaceBluntModifier"), maceBluntModifier.ToString());
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorThresholdModifier"), armorThresholdModifier.ToString());
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BluntTraumaBonus"), bluntTraumaBonus.ToString());
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ThrustMagnitudeModifier"), ThrustMagnitudeModifier.ToString());
 
             foreach (RBMCombatConfigWeaponType weaponTypeFactors in weaponTypesFactors)
             {

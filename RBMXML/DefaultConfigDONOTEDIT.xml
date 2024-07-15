@@ -30,6 +30,7 @@
       <BluntTraumaBonus>0</BluntTraumaBonus>
 	  <ArmorStatusUIEnabled>1</ArmorStatusUIEnabled>
 	  <RealisticArrowArc>0</RealisticArrowArc>
+	  <ThrustMagnitudeModifier>0.05</ThrustMagnitudeModifier>
     </Global>
     <WeaponTypes>
       <Dagger>

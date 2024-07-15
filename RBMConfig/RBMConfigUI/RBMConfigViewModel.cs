@@ -9,6 +9,9 @@ namespace RBMConfig
     internal class RBMConfigViewModel : ViewModel
     {
 
+        public TextViewModel ThrustModifierText { get; }
+        public SelectorVM<SelectorItemVM> ThrustModifier { get; }
+
         public TextViewModel ArmorStatusUIEnabledText { get; }
         public SelectorVM<SelectorItemVM> ArmorStatusUIEnabled { get; }
 
@@ -44,6 +47,15 @@ namespace RBMConfig
         public SelectorVM<SelectorItemVM> RBMAIEnabled { get; }
 
         public SelectorVM<SelectorItemVM> RBMTournamentEnabled { get; }
+
+        [DataSourceProperty]
+        public string ThrustModifiert
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_865}Thrust Modifier").ToString();
+            }
+        }
 
         [DataSourceProperty]
         public string CancelText
@@ -198,6 +210,13 @@ namespace RBMConfig
             }
         }
 
+        public List<string> thrustModifierList = new List<string> { new TextObject("0.01").ToString(), new TextObject("0.05").ToString(), new TextObject("0.10").ToString(), new TextObject("0.15").ToString(),
+                                                                new TextObject("0.20").ToString(), new TextObject("0.25").ToString(), new TextObject("0.30").ToString(), new TextObject("0.35").ToString(),
+                                                                new TextObject("0.40").ToString(), new TextObject("0.45").ToString(), new TextObject("0.50").ToString(), new TextObject("0.55").ToString(),
+                                                                new TextObject("0.60").ToString(), new TextObject("0.65").ToString(), new TextObject("0.70").ToString(), new TextObject("0.75").ToString(),
+                                                                new TextObject("0.80").ToString(), new TextObject("0.85").ToString(), new TextObject("0.90").ToString(), new TextObject("0.95").ToString(),
+                                                                new TextObject("1.00").ToString()};
+
         public RBMConfigViewModel()
         {
             RefreshValues();
@@ -225,6 +244,20 @@ namespace RBMConfig
             List<string> realisticArrowArc = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString(), };
             RealisticArrowArcText = new TextViewModel(new TextObject("Realistic Arrow Arc"));
             RealisticArrowArc = new SelectorVM<SelectorItemVM>(realisticArrowArc, 0, null);
+
+            ThrustModifierText = new TextViewModel(new TextObject("Thrust Modifier"));
+            ThrustModifier = new SelectorVM<SelectorItemVM>(thrustModifierList, 0, null);
+
+            int i = 0;
+            foreach (var item in thrustModifierList)
+            {
+                if(float.Parse(item) == RBMConfig.ThrustMagnitudeModifier)
+                {
+                    ThrustModifier.SelectedIndex = i;
+                    break;
+                }
+                i++;
+            }
 
             if (RBMConfig.troopOverhaulActive)
             {
@@ -441,6 +474,11 @@ namespace RBMConfig
             {
                 RBMConfig.realisticArrowArc = true;
             }
+
+            var newThrustModifier = float.Parse(thrustModifierList[ThrustModifier.SelectedIndex]);
+            RBMConfig.ThrustMagnitudeModifier = newThrustModifier;
+            RBMConfig.OneHandedThrustDamageBonus = 1f / newThrustModifier;
+            RBMConfig.TwoHandedThrustDamageBonus = 1f / newThrustModifier;
 
             if (PostureSystemEnabled.SelectedIndex == 0)
             {
