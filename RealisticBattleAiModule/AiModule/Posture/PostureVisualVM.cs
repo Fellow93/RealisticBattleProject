@@ -23,8 +23,10 @@
         private int enemyPostureMax = 50;
 
         private int playerPosture = 100;
+        private string playerPostureText = "100";
 
         private int playerPostureMax = 50;
+        private string playerPostureMaxText = "50";
 
         [DataSourceProperty]
         public string EnemyName
@@ -175,6 +177,34 @@
                 playerPostureMax = value;
                 OnPropertyChangedWithValue(value, "PlayerPostureMax");
                 //OnPropertyChanged("DisplayText");
+            }
+        }
+
+        [DataSourceProperty]
+        public string PlayerPostureText
+        {
+            get
+            {
+                return playerPostureText;
+            }
+            set
+            {
+                playerPostureText = value;
+                OnPropertyChangedWithValue(value, "PlayerPostureText");
+            }
+        }
+
+        [DataSourceProperty]
+        public string PlayerPostureMaxText
+        {
+            get
+            {
+                return playerPostureMaxText;
+            }
+            set
+            {
+                playerPostureMaxText = value;
+                OnPropertyChangedWithValue(value, "PlayerPostureMaxText");
             }
         }
     }

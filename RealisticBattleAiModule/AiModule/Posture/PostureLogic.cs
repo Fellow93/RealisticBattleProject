@@ -56,33 +56,9 @@ namespace RBMAI
         {
             private static void Postfix(ref Agent __instance, bool isOffHand, bool isWieldedInstantly, bool isWieldedOnSpawn)
             {
-                float playerPostureModifier;
-                switch (RBMConfig.RBMConfig.playerPostureMultiplier)
-                {
-                    case 0:
-                        {
-                            playerPostureModifier = 1f;
-                            break;
-                        }
-                    case 1:
-                        {
-                            playerPostureModifier = 1.5f;
-                            break;
-                        }
-                    case 2:
-                        {
-                            playerPostureModifier = 2f;
-                            break;
-                        }
-                    default:
-                        {
-                            playerPostureModifier = 1f;
-                            break;
-                        }
-                }
+                float playerPostureModifier = RBMConfig.RBMConfig.playerPostureMultiplier;
                 if (RBMConfig.RBMConfig.postureEnabled)
                 {
-                    //AgentPostures.values[__instance] = new Posture();
                     Posture posture = null;
                     AgentPostures.values.TryGetValue(__instance, out posture);
                     if (posture == null)
@@ -123,16 +99,12 @@ namespace RBMAI
                                 int effectiveRidingSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, DefaultSkills.Riding);
                                 posture.maxPosture = (athleticBase * (baseModifier + (effectiveRidingSkill / strengthSkillModifier))) + (weaponSkillBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
                                 posture.regenPerTick = (athleticRegenBase * (baseModifier + (effectiveRidingSkill / strengthSkillModifier))) + (weaponSkillRegenBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
-                                //posture.maxPosture = 100f;
-                                //posture.regenPerTick = 0.035f;
                             }
                             else
                             {
                                 int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, DefaultSkills.Athletics);
                                 posture.maxPosture = (athleticBase * (baseModifier + (effectiveAthleticSkill / strengthSkillModifier))) + (weaponSkillBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
                                 posture.regenPerTick = (athleticRegenBase * (baseModifier + (effectiveAthleticSkill / strengthSkillModifier))) + (weaponSkillRegenBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
-                                //posture.maxPosture = 100f;
-                                //posture.regenPerTick = 0.035f;
                             }
 
                             if (__instance.IsPlayerControlled)
@@ -705,6 +677,8 @@ namespace RBMAI
                                 {
                                     AgentPostures.postureVisual._dataSource.PlayerPosture = (int)posture.posture;
                                     AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)posture.maxPosture;
+                                    AgentPostures.postureVisual._dataSource.PlayerPostureText = ((int)posture.posture).ToString();
+                                    AgentPostures.postureVisual._dataSource.PlayerPostureMaxText = ((int)posture.maxPosture).ToString();
                                 }
                             }
                         }
@@ -718,6 +692,8 @@ namespace RBMAI
                                 {
                                     AgentPostures.postureVisual._dataSource.PlayerPosture = (int)posture.posture;
                                     AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)posture.maxPosture;
+                                    AgentPostures.postureVisual._dataSource.PlayerPostureText = ((int)posture.posture).ToString();
+                                    AgentPostures.postureVisual._dataSource.PlayerPostureMaxText = ((int)posture.maxPosture).ToString();
                                 }
                             }
                         }
@@ -1560,34 +1536,12 @@ namespace RBMAI
         {
             private static bool Prefix(ref Agent __instance, ref EquipmentIndex slotIndex, ref int inflictedDamage)
             {
-                //__instance.HandleDropWeapon(false, slotIndex);
-                //float sumWeight = 0f;
-                //for(int i = 0; i < __instance.Equipment[slotIndex].GetAttachedWeaponsCount(); i++)
-                //{
-                //    sumWeight += __instance.Equipment[slotIndex].GetAttachedWeapon(i).Item.Weight;
-                //}
                 int num = MathF.Max(0, __instance.Equipment[slotIndex].HitPoints - inflictedDamage);
                 __instance.ChangeWeaponHitPoints(slotIndex, (short)num);
                 if (num == 0)
                 {
                     __instance.RemoveEquippedWeapon(slotIndex);
                 }
-                //else
-                //{
-                //    if (sumWeight > 1f)
-                //    {
-                //        Vec3 velocity = new Vec3(0, 0, 0);
-                //        Vec3 velocity2 = __instance.Velocity;
-                //        if ((velocity - velocity2).LengthSquared > 100f)
-                //        {
-                //            Vec3 vec = (velocity - velocity2).NormalizedCopy() * 10f;
-                //            velocity = velocity2 + vec;
-                //        }
-                //        Vec3 angularVelocity = new Vec3(0, 0, 0);
-                //        Mission.Current.SpawnWeaponAsDropFromAgentAux(__instance, slotIndex, ref velocity, ref angularVelocity, Mission.WeaponSpawnFlags.CannotBePickedUp, -1);
-                //        //__instance.RemoveEquippedWeapon(slotIndex);
-                //    }
-                //}
                 return false;
             }
         }
@@ -1610,6 +1564,8 @@ namespace RBMAI
                             {
                                 AgentPostures.postureVisual._dataSource.PlayerPosture = (int)entry.Value.posture;
                                 AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)entry.Value.maxPosture;
+                                AgentPostures.postureVisual._dataSource.PlayerPostureText = ((int)entry.Value.posture).ToString();
+                                AgentPostures.postureVisual._dataSource.PlayerPostureMaxText = ((int)entry.Value.maxPosture).ToString();
                             }
                         }
 
@@ -1646,19 +1602,20 @@ namespace RBMAI
                             inactiveAgents.Add(entry.Key);
                             continue;
                         }
+                        if (entry.Key.IsPlayerControlled)
+                        {
+                            if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
+                            {
+                                AgentPostures.postureVisual._dataSource.PlayerPosture = (int)entry.Value.posture;
+                                AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)entry.Value.maxPosture;
+                                AgentPostures.postureVisual._dataSource.PlayerPostureText = ((int)entry.Value.posture).ToString();
+                                AgentPostures.postureVisual._dataSource.PlayerPostureMaxText = ((int)entry.Value.maxPosture).ToString();
+                            }
+                        }
                         if (entry.Value.posture < entry.Value.maxPosture)
                         {
                             if (RBMConfig.RBMConfig.postureGUIEnabled)
                             {
-                                if (entry.Key.IsPlayerControlled)
-                                {
-                                    if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
-                                    {
-                                        AgentPostures.postureVisual._dataSource.PlayerPosture = (int)entry.Value.posture;
-                                        AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)entry.Value.maxPosture;
-                                    }
-                                }
-
                                 if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowEnemyStatus && AgentPostures.postureVisual.affectedAgent == entry.Key)
                                 {
                                     AgentPostures.postureVisual._dataSource.EnemyPosture = (int)entry.Value.posture;
@@ -1927,10 +1884,5 @@ namespace RBMAI
                 }
             }
         }
-
-        //public override void OnMeleeHit(Agent attacker, Agent victim, bool isCanceled, AttackCollisionData collisionData)
-        //{
-
-        //}
     }
 }

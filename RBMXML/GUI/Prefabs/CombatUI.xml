@@ -82,7 +82,9 @@
                 </FillBarWidget>
               </Children>
             </Widget>
-			
+			<TextWidget Brush="EnemyName" SuggestedWidth="100" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="27" MarginRight="100" IsVisible="@ShowPlayerPostureStatus" Text="@PlayerPostureText" />
+			<TextWidget Brush="EnemyName" SuggestedWidth="100" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="27" MarginRight="80" IsVisible="@ShowPlayerPostureStatus" Text="/" />
+			<TextWidget Brush="EnemyName" SuggestedWidth="100" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="27" MarginRight="60" IsVisible="@ShowPlayerPostureStatus" Text="@PlayerPostureMaxText" />
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="General\Mission\health_bar_frame"/>
             <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!Mission.MainAgentHUD.MountHealthBar.Icon.Width" SuggestedHeight="!Mission.MainAgentHUD.MountHealthBar.Icon.Height" VerticalAlignment="Center" HorizontalAlignment="Left" PositionXOffset="-28" PositionYOffset="0" Sprite="General\Mission\shield_icon" />
           </Children>
