@@ -174,34 +174,34 @@ namespace RBMCombat
             int calculatedMissileSpeed = 10;
             switch (rangedWeaponType)
             {
-                case "bow":
+                case "bow": // composite horn-sinew horsebow
                     {
-                        float powerstroke = (25f * 0.0254f); //28f
-                        double potentialEnergy = 0.5f * (drawWeight * 4.448f) * powerstroke * 0.91f;
-                        //calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.91f * ((ammoWeight * 3f) + 0.432f)));
-                        //calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight + (drawWeight * 0.00012f))));
-                        ammoWeight += drawWeight * 0.00012f;
+                        float powerstroke = (25f * 0.0254f); // in inches then converted to metres
+                        float materialEfficiency = 0.9f; // composite > wood > steel
+                        double potentialEnergy = 0.5f * (drawWeight * 4.448f) * powerstroke * materialEfficiency; // draw weight is in pounds and then multiplied to newton metres
+                        float virtualArrow = drawWeight * 0.00015f;// virtual arrow - weight of limbs and string added to the weight of the arrow
+                        ammoWeight += virtualArrow;
                         calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
                         break;
                     }
                 case "long_bow":
                     {
-                        float powerstroke = (25f * 0.0254f); //30f
-                        double potentialEnergy = 0.5f * (drawWeight * 4.448f) * powerstroke * 0.89f;
-                        //calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.89f * ((ammoWeight * 3.3f) + 0.33f) * (1f + (0.416f - (0.0026 * drawWeight)))));
-                        //calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight + (drawWeight * 0.00020f))));
-                        ammoWeight += drawWeight * 0.00020f;
+                        float powerstroke = (25f * 0.0254f); // in inches then converted to metres
+                        float materialEfficiency = 0.835f; // composite > wood > steel
+                        double potentialEnergy = 0.5f * (drawWeight * 4.448f) * powerstroke * materialEfficiency; // draw weight is in pounds and then multiplied to newton metres
+                        float virtualArrow = drawWeight * 0.00018f;// virtual arrow - weight of limbs and string added to the weight of the arrow
+                        ammoWeight += virtualArrow;
                         calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
                         break;
                     }
-                case "crossbow":
+                case "crossbow": // composite horn-sinew crossbow
                 case "crossbow_fast":
                     {
-                        float powerstroke = (12f * 0.0254f); //4.5f
-                        double potentialEnergy = 0.5f * (drawWeight * 4.448f) * powerstroke * 0.7f;
-                        //calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt(((potentialEnergy * 2f) / ammoWeight) * 0.45f));
-                        //calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight + (drawWeight * 0.0000588f))));
-                        ammoWeight += drawWeight * 0.00013f;
+                        float powerstroke = (8f * 0.0254f); // in inches then converted to metres
+                        float materialEfficiency = 0.85f; // composite > wood > steel
+                        double potentialEnergy = 0.5f * (drawWeight * 4.448f) * powerstroke * materialEfficiency; // draw weight is in pounds and then multiplied to newton metres
+                        float virtualArrow = drawWeight * 0.00014f;// virtual arrow - weight of limbs and string added to the weight of the arrow
+                        ammoWeight += virtualArrow;
                         calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
                         break;
                     }
