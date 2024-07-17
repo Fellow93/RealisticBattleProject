@@ -53,7 +53,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_865}Thrust Modifier").ToString();
+                return new TextObject("{=RBM_CON_021}Thrust weapon preference for AI (default at 0.05)").ToString();
             }
         }
 

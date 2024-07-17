@@ -87,6 +87,7 @@
 	<string id="RBM_CON_018" text="RBM AI" />
 	<string id="RBM_CON_019" text="RBM Tournament" />
 	<string id="RBM_CON_020" text="RBM Configuration" />
+	<string id="RBM_CON_021" text="Thrust weapon preference for AI (default at 0.05)" />
 	<!-- Tournament Module Strings -->
 	<string id="RBM_TOU_001" text="Main tournament" />
 	<string id="RBM_TOU_002" text="Lower tier tournament: Tier {TIER}" />

@@ -4,6 +4,7 @@
     <tag language="简体中文"/>
   </tags>
   <strings>
+
 	<!-- AI Module Strings -->
 	<string id="RBM_AI_001" text="攻方射手:" />
 	<string id="RBM_AI_002" text="攻方骑射手:" />
@@ -175,7 +176,7 @@
 	<string id="RBM_ARM_006" text="重型扎甲衬链甲配鳞甲裙" />
 	<string id="RBM_ARM_007" text="装饰双层链铠" />
 	<string id="RBM_ARM_008" text="重型鳞甲衬双层链甲" />
-	<string id="RBM_ARM_009" text="短层状背心" />
+	<string id="RBM_ARM_009" text="短摆扎甲背心" />
 	<!-- RBMCombat_couched_lances.xml Strings -->
 	<string id="RBM_CLA_001" text="轻型骑矛刃" />
 	<string id="RBM_CLA_002" text="轻型骑矛钝刃" />
@@ -341,6 +342,6 @@
 	<string id="RBM_OVH_033" text="女剑士团追随者" />
 	<string id="RBM_OVH_034" text="侠义女剑士" />
 	<string id="RBM_OVH_035" text="资深女剑士" />
-	<string id="RBM_OVH_036" text="帝国骑兵阿克里塔" />
+	<string id="RBM_OVH_036" text="帝国边防骑兵" />
   </strings>
 </base>
