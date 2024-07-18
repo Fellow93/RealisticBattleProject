@@ -459,7 +459,7 @@
 		<Flags ForceAttachOffHandPrimaryItemBone="true" Civilian="true"/>
 	</Item>
 	
-<!-- greek fire arrows and bolts -->
+<!-- greek fire arrows and bolts not present in game, only experimental -->
 
 	<Item id="fire_arrows" name="{=RBM_ARR_057}Calradian fire arrows" body_name="bo_capsule_arrow" mesh="arrow_roman_a" weight="0.130" appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_back_top:quiver_bolts:quiver_bolts_2" holster_position_shift="0.0,0.0,0.15" is_merchandise="false" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_i_quiver" holster_mesh_with_weapon="arrow_bl_i_quiver" flying_mesh="arrow_bl_flying" culture="Culture.Empire">
 		<ItemComponent>
