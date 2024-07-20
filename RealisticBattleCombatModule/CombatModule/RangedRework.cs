@@ -1222,7 +1222,7 @@ namespace RBMCombat
                     {
                         if (victim != null && collisionData.IsMissile)
                         {
-                            for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                            for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.ExtraWeaponSlot; equipmentIndex++)
                             {
                                 if (victim.Equipment != null && !victim.Equipment[equipmentIndex].IsEmpty)
                                 {
