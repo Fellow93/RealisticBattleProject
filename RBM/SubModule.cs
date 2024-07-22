@@ -26,28 +26,12 @@ namespace RBM
     {
         public static string ModuleId = "RBM";
 
-        //public static void RBMAiFirstPatch(Harmony rbmaiHarmony)
-        //{
-        //    RBMAiPatcher.patched = false;
-        //    var original = AccessTools.Method(typeof(MissionCombatantsLogic), "EarlyStart");
-        //    var postfix = AccessTools.Method(typeof(Tactics.TeamAiFieldBattle), nameof(Tactics.TeamAiFieldBattle.Postfix));
-        //    rbmaiHarmony.Patch(original, null, new HarmonyMethod(postfix));
-        //    var original2 = AccessTools.Method(typeof(CampaignMissionComponent), "EarlyStart");
-        //    var postfix2 = AccessTools.Method(typeof(Tactics.CampaignMissionComponentPatch), nameof(Tactics.CampaignMissionComponentPatch.Postfix));
-        //    rbmaiHarmony.Patch(original2, null, new HarmonyMethod(postfix2));
-
-        //    //harmony.Patch(original, postfix: new HarmonyMethod(postfix));
-        //}
-
         public static void ApplyHarmonyPatches()
         {
             UnpatchAllRBM();
             HarmonyModules.rbmHarmony.PatchAll();
-            //string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             if (RBMConfig.RBMConfig.rbmTournamentEnabled)
             {
-                //string xmlFileName = Path.Combine(assemblyFolder, "RBMTournament.dll");
-                //HarmonyModules.rbmtHarmony.PatchAll(Assembly.LoadFrom(xmlFileName));
                 RBMTournamentPatcher.DoPatching(ref HarmonyModules.rbmtHarmony);
             }
             else
@@ -64,8 +48,6 @@ namespace RBM
             }
             if (RBMConfig.RBMConfig.rbmCombatEnabled)
             {
-                //string xmlFileName = Path.Combine(assemblyFolder, "RBMCombat.dll");
-                //HarmonyModules.rbmcombatHarmony.PatchAll(Assembly.LoadFrom(xmlFileName));
                 RBMCombatPatcher.DoPatching(ref HarmonyModules.rbmcombatHarmony);
             }
             else
@@ -86,7 +68,6 @@ namespace RBM
         protected override void OnSubModuleLoad()
         {
             RBMConfig.RBMConfig.LoadConfig();
-            //ApplyHarmonyPatches();
 
             TaleWorlds.MountAndBlade.Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("{=RBM_CON_020}RBM Configuration"), 9999, delegate
             {
