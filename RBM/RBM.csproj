@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\RBM\bin\Win64_Shipping_Client\</OutputPath>
+    <OutputPath>..\..\ADODRBM\bin\Win64_Shipping_Client\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -270,18 +270,18 @@
   </ItemGroup>
   <!-- Post-Build -->
   <PropertyGroup>
-    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBM_native_parameters_tweaks.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBM_spear_managed_core_parameters.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBM_spear_combat_parameters.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBM_bow_shields.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\project.mbproj" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\" "$(SolutionDir)..\RBM\GUI\Prefabs\"
-xcopy /d /y "$(SolutionDir)RBMXML\GUI\Brushes\" "$(SolutionDir)..\RBM\GUI\Brushes\"
-xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\" "$(SolutionDir)..\RBM\ModuleData\Languages\"
-xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\FR\" "$(SolutionDir)..\RBM\ModuleData\Languages\FR\"
-xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\TR\" "$(SolutionDir)..\RBM\ModuleData\Languages\TR\"
-xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\CNs\" "$(SolutionDir)..\RBM\ModuleData\Languages\CNs\"
-xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\JP\" "$(SolutionDir)..\RBM\ModuleData\Languages\JP\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBM_native_parameters_tweaks.xml" "$(SolutionDir)..\ADODRBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBM_spear_managed_core_parameters.xml" "$(SolutionDir)..\ADODRBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBM_spear_combat_parameters.xml" "$(SolutionDir)..\ADODRBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBM_bow_shields.xml" "$(SolutionDir)..\ADODRBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\project.mbproj" "$(SolutionDir)..\ADODRBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\" "$(SolutionDir)..\ADODRBM\GUI\Prefabs\"
+xcopy /d /y "$(SolutionDir)RBMXML\GUI\Brushes\" "$(SolutionDir)..\ADODRBM\GUI\Brushes\"
+xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\" "$(SolutionDir)..\ADODRBM\ModuleData\Languages\"
+xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\FR\" "$(SolutionDir)..\ADODRBM\ModuleData\Languages\FR\"
+xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\TR\" "$(SolutionDir)..\ADODRBM\ModuleData\Languages\TR\"
+xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\CNs\" "$(SolutionDir)..\ADODRBM\ModuleData\Languages\CNs\"
+xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\JP\" "$(SolutionDir)..\ADODRBM\ModuleData\Languages\JP\"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
@@ -291,6 +291,6 @@ xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\JP\" "$(SolutionDir)..\RBM\Mo
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\DefaultConfigDONOTEDIT.xml" "$(SolutionDir)..\RBM\"</PreBuildEvent>
+    <PreBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\DefaultConfigDONOTEDIT.xml" "$(SolutionDir)..\ADODRBM\"</PreBuildEvent>
   </PropertyGroup>
 </Project>

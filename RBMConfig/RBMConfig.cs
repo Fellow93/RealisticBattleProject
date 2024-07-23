@@ -43,7 +43,7 @@ namespace RBMConfig
 
         public static void LoadConfig()
         {
-            string defaultConfigFilePath = TaleWorlds.Engine.Utilities.GetFullModulePath("RBM") + "DefaultConfigDONOTEDIT.xml";
+            string defaultConfigFilePath = TaleWorlds.Engine.Utilities.GetFullModulePath("ADODRBM") + "DefaultConfigDONOTEDIT.xml";
             string configFolderPath = Utilities.GetConfigFolderPath();
             string configFilePath = Utilities.GetConfigFilePath();
 

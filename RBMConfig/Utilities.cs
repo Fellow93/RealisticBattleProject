@@ -6,13 +6,13 @@ namespace RBMConfig
     {
         public static string GetConfigFilePath()
         {
-            return System.IO.Path.Combine(GetConfigFolderPath(), "config3.xml");
+            return System.IO.Path.Combine(GetConfigFolderPath(), "config.xml");
         }
 
         public static string GetConfigFolderPath()
         {
             return System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-             "Mount and Blade II Bannerlord", "Configs", "RBM");
+             "Mount and Blade II Bannerlord", "Configs", "ADODRBM");
         }
     }
 }

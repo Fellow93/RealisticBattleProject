@@ -8,7 +8,7 @@
     <VanillaCombatAi>0</VanillaCombatAi>
   </RBMAI>
   <RBMTournament>
-    <Enabled>1</Enabled>
+    <Enabled>0</Enabled>
   </RBMTournament>
   <RBMCombat>
     <Enabled>1</Enabled>
@@ -23,7 +23,7 @@
       <ArmorPenetrationMessage>0</ArmorPenetrationMessage>
       <BetterArrowVisuals>1</BetterArrowVisuals>
       <PassiveShoulderShields>0</PassiveShoulderShields>
-      <TroopOverhaulActive>1</TroopOverhaulActive>
+      <TroopOverhaulActive>0</TroopOverhaulActive>
       <RealisticRangedReload>2</RealisticRangedReload>
       <MaceBluntModifier>1</MaceBluntModifier>
       <ArmorThresholdModifier>1</ArmorThresholdModifier>
