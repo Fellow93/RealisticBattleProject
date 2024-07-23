@@ -13,21 +13,18 @@ namespace RBMConfig
 
         //modules
         public static bool rbmTournamentEnabled = false;
-
         public static bool rbmAiEnabled = true;
         public static bool rbmCombatEnabled = true;
         public static bool developerMode = false;
 
         //RBMAI
         public static bool postureEnabled = true;
-
         public static float playerPostureMultiplier = 1f;
         public static bool postureGUIEnabled = true;
         public static bool vanillaCombatAi = false;
 
         //RBMCombat
         public static bool realisticArrowArc = false;
-
         public static bool armorStatusUIEnabled = true;
         public static float armorMultiplier = 2f;
         public static bool armorPenetrationMessage = false;
