@@ -234,7 +234,6 @@ xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_arrow_visuals.xml" "$(SolutionDir)..
 xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_no_bastard_axes.xml" "$(SolutionDir)..\ADODRBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_siege_engines.xml" "$(SolutionDir)..\ADODRBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_siege_ranged.xml" "$(SolutionDir)..\ADODRBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\SubModule.xml" "$(SolutionDir)..\ADODRBM\"
 xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_weapon_descriptions.xml" "$(SolutionDir)..\ADODRBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_lord_equipment_sets.xml" "$(SolutionDir)..\ADODRBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_axe_grip.xml" "$(SolutionDir)..\ADODRBM\ModuleData\"</PostBuildEvent>

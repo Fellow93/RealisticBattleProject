@@ -547,8 +547,8 @@ namespace RBMConfig
                 RBMConfig.rbmTournamentEnabled = true;
             }
 
-            RBMConfig.saveXmlConfig();
-            //RBMConfig.parseXmlConfig();
+            //RBMConfig.saveXmlConfig();
+            RBMConfig.parseXmlConfig();
             TaleWorlds.ScreenSystem.ScreenManager.PopScreen();
         }
 

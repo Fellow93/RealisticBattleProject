@@ -12,7 +12,7 @@ namespace RBMConfig
         public static float TwoHandedThrustDamageBonus = 20f;
 
         //modules
-        public static bool rbmTournamentEnabled = true;
+        public static bool rbmTournamentEnabled = false;
 
         public static bool rbmAiEnabled = true;
         public static bool rbmCombatEnabled = true;
@@ -40,31 +40,7 @@ namespace RBMConfig
         public static float bluntTraumaBonus = 1f;
         public static RBMCombatConfigPriceMultipliers priceMultipliers = new RBMCombatConfigPriceMultipliers();
         public static List<RBMCombatConfigWeaponType> weaponTypesFactors = new List<RBMCombatConfigWeaponType>();
-
-        public static void LoadConfig()
-        {
-            string defaultConfigFilePath = TaleWorlds.Engine.Utilities.GetFullModulePath("ADODRBM") + "DefaultConfigDONOTEDIT.xml";
-            string configFolderPath = Utilities.GetConfigFolderPath();
-            string configFilePath = Utilities.GetConfigFilePath();
-
-            if (!Directory.Exists(configFolderPath))
-            {
-                Directory.CreateDirectory(configFolderPath);
-            }
-
-            if (File.Exists(configFilePath))
-            {
-                xmlConfig.Load(configFilePath);
-            }
-            else
-            {
-                File.Copy(defaultConfigFilePath, configFilePath);
-                xmlConfig.Load(configFilePath);
-            }
-
-            parseXmlConfig();
-        }
-
+        
         public static void parseXmlConfig()
         {
             if (xmlConfig.SelectSingleNode("/Config/DeveloperMode") != null)
@@ -134,7 +110,7 @@ namespace RBMConfig
             bluntTraumaBonus = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BluntTraumaBonus").InnerText);
 
             ThrustMagnitudeModifier = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ThrustMagnitudeModifier").InnerText);
-            OneHandedThrustDamageBonus = 1f/ThrustMagnitudeModifier;
+            OneHandedThrustDamageBonus = 1f / ThrustMagnitudeModifier;
             TwoHandedThrustDamageBonus = 1f / ThrustMagnitudeModifier;
 
             foreach (XmlNode weaponTypeNode in xmlConfig.SelectSingleNode("/Config/RBMCombat/WeaponTypes").ChildNodes)
@@ -154,89 +130,16 @@ namespace RBMConfig
             priceMultipliers.HorsePriceModifier = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/HorsePriceModifier").InnerText);
             priceMultipliers.TradePriceModifier = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/TradePriceModifier").InnerText);
 
-            saveXmlConfig();
+            //saveXmlConfig();
         }
 
-        public static void setInnerTextBoolean(XmlNode xmlConfig, bool value)
+        public static void LoadConfig()
         {
-            if (value)
-            {
-                xmlConfig.InnerText = "1";
-            }
-            else
-            {
-                xmlConfig.InnerText = "0";
-            }
-        }
+            string defaultConfigFilePath = TaleWorlds.Engine.Utilities.GetFullModulePath("ADODRBM") + "DefaultConfigDONOTEDIT.xml";
 
-        public static void setInnerText(XmlNode xmlConfig, string value)
-        {
-            xmlConfig.InnerText = value;
-        }
+            xmlConfig.Load(defaultConfigFilePath);
 
-        public static void saveXmlConfig()
-        {
-            //modules
-            if (xmlConfig.SelectSingleNode("/Config/DeveloperMode") != null && developerMode)
-            {
-                setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/DeveloperMode"), developerMode);
-            }
-            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMTournament/Enabled"), rbmTournamentEnabled);
-            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/Enabled"), rbmAiEnabled);
-            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Enabled"), rbmCombatEnabled);
-            //RBMAI
-            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureEnabled"), postureEnabled);
-            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureGUIEnabled"), postureGUIEnabled);
-            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/VanillaCombatAi"), vanillaCombatAi);
-            switch (playerPostureMultiplier)
-            {
-                case 1f:
-                    {
-                        setInnerText(xmlConfig.SelectSingleNode("/Config/RBMAI/PlayerPostureMultiplier"), "0");
-                        break;
-                    }
-                case 1.5f:
-                    {
-                        setInnerText(xmlConfig.SelectSingleNode("/Config/RBMAI/PlayerPostureMultiplier"), "1");
-
-                        break;
-                    }
-                case 2f:
-                    {
-                        setInnerText(xmlConfig.SelectSingleNode("/Config/RBMAI/PlayerPostureMultiplier"), "2");
-                        break;
-                    }
-            }
-            //RBMCombat
-            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorStatusUIEnabled"), armorStatusUIEnabled);
-            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/RealisticArrowArc"), realisticArrowArc);
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorMultiplier"), armorMultiplier.ToString());
-            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorPenetrationMessage"), armorPenetrationMessage);
-            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BetterArrowVisuals"), betterArrowVisuals);
-            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/PassiveShoulderShields"), passiveShoulderShields);
-            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/TroopOverhaulActive"), troopOverhaulActive);
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/RealisticRangedReload"), realisticRangedReload.ToString());
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/MaceBluntModifier"), maceBluntModifier.ToString());
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorThresholdModifier"), armorThresholdModifier.ToString());
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BluntTraumaBonus"), bluntTraumaBonus.ToString());
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ThrustMagnitudeModifier"), ThrustMagnitudeModifier.ToString());
-
-            foreach (RBMCombatConfigWeaponType weaponTypeFactors in weaponTypesFactors)
-            {
-                setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/WeaponTypes/" + weaponTypeFactors.weaponType + "/ExtraBluntFactorCut"), weaponTypeFactors.ExtraBluntFactorCut.ToString());
-                setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/WeaponTypes/" + weaponTypeFactors.weaponType + "/ExtraBluntFactorPierce"), weaponTypeFactors.ExtraBluntFactorPierce.ToString());
-                setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/WeaponTypes/" + weaponTypeFactors.weaponType + "/ExtraBluntFactorBlunt"), weaponTypeFactors.ExtraBluntFactorBlunt.ToString());
-                setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/WeaponTypes/" + weaponTypeFactors.weaponType + "/ExtraArmorThresholdFactorPierce"), weaponTypeFactors.ExtraArmorThresholdFactorPierce.ToString());
-                setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/WeaponTypes/" + weaponTypeFactors.weaponType + "/ExtraArmorThresholdFactorCut"), weaponTypeFactors.ExtraArmorThresholdFactorCut.ToString());
-                setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/WeaponTypes/" + weaponTypeFactors.weaponType + "/ExtraArmorSkillDamageAbsorb"), weaponTypeFactors.ExtraArmorSkillDamageAbsorb.ToString());
-            }
-
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/ArmorPriceModifier"), priceMultipliers.ArmorPriceModifier.ToString());
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/WeaponPriceModifier"), priceMultipliers.WeaponPriceModifier.ToString());
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/HorsePriceModifier"), priceMultipliers.HorsePriceModifier.ToString());
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/TradePriceModifier"), priceMultipliers.TradePriceModifier.ToString());
-
-            xmlConfig.Save(Utilities.GetConfigFilePath());
+            parseXmlConfig();
         }
 
         public static RBMCombatConfigWeaponType getWeaponTypeFactors(string weaponType)
