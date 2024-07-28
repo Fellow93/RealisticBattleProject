@@ -87,6 +87,7 @@
 	<string id="RBM_CON_018" text="IA RBM" />
 	<string id="RBM_CON_019" text="Tournoi RBM" />
 	<string id="RBM_CON_020" text="Configuration RBM" />
+	<string id="RBM_CON_021" text="Préférence d'arme de poussée pour l'IA (par défaut à 0,05)" />
 	<!-- Tournament Module Strings -->
 	<string id="RBM_TOU_001" text="Tournoi principal" />
 	<string id="RBM_TOU_002" text="Tournoi de niveau inférieur: Niveau {TIER}" />

@@ -87,6 +87,7 @@
 	<string id="RBM_CON_018" text="RBM AI" />
 	<string id="RBM_CON_019" text="RBMトーナメント" />
 	<string id="RBM_CON_020" text="RBMコンフィグ" />
+	<string id="RBM_CON_021" text="AI のスラスト武器の設定 (デフォルトは 0.05)" />
 	<!-- Tournament Module Strings -->
 	<string id="RBM_TOU_001" text="本大会" />
 	<string id="RBM_TOU_002" text="Tier {TIER}競技会" />
