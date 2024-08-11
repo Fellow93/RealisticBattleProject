@@ -87,6 +87,7 @@
 	<string id="RBM_CON_018" text="RBM Yapay Zeka" />
 	<string id="RBM_CON_019" text="RBM Turnuva" />
 	<string id="RBM_CON_020" text="RBM Ayarları" />
+	<string id="RBM_CON_021" text="Yapay Zeka Saplama Silahı Tercihi (Varsayılan 0.05)" />
 	<!-- Tournament Module Strings -->
 	<string id="RBM_TOU_001" text="Ana turnuva" />
 	<string id="RBM_TOU_002" text="Düşük seviye turnuva ({TIER}. seviye)" />

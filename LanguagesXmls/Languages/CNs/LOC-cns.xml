@@ -4,7 +4,6 @@
     <tag language="简体中文"/>
   </tags>
   <strings>
-
 	<!-- AI Module Strings -->
 	<string id="RBM_AI_001" text="攻方射手:" />
 	<string id="RBM_AI_002" text="攻方骑射手:" />
@@ -88,6 +87,7 @@
 	<string id="RBM_CON_018" text="RBM AI模块" />
 	<string id="RBM_CON_019" text="RBM 竞技场模块" />
 	<string id="RBM_CON_020" text="RBM 选项" />
+	<string id="RBM_CON_021" text="AI对刺击武器的偏好(默认值0.05)" />
 	<!-- Tournament Module Strings -->
 	<string id="RBM_TOU_001" text="竞技大赛" />
 	<string id="RBM_TOU_002" text="次级竞技赛: 段位 {TIER}" />
