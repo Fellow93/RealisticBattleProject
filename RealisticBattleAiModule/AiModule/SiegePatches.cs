@@ -703,23 +703,23 @@ namespace RBMAI.AiModule
             }
         }
 
-        //[HarmonyPatch(typeof(AgentMoraleInteractionLogic))]
-        //private class AgentMoraleInteractionLogicPatch
-        //{
-        //    [HarmonyPrefix]
-        //    [HarmonyPatch("ApplyMoraleEffectOnAgentIncapacitated")]
-        //    private static bool PrefixAfterStart(Agent affectedAgent, Agent affectorAgent, float affectedSideMaxMoraleLoss, float affectorSideMoraleMaxGain, float effectRadius)
-        //    {
-        //        if (affectedAgent != null)
-        //        {
-        //            if (Mission.Current.IsSiegeBattle && affectedAgent.Team.IsDefender)
-        //            {
-        //                return false;
-        //            }
-        //        }
-        //        return true;
-        //    }
-        //}
+        [HarmonyPatch(typeof(AgentMoraleInteractionLogic))]
+        private class AgentMoraleInteractionLogicPatch
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch("ApplyMoraleEffectOnAgentIncapacitated")]
+            private static bool PrefixAfterStart(Agent affectedAgent, Agent affectorAgent, float affectedSideMaxMoraleLoss, float affectorSideMoraleMaxGain, float effectRadius)
+            {
+                if (affectedAgent != null)
+                {
+                    if (Mission.Current.IsSiegeBattle && affectedAgent.Team.IsDefender)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
 
         //[HarmonyPatch(typeof(TacticDefendCastle))]
         //class IsSallyOutApplicablePatch
