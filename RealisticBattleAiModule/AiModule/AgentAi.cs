@@ -130,13 +130,14 @@ namespace RBMAI
                     agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.1f;
                     agentDrivenProperties.WeaponBestAccuracyWaitTime = 0.1f;
                 }
+
                 if (RBMConfig.RBMConfig.postureEnabled)
                 {
-                    Posture posture = null;
-                    AgentPostures.values.TryGetValue(agent, out posture);
-                    if (agent != null && posture != null && posture.maxPostureLossCount >= 1)
+                    Posture agentPosture = null;
+                    AgentPostures.values.TryGetValue(agent, out agentPosture);
+                    if (agent != null && agentPosture != null && agentPosture.maxPostureLossCount >= 1)
                     {
-                        agentDrivenProperties.WeaponInaccuracy += posture.maxPostureLossCount * ( agentDrivenProperties.WeaponInaccuracy * 0.3f);
+                        agentDrivenProperties.WeaponInaccuracy += agentPosture.maxPostureLossCount * ( agentDrivenProperties.WeaponInaccuracy * 0.3f);
                     }
                 }
 
@@ -203,6 +204,15 @@ namespace RBMAI
                 //agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, 0f);
 
                 agentDrivenProperties.MissileSpeedMultiplier = 1f;
+
+                Posture posture = null;
+                AgentPostures.values.TryGetValue(agent, out posture);
+                if (posture != null)
+                {
+                    //agent.AgentDrivenProperties.SwingSpeedMultiplier = MathF.Clamp(posture.posture / posture.maxPosture, 0.5f, 1f);
+                    //agent.AgentDrivenProperties.ThrustOrRangedReadySpeedMultiplier = MathF.Clamp(posture.posture / posture.maxPosture, 0.5f, 1f);
+                    //agent.AgentDrivenProperties.HandlingMultiplier = MathF.Clamp(posture.posture / posture.maxPosture, 0.3f, 1f);
+                }
             }
         }
 
