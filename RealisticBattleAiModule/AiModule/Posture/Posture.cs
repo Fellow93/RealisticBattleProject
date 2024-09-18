@@ -72,7 +72,7 @@ namespace RBMAI
                             }
                             else
                             {
-                                postureDmg = ONE_HANDED_SWORD_PARRY;
+                                postureDmg = ONE_HANDED_SWORD_BLOCK;
 
                             }
                             break;
