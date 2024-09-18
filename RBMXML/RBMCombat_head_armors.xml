@@ -536,7 +536,7 @@
 	</Item>
 	<Item id="pointed_skullcap_over_laced_coif" name="{=6n44BIll}Pointed Skullcap over Laced Coif" mesh="vlandia_helmet_l_c" culture="Culture.aserai" weight="1.2" appearance="1.7" Type="HeadArmor" difficulty="0" subtype="head_armor">
 		<ItemComponent>
-			<Armor head_armor="57" body_armor="0" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+			<Armor head_armor="57" body_armor="12" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
@@ -1082,7 +1082,7 @@
 	</Item>
 	<Item id="pointed_skullcap_over_mail" name="{=py7VUj47}Pointed Skullcap over Gambeson" mesh="vlandia_helmet_l_b" culture="Culture.aserai" weight="1.3" appearance="2.5" Type="HeadArmor">
 		<ItemComponent>
-			<Armor head_armor="85" body_armor="15" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
+			<Armor head_armor="85" body_armor="12" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="type2"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
