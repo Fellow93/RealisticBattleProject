@@ -170,81 +170,91 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
             //	int countToTransfer = infCount / 4 - Formations.ToList()[flankersIndex].CountOfUnits;
             //	Formations.ToList()[0].TransferUnits(Formations.ToList()[flankersIndex], countToTransfer);
             //}
-            if (leftflankersIndex > 0 && rightflankersIndex > 0)
+            if((flankersIndex < 0) || (flankersIndex > (FormationsIncludingEmpty.Count-1)))
             {
-                foreach (Agent agent in flankersList.ToList())
+                flankersIndex = 0;
+            }
+            if ((leftflankersIndex < 0) || (leftflankersIndex > (FormationsIncludingEmpty.Count - 1)))
+            {
+                leftflankersIndex = 0;
+            }
+            if ((rightflankersIndex < 0) || (rightflankersIndex > (FormationsIncludingEmpty.Count - 1)))
+            {
+                rightflankersIndex = 0;
+            }
+            foreach (Agent agent in flankersList.ToList())
+            {
+                if (isDoubleFlank)
                 {
-                    if (isDoubleFlank)
+                    if (j < infCount / 6)
                     {
-                        if (j < infCount / 6)
-                        {
-                            //agent.Formation.TransferUnits(Formations.ToList()[flankersIndex], 1);
-                            agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[leftflankersIndex];
-                        }
-                        else if (j < infCount / 3)
-                        {
-                            //agent.Formation.TransferUnits(Formations.ToList()[0], 1);
-                            agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[rightflankersIndex];
-                        }
-                        else
-                        {
-                            //agent.Formation.TransferUnits(Formations.ToList()[0], 1);
-                            agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0];
-                        }
+                        //agent.Formation.TransferUnits(Formations.ToList()[flankersIndex], 1);
+                        agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[leftflankersIndex];
+                    }
+                    else if (j < infCount / 3)
+                    {
+                        //agent.Formation.TransferUnits(Formations.ToList()[0], 1);
+                        agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[rightflankersIndex];
                     }
                     else
                     {
-                        if (j < infCount / 3)
-                        {
-                            //agent.Formation.TransferUnits(Formations.ToList()[flankersIndex], 1);
-                            agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[flankersIndex];
-                        }
-                        else
-                        {
-                            //agent.Formation.TransferUnits(Formations.ToList()[0], 1);
-                            agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0];
-                        }
+                        //agent.Formation.TransferUnits(Formations.ToList()[0], 1);
+                        agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0];
                     }
+                }
+                else
+                {
+                    if (j < infCount / 3)
+                    {
+                        //agent.Formation.TransferUnits(Formations.ToList()[flankersIndex], 1);
+                        agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[flankersIndex];
+                    }
+                    else
+                    {
+                        //agent.Formation.TransferUnits(Formations.ToList()[0], 1);
+                        agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0];
+                    }
+                }
 
-                    j++;
-                }
-                foreach (Agent agent in mainList.ToList())
+                j++;
+            }
+            foreach (Agent agent in mainList.ToList())
+            {
+                if (isDoubleFlank)
                 {
-                    if (isDoubleFlank)
+                    if (j < infCount / 6)
                     {
-                        if (j < infCount / 6)
-                        {
-                            //agent.Formation.TransferUnits(Formations.ToList()[flankersIndex], 1);
-                            agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[leftflankersIndex];
-                        }
-                        else if (j < infCount / 3)
-                        {
-                            //agent.Formation.TransferUnits(Formations.ToList()[0], 1);
-                            agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[rightflankersIndex];
-                        }
-                        else
-                        {
-                            //agent.Formation.TransferUnits(Formations.ToList()[0], 1);
-                            agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0];
-                        }
+                        //agent.Formation.TransferUnits(Formations.ToList()[flankersIndex], 1);
+                        agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[leftflankersIndex];
+                    }
+                    else if (j < infCount / 3)
+                    {
+                        //agent.Formation.TransferUnits(Formations.ToList()[0], 1);
+                        agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[rightflankersIndex];
                     }
                     else
                     {
-                        if (j < infCount / 3)
-                        {
-                            //agent.Formation.TransferUnits(Formations.ToList()[flankersIndex], 1);
-                            agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[flankersIndex];
-                        }
-                        else
-                        {
-                            //agent.Formation.TransferUnits(Formations.ToList()[0], 1);
-                            agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0];
-                        }
+                        //agent.Formation.TransferUnits(Formations.ToList()[0], 1);
+                        agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0];
                     }
-                    j++;
                 }
+                else
+                {
+                    if (j < infCount / 3)
+                    {
+                        //agent.Formation.TransferUnits(Formations.ToList()[flankersIndex], 1);
+                        agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[flankersIndex];
+                    }
+                    else
+                    {
+                        //agent.Formation.TransferUnits(Formations.ToList()[0], 1);
+                        agent.Formation = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0];
+                    }
+                }
+                j++;
             }
         }
+
         _archers = ChooseAndSortByPriority(FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsRangedFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
         List<Formation> list = ChooseAndSortByPriority(FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower);
         if (list.Count > 0)

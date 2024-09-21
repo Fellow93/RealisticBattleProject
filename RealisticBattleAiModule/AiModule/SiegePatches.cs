@@ -220,8 +220,6 @@ namespace RBMAI.AiModule
             [HarmonyPatch("CalculateCurrentOrder")]
             private static void PostfixCalculateCurrentOrder(ref BehaviorAssaultWalls __instance, ref MovementOrder ____wallSegmentMoveOrder, ref MovementOrder ____attackEntityOrderOuterGate, ref ArrangementOrder ___CurrentArrangementOrder, ref MovementOrder ____chargeOrder, ref TeamAISiegeComponent ____teamAISiegeComponent, ref MovementOrder ____currentOrder, ref BehaviorState ____behaviorState, ref MovementOrder ____attackEntityOrderInnerGate)
             {
-                //____attackEntityOrderInnerGate = MovementOrder.MovementOrderAttackEntity(____teamAISiegeComponent.InnerGate.GameEntity, surroundEntity: false);
-                //___CurrentArrangementOrder = ArrangementOrder.ArrangementOrderLine;
                 switch (____behaviorState)
                 {
                     case BehaviorState.ClimbWall:
@@ -246,41 +244,8 @@ namespace RBMAI.AiModule
                             }
                             break;
                         }
-                    case BehaviorState.AttackEntity:
-                        {
-                            //if (____attackEntityOrderInnerGate.TargetEntity != null)
-                            //{
-                            //    __instance.Formation.FormAttackEntityDetachment(____attackEntityOrderInnerGate.TargetEntity);
-                            //}
-
-                            //___CurrentArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
-                            break;
-                        }
-                    case BehaviorState.Charging:
-                        {
-                            if (__instance.Formation.AI.Side == BehaviorSide.Left || __instance.Formation.AI.Side == BehaviorSide.Right)
-                            {
-                                //__instance.Formation.DisbandAttackEntityDetachment();
-
-                                //foreach (IDetachment detach in __instance.Formation.Detachments.ToList())
-                                //{
-                                //    __instance.Formation.LeaveDetachment(detach);
-                                //}
-                            }
-                            break;
-                        }
                     case BehaviorState.TakeControl:
                         {
-                            if (__instance.Formation.AI.Side == BehaviorSide.Middle)
-                            {
-                                //__instance.Formation.DisbandAttackEntityDetachment();
-
-                                //foreach (IDetachment detach in __instance.Formation.Detachments.ToList())
-                                //{
-                                //    __instance.Formation.LeaveDetachment(detach);
-                                //}
-                            }
-
                             if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                             {
                                 ____attackEntityOrderInnerGate = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
@@ -375,15 +340,6 @@ namespace RBMAI.AiModule
             {
                 if (____followTacticalPosition != null)
                 {
-                    //foreach (SiegeLane sl in TeamAISiegeComponent.SiegeLanes)
-                    //{
-                    //    if (sl.IsBreach && (sl.LaneSide == __instance.Formation.AI.Side))
-                    //    {
-                    //        __result = 0f;
-                    //        return false;
-                    //    }
-                    //}
-                    //if (____followTacticalPosition.Position.AsVec2.Distance(__instance.Formation.QuerySystem.AveragePosition) > 7f)
                     if (____followTacticalPosition.Position.AsVec2.Distance(__instance.Formation.QuerySystem.AveragePosition) > 10f)
                     {
                         if (____followOrder.OrderEnum != 0 && !____teamAISiegeComponent.AreLaddersReady)
@@ -552,7 +508,7 @@ namespace RBMAI.AiModule
                         else
                         {
                             float distance = __instance.Formation.SmoothedAverageUnitPosition.Distance(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.SmoothedAverageUnitPosition);
-                            if ((____innerGate.IsDestroyed || ____innerGate.IsGateOpen) && (TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation, includeOnlyPositionedUnits: false, 0.25f) && distance < 35f ||
+                            if ((____innerGate != null && (____innerGate.IsDestroyed || ____innerGate.IsGateOpen)) && (TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation, includeOnlyPositionedUnits: false, 0.25f) && distance < 35f ||
                                 TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation, includeOnlyPositionedUnits: false, 0.2f)))
                             {
                                 ____readyOrder = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
@@ -594,7 +550,7 @@ namespace RBMAI.AiModule
                 if (__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && ____tacticalWaitPos != null && ____tacticalMiddlePos == null)
                 {
                     float distance = __instance.Formation.QuerySystem.MedianPosition.AsVec2.Distance(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.QuerySystem.AveragePosition);
-                    if ((____innerGate.IsDestroyed || ____innerGate.IsGateOpen) && (TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation, includeOnlyPositionedUnits: false, 0.25f) && distance < 35f ||
+                    if ((____innerGate != null && (____innerGate.IsDestroyed || ____innerGate.IsGateOpen)) && (TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation, includeOnlyPositionedUnits: false, 0.25f) && distance < 35f ||
                                 TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation, includeOnlyPositionedUnits: false, 0.2f)))
                     {
                         ____readyOrder = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
