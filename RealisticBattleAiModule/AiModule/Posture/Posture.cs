@@ -35,6 +35,69 @@ namespace RBMAI
         public const float ONE_HANDED_SWORD_PARRY = 15f;
         public const float ONE_HANDED_SWORD_HIT = 15f;
 
+        public const float TWO_HANDED_SWORD_ATTACK_SWING = 15f;
+        public const float TWO_HANDED_SWORD_ATTACK_THRUST = 15f;
+        public const float TWO_HANDED_SWORD_ATTACK_OVERHEAD = 15f;
+        public const float TWO_HANDED_SWORD_BLOCK = 15f;
+        public const float TWO_HANDED_SWORD_PARRY = 15f;
+        public const float TWO_HANDED_SWORD_HIT = 15f;
+
+        public const float ONE_HANDED_AXE_ATTACK_SWING = 15f;
+        public const float ONE_HANDED_AXE_ATTACK_THRUST = 15f;
+        public const float ONE_HANDED_AXE_ATTACK_OVERHEAD = 15f;
+        public const float ONE_HANDED_AXE_BLOCK = 15f;
+        public const float ONE_HANDED_AXE_PARRY = 15f;
+        public const float ONE_HANDED_AXE_HIT = 15f;
+
+        public const float TWO_HANDED_AXE_ATTACK_SWING = 15f;
+        public const float TWO_HANDED_AXE_ATTACK_THRUST = 15f;
+        public const float TWO_HANDED_AXE_ATTACK_OVERHEAD = 15f;
+        public const float TWO_HANDED_AXE_BLOCK = 15f;
+        public const float TWO_HANDED_AXE_PARRY = 15f;
+        public const float TWO_HANDED_AXE_HIT = 15f;
+
+        public const float MACE_ATTACK_SWING = 15f;
+        public const float MACE_ATTACK_THRUST = 15f;
+        public const float MACE_ATTACK_OVERHEAD = 15f;
+        public const float MACE_BLOCK = 15f;
+        public const float MACE_PARRY = 15f;
+        public const float MACE_HIT = 15f;
+
+        public const float TWO_HANDED_MACE_ATTACK_SWING = 15f;
+        public const float TWO_HANDED_MACE_ATTACK_THRUST = 15f;
+        public const float TWO_HANDED_MACE_ATTACK_OVERHEAD = 15f;
+        public const float TWO_HANDED_MACE_BLOCK = 15f;
+        public const float TWO_HANDED_MACE_PARRY = 15f;
+        public const float TWO_HANDED_MACE_HIT = 15f;
+
+        public const float ONE_HANDED_POLEARM_ATTACK_SWING = 15f;
+        public const float ONE_HANDED_POLEARM_ATTACK_THRUST = 15f;
+        public const float ONE_HANDED_POLEARM_ATTACK_OVERHEAD = 15f;
+        public const float ONE_HANDED_POLEARM_BLOCK = 15f;
+        public const float ONE_HANDED_POLEARM_PARRY = 15f;
+        public const float ONE_HANDED_POLEARM_HIT = 15f;
+
+        public const float TWO_HANDED_POLEARM_ATTACK_SWING = 15f;
+        public const float TWO_HANDED_POLEARM_ATTACK_THRUST = 15f;
+        public const float TWO_HANDED_POLEARM_ATTACK_OVERHEAD = 15f;
+        public const float TWO_HANDED_POLEARM_BLOCK = 15f;
+        public const float TWO_HANDED_POLEARM_PARRY = 15f;
+        public const float TWO_HANDED_POLEARM_HIT = 15f;
+
+        public const float SMALL_SHIELD_ATTACK_SWING = 15f;
+        public const float SMALL_SHIELD_ATTACK_THRUST = 15f;
+        public const float SMALL_SHIELD_ATTACK_OVERHEAD = 15f;
+        public const float SMALL_SHIELD_BLOCK = 15f;
+        public const float SMALL_SHIELD_PARRY = 15f;
+        public const float SMALL_SHIELD_HIT = 15f;
+
+        public const float LARGE_SHIELD_ATTACK_SWING = 15f;
+        public const float LARGE_SHIELD_ATTACK_THRUST = 15f;
+        public const float LARGE_SHIELD_ATTACK_OVERHEAD = 15f;
+        public const float LARGE_SHIELD_BLOCK = 15f;
+        public const float LARGE_SHIELD_PARRY = 15f;
+        public const float LARGE_SHIELD_HIT = 15f;
+
         //public const float TWO_HANDED_SWORD = 25f;
         //public const float ONE_HANDED_AXE = 25f;
         //public const float TWO_HANDED_AXE = 30f;
@@ -56,6 +119,7 @@ namespace RBMAI
             switch (defenderWC)
             {
                 case WeaponClass.Dagger:
+                case WeaponClass.ThrowingKnife:
                 case WeaponClass.OneHandedSword:
                     {
                         if (isParry)
@@ -78,6 +142,208 @@ namespace RBMAI
                             break;
                         }
                     }
+                case WeaponClass.TwoHandedSword:
+                    {
+                        if (isParry)
+                        {
+                            postureDmg = ONE_HANDED_AXE_PARRY;
+                            break;
+                        }
+                        else
+                        {
+                            if (isHit)
+                            {
+                                postureDmg = ONE_HANDED_AXE_HIT;
+                                break;
+                            }
+                            else
+                            {
+                                postureDmg = ONE_HANDED_AXE_BLOCK;
+
+                            }
+                            break;
+                        }
+                    }
+                case WeaponClass.OneHandedAxe:
+                case WeaponClass.ThrowingAxe:
+                    {
+                        if (isParry)
+                        {
+                            postureDmg = ONE_HANDED_AXE_PARRY;
+                            break;
+                        }
+                        else
+                        {
+                            if (isHit)
+                            {
+                                postureDmg = ONE_HANDED_AXE_HIT;
+                                break;
+                            }
+                            else
+                            {
+                                postureDmg = ONE_HANDED_AXE_BLOCK;
+
+                            }
+                            break;
+                        }
+                    }
+                case WeaponClass.TwoHandedAxe:
+                    {
+                        if (isParry)
+                        {
+                            postureDmg = TWO_HANDED_AXE_PARRY;
+                            break;
+                        }
+                        else
+                        {
+                            if (isHit)
+                            {
+                                postureDmg = TWO_HANDED_AXE_HIT;
+                                break;
+                            }
+                            else
+                            {
+                                postureDmg = TWO_HANDED_AXE_BLOCK;
+
+                            }
+                            break;
+                        }
+                    }
+                case WeaponClass.Mace:
+                case WeaponClass.Pick:
+                    {
+                        if (isParry)
+                        {
+                            postureDmg = TWO_HANDED_AXE_PARRY;
+                            break;
+                        }
+                        else
+                        {
+                            if (isHit)
+                            {
+                                postureDmg = TWO_HANDED_AXE_HIT;
+                                break;
+                            }
+                            else
+                            {
+                                postureDmg = TWO_HANDED_AXE_BLOCK;
+
+                            }
+                            break;
+                        }
+                    }
+                case WeaponClass.TwoHandedMace:
+                    {
+                        if (isParry)
+                        {
+                            postureDmg = TWO_HANDED_AXE_PARRY;
+                            break;
+                        }
+                        else
+                        {
+                            if (isHit)
+                            {
+                                postureDmg = TWO_HANDED_AXE_HIT;
+                                break;
+                            }
+                            else
+                            {
+                                postureDmg = TWO_HANDED_AXE_BLOCK;
+
+                            }
+                            break;
+                        }
+                    }
+                case WeaponClass.OneHandedPolearm:
+                case WeaponClass.Javelin:
+                    {
+                        if (isParry)
+                        {
+                            postureDmg = TWO_HANDED_AXE_PARRY;
+                            break;
+                        }
+                        else
+                        {
+                            if (isHit)
+                            {
+                                postureDmg = TWO_HANDED_AXE_HIT;
+                                break;
+                            }
+                            else
+                            {
+                                postureDmg = TWO_HANDED_AXE_BLOCK;
+
+                            }
+                            break;
+                        }
+                    }
+                case WeaponClass.TwoHandedPolearm:
+                case WeaponClass.LowGripPolearm:
+                    {
+                        if (isParry)
+                        {
+                            postureDmg = TWO_HANDED_AXE_PARRY;
+                            break;
+                        }
+                        else
+                        {
+                            if (isHit)
+                            {
+                                postureDmg = TWO_HANDED_AXE_HIT;
+                                break;
+                            }
+                            else
+                            {
+                                postureDmg = TWO_HANDED_AXE_BLOCK;
+
+                            }
+                            break;
+                        }
+                    }
+                case WeaponClass.SmallShield:
+                    {
+                        if (isParry)
+                        {
+                            postureDmg = TWO_HANDED_AXE_PARRY;
+                            break;
+                        }
+                        else
+                        {
+                            if (isHit)
+                            {
+                                postureDmg = TWO_HANDED_AXE_HIT;
+                                break;
+                            }
+                            else
+                            {
+                                postureDmg = TWO_HANDED_AXE_BLOCK;
+
+                            }
+                            break;
+                        }
+                    }
+                case WeaponClass.LargeShield:
+                    {
+                        if (isParry)
+                        {
+                            postureDmg = TWO_HANDED_AXE_PARRY;
+                            break;
+                        }
+                        else
+                        {
+                            if (isHit)
+                            {
+                                postureDmg = TWO_HANDED_AXE_HIT;
+                                break;
+                            }
+                            else
+                            {
+                                postureDmg = TWO_HANDED_AXE_BLOCK;
+
+                            }
+                            break;
+                        }
+                    }
                 default:
                     {
                         postureDmg = 20f;
@@ -93,6 +359,7 @@ namespace RBMAI
             switch (attackerWC)
             {
                 case WeaponClass.Dagger:
+                case WeaponClass.ThrowingKnife:
                 case WeaponClass.OneHandedSword:
                     {
                         if (strikeType == StrikeType.Swing)
@@ -111,6 +378,199 @@ namespace RBMAI
                         else
                         {
                             postureDmg = ONE_HANDED_SWORD_ATTACK_THRUST;
+                            break;
+                        }
+                    }
+                case WeaponClass.TwoHandedSword:
+                    {
+                        if (strikeType == StrikeType.Swing)
+                        {
+                            if (attackDirection == Agent.UsageDirection.AttackUp)
+                            {
+                                postureDmg = TWO_HANDED_SWORD_ATTACK_OVERHEAD;
+                                break;
+                            }
+                            else
+                            {
+                                postureDmg = TWO_HANDED_SWORD_ATTACK_SWING;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            postureDmg = TWO_HANDED_SWORD_ATTACK_THRUST;
+                            break;
+                        }
+                    }
+                case WeaponClass.OneHandedAxe:
+                case WeaponClass.ThrowingAxe:
+                    {
+                        if (strikeType == StrikeType.Swing)
+                        {
+                            if (attackDirection == Agent.UsageDirection.AttackUp)
+                            {
+                                postureDmg = ONE_HANDED_AXE_ATTACK_OVERHEAD;
+                                break;
+                            }
+                            else
+                            {
+                                postureDmg = ONE_HANDED_AXE_ATTACK_SWING;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            postureDmg = ONE_HANDED_AXE_ATTACK_THRUST;
+                            break;
+                        }
+                    }
+                case WeaponClass.TwoHandedAxe:
+                    {
+                        if (strikeType == StrikeType.Swing)
+                        {
+                            if (attackDirection == Agent.UsageDirection.AttackUp)
+                            {
+                                postureDmg = TWO_HANDED_AXE_ATTACK_OVERHEAD;
+                                break;
+                            }
+                            else
+                            {
+                                postureDmg = TWO_HANDED_AXE_ATTACK_SWING;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            postureDmg = TWO_HANDED_AXE_ATTACK_THRUST;
+                            break;
+                        }
+                    }
+                case WeaponClass.Mace:
+                case WeaponClass.Pick:
+                    {
+                        if (strikeType == StrikeType.Swing)
+                        {
+                            if (attackDirection == Agent.UsageDirection.AttackUp)
+                            {
+                                postureDmg = MACE_ATTACK_OVERHEAD;
+                                break;
+                            }
+                            else
+                            {
+                                postureDmg = MACE_ATTACK_SWING;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            postureDmg = MACE_ATTACK_THRUST;
+                            break;
+                        }
+                    }
+                case WeaponClass.TwoHandedMace:
+                    {
+                        if (strikeType == StrikeType.Swing)
+                        {
+                            if (attackDirection == Agent.UsageDirection.AttackUp)
+                            {
+                                postureDmg = TWO_HANDED_MACE_ATTACK_OVERHEAD;
+                                break;
+                            }
+                            else
+                            {
+                                postureDmg = TWO_HANDED_MACE_ATTACK_SWING;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            postureDmg = TWO_HANDED_MACE_ATTACK_THRUST;
+                            break;
+                        }
+                    }
+                case WeaponClass.OneHandedPolearm:
+                case WeaponClass.Javelin:
+                    {
+                        if (strikeType == StrikeType.Swing)
+                        {
+                            if (attackDirection == Agent.UsageDirection.AttackUp)
+                            {
+                                postureDmg = ONE_HANDED_POLEARM_ATTACK_OVERHEAD;
+                                break;
+                            }
+                            else
+                            {
+                                postureDmg = ONE_HANDED_POLEARM_ATTACK_SWING;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            postureDmg = ONE_HANDED_POLEARM_ATTACK_THRUST;
+                            break;
+                        }
+                    }
+                case WeaponClass.TwoHandedPolearm:
+                case WeaponClass.LowGripPolearm:
+                    {
+                        if (strikeType == StrikeType.Swing)
+                        {
+                            if (attackDirection == Agent.UsageDirection.AttackUp)
+                            {
+                                postureDmg = TWO_HANDED_POLEARM_ATTACK_OVERHEAD;
+                                break;
+                            }
+                            else
+                            {
+                                postureDmg = TWO_HANDED_POLEARM_ATTACK_SWING;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            postureDmg = TWO_HANDED_POLEARM_ATTACK_THRUST;
+                            break;
+                        }
+                    }
+                case WeaponClass.SmallShield:
+                    {
+                        if (strikeType == StrikeType.Swing)
+                        {
+                            if (attackDirection == Agent.UsageDirection.AttackUp)
+                            {
+                                postureDmg = SMALL_SHIELD_ATTACK_OVERHEAD;
+                                break;
+                            }
+                            else
+                            {
+                                postureDmg = SMALL_SHIELD_ATTACK_SWING;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            postureDmg = SMALL_SHIELD_ATTACK_THRUST;
+                            break;
+                        }
+                    }
+                case WeaponClass.LargeShield:
+                    {
+                        if (strikeType == StrikeType.Swing)
+                        {
+                            if (attackDirection == Agent.UsageDirection.AttackUp)
+                            {
+                                postureDmg = LARGE_SHIELD_ATTACK_OVERHEAD;
+                                break;
+                            }
+                            else
+                            {
+                                postureDmg = LARGE_SHIELD_ATTACK_SWING;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            postureDmg = LARGE_SHIELD_ATTACK_THRUST;
                             break;
                         }
                     }
