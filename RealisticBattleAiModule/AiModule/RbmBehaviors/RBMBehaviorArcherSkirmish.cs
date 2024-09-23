@@ -286,17 +286,12 @@ namespace RBMAI
         public override void TickOccasionally()
         {
             CalculateCurrentOrder();
-            //if(base.Formation.Width > customWidth)
-            //{
-            //    base.Formation.FormOrder = FormOrder.FormOrderCustom(customWidth);
-            //}
             base.Formation.SetMovementOrder(base.CurrentOrder);
             base.Formation.FacingOrder = CurrentFacingOrder;
         }
 
         protected override void OnBehaviorActivatedAux()
         {
-            //_cantShootDistance = float.MaxValue;
             _behaviorState = BehaviorState.PullingBack;
             _cantShootTimer.Reset(Mission.Current.CurrentTime, MBMath.Lerp(5f, 10f, (MBMath.ClampFloat(base.Formation.CountOfUnits, 10f, 60f) - 10f) * 0.02f));
             CalculateCurrentOrder();
