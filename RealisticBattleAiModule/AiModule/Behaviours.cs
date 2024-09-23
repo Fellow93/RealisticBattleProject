@@ -32,7 +32,6 @@ namespace RBMAI
             private static void PostfixOnBehaviorActivatedAux(ref BehaviorSkirmishLine __instance)
             {
                 __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
-                //__instance.Formation.FormOrder = FormOrder.FormOrderWide;
                 __instance.Formation.FormOrder = FormOrder.FormOrderCustom(110f);
             }
         }
@@ -170,12 +169,6 @@ namespace RBMAI
                 MethodInfo method = typeof(BehaviorScreenedSkirmish).GetMethod("CalculateCurrentOrder", BindingFlags.NonPublic | BindingFlags.Instance);
                 method.DeclaringType.GetMethod("CalculateCurrentOrder");
                 method.Invoke(__instance, new object[] { });
-                //bool flag = formation.QuerySystem.ClosestEnemyFormation == null || _mainFormation.QuerySystem.MedianPosition.AsVec2.DistanceSquared(formation.QuerySystem.ClosestEnemyFormation.MedianPosition.AsVec2) <= formation.QuerySystem.AveragePosition.DistanceSquared(formation.QuerySystem.ClosestEnemyFormation.MedianPosition.AsVec2) || formation.QuerySystem.AveragePosition.DistanceSquared(position.AsVec2) <= (_mainFormation.Depth + formation.Depth) * (_mainFormation.Depth + formation.Depth) * 0.25f;
-                //if (flag != _isFireAtWill)
-                //{
-                //    _isFireAtWill = flag;
-                //    formation.FiringOrder = (_isFireAtWill ? FiringOrder.FiringOrderFireAtWill : FiringOrder.FiringOrderHoldYourFire);
-                //}
                 __instance.Formation.SetMovementOrder(____currentOrder);
                 __instance.Formation.FacingOrder = ___CurrentFacingOrder;
                 return false;
@@ -187,13 +180,6 @@ namespace RBMAI
             {
                 __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
             }
-
-            //[HarmonyPostfix]
-            //[HarmonyPatch("GetAiWeight")]
-            //static void PostfixGetAiWeight( ref float __result)
-            //{
-            //    __result.ToString();
-            //}
         }
     }
 
@@ -509,33 +495,6 @@ namespace RBMAI
                         return;
                     }
 
-                    //foreach (Team team in Mission.Current.Teams.ToList())
-                    //{
-                    //    if (!team.IsEnemyOf(__instance.Formation.Team))
-                    //    {
-                    //        continue;
-                    //    }
-                    //    foreach (Formation formation2 in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0)IncludingSpecialAndEmpty.ToList())
-                    //    {
-                    //        if (formation2.CountOfUnits > 0 && formation2.QuerySystem != closestSignificantlyLargeEnemyFormation)
-                    //        {
-                    //            Vec2 v = formation2.QuerySystem.AveragePosition - closestSignificantlyLargeEnemyFormation.AveragePosition;
-                    //            float num4 = v.Normalize();
-                    //            if (vec.DotProduct(v) > 0.8f && num4 < num2 && num4 > num3)
-                    //            {
-                    //                num3 = num4;
-                    //                enemyFormation = formation2;
-                    //            }
-                    //        }
-                    //    }
-                    //}
-
-                    //if (__instance.Formation.QuerySystem.RangedCavalryUnitRatio > 0.95f && targetFormationQS.Formation == enemyFormation)
-                    //{
-                    //    ____currentOrder = MovementOrder.MovementOrderCharge;
-                    //    return;
-                    //}
-
                     if (enemyFormation != null && enemyFormation.QuerySystem != null)
                     {
                         bool isEnemyCav = enemyFormation.QuerySystem.IsCavalryFormation || enemyFormation.QuerySystem.IsRangedCavalryFormation;
@@ -766,8 +725,6 @@ namespace RBMAI
                     vec = ____mainFormation.CurrentPosition + v * ((____mainFormation.Depth + __instance.Formation.Depth) * 0.5f + 10f);
                     position.SetVec2(vec);
                 }
-                //WorldPosition medianPosition = ____mainFormation.QuerySystem.MedianPosition;
-                //medianPosition.SetVec2(vec);
                 ____movementOrder = MovementOrder.MovementOrderMove(position);
                 ____currentOrder = ____movementOrder;
                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(direction);
@@ -922,33 +879,6 @@ namespace RBMAI
         [HarmonyPatch("AdjustSpeedLimit")]
         private static bool AdjustSpeedLimitPrefix(ref HumanAIComponent __instance, ref Agent agent, ref float desiredSpeed, ref bool limitIsMultiplier, ref Agent ___Agent)
         {
-            //FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
-            //_currentTacticField.DeclaringType.GetField("_currentTactic");
-            //if (agent.Formation != null && agent.Formation.QuerySystem.IsCavalryFormation && _currentTacticField.GetValue(agent.Formation?.Team?.TeamAI) != null && _currentTacticField.GetValue(agent.Formation?.Team?.TeamAI).ToString().Contains("Embolon"))
-            //{
-            //    if (limitIsMultiplier && desiredSpeed < 0.6f)
-            //    {
-            //        desiredSpeed = 0.6f;
-            //    }
-            //    return true;
-            //}
-            //if(agent != null && agent.Formation != null)
-            //{
-            //    float currentTime = MBCommon.GetTotalMissionTime();
-            //    if (agent.Formation.QuerySystem.IsInfantryFormation)
-            //    {
-            //        float lastMeleeAttackTime = agent.LastMeleeAttackTime;
-            //        float lastMeleeHitTime = agent.LastMeleeHitTime;
-            //        if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
-            //        {
-            //            if(desiredSpeed > 0.65f)
-            //            {
-            //                desiredSpeed = 0.65f;
-            //            }
-            //            return true;
-            //        }
-            //    }
-            //}
             if (agent.Formation != null && (agent.Formation.QuerySystem.IsRangedCavalryFormation || agent.Formation.QuerySystem.IsCavalryFormation))
             {
                 if (agent.MountAgent != null)
@@ -967,7 +897,6 @@ namespace RBMAI
                 {
                     desiredSpeed = 0.85f;
                 }
-                //___Agent.SetMaximumSpeedLimit(100f, false);
             }
             if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
                 (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorProtectFlank)))
@@ -977,7 +906,6 @@ namespace RBMAI
                     limitIsMultiplier = true;
                     desiredSpeed = 0.85f;
                 }
-                //___Agent.SetMaximumSpeedLimit(100f, false);
             }
             if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
                 (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorRegroup)))
@@ -986,7 +914,6 @@ namespace RBMAI
                 {
                     desiredSpeed = 0.95f;
                 }
-                //___Agent.SetMaximumSpeedLimit(100f, false);
             }
             if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
                 (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorCharge)))
@@ -1012,24 +939,6 @@ namespace RBMAI
                     desiredSpeed = 0.9f;
                 }
             }
-            //else if(agent.Formation != null && agent.Formation.Team.HasTeamAi)
-            //{
-            //    FieldInfo field = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
-            //    field.DeclaringType.GetField("_currentTactic");
-            //    TacticComponent currentTactic = (TacticComponent)field.GetValue(agent.Formation.Team.TeamAI);
-
-            //    if(agent.Formation.GetReadonlyMovementOrderReference().OrderEnum == MovementOrder.MovementOrderEnum.ChargeToTarget)
-            //    {
-            //        if (currentTactic != null && currentTactic.GetType() != null && (currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry) || currentTactic.GetType() == typeof(RBMTacticAttackSplitInfantry)))
-            //        {
-            //            if (limitIsMultiplier && desiredSpeed < 0.8f)
-            //            {
-            //                desiredSpeed = 0.8f;
-            //            }
-            //        }
-            //    }
-
-            //}
             return true;
         }
     }
@@ -1231,181 +1140,6 @@ namespace RBMAI
             FallBack
         }
 
-        //[HarmonyPrefix]
-        //[HarmonyPatch("SetChargeBehaviorValues")]
-        //private static bool PrefixSetChargeBehaviorValues(Agent unit)
-        //{
-        //    if (unit != null && unit.Formation != null)
-        //    {
-        //        if (unit.Formation.QuerySystem.IsRangedCavalryFormation)
-        //        {
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0.01f, 7f, 4f, 20f, 6f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 0.55f, 2f, 0.55f, 20f, 0.55f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 2f, 7f, 4f, 20f, 5f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 4f, 2f, 0.55f, 30f, 0.55f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 8f, 15f, 10f, 30f, 10f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-        //            return false;
-        //        }
-        //        if (unit.Formation.QuerySystem.IsCavalryFormation)
-        //        {
-        //            if (unit.HasMount)
-        //            {
-        //                if (RBMAI.Utilities.GetHarnessTier(unit) > 3)
-        //                {
-        //                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 7f, 4f, 20f, 1f);
-        //                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
-        //                }
-        //                else
-        //                {
-        //                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 1f, 2f, 1f, 20f, 1f);
-        //                    unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
-        //                }
-        //            }
-        //            else
-        //            {
-        //                unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 7f, 4f, 20f, 1f);
-        //                unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
-        //            }
-        //            //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 1f, 2f, 4f, 20f, 1f);
-        //            //unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 25f, 5f, 30f, 5f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 1f, 7f, 4f, 20f, 6f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 2f, 7f, 4f, 20f, 5f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 0f, 10f, 3f, 20f, 6f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-        //            return false;
-        //        }
-        //        if (unit.Formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget)
-        //        {
-        //            if (unit.Formation.QuerySystem.IsInfantryFormation)
-        //            {
-        //                //podmienky: twohandedpolearm v rukach
-        //                //unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0f, 40f, 4f, 50f, 6f);
-        //                //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 7f, 1f, 10f, 0.01f);
-        //                //if (RBMAI.Utilities.CheckIfTwoHandedPolearmInfantry(unit))
-        //                //{
-        //                //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 3.5f, 5f, 20f, 6f);
-        //                //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 3.5f, 4f, 20f, 0.01f);
-        //                //}
-        //                //else {
-        //                //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-        //                //    unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 2f, 1f, 10f, 0.01f);
-        //                //}
-
-        //                //unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 5f, 20f, 6f);
-        //                //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 2f, 1f, 20f, 1f);
-        //                //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 2f, 7f, 4f, 20f, 5f);
-        //                //unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 40f, 4f, 60f, 0f);
-        //                //unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 5f, 7f, 10f, 8, 20f);
-        //                //unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 1f, 12f, 1f, 30f, 0f);
-        //                //unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-
-        //                unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-        //                unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 2f, 1f, 10f, 0.01f);
-        //                unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 0.8f, 20f, 20f);
-        //                unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 40f, 4f, 60f, 0f);
-        //                unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 5f, 7f, 10f, 8, 20f);
-        //                unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 1f, 12f, 1f, 30f, 0f);
-        //                unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-        //                return false;
-        //            }
-        //            if (unit.Formation.QuerySystem.IsRangedFormation)
-        //            {
-        //                //unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 0f, 40f, 4f, 50f, 6f);
-        //                //unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 7f, 1f, 10f, 0.01f);
-        //                unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-        //                unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 5.5f, 2f, 4f, 10f, 0.01f);
-        //                unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 2f, 0f, 8f, 20f);
-        //                unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 5f, 40f, 4f, 60f, 0f);
-        //                unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 2f, 15f, 6.5f, 30f, 5.5f);
-        //                unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 1f, 12f, 1f, 30f, 0f);
-        //                unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-        //                return false;
-        //            }
-        //        }
-        //    }
-        //    return true;
-        //}
-
-        //[HarmonyPrefix]
-        //[HarmonyPatch("SetFollowBehaviorValues")]
-        //private static bool PrefixSetFollowBehaviorValues(Agent unit)
-        //{
-        //    if (unit.Formation != null)
-        //    {
-        //        if (unit.Formation.QuerySystem.IsRangedCavalryFormation)
-        //        {
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 7f, 5f, 20f, 5f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 0.55f, 2f, 4f, 20f, 0.55f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0.55f, 7f, 0.55f, 20f, 0.55f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 8f, 2f, 0.55f, 30f, 0.55f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 10f, 15f, 0.065f, 30f, 0.065f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-        //            return false;
-        //        }
-        //    }
-        //    return true;
-        //}
-
-        //[HarmonyPrefix]
-        //[HarmonyPatch("SetDefaultMoveBehaviorValues")]
-        //private static bool PrefixSetDefaultMoveBehaviorValues(Agent unit)
-        //{
-        //    if (unit.Formation != null)
-        //    {
-        //        if (unit.Formation.QuerySystem.IsRangedCavalryFormation)
-        //        {
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 15f, 5f, 20f, 5f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 0f, 2f, 0f, 20f, 0f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0.02f, 7f, 0.04f, 20f, 0.03f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 0.01f, 2f, 0.01f, 30f, 0.01f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 1f, 15f, 0.065f, 30f, 0.065f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-        //            return false;
-        //        }
-        //    }
-        //    if (Mission.Current.MissionTeamAIType != Mission.MissionTeamAITypeEnum.FieldBattle)
-        //    {
-        //        unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 7f, 5f, 20f, 6f);
-        //        unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 4f, 3f, 20f, 0.01f);
-        //        unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0.02f, 7f, 0.04f, 20f, 0.03f);
-        //        unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 10f, 7f, 5f, 30f, 0.05f);
-        //        unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 0.02f, 15f, 0.065f, 30f, 0.055f);
-        //        unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
-        //        unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-        //        return false;
-        //    }
-        //    if (unit.Formation != null)
-        //    {
-        //        if (unit.Formation.GetReadonlyMovementOrderReference().OrderEnum == MovementOrder.MovementOrderEnum.FallBack)
-        //        {
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 7f, 5f, 20f, 6f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 0f, 4f, 0f, 20f, 0f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 10f, 7f, 5f, 30f, 0.05f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 0.02f, 15f, 0.065f, 30f, 0.055f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 4f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-        //            return false;
-        //        }
-        //        else
-        //        {
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.GoToPos, 3f, 7f, 5f, 20f, 6f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Melee, 8f, 5f, 3f, 20f, 0.01f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.Ranged, 0.02f, 7f, 0.04f, 20f, 0.03f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.ChargeHorseback, 10f, 7f, 5f, 30f, 0.05f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.RangedHorseback, 0.02f, 15f, 0.065f, 30f, 0.055f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityMelee, 5f, 12f, 7.5f, 30f, 9f);
-        //            unit.SetAIBehaviorValues(AISimpleBehaviorKind.AttackEntityRanged, 0.55f, 12f, 0.8f, 30f, 0.45f);
-        //            return false;
-        //        }
-        //    }
-        //    return true;
-        //}
 
         [HarmonyPrefix]
         [HarmonyPatch("GetSubstituteOrder")]
@@ -1421,9 +1155,6 @@ namespace RBMAI
                 {
                     __result = MovementOrder.MovementOrderCharge;
                 }
-                //var position = formation.QuerySystem.MedianPosition;
-                //position.SetVec2(formation.CurrentPosition);
-                //__result = MovementOrder.MovementOrderMove(position);
                 return false;
             }
 
@@ -1541,57 +1272,11 @@ namespace RBMAI
                 }
             }
         }
-
-        //[HarmonyPrefix]
-        //[HarmonyPatch("GetPosition")]
-        //static bool PrefixGetPosition(Formation f, ref WorldPosition __result)
-        //{
-        //    if(f == null)
-        //    {
-        //        __result = WorldPosition.Invalid;
-        //        return false;
-        //    }
-        //    else
-        //    {
-        //        InformationManager.DisplayMessage(new InformationMessage(f.Team.IsAttacker + " " + f.AI.Side.ToString() + " " + f.PrimaryClass.GetName()));
-        //        return true;
-        //    }
-        //}
     }
 
     [HarmonyPatch(typeof(Agent))]
     internal class OverrideAgent
     {
-        //[HarmonyPrefix]
-        //[HarmonyPatch("GetTargetAgent")]
-        //static bool PrefixGetTargetAgent(ref Agent __instance, ref Agent __result)
-        //{
-        //    List<Formation> formations;
-        //    if (__instance != null)
-        //    {
-        //        Formation formation = __instance.Formation;
-        //        if (formation != null)
-        //        {
-        //            if ((formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && (formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget))
-        //            {
-        //                formations = RBMAI.Utilities.FindSignificantFormations(formation);
-        //                if (formations.Count > 0)
-        //                {
-        //                    __result = RBMAI.Utilities.NearestAgentFromMultipleFormations(__instance.Position.AsVec2, formations);
-        //                    return false;
-        //                }
-        //                //Formation enemyFormation = formation.MovementOrder.TargetFormation;
-        //                //if(enemyFormation != null)
-        //                //{
-        //                //    __result = RBMAI.Utilities.NearestAgentFromFormation(__instance.Position.AsVec2, enemyFormation);
-        //                //    return false;
-        //                //}
-        //            }
-        //        }
-        //    }
-        //    return true;
-        //}
-
         [HarmonyPrefix]
         [HarmonyPatch("SetFiringOrder")]
         private static bool PrefixSetFiringOrder(ref Agent __instance, ref int order)
@@ -1628,7 +1313,6 @@ namespace RBMAI
                             {
                                 if (RBMAI.Utilities.CheckIfCanBrace(__instance))
                                 {
-                                    //__instance.SetLookAgent(__instance.GetTargetAgent());
                                     order = 1;
                                 }
                                 else
@@ -1665,7 +1349,6 @@ namespace RBMAI
                     {
                         bool hasnotusableonehand = __instance.Equipment.HasAnyWeaponWithFlags(WeaponFlags.NotUsableWithOneHand);
                         bool hasranged = __instance.IsRangedCached;
-                        //bool hasranged = __instance.Equipment.HasAnyWeaponWithFlags(WeaponFlags.RangedWeapon);
                         float distance = __instance.GetTargetAgent() != null ? __instance.Position.Distance(__instance.GetTargetAgent().Position) : 100f;
                         if (!hasnotusableonehand && !hasranged && __instance.GetTargetAgent() != null && distance < 7f)
                         {
@@ -1702,33 +1385,6 @@ namespace RBMAI
         }
     }
 
-    //[HarmonyPatch(typeof(OrderController))]
-    //class OverrideOrderController
-    //{
-    //    [HarmonyPostfix]
-    //    [HarmonyPatch("SetOrder")]
-    //    static void PostfixSetOrder(OrderController __instance, OrderType orderType, ref Mission ____mission)
-    //    {
-    //        if (orderType == OrderType.Charge)
-    //        {
-    //            foreach (Formation selectedFormation in __instance.SelectedFormations)
-    //            {
-    //                //if ((selectedFormation.QuerySystem.IsInfantryFormation || selectedFormation.QuerySystem.IsRangedFormation) || ____mission.IsTeleportingAgents)
-    //                //{
-    //                if (selectedFormation.QuerySystem.ClosestEnemyFormation == null)
-    //                {
-    //                    selectedFormation.SetMovementOrder(MovementOrder.MovementOrderCharge);
-    //                }
-    //                else
-    //                {
-    //                    selectedFormation.SetMovementOrder(MovementOrder.MovementOrderChargeToTarget(selectedFormation.QuerySystem.ClosestEnemyFormation.Formation));
-    //                }
-    //                //}
-    //            }
-    //        }
-    //    }
-    //}
-
     [HarmonyPatch(typeof(Formation))]
     internal class OverrideSetMovementOrder
     {
@@ -1747,70 +1403,6 @@ namespace RBMAI
         }
     }
 
-    //[HarmonyPatch(typeof(BehaviorComponent))]
-    //class OverrideFindBestBehavior
-    //{
-    //    [HarmonyPrefix]
-    //    [HarmonyPatch("GetAIWeight")]
-    //    static bool PrefixFindBestBehavior(ref BehaviorComponent __instance, ref float __result)
-    //    {
-    //        __instance.NavmeshlessTargetPositionPenalty = 1f;
-    //        return true;
-    //    }
-    //}
-
-    //[HarmonyPatch(typeof(FormationAI))]
-    //class OverrideFindBestBehavior
-    //{
-    //    [HarmonyPrefix]
-    //    [HarmonyPatch("FindBestBehavior")]
-    //    static bool PrefixFindBestBehavior(FormationAI __instance, ref bool __result,
-    //        ref List<BehaviorComponent> ____behaviors, ref Formation ____formation, ref BehaviorComponent ____activeBehavior)
-    //    {
-    //        BehaviorComponent behaviorComponent = null;
-    //        float num = float.MinValue;
-    //        foreach (BehaviorComponent behavior in ____behaviors)
-    //        {
-    //            if (!(behavior.WeightFactor > 1E-07f))
-    //            {
-    //                continue;
-    //            }
-    //            float num2 = behavior.GetAIWeight() * behavior.WeightFactor;
-    //            if (behavior == __instance.ActiveBehavior)
-    //            {
-    //                num2 *= MBMath.Lerp(1.2f, 2f, MBMath.ClampFloat((behavior.PreserveExpireTime - Mission.Current.CurrentTime) / 5f, 0f, 1f), float.MinValue);
-    //            }
-    //            if (num2 > num)
-    //            {
-    //                if (behavior.NavmeshlessTargetPositionPenalty > 0f)
-    //                {
-    //                    num2 /= behavior.NavmeshlessTargetPositionPenalty;
-    //                }
-    //                behavior.PrecalculateMovementOrder();
-    //                num2 *= behavior.NavmeshlessTargetPositionPenalty;
-    //                if (num2 > num)
-    //                {
-    //                    behaviorComponent = behavior;
-    //                    num = num2;
-    //                }
-    //            }
-    //        }
-    //        if (behaviorComponent != null)
-    //        {
-    //            typeof(FormationAI).GetProperty("ActiveBehavior").SetValue(__instance, behaviorComponent, null);
-    //            if (behaviorComponent != ____behaviors[0])
-    //            {
-    //                ____behaviors.Remove(behaviorComponent);
-    //                ____behaviors.Insert(0, behaviorComponent);
-    //            }
-    //            __result = true;
-    //            return false;
-    //        }
-    //        __result = false;
-    //        return false;
-    //    }
-    //}
-
     [HarmonyPatch(typeof(BehaviorRegroup))]
     internal class OverrideBehaviorRegroup
     {
@@ -1826,12 +1418,6 @@ namespace RBMAI
                     __result = 0f;
                     return false;
                 }
-                //if(__instance.Formation.QuerySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents > 15f)
-                //{
-                //__result = 10f;
-                //return false;
-                //}
-                //__result =  MBMath.Lerp(0.1f, 1.2f, MBMath.ClampFloat(behaviorCoherence * (querySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents + 1f) / (querySystem.IdealAverageDisplacement + 1f), 0f, 3f) / 3f);
                 __result = MBMath.Lerp(0.1f, 1.2f, MBMath.ClampFloat(__instance.BehaviorCoherence * (querySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents + 1f) / (querySystem.IdealAverageDisplacement + 1f), 0f, 3f) / 3f);
                 return false;
             }
@@ -1885,7 +1471,6 @@ namespace RBMAI
                 {
                     FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
                     _currentTacticField.DeclaringType.GetField("_currentTactic");
-                    //TacticComponent _currentTactic = (TacticComponent);
                     if (__instance.Formation?.Team?.TeamAI != null)
                     {
                         if (_currentTacticField.GetValue(__instance.Formation?.Team?.TeamAI) != null && _currentTacticField.GetValue(__instance.Formation?.Team?.TeamAI).ToString().Contains("SplitArchers"))
@@ -1948,21 +1533,9 @@ namespace RBMAI
                             {
                                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
                             }
-                            //__instance.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent) {
-                            //    if (RBMAI.Utilities.CheckIfCanBrace(agent))
-                            //    {
-                            //        agent.SetFiringOrder(1);
-                            //    }
-                            //    else
-                            //    {
-                            //        agent.SetFiringOrder(0);
-                            //    }
-                            //});
-                            //__instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
                             return false;
                         }
                         positionsStorage.Remove(__instance.Formation);
-                        //medianPositionOld = WorldPosition.Invalid;
                     }
                     else if (significantEnemy != null && signDist < 60f && RBMAI.Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.33f))
                     {
@@ -1980,45 +1553,16 @@ namespace RBMAI
                         {
                             ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
                         }
-                        //__instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
                         return false;
-                        //__instance.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent) {
-                        //    agent.SetMaximumSpeedLimit(0.1f, true);
-                        //});
                     }
                     positionsStorage.Remove(__instance.Formation);
                 }
 
                 if (significantEnemy != null)
                 {
-                    //int storedWaitCount;
-                    //if (Mission.Current.AllowAiTicking)
-                    //{
-                    //    if (waitCountStorage.TryGetValue(__instance.Formation, out storedWaitCount))
-                    //    {
-                    //        if (storedWaitCount < 100)
-                    //        {
-                    //            storedWaitCount++;
-                    //            Vec2 direction = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
-                    //            WorldPosition pos = __instance.Formation.QuerySystem.MedianPosition;
-                    //            ____currentOrder = MovementOrder.MovementOrderMove(pos);
-                    //            ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(direction.Normalized());
-                    //            waitCountStorage[__instance.Formation] = storedWaitCount;
-                    //            return false;
-                    //        }
-                    //    }
-                    //    else
-                    //    {
-                    //        waitCountStorage.Add(__instance.Formation, 0);
-                    //    }
-                    //}
-
                     Vec2 vec = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
                     WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
 
-                    //if (!Mission.Current.IsPositionInsideBoundaries(positionNew.AsVec2) || positionNew.GetNavMesh() == UIntPtr.Zero)
-                    //{
-                    //}
                     float disper = __instance.Formation.QuerySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents;
                     if (disper > 10f)
                     {
@@ -2069,27 +1613,6 @@ namespace RBMAI
                         }
                     }
                 }
-                //if (flag != ____isInShieldWallDistance)
-                //{
-                //    ____isInShieldWallDistance = flag;
-                //    if (____isInShieldWallDistance)
-                //    {
-                //        if (__instance.Formation.QuerySystem.HasShield)
-                //        {
-                //            __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderShieldWall;
-                //        }
-                //        else
-                //        {
-                //            __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
-                //        }
-                //        ____switchedToShieldWallRecently = true;
-                //        ____switchedToShieldWallTimer.Reset(Mission.Current.CurrentTime, 5f);
-                //    }
-                //    else
-                //    {
-                //        __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
-                //    }
-                //}
             }
             __instance.Formation.SetMovementOrder(__instance.CurrentOrder);
             return false;

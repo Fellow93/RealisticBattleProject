@@ -7,7 +7,6 @@ using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
-using static RBMAI.Frontline;
 using static TaleWorlds.MountAndBlade.HumanAIComponent;
 
 namespace RBMAI
@@ -93,6 +92,13 @@ namespace RBMAI
             private static bool PrefixGetOrderPositionOfUnit(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ____detachedUnits, ref WorldPosition __result)
             {
                 Mission mission = Mission.Current;
+                if (mission != null && mission.IsFieldBattle && unit != null && (__instance.QuerySystem.IsCavalryFormation || __instance.QuerySystem.IsRangedCavalryFormation)){
+                    if(unit != null && unit.MountAgent == null)
+                    {
+                        __result = __instance.GetReadonlyMovementOrderReference().CreateNewOrderWorldPosition(__instance, WorldPosition.WorldPositionEnforcedCache.None);
+                        return false;
+                    }
+                }
                 if (__instance.Team.ActiveAgents.Count()* __instance.Team.QuerySystem.InfantryRatio <= 30) { return true; } // frontline system disabled for small infantry battles
                 if (mission != null && mission.IsFieldBattle && unit != null && (__instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation) && !____detachedUnits.Contains(unit))
                 {

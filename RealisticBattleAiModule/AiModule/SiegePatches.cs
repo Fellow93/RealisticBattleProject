@@ -39,62 +39,10 @@ namespace RBMAI.AiModule
             {
                 if (Mission.Current.Mode != MissionMode.Deployment)
                 {
-                    //List<Formation> archerFormations = new List<Formation>();
-                    //foreach (Formation formation in ___team.Formations.ToList())
-                    //{
-                    //    if (formation.QuerySystem.IsRangedFormation)
-                    //    {
-                    //        archerFormations.Add(formation);
-                    //    }
-                    //}
-                    //if (archerFormations.Count > 1)
-                    //{Team ___team
-                    //    foreach (Formation archerFormation in archerFormations.ToList())
-                    //    {
-                    //        archerFormation.AI.ResetBehaviorWeights();
-                    //        archerFormation.AI.SetBehaviorWeight<BehaviorShootFromCastleWalls>(100f);
-                    //        return false;
-                    //    }
-                    //}
-                    ////bool carryOutDefenceEnabledOut;
-                    //if (!carryOutDefenceEnabled.TryGetValue(___team, out carryOutDefenceEnabledOut))
-                    //{
-                    //    carryOutDefenceEnabled[___team] = false;
                     doRangedJoinMelee = false;
-                    //    return true;
-                    //}
-                    //else
-                    //{
-                    //    return false;
-                    //}
                 }
                 return true;
             }
-
-            //[HarmonyPostfix]
-            //[HarmonyPatch("CarryOutDefense")]
-            //static void PostfixCarryOutDefense(ref TacticDefendCastle __instance, ref bool doRangedJoinMelee, ref Team ___team)
-            //{
-            //    if (Mission.Current.Mode != MissionMode.Deployment)
-            //    {
-            //        List<Formation> archerFormations = new List<Formation>();
-            //        foreach (Formation formation in ___team.Formations.ToList())
-            //        {
-            //            if (formation.QuerySystem.IsRangedFormation)
-            //            {
-            //                archerFormations.Add(formation);
-            //            }
-            //        }
-            //        if (archerFormations.Count > 1)
-            //        {
-            //            foreach (Formation archerFormation in archerFormations.ToList())
-            //            {
-            //                archerFormation.AI.ResetBehaviorWeights();
-            //                archerFormation.AI.SetBehaviorWeight<BehaviorShootFromCastleWalls>(100f);
-            //            }
-            //        }
-            //    }
-            //}
 
             [HarmonyPrefix]
             [HarmonyPatch("ArcherShiftAround")]
@@ -206,15 +154,6 @@ namespace RBMAI.AiModule
 
             [HarmonyPrefix]
             [HarmonyPatch("CalculateCurrentOrder")]
-            private static bool PrefixCalculateCurrentOrder(ref BehaviorAssaultWalls __instance, ref MovementOrder ____chargeOrder)
-            {
-                //__instance.Formation.AI.SetBehaviorWeight<BehaviorCharge>(0f);
-                //if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
-                //{
-                //    ____chargeOrder = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
-                //}
-                return true;
-            }
 
             [HarmonyPostfix]
             [HarmonyPatch("CalculateCurrentOrder")]
@@ -260,16 +199,6 @@ namespace RBMAI.AiModule
                 }
             }
         }
-
-        ////[HarmonyPatch(typeof(AttackEntityOrderDetachment))]
-        ////class OverrideAttackEntityOrderDetachment
-        ////{
-        ////    [HarmonyPostfix]
-        ////    [HarmonyPatch("Initialize")]
-        ////    static void PostfixInitialize(ref BattleSideEnum managedSide, Vec3 managedDirection, ref float queueBeginDistance, ref int ____maxUserCount, ref float ____agentSpacing, ref float ____queueBeginDistance, ref float ____queueRowSize, ref float ____costPerRow, ref float ____baseCost)
-        ////    {
-        ////    }
-        ////}
 
         [HarmonyPatch(typeof(BehaviorShootFromCastleWalls))]
         private class OverrideBehaviorShootFromCastleWalls
@@ -331,7 +260,6 @@ namespace RBMAI.AiModule
             }
         }
 
-        //[HarmonyPatch(typeof(BehaviorWaitForLadders))]
         private class OverrideBehaviorWaitForLadders
         {
             [HarmonyPrefix]
@@ -605,23 +533,7 @@ namespace RBMAI.AiModule
                 {
                     __instance.Formation.FormOrder = FormOrder.FormOrderCustom(____tacticalWaitPos.Width * 2f);
                 }
-                //bool flag = ____isDefendingWideGap && ____behaviorState == BehaviorState.Ready && __instance.Formation.QuerySystem.ClosestEnemyFormation != null && (__instance.Formation.QuerySystem.IsUnderRangedAttack || __instance.Formation.QuerySystem.AveragePosition.DistanceSquared(____currentOrder.GetPosition(__instance.Formation)) < 25f + (____isInShieldWallDistance ? 75f : 0f));
-                //if (flag == ____isInShieldWallDistance)
-                //{
-                //    return false;
-                //}
-                //____isInShieldWallDistance = flag;
-                //if (____isInShieldWallDistance && __instance.Formation.QuerySystem.HasShield)
-                //{
-                //    if (__instance.Formation.ArrangementOrder != ArrangementOrder.ArrangementOrderLine)
-                //    {
-                //        __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
-                //    }
-                //}
-                //else if (__instance.Formation.ArrangementOrder == ArrangementOrder.ArrangementOrderLine)
-                //{
                 __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
-                //}
                 return false;
             }
         }
@@ -645,17 +557,6 @@ namespace RBMAI.AiModule
                 {
                     ____maxUserCount = 0;
                 }
-                //else
-                //{
-                //    ____maxUserCount = 0;
-                //}
-                //else if(queueBeginDistance == 3f)
-                //{
-                //    ____agentSpacing = 5f;
-                //    ____queueBeginDistance = 0.2f;
-                //    ____queueRowSize = 5f;
-                //    ____maxUserCount = 10;
-                //}
             }
         }
 
@@ -676,18 +577,6 @@ namespace RBMAI.AiModule
                 return true;
             }
         }
-
-        //[HarmonyPatch(typeof(TacticDefendCastle))]
-        //class IsSallyOutApplicablePatch
-        //{
-        //    [HarmonyPrefix]
-        //    [HarmonyPatch("IsSallyOutApplicable")]
-        //    static bool Prefix(ref bool __result)
-        //    {
-        //        __result = false;
-        //        return false;
-        //    }
-        //}
 
         [HarmonyPatch(typeof(TacticDefendCastle))]
         private class StopUsingStrategicAreasPatch
@@ -721,47 +610,5 @@ namespace RBMAI.AiModule
                 return false;
             }
         }
-
-        //[HarmonyPatch(typeof(SiegeMissionController))]
-        //class SetupTeamsOfSidePatch
-        //{
-        //    [HarmonyPostfix]
-        //    [HarmonyPatch("SetupTeamsOfSide")]
-        //    static void Postfix(BattleSideEnum side)
-        //    {
-        //        if(side == BattleSideEnum.Defender)
-        //        {
-        //            foreach (Formation item2 in Mission.Current.DefenderTeam.FormationsIncludingSpecial)
-        //            {
-        //                Mission.Current.AllowAiTicking = true;
-        //                item2.ApplyActionOnEachUnit(delegate (Agent agent)
-        //                {
-        //                    if (agent.IsAIControlled)
-        //                    {
-        //                        agent.AIStateFlags |= Agent.AIStateFlag.Alarmed;
-        //                        agent.SetIsAIPaused(isPaused: false);
-        //                    }
-        //                });
-        //            }
-        //        }
-        //    }
-        //}
-
-        //[HarmonyPatch(typeof(TacticBreachWalls))]
-        //class StartTacticalRetreatPatch
-        //{
-        //    [HarmonyPrefix]
-        //    [HarmonyPatch("StartTacticalRetreat")]
-        //    static bool Prefix(ref TacticBreachWalls __instance, ref Team ___team)
-        //    {
-        //        float enemyPower = Mission.Current.Teams.GetEnemiesOf(___team).Sum((Team t) => t.QuerySystem.TeamPower);
-        //        float allyPower = Mission.Current.Teams.GetAlliesOf(___team, true).Sum((Team t) => t.QuerySystem.TeamPower);
-        //        if (allyPower >= enemyPower * 0.3f)
-        //        {
-        //            return false;
-        //        }
-        //        return true;
-        //    }
-        //}
     }
 }
