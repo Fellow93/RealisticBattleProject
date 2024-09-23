@@ -32,7 +32,6 @@ namespace RBMAI
             private static void PostfixOnBehaviorActivatedAux(ref BehaviorSkirmishLine __instance)
             {
                 __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
-                //__instance.Formation.FormOrder = FormOrder.FormOrderWide;
                 __instance.Formation.FormOrder = FormOrder.FormOrderCustom(110f);
             }
         }
