@@ -231,16 +231,39 @@ namespace RBMAI.AiModule
                             }
                             if (__instance.Formation != null)
                             {
+                                if(((float)__instance.Formation.QuerySystem.InsideCastleUnitCountIncludingUnpositioned/ (float)__instance.Formation.CountOfUnits) > 0.80f)
+                                {
+                                    if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
+                                    {
+                                        ____attackEntityOrderInnerGate = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                                        ____attackEntityOrderOuterGate = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                                        ____chargeOrder = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                                        ____chargeOrder.TargetEntity = null;
+                                        ____currentOrder = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                                        ____currentOrder.TargetEntity = null;
+                                        ____currentOrder = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation); break;
+                                    }
+                                    else
+                                    {
+                                        ____attackEntityOrderInnerGate = MovementOrder.MovementOrderCharge;
+                                        ____attackEntityOrderOuterGate = MovementOrder.MovementOrderCharge;
+                                        ____chargeOrder = MovementOrder.MovementOrderCharge;
+                                        ____chargeOrder.TargetEntity = null;
+                                        ____currentOrder = MovementOrder.MovementOrderCharge;
+                                        ____currentOrder.TargetEntity = null;
+                                        ____currentOrder = MovementOrder.MovementOrderCharge; break;
+                                    }
+                                }
                                 Formation enemyFormation = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, false, false, false, false, false);
                                 if (enemyFormation != null)
                                 {
-                                    ____currentOrder = MovementOrder.MovementOrderChargeToTarget(enemyFormation);
-                                    break;
+                                    ____currentOrder = MovementOrder.MovementOrderChargeToTarget(enemyFormation); break;
                                 }
                             }
                             if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                             {
                                 ____currentOrder = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                                break;
                             }
                             break;
                         }
@@ -254,6 +277,7 @@ namespace RBMAI.AiModule
                                 ____chargeOrder.TargetEntity = null;
                                 ____currentOrder = MovementOrder.MovementOrderChargeToTarget(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
                                 ____currentOrder.TargetEntity = null;
+                                break;
                             }
                             break;
                         }

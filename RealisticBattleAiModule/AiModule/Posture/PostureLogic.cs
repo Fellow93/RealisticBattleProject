@@ -198,10 +198,6 @@ namespace RBMAI
             {
                 if (posture != null)
                 {
-                    if (agent != null && posture.maxPostureLossCount >= 1)
-                    {
-                        agent.AgentDrivenProperties.WeaponInaccuracy *= posture.maxPostureLossCount * 1.1f;
-                    }
                     float currentTime = Mission.Current.CurrentTime;
                     int restCount = posture.lastPostureLossTime > 0 ? MathF.Floor((currentTime - posture.lastPostureLossTime) / 20f) : 0;
                     posture.maxPostureLossCount = posture.maxPostureLossCount - restCount;
