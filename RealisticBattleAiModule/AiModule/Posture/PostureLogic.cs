@@ -243,7 +243,7 @@ namespace RBMAI
                                 if (defenderPosture != null)
                                 {
                                     //float postureDmg = calculateDefenderPostureDamage(victimAgent, attackerAgent, absoluteDamageModifier, 0.85f, ref collisionData, attackerWeapon, comHitModifier);
-                                    float postureDmg = PostureDamage.getDefenseBasePostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry:false, isDirectHit:false);
+                                    float postureDmg = PostureDamage.getDefenderPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry:false, isDirectHit:false);
                                     defenderPosture.posture = defenderPosture.posture - postureDmg;
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (defenderPosture.posture <= 0f)
@@ -288,7 +288,7 @@ namespace RBMAI
                                 }
                                 if (attackerPosture != null)
                                 {
-                                    float attackerPostureDmg = PostureDamage.getAttackBasePostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: false, isDirectHit: false);
+                                    float attackerPostureDmg = PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: false, isDirectHit: false);
                                     attackerPosture.posture = attackerPosture.posture - attackerPostureDmg;
                                     if (attackerPosture.posture <= 0f)
                                     {
@@ -317,7 +317,7 @@ namespace RBMAI
                             {
                                 if (defenderPosture != null)
                                 {
-                                    float postureDmg = PostureDamage.getDefenseBasePostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
+                                    float postureDmg = PostureDamage.getDefenderPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
                                     defenderPosture.posture = defenderPosture.posture - postureDmg;
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (defenderPosture.posture <= 0f)
@@ -356,7 +356,7 @@ namespace RBMAI
                                 }
                                 if (attackerPosture != null)
                                 {
-                                    float attackerPostureDmg = PostureDamage.getAttackBasePostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
+                                    float attackerPostureDmg = PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
                                     attackerPosture.posture = attackerPosture.posture - attackerPostureDmg;
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (attackerPosture.posture <= 0f)
@@ -433,7 +433,7 @@ namespace RBMAI
                                 }
                                 if (attackerPosture != null)
                                 {
-                                    attackerPosture.posture = attackerPosture.posture - PostureDamage.getAttackBasePostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: false, isDirectHit: true);
+                                    attackerPosture.posture = attackerPosture.posture - PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: false, isDirectHit: true);
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (attackerPosture.posture <= 0f)
                                     {
@@ -448,7 +448,7 @@ namespace RBMAI
                             {
                                 if (defenderPosture != null)
                                 {
-                                    float postureDmg = PostureDamage.getDefenseBasePostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: false, isDirectHit: false);
+                                    float postureDmg = PostureDamage.getDefenderPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: false, isDirectHit: false);
                                     defenderPosture.posture = defenderPosture.posture - postureDmg;
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     float healthDamage = calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureDmg, __result, victimAgent);
@@ -490,7 +490,7 @@ namespace RBMAI
                                 }
                                 if (attackerPosture != null)
                                 {
-                                    attackerPosture.posture = attackerPosture.posture - PostureDamage.getAttackBasePostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: false, isDirectHit: false);
+                                    attackerPosture.posture = attackerPosture.posture - PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: false, isDirectHit: false);
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (attackerPosture.posture <= 0f)
                                     {
@@ -502,7 +502,7 @@ namespace RBMAI
                             {
                                 if (defenderPosture != null)
                                 {
-                                    float postureDmg = PostureDamage.getDefenseBasePostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
+                                    float postureDmg = PostureDamage.getDefenderPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
                                     defenderPosture.posture = defenderPosture.posture - postureDmg;
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (defenderPosture.posture <= 0f)
@@ -542,7 +542,7 @@ namespace RBMAI
                                 }
                                 if (attackerPosture != null)
                                 {
-                                    attackerPosture.posture = attackerPosture.posture - PostureDamage.getAttackBasePostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
+                                    attackerPosture.posture = attackerPosture.posture - PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (attackerPosture.posture <= 0f)
                                     {
@@ -554,7 +554,7 @@ namespace RBMAI
                             {
                                 if (defenderPosture != null)
                                 {
-                                    float postureDmg = PostureDamage.getDefenseBasePostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
+                                    float postureDmg = PostureDamage.getDefenderPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
                                     defenderPosture.posture = defenderPosture.posture - postureDmg;
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (defenderPosture.posture <= 0f)
@@ -594,7 +594,7 @@ namespace RBMAI
                                 }
                                 if (attackerPosture != null)
                                 {
-                                    float attackerPostureDmg = PostureDamage.getAttackBasePostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
+                                    float attackerPostureDmg = PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
                                     attackerPosture.posture = attackerPosture.posture - attackerPostureDmg;
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (attackerPosture.posture <= 0f)
@@ -632,7 +632,7 @@ namespace RBMAI
                         {
                             if (defenderPosture != null)
                             {
-                                defenderPosture.posture = defenderPosture.posture - PostureDamage.getDefenseBasePostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
+                                defenderPosture.posture = defenderPosture.posture - PostureDamage.getDefenderPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
                                 addPosturedamageVisual(attackerAgent, victimAgent);
                                 if (defenderPosture.posture <= 0f)
                                 {
@@ -652,7 +652,7 @@ namespace RBMAI
                             }
                             if (attackerPosture != null)
                             {
-                                float postureDmg = PostureDamage.getAttackBasePostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
+                                float postureDmg = PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
                                 attackerPosture.posture = attackerPosture.posture - postureDmg;
                                 addPosturedamageVisual(attackerAgent, victimAgent);
                                 if (attackerPosture.posture <= 0f)

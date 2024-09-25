@@ -26,561 +26,187 @@ namespace RBMAI
     // When there is attack, there is always default 20 posture drain for both the attack and the defender. For example: ONE_HANDED_SWORD_ATTACK_SWING vs SMALL_SHIELD_BLOCK; Attacker gets 20 default damage - ONE_HANDED_SWORD_ATTACK_SWING posture damage + SMALL_SHIELD_BLOCK posture damage. Defender gets 20 default damage + ONE_HANDED_SWORD_ATTACK_SWING posture damage - SMALL_SHIELD_BLOCK posture damage.
     public static class PostureDamage
     {
-        public const float DEFAULT = 20f;
+        public const float ONEHANDEDSWORD_SWING_COST = 15f;
+        public const float ONEHANDEDSWORD_THRUST_COST = 15f;
+        public const float ONEHANDEDSWORD_OVERHEAD_COST = 15f;
+        public const float ONEHANDEDSWORD_SWING_DRAIN = 15f;
+        public const float ONEHANDEDSWORD_THRUST_DRAIN = 15f;
+        public const float ONEHANDEDSWORD_OVERHEAD_DRAIN = 15f;
+        public const float ONEHANDEDSWORD_BLOCK_COST = 15f;
+        public const float ONEHANDEDSWORD_PARRY_COST = 15f;
+        public const float ONEHANDEDSWORD_HIT_COST = 15f;
+        public const float ONEHANDEDSWORD_BLOCK_REFLECT = 15f;
+        public const float ONEHANDEDSWORD_PARRY_REFLECT = 15f;
 
-        public const float ONE_HANDED_SWORD_ATTACK_SWING = 15f;
-        public const float ONE_HANDED_SWORD_ATTACK_THRUST = 15f;
-        public const float ONE_HANDED_SWORD_ATTACK_OVERHEAD = 15f;
-        public const float ONE_HANDED_SWORD_BLOCK = 15f;
-        public const float ONE_HANDED_SWORD_PARRY = 15f;
-        public const float ONE_HANDED_SWORD_HIT = 15f;
+        public const float TWOHANDEDSWORD_SWING_COST = 15f;
+        public const float TWOHANDEDSWORD_THRUST_COST = 15f;
+        public const float TWOHANDEDSWORD_OVERHEAD_COST = 15f;
+        public const float TWOHANDEDSWORD_SWING_DRAIN = 15f;
+        public const float TWOHANDEDSWORD_THRUST_DRAIN = 15f;
+        public const float TWOHANDEDSWORD_OVERHEAD_DRAIN = 15f;
+        public const float TWOHANDEDSWORD_BLOCK_COST = 15f;
+        public const float TWOHANDEDSWORD_PARRY_COST = 15f;
+        public const float TWOHANDEDSWORD_HIT_COST = 15f;
+        public const float TWOHANDEDSWORD_BLOCK_REFLECT = 15f;
+        public const float TWOHANDEDSWORD_PARRY_REFLECT = 15f;
 
-        public const float TWO_HANDED_SWORD_ATTACK_SWING = 15f;
-        public const float TWO_HANDED_SWORD_ATTACK_THRUST = 15f;
-        public const float TWO_HANDED_SWORD_ATTACK_OVERHEAD = 15f;
-        public const float TWO_HANDED_SWORD_BLOCK = 15f;
-        public const float TWO_HANDED_SWORD_PARRY = 15f;
-        public const float TWO_HANDED_SWORD_HIT = 15f;
+        public const float ONEHANDEDAXE_SWING_COST = 15f;
+        public const float ONEHANDEDAXE_THRUST_COST = 15f;
+        public const float ONEHANDEDAXE_OVERHEAD_COST = 15f;
+        public const float ONEHANDEDAXE_SWING_DRAIN = 15f;
+        public const float ONEHANDEDAXE_THRUST_DRAIN = 15f;
+        public const float ONEHANDEDAXE_OVERHEAD_DRAIN = 15f;
+        public const float ONEHANDEDAXE_BLOCK_COST = 15f;
+        public const float ONEHANDEDAXE_PARRY_COST = 15f;
+        public const float ONEHANDEDAXE_HIT_COST = 15f;
+        public const float ONEHANDEDAXE_BLOCK_REFLECT = 15f;
+        public const float ONEHANDEDAXE_PARRY_REFLECT = 15f;
 
-        public const float ONE_HANDED_AXE_ATTACK_SWING = 15f;
-        public const float ONE_HANDED_AXE_ATTACK_THRUST = 15f;
-        public const float ONE_HANDED_AXE_ATTACK_OVERHEAD = 15f;
-        public const float ONE_HANDED_AXE_BLOCK = 15f;
-        public const float ONE_HANDED_AXE_PARRY = 15f;
-        public const float ONE_HANDED_AXE_HIT = 15f;
+        public const float TWOHANDEDAXE_SWING_COST = 15f;
+        public const float TWOHANDEDAXE_THRUST_COST = 15f;
+        public const float TWOHANDEDAXE_OVERHEAD_COST = 15f;
+        public const float TWOHANDEDAXE_SWING_DRAIN = 15f;
+        public const float TWOHANDEDAXE_THRUST_DRAIN = 15f;
+        public const float TWOHANDEDAXE_OVERHEAD_DRAIN = 15f;
+        public const float TWOHANDEDAXE_BLOCK_COST = 15f;
+        public const float TWOHANDEDAXE_PARRY_COST = 15f;
+        public const float TWOHANDEDAXE_HIT_COST = 15f;
+        public const float TWOHANDEDAXE_BLOCK_REFLECT = 15f;
+        public const float TWOHANDEDAXE_PARRY_REFLECT = 15f;
 
-        public const float TWO_HANDED_AXE_ATTACK_SWING = 15f;
-        public const float TWO_HANDED_AXE_ATTACK_THRUST = 15f;
-        public const float TWO_HANDED_AXE_ATTACK_OVERHEAD = 15f;
-        public const float TWO_HANDED_AXE_BLOCK = 15f;
-        public const float TWO_HANDED_AXE_PARRY = 15f;
-        public const float TWO_HANDED_AXE_HIT = 15f;
+        public const float MACE_SWING_COST = 15f;
+        public const float MACE_THRUST_COST = 15f;
+        public const float MACE_OVERHEAD_COST = 15f;
+        public const float MACE_SWING_DRAIN = 15f;
+        public const float MACE_THRUST_DRAIN = 15f;
+        public const float MACE_OVERHEAD_DRAIN = 15f;
+        public const float MACE_BLOCK_COST = 15f;
+        public const float MACE_PARRY_COST = 15f;
+        public const float MACE_HIT_COST = 15f;
+        public const float MACE_BLOCK_REFLECT = 15f;
+        public const float MACE_PARRY_REFLECT = 15f;
 
-        public const float MACE_ATTACK_SWING = 15f;
-        public const float MACE_ATTACK_THRUST = 15f;
-        public const float MACE_ATTACK_OVERHEAD = 15f;
-        public const float MACE_BLOCK = 15f;
-        public const float MACE_PARRY = 15f;
-        public const float MACE_HIT = 15f;
+        public const float TWOHANDEDMACE_SWING_COST = 15f;
+        public const float TWOHANDEDMACE_THRUST_COST = 15f;
+        public const float TWOHANDEDMACE_OVERHEAD_COST = 15f;
+        public const float TWOHANDEDMACE_SWING_DRAIN = 15f;
+        public const float TWOHANDEDMACE_THRUST_DRAIN = 15f;
+        public const float TWOHANDEDMACE_OVERHEAD_DRAIN = 15f;
+        public const float TWOHANDEDMACE_BLOCK_COST = 15f;
+        public const float TWOHANDEDMACE_PARRY_COST = 15f;
+        public const float TWOHANDEDMACE_HIT_COST = 15f;
+        public const float TWOHANDEDMACE_BLOCK_REFLECT = 15f;
+        public const float TWOHANDEDMACE_PARRY_REFLECT = 15f;
 
-        public const float TWO_HANDED_MACE_ATTACK_SWING = 15f;
-        public const float TWO_HANDED_MACE_ATTACK_THRUST = 15f;
-        public const float TWO_HANDED_MACE_ATTACK_OVERHEAD = 15f;
-        public const float TWO_HANDED_MACE_BLOCK = 15f;
-        public const float TWO_HANDED_MACE_PARRY = 15f;
-        public const float TWO_HANDED_MACE_HIT = 15f;
+        public const float ONEHANDEDPOLEARM_SWING_COST = 15f;
+        public const float ONEHANDEDPOLEARM_THRUST_COST = 15f;
+        public const float ONEHANDEDPOLEARM_OVERHEAD_COST = 15f;
+        public const float ONEHANDEDPOLEARM_SWING_DRAIN = 15f;
+        public const float ONEHANDEDPOLEARM_THRUST_DRAIN = 15f;
+        public const float ONEHANDEDPOLEARM_OVERHEAD_DRAIN = 15f;
+        public const float ONEHANDEDPOLEARM_BLOCK_COST = 15f;
+        public const float ONEHANDEDPOLEARM_PARRY_COST = 15f;
+        public const float ONEHANDEDPOLEARM_HIT_COST = 15f;
+        public const float ONEHANDEDPOLEARM_BLOCK_REFLECT = 15f;
+        public const float ONEHANDEDPOLEARM_PARRY_REFLECT = 15f;
 
-        public const float ONE_HANDED_POLEARM_ATTACK_SWING = 15f;
-        public const float ONE_HANDED_POLEARM_ATTACK_THRUST = 15f;
-        public const float ONE_HANDED_POLEARM_ATTACK_OVERHEAD = 15f;
-        public const float ONE_HANDED_POLEARM_BLOCK = 15f;
-        public const float ONE_HANDED_POLEARM_PARRY = 15f;
-        public const float ONE_HANDED_POLEARM_HIT = 15f;
+        public const float TWOHANDEDPOLEARM_SWING_COST = 15f;
+        public const float TWOHANDEDPOLEARM_THRUST_COST = 15f;
+        public const float TWOHANDEDPOLEARM_OVERHEAD_COST = 15f;
+        public const float TWOHANDEDPOLEARM_SWING_DRAIN = 15f;
+        public const float TWOHANDEDPOLEARM_THRUST_DRAIN = 15f;
+        public const float TWOHANDEDPOLEARM_OVERHEAD_DRAIN = 15f;
+        public const float TWOHANDEDPOLEARM_BLOCK_COST = 15f;
+        public const float TWOHANDEDPOLEARM_PARRY_COST = 15f;
+        public const float TWOHANDEDPOLEARM_HIT_COST = 15f;
+        public const float TWOHANDEDPOLEARM_BLOCK_REFLECT = 15f;
+        public const float TWOHANDEDPOLEARM_PARRY_REFLECT = 15f;
 
-        public const float TWO_HANDED_POLEARM_ATTACK_SWING = 15f;
-        public const float TWO_HANDED_POLEARM_ATTACK_THRUST = 15f;
-        public const float TWO_HANDED_POLEARM_ATTACK_OVERHEAD = 15f;
-        public const float TWO_HANDED_POLEARM_BLOCK = 15f;
-        public const float TWO_HANDED_POLEARM_PARRY = 15f;
-        public const float TWO_HANDED_POLEARM_HIT = 15f;
+        public const float SMALLSHIELD_BLOCK_COST = 15f;
+        public const float SMALLSHIELD_PARRY_COST = 15f;
+        public const float SMALLSHIELD_HIT_COST = 15f;
+        public const float SMALLSHIELD_BLOCK_REFLECT = 15f;
+        public const float SMALLSHIELD_PARRY_REFLECT = 15f;
 
-        public const float SMALL_SHIELD_ATTACK_SWING = 15f;
-        public const float SMALL_SHIELD_ATTACK_THRUST = 15f;
-        public const float SMALL_SHIELD_ATTACK_OVERHEAD = 15f;
-        public const float SMALL_SHIELD_BLOCK = 15f;
-        public const float SMALL_SHIELD_PARRY = 15f;
-        public const float SMALL_SHIELD_HIT = 15f;
+        public const float LARGESHIELD_BLOCK_COST = 15f;
+        public const float LARGESHIELD_PARRY_COST = 15f;
+        public const float LARGESHIELD_HIT_COST = 15f;
+        public const float LARGESHIELD_BLOCK_REFLECT = 15f;
+        public const float LARGESHIELD_PARRY_REFLECT = 15f;
 
-        public const float LARGE_SHIELD_ATTACK_SWING = 15f;
-        public const float LARGE_SHIELD_ATTACK_THRUST = 15f;
-        public const float LARGE_SHIELD_ATTACK_OVERHEAD = 15f;
-        public const float LARGE_SHIELD_BLOCK = 15f;
-        public const float LARGE_SHIELD_PARRY = 15f;
-        public const float LARGE_SHIELD_HIT = 15f;
-
-        //public const float TWO_HANDED_SWORD = 25f;
-        //public const float ONE_HANDED_AXE = 25f;
-        //public const float TWO_HANDED_AXE = 30f;
-        //public const float MACE = 25f;
-        //public const float PICK = 15f;
-        //public const float TWO_HANDED_MACE = 35f;
-        //public const float ONE_HANDED_POLEARM = 15f;
-        //public const float TWO_HANDED_POLEARM_THRUST = 20f;
-        //public const float TWO_HANDED_POLEARM_SWING = 30f;
-        //public const float LOW_GRIP_POLEARM = 15f;
-        //public const float THROWING_AXE = 20f;
-        //public const float JAVELIN = 20f;
-        //public const float SMALL_SHIELD = 20f;
-        //public const float LARGE_SHIELD = 20f;
-
-        public static float getDefenderBasePostureDamage(WeaponClass defenderWC, bool isParry, bool isHit)
+        public static float getDefenseCost(WeaponClass wc, bool isParry, bool isHit)
         {
-            float postureDmg = 0f;
-            switch (defenderWC)
+            if (isParry)
             {
-                case WeaponClass.Dagger:
-                case WeaponClass.ThrowingKnife:
-                case WeaponClass.OneHandedSword:
-                    {
-                        if (isParry)
-                        {
-                            postureDmg = ONE_HANDED_SWORD_PARRY;
-                            break;
-                        }
-                        else
-                        {
-                            if(isHit)
-                            {
-                                postureDmg = ONE_HANDED_SWORD_HIT;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = ONE_HANDED_SWORD_BLOCK;
-
-                            }
-                            break;
-                        }
-                    }
-                case WeaponClass.TwoHandedSword:
-                    {
-                        if (isParry)
-                        {
-                            postureDmg = ONE_HANDED_AXE_PARRY;
-                            break;
-                        }
-                        else
-                        {
-                            if (isHit)
-                            {
-                                postureDmg = ONE_HANDED_AXE_HIT;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = ONE_HANDED_AXE_BLOCK;
-
-                            }
-                            break;
-                        }
-                    }
-                case WeaponClass.OneHandedAxe:
-                case WeaponClass.ThrowingAxe:
-                    {
-                        if (isParry)
-                        {
-                            postureDmg = ONE_HANDED_AXE_PARRY;
-                            break;
-                        }
-                        else
-                        {
-                            if (isHit)
-                            {
-                                postureDmg = ONE_HANDED_AXE_HIT;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = ONE_HANDED_AXE_BLOCK;
-
-                            }
-                            break;
-                        }
-                    }
-                case WeaponClass.TwoHandedAxe:
-                    {
-                        if (isParry)
-                        {
-                            postureDmg = TWO_HANDED_AXE_PARRY;
-                            break;
-                        }
-                        else
-                        {
-                            if (isHit)
-                            {
-                                postureDmg = TWO_HANDED_AXE_HIT;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = TWO_HANDED_AXE_BLOCK;
-
-                            }
-                            break;
-                        }
-                    }
-                case WeaponClass.Mace:
-                case WeaponClass.Pick:
-                    {
-                        if (isParry)
-                        {
-                            postureDmg = TWO_HANDED_AXE_PARRY;
-                            break;
-                        }
-                        else
-                        {
-                            if (isHit)
-                            {
-                                postureDmg = TWO_HANDED_AXE_HIT;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = TWO_HANDED_AXE_BLOCK;
-
-                            }
-                            break;
-                        }
-                    }
-                case WeaponClass.TwoHandedMace:
-                    {
-                        if (isParry)
-                        {
-                            postureDmg = TWO_HANDED_AXE_PARRY;
-                            break;
-                        }
-                        else
-                        {
-                            if (isHit)
-                            {
-                                postureDmg = TWO_HANDED_AXE_HIT;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = TWO_HANDED_AXE_BLOCK;
-
-                            }
-                            break;
-                        }
-                    }
-                case WeaponClass.OneHandedPolearm:
-                case WeaponClass.Javelin:
-                    {
-                        if (isParry)
-                        {
-                            postureDmg = TWO_HANDED_AXE_PARRY;
-                            break;
-                        }
-                        else
-                        {
-                            if (isHit)
-                            {
-                                postureDmg = TWO_HANDED_AXE_HIT;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = TWO_HANDED_AXE_BLOCK;
-
-                            }
-                            break;
-                        }
-                    }
-                case WeaponClass.TwoHandedPolearm:
-                case WeaponClass.LowGripPolearm:
-                    {
-                        if (isParry)
-                        {
-                            postureDmg = TWO_HANDED_AXE_PARRY;
-                            break;
-                        }
-                        else
-                        {
-                            if (isHit)
-                            {
-                                postureDmg = TWO_HANDED_AXE_HIT;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = TWO_HANDED_AXE_BLOCK;
-
-                            }
-                            break;
-                        }
-                    }
-                case WeaponClass.SmallShield:
-                    {
-                        if (isParry)
-                        {
-                            postureDmg = TWO_HANDED_AXE_PARRY;
-                            break;
-                        }
-                        else
-                        {
-                            if (isHit)
-                            {
-                                postureDmg = TWO_HANDED_AXE_HIT;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = TWO_HANDED_AXE_BLOCK;
-
-                            }
-                            break;
-                        }
-                    }
-                case WeaponClass.LargeShield:
-                    {
-                        if (isParry)
-                        {
-                            postureDmg = TWO_HANDED_AXE_PARRY;
-                            break;
-                        }
-                        else
-                        {
-                            if (isHit)
-                            {
-                                postureDmg = TWO_HANDED_AXE_HIT;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = TWO_HANDED_AXE_BLOCK;
-
-                            }
-                            break;
-                        }
-                    }
-                default:
-                    {
-                        postureDmg = 20f;
-                        break;
-                    }
+                return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_PARRY_COST").GetValue(null);
             }
-            return postureDmg;
+            else
+            {
+                if (isHit)
+                {
+                    return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_HIT_COST").GetValue(null);
+                }
+                else
+                {
+                    return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_BLOCK_COST").GetValue(null);
+                }
+            }
         }
 
-        public static float getAttackerBasePostureDamage(WeaponClass attackerWC, Agent.UsageDirection attackDirection, StrikeType strikeType)
+        public static float getAttackDrain(WeaponClass wc, Agent.UsageDirection attackDirection, StrikeType strikeType)
         {
-            float postureDmg = 0f;
-            switch (attackerWC)
+            if (strikeType == StrikeType.Swing)
             {
-                case WeaponClass.Dagger:
-                case WeaponClass.ThrowingKnife:
-                case WeaponClass.OneHandedSword:
-                    {
-                        if (strikeType == StrikeType.Swing)
-                        {
-                            if (attackDirection == Agent.UsageDirection.AttackUp)
-                            {
-                                postureDmg = ONE_HANDED_SWORD_ATTACK_OVERHEAD;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = ONE_HANDED_SWORD_ATTACK_SWING;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            postureDmg = ONE_HANDED_SWORD_ATTACK_THRUST;
-                            break;
-                        }
-                    }
-                case WeaponClass.TwoHandedSword:
-                    {
-                        if (strikeType == StrikeType.Swing)
-                        {
-                            if (attackDirection == Agent.UsageDirection.AttackUp)
-                            {
-                                postureDmg = TWO_HANDED_SWORD_ATTACK_OVERHEAD;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = TWO_HANDED_SWORD_ATTACK_SWING;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            postureDmg = TWO_HANDED_SWORD_ATTACK_THRUST;
-                            break;
-                        }
-                    }
-                case WeaponClass.OneHandedAxe:
-                case WeaponClass.ThrowingAxe:
-                    {
-                        if (strikeType == StrikeType.Swing)
-                        {
-                            if (attackDirection == Agent.UsageDirection.AttackUp)
-                            {
-                                postureDmg = ONE_HANDED_AXE_ATTACK_OVERHEAD;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = ONE_HANDED_AXE_ATTACK_SWING;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            postureDmg = ONE_HANDED_AXE_ATTACK_THRUST;
-                            break;
-                        }
-                    }
-                case WeaponClass.TwoHandedAxe:
-                    {
-                        if (strikeType == StrikeType.Swing)
-                        {
-                            if (attackDirection == Agent.UsageDirection.AttackUp)
-                            {
-                                postureDmg = TWO_HANDED_AXE_ATTACK_OVERHEAD;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = TWO_HANDED_AXE_ATTACK_SWING;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            postureDmg = TWO_HANDED_AXE_ATTACK_THRUST;
-                            break;
-                        }
-                    }
-                case WeaponClass.Mace:
-                case WeaponClass.Pick:
-                    {
-                        if (strikeType == StrikeType.Swing)
-                        {
-                            if (attackDirection == Agent.UsageDirection.AttackUp)
-                            {
-                                postureDmg = MACE_ATTACK_OVERHEAD;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = MACE_ATTACK_SWING;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            postureDmg = MACE_ATTACK_THRUST;
-                            break;
-                        }
-                    }
-                case WeaponClass.TwoHandedMace:
-                    {
-                        if (strikeType == StrikeType.Swing)
-                        {
-                            if (attackDirection == Agent.UsageDirection.AttackUp)
-                            {
-                                postureDmg = TWO_HANDED_MACE_ATTACK_OVERHEAD;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = TWO_HANDED_MACE_ATTACK_SWING;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            postureDmg = TWO_HANDED_MACE_ATTACK_THRUST;
-                            break;
-                        }
-                    }
-                case WeaponClass.OneHandedPolearm:
-                case WeaponClass.Javelin:
-                    {
-                        if (strikeType == StrikeType.Swing)
-                        {
-                            if (attackDirection == Agent.UsageDirection.AttackUp)
-                            {
-                                postureDmg = ONE_HANDED_POLEARM_ATTACK_OVERHEAD;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = ONE_HANDED_POLEARM_ATTACK_SWING;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            postureDmg = ONE_HANDED_POLEARM_ATTACK_THRUST;
-                            break;
-                        }
-                    }
-                case WeaponClass.TwoHandedPolearm:
-                case WeaponClass.LowGripPolearm:
-                    {
-                        if (strikeType == StrikeType.Swing)
-                        {
-                            if (attackDirection == Agent.UsageDirection.AttackUp)
-                            {
-                                postureDmg = TWO_HANDED_POLEARM_ATTACK_OVERHEAD;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = TWO_HANDED_POLEARM_ATTACK_SWING;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            postureDmg = TWO_HANDED_POLEARM_ATTACK_THRUST;
-                            break;
-                        }
-                    }
-                case WeaponClass.SmallShield:
-                    {
-                        if (strikeType == StrikeType.Swing)
-                        {
-                            if (attackDirection == Agent.UsageDirection.AttackUp)
-                            {
-                                postureDmg = SMALL_SHIELD_ATTACK_OVERHEAD;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = SMALL_SHIELD_ATTACK_SWING;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            postureDmg = SMALL_SHIELD_ATTACK_THRUST;
-                            break;
-                        }
-                    }
-                case WeaponClass.LargeShield:
-                    {
-                        if (strikeType == StrikeType.Swing)
-                        {
-                            if (attackDirection == Agent.UsageDirection.AttackUp)
-                            {
-                                postureDmg = LARGE_SHIELD_ATTACK_OVERHEAD;
-                                break;
-                            }
-                            else
-                            {
-                                postureDmg = LARGE_SHIELD_ATTACK_SWING;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            postureDmg = LARGE_SHIELD_ATTACK_THRUST;
-                            break;
-                        }
-                    }
-                default:
-                    {
-                        postureDmg = 20f;
-                        break;
-                    }
+                if (attackDirection == Agent.UsageDirection.AttackUp)
+                {
+                    return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_OVERHEAD_DRAIN").GetValue(null);
+                }
+                else
+                {
+                    return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_SWING_DRAIN").GetValue(null);
+                }
             }
-            return postureDmg;
+            else
+            {
+                return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_THRUST_DRAIN").GetValue(null);
+            }
+        }
+
+        public static float getAttackCost(WeaponClass wc, Agent.UsageDirection attackDirection, StrikeType strikeType)
+        {
+            if (strikeType == StrikeType.Swing)
+            {
+                if (attackDirection == Agent.UsageDirection.AttackUp)
+                {
+                    return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_OVERHEAD_COST").GetValue(null);
+                }
+                else
+                {
+                    return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_SWING_COST").GetValue(null);
+                }
+            }
+            else
+            {
+                return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_THRUST_COST").GetValue(null);
+            }
+        }
+        public static float getDefenseReflect(WeaponClass wc, bool isParry, bool isHit)
+        {
+            if (isParry)
+            {
+                return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_PARRY_REFLECT").GetValue(null);
+            }
+            else
+            {
+                if (!isHit)
+                {
+                    return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_BLOCK_REFLECT").GetValue(null);
+                }
+                else
+                {
+                    return 0f;
+                }
+            }
         }
 
         public static WeaponClass getDefenderWeaponClass(Agent agent)
@@ -613,26 +239,26 @@ namespace RBMAI
             return wc;
         }
 
-        public static float getDefenseBasePostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, bool isParry, bool isDirectHit)
+        public static float getDefenderPostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, bool isParry, bool isDirectHit)
         {
             WeaponClass defenderWC = getDefenderWeaponClass(defender);
             WeaponClass attackerWC = getAttackerWeaponClass(attacker);
 
-            float defenderPostureDmg = getDefenderBasePostureDamage(defenderWC, isParry, isDirectHit);
-            float attackerPostureDmg = getAttackerBasePostureDamage(attackerWC, attackDirection, strikeType);
+            float defenseCost = getDefenseCost(defenderWC, isParry, isDirectHit);
+            float attackDrain = getAttackDrain(attackerWC, attackDirection, strikeType);
 
-            return DEFAULT - defenderPostureDmg + attackerPostureDmg;
+            return defenseCost + attackDrain;
         }
 
-        public static float getAttackBasePostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, bool isParry, bool isDirectHit)
+        public static float getAttackerPostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, bool isParry, bool isDirectHit)
         {
             WeaponClass defenderWC = getDefenderWeaponClass(defender);
             WeaponClass attackerWC = getAttackerWeaponClass(attacker);
 
-            float defenderPostureDmg = getDefenderBasePostureDamage(defenderWC, isParry, isDirectHit);
-            float attackerPostureDmg = getAttackerBasePostureDamage(attackerWC, attackDirection, strikeType);
+            float attackCost = getAttackCost(attackerWC, attackDirection, strikeType);
+            float defenseReflect = getDefenseReflect(defenderWC, isParry, isDirectHit);
 
-            return DEFAULT - attackerPostureDmg + defenderPostureDmg;
+            return attackCost + defenseReflect;
         }
     }
 }
