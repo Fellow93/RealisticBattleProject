@@ -1117,6 +1117,10 @@ namespace RBMAI
                                     if (defenderPosture != null)
                                     {
                                         float postureDmg = collisionData.InflictedDamage;
+                                        if(postureDmg < 5f)
+                                        {
+                                            postureDmg = 5f;
+                                        }
                                         defenderPosture.posture -= postureDmg;
                                         if (defenderPosture.posture <= 0f)
                                         {
