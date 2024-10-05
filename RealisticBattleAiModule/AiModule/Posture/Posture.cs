@@ -23,9 +23,25 @@ namespace RBMAI
             this.posture = this.maxPosture;
         }
     }
+
     // When there is attack, there is always default 20 posture drain for both the attack and the defender. For example: ONE_HANDED_SWORD_ATTACK_SWING vs SMALL_SHIELD_BLOCK; Attacker gets 20 default damage - ONE_HANDED_SWORD_ATTACK_SWING posture damage + SMALL_SHIELD_BLOCK posture damage. Defender gets 20 default damage + ONE_HANDED_SWORD_ATTACK_SWING posture damage - SMALL_SHIELD_BLOCK posture damage.
     public static class PostureDamage
     {
+        public enum MeleeHitType
+        {
+            None,
+            AgentHit,
+            WeaponBlock,
+            WeaponParry,
+            ShieldIncorrectBlock,
+            ShieldBlock,
+            ShieldParry,
+            ChamberBlock
+        }
+
+        public const float POSTURE_RESET_MODIFIER = 0.75f;
+        public const float SHIELD_POSTURE_RESET_MODIFIER = 1f;
+
         public const float ONEHANDEDSWORD_SWING_COST = 15f;
         public const float ONEHANDEDSWORD_THRUST_COST = 15f;
         public const float ONEHANDEDSWORD_OVERHEAD_COST = 15f;
@@ -37,6 +53,18 @@ namespace RBMAI
         public const float ONEHANDEDSWORD_HIT_COST = 15f;
         public const float ONEHANDEDSWORD_BLOCK_REFLECT = 15f;
         public const float ONEHANDEDSWORD_PARRY_REFLECT = 15f;
+
+        public const float DAGGER_SWING_COST = 15f;
+        public const float DAGGER_THRUST_COST = 15f;
+        public const float DAGGER_OVERHEAD_COST = 15f;
+        public const float DAGGER_SWING_DRAIN = 15f;
+        public const float DAGGER_THRUST_DRAIN = 15f;
+        public const float DAGGER_OVERHEAD_DRAIN = 15f;
+        public const float DAGGER_BLOCK_COST = 15f;
+        public const float DAGGER_PARRY_COST = 15f;
+        public const float DAGGER_HIT_COST = 15f;
+        public const float DAGGER_BLOCK_REFLECT = 15f;
+        public const float DAGGER_PARRY_REFLECT = 15f;
 
         public const float TWOHANDEDSWORD_SWING_COST = 15f;
         public const float TWOHANDEDSWORD_THRUST_COST = 15f;
@@ -122,34 +150,91 @@ namespace RBMAI
         public const float TWOHANDEDPOLEARM_BLOCK_REFLECT = 15f;
         public const float TWOHANDEDPOLEARM_PARRY_REFLECT = 15f;
 
+        public const float SMALLSHIELD_INCORRECT_BLOCK_COST = 15f;
         public const float SMALLSHIELD_BLOCK_COST = 15f;
         public const float SMALLSHIELD_PARRY_COST = 15f;
         public const float SMALLSHIELD_HIT_COST = 15f;
+        public const float SMALLSHIELD_INCORRECT_BLOCK_REFLECT = 15f;
         public const float SMALLSHIELD_BLOCK_REFLECT = 15f;
         public const float SMALLSHIELD_PARRY_REFLECT = 15f;
 
+        public const float LARGESHIELD_INCORRECT_BLOCK_COST = 15f;
         public const float LARGESHIELD_BLOCK_COST = 15f;
         public const float LARGESHIELD_PARRY_COST = 15f;
         public const float LARGESHIELD_HIT_COST = 15f;
+        public const float LARGESHIELD_INCORRECT_BLOCK_REFLECT = 15f;
         public const float LARGESHIELD_BLOCK_REFLECT = 15f;
         public const float LARGESHIELD_PARRY_REFLECT = 15f;
 
-        public static float getDefenseCost(WeaponClass wc, bool isParry, bool isHit)
+        public const float SHIELD_ON_BACK_HIT_COST = 15f;
+        public const float SHIELD_ON_BACK_HIT_REFLECT = 15f;
+
+        public static string getWeaponClassString(WeaponClass wc)
         {
-            if (isParry)
+            switch (wc)
             {
-                return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_PARRY_COST").GetValue(null);
+                case WeaponClass.Dagger:
+                case WeaponClass.ThrowingKnife:
+                    {
+                        return WeaponClass.OneHandedSword.ToString().ToUpper();
+                    }
+                case WeaponClass.Pick:
+                    {
+                        return WeaponClass.Mace.ToString().ToUpper();
+                    }
+                case WeaponClass.LowGripPolearm:
+                case WeaponClass.Javelin:
+                    {
+                        return WeaponClass.OneHandedPolearm.ToString().ToUpper();
+                    }
+                case WeaponClass.ThrowingAxe:
+                    {
+                        return WeaponClass.OneHandedAxe.ToString().ToUpper();
+                    }
+                default:
+                    {
+                        return wc.ToString().ToUpper();
+                    }
             }
-            else
+        }
+
+        public static float getDefenseCost(WeaponClass wc, MeleeHitType hitType)
+        {
+            switch (hitType)
             {
-                if (isHit)
-                {
-                    return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_HIT_COST").GetValue(null);
-                }
-                else
-                {
-                    return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_BLOCK_COST").GetValue(null);
-                }
+                case MeleeHitType.WeaponBlock:
+                case MeleeHitType.ShieldBlock:
+                    {
+                        return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_BLOCK_COST").GetValue(null);
+                    }
+                case MeleeHitType.WeaponParry:
+                case MeleeHitType.ShieldParry:
+                    {
+                        return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_PARRY_COST").GetValue(null);
+                    }
+                case MeleeHitType.AgentHit:
+                    {
+                        return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_HIT_COST").GetValue(null);
+                    }
+                case MeleeHitType.ShieldIncorrectBlock:
+                    {
+                        if(wc == WeaponClass.SmallShield || wc == WeaponClass.LargeShield)
+                        {
+                            return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_INCORRECT_BLOCK_COST").GetValue(null);
+                        }
+                        else
+                        {
+                            return SHIELD_ON_BACK_HIT_COST;
+                        }
+                    }
+                case MeleeHitType.ChamberBlock:
+                    {
+                        return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_PARRY_COST").GetValue(null) * 0.5f;
+                    }
+                default:
+                    {
+                        return 0f;
+                    }
             }
         }
 
@@ -190,22 +275,41 @@ namespace RBMAI
                 return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_THRUST_COST").GetValue(null);
             }
         }
-        public static float getDefenseReflect(WeaponClass wc, bool isParry, bool isHit)
+
+        public static float getDefenseReflect(WeaponClass wc, MeleeHitType hitType)
         {
-            if (isParry)
+            switch (hitType)
             {
-                return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_PARRY_REFLECT").GetValue(null);
-            }
-            else
-            {
-                if (!isHit)
-                {
-                    return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_BLOCK_REFLECT").GetValue(null);
-                }
-                else
-                {
-                    return 0f;
-                }
+                case MeleeHitType.WeaponBlock:
+                case MeleeHitType.ShieldBlock:
+                    {
+                        return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_BLOCK_REFLECT").GetValue(null);
+                    }
+                case MeleeHitType.WeaponParry:
+                case MeleeHitType.ShieldParry:
+                    {
+                        return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_PARRY_REFLECT").GetValue(null);
+                    }
+                case MeleeHitType.ShieldIncorrectBlock:
+                    {
+                        if (wc == WeaponClass.SmallShield || wc == WeaponClass.LargeShield)
+                        {
+                            return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_INCORRECT_BLOCK_REFLECT").GetValue(null);
+                        }
+                        else
+                        {
+                            return SHIELD_ON_BACK_HIT_REFLECT;
+                        }
+                    }
+                case MeleeHitType.ChamberBlock:
+                    {
+                        //TODO: decide chamber block posture damage
+                        return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_PARRY_REFLECT").GetValue(null) * 2f;
+                    }
+                default:
+                    {
+                        return 0f;
+                    }
             }
         }
 
@@ -239,24 +343,24 @@ namespace RBMAI
             return wc;
         }
 
-        public static float getDefenderPostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, bool isParry, bool isDirectHit)
+        public static float getDefenderPostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, MeleeHitType hitType)
         {
             WeaponClass defenderWC = getDefenderWeaponClass(defender);
             WeaponClass attackerWC = getAttackerWeaponClass(attacker);
 
-            float defenseCost = getDefenseCost(defenderWC, isParry, isDirectHit);
+            float defenseCost = getDefenseCost(defenderWC, hitType);
             float attackDrain = getAttackDrain(attackerWC, attackDirection, strikeType);
 
             return defenseCost + attackDrain;
         }
 
-        public static float getAttackerPostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, bool isParry, bool isDirectHit)
+        public static float getAttackerPostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, MeleeHitType hitType)
         {
             WeaponClass defenderWC = getDefenderWeaponClass(defender);
             WeaponClass attackerWC = getAttackerWeaponClass(attacker);
 
             float attackCost = getAttackCost(attackerWC, attackDirection, strikeType);
-            float defenseReflect = getDefenseReflect(defenderWC, isParry, isDirectHit);
+            float defenseReflect = getDefenseReflect(defenderWC, hitType);
 
             return attackCost + defenseReflect;
         }

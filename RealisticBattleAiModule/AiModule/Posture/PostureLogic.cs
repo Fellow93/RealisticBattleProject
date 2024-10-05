@@ -8,6 +8,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
+using static RBMAI.PostureDamage;
 using static TaleWorlds.Core.ItemObject;
 using static TaleWorlds.MountAndBlade.Agent;
 
@@ -15,27 +16,32 @@ namespace RBMAI
 {
     public class PostureLogic : MissionLogic
     {
-        //private static int tickCooldownReset = 30;
-        //private static int tickCooldown = 0;
-        private static float timeToCalc = 0.5f;
-
-        private static float currentDt = 0f;
-        private static int postureEffectCheck = 0;
-        private static int postureEffectCheckCooldown = 15;
-
-        private static float weaponLengthPostureFactor = 0.2f;
-        private static float weaponWeightPostureFactor = 0.5f;
-        private static float relativeSpeedPostureFactor = 0.6f;
-        private static float lwrResultModifier = 3f;
+        public static MBArrayList<Agent> agentsToDropShield = new MBArrayList<Agent> { };
 
         //private static float maxAcc = 1.5f;
         //private static float minAcc = 0.1f;
         //private static float curAcc = 1f;
         //private static bool isCountingUp = false;
-
-        public static MBArrayList<Agent> agentsToDropShield = new MBArrayList<Agent> { };
         public static MBArrayList<Agent> agentsToDropWeapon = new MBArrayList<Agent> { };
+
         public static Dictionary<Agent, FormationClass> agentsToChangeFormation = new Dictionary<Agent, FormationClass> { };
+
+        private static float currentDt = 0f;
+
+        private static float lwrResultModifier = 3f;
+
+        private static int postureEffectCheck = 0;
+
+        private static int postureEffectCheckCooldown = 15;
+
+        private static float relativeSpeedPostureFactor = 0.6f;
+
+        //private static int tickCooldownReset = 30;
+        //private static int tickCooldown = 0;
+        private static float timeToCalc = 0.5f;
+
+        private static float weaponLengthPostureFactor = 0.2f;
+        private static float weaponWeightPostureFactor = 0.5f;
 
         public static float getEquipWeight(Agent agent)
         {
@@ -56,8 +62,17 @@ namespace RBMAI
             //    }
             //}
             armorWeight = agent.SpawnEquipment.GetTotalWeightOfArmor(true);
-            weaponWeight = agent.Equipment.GetTotalWeightOfWeapons();
-            return armorWeight + weaponWeight;
+            //weaponWeight = agent.Equipment.GetTotalWeightOfWeapons();
+            
+            //return armorWeight - weaponWeight;
+            return armorWeight;
+        }
+
+        public static float getWeaponWeightModifier(Agent agent)
+        {
+            float weaponWeight = agent.Equipment.GetTotalWeightOfWeapons();
+
+            return MBMath.Lerp(0f, 1f, MathF.Clamp(weaponWeight / 50f, 0f, 1f));
         }
 
         public static float getEquipWeightModifier(Agent agent)
@@ -65,101 +80,147 @@ namespace RBMAI
             return MBMath.Lerp(0f, 1f, MathF.Clamp(getEquipWeight(agent) / 50f, 0f, 1f));
         }
 
-        public static float getEquipWeightModifier(float equipWeight)
+        public override void OnMissionTick(float dt)
         {
-            return MBMath.Lerp(0f, 1f, MathF.Clamp(equipWeight / 50f, 0f, 1f));
-        }
-
-        [HarmonyPatch(typeof(Agent))]
-        [HarmonyPatch("EquipItemsFromSpawnEquipment")]
-        private class EquipItemsFromSpawnEquipmentPatch
-        {
-            private static void Prefix(ref Agent __instance)
+            base.OnMissionTick(dt);
+            if (RBMConfig.RBMConfig.postureEnabled && Mission.Current.AllowAiTicking)
             {
-                if (__instance.IsHuman)
+                if (currentDt < timeToCalc)
                 {
-                    AgentPostures.values[__instance] = new Posture();
+                    currentDt += dt;
                 }
-            }
-        }
-
-        [HarmonyPatch(typeof(Agent))]
-        [HarmonyPatch("OnWieldedItemIndexChange")]
-        private class OnWieldedItemIndexChangePatch
-        {
-            private static void Postfix(ref Agent __instance, bool isOffHand, bool isWieldedInstantly, bool isWieldedOnSpawn)
-            {
-                float playerPostureModifier = RBMConfig.RBMConfig.playerPostureMultiplier;
-                if (RBMConfig.RBMConfig.postureEnabled)
+                else
                 {
-                    Posture posture = null;
-                    AgentPostures.values.TryGetValue(__instance, out posture);
-                    if (posture == null)
+                    MBArrayList<Agent> inactiveAgents = new MBArrayList<Agent>();
+                    foreach (KeyValuePair<Agent, Posture> entry in AgentPostures.values)
                     {
-                        AgentPostures.values[__instance] = new Posture();
-                    }
-                    AgentPostures.values.TryGetValue(__instance, out posture);
-                    if (posture != null)
-                    {
-                        float oldPosture = posture.posture;
-                        float oldMaxPosture = posture.maxPosture;
-                        float oldPosturePercentage = oldPosture / oldMaxPosture;
-
-                        EquipmentIndex slotIndex = __instance.GetWieldedItemIndex(0);
-                        if (slotIndex != EquipmentIndex.None)
+                        if (entry.Key != null && entry.Key.Mission != null && !entry.Key.IsActive())
                         {
-                            int usageIndex = __instance.Equipment[slotIndex].CurrentUsageIndex;
-
-                            WeaponComponentData wcd = __instance.Equipment[slotIndex].GetWeaponComponentDataForUsage(usageIndex);
-                            SkillObject weaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(wcd.WeaponClass);
-                            int effectiveWeaponSkill;
-                            if (weaponSkill != null)
+                            inactiveAgents.Add(entry.Key);
+                            continue;
+                        }
+                        if (entry.Key.IsPlayerControlled)
+                        {
+                            if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
                             {
-                                effectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, weaponSkill);
+                                AgentPostures.postureVisual._dataSource.PlayerPosture = (int)entry.Value.posture;
+                                AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)entry.Value.maxPosture;
+                                AgentPostures.postureVisual._dataSource.PlayerPostureText = ((int)entry.Value.posture).ToString();
+                                AgentPostures.postureVisual._dataSource.PlayerPostureMaxText = ((int)entry.Value.maxPosture).ToString();
                             }
-                            else
+                        }
+                        if (entry.Value.posture < entry.Value.maxPosture)
+                        {
+                            if (RBMConfig.RBMConfig.postureGUIEnabled)
                             {
-                                effectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, DefaultSkills.Athletics);
+                                if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowEnemyStatus && AgentPostures.postureVisual.affectedAgent == entry.Key)
+                                {
+                                    AgentPostures.postureVisual._dataSource.EnemyPosture = (int)entry.Value.posture;
+                                    AgentPostures.postureVisual._dataSource.EnemyPostureMax = (int)entry.Value.maxPosture;
+                                }
                             }
+                            entry.Value.posture += entry.Value.regenPerTick * 30f;
 
-                            float athleticBase = 20f;
-                            float weaponSkillBase = 80f;
-                            float strengthSkillModifier = 500f;
-                            float weaponSkillModifier = 500f;
-                            float athleticRegenBase = 0.008f;
-                            float weaponSkillRegenBase = 0.032f;
-                            float baseModifier = 1f;
-                            int effectiveStrengthSkill;
-
-                            if (__instance.HasMount)
-                            {
-                                effectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, DefaultSkills.Riding);
-                            }
-                            else
-                            {
-                                effectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, DefaultSkills.Athletics);
-                            }
-
-                            float maxPosture = (athleticBase * (baseModifier + (effectiveStrengthSkill / strengthSkillModifier))) +
-                                                 (weaponSkillBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
-                            //heavier equipment = higher max posture
-                            posture.maxPosture = maxPosture * (1f + getEquipWeightModifier(__instance));
-
-                            float regenPerTick = (athleticRegenBase * (baseModifier + (effectiveStrengthSkill / strengthSkillModifier))) +
-                                                 (weaponSkillRegenBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
-
-                            //heavier equipment = slower posture regen
-                            posture.regenPerTick = regenPerTick * (1f - getEquipWeightModifier(__instance));
-
-                            if (__instance.IsPlayerControlled)
-                            {
-                                posture.maxPosture *= playerPostureModifier;
-                                posture.regenPerTick *= playerPostureModifier;
-                            }
-
-                            posture.posture = posture.maxPosture * oldPosturePercentage;
+                            entry.Key.UpdateAgentProperties();
                         }
                     }
+                    foreach (Agent agent in inactiveAgents)
+                    {
+                        AgentPostures.values.Remove(agent);
+                    }
+                    inactiveAgents.Clear();
+
+                    foreach (KeyValuePair<Agent, FormationClass> entry in agentsToChangeFormation)
+                    {
+                        if (entry.Key != null && entry.Key.Mission != null && entry.Key.IsActive() && entry.Key.Team != null)
+                        {
+                            entry.Key.Formation = entry.Key.Team.GetFormation(entry.Value);
+                            entry.Key.DisableScriptedMovement();
+                        }
+                    }
+                    agentsToChangeFormation.Clear();
+
+                    //shield drop
+                    MBArrayList<Agent> agentsAbleToDropShield = new MBArrayList<Agent> { };
+                    for (int i = agentsToDropShield.Count - 1; i >= 0; i--)
+                    {
+                        if (agentsToDropShield[i] != null && agentsToDropShield[i].Mission != null && agentsToDropShield[i].IsActive())
+                        {
+                            ActionCodeType currentActionType = agentsToDropShield[i].GetCurrentActionType(1);
+                            if (
+                                currentActionType == ActionCodeType.ReleaseMelee ||
+                                currentActionType == ActionCodeType.ReleaseRanged ||
+                                currentActionType == ActionCodeType.ReleaseThrowing ||
+                                currentActionType == ActionCodeType.WeaponBash)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                agentsAbleToDropShield.Add(agentsToDropShield[i]);
+                            }
+                        }
+                        else
+                        {
+                            agentsAbleToDropShield.Add(agentsToDropShield[i]);
+                        }
+                    }
+                    foreach (Agent agent in agentsAbleToDropShield)
+                    {
+                        if (agent != null && agent.Mission != null && agent.IsActive())
+                        {
+                            EquipmentIndex ei = agent.GetWieldedItemIndex(Agent.HandIndex.OffHand);
+                            if (ei != EquipmentIndex.None)
+                            {
+                                agent.DropItem(ei);
+                                agent.UpdateAgentProperties();
+                            }
+                        }
+                        agentsToDropShield.Remove(agent);
+                    }
+                    agentsAbleToDropShield.Clear();
+
+                    //weapon drop
+                    MBArrayList<Agent> agentsAbleToDropWeapon = new MBArrayList<Agent> { };
+                    for (int i = agentsToDropWeapon.Count - 1; i >= 0; i--)
+                    {
+                        if (agentsToDropWeapon[i] != null && agentsToDropWeapon[i].Mission != null && agentsToDropWeapon[i].IsActive())
+                        {
+                            ActionCodeType currentActionType = agentsToDropWeapon[i].GetCurrentActionType(1);
+                            if (
+                                currentActionType == ActionCodeType.ReleaseMelee ||
+                                currentActionType == ActionCodeType.ReleaseRanged ||
+                                currentActionType == ActionCodeType.ReleaseThrowing ||
+                                currentActionType == ActionCodeType.WeaponBash)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                agentsAbleToDropWeapon.Add(agentsToDropWeapon[i]);
+                            }
+                        }
+                        else
+                        {
+                            agentsAbleToDropWeapon.Add(agentsToDropWeapon[i]);
+                        }
+                    }
+                    foreach (Agent agent in agentsAbleToDropWeapon)
+                    {
+                        if (agent != null && agent.Mission != null && agent.IsActive())
+                        {
+                            EquipmentIndex ei = agent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                            if (ei != EquipmentIndex.None)
+                            {
+                                agent.DropItem(ei);
+                                agent.UpdateAgentProperties();
+                            }
+                        }
+                        agentsToDropWeapon.Remove(agent);
+                    }
+                    agentsAbleToDropWeapon.Clear();
+
+                    currentDt = 0f;
                 }
             }
         }
@@ -194,578 +255,123 @@ namespace RBMAI
         [HarmonyPatch("CreateMeleeBlow")]
         private class CreateMeleeBlowPatch
         {
-            public static void ResetPostureForAgent(ref Posture posture, float postureResetModifier, Agent agent)
+            
+
+            public static float calculateHealthDamage(MissionWeapon targetWeapon, Agent attacker, Agent vicitm, float overPostureDamage, ref Blow b)
             {
-                if (posture != null)
+                float armorSumPosture = vicitm.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Head);
+                armorSumPosture += vicitm.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Neck);
+                armorSumPosture += vicitm.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Chest);
+                armorSumPosture += vicitm.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Abdomen);
+                armorSumPosture += vicitm.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ShoulderLeft);
+                armorSumPosture += vicitm.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ShoulderRight);
+                armorSumPosture += vicitm.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ArmLeft);
+                armorSumPosture += vicitm.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ArmRight);
+                armorSumPosture += vicitm.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Legs);
+
+                armorSumPosture = (armorSumPosture / 9f);
+
+                if (RBMConfig.RBMConfig.rbmCombatEnabled)
                 {
-                    float currentTime = Mission.Current.CurrentTime;
-                    int restCount = posture.lastPostureLossTime > 0 ? MathF.Floor((currentTime - posture.lastPostureLossTime) / 20f) : 0;
-                    posture.maxPostureLossCount = posture.maxPostureLossCount - restCount;
-                    if (posture.maxPostureLossCount < 0)
+                    int relevantSkill = 0;
+                    float swingSpeed = 0f;
+                    float thrustSpeed = 0f;
+                    float swingDamageFactor = 0f;
+                    float thrustDamageFactor = 0f;
+                    float sweetSpotOut = 0f;
+                    float sweetSpot = 0f;
+                    int targetWeaponUsageIndex = targetWeapon.CurrentUsageIndex;
+                    BasicCharacterObject currentSelectedChar = attacker.Character;
+
+                    if (currentSelectedChar != null && !targetWeapon.IsEmpty && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex) != null && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).IsMeleeWeapon)
                     {
-                        posture.maxPostureLossCount = 0;
+                        if (currentSelectedChar != null)
+                        {
+                            SkillObject skill = targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).RelevantSkill;
+                            int effectiveSkill = currentSelectedChar.GetSkillValue(skill);
+                            float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(effectiveSkill);
+                            float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill);
+
+                            Utilities.CalculateVisualSpeeds(targetWeapon, targetWeaponUsageIndex, effectiveSkillDR, out int swingSpeedReal, out int thrustSpeedReal, out int handlingReal);
+
+                            float swingSpeedRealF = swingSpeedReal / Utilities.swingSpeedTransfer;
+                            float thrustSpeedRealF = thrustSpeedReal / Utilities.thrustSpeedTransfer;
+
+                            relevantSkill = effectiveSkill;
+
+                            swingSpeed = swingSpeedRealF;
+                            thrustSpeed = thrustSpeedRealF;
+                            if (b.StrikeType == StrikeType.Swing)
+                            {
+                                float sweetSpotMagnitude = CalculateSweetSpotSwingMagnitude(currentSelectedChar, targetWeapon, targetWeaponUsageIndex, effectiveSkill);
+
+                                float skillBasedDamage = Utilities.GetSkillBasedDamage(sweetSpotMagnitude, false, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
+                                    targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, effectiveSkillDR, skillModifier, StrikeType.Swing, targetWeapon.Item.Weight);
+
+                                swingDamageFactor = (float)Math.Sqrt(Utilities.getSwingDamageFactor(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex), targetWeapon.ItemModifier));
+
+                                int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(), targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, skillBasedDamage, armorSumPosture, 1f, out float penetratedDamage, out float bluntForce, swingDamageFactor, null, false)), 0, 2000);
+                                realDamage = MathF.Floor(realDamage * 1f);
+                                return realDamage;
+                            }
+                            else
+                            {
+                                float thrustMagnitude = CalculateThrustMagnitude(currentSelectedChar, targetWeapon, targetWeaponUsageIndex, effectiveSkill);
+
+                                float skillBasedDamage = Utilities.GetSkillBasedDamage(thrustMagnitude, false, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
+                                    targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, effectiveSkillDR, skillModifier, StrikeType.Thrust, targetWeapon.Item.Weight);
+
+                                thrustDamageFactor = (float)Math.Sqrt(Utilities.getThrustDamageFactor(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex), targetWeapon.ItemModifier));
+
+                                int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
+                                targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, skillBasedDamage, armorSumPosture, 1f, out float penetratedDamage, out float bluntForce, thrustDamageFactor, null, false)), 0, 2000);
+                                realDamage = MathF.Floor(realDamage * 1f);
+                                return realDamage;
+                            }
+                        }
                     }
-                    if (posture.maxPostureLossCount < 10)
-                    {
-                        posture.maxPostureLossCount++;
-                    }
-                    posture.posture = posture.maxPosture * (postureResetModifier * (1f - (0.05f * posture.maxPostureLossCount)));
-                    posture.lastPostureLossTime = Mission.Current.CurrentTime;
                 }
+
+                int weaponDamage = 0;
+                if (b.StrikeType == StrikeType.Swing)
+                {
+                    weaponDamage = targetWeapon.GetModifiedSwingDamageForCurrentUsage();
+                }
+                else
+                {
+                    weaponDamage = targetWeapon.GetModifiedThrustDamageForCurrentUsage();
+                }
+
+                return MBMath.ClampInt(MathF.Ceiling(MissionGameModels.Current.StrikeMagnitudeModel.ComputeRawDamage(b.DamageType, weaponDamage, armorSumPosture, 1f)), 0, 2000);
             }
 
-            private static void Postfix(ref Mission __instance, ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
+            public static float calculateRangedPostureLoss(float fixedPS, float dynamicPS, Agent shooterAgent, WeaponClass wc)
             {
-                if ((new StackTrace()).GetFrame(3).GetMethod().Name.Contains("MeleeHit") && victimAgent != null && victimAgent.IsHuman)
+                SkillObject attackerWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(wc);
+
+                float attackerEffectiveWeaponSkill = 0;
+                float attackerEffectiveStrengthSkill = 0;
+
+                float fixedPostureLoss = fixedPS;
+                float dynamicPostureLoss = dynamicPS;
+
+                if (attackerWeaponSkill != null)
                 {
-                    if (RBMConfig.RBMConfig.postureEnabled && attackerAgent != null && victimAgent != null && !attackerAgent.IsFriendOf(victimAgent) && attackerWeapon.CurrentUsageItem != null &&
-                        attackerWeapon.CurrentUsageItem != null)
-                    {
-                        Posture defenderPosture = null;
-                        Posture attackerPosture = null;
-                        AgentPostures.values.TryGetValue(victimAgent, out defenderPosture);
-                        AgentPostures.values.TryGetValue(attackerAgent, out attackerPosture);
-
-                        float postureResetModifier = 0.75f;
-                        float shieldPostureResetModifier = 1f;
-
-                        float absoluteDamageModifier = 3f;
-                        float absoluteShieldDamageModifier = 1.2f;
-
-                        float comHitModifier = Utilities.GetComHitModifier(in collisionData, in attackerWeapon);
-
-                        //parry or direct hit
-                        if (!collisionData.AttackBlockedWithShield)
-                        {
-                            //normal parry
-                            if (collisionData.CollisionResult == CombatCollisionResult.Blocked)
-                            {
-                                if (defenderPosture != null)
-                                {
-                                    //float postureDmg = calculateDefenderPostureDamage(victimAgent, attackerAgent, absoluteDamageModifier, 0.85f, ref collisionData, attackerWeapon, comHitModifier);
-                                    float postureDmg = PostureDamage.getDefenderPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry:false, isDirectHit:false);
-                                    defenderPosture.posture = defenderPosture.posture - postureDmg;
-                                    addPosturedamageVisual(attackerAgent, victimAgent);
-                                    if (defenderPosture.posture <= 0f)
-                                    {
-                                        float healthDamage = calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureDmg, __result, victimAgent);
-                                        EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
-                                        if (wieldedItemIndex != EquipmentIndex.None)
-                                        {
-                                            MBTextManager.SetTextVariable("DMG", MathF.Floor(healthDamage));
-                                            if (victimAgent.IsPlayerControlled)
-                                            {
-                                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_009}Posture break: Posture depleted, {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
-                                            }
-                                            if (attackerAgent.IsPlayerControlled)
-                                            {
-                                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_010}Enemy Posture break: Posture depleted, {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
-                                            }
-                                            if (!victimAgent.HasMount)
-                                            {
-                                                if (postureDmg >= defenderPosture.maxPosture * 0.33f)
-                                                {
-                                                    makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                                    agentsToDropWeapon.Add(victimAgent);
-                                                    if (!agentsToDropWeapon.Contains(victimAgent))
-                                                    {
-                                                        agentsToDropWeapon.Add(victimAgent);
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
-                                            }
-                                        }
-                                        ResetPostureForAgent(ref defenderPosture, postureResetModifier, victimAgent);
-                                        addPosturedamageVisual(attackerAgent, victimAgent);
-                                    }
-                                }
-                                if (attackerPosture != null)
-                                {
-                                    float attackerPostureDmg = PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: false, isDirectHit: false);
-                                    attackerPosture.posture = attackerPosture.posture - attackerPostureDmg;
-                                    if (attackerPosture.posture <= 0f)
-                                    {
-                                        if (attackerPostureDmg >= attackerPosture.maxPosture * 0.33f)
-                                        {
-                                            makePostureRiposteBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                            agentsToDropWeapon.Add(attackerAgent);
-                                            if (!agentsToDropWeapon.Contains(attackerAgent))
-                                            {
-                                                agentsToDropWeapon.Add(attackerAgent);
-                                            }
-                                            ResetPostureForAgent(ref attackerPosture, postureResetModifier, attackerAgent);
-                                            addPosturedamageVisual(attackerAgent, victimAgent);
-                                        }
-                                        else
-                                        {
-                                            attackerPosture.posture = 0f;
-                                        }
-                                    }
-                                    //attackerPosture.lastPostureLossTime = Mission.Current.CurrentTime;
-                                    addPosturedamageVisual(attackerAgent, victimAgent);
-                                }
-                            }
-                            //perfect parry
-                            else if (collisionData.CollisionResult == CombatCollisionResult.Parried)
-                            {
-                                if (defenderPosture != null)
-                                {
-                                    float postureDmg = PostureDamage.getDefenderPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
-                                    defenderPosture.posture = defenderPosture.posture - postureDmg;
-                                    addPosturedamageVisual(attackerAgent, victimAgent);
-                                    if (defenderPosture.posture <= 0f)
-                                    {
-                                        float healthDamage = calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureDmg, __result, victimAgent);
-                                        EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
-                                        if (wieldedItemIndex != EquipmentIndex.None)
-                                        {
-                                            MBTextManager.SetTextVariable("DMG", MathF.Floor(healthDamage));
-                                            if (victimAgent.IsPlayerControlled)
-                                            {
-                                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_011}Posture break: Posture depleted, perfect parry, {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
-                                            }
-                                            if (attackerAgent.IsPlayerControlled)
-                                            {
-                                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_012}Enemy Posture break: Posture depleted, perfect parry, {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
-                                            }
-                                            if (postureDmg >= defenderPosture.maxPosture * 0.33f)
-                                            {
-                                                makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                                agentsToDropWeapon.Add(victimAgent);
-                                                if (!agentsToDropWeapon.Contains(victimAgent))
-                                                {
-                                                    agentsToDropWeapon.Add(victimAgent);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                            }
-                                        }
-                                        ResetPostureForAgent(ref defenderPosture, postureResetModifier, victimAgent);
-                                        addPosturedamageVisual(attackerAgent, victimAgent);
-                                    }
-                                    //defenderPosture.lastPostureLossTime = Mission.Current.CurrentTime;
-                                }
-                                if (attackerPosture != null)
-                                {
-                                    float attackerPostureDmg = PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
-                                    attackerPosture.posture = attackerPosture.posture - attackerPostureDmg;
-                                    addPosturedamageVisual(attackerAgent, victimAgent);
-                                    if (attackerPosture.posture <= 0f)
-                                    {
-                                        if (attackerAgent.IsPlayerControlled)
-                                        {
-                                            InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_013}Posture break: Posture depleted, perfect parry").ToString(), Color.FromUint(4282569842u)));
-                                        }
-                                        if (!attackerAgent.HasMount)
-                                        {
-                                            if (attackerPostureDmg >= attackerPosture.maxPosture * 0.33f)
-                                            {
-                                                makePostureRiposteBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                                agentsToDropWeapon.Add(attackerAgent);
-                                                if (!agentsToDropWeapon.Contains(attackerAgent))
-                                                {
-                                                    agentsToDropWeapon.Add(attackerAgent);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                makePostureRiposteBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            makePostureRiposteBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
-                                        }
-                                        ResetPostureForAgent(ref attackerPosture, postureResetModifier, attackerAgent);
-                                        addPosturedamageVisual(attackerAgent, victimAgent);
-                                    }
-                                    //attackerPosture.lastPostureLossTime = Mission.Current.CurrentTime;
-                                }
-                            }
-                            //direct hit
-                            else if (victimAgent.IsHuman && attackerAgent.IsHuman && collisionData.CollisionResult == CombatCollisionResult.StrikeAgent)
-                            {
-                                if (defenderPosture != null)
-                                {
-                                    float postureDmg;
-                                    //postureDmg = calculateDefenderPostureDamage(victimAgent, attackerAgent, absoluteDamageModifier, 0.8f, ref collisionData, attackerWeapon, comHitModifier);
-                                    postureDmg = collisionData.InflictedDamage;
-                                    defenderPosture.posture = defenderPosture.posture - postureDmg;
-                                    addPosturedamageVisual(attackerAgent, victimAgent);
-                                    if (defenderPosture.posture <= 0f)
-                                    {
-                                        EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
-                                        if (wieldedItemIndex != EquipmentIndex.None)
-                                        {
-                                            if (!victimAgent.HasMount)
-                                            {
-                                                if (postureDmg >= defenderPosture.maxPosture * 0.33f && !attackerWeapon.IsEmpty && (
-                                                    attackerWeapon.CurrentUsageItem.WeaponClass == WeaponClass.TwoHandedAxe ||
-                                                    attackerWeapon.CurrentUsageItem.WeaponClass == WeaponClass.TwoHandedMace ||
-                                                    attackerWeapon.CurrentUsageItem.WeaponClass == WeaponClass.TwoHandedPolearm ||
-                                                    attackerWeapon.CurrentUsageItem.WeaponClass == WeaponClass.TwoHandedSword))
-                                                {
-                                                    makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
-                                                }
-                                                else
-                                                {
-                                                    makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
-                                            }
-                                        }
-                                        ResetPostureForAgent(ref defenderPosture, postureResetModifier, victimAgent);
-                                        addPosturedamageVisual(attackerAgent, victimAgent);
-                                    }
-                                    //defenderPosture.lastPostureLossTime = Mission.Current.CurrentTime;
-                                }
-                                if (attackerPosture != null)
-                                {
-                                    attackerPosture.posture = attackerPosture.posture - PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: false, isDirectHit: true);
-                                    addPosturedamageVisual(attackerAgent, victimAgent);
-                                    if (attackerPosture.posture <= 0f)
-                                    {
-                                        attackerPosture.posture = 0f;
-                                    }
-                                }
-                            }
-                        }
-                        else if (collisionData.AttackBlockedWithShield)
-                        {
-                            if (collisionData.CollisionResult == CombatCollisionResult.Blocked && !collisionData.CorrectSideShieldBlock)
-                            {
-                                if (defenderPosture != null)
-                                {
-                                    float postureDmg = PostureDamage.getDefenderPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: false, isDirectHit: false);
-                                    defenderPosture.posture = defenderPosture.posture - postureDmg;
-                                    addPosturedamageVisual(attackerAgent, victimAgent);
-                                    float healthDamage = calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureDmg, __result, victimAgent);
-                                    if (defenderPosture.posture <= 0f)
-                                    {
-                                        damageShield(victimAgent, 150);
-                                        EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
-                                        if (wieldedItemIndex != EquipmentIndex.None)
-                                        {
-                                            if (victimAgent.IsPlayerControlled)
-                                            {
-                                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_014}Posture break: Posture depleted, incorrect side block").ToString(), Color.FromUint(4282569842u)));
-                                            }
-                                            if (!victimAgent.HasMount)
-                                            {
-                                                if (postureDmg >= defenderPosture.maxPosture * 0.33f)
-                                                {
-                                                    makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                                    makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                                    if (!agentsToDropShield.Contains(victimAgent))
-                                                    {
-                                                        agentsToDropShield.Add(victimAgent);
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
-                                            }
-                                        }
-                                        ResetPostureForAgent(ref defenderPosture, shieldPostureResetModifier, victimAgent);
-                                        addPosturedamageVisual(attackerAgent, victimAgent);
-                                    }
-                                    //defenderPosture.lastPostureLossTime = Mission.Current.CurrentTime;
-                                }
-                                if (attackerPosture != null)
-                                {
-                                    attackerPosture.posture = attackerPosture.posture - PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: false, isDirectHit: false);
-                                    addPosturedamageVisual(attackerAgent, victimAgent);
-                                    if (attackerPosture.posture <= 0f)
-                                    {
-                                        attackerPosture.posture = 0f;
-                                    }
-                                }
-                            }
-                            else if ((collisionData.CollisionResult == CombatCollisionResult.Blocked && collisionData.CorrectSideShieldBlock) || (collisionData.CollisionResult == CombatCollisionResult.Parried && !collisionData.CorrectSideShieldBlock))
-                            {
-                                if (defenderPosture != null)
-                                {
-                                    float postureDmg = PostureDamage.getDefenderPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
-                                    defenderPosture.posture = defenderPosture.posture - postureDmg;
-                                    addPosturedamageVisual(attackerAgent, victimAgent);
-                                    if (defenderPosture.posture <= 0f)
-                                    {
-                                        damageShield(victimAgent, 125);
-                                        EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
-                                        if (wieldedItemIndex != EquipmentIndex.None)
-                                        {
-                                            if (victimAgent.IsPlayerControlled)
-                                            {
-                                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_015}Posture break: Posture depleted, correct side block").ToString(), Color.FromUint(4282569842u)));
-                                            }
-                                            if (!victimAgent.HasMount)
-                                            {
-                                                if (postureDmg >= defenderPosture.maxPosture * 0.33f)
-                                                {
-                                                    makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                                    if (!agentsToDropShield.Contains(victimAgent))
-                                                    {
-                                                        agentsToDropShield.Add(victimAgent);
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
-                                            }
-                                        }
-                                        ResetPostureForAgent(ref defenderPosture, shieldPostureResetModifier, victimAgent);
-                                        addPosturedamageVisual(attackerAgent, victimAgent);
-                                    }
-                                    //defenderPosture.lastPostureLossTime = Mission.Current.CurrentTime;
-                                }
-                                if (attackerPosture != null)
-                                {
-                                    attackerPosture.posture = attackerPosture.posture - PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
-                                    addPosturedamageVisual(attackerAgent, victimAgent);
-                                    if (attackerPosture.posture <= 0f)
-                                    {
-                                        attackerPosture.posture = 0f;
-                                    }
-                                }
-                            }
-                            else if (collisionData.CollisionResult == CombatCollisionResult.Parried && collisionData.CorrectSideShieldBlock)
-                            {
-                                if (defenderPosture != null)
-                                {
-                                    float postureDmg = PostureDamage.getDefenderPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
-                                    defenderPosture.posture = defenderPosture.posture - postureDmg;
-                                    addPosturedamageVisual(attackerAgent, victimAgent);
-                                    if (defenderPosture.posture <= 0f)
-                                    {
-                                        damageShield(victimAgent, 100);
-                                        EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
-                                        if (wieldedItemIndex != EquipmentIndex.None)
-                                        {
-                                            if (victimAgent.IsPlayerControlled)
-                                            {
-                                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_016}Posture break: Posture depleted, perfect parry, correct side block").ToString(), Color.FromUint(4282569842u)));
-                                            }
-                                            if (!victimAgent.HasMount)
-                                            {
-                                                if (postureDmg >= defenderPosture.maxPosture * 0.33f)
-                                                {
-                                                    makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                                    if (!agentsToDropShield.Contains(victimAgent))
-                                                    {
-                                                        agentsToDropShield.Add(victimAgent);
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                            }
-                                        }
-                                        ResetPostureForAgent(ref defenderPosture, shieldPostureResetModifier, victimAgent);
-                                        addPosturedamageVisual(attackerAgent, victimAgent);
-                                    }
-                                    //defenderPosture.lastPostureLossTime = Mission.Current.CurrentTime;
-                                }
-                                if (attackerPosture != null)
-                                {
-                                    float attackerPostureDmg = PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
-                                    attackerPosture.posture = attackerPosture.posture - attackerPostureDmg;
-                                    addPosturedamageVisual(attackerAgent, victimAgent);
-                                    if (attackerPosture.posture <= 0f)
-                                    {
-                                        if (attackerAgent.IsPlayerControlled)
-                                        {
-                                            InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_017}Posture break: Posture depleted, perfect parry, correct side block").ToString(), Color.FromUint(4282569842u)));
-                                        }
-
-                                        {
-                                            if (attackerPostureDmg >= attackerPosture.maxPosture * 0.33f)
-                                            {
-                                                makePostureRiposteBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                                agentsToDropWeapon.Add(attackerAgent);
-                                                if (!agentsToDropWeapon.Contains(attackerAgent))
-                                                {
-                                                    agentsToDropWeapon.Add(attackerAgent);
-                                                }
-                                                ResetPostureForAgent(ref attackerPosture, postureResetModifier, attackerAgent);
-                                                addPosturedamageVisual(attackerAgent, victimAgent);
-                                            }
-                                            else
-                                            {
-                                                makePostureRiposteBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                            }
-                                        }
-                                        ResetPostureForAgent(ref attackerPosture, postureResetModifier, attackerAgent);
-                                        addPosturedamageVisual(attackerAgent, victimAgent);
-                                    }
-                                    //attackerPosture.lastPostureLossTime = Mission.Current.CurrentTime;
-                                }
-                            }
-                        }
-                        else if (collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked)
-                        {
-                            if (defenderPosture != null)
-                            {
-                                defenderPosture.posture = defenderPosture.posture - PostureDamage.getDefenderPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
-                                addPosturedamageVisual(attackerAgent, victimAgent);
-                                if (defenderPosture.posture <= 0f)
-                                {
-                                    EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
-                                    if (wieldedItemIndex != EquipmentIndex.None)
-                                    {
-                                        if (victimAgent.IsPlayerControlled)
-                                        {
-                                            InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_018}Posture break: Posture depleted, chamber block").ToString(), Color.FromUint(4282569842u)));
-                                        }
-                                        makePostureBlow(ref __instance, __result, attackerAgent, victimAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.NonTipThrust);
-                                    }
-                                    ResetPostureForAgent(ref defenderPosture, postureResetModifier, victimAgent);
-                                    addPosturedamageVisual(attackerAgent, victimAgent);
-                                }
-                                //defenderPosture.lastPostureLossTime = Mission.Current.CurrentTime;
-                            }
-                            if (attackerPosture != null)
-                            {
-                                float postureDmg = PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, isParry: true, isDirectHit: false);
-                                attackerPosture.posture = attackerPosture.posture - postureDmg;
-                                addPosturedamageVisual(attackerAgent, victimAgent);
-                                if (attackerPosture.posture <= 0f)
-                                {
-                                    float healthDamage = calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureDmg, __result, attackerAgent);
-                                    if (attackerAgent.IsPlayerControlled)
-                                    {
-                                        MBTextManager.SetTextVariable("DMG", MathF.Floor(healthDamage));
-                                        InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_019}Posture break: Posture depleted, chamber block {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
-                                    }
-                                    makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
-                                    ResetPostureForAgent(ref attackerPosture, postureResetModifier, attackerAgent);
-                                    addPosturedamageVisual(attackerAgent, victimAgent);
-                                }
-                                else
-                                {
-                                    float healthDamage = calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureDmg, __result, attackerAgent);
-                                    if (attackerAgent.IsPlayerControlled)
-                                    {
-                                        MBTextManager.SetTextVariable("DMG", MathF.Floor(healthDamage));
-                                        InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_020}Chamber block {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
-                                    }
-                                    makePostureCrashThroughBlow(ref __instance, __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                    ResetPostureForAgent(ref attackerPosture, postureResetModifier, attackerAgent);
-                                    addPosturedamageVisual(attackerAgent, victimAgent);
-                                }
-                                //attackerPosture.lastPostureLossTime = Mission.Current.CurrentTime;
-                            }
-                        }
-                    }
+                    attackerEffectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(shooterAgent, attackerWeaponSkill);
                 }
-            }
-
-            private static void damageShield(Agent victim, int ammount)
-            {
-                for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                if (shooterAgent.HasMount)
                 {
-                    if (victim.Equipment != null && !victim.Equipment[equipmentIndex].IsEmpty)
-                    {
-                        if (victim.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield && !victim.WieldedOffhandWeapon.IsEmpty && victim.WieldedOffhandWeapon.Item.Id == victim.Equipment[equipmentIndex].Item.Id)
-                        {
-                            int num = MathF.Max(0, victim.Equipment[equipmentIndex].HitPoints - ammount);
-                            victim.ChangeWeaponHitPoints(equipmentIndex, (short)num);
-                            break;
-                        }
-                    }
+                    attackerEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(shooterAgent, DefaultSkills.Riding);
                 }
-            }
-
-            private static void addPosturedamageVisual(Agent attackerAgent, Agent victimAgent)
-            {
-                if (RBMConfig.RBMConfig.postureEnabled)
+                else
                 {
-                    if (victimAgent != null && attackerAgent != null && (victimAgent.IsPlayerControlled || attackerAgent.IsPlayerControlled))
-                    {
-                        Agent enemyAgent = null;
-                        if (victimAgent.IsPlayerControlled)
-                        {
-                            enemyAgent = attackerAgent;
-                            Posture posture = null;
-                            if (AgentPostures.values.TryGetValue(victimAgent, out posture))
-                            {
-                                if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
-                                {
-                                    AgentPostures.postureVisual._dataSource.PlayerPosture = (int)posture.posture;
-                                    AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)posture.maxPosture;
-                                    AgentPostures.postureVisual._dataSource.PlayerPostureText = ((int)posture.posture).ToString();
-                                    AgentPostures.postureVisual._dataSource.PlayerPostureMaxText = ((int)posture.maxPosture).ToString();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            enemyAgent = victimAgent;
-                            Posture posture = null;
-                            if (AgentPostures.values.TryGetValue(attackerAgent, out posture))
-                            {
-                                if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
-                                {
-                                    AgentPostures.postureVisual._dataSource.PlayerPosture = (int)posture.posture;
-                                    AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)posture.maxPosture;
-                                    AgentPostures.postureVisual._dataSource.PlayerPostureText = ((int)posture.posture).ToString();
-                                    AgentPostures.postureVisual._dataSource.PlayerPostureMaxText = ((int)posture.maxPosture).ToString();
-                                }
-                            }
-                        }
-                        if (AgentPostures.postureVisual != null)
-                        {
-                            Posture posture = null;
-                            if (AgentPostures.values.TryGetValue(enemyAgent, out posture))
-                            {
-                                AgentPostures.postureVisual._dataSource.ShowEnemyStatus = true;
-                                AgentPostures.postureVisual.affectedAgent = enemyAgent;
-                                if (AgentPostures.postureVisual._dataSource.ShowEnemyStatus && AgentPostures.postureVisual.affectedAgent == enemyAgent)
-                                {
-                                    AgentPostures.postureVisual.timer = AgentPostures.postureVisual.DisplayTime;
-                                    AgentPostures.postureVisual._dataSource.EnemyPosture = (int)posture.posture;
-                                    AgentPostures.postureVisual._dataSource.EnemyPostureMax = (int)posture.maxPosture;
-                                    AgentPostures.postureVisual._dataSource.EnemyHealth = (int)enemyAgent.Health;
-                                    AgentPostures.postureVisual._dataSource.EnemyHealthMax = (int)enemyAgent.HealthLimit;
-                                    if (enemyAgent.IsMount)
-                                    {
-                                        AgentPostures.postureVisual._dataSource.EnemyName = enemyAgent.RiderAgent?.Name + " (" + new TextObject("{=mountnoun}Mount").ToString() + ")";
-                                    }
-                                    else
-                                    {
-                                        AgentPostures.postureVisual._dataSource.EnemyName = enemyAgent.Name;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    attackerEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(shooterAgent, DefaultSkills.Athletics);
                 }
+
+                dynamicPostureLoss -= MBMath.Lerp(0f, 1f, 1f - (attackerEffectiveWeaponSkill / 200f)) * (dynamicPS * 0.5f);
+                dynamicPostureLoss -= MBMath.Lerp(0f, 1f, 1f - (attackerEffectiveStrengthSkill / 200f)) * (dynamicPS * 0.5f);
+
+                return fixedPostureLoss + dynamicPostureLoss;
             }
 
             public static float CalculateSweetSpotSwingMagnitude(BasicCharacterObject character, MissionWeapon weapon, int weaponUsageIndex, int relevantSkill)
@@ -914,126 +520,437 @@ namespace RBMAI
                 return thrustMagnitude;
             }
 
-            public static float calculateHealthDamage(MissionWeapon targetWeapon, Agent attacker, Agent vicitm, float overPostureDamage, Blow b, Agent victimAgent)
+            public static MeleeHitType DecideMeleeHitType(ref AttackCollisionData collisionData)
             {
-                float armorSumPosture = victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Head);
-                armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Neck);
-                armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Chest);
-                armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Abdomen);
-                armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ShoulderLeft);
-                armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ShoulderRight);
-                armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ArmLeft);
-                armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ArmRight);
-                armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Legs);
+                MeleeHitType hitType = MeleeHitType.None;
 
-                armorSumPosture = (armorSumPosture / 9f);
-
-                if (RBMConfig.RBMConfig.rbmCombatEnabled)
+                if (collisionData.AttackBlockedWithShield)
                 {
-                    int relevantSkill = 0;
-                    float swingSpeed = 0f;
-                    float thrustSpeed = 0f;
-                    float swingDamageFactor = 0f;
-                    float thrustDamageFactor = 0f;
-                    float sweetSpotOut = 0f;
-                    float sweetSpot = 0f;
-                    int targetWeaponUsageIndex = targetWeapon.CurrentUsageIndex;
-                    BasicCharacterObject currentSelectedChar = attacker.Character;
-
-                    if (currentSelectedChar != null && !targetWeapon.IsEmpty && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex) != null && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).IsMeleeWeapon)
+                    if (collisionData.CorrectSideShieldBlock)
                     {
-                        if (currentSelectedChar != null)
+                        if (collisionData.CollisionResult == CombatCollisionResult.Blocked)
                         {
-                            SkillObject skill = targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).RelevantSkill;
-                            int effectiveSkill = currentSelectedChar.GetSkillValue(skill);
-                            float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(effectiveSkill);
-                            float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill);
+                            hitType = MeleeHitType.ShieldBlock;
+                        }
+                        else
+                        {
+                            hitType = MeleeHitType.ShieldParry;
+                        }
+                    }
+                    else
+                    {
+                        hitType = MeleeHitType.ShieldIncorrectBlock;
+                    }
+                }
+                else
+                {
+                    if (collisionData.CollisionResult == CombatCollisionResult.Blocked)
+                    {
+                        hitType = MeleeHitType.WeaponBlock;
+                    }
+                    else if (collisionData.CollisionResult == CombatCollisionResult.Parried)
+                    {
+                        hitType = MeleeHitType.WeaponParry;
+                    }
+                    else if (collisionData.CollisionResult == CombatCollisionResult.StrikeAgent)
+                    {
+                        hitType = MeleeHitType.AgentHit;
+                    }
+                }
 
-                            Utilities.CalculateVisualSpeeds(targetWeapon, targetWeaponUsageIndex, effectiveSkillDR, out int swingSpeedReal, out int thrustSpeedReal, out int handlingReal);
+                return hitType;
+            }
 
-                            float swingSpeedRealF = swingSpeedReal / Utilities.swingSpeedTransfer;
-                            float thrustSpeedRealF = thrustSpeedReal / Utilities.thrustSpeedTransfer;
+            public static void handleAgentDropShield(Agent defAgent)
+            {
+                EquipmentIndex wieldedItemIndex = defAgent.GetWieldedItemIndex(HandIndex.OffHand);
+                if (wieldedItemIndex != EquipmentIndex.None)
+                {
+                    if (!agentsToDropShield.Contains(defAgent))
+                    {
+                        agentsToDropShield.Add(defAgent);
+                    }
+                }
+            }
 
-                            relevantSkill = effectiveSkill;
+            public static void handleAgentDropWeapon(Agent defAgent)
+            {
+                EquipmentIndex wieldedItemIndex = defAgent.GetWieldedItemIndex(HandIndex.MainHand);
+                if (wieldedItemIndex != EquipmentIndex.None)
+                {
+                    if (!agentsToDropWeapon.Contains(defAgent))
+                    {
+                        agentsToDropWeapon.Add(defAgent);
+                    }
+                }
+            }
 
-                            swingSpeed = swingSpeedRealF;
-                            thrustSpeed = thrustSpeedRealF;
-                            if (b.StrikeType == StrikeType.Swing)
+            public static void HandleAttackerPostureBreak(MeleeHitType hitType, Posture attackerPosture, Agent defAgent, Agent ataAgent, float postureDmg, MissionWeapon attackerWeapon, ref Blow blow, ref Mission mission, ref AttackCollisionData collisionData, ref Vec3 blowDirection, ref Vec3 swingDirection, ref bool cancelDamage, CrushThroughState crushThroughState)
+            {
+                switch (hitType)
+                {
+                    case MeleeHitType.None:
+                        {
+                            break;
+                        }
+                    case MeleeHitType.WeaponBlock:
+                        {
+                            if (postureDmg >= attackerPosture.maxPosture * 0.33f)
                             {
-                                float sweetSpotMagnitude = CalculateSweetSpotSwingMagnitude(currentSelectedChar, targetWeapon, targetWeaponUsageIndex, effectiveSkill);
-
-                                float skillBasedDamage = Utilities.GetSkillBasedDamage(sweetSpotMagnitude, false, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
-                                    targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, effectiveSkillDR, skillModifier, StrikeType.Swing, targetWeapon.Item.Weight);
-
-                                swingDamageFactor = (float)Math.Sqrt(Utilities.getSwingDamageFactor(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex), targetWeapon.ItemModifier));
-
-                                int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(), targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, skillBasedDamage, armorSumPosture, 1f, out float penetratedDamage, out float bluntForce, swingDamageFactor, null, false)), 0, 2000);
-                                realDamage = MathF.Floor(realDamage * 1f);
-                                return realDamage;
+                                makePostureRiposteBlow(ref mission, ref blow, ataAgent, defAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                handleAgentDropWeapon(defAgent);
+                                addPostureDamageVisual(ataAgent, defAgent);
                             }
                             else
                             {
-                                float thrustMagnitude = CalculateThrustMagnitude(currentSelectedChar, targetWeapon, targetWeaponUsageIndex, effectiveSkill);
+                                attackerPosture.posture = 0f;
+                            }
+                            break;
+                        }
+                    case MeleeHitType.WeaponParry:
+                        {
+                            if (ataAgent.IsPlayerControlled)
+                            {
+                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_013}Posture break: Posture depleted, perfect parry").ToString(), Color.FromUint(4282569842u)));
+                            }
+                            if (ataAgent.HasMount)
+                            {
+                                makePostureRiposteBlow(ref mission, ref blow, ataAgent, defAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
+                            }
+                            else
+                            {
+                                makePostureRiposteBlow(ref mission, ref blow, ataAgent, defAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                if (postureDmg >= attackerPosture.maxPosture * 0.33f)
+                                {
+                                    handleAgentDropWeapon(ataAgent);
+                                }
+                            }
+                            ResetPostureForAgent(ref attackerPosture, PostureDamage.POSTURE_RESET_MODIFIER, ataAgent);
+                            addPostureDamageVisual(ataAgent, defAgent);
+                            break;
+                        }
+                    case MeleeHitType.AgentHit:
+                    case MeleeHitType.ShieldIncorrectBlock:
+                    case MeleeHitType.ShieldBlock:
+                        {
+                            attackerPosture.posture = 0f;
+                            addPostureDamageVisual(ataAgent, defAgent);
+                            break;
+                        }
+                    case MeleeHitType.ShieldParry:
+                        {
+                            if (ataAgent.IsPlayerControlled)
+                            {
+                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_017}Posture break: Posture depleted, perfect parry, correct side block").ToString(), Color.FromUint(4282569842u)));
+                            }
+                            if (ataAgent.HasMount)
+                            {
+                                makePostureRiposteBlow(ref mission, ref blow, ataAgent, defAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
+                            }
+                            else
+                            {
+                                makePostureRiposteBlow(ref mission, ref blow, ataAgent, defAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                if (postureDmg >= attackerPosture.maxPosture * 0.33f)
+                                {
+                                    handleAgentDropWeapon(ataAgent);
+                                }
+                            }
+                            ResetPostureForAgent(ref attackerPosture, PostureDamage.POSTURE_RESET_MODIFIER, ataAgent);
+                            break;
+                        }
+                    case MeleeHitType.ChamberBlock:
+                        {
+                            float healthDamage = calculateHealthDamage(attackerWeapon, ataAgent, defAgent, postureDmg, ref blow);
+                            if (ataAgent.IsPlayerControlled)
+                            {
+                                MBTextManager.SetTextVariable("DMG", MathF.Floor(healthDamage));
+                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_019}Posture break: Posture depleted, chamber block {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
+                            }
+                            makePostureCrashThroughBlow(ref mission, ref blow, ataAgent, defAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
+                            ResetPostureForAgent(ref attackerPosture, PostureDamage.POSTURE_RESET_MODIFIER, ataAgent);
+                            break;
+                        }
+                }
+            }
 
-                                float skillBasedDamage = Utilities.GetSkillBasedDamage(thrustMagnitude, false, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
-                                    targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, effectiveSkillDR, skillModifier, StrikeType.Thrust, targetWeapon.Item.Weight);
+            public static void HandleDefenderPostureBreak(MeleeHitType hitType, Posture defenderPosture, Agent defAgent, Agent ataAgent, float postureDmg, MissionWeapon attackerWeapon, ref Blow blow, ref Mission mission, ref AttackCollisionData collisionData, ref Vec3 blowDirection, ref Vec3 swingDirection, ref bool cancelDamage, CrushThroughState crushThroughState)
+            {
+                switch (hitType)
+                {
+                    case MeleeHitType.None:
+                        {
+                            break;
+                        }
+                    case MeleeHitType.WeaponBlock:
+                        {
+                            float healthDamage = calculateHealthDamage(attackerWeapon, ataAgent, defAgent, postureDmg, ref blow);
+                            showCrushThroughMessage(healthDamage, defAgent, ataAgent);
+                            if (defAgent.HasMount)
+                            {
+                                makePostureCrashThroughBlow(ref mission, ref blow, ataAgent, defAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
+                            }
+                            else
+                            {
+                                makePostureCrashThroughBlow(ref mission, ref blow, ataAgent, defAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                if (postureDmg >= defenderPosture.maxPosture * 0.33f)
+                                {
+                                    handleAgentDropWeapon(defAgent);
+                                }
+                            }
+                            ResetPostureForAgent(ref defenderPosture, PostureDamage.POSTURE_RESET_MODIFIER, defAgent);
+                            break;
+                        }
+                    case MeleeHitType.WeaponParry:
+                        {
+                            float healthDamage = calculateHealthDamage(attackerWeapon, ataAgent, defAgent, postureDmg, ref blow);
+                            showCrushThroughMessage(healthDamage, defAgent, ataAgent);
+                            if (defAgent.HasMount)
+                            {
+                                makePostureCrashThroughBlow(ref mission, ref blow, ataAgent, defAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                            }
+                            else
+                            {
+                                makePostureCrashThroughBlow(ref mission, ref blow, ataAgent, defAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                if (postureDmg >= defenderPosture.maxPosture * 0.33f)
+                                {
+                                    handleAgentDropWeapon(defAgent);
+                                }
+                            }
+                            ResetPostureForAgent(ref defenderPosture, PostureDamage.POSTURE_RESET_MODIFIER, defAgent);
+                            break;
+                        }
+                    case MeleeHitType.AgentHit:
+                        {
+                            if (defAgent.HasMount)
+                            {
+                                makePostureBlow(ref mission, ref blow, ataAgent, defAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
+                            }
+                            else
+                            {
+                                if (postureDmg >= defenderPosture.maxPosture * 0.33f && !attackerWeapon.IsEmpty && (
+                                    attackerWeapon.CurrentUsageItem.WeaponClass == WeaponClass.TwoHandedAxe ||
+                                    attackerWeapon.CurrentUsageItem.WeaponClass == WeaponClass.TwoHandedMace ||
+                                    attackerWeapon.CurrentUsageItem.WeaponClass == WeaponClass.TwoHandedPolearm ||
+                                    attackerWeapon.CurrentUsageItem.WeaponClass == WeaponClass.TwoHandedSword))
+                                {
+                                    makePostureBlow(ref mission, ref blow, ataAgent, defAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockDown);
+                                }
+                                else
+                                {
+                                    makePostureBlow(ref mission, ref blow, ataAgent, defAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                }
+                            }
+                            ResetPostureForAgent(ref defenderPosture, PostureDamage.POSTURE_RESET_MODIFIER, defAgent);
+                            break;
+                        }
+                    case MeleeHitType.ShieldIncorrectBlock:
+                        {
+                            damageShield(defAgent, 150);
+                            if (defAgent.IsPlayerControlled)
+                            {
+                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_014}Posture break: Posture depleted, incorrect side block").ToString(), Color.FromUint(4282569842u)));
+                            }
+                            if (defAgent.HasMount)
+                            {
+                                makePostureBlow(ref mission, ref blow, ataAgent, defAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
+                            }
+                            else
+                            {
+                                if (postureDmg >= defenderPosture.maxPosture * 0.33f)
+                                {
+                                    float healthDamage = calculateHealthDamage(attackerWeapon, ataAgent, defAgent, postureDmg, ref blow);
+                                    makePostureCrashThroughBlow(ref mission, ref blow, ataAgent, defAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                    handleAgentDropShield(defAgent);
+                                }
+                                else
+                                {
+                                    makePostureBlow(ref mission, ref blow, ataAgent, defAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                }
+                            }
+                            ResetPostureForAgent(ref defenderPosture, PostureDamage.SHIELD_POSTURE_RESET_MODIFIER, defAgent);
+                            break;
+                        }
+                    case MeleeHitType.ShieldBlock:
+                        {
+                            damageShield(defAgent, 125);
+                            if (defAgent.IsPlayerControlled)
+                            {
+                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_015}Posture break: Posture depleted, correct side block").ToString(), Color.FromUint(4282569842u)));
+                            }
+                            if (defAgent.HasMount)
+                            {
+                                makePostureBlow(ref mission, ref blow, ataAgent, defAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.CanDismount);
+                            }
+                            else
+                            {
+                                if (postureDmg >= defenderPosture.maxPosture * 0.33f)
+                                {
+                                    makePostureBlow(ref mission, ref blow, ataAgent, defAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                    handleAgentDropShield(defAgent);
+                                }
+                                else
+                                {
+                                    makePostureBlow(ref mission, ref blow, ataAgent, defAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                }
+                            }
+                            ResetPostureForAgent(ref defenderPosture, PostureDamage.SHIELD_POSTURE_RESET_MODIFIER, defAgent);
+                            break;
+                        }
+                    case MeleeHitType.ShieldParry:
+                        {
+                            damageShield(defAgent, 100);
+                            EquipmentIndex wieldedItemIndex = defAgent.GetWieldedItemIndex(0);
+                            if (wieldedItemIndex != EquipmentIndex.None)
+                            {
+                                if (defAgent.IsPlayerControlled)
+                                {
+                                    InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_016}Posture break: Posture depleted, perfect parry, correct side block").ToString(), Color.FromUint(4282569842u)));
+                                }
+                                if (defAgent.HasMount)
+                                {
+                                    makePostureBlow(ref mission, ref blow, ataAgent, defAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                }
+                                else
+                                {
+                                    makePostureBlow(ref mission, ref blow, ataAgent, defAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                    if (postureDmg >= defenderPosture.maxPosture * 0.33f)
+                                    {
+                                        handleAgentDropShield(defAgent);
+                                    }
+                                }
+                            }
+                            ResetPostureForAgent(ref defenderPosture, PostureDamage.SHIELD_POSTURE_RESET_MODIFIER, defAgent);
+                            break;
+                        }
+                    case MeleeHitType.ChamberBlock:
+                        {
+                            if (defAgent.IsPlayerControlled)
+                            {
+                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_018}Posture break: Posture depleted, chamber block").ToString(), Color.FromUint(4282569842u)));
+                            }
+                            makePostureBlow(ref mission, ref blow, ataAgent, defAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.NonTipThrust);
+                            ResetPostureForAgent(ref defenderPosture, PostureDamage.POSTURE_RESET_MODIFIER, defAgent);
+                            break;
+                        }
+                }
+            }
 
-                                thrustDamageFactor = (float)Math.Sqrt(Utilities.getThrustDamageFactor(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex), targetWeapon.ItemModifier));
+            public static void ResetPostureForAgent(ref Posture posture, float postureResetModifier, Agent agent)
+            {
+                if (posture != null)
+                {
+                    float currentTime = Mission.Current.CurrentTime;
+                    int restCount = posture.lastPostureLossTime > 0 ? MathF.Floor((currentTime - posture.lastPostureLossTime) / 20f) : 0;
+                    posture.maxPostureLossCount = posture.maxPostureLossCount - restCount;
+                    if (posture.maxPostureLossCount < 0)
+                    {
+                        posture.maxPostureLossCount = 0;
+                    }
+                    if (posture.maxPostureLossCount < 10)
+                    {
+                        posture.maxPostureLossCount++;
+                    }
+                    posture.posture = posture.maxPosture * (postureResetModifier * (1f - (0.05f * posture.maxPostureLossCount)));
+                    posture.lastPostureLossTime = Mission.Current.CurrentTime;
+                }
+            }
 
-                                int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
-                                targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, skillBasedDamage, armorSumPosture, 1f, out float penetratedDamage, out float bluntForce, thrustDamageFactor, null, false)), 0, 2000);
-                                realDamage = MathF.Floor(realDamage * 1f);
-                                return realDamage;
+            public static void showCrushThroughMessage(float healthDamage, Agent defAgent, Agent ataAgent)
+            {
+                MBTextManager.SetTextVariable("DMG", MathF.Floor(healthDamage));
+                if (defAgent.IsPlayerControlled)
+                {
+                    InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_009}Posture break: Posture depleted, {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
+                }
+                if (ataAgent.IsPlayerControlled)
+                {
+                    InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_010}Enemy Posture break: Posture depleted, {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
+                }
+            }
+
+            private static void addPostureDamageVisual(Agent attackerAgent, Agent victimAgent)
+            {
+                if (RBMConfig.RBMConfig.postureEnabled)
+                {
+                    if (victimAgent != null && attackerAgent != null && (victimAgent.IsPlayerControlled || attackerAgent.IsPlayerControlled))
+                    {
+                        Agent enemyAgent = null;
+                        if (victimAgent.IsPlayerControlled)
+                        {
+                            enemyAgent = attackerAgent;
+                            Posture posture = null;
+                            if (AgentPostures.values.TryGetValue(victimAgent, out posture))
+                            {
+                                if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
+                                {
+                                    AgentPostures.postureVisual._dataSource.PlayerPosture = (int)posture.posture;
+                                    AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)posture.maxPosture;
+                                    AgentPostures.postureVisual._dataSource.PlayerPostureText = ((int)posture.posture).ToString();
+                                    AgentPostures.postureVisual._dataSource.PlayerPostureMaxText = ((int)posture.maxPosture).ToString();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            enemyAgent = victimAgent;
+                            Posture posture = null;
+                            if (AgentPostures.values.TryGetValue(attackerAgent, out posture))
+                            {
+                                if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
+                                {
+                                    AgentPostures.postureVisual._dataSource.PlayerPosture = (int)posture.posture;
+                                    AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)posture.maxPosture;
+                                    AgentPostures.postureVisual._dataSource.PlayerPostureText = ((int)posture.posture).ToString();
+                                    AgentPostures.postureVisual._dataSource.PlayerPostureMaxText = ((int)posture.maxPosture).ToString();
+                                }
+                            }
+                        }
+                        if (AgentPostures.postureVisual != null)
+                        {
+                            Posture posture = null;
+                            if (AgentPostures.values.TryGetValue(enemyAgent, out posture))
+                            {
+                                AgentPostures.postureVisual._dataSource.ShowEnemyStatus = true;
+                                AgentPostures.postureVisual.affectedAgent = enemyAgent;
+                                if (AgentPostures.postureVisual._dataSource.ShowEnemyStatus && AgentPostures.postureVisual.affectedAgent == enemyAgent)
+                                {
+                                    AgentPostures.postureVisual.timer = AgentPostures.postureVisual.DisplayTime;
+                                    AgentPostures.postureVisual._dataSource.EnemyPosture = (int)posture.posture;
+                                    AgentPostures.postureVisual._dataSource.EnemyPostureMax = (int)posture.maxPosture;
+                                    AgentPostures.postureVisual._dataSource.EnemyHealth = (int)enemyAgent.Health;
+                                    AgentPostures.postureVisual._dataSource.EnemyHealthMax = (int)enemyAgent.HealthLimit;
+                                    if (enemyAgent.IsMount)
+                                    {
+                                        AgentPostures.postureVisual._dataSource.EnemyName = enemyAgent.RiderAgent?.Name + " (" + new TextObject("{=mountnoun}Mount").ToString() + ")";
+                                    }
+                                    else
+                                    {
+                                        AgentPostures.postureVisual._dataSource.EnemyName = enemyAgent.Name;
+                                    }
+                                }
                             }
                         }
                     }
                 }
-
-                int weaponDamage = 0;
-                if (b.StrikeType == StrikeType.Swing)
-                {
-                    weaponDamage = targetWeapon.GetModifiedSwingDamageForCurrentUsage();
-                }
-                else
-                {
-                    weaponDamage = targetWeapon.GetModifiedThrustDamageForCurrentUsage();
-                }
-
-                return MBMath.ClampInt(MathF.Ceiling(MissionGameModels.Current.StrikeMagnitudeModel.ComputeRawDamage(b.DamageType, weaponDamage, armorSumPosture, 1f)), 0, 2000);
             }
 
-            private static void makePostureRiposteBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
+            private static void damageShield(Agent victim, int ammount)
             {
-                Blow newBLow = blow;
-                newBLow.BaseMagnitude = collisionData.BaseMagnitude;
-                newBLow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
-                newBLow.InflictedDamage = 1;
-                newBLow.SelfInflictedDamage = collisionData.SelfInflictedDamage;
-                newBLow.AbsorbedByArmor = collisionData.AbsorbedByArmor;
-
-                sbyte weaponAttachBoneIndex = (sbyte)(attackerWeapon.IsEmpty ? (-1) : attackerAgent.Monster.GetBoneToAttachForItemFlags(attackerWeapon.Item.ItemFlags));
-                newBLow.WeaponRecord.FillAsMeleeBlow(attackerWeapon.Item, attackerWeapon.CurrentUsageItem, collisionData.AffectorWeaponSlotOrMissileIndex, weaponAttachBoneIndex);
-                newBLow.StrikeType = (StrikeType)collisionData.StrikeType;
-                newBLow.DamageType = ((!attackerWeapon.IsEmpty && true && !collisionData.IsAlternativeAttack) ? ((DamageTypes)collisionData.DamageType) : DamageTypes.Blunt);
-                newBLow.NoIgnore = collisionData.IsAlternativeAttack;
-                newBLow.AttackerStunPeriod = collisionData.AttackerStunPeriod;
-                newBLow.DefenderStunPeriod = collisionData.DefenderStunPeriod;
-                newBLow.BlowFlag = BlowFlags.None;
-                newBLow.GlobalPosition = collisionData.CollisionGlobalPosition;
-                newBLow.BoneIndex = collisionData.CollisionBoneIndex;
-                newBLow.Direction = blowDirection;
-                newBLow.SwingDirection = swingDirection;
-                //blow.InflictedDamage = 1;
-                newBLow.VictimBodyPart = collisionData.VictimHitBodyPart;
-                newBLow.BlowFlag |= addedBlowFlag;
-                attackerAgent.RegisterBlow(newBLow, collisionData);
-                foreach (MissionBehavior missionBehaviour in mission.MissionBehaviors)
+                for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                 {
-                    missionBehaviour.OnRegisterBlow(victimAgent, attackerAgent, null, newBLow, ref collisionData, in attackerWeapon);
+                    if (victim.Equipment != null && !victim.Equipment[equipmentIndex].IsEmpty)
+                    {
+                        if (victim.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield && !victim.WieldedOffhandWeapon.IsEmpty && victim.WieldedOffhandWeapon.Item.Id == victim.Equipment[equipmentIndex].Item.Id)
+                        {
+                            int num = MathF.Max(0, victim.Equipment[equipmentIndex].HitPoints - ammount);
+                            victim.ChangeWeaponHitPoints(equipmentIndex, (short)num);
+                            break;
+                        }
+                    }
                 }
             }
 
-            private static void makePostureBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
+            private static void makePostureBlow(ref Mission mission, ref Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
             {
                 Blow newBLow = blow;
                 newBLow.BaseMagnitude = collisionData.BaseMagnitude;
@@ -1064,7 +981,7 @@ namespace RBMAI
                 }
             }
 
-            private static void makePostureCrashThroughBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, int inflictedHpDmg, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
+            private static void makePostureCrashThroughBlow(ref Mission mission, ref Blow blow, Agent attackerAgent, Agent victimAgent, int inflictedHpDmg, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
             {
                 Blow newBLow = blow;
                 newBLow.BaseMagnitude = collisionData.BaseMagnitude;
@@ -1096,33 +1013,234 @@ namespace RBMAI
                 }
             }
 
-            public static float calculateRangedPostureLoss(float fixedPS, float dynamicPS, Agent shooterAgent, WeaponClass wc)
+            private static void makePostureRiposteBlow(ref Mission mission, ref Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)
             {
-                SkillObject attackerWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(wc);
+                Blow newBLow = blow;
+                newBLow.BaseMagnitude = collisionData.BaseMagnitude;
+                newBLow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
+                newBLow.InflictedDamage = 1;
+                newBLow.SelfInflictedDamage = collisionData.SelfInflictedDamage;
+                newBLow.AbsorbedByArmor = collisionData.AbsorbedByArmor;
 
-                float attackerEffectiveWeaponSkill = 0;
-                float attackerEffectiveStrengthSkill = 0;
-
-                float fixedPostureLoss = fixedPS;
-                float dynamicPostureLoss = dynamicPS;
-
-                if (attackerWeaponSkill != null)
+                sbyte weaponAttachBoneIndex = (sbyte)(attackerWeapon.IsEmpty ? (-1) : attackerAgent.Monster.GetBoneToAttachForItemFlags(attackerWeapon.Item.ItemFlags));
+                newBLow.WeaponRecord.FillAsMeleeBlow(attackerWeapon.Item, attackerWeapon.CurrentUsageItem, collisionData.AffectorWeaponSlotOrMissileIndex, weaponAttachBoneIndex);
+                newBLow.StrikeType = (StrikeType)collisionData.StrikeType;
+                newBLow.DamageType = ((!attackerWeapon.IsEmpty && true && !collisionData.IsAlternativeAttack) ? ((DamageTypes)collisionData.DamageType) : DamageTypes.Blunt);
+                newBLow.NoIgnore = collisionData.IsAlternativeAttack;
+                newBLow.AttackerStunPeriod = collisionData.AttackerStunPeriod;
+                newBLow.DefenderStunPeriod = collisionData.DefenderStunPeriod;
+                newBLow.BlowFlag = BlowFlags.None;
+                newBLow.GlobalPosition = collisionData.CollisionGlobalPosition;
+                newBLow.BoneIndex = collisionData.CollisionBoneIndex;
+                newBLow.Direction = blowDirection;
+                newBLow.SwingDirection = swingDirection;
+                //blow.InflictedDamage = 1;
+                newBLow.VictimBodyPart = collisionData.VictimHitBodyPart;
+                newBLow.BlowFlag |= addedBlowFlag;
+                attackerAgent.RegisterBlow(newBLow, collisionData);
+                foreach (MissionBehavior missionBehaviour in mission.MissionBehaviors)
                 {
-                    attackerEffectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(shooterAgent, attackerWeaponSkill);
+                    missionBehaviour.OnRegisterBlow(victimAgent, attackerAgent, null, newBLow, ref collisionData, in attackerWeapon);
                 }
-                if (shooterAgent.HasMount)
-                {
-                    attackerEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(shooterAgent, DefaultSkills.Riding);
-                }
-                else
-                {
-                    attackerEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(shooterAgent, DefaultSkills.Athletics);
-                }
+            }
 
-                dynamicPostureLoss -= MBMath.Lerp(0f, 1f, 1f - (attackerEffectiveWeaponSkill / 200f)) * (dynamicPS * 0.5f);
-                dynamicPostureLoss -= MBMath.Lerp(0f, 1f, 1f - (attackerEffectiveStrengthSkill / 200f)) * (dynamicPS * 0.5f);
+            private static void Postfix(ref Mission __instance, ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
+            {
+                if ((new StackTrace()).GetFrame(3).GetMethod().Name.Contains("MeleeHit") && victimAgent != null && victimAgent.IsHuman)
+                {
+                    if (RBMConfig.RBMConfig.postureEnabled && attackerAgent != null && victimAgent != null && !attackerAgent.IsFriendOf(victimAgent) && attackerWeapon.CurrentUsageItem != null &&
+                        attackerWeapon.CurrentUsageItem != null)
+                    {
+                        Posture defenderPosture = null;
+                        Posture attackerPosture = null;
+                        AgentPostures.values.TryGetValue(victimAgent, out defenderPosture);
+                        AgentPostures.values.TryGetValue(attackerAgent, out attackerPosture);
 
-                return fixedPostureLoss + dynamicPostureLoss;
+                        float comHitModifier = Utilities.GetComHitModifier(in collisionData, in attackerWeapon);
+
+                        MeleeHitType hitType = DecideMeleeHitType(ref collisionData);
+
+                        switch (hitType)
+                        {
+                            case MeleeHitType.None:
+                                {
+                                    break;
+                                }
+                            case MeleeHitType.WeaponBlock:
+                                {
+                                    if (defenderPosture != null)
+                                    {
+                                        float postureDmg = PostureDamage.getDefenderPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, hitType);
+                                        defenderPosture.posture -= postureDmg;
+                                        if (defenderPosture.posture <= 0f)
+                                        {
+                                            HandleDefenderPostureBreak(hitType, defenderPosture, victimAgent, attackerAgent, postureDmg, attackerWeapon, ref __result, ref __instance, ref collisionData, ref blowDirection, ref swingDirection, ref cancelDamage, crushThroughState);
+                                        }
+                                    }
+                                    if (attackerPosture != null)
+                                    {
+                                        float postureDmg = PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, hitType);
+                                        attackerPosture.posture -= postureDmg;
+                                        if (attackerPosture.posture <= 0f)
+                                        {
+                                            HandleAttackerPostureBreak(hitType, attackerPosture, victimAgent, attackerAgent, postureDmg, attackerWeapon, ref __result, ref __instance, ref collisionData, ref blowDirection, ref swingDirection, ref cancelDamage, crushThroughState);
+                                        }
+                                    }
+                                    addPostureDamageVisual(attackerAgent, victimAgent);
+                                    break;
+                                }
+                            case MeleeHitType.WeaponParry:
+                                {
+                                    if (defenderPosture != null)
+                                    {
+                                        float postureDmg = PostureDamage.getDefenderPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, hitType);
+                                        defenderPosture.posture -= postureDmg;
+                                        if (defenderPosture.posture <= 0f)
+                                        {
+                                            HandleDefenderPostureBreak(hitType, defenderPosture, victimAgent, attackerAgent, postureDmg, attackerWeapon, ref __result, ref __instance, ref collisionData, ref blowDirection, ref swingDirection, ref cancelDamage, crushThroughState);
+                                        }
+                                    }
+                                    if (attackerPosture != null)
+                                    {
+                                        float postureDmg = PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, hitType);
+                                        attackerPosture.posture -= postureDmg;
+                                        if (attackerPosture.posture <= 0f)
+                                        {
+                                            HandleAttackerPostureBreak(hitType, attackerPosture, victimAgent, attackerAgent, postureDmg, attackerWeapon, ref __result, ref __instance, ref collisionData, ref blowDirection, ref swingDirection, ref cancelDamage, crushThroughState);
+                                        }
+                                    }
+                                    addPostureDamageVisual(attackerAgent, victimAgent);
+                                    break;
+                                }
+                            case MeleeHitType.AgentHit:
+                                {
+                                    if (defenderPosture != null)
+                                    {
+                                        float postureDmg = collisionData.InflictedDamage;
+                                        defenderPosture.posture -= postureDmg;
+                                        if (defenderPosture.posture <= 0f)
+                                        {
+                                            HandleDefenderPostureBreak(hitType, defenderPosture, victimAgent, attackerAgent, postureDmg, attackerWeapon, ref __result, ref __instance, ref collisionData, ref blowDirection, ref swingDirection, ref cancelDamage, crushThroughState);
+                                        }
+                                    }
+                                    if (attackerPosture != null)
+                                    {
+                                        float postureDmg = PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, hitType);
+                                        attackerPosture.posture -= postureDmg;
+                                        if (attackerPosture.posture <= 0f)
+                                        {
+                                            HandleAttackerPostureBreak(hitType, attackerPosture, victimAgent, attackerAgent, postureDmg, attackerWeapon, ref __result, ref __instance, ref collisionData, ref blowDirection, ref swingDirection, ref cancelDamage, crushThroughState);
+                                        }
+                                    }
+                                    addPostureDamageVisual(attackerAgent, victimAgent);
+                                    break;
+                                }
+                            case MeleeHitType.ShieldIncorrectBlock:
+                                {
+                                    if (defenderPosture != null)
+                                    {
+                                        float postureDmg = PostureDamage.getDefenderPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, hitType);
+                                        defenderPosture.posture -= postureDmg;
+                                        if (defenderPosture.posture <= 0f)
+                                        {
+                                            HandleDefenderPostureBreak(hitType, defenderPosture, victimAgent, attackerAgent, postureDmg, attackerWeapon, ref __result, ref __instance, ref collisionData, ref blowDirection, ref swingDirection, ref cancelDamage, crushThroughState);
+                                        }
+                                    }
+                                    if (attackerPosture != null)
+                                    {
+                                        float postureDmg = PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, hitType);
+                                        attackerPosture.posture -= postureDmg;
+                                        if (attackerPosture.posture <= 0f)
+                                        {
+                                            HandleAttackerPostureBreak(hitType, attackerPosture, victimAgent, attackerAgent, postureDmg, attackerWeapon, ref __result, ref __instance, ref collisionData, ref blowDirection, ref swingDirection, ref cancelDamage, crushThroughState);
+                                        }
+                                    }
+                                    addPostureDamageVisual(attackerAgent, victimAgent);
+                                    break;
+                                }
+                            case MeleeHitType.ShieldBlock:
+                                {
+                                    if (defenderPosture != null)
+                                    {
+                                        float postureDmg = PostureDamage.getDefenderPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, hitType);
+                                        defenderPosture.posture -= postureDmg;
+                                        if (defenderPosture.posture <= 0f)
+                                        {
+                                            HandleDefenderPostureBreak(hitType, defenderPosture, victimAgent, attackerAgent, postureDmg, attackerWeapon, ref __result, ref __instance, ref collisionData, ref blowDirection, ref swingDirection, ref cancelDamage, crushThroughState);
+                                        }
+                                    }
+                                    if (attackerPosture != null)
+                                    {
+                                        float postureDmg = PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, hitType);
+                                        attackerPosture.posture -= postureDmg;
+                                        if (attackerPosture.posture <= 0f)
+                                        {
+                                            HandleAttackerPostureBreak(hitType, attackerPosture, victimAgent, attackerAgent, postureDmg, attackerWeapon, ref __result, ref __instance, ref collisionData, ref blowDirection, ref swingDirection, ref cancelDamage, crushThroughState);
+                                        }
+                                    }
+                                    addPostureDamageVisual(attackerAgent, victimAgent);
+                                    break;
+                                }
+                            case MeleeHitType.ShieldParry:
+                                {
+                                    if (defenderPosture != null)
+                                    {
+                                        float postureDmg = PostureDamage.getDefenderPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, hitType);
+                                        defenderPosture.posture -= postureDmg;
+                                        if (defenderPosture.posture <= 0f)
+                                        {
+                                            HandleDefenderPostureBreak(hitType, defenderPosture, victimAgent, attackerAgent, postureDmg, attackerWeapon, ref __result, ref __instance, ref collisionData, ref blowDirection, ref swingDirection, ref cancelDamage, crushThroughState);
+                                        }
+                                    }
+                                    if (attackerPosture != null)
+                                    {
+                                        float postureDmg = PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, hitType);
+                                        attackerPosture.posture -= postureDmg;
+                                        if (attackerPosture.posture <= 0f)
+                                        {
+                                            HandleAttackerPostureBreak(hitType, attackerPosture, victimAgent, attackerAgent, postureDmg, attackerWeapon, ref __result, ref __instance, ref collisionData, ref blowDirection, ref swingDirection, ref cancelDamage, crushThroughState);
+                                        }
+                                    }
+                                    addPostureDamageVisual(attackerAgent, victimAgent);
+                                    break;
+                                }
+                            case MeleeHitType.ChamberBlock:
+                                {
+                                    if (defenderPosture != null)
+                                    {
+                                        float postureDmg = PostureDamage.getDefenderPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, hitType);
+                                        defenderPosture.posture -= postureDmg;
+                                        if (defenderPosture.posture <= 0f)
+                                        {
+                                            HandleDefenderPostureBreak(hitType, defenderPosture, victimAgent, attackerAgent, postureDmg, attackerWeapon, ref __result, ref __instance, ref collisionData, ref blowDirection, ref swingDirection, ref cancelDamage, crushThroughState);
+                                        }
+                                    }
+                                    if (attackerPosture != null)
+                                    {
+                                        float postureDmg = PostureDamage.getAttackerPostureDamage(victimAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, hitType);
+                                        attackerPosture.posture -= postureDmg;
+                                        if (attackerPosture.posture <= 0f)
+                                        {
+                                            HandleAttackerPostureBreak(hitType, attackerPosture, victimAgent, attackerAgent, postureDmg, attackerWeapon, ref __result, ref __instance, ref collisionData, ref blowDirection, ref swingDirection, ref cancelDamage, crushThroughState);
+                                        }
+                                        else
+                                        {
+                                            float healthDamage = calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureDmg, ref __result);
+                                            if (attackerAgent.IsPlayerControlled)
+                                            {
+                                                MBTextManager.SetTextVariable("DMG", MathF.Floor(healthDamage));
+                                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_020}Chamber block {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
+                                            }
+                                            makePostureCrashThroughBlow(ref __instance, ref __result, attackerAgent, victimAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
+                                            ResetPostureForAgent(ref attackerPosture, PostureDamage.POSTURE_RESET_MODIFIER, attackerAgent);
+                                        }
+                                    }
+                                    addPostureDamageVisual(attackerAgent, victimAgent);
+                                    break;
+                                }
+                        }
+                    }
+                }
             }
 
             [HarmonyPatch(typeof(Mission))]
@@ -1178,22 +1296,6 @@ namespace RBMAI
             }
         }
 
-        [HarmonyPatch(typeof(Agent))]
-        [HarmonyPatch("OnShieldDamaged")]
-        private class OnShieldDamagedPatch
-        {
-            private static bool Prefix(ref Agent __instance, ref EquipmentIndex slotIndex, ref int inflictedDamage)
-            {
-                int num = MathF.Max(0, __instance.Equipment[slotIndex].HitPoints - inflictedDamage);
-                __instance.ChangeWeaponHitPoints(slotIndex, (short)num);
-                if (num == 0)
-                {
-                    __instance.RemoveEquippedWeapon(slotIndex);
-                }
-                return false;
-            }
-        }
-
         [HarmonyPatch(typeof(TournamentRound))]
         [HarmonyPatch("EndMatch")]
         private class EndMatchPatch
@@ -1231,307 +1333,281 @@ namespace RBMAI
             }
         }
 
-        public override void OnMissionTick(float dt)
+        [HarmonyPatch(typeof(Agent))]
+        [HarmonyPatch("EquipItemsFromSpawnEquipment")]
+        private class EquipItemsFromSpawnEquipmentPatch
         {
-            base.OnMissionTick(dt);
-            if (RBMConfig.RBMConfig.postureEnabled && Mission.Current.AllowAiTicking)
+            private static void Prefix(ref Agent __instance)
             {
-                if (currentDt < timeToCalc)
+                if (__instance.IsHuman)
                 {
-                    currentDt += dt;
+                    AgentPostures.values[__instance] = new Posture();
                 }
-                else
+            }
+        }
+
+        [HarmonyPatch(typeof(Agent))]
+        [HarmonyPatch("OnShieldDamaged")]
+        private class OnShieldDamagedPatch
+        {
+            private static bool Prefix(ref Agent __instance, ref EquipmentIndex slotIndex, ref int inflictedDamage)
+            {
+                int num = MathF.Max(0, __instance.Equipment[slotIndex].HitPoints - inflictedDamage);
+                __instance.ChangeWeaponHitPoints(slotIndex, (short)num);
+                if (num == 0)
                 {
-                    MBArrayList<Agent> inactiveAgents = new MBArrayList<Agent>();
-                    foreach (KeyValuePair<Agent, Posture> entry in AgentPostures.values)
-                    {
-                        if (entry.Key != null && entry.Key.Mission != null && !entry.Key.IsActive())
-                        {
-                            inactiveAgents.Add(entry.Key);
-                            continue;
-                        }
-                        if (entry.Key.IsPlayerControlled)
-                        {
-                            if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
-                            {
-                                AgentPostures.postureVisual._dataSource.PlayerPosture = (int)entry.Value.posture;
-                                AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)entry.Value.maxPosture;
-                                AgentPostures.postureVisual._dataSource.PlayerPostureText = ((int)entry.Value.posture).ToString();
-                                AgentPostures.postureVisual._dataSource.PlayerPostureMaxText = ((int)entry.Value.maxPosture).ToString();
-                            }
-                        }
-                        if (entry.Value.posture < entry.Value.maxPosture)
-                        {
-                            if (RBMConfig.RBMConfig.postureGUIEnabled)
-                            {
-                                if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowEnemyStatus && AgentPostures.postureVisual.affectedAgent == entry.Key)
-                                {
-                                    AgentPostures.postureVisual._dataSource.EnemyPosture = (int)entry.Value.posture;
-                                    AgentPostures.postureVisual._dataSource.EnemyPostureMax = (int)entry.Value.maxPosture;
-                                }
-                            }
-                            entry.Value.posture += entry.Value.regenPerTick * 30f;
+                    __instance.RemoveEquippedWeapon(slotIndex);
+                }
+                return false;
+            }
+        }
 
-                            entry.Key.UpdateAgentProperties();
-                        }
-                    }
-                    foreach (Agent agent in inactiveAgents)
+        [HarmonyPatch(typeof(Agent))]
+        [HarmonyPatch("OnWieldedItemIndexChange")]
+        private class OnWieldedItemIndexChangePatch
+        {
+            private static void Postfix(ref Agent __instance, bool isOffHand, bool isWieldedInstantly, bool isWieldedOnSpawn)
+            {
+                float playerPostureModifier = RBMConfig.RBMConfig.playerPostureMultiplier;
+                if (RBMConfig.RBMConfig.postureEnabled)
+                {
+                    Posture posture = null;
+                    AgentPostures.values.TryGetValue(__instance, out posture);
+                    if (posture == null)
                     {
-                        AgentPostures.values.Remove(agent);
+                        AgentPostures.values[__instance] = new Posture();
                     }
-                    inactiveAgents.Clear();
+                    AgentPostures.values.TryGetValue(__instance, out posture);
+                    if (posture != null)
+                    {
+                        float oldPosture = posture.posture;
+                        float oldMaxPosture = posture.maxPosture;
+                        float oldPosturePercentage = oldPosture / oldMaxPosture;
 
-                    foreach (KeyValuePair<Agent, FormationClass> entry in agentsToChangeFormation)
-                    {
-                        if (entry.Key != null && entry.Key.Mission != null && entry.Key.IsActive() && entry.Key.Team != null)
+                        EquipmentIndex slotIndex = __instance.GetWieldedItemIndex(0);
+                        if (slotIndex != EquipmentIndex.None)
                         {
-                            entry.Key.Formation = entry.Key.Team.GetFormation(entry.Value);
-                            entry.Key.DisableScriptedMovement();
-                        }
-                    }
-                    agentsToChangeFormation.Clear();
+                            int usageIndex = __instance.Equipment[slotIndex].CurrentUsageIndex;
 
-                    //shield drop
-                    MBArrayList<Agent> agentsAbleToDropShield = new MBArrayList<Agent> { };
-                    for (int i = agentsToDropShield.Count - 1; i >= 0; i--)
-                    {
-                        if (agentsToDropShield[i] != null && agentsToDropShield[i].Mission != null && agentsToDropShield[i].IsActive())
-                        {
-                            ActionCodeType currentActionType = agentsToDropShield[i].GetCurrentActionType(1);
-                            if (
-                                currentActionType == ActionCodeType.ReleaseMelee ||
-                                currentActionType == ActionCodeType.ReleaseRanged ||
-                                currentActionType == ActionCodeType.ReleaseThrowing ||
-                                currentActionType == ActionCodeType.WeaponBash)
+                            WeaponComponentData wcd = __instance.Equipment[slotIndex].GetWeaponComponentDataForUsage(usageIndex);
+                            SkillObject weaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(wcd.WeaponClass);
+                            int effectiveWeaponSkill;
+                            if (weaponSkill != null)
                             {
-                                continue;
+                                effectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, weaponSkill);
                             }
                             else
                             {
-                                agentsAbleToDropShield.Add(agentsToDropShield[i]);
+                                effectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, DefaultSkills.Athletics);
                             }
-                        }
-                        else
-                        {
-                            agentsAbleToDropShield.Add(agentsToDropShield[i]);
-                        }
-                    }
-                    foreach (Agent agent in agentsAbleToDropShield)
-                    {
-                        if (agent != null && agent.Mission != null && agent.IsActive())
-                        {
-                            EquipmentIndex ei = agent.GetWieldedItemIndex(Agent.HandIndex.OffHand);
-                            if (ei != EquipmentIndex.None)
-                            {
-                                agent.DropItem(ei);
-                                agent.UpdateAgentProperties();
-                            }
-                        }
-                        agentsToDropShield.Remove(agent);
-                    }
-                    agentsAbleToDropShield.Clear();
 
-                    //weapon drop
-                    MBArrayList<Agent> agentsAbleToDropWeapon = new MBArrayList<Agent> { };
-                    for (int i = agentsToDropWeapon.Count - 1; i >= 0; i--)
-                    {
-                        if (agentsToDropWeapon[i] != null && agentsToDropWeapon[i].Mission != null && agentsToDropWeapon[i].IsActive())
-                        {
-                            ActionCodeType currentActionType = agentsToDropWeapon[i].GetCurrentActionType(1);
-                            if (
-                                currentActionType == ActionCodeType.ReleaseMelee ||
-                                currentActionType == ActionCodeType.ReleaseRanged ||
-                                currentActionType == ActionCodeType.ReleaseThrowing ||
-                                currentActionType == ActionCodeType.WeaponBash)
+                            float athleticBase = 20f;
+                            float weaponSkillBase = 80f;
+                            float strengthSkillModifier = 500f;
+                            float weaponSkillModifier = 500f;
+                            float athleticRegenBase = 0.008f;
+                            float weaponSkillRegenBase = 0.032f;
+                            float baseModifier = 1f;
+                            int effectiveStrengthSkill;
+
+                            if (__instance.HasMount)
                             {
-                                continue;
+                                effectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, DefaultSkills.Riding);
                             }
                             else
                             {
-                                agentsAbleToDropWeapon.Add(agentsToDropWeapon[i]);
+                                effectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, DefaultSkills.Athletics);
                             }
-                        }
-                        else
-                        {
-                            agentsAbleToDropWeapon.Add(agentsToDropWeapon[i]);
-                        }
-                    }
-                    foreach (Agent agent in agentsAbleToDropWeapon)
-                    {
-                        if (agent != null && agent.Mission != null && agent.IsActive())
-                        {
-                            EquipmentIndex ei = agent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
-                            if (ei != EquipmentIndex.None)
-                            {
-                                agent.DropItem(ei);
-                                agent.UpdateAgentProperties();
-                            }
-                        }
-                        agentsToDropWeapon.Remove(agent);
-                    }
-                    agentsAbleToDropWeapon.Clear();
 
-                    currentDt = 0f;
-                }
-            }
-        }
+                            float maxPosture = (athleticBase * (baseModifier + (effectiveStrengthSkill / strengthSkillModifier))) +
+                                                 (weaponSkillBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
 
-        [HarmonyPatch(typeof(Mission))]
-        [HarmonyPatch("OnAgentDismount")]
-        public class OnAgentDismountPatch
-        {
-            private static void Postfix(Agent agent, Mission __instance)
-            {
-                if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
-                {
-                    bool isInfFormationActive = agent.Team.GetFormation(FormationClass.Infantry) != null && agent.Team.GetFormation(FormationClass.Infantry).CountOfUnits > 0;
-                    bool isArcFormationActive = agent.Team.GetFormation(FormationClass.Ranged) != null && agent.Team.GetFormation(FormationClass.Ranged).CountOfUnits > 0;
-                    if (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) || agent.Equipment.HasRangedWeapon(WeaponClass.Bolt))
-                    {
-                        float distanceToInf = -1f;
-                        float distanceToArc = -1f;
-                        if (agent.Formation != null && isInfFormationActive)
-                        {
-                            distanceToInf = agent.Team.GetFormation(FormationClass.Infantry).QuerySystem.MedianPosition.AsVec2.Distance(agent.Formation.QuerySystem.MedianPosition.AsVec2);
-                        }
-                        if (agent.Formation != null && isArcFormationActive)
-                        {
-                            distanceToArc = agent.Team.GetFormation(FormationClass.Ranged).QuerySystem.MedianPosition.AsVec2.Distance(agent.Formation.QuerySystem.MedianPosition.AsVec2);
-                        }
-                        if (distanceToArc > 0f && distanceToArc < distanceToInf)
-                        {
-                            if (agent != null && agent.IsActive())
+                            //heavier armor = higher max posture
+                            maxPosture *= (1f + getEquipWeightModifier(__instance));
+                            //heavier weapons = less max posture
+                            maxPosture *= (1f - getWeaponWeightModifier(__instance));
+
+                            posture.maxPosture = maxPosture;
+
+                            float regenPerTick = (athleticRegenBase * (baseModifier + (effectiveStrengthSkill / strengthSkillModifier))) +
+                                                 (weaponSkillRegenBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
+
+                            //heavier equipment = slower posture regen
+                            regenPerTick *= (1f - getEquipWeightModifier(__instance));
+                            //heavier weapons = slower posture regen
+                            regenPerTick *= (1f - getWeaponWeightModifier(__instance));
+
+                            posture.regenPerTick = regenPerTick;
+
+                            if (__instance.IsPlayerControlled)
                             {
-                                try
-                                {
-                                    agentsToChangeFormation[agent] = FormationClass.Ranged;
-                                    return;
-                                }
-                                catch (Exception ex)
-                                {
-                                    return;
-                                }
+                                posture.maxPosture *= playerPostureModifier;
+                                posture.regenPerTick *= playerPostureModifier;
                             }
-                        }
-                        else if (distanceToInf > 0f && distanceToInf < distanceToArc)
-                        {
-                            if (agent != null && agent.IsActive())
-                            {
-                                try
-                                {
-                                    agentsToChangeFormation[agent] = FormationClass.Infantry;
-                                    return;
-                                }
-                                catch (Exception ex)
-                                {
-                                    return;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (distanceToInf > 0f)
-                            {
-                                if (agent != null && agent.IsActive())
-                                {
-                                    try
-                                    {
-                                        agentsToChangeFormation[agent] = FormationClass.Infantry;
-                                        return;
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        return;
-                                    }
-                                }
-                            }
-                            else if (distanceToArc > 0f)
-                            {
-                                if (agent != null && agent.IsActive())
-                                {
-                                    try
-                                    {
-                                        agentsToChangeFormation[agent] = FormationClass.Ranged;
-                                        return;
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        return;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (agent.Formation != null && isInfFormationActive)
-                        {
-                            if (agent != null && agent.IsActive())
-                            {
-                                try
-                                {
-                                    agentsToChangeFormation[agent] = FormationClass.Infantry;
-                                    return;
-                                }
-                                catch (Exception ex)
-                                {
-                                    return;
-                                }
-                            }
+
+                            posture.posture = posture.maxPosture * oldPosturePercentage;
                         }
                     }
                 }
             }
         }
 
-        [HarmonyPatch(typeof(Mission))]
-        [HarmonyPatch("OnAgentMount")]
-        internal class OnAgentMountPatch
-        {
-            private static void Postfix(Agent agent, Mission __instance)
-            {
-                if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
-                {
-                    bool isCavFormationActive = agent.Team.GetFormation(FormationClass.Cavalry) != null && agent.Team.GetFormation(FormationClass.Cavalry).CountOfUnits > 0;
-                    bool isHaFormationActive = agent.Team.GetFormation(FormationClass.HorseArcher) != null && agent.Team.GetFormation(FormationClass.HorseArcher).CountOfUnits > 0;
-                    if (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) || agent.Equipment.HasRangedWeapon(WeaponClass.Bolt))
-                    {
-                        if (agent.Formation != null && isHaFormationActive)
-                        {
-                            if (agent.IsActive())
-                            {
-                                try
-                                {
-                                    agentsToChangeFormation[agent] = FormationClass.HorseArcher;
-                                    return;
-                                }
-                                catch (Exception ex)
-                                {
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (agent.Formation != null && isCavFormationActive)
-                        {
-                            if (agent.IsActive())
-                            {
-                                try
-                                {
-                                    agentsToChangeFormation[agent] = FormationClass.Cavalry;
-                                    return;
-                                }
-                                catch (Exception ex)
-                                {
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        //[HarmonyPatch(typeof(Mission))]
+        //[HarmonyPatch("OnAgentDismount")]
+        //public class OnAgentDismountPatch
+        //{
+        //    private static void Postfix(Agent agent, Mission __instance)
+        //    {
+        //        if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
+        //        {
+        //            bool isInfFormationActive = agent.Team.GetFormation(FormationClass.Infantry) != null && agent.Team.GetFormation(FormationClass.Infantry).CountOfUnits > 0;
+        //            bool isArcFormationActive = agent.Team.GetFormation(FormationClass.Ranged) != null && agent.Team.GetFormation(FormationClass.Ranged).CountOfUnits > 0;
+        //            if (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) || agent.Equipment.HasRangedWeapon(WeaponClass.Bolt))
+        //            {
+        //                float distanceToInf = -1f;
+        //                float distanceToArc = -1f;
+        //                if (agent.Formation != null && isInfFormationActive)
+        //                {
+        //                    distanceToInf = agent.Team.GetFormation(FormationClass.Infantry).QuerySystem.MedianPosition.AsVec2.Distance(agent.Formation.QuerySystem.MedianPosition.AsVec2);
+        //                }
+        //                if (agent.Formation != null && isArcFormationActive)
+        //                {
+        //                    distanceToArc = agent.Team.GetFormation(FormationClass.Ranged).QuerySystem.MedianPosition.AsVec2.Distance(agent.Formation.QuerySystem.MedianPosition.AsVec2);
+        //                }
+        //                if (distanceToArc > 0f && distanceToArc < distanceToInf)
+        //                {
+        //                    if (agent != null && agent.IsActive())
+        //                    {
+        //                        try
+        //                        {
+        //                            agentsToChangeFormation[agent] = FormationClass.Ranged;
+        //                            return;
+        //                        }
+        //                        catch (Exception ex)
+        //                        {
+        //                            return;
+        //                        }
+        //                    }
+        //                }
+        //                else if (distanceToInf > 0f && distanceToInf < distanceToArc)
+        //                {
+        //                    if (agent != null && agent.IsActive())
+        //                    {
+        //                        try
+        //                        {
+        //                            agentsToChangeFormation[agent] = FormationClass.Infantry;
+        //                            return;
+        //                        }
+        //                        catch (Exception ex)
+        //                        {
+        //                            return;
+        //                        }
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    if (distanceToInf > 0f)
+        //                    {
+        //                        if (agent != null && agent.IsActive())
+        //                        {
+        //                            try
+        //                            {
+        //                                agentsToChangeFormation[agent] = FormationClass.Infantry;
+        //                                return;
+        //                            }
+        //                            catch (Exception ex)
+        //                            {
+        //                                return;
+        //                            }
+        //                        }
+        //                    }
+        //                    else if (distanceToArc > 0f)
+        //                    {
+        //                        if (agent != null && agent.IsActive())
+        //                        {
+        //                            try
+        //                            {
+        //                                agentsToChangeFormation[agent] = FormationClass.Ranged;
+        //                                return;
+        //                            }
+        //                            catch (Exception ex)
+        //                            {
+        //                                return;
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //            else
+        //            {
+        //                if (agent.Formation != null && isInfFormationActive)
+        //                {
+        //                    if (agent != null && agent.IsActive())
+        //                    {
+        //                        try
+        //                        {
+        //                            agentsToChangeFormation[agent] = FormationClass.Infantry;
+        //                            return;
+        //                        }
+        //                        catch (Exception ex)
+        //                        {
+        //                            return;
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
+
+        //[HarmonyPatch(typeof(Mission))]
+        //[HarmonyPatch("OnAgentMount")]
+        //internal class OnAgentMountPatch
+        //{
+        //    private static void Postfix(Agent agent, Mission __instance)
+        //    {
+        //        if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
+        //        {
+        //            bool isCavFormationActive = agent.Team.GetFormation(FormationClass.Cavalry) != null && agent.Team.GetFormation(FormationClass.Cavalry).CountOfUnits > 0;
+        //            bool isHaFormationActive = agent.Team.GetFormation(FormationClass.HorseArcher) != null && agent.Team.GetFormation(FormationClass.HorseArcher).CountOfUnits > 0;
+        //            if (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) || agent.Equipment.HasRangedWeapon(WeaponClass.Bolt))
+        //            {
+        //                if (agent.Formation != null && isHaFormationActive)
+        //                {
+        //                    if (agent.IsActive())
+        //                    {
+        //                        try
+        //                        {
+        //                            agentsToChangeFormation[agent] = FormationClass.HorseArcher;
+        //                            return;
+        //                        }
+        //                        catch (Exception ex)
+        //                        {
+        //                            return;
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //            else
+        //            {
+        //                if (agent.Formation != null && isCavFormationActive)
+        //                {
+        //                    if (agent.IsActive())
+        //                    {
+        //                        try
+        //                        {
+        //                            agentsToChangeFormation[agent] = FormationClass.Cavalry;
+        //                            return;
+        //                        }
+        //                        catch (Exception ex)
+        //                        {
+        //                            return;
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
     }
 }
