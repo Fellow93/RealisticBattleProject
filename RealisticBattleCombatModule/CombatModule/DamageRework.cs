@@ -3,6 +3,7 @@ using SandBox.GameComponents;
 using SandBox.Missions.MissionLogics;
 using System;
 using System.Reflection;
+using System.Xml;
 using TaleWorlds.CampaignSystem.ViewModelCollection.WeaponCrafting.WeaponDesign;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
@@ -1506,6 +1507,22 @@ namespace RBMCombat
                     attackCollisionData.InflictedDamage = attackCollisionData.InflictedDamage + 5;
                     combatLog.InflictedDamage = attackCollisionData.InflictedDamage;
                 }
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(WeaponComponentData))]
+    [HarmonyPatch("Deserialize")]
+    internal class WeaponComponentDataDeserializePatch
+    {
+        private static void Postfix(WeaponComponentData __instance, ItemObject item, XmlNode node)
+        {
+            if (node.Attributes["is_valyrian"] != null)
+            {
+                PropertyInfo swingDamageFactor = typeof(WeaponComponentData).GetProperty("SwingDamageFactor");
+                PropertyInfo thrustDamageFactor = typeof(WeaponComponentData).GetProperty("ThrustDamageFactor");
+                swingDamageFactor.SetValue(__instance, 5f, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                thrustDamageFactor.SetValue(__instance, 5f, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
             }
         }
     }
