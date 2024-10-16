@@ -5,6 +5,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Xml;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
@@ -17,6 +19,37 @@ using static TaleWorlds.MountAndBlade.Mission;
 
 namespace RBMCombat
 {
+    //[Serializable]
+    //public class WeaponComponentDataAdditionalData
+    //{
+    //    public int drawWeight;
+
+    //    public WeaponComponentDataAdditionalData()
+    //    {
+    //        drawWeight = 0;
+    //    }
+    //}
+
+    //public static class WeaponComponentDataExtension
+    //{
+    //    private static readonly ConditionalWeakTable<WeaponComponentData, WeaponComponentDataAdditionalData> data =
+    //        new ConditionalWeakTable<WeaponComponentData, WeaponComponentDataAdditionalData>();
+
+    //    public static WeaponComponentDataAdditionalData GetAdditionalData(this WeaponComponentData weapon)
+    //    {
+    //        return data.GetOrCreateValue(weapon);
+    //    }
+
+    //    public static void AddData(this WeaponComponentData weapon, WeaponComponentDataAdditionalData value)
+    //    {
+    //        try
+    //        {
+    //            data.Add(weapon, value);
+    //        }
+    //        catch (Exception) { }
+    //    }
+    //}
+
     public class RangedRework
     {
         public static Dictionary<TextObject, int> originalItemSwingSpeed = new Dictionary<TextObject, int> { };
@@ -24,6 +57,21 @@ namespace RBMCombat
         public static Dictionary<TextObject, int> originalItemHandling = new Dictionary<TextObject, int> { };
         public static Dictionary<string, RangedWeaponStats> rangedWeaponStats = new Dictionary<string, RangedWeaponStats>(new RangedWeaponStatsComparer());
         public static Dictionary<string, MissionWeapon> rangedWeaponMW = new Dictionary<string, MissionWeapon> { };
+
+        //[HarmonyPatch(typeof(WeaponComponentData))]
+        //[HarmonyPatch("Deserialize")]
+        //internal class WeaponComponentDataDeserializePatch
+        //{
+        //    private static void Postfix(WeaponComponentData __instance, ItemObject item, XmlNode node)
+        //    {
+        //        if (node.Attributes["draw_weight"] != null)
+        //        {
+        //            WeaponComponentDataAdditionalData data = new WeaponComponentDataAdditionalData();
+        //            data.drawWeight = int.Parse(node.Attributes["draw_weight"].Value);
+        //            __instance.AddData(data);
+        //        }
+        //    }
+        //}
 
         [HarmonyPatch(typeof(MissionState))]
         [HarmonyPatch("FinishMissionLoading")]
