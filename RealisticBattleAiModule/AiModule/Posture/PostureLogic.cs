@@ -598,7 +598,7 @@ namespace RBMAI
                             if (postureDmg >= attackerPosture.maxPosture * 0.33f)
                             {
                                 makePostureRiposteBlow(ref mission, ref blow, ataAgent, defAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
-                                handleAgentDropWeapon(defAgent);
+                                //handleAgentDropWeapon(defAgent);
                                 addPostureDamageVisual(ataAgent, defAgent);
                             }
                             else
@@ -622,7 +622,7 @@ namespace RBMAI
                                 makePostureRiposteBlow(ref mission, ref blow, ataAgent, defAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
                                 if (postureDmg >= attackerPosture.maxPosture * 0.33f)
                                 {
-                                    handleAgentDropWeapon(ataAgent);
+                                    //handleAgentDropWeapon(ataAgent);
                                 }
                             }
                             ResetPostureForAgent(ref attackerPosture, PostureDamage.POSTURE_RESET_MODIFIER, ataAgent);
@@ -652,7 +652,7 @@ namespace RBMAI
                                 makePostureRiposteBlow(ref mission, ref blow, ataAgent, defAgent, ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
                                 if (postureDmg >= attackerPosture.maxPosture * 0.33f)
                                 {
-                                    handleAgentDropWeapon(ataAgent);
+                                    //handleAgentDropWeapon(ataAgent);
                                 }
                             }
                             ResetPostureForAgent(ref attackerPosture, PostureDamage.POSTURE_RESET_MODIFIER, ataAgent);
@@ -694,7 +694,7 @@ namespace RBMAI
                                 makePostureCrashThroughBlow(ref mission, ref blow, ataAgent, defAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
                                 if (postureDmg >= defenderPosture.maxPosture * 0.33f)
                                 {
-                                    handleAgentDropWeapon(defAgent);
+                                    //handleAgentDropWeapon(defAgent);
                                 }
                             }
                             ResetPostureForAgent(ref defenderPosture, PostureDamage.POSTURE_RESET_MODIFIER, defAgent);
@@ -713,7 +713,7 @@ namespace RBMAI
                                 makePostureCrashThroughBlow(ref mission, ref blow, ataAgent, defAgent, MathF.Floor(healthDamage), ref collisionData, attackerWeapon, crushThroughState, blowDirection, swingDirection, cancelDamage, BlowFlags.KnockBack);
                                 if (postureDmg >= defenderPosture.maxPosture * 0.33f)
                                 {
-                                    handleAgentDropWeapon(defAgent);
+                                    //handleAgentDropWeapon(defAgent);
                                 }
                             }
                             ResetPostureForAgent(ref defenderPosture, PostureDamage.POSTURE_RESET_MODIFIER, defAgent);
