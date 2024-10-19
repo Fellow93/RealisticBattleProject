@@ -92,14 +92,63 @@ namespace RBMAI
             private static bool PrefixGetOrderPositionOfUnit(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ____detachedUnits, ref WorldPosition __result)
             {
                 Mission mission = Mission.Current;
-                if (mission != null && mission.IsFieldBattle && unit != null && (__instance.QuerySystem.IsCavalryFormation || __instance.QuerySystem.IsRangedCavalryFormation)){
-                    if(unit != null && unit.MountAgent == null)
+                if(mission != null && !mission.IsFieldBattle)
+                {
+                    //everyone charge if close to enemy in non-field battle
+                    MBList<Agent> enemiesCloseBy = new MBList<Agent>();
+                    enemiesCloseBy = mission.GetNearbyEnemyAgents(unit.Position.AsVec2, 2.5f, unit.Team, enemiesCloseBy);
+                    if (enemiesCloseBy.Count() > 0)
                     {
-                        __result = __instance.GetReadonlyMovementOrderReference().CreateNewOrderWorldPosition(__instance, WorldPosition.WorldPositionEnforcedCache.None);
+                        __result = WorldPosition.Invalid;
                         return false;
                     }
                 }
-                if (__instance.Team.ActiveAgents.Count()* __instance.Team.QuerySystem.InfantryRatio <= 30) { return true; } // frontline system disabled for small infantry battles
+                if (mission != null && mission.IsFieldBattle && unit != null && (__instance.QuerySystem.IsCavalryFormation || __instance.QuerySystem.IsRangedCavalryFormation)){
+                    //cav cahrge if no mount
+                    if(unit != null && unit.MountAgent == null)
+                    {
+                        __result = WorldPosition.Invalid;
+                        return false;
+                    }
+                    //cav charge if close to enemy
+                    MBList<Agent> enemiesCloseBy = new MBList<Agent>();
+                    enemiesCloseBy = mission.GetNearbyEnemyAgents(unit.Position.AsVec2, 15f, unit.Team, enemiesCloseBy);
+                    if (enemiesCloseBy.Count() > 2)
+                    {
+                        __result = WorldPosition.Invalid;
+                        return false;
+                    }
+                }
+                if(mission != null && unit != null &&  mission.IsFieldBattle && __instance.QuerySystem.IsRangedFormation)
+                {
+                    //ranged charge if close to enemy
+                    MBList<Agent> enemiesCloseBy = new MBList<Agent>();
+                    enemiesCloseBy = mission.GetNearbyEnemyAgents(unit.Position.AsVec2, 3f, unit.Team, enemiesCloseBy);
+                    if (enemiesCloseBy.Count() > 0)
+                    {
+                        __result = WorldPosition.Invalid;
+                        return false;
+                    }
+
+                    //ranged charge if they are skirmishing but not attacking
+                    if(__instance.AI != null && __instance.AI.ActiveBehavior != null)
+                    {
+                        if(unit.LastRangedAttackTime > 0){
+                            Type activeBehaviorType = __instance.AI.ActiveBehavior.GetType();
+                            if(activeBehaviorType == typeof(RBMBehaviorArcherFlank) || activeBehaviorType == typeof(RBMBehaviorArcherSkirmish) 
+                                || activeBehaviorType == typeof(BehaviorSkirmish) || activeBehaviorType == typeof(BehaviorSkirmishBehindFormation) || activeBehaviorType == typeof(BehaviorSkirmishLine))
+                            {
+                                float currentTime = MBCommon.GetTotalMissionTime();
+                                if (currentTime - unit.LastRangedAttackTime > 20f)
+                                {
+                                    __result = WorldPosition.Invalid;
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (__instance.Team.ActiveAgents.Count() * __instance.Team.QuerySystem.InfantryRatio <= 30) { return true; } // frontline system disabled for small infantry battles
                 if (mission != null && mission.IsFieldBattle && unit != null && (__instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation) && !____detachedUnits.Contains(unit))
                 {
                     AIDecision aiDecision;

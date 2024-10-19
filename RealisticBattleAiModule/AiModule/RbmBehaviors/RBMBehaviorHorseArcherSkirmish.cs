@@ -191,13 +191,13 @@ namespace RBMAI
                 Formation enemyFormation = RBMAI.Utilities.FindSignificantEnemy(base.Formation, false, false, true, false, false);
                 if (enemyFormation != null && enemyFormation.QuerySystem.IsCavalryFormation && base.Formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2) < 55f && enemyFormation.CountOfUnits >= base.Formation.CountOfUnits * 0.5f)
                 {
-                    return 0.01f;
+                    return 1000f;
                 }
                 if (!_isEnemyReachable)
                 {
                     return 0.01f;
                 }
-                return 100f;
+                return 1000f;
             }
             else
             {
