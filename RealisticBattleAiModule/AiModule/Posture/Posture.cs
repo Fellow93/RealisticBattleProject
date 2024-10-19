@@ -322,6 +322,13 @@ namespace RBMAI
                 {
                     wc = agent.Equipment[agent.GetWieldedItemIndex(Agent.HandIndex.OffHand)].CurrentUsageItem.WeaponClass;
                 }
+                else
+                {
+                    if (agent.GetWieldedItemIndex(0) != EquipmentIndex.None)
+                    {
+                        wc = agent.Equipment[agent.GetWieldedItemIndex(0)].CurrentUsageItem.WeaponClass;
+                    }
+                }
             }
             else
             {
