@@ -78,12 +78,12 @@ public class RBMTacticEmbolon : TacticComponent
         {
             _cavalry.AI.ResetBehaviorWeights();
             SetDefaultBehaviorWeights(_cavalry);
-            _cavalry.AI.SetBehaviorWeight<RBMBehaviorCavalryCharge>(1f);
+            //_cavalry.AI.SetBehaviorWeight<RBMBehaviorCavalryCharge>(1f);
         }
         if (_rangedCavalry != null)
         {
             _rangedCavalry.AI.ResetBehaviorWeights();
-            SetDefaultBehaviorWeights(_rangedCavalry);
+            //SetDefaultBehaviorWeights(_rangedCavalry);
             _rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
         }
     }

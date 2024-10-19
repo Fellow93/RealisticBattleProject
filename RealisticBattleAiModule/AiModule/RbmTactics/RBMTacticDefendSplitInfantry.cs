@@ -346,21 +346,21 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
         if (_leftCavalry != null)
         {
             _leftCavalry.AI.ResetBehaviorWeights();
-            SetDefaultBehaviorWeights(_leftCavalry);
+            //SetDefaultBehaviorWeights(_leftCavalry);
             _leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
             _leftCavalry.AI.SetBehaviorWeight<RBMBehaviorCavalryCharge>(1f);
         }
         if (_rightCavalry != null)
         {
             _rightCavalry.AI.ResetBehaviorWeights();
-            SetDefaultBehaviorWeights(_rightCavalry);
+            //SetDefaultBehaviorWeights(_rightCavalry);
             _rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
             _rightCavalry.AI.SetBehaviorWeight<RBMBehaviorCavalryCharge>(1f);
         }
         if (_rangedCavalry != null)
         {
             _rangedCavalry.AI.ResetBehaviorWeights();
-            TacticComponent.SetDefaultBehaviorWeights(_rangedCavalry);
+            //TacticComponent.SetDefaultBehaviorWeights(_rangedCavalry);
             _rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
         }
     }

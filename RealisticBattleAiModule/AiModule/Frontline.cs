@@ -110,10 +110,19 @@ namespace RBMAI
                         __result = WorldPosition.Invalid;
                         return false;
                     }
-                    //cav charge if close to enemy
-                    MBList<Agent> enemiesCloseBy = new MBList<Agent>();
-                    enemiesCloseBy = mission.GetNearbyEnemyAgents(unit.Position.AsVec2, 15f, unit.Team, enemiesCloseBy);
-                    if (enemiesCloseBy.Count() > 2)
+                    //cav charge if close to enemy cavalry
+                    MBList<Agent> enemyCavalryCloseBy = new MBList<Agent>();
+                    enemyCavalryCloseBy = mission.GetNearbyEnemyAgents(unit.Position.AsVec2, 15f, unit.Team, enemyCavalryCloseBy);
+                    enemyCavalryCloseBy.RemoveAll(x => x.MountAgent == null);
+                    MBList<Agent> enemyInfantryCloseBy = new MBList<Agent>();
+                    enemyInfantryCloseBy = mission.GetNearbyEnemyAgents(unit.Position.AsVec2, 7.5f, unit.Team, enemyInfantryCloseBy);
+                    enemyInfantryCloseBy.RemoveAll(x => x.MountAgent != null);
+                    if (enemyCavalryCloseBy.Count() > 2)
+                    {
+                        __result = WorldPosition.Invalid;
+                        return false;
+                    }
+                    if(enemyInfantryCloseBy.Count() > 2)
                     {
                         __result = WorldPosition.Invalid;
                         return false;
@@ -135,14 +144,29 @@ namespace RBMAI
                     {
                         if(unit.LastRangedAttackTime > 0){
                             Type activeBehaviorType = __instance.AI.ActiveBehavior.GetType();
-                            if(activeBehaviorType == typeof(RBMBehaviorArcherFlank) || activeBehaviorType == typeof(RBMBehaviorArcherSkirmish) 
+                            if (activeBehaviorType == typeof(RBMBehaviorArcherFlank) || activeBehaviorType == typeof(RBMBehaviorArcherSkirmish)
                                 || activeBehaviorType == typeof(BehaviorSkirmish) || activeBehaviorType == typeof(BehaviorSkirmishBehindFormation) || activeBehaviorType == typeof(BehaviorSkirmishLine))
                             {
+                                MBList<Agent> enemyCloseBy = new MBList<Agent>();
+                                enemyCloseBy = mission.GetNearbyEnemyAgents(unit.Position.AsVec2, 15f, unit.Team, enemyCloseBy);
                                 float currentTime = MBCommon.GetTotalMissionTime();
-                                if (currentTime - unit.LastRangedAttackTime > 20f)
+                                if (currentTime - unit.LastMeleeAttackTime > 10f && currentTime - unit.LastMeleeHitTime > 10f)
                                 {
-                                    __result = WorldPosition.Invalid;
-                                    return false;
+                                    if (currentTime - unit.LastRangedAttackTime > 50f)
+                                    {
+                                        PropertyInfo LastRangedAttackTime = typeof(Agent).GetProperty("LastRangedAttackTime");
+                                        LastRangedAttackTime.DeclaringType.GetProperty("LastRangedAttackTime");
+                                        LastRangedAttackTime.SetValue(unit, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                                    }
+                                    if (currentTime - unit.LastRangedAttackTime > 20f && enemyCloseBy.Count() < 3)
+                                    {
+                                        __result = WorldPosition.Invalid;
+                                        return false;
+                                    }
+                                }
+                                else
+                                {
+                                    int testc = 0;
                                 }
                             }
                         }
