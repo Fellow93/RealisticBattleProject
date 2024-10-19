@@ -502,12 +502,12 @@ namespace RBMAI
                         enemyFormation = RBMAI.Utilities.FindSignificantEnemyToPosition(__instance.Formation, position, true, true, false, false, false, false);
                     }
 
-                    if (closestSignificantlyLargeEnemyFormation != null && closestSignificantlyLargeEnemyFormation.AveragePosition.Distance(__instance.Formation.CurrentPosition) < __instance.Formation.Depth / 2f + (
-                        (closestSignificantlyLargeEnemyFormation.Formation.QuerySystem.FormationPower / __instance.Formation.QuerySystem.FormationPower) * 20f + 10f))
-                    {
-                        ____currentOrder = MovementOrder.MovementOrderChargeToTarget(closestSignificantlyLargeEnemyFormation.Formation);
-                        return;
-                    }
+                    //if (closestSignificantlyLargeEnemyFormation != null && closestSignificantlyLargeEnemyFormation.AveragePosition.Distance(__instance.Formation.CurrentPosition) < __instance.Formation.Depth / 2f + (
+                    //    (closestSignificantlyLargeEnemyFormation.Formation.QuerySystem.FormationPower / __instance.Formation.QuerySystem.FormationPower) * 20f + 10f))
+                    //{
+                    //    ____currentOrder = MovementOrder.MovementOrderChargeToTarget(closestSignificantlyLargeEnemyFormation.Formation);
+                    //    return;
+                    //}
 
                     //foreach (Team team in Mission.Current.Teams.ToList())
                     //{
@@ -631,12 +631,12 @@ namespace RBMAI
             }
             else if (__instance.Formation != null && __instance.Formation.QuerySystem.IsRangedCavalryFormation)
             {
-                Formation enemyCav = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
-                if (enemyCav != null && enemyCav.QuerySystem.IsCavalryFormation && __instance.Formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyCav.QuerySystem.MedianPosition.AsVec2) < 55f && enemyCav.CountOfUnits >= __instance.Formation.CountOfUnits * 0.5f)
-                {
-                    __result = 0.01f;
-                    return;
-                }
+                //Formation enemyCav = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
+                //if (enemyCav != null && enemyCav.QuerySystem.IsCavalryFormation && __instance.Formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyCav.QuerySystem.MedianPosition.AsVec2) < 55f && enemyCav.CountOfUnits >= __instance.Formation.CountOfUnits * 0.5f)
+                //{
+                //    __result = 1000f;
+                //    return;
+                //}
                 if (!____isEnemyReachable)
                 {
                     __result = 0.01f;
@@ -652,11 +652,11 @@ namespace RBMAI
                     }
                     if (powerSum > 0f && __instance.Formation.QuerySystem.FormationPower > 0f && (__instance.Formation.QuerySystem.FormationPower / powerSum) < 0.75f)
                     {
-                        __result = 0.01f;
+                        __result = 1000f;
                         return;
                     }
                 }
-                __result = 100f;
+                __result = 1000f;
                 return;
             }
             else
@@ -1099,7 +1099,16 @@ namespace RBMAI
         [HarmonyPatch("SetBehaviorValueSet")]
         private static void SetBehaviorValueSet(HumanAIComponent __instance, BehaviorValueSet behaviorValueSet, Agent ___Agent)
         {
-            if(Mission.Current.SceneName.Contains("arena"))
+            if (Mission.Current.IsSiegeBattle || Mission.Current.IsSallyOutBattle)
+            {
+                if (___Agent.IsRangedCached)
+                {
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 5f, 5f, 15f, 0.01f);
+                    __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0.02f, 5f, 0.04f, 15f, 0.03f);
+                    return;
+                }
+            }
+            if (Mission.Current.SceneName.Contains("arena"))
             {
                 if(___Agent != null && ___Agent.SpawnEquipment!= null && ___Agent.IsRangedCached)
                 {
@@ -1197,16 +1206,7 @@ namespace RBMAI
                         __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 5f, 3f, 20f, 0.01f);
                     }
                     return;
-                }
-                if (Mission.Current.IsSiegeBattle || Mission.Current.IsSallyOutBattle)
-                {
-                    if (___Agent.Formation.QuerySystem.IsRangedFormation)
-                    {
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 5f, 5f, 15f, 0.01f);
-                        __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0.02f, 5f, 0.04f, 15f, 0.03f);
-                        return;
-                    }
-                }
+                }             
             }
         }
     }
