@@ -62,21 +62,21 @@ namespace RBMAI
             if (____rightCavalry != null)
             {
                 ____rightCavalry.AI.ResetBehaviorWeights();
-                TacticComponent.SetDefaultBehaviorWeights(____rightCavalry);
+                //TacticComponent.SetDefaultBehaviorWeights(____rightCavalry);
                 ____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                 ____rightCavalry.AI.SetBehaviorWeight<RBMBehaviorCavalryCharge>(1f);
             }
             if (____leftCavalry != null)
             {
                 ____leftCavalry.AI.ResetBehaviorWeights();
-                TacticComponent.SetDefaultBehaviorWeights(____leftCavalry);
+                //TacticComponent.SetDefaultBehaviorWeights(____leftCavalry);
                 ____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
                 ____leftCavalry.AI.SetBehaviorWeight<RBMBehaviorCavalryCharge>(1f);
             }
             if (____rangedCavalry != null)
             {
                 ____rangedCavalry.AI.ResetBehaviorWeights();
-                TacticFullScaleAttack.SetDefaultBehaviorWeights(____rangedCavalry);
+                //TacticFullScaleAttack.SetDefaultBehaviorWeights(____rangedCavalry);
                 ____rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
             }
             RBMAI.Utilities.FixCharge(ref ____mainInfantry);

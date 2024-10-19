@@ -62,14 +62,14 @@ namespace RBMAI.AiModule.RbmTactics
             {
                 ____rightCavalry.AI.ResetBehaviorWeights();
                 ____rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
-                ____rightCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
+                //____rightCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
                 ____rightCavalry.AI.SetBehaviorWeight<RBMBehaviorCavalryCharge>(1f);
             }
             if (____leftCavalry != null)
             {
                 ____leftCavalry.AI.ResetBehaviorWeights();
                 ____leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
-                ____leftCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
+                //____leftCavalry.AI.SetBehaviorWeight<BehaviorCharge>(1f);
                 ____leftCavalry.AI.SetBehaviorWeight<RBMBehaviorCavalryCharge>(1f);
             }
             if (____rangedCavalry != null)
