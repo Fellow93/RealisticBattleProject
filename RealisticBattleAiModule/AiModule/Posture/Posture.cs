@@ -142,8 +142,8 @@ namespace RBMAI
         public const float TWOHANDEDPOLEARM_THRUST_COST = 17f;
         public const float TWOHANDEDPOLEARM_OVERHEAD_COST = 21f;
         public const float TWOHANDEDPOLEARM_SWING_DRAIN = 50f;
-        public const float TWOHANDEDPOLEARM_THRUST_DRAIN = 28f;
-        public const float TWOHANDEDPOLEARM_OVERHEAD_DRAIN = 36f;
+        public const float TWOHANDEDPOLEARM_THRUST_DRAIN = 20f;
+        public const float TWOHANDEDPOLEARM_OVERHEAD_DRAIN = 25f;
         public const float TWOHANDEDPOLEARM_BLOCK_COST = 10f;
         public const float TWOHANDEDPOLEARM_PARRY_COST = 5f;
         public const float TWOHANDEDPOLEARM_HIT_COST = 15f;

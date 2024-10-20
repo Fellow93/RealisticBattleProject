@@ -1362,7 +1362,7 @@ namespace RBMCombat
                             swingSpeedReal = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
                             thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Item.Weight, weaponData.Inertia, weaponData.CenterOfMass) * Utilities.thrustSpeedTransfer);
                             thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.05f) * thrustskillModifier);
-                            handlingReal = MathF.Ceiling((handling * 5f) * handlingskillModifier);
+                            handlingReal = MathF.Ceiling((handling * 0.83f) * handlingskillModifier);
                             break;
                         }
                     case WeaponClass.TwoHandedAxe:
