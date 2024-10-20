@@ -103,26 +103,28 @@ namespace RBMAI
                         return false;
                     }
                 }
-                if (mission != null && mission.IsFieldBattle && unit != null && (__instance.QuerySystem.IsCavalryFormation || __instance.QuerySystem.IsRangedCavalryFormation)){
+                if (mission != null && mission.IsFieldBattle && unit != null && (__instance.QuerySystem.IsCavalryFormation || __instance.QuerySystem.IsRangedCavalryFormation))
+                {
                     //cav cahrge if no mount
                     if(unit != null && unit.MountAgent == null)
                     {
                         __result = WorldPosition.Invalid;
                         return false;
                     }
-                    //cav charge if close to enemy cavalry
                     MBList<Agent> enemyCavalryCloseBy = new MBList<Agent>();
                     enemyCavalryCloseBy = mission.GetNearbyEnemyAgents(unit.Position.AsVec2, 15f, unit.Team, enemyCavalryCloseBy);
                     enemyCavalryCloseBy.RemoveAll(x => x.MountAgent == null);
                     MBList<Agent> enemyInfantryCloseBy = new MBList<Agent>();
-                    enemyInfantryCloseBy = mission.GetNearbyEnemyAgents(unit.Position.AsVec2, 7.5f, unit.Team, enemyInfantryCloseBy);
+                    enemyInfantryCloseBy = mission.GetNearbyEnemyAgents(unit.Position.AsVec2, 7f, unit.Team, enemyInfantryCloseBy);
                     enemyInfantryCloseBy.RemoveAll(x => x.MountAgent != null);
+                    //cav charge if close to enemy cavalry
                     if (enemyCavalryCloseBy.Count() > 2)
                     {
                         __result = WorldPosition.Invalid;
                         return false;
                     }
-                    if(enemyInfantryCloseBy.Count() > 2)
+                    //cav charge if close to enemy infantry
+                    if (enemyInfantryCloseBy.Count() > 2)
                     {
                         __result = WorldPosition.Invalid;
                         return false;
@@ -132,7 +134,7 @@ namespace RBMAI
                 {
                     //ranged charge if close to enemy
                     MBList<Agent> enemiesCloseBy = new MBList<Agent>();
-                    enemiesCloseBy = mission.GetNearbyEnemyAgents(unit.Position.AsVec2, 3f, unit.Team, enemiesCloseBy);
+                    enemiesCloseBy = mission.GetNearbyEnemyAgents(unit.Position.AsVec2, 2.5f, unit.Team, enemiesCloseBy);
                     if (enemiesCloseBy.Count() > 0)
                     {
                         __result = WorldPosition.Invalid;

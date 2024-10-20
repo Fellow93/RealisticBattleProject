@@ -156,12 +156,18 @@ namespace RBMAI
                 Formation formation = agent.Formation;
                 if (formation != null)
                 {
-                    if ((formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && (formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget))
+                    MovementOrder movementOrder = formation.GetReadonlyMovementOrderReference();
+                    if ((formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && (movementOrder.OrderType == OrderType.ChargeWithTarget))
                     {
                         formations = RBMAI.Utilities.FindSignificantFormations(formation);
-                        if (formations.Count > 0)
+                        Formation priorityFormation = null;
+                        if (movementOrder.OrderType == OrderType.ChargeWithTarget && movementOrder.TargetFormation != null && !formations.Contains(movementOrder.TargetFormation))
                         {
-                            return RBMAI.Utilities.NearestAgentFromMultipleFormations(agent.Position.AsVec2, formations);
+                            priorityFormation = movementOrder.TargetFormation;
+                        }
+                        if (formations.Count > 0 || priorityFormation != null)
+                        {
+                            return RBMAI.Utilities.NearestAgentFromMultipleFormations(agent.Position.AsVec2, formations, priorityFormation);
                         }
                     }
                 }
@@ -185,7 +191,7 @@ namespace RBMAI
             return targetAgent;
         }
 
-        public static Agent NearestAgentFromMultipleFormations(Vec2 unitPosition, List<Formation> formations)
+        public static Agent NearestAgentFromMultipleFormations(Vec2 unitPosition, List<Formation> formations, Formation priorityFormation = null)
         {
             Agent targetAgent = null;
             float distance = 10000f;
@@ -213,6 +219,19 @@ namespace RBMAI
                             targetAgent = agent;
                             distance = newDist;
                         }
+                    }
+                });
+            }
+            if (priorityFormation != null && distance > 30f)
+            {
+                distance = 10000f;
+                priorityFormation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+                {
+                    float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
+                    if (newDist < distance)
+                    {
+                        targetAgent = agent;
+                        distance = newDist;
                     }
                 });
             }
