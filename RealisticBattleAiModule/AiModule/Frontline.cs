@@ -174,6 +174,20 @@ namespace RBMAI
                         }
                     }
                 }
+                if(mission != null && mission.IsFieldBattle && unit != null && __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsCavalryFormation)
+                {
+                    var targetAgent = Utilities.GetCorrectTarget(unit);
+                    if(targetAgent != null)
+                    {
+                        float distance = targetAgent != null ? (targetAgent.Position - unit.Position).Length : 0f;
+                        if (distance > 60f)
+                        {
+                            //InformationManager.DisplayMessage(new InformationMessage(unit.Name.ToString() + " " + distance+" "+targetAgent.Name.ToString()));
+                            __result = targetAgent != null ? targetAgent.GetWorldPosition() : WorldPosition.Invalid;
+                            return false;
+                        }
+                    }
+                }
                 if (__instance.Team.ActiveAgents.Count() * __instance.Team.QuerySystem.InfantryRatio <= 30) { return true; } // frontline system disabled for small infantry battles
                 if (mission != null && mission.IsFieldBattle && unit != null && (__instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation) && !____detachedUnits.Contains(unit))
                 {
@@ -286,9 +300,9 @@ namespace RBMAI
                             aiDecisionCooldownDict.TryGetValue(unit, out aiDecision);
                         }
 
-                        if (targetAgent != vanillaTargetAgent && vanillaTargetAgent.HasMount || vanillaTargetAgent.IsRunningAway)
+                        if (targetAgent != null && unit != null && targetAgent != vanillaTargetAgent && vanillaTargetAgent.HasMount || vanillaTargetAgent.IsRunningAway)
                         {
-                            __result = targetAgent.GetWorldPosition();
+                            __result = targetAgent!= null ? targetAgent.GetWorldPosition() : WorldPosition.Invalid;
                             aiDecision.position = __result;
                             if (!unit.IsRangedCached)
                             {

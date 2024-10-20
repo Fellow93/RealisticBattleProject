@@ -170,6 +170,19 @@ namespace RBMAI
                             return RBMAI.Utilities.NearestAgentFromMultipleFormations(agent.Position.AsVec2, formations, priorityFormation);
                         }
                     }
+                    if(formation.QuerySystem.IsCavalryFormation && movementOrder.OrderType == OrderType.ChargeWithTarget)
+                    {
+                        formations = RBMAI.Utilities.FindSignificantFormations(formation);
+                        Formation priorityFormation = null;
+                        if (movementOrder.OrderType == OrderType.ChargeWithTarget && movementOrder.TargetFormation != null && !formations.Contains(movementOrder.TargetFormation))
+                        {
+                            priorityFormation = movementOrder.TargetFormation;
+                        }
+                        if (formations.Count > 0 || priorityFormation != null)
+                        {
+                            return RBMAI.Utilities.NearestAgentFromMultipleFormations(agent.Position.AsVec2, formations, priorityFormation);
+                        }
+                    }
                 }
             }
             return null;
@@ -405,7 +418,7 @@ namespace RBMAI
             return false;
         }
 
-        public static List<Formation> FindSignificantFormations(Formation formation)
+        public static List<Formation> FindSignificantFormations(Formation formation, bool includeCavalry = false)
         {
             List<Formation> formations = new List<Formation>();
             if (formation != null)
@@ -431,10 +444,10 @@ namespace RBMAI
                                 {
                                     formations.Add(enemyFormation);
                                 }
-                                //if (formation != null && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsCavalryFormation)
-                                //{
-                                //    formations.Add(enemyFormation);
-                                //}
+                                if (includeCavalry && formation != null && enemyFormation.CountOfUnits > 0 && (enemyFormation.QuerySystem.IsCavalryFormation || enemyFormation.QuerySystem.IsRangedCavalryFormation))
+                                {
+                                    formations.Add(enemyFormation);
+                                }
                             }
                         }
                     }
