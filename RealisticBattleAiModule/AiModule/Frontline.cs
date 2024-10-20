@@ -166,10 +166,6 @@ namespace RBMAI
                                         return false;
                                     }
                                 }
-                                else
-                                {
-                                    int testc = 0;
-                                }
                             }
                         }
                     }
