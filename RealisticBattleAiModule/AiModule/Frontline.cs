@@ -166,10 +166,6 @@ namespace RBMAI
                                         return false;
                                     }
                                 }
-                                else
-                                {
-                                    int testc = 0;
-                                }
                             }
                         }
                     }
@@ -202,7 +198,7 @@ namespace RBMAI
                     int enemyAgentsCountCriticalTreshold = 6;
                     int hasShieldBonusNumber = 40;
                     int isAttackingArcherNumber = -60;
-                    int aggresivnesModifier = 5;
+                    int aggresivnesModifier = 0;
                     float backStepDistance = 0.35f;
 
                     if (isAgentInDefensiveOrder)
@@ -213,7 +209,7 @@ namespace RBMAI
                         enemyAgentsCountCriticalTreshold = 6;
                         backStepDistance = 0.35f;
                         hasShieldBonusNumber = 40;
-                        aggresivnesModifier = 5;
+                        aggresivnesModifier = 0;
                     }
                     float weaponLengthModifier = unit.WieldedWeapon.CurrentUsageItem != null ? (unit.WieldedWeapon.CurrentUsageItem.GetRealWeaponLength() + 0.5f) : 1f;
 
@@ -527,7 +523,9 @@ namespace RBMAI
 
                         MBList<Agent> enemyAgentsImmidiate = new MBList<Agent>();
                         MBList<Agent> enemyAgentsClose = new MBList<Agent>();
-                        enemyAgentsImmidiate = mission.GetNearbyEnemyAgents(unitPosition, 4.5f, unit.Team, enemyAgentsImmidiate);
+                        //float searchArea = 4.5f;
+                        float searchArea = weaponLengthModifier + 1f;
+                        enemyAgentsImmidiate = mission.GetNearbyEnemyAgents(unitPosition, searchArea, unit.Team, enemyAgentsImmidiate);
                         //IEnumerable<Agent> enemyAgentsImmidiate = null;
 
                         int enemyAgentsImmidiateCount = 0;
@@ -537,7 +535,7 @@ namespace RBMAI
 
                         if (!isTargetArcher)
                         {
-                            enemyAgentsClose = mission.GetNearbyEnemyAgents(unitPosition + direction * 4.5f, 4.5f / 2f, unit.Team, enemyAgentsClose);
+                            enemyAgentsClose = mission.GetNearbyEnemyAgents(unitPosition + direction * searchArea, searchArea / 2f, unit.Team, enemyAgentsClose);
 
                             enemyAgentsImmidiateCount = enemyAgentsImmidiate.Count();
                             enemyAgentsCloseCount = enemyAgentsClose.Count();
@@ -552,6 +550,7 @@ namespace RBMAI
                             enemyAgentsCountCriticalTreshold *= 1;
                             enemyAgentsCountDangerousTreshold *= 1;
                         }
+                        attackingTogether = 0;
                         if (enemyAgentsImmidiateCount > enemyAgentsCountTreshold || enemyAgentsCloseCount > enemyAgentsCountTreshold)
                         {
                             //unit.LookDirection = direction.ToVec3();
