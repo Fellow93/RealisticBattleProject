@@ -1010,7 +1010,7 @@ namespace RBMAI
         {
             if (Mission.Current.IsSiegeBattle || Mission.Current.IsSallyOutBattle)
             {
-                if (___Agent.IsRangedCached)
+                if (___Agent != null && ___Agent.Equipment != null && ___Agent.IsRangedCached)
                 {
                     __instance.SetBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 5f, 5f, 15f, 0.01f);
                     __instance.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0.02f, 5f, 0.04f, 15f, 0.03f);
