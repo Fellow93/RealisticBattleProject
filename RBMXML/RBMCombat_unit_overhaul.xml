@@ -12241,7 +12241,7 @@
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Head"
-                 id="Item.visored_helmet_over_mail_coif" />
+                 id="Item.visored_helmet_over_padded_cloth" />
       <equipment slot="Gloves"
                  id="Item.reinforced_mail_mitten" />
       <equipment slot="Cape"
@@ -12300,7 +12300,7 @@
       <equipment slot="Item1"
                  id="Item.fortified_kite_shield_shoulder" />
       <equipment slot="Body"
-                 id="Item.sturgian_fortified_armor" />
+                 id="Item.coat_of_plates_over_mail" />
 	  <equipment slot="Cape"
                  id="Item.noble_pauldron" />
       <equipment slot="Leg"
@@ -12316,13 +12316,13 @@
       <equipment slot="Item1"
                  id="Item.fortified_kite_shield_shoulder" />
       <equipment slot="Body"
-                 id="Item.sturgian_fortified_armor" />
+                 id="Item.coat_of_plates_over_mail" />
 	  <equipment slot="Cape"
                  id="Item.noble_pauldron" />
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Head"
-                 id="Item.full_helm_over_padded_cap" />
+                 id="Item.visored_helmet_over_padded_coif" />
       <equipment slot="Gloves"
                  id="Item.reinforced_mail_mitten" />
       </EquipmentRoster>
@@ -12332,13 +12332,13 @@
       <equipment slot="Item1"
                  id="Item.fortified_kite_shield_shoulder" />
       <equipment slot="Body"
-                 id="Item.sturgian_fortified_armor" />
+                 id="Item.coat_of_plates_over_mail" />
 	  <equipment slot="Cape"
                  id="Item.noble_pauldron" />
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Head"
-                 id="Item.full_helm_over_arming_coif" />
+                 id="Item.visored_helmet_over_laced_coif" />
       <equipment slot="Gloves"
                  id="Item.reinforced_mail_mitten" />
       </EquipmentRoster>
@@ -12612,7 +12612,7 @@
       <equipment slot="Leg"
                  id="Item.northern_plated_boots" />
       <equipment slot="Head"
-                 id="Item.visored_helmet_over_mail_coif" />
+                 id="Item.peaked_helmet_over_mail_coif" />
       <equipment slot="Gloves"
                  id="Item.lordly_mail_mitten" />
       <equipment slot="Cape"
@@ -12630,7 +12630,7 @@
       <equipment slot="Leg"
                  id="Item.northern_plated_boots" />
       <equipment slot="Head"
-                 id="Item.full_helm_over_cloth_headwrap" />
+                 id="Item.peaked_helmet_over_mail" />
       <equipment slot="Gloves"
                  id="Item.lordly_mail_mitten" />
       <equipment slot="Cape"
@@ -12646,7 +12646,7 @@
       <equipment slot="Leg"
                  id="Item.northern_plated_boots" />
       <equipment slot="Head"
-                 id="Item.full_helm_over_laced_coif" />
+                 id="Item.visored_helmet_over_padded_coif" />
       <equipment slot="Gloves"
                  id="Item.lordly_mail_mitten" />
       <equipment slot="Cape"
@@ -12664,7 +12664,7 @@
       <equipment slot="Leg"
                  id="Item.mail_chausses" />
       <equipment slot="Head"
-                 id="Item.visored_helmet_over_mail_coif" />
+                 id="Item.visored_helmet_over_laced_coif" />
       <equipment slot="Gloves"
                  id="Item.lordly_mail_mitten" />
       <equipment slot="Cape"
