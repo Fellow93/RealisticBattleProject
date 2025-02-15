@@ -15992,7 +15992,7 @@
       <skill id="Riding"
              value="20" />
       <skill id="OneHanded"
-             value="15" />
+             value="80" />
       <skill id="TwoHanded"
              value="90" />
       <skill id="Polearm"
@@ -16041,7 +16041,7 @@
       <skill id="Riding"
              value="50" />
       <skill id="OneHanded"
-             value="50" />
+             value="110" />
       <skill id="TwoHanded"
              value="120" />
       <skill id="Polearm"
@@ -16090,7 +16090,7 @@
       <skill id="Riding"
              value="60" />
       <skill id="OneHanded"
-             value="130" />
+             value="190" />
       <skill id="TwoHanded"
              value="200" />
       <skill id="Polearm"

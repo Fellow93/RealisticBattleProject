@@ -512,15 +512,15 @@
                culture="Culture.sturgia"
 			   modifier_group="spear_dart_throwing">
     <Pieces>
-      <Piece id="spear_blade_27"
+      <Piece id="spear_blade_38"
              Type="Blade"
-             scale_factor="50" />
+             scale_factor="250" />
       <Piece id="default_polearm_guard"
              Type="Guard"
              scale_factor="100" />
       <Piece id="spear_handle_10"
              Type="Handle"
-             scale_factor="200" />
+             scale_factor="150" />
       <Piece id="spear_pommel_5"
              Type="Pommel"
              scale_factor="100" />

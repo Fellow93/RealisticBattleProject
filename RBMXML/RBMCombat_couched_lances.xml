@@ -184,7 +184,7 @@
   
   <CraftingPiece id="spear_blade_38" name="{=nr3K4od2}Pilum Head" tier="5" piece_type="Blade" mesh="spear_blade_38" length="23.7" weight="0.250" excluded_item_usage_features="swing">
     <BladeData stack_amount="2" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_3_2" holster_body_name="bo_throwing_spear_quiver_3_2" holster_mesh_length="96.8">
-      <Thrust damage_type="Pierce" damage_factor="1.2" />
+      <Thrust damage_type="Pierce" damage_factor="3" />
     </BladeData>
     <Flags>
       <Flag name="BonusAgainstShield" />

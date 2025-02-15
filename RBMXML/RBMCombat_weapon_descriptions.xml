@@ -1761,7 +1761,7 @@
   </WeaponDescription>
   <WeaponDescription id="OneHandedAxe"
                      weapon_class="OneHandedAxe"
-                     item_usage_features="onehanded:shield:axe">
+                     item_usage_features="onehanded:shield:axe:thrust">
     <WeaponFlags>
       <WeaponFlag value="MeleeWeapon"/>
       <WeaponFlag value="BonusAgainstShield"/>
@@ -1932,7 +1932,7 @@
   </WeaponDescription>
   <WeaponDescription id="OneHandedBastardAxe"
                      weapon_class="OneHandedAxe"
-                     item_usage_features="onehanded:rshield:axe">
+                     item_usage_features="onehanded:rshield:axe:thrust">
     <WeaponFlags>
       <WeaponFlag value="MeleeWeapon"/>
       <WeaponFlag value="BonusAgainstShield"/>
@@ -1977,7 +1977,7 @@
   </WeaponDescription>
   <WeaponDescription id="OneHandedBastardAxeAlternative"
                      weapon_class="OneHandedAxe"
-                     item_usage_features="onehanded:axe">
+                     item_usage_features="onehanded:axe:thrust">
     <WeaponFlags>
       <WeaponFlag value="MeleeWeapon"/>
       <WeaponFlag value="BonusAgainstShield"/>
@@ -2022,7 +2022,7 @@
   </WeaponDescription>
   <WeaponDescription id="TwoHandedAxe"
                      weapon_class="TwoHandedAxe"
-                     item_usage_features="twohanded:widegrip:axe">
+                     item_usage_features="twohanded:widegrip:axe:thrust">
     <WeaponFlags>
       <WeaponFlag value="MeleeWeapon"/>
       <WeaponFlag value="NotUsableWithOneHand"/>
@@ -3683,7 +3683,7 @@
   </WeaponDescription>
   <WeaponDescription id="TwoHandedMace"
                      weapon_class="TwoHandedMace"
-                     item_usage_features="twohanded:axe">
+                     item_usage_features="twohanded:axe:thrust">
     <WeaponFlags>
       <WeaponFlag value="MeleeWeapon"/>
       <WeaponFlag value="NotUsableWithOneHand"/>

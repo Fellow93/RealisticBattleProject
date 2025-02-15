@@ -21,6 +21,7 @@
                body_name="bo_axe_longer_b">
       <Swing damage_type="Cut"
              damage_factor="0.6" />
+		<Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse"
@@ -51,6 +52,7 @@
                body_name="bo_axe_longer_b">
       <Swing damage_type="Cut"
              damage_factor="0.6" />
+	<Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse"
@@ -69,6 +71,7 @@
     <BuildData piece_offset="-6.8" />
     <BladeData stack_amount="3" blade_length="15.764" blade_width="16" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="0.9" />
+		<Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -84,6 +87,7 @@
     <BuildData piece_offset="-7.2" />
     <BladeData stack_amount="3" blade_length="10.364" blade_width="20.3" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="0.7" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -98,6 +102,7 @@
     <BuildData piece_offset="-6.2" />
     <BladeData stack_amount="3" blade_length="16.562" blade_width="13.626" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="0.7" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -112,6 +117,7 @@
     <BuildData piece_offset="0" />
     <BladeData stack_amount="2" blade_length="17.6" blade_width="19.393" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
       <Swing damage_type="Cut" damage_factor="0.9" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -126,6 +132,7 @@
     <BuildData piece_offset="-6.558" />
     <BladeData stack_amount="3" blade_length="9.79" blade_width="28.335" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="1.1" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -141,6 +148,7 @@
     <BuildData piece_offset="-8" />
     <BladeData stack_amount="3" blade_length="25.328" blade_width="31.023" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="1.1" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -157,6 +165,7 @@
     <BuildData piece_offset="-5.4" />
     <BladeData stack_amount="3" blade_length="9.683" blade_width="18.004" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="0.7" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -172,6 +181,7 @@
     <BuildData piece_offset="-5.4" />
     <BladeData stack_amount="3" blade_length="9.683" blade_width="18.004" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="0.7" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -187,6 +197,7 @@
     <BuildData piece_offset="-4" />
     <BladeData stack_amount="3" blade_length="9.382" blade_width="18.004" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="0.9" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -201,6 +212,7 @@
     <BuildData piece_offset="-4.6" />
     <BladeData stack_amount="3" blade_length="8.442" blade_width="19.527" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="0.7" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -215,6 +227,7 @@
     <BuildData piece_offset="-4.6" />
     <BladeData stack_amount="3" blade_length="8.442" blade_width="19.527" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="0.7" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -229,6 +242,7 @@
     <BuildData piece_offset="-2.6" />
     <BladeData stack_amount="3" blade_length="11.4" blade_width="17.4" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="1.1" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -244,6 +258,7 @@
     <BuildData piece_offset="-5.628" />
     <BladeData stack_amount="3" blade_length="12.2" blade_width="24.433" physics_material="metal_weapon" body_name="bo_axe_longer_a">
       <Swing damage_type="Cut" damage_factor="0.7" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -258,6 +273,7 @@
     <BuildData piece_offset="-10.6" />
     <BladeData stack_amount="3" blade_length="24.97" blade_width="20.661" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="1.1" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -273,6 +289,7 @@
     <BuildData piece_offset="-4.208" />
     <BladeData stack_amount="3" blade_length="11.538" blade_width="26.876" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="1.3" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -290,6 +307,7 @@
     <BuildData piece_offset="-3.92" />
     <BladeData stack_amount="3" blade_length="22.332" blade_width="23.205" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="1.2" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -307,6 +325,7 @@
     <BuildData piece_offset="-4.2" />
     <BladeData stack_amount="3" blade_length="9.46" blade_width="21.987" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="0.7" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -321,6 +340,7 @@
     <BuildData piece_offset="-9.6" />
     <BladeData stack_amount="3" blade_length="9.105" blade_width="23.082" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="0.9" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -335,6 +355,7 @@
     <BuildData piece_offset="-6.2" />
     <BladeData stack_amount="3" blade_length="12.961" blade_width="19.393" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="0.9" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -350,6 +371,7 @@
     <BuildData piece_offset="-3" />
     <BladeData stack_amount="3" blade_length="11.622" blade_width="23.945" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="0.9" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -364,6 +386,7 @@
     <BuildData piece_offset="-20.4" />
     <BladeData stack_amount="3" blade_length="22.539" blade_width="16.706" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="1.1" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -379,6 +402,7 @@
     <BuildData piece_offset="-6" />
     <BladeData stack_amount="3" blade_length="12.564" blade_width="15.1" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="0.7" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -409,6 +433,7 @@
                body_name="bo_axe_longer_b">
       <Swing damage_type="Cut"
              damage_factor="0.6" />
+			 <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse"
@@ -430,6 +455,7 @@
     <BuildData piece_offset="-5.424" />
     <BladeData stack_amount="3" blade_length="28.366" blade_width="28.192" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="1.1" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -440,7 +466,7 @@
       <Material id="Iron3" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="axe_craft_17_head" name="{=R62maL2H}Bill Head" tier="4" piece_type="Blade" mesh="axe_craft_17_head" distance_to_next_piece="21" distance_to_previous_piece="3.8" weight="0.7">
+  <CraftingPiece id="axe_craft_17_head" name="{=R62maL2H}Bill Head" tier="4" piece_type="Blade" mesh="axe_craft_17_head" distance_to_next_piece="21" distance_to_previous_piece="3.8" weight="0.7" excluded_item_usage_features="thrust">
     <BuildData piece_offset="-7.6" />
     <BladeData stack_amount="3" blade_length="33.887" blade_width="22.47" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Pierce" damage_factor="0.9" />
@@ -458,6 +484,7 @@
     <BuildData piece_offset="-7.992" />
     <BladeData stack_amount="3" blade_length="24.612" blade_width="24.998" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="0.9" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -473,6 +500,7 @@
     <BuildData piece_offset="-12" />
     <BladeData stack_amount="3" blade_length="57.435" blade_width="23.337" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="1.0" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -487,6 +515,7 @@
     <BuildData piece_offset="-12" />
     <BladeData stack_amount="3" blade_length="57.435" blade_width="23.337" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="1.2" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -504,6 +533,7 @@
     <BuildData piece_offset="-8.241" />
     <BladeData stack_amount="3" blade_length="16.651" blade_width="26.744" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="1.3" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -521,6 +551,7 @@
     <BuildData piece_offset="-4" />
     <BladeData stack_amount="3" blade_length="20.781" blade_width="30.384" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="1.2" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -538,6 +569,7 @@
     <BuildData piece_offset="-5.8" />
     <BladeData stack_amount="3" blade_length="13.923" blade_width="21.94" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="0.7" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -552,6 +584,7 @@
     <BuildData piece_offset="-5.8" />
     <BladeData stack_amount="3" blade_length="13.923" blade_width="21.94" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="0.7" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -566,6 +599,7 @@
     <BuildData piece_offset="-5.234" />
     <BladeData stack_amount="3" blade_length="13.105" blade_width="27.618" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="0.7" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -580,6 +614,7 @@
     <BuildData piece_offset="-4.628" />
     <BladeData stack_amount="3" blade_length="23.005" blade_width="22.407" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="1.1" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -595,6 +630,7 @@
     <BuildData piece_offset="-8" />
     <BladeData stack_amount="3" blade_length="20.281" blade_width="19.8" physics_material="metal_weapon" body_name="bo_axe_longer_b">
       <Swing damage_type="Cut" damage_factor="1.1" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -611,6 +647,7 @@
     <BuildData piece_offset="5.0" />
     <BladeData stack_amount="2" blade_length="10.566" blade_width="19.257" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
       <Swing damage_type="Cut" damage_factor="1.1" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="3" />
@@ -623,6 +660,7 @@
     <BuildData piece_offset="5.0" />
     <BladeData stack_amount="2" blade_length="8.707" blade_width="16.898" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
       <Swing damage_type="Cut" damage_factor="1.1" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Materials>
       <Material id="Iron4" count="3" />
@@ -635,6 +673,7 @@
     <BuildData piece_offset="5.0" />
     <BladeData stack_amount="2" blade_length="13.366" blade_width="13.211" physics_material="metal_weapon" body_name="bo_axe_longer_b" holster_mesh="throwing_axe_quiver_1">
       <Swing damage_type="Cut" damage_factor="0.7" />
+	  <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
@@ -661,6 +700,7 @@
                holster_mesh="throwing_axe_quiver_1">
       <Swing damage_type="Cut"
              damage_factor="1.1" />
+			 <Thrust damage_type="Pierce" damage_factor="0.8" />
     </BladeData>
     <Materials>
       <Material id="Iron4"
