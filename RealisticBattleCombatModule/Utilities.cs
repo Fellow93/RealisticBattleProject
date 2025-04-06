@@ -993,6 +993,12 @@ namespace RBMCombat
                         break;
                     }
             }
+
+            //critical strike
+            float minCrit = 0; // skill based min
+            float maxCrit = 1; // skill based max
+            magnitude = magnitude * (MBRandom.RandomFloatRanged(minCrit, maxCrit));  
+
             return magnitude;
         }
 
@@ -1095,6 +1101,10 @@ namespace RBMCombat
                     }
                 case "Arrow":
                     {
+                        //critical strike
+                        float minCrit = 0; // skill based min
+                        float maxCrit = 1; // skill based max
+                        magnitude = magnitude * (MBRandom.RandomFloatRanged(minCrit, maxCrit));
                         damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor, 0f);
                         break;
                     }
