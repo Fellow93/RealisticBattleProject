@@ -1037,7 +1037,7 @@ namespace RBMCombat
             return magnitude;
         }
 
-        public static float RBMComputeDamage(string weaponType, DamageTypes damageType, float magnitude, float skillModifier, float armorEffectiveness, float absorbedDamageRatio, out float penetratedDamage, out float bluntTraumaAfterArmor, float weaponDamageFactor = 1f, BasicCharacterObject player = null, bool isPlayerVictim = false, ArmorMaterialTypes armorMaterial = ArmorMaterialTypes.None)
+        public static float RBMComputeDamage(string weaponType, DamageTypes damageType, float magnitude, float armorEffectiveness, float absorbedDamageRatio, out float penetratedDamage, out float bluntTraumaAfterArmor, float weaponDamageFactor = 1f, BasicCharacterObject player = null, bool isPlayerVictim = false, ArmorMaterialTypes armorMaterial = ArmorMaterialTypes.None)
         {
 
             if(armorMaterial != ArmorMaterialTypes.None)
@@ -1139,7 +1139,7 @@ namespace RBMCombat
                         //critical strike
                         float minCrit = 0.75f; // skill based min
                         float maxCrit = 1f; // skill based max
-                        minCrit = 0.75f + (skillModifier * 0.2f);
+                        //minCrit = 0.75f + (skillModifier * 0.2f);
                         magnitude = magnitude * (MBRandom.RandomFloatRanged(minCrit, maxCrit));
                         damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor, 0f);
                         break;
@@ -1158,7 +1158,7 @@ namespace RBMCombat
                         //critical strike
                         float minCrit = 0.5f; // skill based min
                         float maxCrit = 1.5f; // skill based max
-                        minCrit = 0.5f + (skillModifier * 0.35f);
+                        //minCrit = 0.5f + (skillModifier * 0.35f);
                         maxCrit = 1.5f;
                         magnitude = magnitude * (MBRandom.RandomFloatRanged(minCrit, maxCrit));
                         damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_thrust, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);
@@ -1169,7 +1169,7 @@ namespace RBMCombat
                         //critical strike
                         float minCrit = 0.4f; // skill based min
                         float maxCrit = 1.6f; // skill based max
-                        minCrit = 0.4f + (skillModifier * 0.4f);
+                        //minCrit = 0.4f + (skillModifier * 0.4f);
                         maxCrit = 1.6f;
                         magnitude = magnitude * (MBRandom.RandomFloatRanged(minCrit, maxCrit));
                         damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_thrust, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);
