@@ -637,13 +637,18 @@ namespace RBMCombat
             const float ashBreakTreshold = 430f;
             const float poplarBreakTreshold = 260f;
             float BraceBonus = 0f;
-            float BraceModifier = 1f; // because lances have 3 times more damage
+            float BraceModifier = 1f; // because lances have 3 times more damage - no longer applies
+            //critical strike
+            float minCrit = 0.5f; // skill based min default
+            float maxCrit = 1.5f; // skill based max default
             switch (weaponType)
             {
                 case "Dagger":
                 case "OneHandedSword":
                 case "ThrowingKnife":
                     {
+                        minCrit = 0.5f + (skillModifier * 0.4f);
+                        maxCrit = 1.25f + (skillModifier * 0.5f);
                         if (damageType == DamageTypes.Cut)
                         {
                             float value = magnitude + (effectiveSkill * 0.133f);
@@ -674,6 +679,8 @@ namespace RBMCombat
                                 //    skillBasedDamage = 170f * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
                                 //}
                                 skillBasedDamage = magnitude;
+                                minCrit = 0.65f + (skillModifier * 0.25f);
+                                maxCrit = 1.1f + (skillModifier * 0.4f);
                             }
                         }
                         if (magnitude > 1f)
@@ -684,6 +691,8 @@ namespace RBMCombat
                     }
                 case "TwoHandedSword":
                     {
+                        minCrit = 0.7f + (skillModifier * 0.25f);
+                        maxCrit = 1.35f + (skillModifier * 0.5f);
                         if (damageType == DamageTypes.Cut)
                         {
                             float value = magnitude + (effectiveSkill * 0.199f);
@@ -712,6 +721,8 @@ namespace RBMCombat
                                 //    skillBasedDamage = 240 * (1 + (skillModifier * 0.5f)) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
                                 //}
                                 skillBasedDamage = magnitude;
+                                minCrit = 0.8f + (skillModifier * 0.15f);
+                                maxCrit = 1.2f + (skillModifier * 0.4f);
                             }
                         }
                         if (magnitude > 1f)
@@ -723,6 +734,8 @@ namespace RBMCombat
                 case "OneHandedAxe":
                 case "ThrowingAxe":
                     {
+                        minCrit = 0.4f + (skillModifier * 0.45f);
+                        maxCrit = 1.35f + (skillModifier * 0.55f);
                         float value = magnitude + (effectiveSkill * 0.1f);
                         float min = 10f * (1 + skillModifier);
                         float max = 18f * (1 + (2 * skillModifier));
@@ -740,6 +753,8 @@ namespace RBMCombat
                     }
                 case "OneHandedBastardAxe":
                     {
+                        minCrit = 0.5f + (skillModifier * 0.4f);
+                        maxCrit = 1.4f + (skillModifier * 0.55f);
                         skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.13f), 12f * (1 + skillModifier), 20f * (1 + (2 * skillModifier))) * 4.6f);
                         if (damageType == DamageTypes.Blunt)
                         {
@@ -754,6 +769,8 @@ namespace RBMCombat
                     }
                 case "TwoHandedAxe":
                     {
+                        minCrit = 0.55f + (skillModifier * 0.35f);
+                        maxCrit = 1.45f + (skillModifier * 0.55f);
                         float value = magnitude + (effectiveSkill * 0.15f);
                         float min = 15f * (1 + skillModifier);
                         float max = 24f * (1 + (2 * skillModifier));
@@ -771,6 +788,8 @@ namespace RBMCombat
                     }
                 case "Mace":
                     {
+                        minCrit = 0.7f + (skillModifier * 0.25f);
+                        maxCrit = 1.3f + (skillModifier * 0.2f);
                         if (damageType == DamageTypes.Pierce)
                         {
                             //float totalSpeed = (float)Math.Sqrt((magnitude * 2) / 8f);
@@ -785,6 +804,8 @@ namespace RBMCombat
                         }
                         else
                         {
+                            minCrit = 0.8f + (skillModifier * 0.15f);
+                            maxCrit = 1.2f + (skillModifier * 0.3f);
                             float value = magnitude + (effectiveSkill * 0.075f);
                             float min = 10f * (1 + skillModifier);
                             float max = 15f * (1 + (2 * skillModifier));
@@ -799,12 +820,16 @@ namespace RBMCombat
                     }
                 case "TwoHandedMace":
                     {
+                        minCrit = 0.8f + (skillModifier * 0.15f);
+                        maxCrit = 1.4f + (skillModifier * 0.2f);
                         if (damageType == DamageTypes.Pierce)
                         {
                             skillBasedDamage = (magnitude * 0.2f + 40f * RBMConfig.RBMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.4f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) * 1.3f;
                         }
                         else
                         {
+                            minCrit = 0.85f + (skillModifier * 0.1f);
+                            maxCrit = 1.3f + (skillModifier * 0.3f);
                             skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.112f), 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4.6f);
                         }
                         if (magnitude > 1f)
@@ -815,8 +840,12 @@ namespace RBMCombat
                     }
                 case "OneHandedPolearm":
                     {
+                        minCrit = 0.55f + (skillModifier * 0.35f);
+                        maxCrit = 1.1f + (skillModifier * 0.4f);
                         if (damageType == DamageTypes.Cut)
                         {
+                            minCrit = 0.55f + (skillModifier * 0.35f);
+                            maxCrit = 1.45f + (skillModifier * 0.55f);
                             skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.1f), 15f * (1 + skillModifier), 24f * (1 + (2 * skillModifier))) * 4f);
                         }
                         else if (damageType == DamageTypes.Blunt && !isPassiveUsage)
@@ -828,6 +857,8 @@ namespace RBMCombat
                         {
                             if (isPassiveUsage)
                             {
+                                minCrit = 0.55f + (skillModifier * 0.35f);
+                                maxCrit = 1.1f + (skillModifier * 0.4f);
                                 float couchedSkill = 0.5f + effectiveSkill * 0.02f;
                                 float skillCap = (150f + effectiveSkill * 1.5f);
 
@@ -905,8 +936,12 @@ namespace RBMCombat
                     }
                 case "TwoHandedPolearm":
                     {
+                        minCrit = 0.8f + (skillModifier * 0.15f);
+                        maxCrit = 1.3f + (skillModifier * 0.4f);
                         if (damageType == DamageTypes.Cut)
                         {
+                            minCrit = 0.55f + (skillModifier * 0.35f);
+                            maxCrit = 1.45f + (skillModifier * 0.55f);
                             float value = magnitude + (effectiveSkill * 0.1495f);
                             float min = 18f * (1 + skillModifier);
                             float max = 28f * (1 + (2 * skillModifier));
@@ -921,6 +956,8 @@ namespace RBMCombat
                         {
                             if (isPassiveUsage)
                             {
+                                minCrit = 0.55f + (skillModifier * 0.35f);
+                                maxCrit = 1.1f + (skillModifier * 0.4f);
                                 float couchedSkill = 0.5f + effectiveSkill * 0.02f;
                                 float skillCap = (150f + effectiveSkill * 1.5f);
 
@@ -995,14 +1032,12 @@ namespace RBMCombat
             }
 
             //critical strike
-            float minCrit = 0; // skill based min
-            float maxCrit = 1; // skill based max
             magnitude = magnitude * (MBRandom.RandomFloatRanged(minCrit, maxCrit));  
 
             return magnitude;
         }
 
-        public static float RBMComputeDamage(string weaponType, DamageTypes damageType, float magnitude, float armorEffectiveness, float absorbedDamageRatio, out float penetratedDamage, out float bluntTraumaAfterArmor, float weaponDamageFactor = 1f, BasicCharacterObject player = null, bool isPlayerVictim = false, ArmorMaterialTypes armorMaterial = ArmorMaterialTypes.None)
+        public static float RBMComputeDamage(string weaponType, DamageTypes damageType, float magnitude, float skillModifier, float armorEffectiveness, float absorbedDamageRatio, out float penetratedDamage, out float bluntTraumaAfterArmor, float weaponDamageFactor = 1f, BasicCharacterObject player = null, bool isPlayerVictim = false, ArmorMaterialTypes armorMaterial = ArmorMaterialTypes.None)
         {
 
             if(armorMaterial != ArmorMaterialTypes.None)
@@ -1102,24 +1137,41 @@ namespace RBMCombat
                 case "Arrow":
                     {
                         //critical strike
-                        float minCrit = 0; // skill based min
-                        float maxCrit = 1; // skill based max
+                        float minCrit = 0.75f; // skill based min
+                        float maxCrit = 1f; // skill based max
+                        minCrit = 0.75f + (skillModifier * 0.2f);
                         magnitude = magnitude * (MBRandom.RandomFloatRanged(minCrit, maxCrit));
                         damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor, 0f);
                         break;
                     }
                 case "Bolt":
                     {
+                        //critical strike
+                        float minCrit = 0.95f; // skill based min
+                        float maxCrit = 1f; // skill based max
+                        magnitude = magnitude * (MBRandom.RandomFloatRanged(minCrit, maxCrit));
                         damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor, 0f);
                         break;
                     }
                 case "Javelin":
                     {
+                        //critical strike
+                        float minCrit = 0.5f; // skill based min
+                        float maxCrit = 1.5f; // skill based max
+                        minCrit = 0.5f + (skillModifier * 0.35f);
+                        maxCrit = 1.5f;
+                        magnitude = magnitude * (MBRandom.RandomFloatRanged(minCrit, maxCrit));
                         damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_thrust, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);
                         break;
                     }
                 case "ThrowingAxe":
                     {
+                        //critical strike
+                        float minCrit = 0.4f; // skill based min
+                        float maxCrit = 1.6f; // skill based max
+                        minCrit = 0.4f + (skillModifier * 0.4f);
+                        maxCrit = 1.6f;
+                        magnitude = magnitude * (MBRandom.RandomFloatRanged(minCrit, maxCrit));
                         damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_thrust, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);
                         break;
                     }
