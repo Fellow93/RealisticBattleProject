@@ -1086,6 +1086,12 @@ namespace RBMCombat
                     }
                 case "ThrowingKnife":
                     {
+                        //critical strike
+                        float minCrit = 0.4f; // skill based min
+                        float maxCrit = 1.6f; // skill based max
+                        //minCrit = 0.4f + (skillModifier * 0.4f);
+                        maxCrit = 1.6f;
+                        mag_1h_sword_thrust = mag_1h_sword_thrust * (MBRandom.RandomFloatRanged(minCrit, maxCrit));
                         damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_sword_thrust, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);
                         break;
                     }
@@ -1160,7 +1166,7 @@ namespace RBMCombat
                         float maxCrit = 1.5f; // skill based max
                         //minCrit = 0.5f + (skillModifier * 0.35f);
                         maxCrit = 1.5f;
-                        magnitude = magnitude * (MBRandom.RandomFloatRanged(minCrit, maxCrit));
+                        mag_1h_thrust = mag_1h_thrust * (MBRandom.RandomFloatRanged(minCrit, maxCrit));
                         damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_thrust, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);
                         break;
                     }
@@ -1171,7 +1177,7 @@ namespace RBMCombat
                         float maxCrit = 1.6f; // skill based max
                         //minCrit = 0.4f + (skillModifier * 0.4f);
                         maxCrit = 1.6f;
-                        magnitude = magnitude * (MBRandom.RandomFloatRanged(minCrit, maxCrit));
+                        mag_1h_thrust = mag_1h_thrust * (MBRandom.RandomFloatRanged(minCrit, maxCrit));
                         damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_thrust, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);
                         break;
                     }
