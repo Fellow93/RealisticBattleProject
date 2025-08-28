@@ -212,6 +212,11 @@ namespace RBMAI
                         aggresivnesModifier = 0;
                     }
                     float weaponLengthModifier = unit.WieldedWeapon.CurrentUsageItem != null ? (unit.WieldedWeapon.CurrentUsageItem.GetRealWeaponLength() + 0.5f) : 1f;
+                    float enemyWeaponLengthModifier = -1f;
+                    if(targetAgent != null)
+                    {
+                        enemyWeaponLengthModifier = targetAgent.WieldedWeapon.CurrentUsageItem != null ? (targetAgent.WieldedWeapon.CurrentUsageItem.GetRealWeaponLength()) : 1f;
+                    }
 
                     int weaponLengthAgressivnessModifier = 10;
                     if (!unit.WieldedWeapon.IsEmpty && unit.WieldedWeapon.CurrentUsageItem != null)
@@ -223,6 +228,7 @@ namespace RBMAI
                     }
 
                     aggresivnesModifier += weaponLengthAgressivnessModifier;
+                    aggresivnesModifier *= (int)MBMath.ClampFloat(enemyWeaponLengthModifier/weaponLengthModifier, 1f, 2f);
 
                     if (__instance.Captain != null && __instance.Captain.IsPlayerTroop)
                     {
@@ -319,7 +325,7 @@ namespace RBMAI
                             {
                                 unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, weaponLengthModifier, 4f, 10f, 6f);
                                 unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5f, weaponLengthModifier, 1f, 10f, 0.01f);
-                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 6f, 0.8f, 10f, 6f);
+                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0.01f);
                             }
                             //if (IsInImportantFrontlineAction(unit))
                             //{
@@ -524,7 +530,7 @@ namespace RBMAI
                         MBList<Agent> enemyAgentsImmidiate = new MBList<Agent>();
                         MBList<Agent> enemyAgentsClose = new MBList<Agent>();
                         //float searchArea = 4.5f;
-                        float searchArea = weaponLengthModifier + 1f;
+                        float searchArea = weaponLengthModifier + 2f;
                         enemyAgentsImmidiate = mission.GetNearbyEnemyAgents(unitPosition, searchArea, unit.Team, enemyAgentsImmidiate);
                         //IEnumerable<Agent> enemyAgentsImmidiate = null;
 
@@ -566,7 +572,7 @@ namespace RBMAI
                                     postureModifier = ((posture.posture / posture.maxPosture) * 0.3f) + ((1f - (posture.maxPostureLossCount / 10)) * 0.7f);
                                 }
                             }
-                            int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * hpModifier * postureModifier * 40) + attackingTogether, 50, 180);
+                            int unitPower = MBMath.ClampInt((int)Math.Floor(unit.CharacterPowerCached * hpModifier * postureModifier * 40) + attackingTogether, 50, 200);
                             int randInt = MBRandom.RandomInt((int)unitPower + aggresivnesModifier);
                             int defensivnesModifier = 0;
 
@@ -591,9 +597,9 @@ namespace RBMAI
                                 {
                                     if (IsActivelyAttacking(unit))
                                     {
-                                        aiDecision.position = WorldPosition.Invalid;
+                                        //aiDecision.position = WorldPosition.Invalid;
                                         ResetAiDecision(ref aiDecision);
-                                        return true;
+                                        return false;
                                     }
                                     WorldPosition backPosition = unit.GetWorldPosition();
                                     backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * backStepDistance);
@@ -610,9 +616,9 @@ namespace RBMAI
                                 //{
                                 if (IsActivelyAttacking(unit))
                                 {
-                                    aiDecision.position = WorldPosition.Invalid;
+                                    //aiDecision.position = WorldPosition.Invalid;
                                     ResetAiDecision(ref aiDecision);
-                                    return true;
+                                    return false;
                                 }
                                 if (rnd.Next(3) == 0)
                                 {
@@ -639,9 +645,9 @@ namespace RBMAI
                                         //{
                                         if (IsActivelyAttacking(unit))
                                         {
-                                            aiDecision.position = WorldPosition.Invalid;
+                                            //aiDecision.position = WorldPosition.Invalid;
                                             ResetAiDecision(ref aiDecision);
-                                            return true;
+                                            return false;
                                         }
                                         if (rnd.Next(2) == 0)
                                         {
@@ -660,9 +666,9 @@ namespace RBMAI
                                     }
                                     if (IsActivelyAttacking(unit))
                                     {
-                                        aiDecision.position = WorldPosition.Invalid;
+                                        //aiDecision.position = WorldPosition.Invalid;
                                         ResetAiDecision(ref aiDecision);
-                                        return true;
+                                        return false;
                                     }
                                     __result = getNearbyAllyWorldPosition(mission, unitPosition, unit);
                                     aiDecision.position = __result; return false;
@@ -673,9 +679,9 @@ namespace RBMAI
                                     {
                                         if (IsActivelyAttacking(unit))
                                         {
-                                            aiDecision.position = WorldPosition.Invalid;
+                                            //aiDecision.position = WorldPosition.Invalid;
                                             ResetAiDecision(ref aiDecision);
-                                            return true;
+                                            return false;
                                         }
                                         if (rnd.Next(2) == 0)
                                         {
@@ -692,9 +698,9 @@ namespace RBMAI
                                     {
                                         if (IsActivelyAttacking(unit))
                                         {
-                                            aiDecision.position = WorldPosition.Invalid;
+                                            //aiDecision.position = WorldPosition.Invalid;
                                             ResetAiDecision(ref aiDecision);
-                                            return true;
+                                            return false;
                                         }
                                         if (rnd.Next(2) == 0)
                                         {

@@ -520,7 +520,7 @@
              scale_factor="100" />
       <Piece id="spear_handle_10"
              Type="Handle"
-             scale_factor="150" />
+             scale_factor="225" />
       <Piece id="spear_pommel_5"
              Type="Pommel"
              scale_factor="100" />

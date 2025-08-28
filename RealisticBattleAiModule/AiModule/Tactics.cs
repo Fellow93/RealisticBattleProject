@@ -33,7 +33,7 @@ namespace RBMAI
         {
             private static void Postfix(Agent affectedAgent, Agent affectorAgent, in Blow b, in AttackCollisionData collisionData, bool isBlocked, float damagedHp)
             {
-                if (affectedAgent != null && affectorAgent != null && affectedAgent.IsActive() && affectedAgent.IsHuman && !collisionData.AttackBlockedWithShield)
+                if (affectedAgent != null && affectorAgent != null && affectedAgent.IsActive() && affectedAgent.IsHuman && affectorAgent.IsHuman && !collisionData.AttackBlockedWithShield)
                 {
                     if (!affectorAgent.IsHuman && affectorAgent.RiderAgent != null)
                     {

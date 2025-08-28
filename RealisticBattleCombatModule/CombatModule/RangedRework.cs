@@ -388,15 +388,15 @@ namespace RBMCombat
                 if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
                 {
                     float ammoWeight;
-                    if (missionWeapon.AmmoWeapon.IsEmpty)
-                    {
-                        ammoWeight = 0.07f;
-                    }
-                    else
+                    if (missionWeapon.AmmoWeapon.Item != null && missionWeapon.Item != null && !missionWeapon.AmmoWeapon.IsEmpty && missionWeapon.AmmoWeapon.Amount > 0)
                     {
                         float ammoWeightSum = missionWeapon.AmmoWeapon.GetWeight();
                         float ammoCount = missionWeapon.AmmoWeapon.Amount;
                         ammoWeight = ammoWeightSum / ammoCount;
+                    }
+                    else
+                    {
+                        ammoWeight = 0.07f;
                     }
 
                     RangedWeaponStats rws;
