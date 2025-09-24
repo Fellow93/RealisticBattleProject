@@ -228,4 +228,27 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
+	
+	<!-- #endregion -->
+	<Item
+		id="assassin_boot"
+		name="{=iqaRjMhe}Blackened Boots"
+		mesh="assassin_boot"
+		culture="Culture.nord"
+		weight="1"
+		appearance="4"
+		Type="LegArmor">
+		<ItemComponent>
+			<Armor
+				leg_armor="5"
+				stealth_factor="20"
+				covers_legs="true"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Stealth="true" />
+	</Item>
+	<!-- #endregion -->
+	
 </Items>

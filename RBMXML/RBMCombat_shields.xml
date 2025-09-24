@@ -955,4 +955,167 @@
 		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandSecondaryItemBone="true"/>
 	</Item>
 <!-- Shoulder shields, cannot be obtained by the player, will never drop-->
+<!-- New -->
+
+	<Item
+		id="vlandia_infantry_shield_a"
+		name="{=djSq8yL0}Angular Kite Shield"
+		body_name="bo_cap_vlandia_infantry_shield_a"
+		shield_body_name="bo_vlandia_infantry_shield_a"
+		recalculate_body="false"
+		mesh="vlandia_infantry_shield_a"
+		culture="Culture.vlandia"
+		using_tableau="true"
+		weight="3.7"
+		appearance="1"
+		Type="Shield"
+		item_holsters="shield_kite:shield_2:shield_3:shield_4"
+		has_lower_holster_priority="true"
+		holster_position_shift="-0.03,0.0,0.05">
+		<ItemComponent>
+			<Weapon
+				weapon_class="LargeShield"
+				body_armor="5"
+				thrust_speed="85"
+				thrust_damage_type="Blunt"
+				speed_rating="85"
+				physics_material="wood_shield"
+				item_usage="shield"
+				position="0.03, -0.02, 0.00"
+				rotation="0.00,16.00,40.00"
+				weapon_length="133"
+				center_of_mass="-0.070,0.0,0.05"
+				hit_points="520"
+				modifier_group="shield">
+				<WeaponFlags
+					CanBlockRanged="true"
+					HasHitPoints="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			WoodenParry="true"
+			HeldInOffHand="true"
+			ForceAttachOffHandSecondaryItemBone="true" />
+	</Item>
+	<Item
+		id="sturgia_infantry_shield_a"
+		name="{=eopAWegQ}Leaf-Point Kite Shield"
+		body_name="bo_cap_sturgia_infantry_shield_a"
+		shield_body_name="bo_sturgia_infantry_shield_a"
+		recalculate_body="false"
+		mesh="sturgia_infantry_shield_a"
+		culture="Culture.sturgia"
+		using_tableau="true"
+		weight="4.7"
+		appearance="1"
+		Type="Shield"
+		item_holsters="shield_kite:shield_2:shield_3:shield_4"
+		has_lower_holster_priority="true"
+		holster_position_shift="-0.1,0.1,0.05">
+		<ItemComponent>
+			<Weapon
+				weapon_class="LargeShield"
+				body_armor="7"
+				thrust_speed="82"
+				thrust_damage_type="Blunt"
+				speed_rating="82"
+				physics_material="wood_shield"
+				item_usage="shield"
+				position="0.03, -0.02, -0.02"
+				rotation="0.00,10.00,40.00"
+				weapon_length="133"
+				center_of_mass="-0.070,0.0,0.05"
+				hit_points="520"
+				modifier_group="shield">
+				<WeaponFlags
+					CanBlockRanged="true"
+					HasHitPoints="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			WoodenParry="true"
+			HeldInOffHand="true"
+			ForceAttachOffHandSecondaryItemBone="true" />
+	</Item>
+	<Item
+		id="sturgia_infantry_shield_b"
+		name="{=jdOu5l5D}Reinforced Leaf-Point Kite Shield"
+		body_name="bo_cap_sturgia_infantry_shield_b"
+		shield_body_name="bo_sturgia_infantry_shield_b"
+		recalculate_body="false"
+		mesh="sturgia_infantry_shield_b"
+		culture="Culture.sturgia"
+		using_tableau="true"
+		weight="4.7"
+		appearance="1"
+		Type="Shield"
+		item_holsters="shield_kite:shield_2:shield_3:shield_4"
+		has_lower_holster_priority="true"
+		holster_position_shift="-0.1,0.1,0.05">
+		<ItemComponent>
+			<Weapon
+				weapon_class="LargeShield"
+				body_armor="7"
+				thrust_speed="82"
+				thrust_damage_type="Blunt"
+				speed_rating="82"
+				physics_material="wood_shield"
+				item_usage="shield"
+				position="0.03, -0.02, -0.02"
+				rotation="0.00,10.00,40.00"
+				weapon_length="133"
+				center_of_mass="-0.070,0.0,0.05"
+				hit_points="540"
+				modifier_group="shield">
+				<WeaponFlags
+					CanBlockRanged="true"
+					HasHitPoints="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			WoodenParry="true"
+			HeldInOffHand="true"
+			ForceAttachOffHandSecondaryItemBone="true" />
+	</Item>
+	<Item
+		id="steel_druzhinnik_kite_shield"
+		name="{=T3SFANYK}Druzhinnik Kite Shield"
+		body_name="bo_cap_steel_druzhinnik_kite_shield"
+		shield_body_name="bo_steel_druzhinnik_kite_shield"
+		recalculate_body="false"
+		mesh="steel_druzhinnik_kite_shield"
+		culture="Culture.sturgia"
+		using_tableau="true"
+		weight="4.1"
+		appearance="1"
+		Type="Shield"
+		item_holsters="shield_kite:shield_2:shield_3:shield_4"
+		has_lower_holster_priority="true"
+		holster_position_shift="-0.03,0.0,0.05">
+		<ItemComponent>
+			<Weapon
+				weapon_class="LargeShield"
+				body_armor="5"
+				thrust_speed="87"
+				thrust_damage_type="Blunt"
+				speed_rating="87"
+				physics_material="metal_shield"
+				item_usage="shield"
+				position="0.03, -0.02, 0.00"
+				rotation="0.00,16.00,40.00"
+				weapon_length="133"
+				center_of_mass="-0.070,0.0,0.05"
+				hit_points="520"
+				modifier_group="shield">
+				<WeaponFlags
+					CanBlockRanged="true"
+					HasHitPoints="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			WoodenParry="true"
+			HeldInOffHand="true"
+			ForceAttachOffHandSecondaryItemBone="true" />
+	</Item>
+
 </Items>

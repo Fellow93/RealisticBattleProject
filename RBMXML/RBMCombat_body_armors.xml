@@ -1470,4 +1470,30 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
+	
+	<!-- Stealth -->
+	<Item
+		id="assassin_armor"
+		name="{=uZYqmBST}Blackened Armor"
+		subtype="body_armor"
+		mesh="assassin_armor"
+		culture="Culture.nord"
+		weight="5"
+		appearance="4"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="18"
+				leg_armor="6"
+				arm_armor="4"
+				stealth_factor="30"
+				has_gender_variations="true"
+				covers_body="true"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Stealth="true" />
+	</Item>	
+	
 </Items>

@@ -451,4 +451,107 @@
 				scale_factor="140" />
 		</Pieces>
 	</CraftedItem>
+
+
+  <!-- Flails -->	
+		<Item
+		id="flail"
+		name="{=dkldfSqU}Spiked Flail"
+		is_merchandise="false"
+		body_name="bo_mace_a"
+		holster_body_name="bo_axe_short"
+		skeleton_name="flail_skeleton"
+		recalculate_body="true"
+		mesh="flail_a"
+		holster_mesh_with_weapon="flail_a_holster_2"
+		culture="Culture.empire"
+		value="4"
+		weight="4.0"
+		Type="OneHandedWeapon"
+		item_holsters="mace_right_hip"
+		holster_position_shift="0.15,0.0,-0.35">
+		<ItemComponent>
+			<Weapon
+				weapon_class="Mace"
+				weapon_balance="100"
+				thrust_speed="78"
+				speed_rating="97"
+				missile_speed="0"
+				weapon_length="65"
+				swing_damage="6"
+				swing_damage_type="Blunt"
+				item_usage="flail_block_shield_swing"
+				physics_material="metal_weapon">
+				<WeaponFlags
+					MeleeWeapon="true" />
+			</Weapon>
+		</ItemComponent>
+	</Item>
+	
+	<Item
+		id="flail_b"
+		name="{=77GPT2B6}War Flail"
+		is_merchandise="false"
+		body_name="bo_mace_a"
+		skeleton_name="flail_skeleton"
+		recalculate_body="true"
+		mesh="flail_b"
+		holster_mesh_with_weapon="flail_b_holster_2"
+		culture="Culture.empire"
+		value="4"
+		weight="4.0"
+		Type="OneHandedWeapon"
+		item_holsters="mace_right_hip"
+		holster_position_shift="0.15,0.0,-0.35">
+		<ItemComponent>
+			<Weapon
+				weapon_class="Mace"
+				weapon_balance="100"
+				thrust_speed="78"
+				speed_rating="97"
+				missile_speed="0"
+				weapon_length="65"
+				swing_damage="6"
+				swing_damage_type="Blunt"
+				item_usage="flail_block_shield_swing"
+				physics_material="metal_weapon">
+				<WeaponFlags
+					MeleeWeapon="true" />
+			</Weapon>
+		</ItemComponent>
+	</Item>
+	
+	<Item
+		id="shackle"
+		name="{=6jYzHJjB}Shackle"
+		is_merchandise="false"
+		body_name="bo_mace_a"
+		skeleton_name="shackle_skeleton"
+		recalculate_body="true"
+		mesh="shackle"
+		holster_mesh_with_weapon="shackle_holster"
+		culture="Culture.empire"
+		value="4"
+		weight="4.0"
+		Type="OneHandedWeapon"
+		item_holsters="mace_right_hip"
+		holster_position_shift="0.15,0.0,-0.35">
+		<ItemComponent>
+			<Weapon
+				weapon_class="Mace"
+				weapon_balance="100"
+				thrust_speed="160"
+				speed_rating="160"
+				missile_speed="0"
+				weapon_length="65"
+				swing_damage="56"
+				swing_damage_type="Blunt"
+				item_usage="flail_block_shield_swing"
+				physics_material="metal_weapon">
+				<WeaponFlags
+					MeleeWeapon="true" />
+			</Weapon>
+		</ItemComponent>
+	</Item>
+	
 </Items>

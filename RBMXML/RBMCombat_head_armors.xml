@@ -1530,4 +1530,30 @@
 		</ItemComponent>
 		<Flags/>
 	</Item>
+	
+	<!-- #Stealth -->
+	<Item
+		id="assassin_hood"
+		name="{=XrsKuPT5}Blackened Hood"
+		subtype="head_armor"
+		mesh="assassin_hood"
+		culture="Culture.nord"
+		weight="0.4"
+		appearance="4"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="4"
+				stealth_factor="25"
+				has_gender_variations="false"
+				hair_cover_type="all"
+				beard_cover_type="all"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Civilian="true"
+			Stealth="true" />
+	</Item>
+	
 </Items>
