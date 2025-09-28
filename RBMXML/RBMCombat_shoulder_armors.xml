@@ -570,4 +570,27 @@
 		</ItemComponent>
 		<Flags />
 	</Item>
+	
+	<!-- #Stealth -->
+	<Item
+		id="assassin_shoulder"
+		name="{=6CMYwYai}Blackened Cape"
+		mesh="assassin_shoulder"
+		culture="Culture.nord"
+		subtype="body_armor"
+		weight="0.85"
+		appearance="5"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="23"
+				stealth_factor="15"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Civilian="true"
+			Stealth="true" />
+	</Item>
+	
 </Items>

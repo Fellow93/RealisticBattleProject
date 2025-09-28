@@ -240,7 +240,7 @@
 		Type="LegArmor">
 		<ItemComponent>
 			<Armor
-				leg_armor="5"
+				leg_armor="28"
 				stealth_factor="20"
 				covers_legs="true"
 				modifier_group="leather"

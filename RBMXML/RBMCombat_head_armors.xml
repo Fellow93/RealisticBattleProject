@@ -1543,7 +1543,9 @@
 		Type="HeadArmor">
 		<ItemComponent>
 			<Armor
-				head_armor="4"
+				head_armor="30"
+				body_armor="18"
+				arm_armor="30"
 				stealth_factor="25"
 				has_gender_variations="false"
 				hair_cover_type="all"

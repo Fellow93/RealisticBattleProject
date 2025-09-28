@@ -1483,9 +1483,9 @@
 		Type="BodyArmor">
 		<ItemComponent>
 			<Armor
-				body_armor="18"
-				leg_armor="6"
-				arm_armor="4"
+				body_armor="28"
+				leg_armor="22"
+				arm_armor="25"
 				stealth_factor="30"
 				has_gender_variations="true"
 				covers_body="true"

@@ -235,7 +235,7 @@
 	
 	<Item
 		id="sling_stoneammo"
-		name="{=a3WNz6Ci}Stone Sling Bullets"
+		name="{=a3WNz6Ci}Stone Sling Pebbles 35 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
 		flying_mesh="sling_ammo_flying"
@@ -243,21 +243,21 @@
 		tier_override="1"
 		holster_mesh="stone_holster"
 		holster_mesh_with_weapon="stone_holster"
-		weight="0.1"
+		weight="0.035"
 		appearance="1"
 		Type="SlingStones"
 		item_holsters="throwing_stone:throwing_stone_2">
 		<ItemComponent>
 			<Weapon
 				weapon_class="SlingStone"
-				stack_amount="18"
+				stack_amount="40"
 				physics_material="missile"
 				accuracy="45"
 				thrust_speed="0"
 				speed_rating="0"
 				missile_speed="10"
 				weapon_length="10"
-				thrust_damage="4"
+				thrust_damage="100"
 				thrust_damage_type="Blunt"
 				item_usage=""
 				passby_sound_code="">
@@ -272,9 +272,290 @@
 			Stealth="true"
 			ForceAttachOffHandPrimaryItemBone="true" />
 	</Item>
+	
+	<Item
+		id="sling_stoneammo_50g"
+		name="{=a3WNz6Ci}Stone Sling Pebbles 50 grams"
+		body_name="bo_sling_ammo"
+		holster_body_name="bo_axe_short"
+		flying_mesh="sling_ammo_flying"
+		mesh="sling_ammo"
+		tier_override="1"
+		holster_mesh="stone_holster"
+		holster_mesh_with_weapon="stone_holster"
+		weight="0.05"
+		appearance="1"
+		Type="SlingStones"
+		item_holsters="throwing_stone:throwing_stone_2">
+		<ItemComponent>
+			<Weapon
+				weapon_class="SlingStone"
+				stack_amount="40"
+				physics_material="missile"
+				accuracy="45"
+				thrust_speed="0"
+				speed_rating="0"
+				missile_speed="10"
+				weapon_length="10"
+				thrust_damage="100"
+				thrust_damage_type="Blunt"
+				item_usage=""
+				passby_sound_code="">
+				<WeaponFlags
+					AmmoBreaksOnBounceBack="true"
+					AttachAmmoToVisual="true"
+					Consumable="true"
+					UseHandAsThrowBase="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			Stealth="true"
+			ForceAttachOffHandPrimaryItemBone="true" />
+	</Item>	
+	
+	<Item
+		id="sling_stoneammo_80g"
+		name="{=a3WNz6Ci}Stone Sling Pebbles 80 grams"
+		body_name="bo_sling_ammo"
+		holster_body_name="bo_axe_short"
+		flying_mesh="sling_ammo_flying"
+		mesh="sling_ammo"
+		tier_override="1"
+		holster_mesh="stone_holster"
+		holster_mesh_with_weapon="stone_holster"
+		weight="0.08"
+		appearance="1"
+		Type="SlingStones"
+		item_holsters="throwing_stone:throwing_stone_2">
+		<ItemComponent>
+			<Weapon
+				weapon_class="SlingStone"
+				stack_amount="30"
+				physics_material="missile"
+				accuracy="45"
+				thrust_speed="0"
+				speed_rating="0"
+				missile_speed="10"
+				weapon_length="10"
+				thrust_damage="100"
+				thrust_damage_type="Blunt"
+				item_usage=""
+				passby_sound_code="">
+				<WeaponFlags
+					AmmoBreaksOnBounceBack="true"
+					AttachAmmoToVisual="true"
+					Consumable="true"
+					UseHandAsThrowBase="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			Stealth="true"
+			ForceAttachOffHandPrimaryItemBone="true" />
+	</Item>
+
+	<Item
+		id="sling_stoneammo_120g"
+		name="{=a3WNz6Ci}Stone Sling Ammo 120 grams"
+		body_name="bo_sling_ammo"
+		holster_body_name="bo_axe_short"
+		flying_mesh="sling_ammo_flying"
+		mesh="sling_ammo"
+		tier_override="1"
+		holster_mesh="stone_holster"
+		holster_mesh_with_weapon="stone_holster"
+		weight="0.12"
+		appearance="1"
+		Type="SlingStones"
+		item_holsters="throwing_stone:throwing_stone_2">
+		<ItemComponent>
+			<Weapon
+				weapon_class="SlingStone"
+				stack_amount="20"
+				physics_material="missile"
+				accuracy="45"
+				thrust_speed="0"
+				speed_rating="0"
+				missile_speed="10"
+				weapon_length="10"
+				thrust_damage="100"
+				thrust_damage_type="Blunt"
+				item_usage=""
+				passby_sound_code="">
+				<WeaponFlags
+					AmmoBreaksOnBounceBack="true"
+					AttachAmmoToVisual="true"
+					Consumable="true"
+					UseHandAsThrowBase="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			Stealth="true"
+			ForceAttachOffHandPrimaryItemBone="true" />
+	</Item>		
+
+	<Item
+		id="sling_stoneammo_164g"
+		name="{=a3WNz6Ci}Stone Sling Half-Libra 164 grams"
+		body_name="bo_sling_ammo"
+		holster_body_name="bo_axe_short"
+		flying_mesh="sling_ammo_flying"
+		mesh="sling_ammo"
+		tier_override="1"
+		holster_mesh="stone_holster"
+		holster_mesh_with_weapon="stone_holster"
+		weight="0.164"
+		appearance="1"
+		Type="SlingStones"
+		item_holsters="throwing_stone:throwing_stone_2">
+		<ItemComponent>
+			<Weapon
+				weapon_class="SlingStone"
+				stack_amount="15"
+				physics_material="missile"
+				accuracy="45"
+				thrust_speed="0"
+				speed_rating="0"
+				missile_speed="10"
+				weapon_length="10"
+				thrust_damage="100"
+				thrust_damage_type="Blunt"
+				item_usage=""
+				passby_sound_code="">
+				<WeaponFlags
+					AmmoBreaksOnBounceBack="true"
+					AttachAmmoToVisual="true"
+					Consumable="true"
+					UseHandAsThrowBase="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			Stealth="true"
+			ForceAttachOffHandPrimaryItemBone="true" />
+	</Item>	
+	
+	<Item
+		id="sling_stoneammo_218g"
+		name="{=a3WNz6Ci}Stone Sling Half-Mina 218 grams"
+		body_name="bo_sling_ammo"
+		holster_body_name="bo_axe_short"
+		flying_mesh="sling_ammo_flying"
+		mesh="sling_ammo"
+		tier_override="1"
+		holster_mesh="stone_holster"
+		holster_mesh_with_weapon="stone_holster"
+		weight="0.218"
+		appearance="1"
+		Type="SlingStones"
+		item_holsters="throwing_stone:throwing_stone_2">
+		<ItemComponent>
+			<Weapon
+				weapon_class="SlingStone"
+				stack_amount="11"
+				physics_material="missile"
+				accuracy="45"
+				thrust_speed="0"
+				speed_rating="0"
+				missile_speed="10"
+				weapon_length="10"
+				thrust_damage="100"
+				thrust_damage_type="Blunt"
+				item_usage=""
+				passby_sound_code="">
+				<WeaponFlags
+					AmmoBreaksOnBounceBack="true"
+					AttachAmmoToVisual="true"
+					Consumable="true"
+					UseHandAsThrowBase="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			Stealth="true"
+			ForceAttachOffHandPrimaryItemBone="true" />
+	</Item>	
+
+	<Item
+		id="sling_stoneammo_329g"
+		name="{=a3WNz6Ci}Stone Sling Libra 329 grams"
+		body_name="bo_sling_ammo"
+		holster_body_name="bo_axe_short"
+		flying_mesh="sling_ammo_flying"
+		mesh="sling_ammo"
+		tier_override="1"
+		holster_mesh="stone_holster"
+		holster_mesh_with_weapon="stone_holster"
+		weight="0.329"
+		appearance="1"
+		Type="SlingStones"
+		item_holsters="throwing_stone:throwing_stone_2">
+		<ItemComponent>
+			<Weapon
+				weapon_class="SlingStone"
+				stack_amount="8"
+				physics_material="missile"
+				accuracy="45"
+				thrust_speed="0"
+				speed_rating="0"
+				missile_speed="10"
+				weapon_length="10"
+				thrust_damage="100"
+				thrust_damage_type="Blunt"
+				item_usage=""
+				passby_sound_code="">
+				<WeaponFlags
+					AmmoBreaksOnBounceBack="true"
+					AttachAmmoToVisual="true"
+					Consumable="true"
+					UseHandAsThrowBase="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			Stealth="true"
+			ForceAttachOffHandPrimaryItemBone="true" />
+	</Item>	
+
+	<Item
+		id="sling_stoneammo_436g"
+		name="{=a3WNz6Ci}Stone Sling Mina 436 grams"
+		body_name="bo_sling_ammo"
+		holster_body_name="bo_axe_short"
+		flying_mesh="sling_ammo_flying"
+		mesh="sling_ammo"
+		tier_override="1"
+		holster_mesh="stone_holster"
+		holster_mesh_with_weapon="stone_holster"
+		weight="0.436"
+		appearance="1"
+		Type="SlingStones"
+		item_holsters="throwing_stone:throwing_stone_2">
+		<ItemComponent>
+			<Weapon
+				weapon_class="SlingStone"
+				stack_amount="6"
+				physics_material="missile"
+				accuracy="45"
+				thrust_speed="0"
+				speed_rating="0"
+				missile_speed="10"
+				weapon_length="10"
+				thrust_damage="100"
+				thrust_damage_type="Blunt"
+				item_usage=""
+				passby_sound_code="">
+				<WeaponFlags
+					AmmoBreaksOnBounceBack="true"
+					AttachAmmoToVisual="true"
+					Consumable="true"
+					UseHandAsThrowBase="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			Stealth="true"
+			ForceAttachOffHandPrimaryItemBone="true" />
+	</Item>	
+	
 	<Item
 		id="sling_chiseledammo"
-		name="{=yeQr4RiM}Chiseled Sling Bullets"
+		name="{=yeQr4RiM}Chiseled Sling Bullets 35 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
 		flying_mesh="sling_ammo_flying"
@@ -282,14 +563,14 @@
 		tier_override="3"
 		holster_mesh="stone_holster"
 		holster_mesh_with_weapon="stone_holster"
-		weight="0.13"
+		weight="0.035"
 		appearance="1"
 		Type="SlingStones"
 		item_holsters="throwing_stone:throwing_stone_2">
 		<ItemComponent>
 			<Weapon
 				weapon_class="SlingStone"
-				stack_amount="16"
+				stack_amount="40"
 				physics_material="missile"
 				accuracy="45"
 				thrust_speed="0"
@@ -311,9 +592,130 @@
 			Stealth="true"
 			ForceAttachOffHandPrimaryItemBone="true" />
 	</Item>
+	
+	<Item
+		id="sling_chiseledammo_50g"
+		name="{=yeQr4RiM}Chiseled Sling Bullets 50 grams"
+		body_name="bo_sling_ammo"
+		holster_body_name="bo_axe_short"
+		flying_mesh="sling_ammo_flying"
+		mesh="sling_ammo"
+		tier_override="3"
+		holster_mesh="stone_holster"
+		holster_mesh_with_weapon="stone_holster"
+		weight="0.05"
+		appearance="1"
+		Type="SlingStones"
+		item_holsters="throwing_stone:throwing_stone_2">
+		<ItemComponent>
+			<Weapon
+				weapon_class="SlingStone"
+				stack_amount="40"
+				physics_material="missile"
+				accuracy="45"
+				thrust_speed="0"
+				speed_rating="0"
+				missile_speed="10"
+				weapon_length="10"
+				thrust_damage="5"
+				thrust_damage_type="Blunt"
+				item_usage=""
+				passby_sound_code="">
+				<WeaponFlags
+					AmmoBreaksOnBounceBack="true"
+					AttachAmmoToVisual="true"
+					Consumable="true"
+					UseHandAsThrowBase="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			Stealth="true"
+			ForceAttachOffHandPrimaryItemBone="true" />
+	</Item>
+
+	<Item
+		id="sling_chiseledammo_80g"
+		name="{=yeQr4RiM}Chiseled Sling Bullets 80 grams"
+		body_name="bo_sling_ammo"
+		holster_body_name="bo_axe_short"
+		flying_mesh="sling_ammo_flying"
+		mesh="sling_ammo"
+		tier_override="3"
+		holster_mesh="stone_holster"
+		holster_mesh_with_weapon="stone_holster"
+		weight="0.08"
+		appearance="1"
+		Type="SlingStones"
+		item_holsters="throwing_stone:throwing_stone_2">
+		<ItemComponent>
+			<Weapon
+				weapon_class="SlingStone"
+				stack_amount="30"
+				physics_material="missile"
+				accuracy="45"
+				thrust_speed="0"
+				speed_rating="0"
+				missile_speed="10"
+				weapon_length="10"
+				thrust_damage="5"
+				thrust_damage_type="Blunt"
+				item_usage=""
+				passby_sound_code="">
+				<WeaponFlags
+					AmmoBreaksOnBounceBack="true"
+					AttachAmmoToVisual="true"
+					Consumable="true"
+					UseHandAsThrowBase="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			Stealth="true"
+			ForceAttachOffHandPrimaryItemBone="true" />
+	</Item>
+
+	<Item
+		id="sling_chiseledammo_140g"
+		name="{=yeQr4RiM}Chiseled Sling Siege Bullets 140 grams"
+		body_name="bo_sling_ammo"
+		holster_body_name="bo_axe_short"
+		flying_mesh="sling_ammo_flying"
+		mesh="sling_ammo"
+		tier_override="3"
+		holster_mesh="stone_holster"
+		holster_mesh_with_weapon="stone_holster"
+		weight="0.14"
+		appearance="1"
+		Type="SlingStones"
+		item_holsters="throwing_stone:throwing_stone_2">
+		<ItemComponent>
+			<Weapon
+				weapon_class="SlingStone"
+				stack_amount="17"
+				physics_material="missile"
+				accuracy="45"
+				thrust_speed="0"
+				speed_rating="0"
+				missile_speed="10"
+				weapon_length="10"
+				thrust_damage="5"
+				thrust_damage_type="Blunt"
+				item_usage=""
+				passby_sound_code="">
+				<WeaponFlags
+					AmmoBreaksOnBounceBack="true"
+					AttachAmmoToVisual="true"
+					Consumable="true"
+					UseHandAsThrowBase="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			Stealth="true"
+			ForceAttachOffHandPrimaryItemBone="true" />
+	</Item>
+	
 	<Item
 		id="sling_leadammo"
-		name="{=ZDZR5UzN}Lead Sling Bullets"
+		name="{=ZDZR5UzN}Lead Sling Bullets 35 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
 		flying_mesh="sling_ammo_flying"
@@ -322,14 +724,14 @@
 		value="3100"
 		holster_mesh="stone_holster"
 		holster_mesh_with_weapon="stone_holster"
-		weight="0.04"
+		weight="0.035"
 		appearance="1"
 		Type="SlingStones"
 		item_holsters="throwing_stone:throwing_stone_2">
 		<ItemComponent>
 			<Weapon
 				weapon_class="SlingStone"
-				stack_amount="15"
+				stack_amount="60"
 				physics_material="missile"
 				accuracy="45"
 				thrust_speed="0"
@@ -351,10 +753,51 @@
 			Stealth="true"
 			ForceAttachOffHandPrimaryItemBone="true" />
 	</Item>	
+	
+	<Item
+		id="sling_leadammo_50g"
+		name="{=ZDZR5UzN}Lead Sling Bullets 50 grams"
+		body_name="bo_sling_ammo"
+		holster_body_name="bo_axe_short"
+		flying_mesh="sling_ammo_flying"
+		mesh="sling_ammo"
+		tier_override="4"
+		value="3100"
+		holster_mesh="stone_holster"
+		holster_mesh_with_weapon="stone_holster"
+		weight="0.05"
+		appearance="1"
+		Type="SlingStones"
+		item_holsters="throwing_stone:throwing_stone_2">
+		<ItemComponent>
+			<Weapon
+				weapon_class="SlingStone"
+				stack_amount="60"
+				physics_material="missile"
+				accuracy="45"
+				thrust_speed="0"
+				speed_rating="0"
+				missile_speed="10"
+				weapon_length="10"
+				thrust_damage="9"
+				thrust_damage_type="Blunt"
+				item_usage=""
+				passby_sound_code="">
+				<WeaponFlags
+					AmmoBreaksOnBounceBack="true"
+					AttachAmmoToVisual="true"
+					Consumable="true"
+					UseHandAsThrowBase="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			Stealth="true"
+			ForceAttachOffHandPrimaryItemBone="true" />
+	</Item>
 
 	<Item
 		id="sling_wool"
-		name="{=L5i5RgO0}Wool Sling"
+		name="{=L5i5RgO0}Wool Sling 18 Inches"
 		body_name="bo_throwing_stone"
 		skeleton_name="sling_skeleton"
 		static_animation_name="sling_drop_weapon"
@@ -375,9 +818,9 @@
 				accuracy="45"
 				thrust_speed="105"
 				speed_rating="105"
-				missile_speed="40"
+				missile_speed="175"
 				weapon_length="20"
-				thrust_damage="25"
+				thrust_damage="156"
 				thrust_damage_type="Blunt"
 				item_usage="sling"
 				physics_material="wood_weapon"
@@ -394,7 +837,7 @@
 	</Item>
 	<Item
 		id="sling_braided"
-		name="{=z3brrzJ9}Braided Sling"
+		name="{=z3brrzJ9}Braided Sling 28 Inches"
 		body_name="bo_throwing_stone"
 		skeleton_name="sling_skeleton"
 		static_animation_name="sling_drop_weapon"
@@ -415,9 +858,9 @@
 				accuracy="55"
 				thrust_speed="100"
 				speed_rating="100"
-				missile_speed="35"
+				missile_speed="260"
 				weapon_length="20"
-				thrust_damage="45"
+				thrust_damage="236"
 				thrust_damage_type="Blunt"
 				item_usage="sling"
 				physics_material="wood_weapon"
@@ -434,7 +877,7 @@
 	</Item>
 	<Item
 		id="sling_reinforced"
-		name="{=qxYDHkKl}Reinforced Sling"
+		name="{=qxYDHkKl}Reinforced Sling 41 Inches"
 		body_name="bo_throwing_stone"
 		skeleton_name="sling_skeleton"
 		static_animation_name="sling_drop_weapon"
@@ -455,9 +898,9 @@
 				accuracy="65"
 				thrust_speed="120"
 				speed_rating="120"
-				missile_speed="50"
+				missile_speed="320"
 				weapon_length="20"
-				thrust_damage="57"
+				thrust_damage="410"
 				thrust_damage_type="Blunt"
 				item_usage="sling"
 				physics_material="wood_weapon"
