@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using TaleWorlds.Engine;
+using TaleWorlds.Library;
+using TaleWorlds.ModuleManager;
+using TaleWorlds.MountAndBlade;
 
 namespace RBMConfig
 {
@@ -43,7 +47,7 @@ namespace RBMConfig
 
         public static void LoadConfig()
         {
-            string defaultConfigFilePath = TaleWorlds.Engine.Utilities.GetFullModulePath("RBM") + "DefaultConfigDONOTEDIT.xml";
+            string defaultConfigFilePath = BasePath.Name + "Modules/RBM/DefaultConfigDONOTEDIT.xml"; 
             string configFolderPath = Utilities.GetConfigFolderPath();
             string configFilePath = Utilities.GetConfigFilePath();
 

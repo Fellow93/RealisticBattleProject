@@ -455,7 +455,7 @@ namespace RBMCombat
         {
             private static void Postfix(ref Agent __instance, bool isOffHand, bool isWieldedInstantly, bool isWieldedOnSpawn)
             {
-                EquipmentIndex wieldedItemIndex = __instance.GetWieldedItemIndex(HandIndex.MainHand);
+                EquipmentIndex wieldedItemIndex = __instance.GetPrimaryWieldedItemIndex();
                 if (wieldedItemIndex != EquipmentIndex.None)
                 {
                     bool isBowWielded = false;
@@ -807,7 +807,7 @@ namespace RBMCombat
                             }
                             else
                             {
-                                wieldedItemIndex = attachedAgent.GetWieldedItemIndex(Agent.HandIndex.OffHand);
+                                wieldedItemIndex = attachedAgent.GetOffhandWieldedItemIndex();
                                 attachedAgent.AttachWeaponToWeapon(wieldedItemIndex, missile.Weapon, missile.Entity, ref attachLocalFrame);
                             }
                         }

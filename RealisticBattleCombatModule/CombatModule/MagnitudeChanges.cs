@@ -100,7 +100,7 @@ namespace RBMCombat
                                         float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
                                         float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
 
-                                        thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.Inertia, weapon.CurrentUsageItem.CenterOfMass);
+                                        thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.TotalInertia, weapon.CurrentUsageItem.CenterOfMass);
                                         thrustWeaponSpeed = thrustWeaponSpeed * 0.75f * thrustskillModifier * accelerationProgress;
                                         break;
                                     }
@@ -110,7 +110,7 @@ namespace RBMCombat
                                         float thrustskillModifier = 1f + (effectiveSkillDR / 800f);
                                         float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
 
-                                        thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.Inertia, weapon.CurrentUsageItem.CenterOfMass);
+                                        thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.TotalInertia, weapon.CurrentUsageItem.CenterOfMass);
                                         thrustWeaponSpeed = thrustWeaponSpeed * 0.65f * thrustskillModifier * accelerationProgress;
                                         break;
                                     }
@@ -120,7 +120,7 @@ namespace RBMCombat
                                         float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
                                         float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
 
-                                        thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.Inertia, weapon.CurrentUsageItem.CenterOfMass);
+                                        thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.TotalInertia, weapon.CurrentUsageItem.CenterOfMass);
                                         thrustWeaponSpeed = thrustWeaponSpeed * 0.9f * thrustskillModifier * accelerationProgress;
                                         break;
                                     }
@@ -132,7 +132,7 @@ namespace RBMCombat
                                         float thrustskillModifier = 1f + (effectiveSkillDR / 800f);
                                         float handlingskillModifier = 1f + (effectiveSkillDR / 800f);
 
-                                        thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.Inertia, weapon.CurrentUsageItem.CenterOfMass);
+                                        thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.TotalInertia, weapon.CurrentUsageItem.CenterOfMass);
                                         thrustWeaponSpeed = thrustWeaponSpeed * 0.7f * thrustskillModifier * accelerationProgress;
                                         break;
                                     }
@@ -233,7 +233,7 @@ namespace RBMCombat
                 //{
                 //    //float bladeLength = weapon.Item.WeaponDesign.UsedPieces[0].ScaledBladeLength;
                 //    float impactPointAsPercent2 = num3 + (float)i / 4f * (num4 - num3);
-                //    float num6 = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(attackerAgentCharacter, attackerCaptainCharacter, swingSpeed, impactPointAsPercent2, weapon.Item.Weight, currentUsageItem, currentUsageItem.GetRealWeaponLength(), currentUsageItem.Inertia, currentUsageItem.CenterOfMass, exraLinearSpeed, doesAttackerHaveMount);
+                //    float num6 = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(attackerAgentCharacter, attackerCaptainCharacter, swingSpeed, impactPointAsPercent2, weapon.Item.Weight, currentUsageItem, currentUsageItem.GetRealWeaponLength(), currentUsageItem.TotalInertia, currentUsageItem.CenterOfMass, exraLinearSpeed, doesAttackerHaveMount);
                 //    if (originalValue < num6)
                 //    {
                 //        originalValue = num6;
@@ -241,9 +241,9 @@ namespace RBMCombat
                 //}
 
                 float impactPointAsPercent3 = num3 + (float)0 / 4f * (num4 - num3);
-                //newValue = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(attackerAgentCharacter, attackerCaptainCharacter, swingSpeed, impactPointAsPercent3, weapon.Item.Weight, weapon.Item, currentUsageItem, currentUsageItem.GetRealWeaponLength(), currentUsageItem.Inertia, currentUsageItem.CenterOfMass, exraLinearSpeed, doesAttackerHaveMount);
+                //newValue = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(attackerAgentCharacter, attackerCaptainCharacter, swingSpeed, impactPointAsPercent3, weapon.Item.Weight, weapon.Item, currentUsageItem, currentUsageItem.GetRealWeaponLength(), currentUsageItem.TotalInertia, currentUsageItem.CenterOfMass, exraLinearSpeed, doesAttackerHaveMount);
                 newValue = CombatStatCalculator.CalculateStrikeMagnitudeForSwing(swingSpeed, impactPointAsPercent3, weapon.Item.Weight,
-                            currentUsageItem.GetRealWeaponLength(), currentUsageItem.Inertia, currentUsageItem.CenterOfMass, exraLinearSpeed);
+                            currentUsageItem.GetRealWeaponLength(), currentUsageItem.TotalInertia, currentUsageItem.CenterOfMass, exraLinearSpeed);
                 __result = newValue;
                 return false;
             }
@@ -588,7 +588,7 @@ namespace RBMCombat
                         }
                 }
                 float weaponWeight = weapon.Item.Weight;
-                float weaponInertia = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia;
+                float weaponInertia = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).TotalInertia;
                 float weaponCOM = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass;
                 for (float currentSpot = 1f; currentSpot > 0.35f; currentSpot -= 0.01f)
                 {
@@ -620,7 +620,7 @@ namespace RBMCombat
                 float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
 
                 float weaponWeight = weapon.Item.Weight;
-                float weaponInertia = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia;
+                float weaponInertia = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).TotalInertia;
                 float weaponCOM = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass;
 
                 switch (weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).WeaponClass)

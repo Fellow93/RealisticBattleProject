@@ -402,7 +402,7 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
         return true;
     }
 
-    protected override void TickOccasionally()
+    public override void TickOccasionally()
     {
         if (!base.AreFormationsCreated)
         {

@@ -113,7 +113,7 @@ namespace RBMCombat
                     magnitude = attackCollisionData.BaseMagnitude / wdm;
                 }
                 WeaponComponentData shieldOnBack = attackInformation.ShieldOnBack;
-                AgentFlag victimAgentFlag = attackInformation.VictimAgentFlag;
+                AgentFlag victimAgentFlag = attackInformation.VictimAgentFlags;
                 float victimAgentAbsorbedDamageRatio = attackInformation.VictimAgentAbsorbedDamageRatio;
                 float damageMultiplierOfBone = attackInformation.DamageMultiplierOfBone;
                 float combatDifficultyMultiplier = attackInformation.CombatDifficultyMultiplier;
@@ -131,7 +131,7 @@ namespace RBMCombat
 
                 if (!isFallDamage)
                 {
-                    float adjustedArmor = MissionGameModels.Current.StrikeMagnitudeModel.CalculateAdjustedArmorForBlow(armorAmountFloat, attackerAgentCharacter, attackerCaptainCharacter, victimAgentCharacter, victimCaptainCharacter, attackerWeapon);
+                    float adjustedArmor = MissionGameModels.Current.StrikeMagnitudeModel.CalculateAdjustedArmorForBlow(attackInformation,attackCollisionData, armorAmountFloat, attackerAgentCharacter, attackerCaptainCharacter, victimAgentCharacter, victimCaptainCharacter, attackerWeapon);
                     armorAmount = adjustedArmor;
                 }
                 //float num2 = (float)armorAmount;
@@ -403,10 +403,10 @@ namespace RBMCombat
                         int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgent, skill);
                         float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
                         float skillModifier = Utilities.CalculateSkillModifier(ef);
-                        if (attacker != null && attacker.Equipment != null && attacker.GetWieldedItemIndex(HandIndex.MainHand) != EquipmentIndex.None)
+                        if (attacker != null && attacker.Equipment != null && attacker.GetPrimaryWieldedItemIndex() != EquipmentIndex.None)
                         {
-                            itemModifier = attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].ItemModifier;
-                            magnitude = Utilities.GetSkillBasedDamage(magnitude, attackInformation.IsAttackerAgentDoingPassiveAttack, weaponType, damageType, effectiveSkill, skillModifier, (StrikeType)attackCollisionData.StrikeType, attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight());
+                            itemModifier = attacker.Equipment[attacker.GetPrimaryWieldedItemIndex()].ItemModifier;
+                            magnitude = Utilities.GetSkillBasedDamage(magnitude, attackInformation.IsAttackerAgentDoingPassiveAttack, weaponType, damageType, effectiveSkill, skillModifier, (StrikeType)attackCollisionData.StrikeType, attacker.Equipment[attacker.GetPrimaryWieldedItemIndex()].GetWeight());
                         }
                         else
                         {
@@ -1195,7 +1195,7 @@ namespace RBMCombat
                         victimAgent.RegisterBlow(__result, collisionData);
                         foreach (MissionBehavior missionBehaviour in __instance.MissionBehaviors)
                         {
-                            missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, null, __result, ref collisionData, in attackerWeapon);
+                            missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, WeakGameEntity.Invalid, __result, ref collisionData, in attackerWeapon);
                         }
                         return;
                     }
@@ -1233,7 +1233,7 @@ namespace RBMCombat
                                     victimAgent.RegisterBlow(newBlow, collisionData);
                                     foreach (MissionBehavior missionBehaviour in __instance.MissionBehaviors)
                                     {
-                                        missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, null, newBlow, ref collisionData, in attackerWeapon);
+                                        missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, WeakGameEntity.Invalid, newBlow, ref collisionData, in attackerWeapon);
                                     }
                                 }
                                 break;
@@ -1295,7 +1295,7 @@ namespace RBMCombat
                 }
                 foreach (MissionBehavior missionBehaviour in __instance.MissionBehaviors)
                 {
-                    missionBehaviour.OnRegisterBlow(attacker, victim, realHitEntity, b, ref collisionData, in attackerWeapon);
+                    missionBehaviour.OnRegisterBlow(attacker, victim, realHitEntity.WeakEntity, b, ref collisionData, in attackerWeapon);
                 }
                 return false;
             }
@@ -1414,7 +1414,7 @@ namespace RBMCombat
                         int soundCodeMissionCombatPlayerhit = CombatSoundContainer.SoundCodeMissionCombatPlayerhit;
                         __instance.Mission.MakeSoundOnlyOnRelatedPeer(soundCodeMissionCombatPlayerhit, b.GlobalPosition, agent.Index);
                     }
-                    __instance.Mission.AddSoundAlarmFactorToAgents(b.OwnerId, b.GlobalPosition, 15f);
+                    __instance.Mission.AddSoundAlarmFactorToAgents(__instance, b.GlobalPosition, 15f);
                 }
                 b.DamagedPercentage = (float)b.InflictedDamage / __instance.HealthLimit;
 

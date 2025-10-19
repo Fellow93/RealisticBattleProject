@@ -70,10 +70,10 @@ namespace RBMCombat
                 if (party != null && party.MobileParty != null)
                 {
                     MobileParty mobileParty = party.MobileParty;
-                    SkillHelper.AddSkillBonusForParty(DefaultSkills.Medicine, DefaultSkillEffects.SurgeonSurvivalBonus, mobileParty, ref stat);
+                    SkillHelper.AddSkillBonusForParty(DefaultSkillEffects.SurgeonSurvivalBonus, mobileParty, ref stat);
                     if (enemyParty?.MobileParty != null && enemyParty.MobileParty.HasPerk(DefaultPerks.Medicine.DoctorsOath))
                     {
-                        SkillHelper.AddSkillBonusForParty(DefaultSkills.Medicine, DefaultSkillEffects.SurgeonSurvivalBonus, enemyParty.MobileParty, ref stat);
+                        SkillHelper.AddSkillBonusForParty(DefaultSkillEffects.SurgeonSurvivalBonus, enemyParty.MobileParty, ref stat);
                     }
                     stat.Add((float)character.Level * 0.02f);
                     if (!character.IsHero && party.MapEvent != null && character.Tier < 3)
@@ -241,14 +241,14 @@ namespace RBMCombat
                             CharacterObject affectorCharacter = (CharacterObject)attackerAgent.Character;
 
                             float experience = 1f;
-                            Campaign.Current.Models.CombatXpModel.GetXpFromHit(heroObject.CharacterObject, null, affectorCharacter, heroObject.PartyBelongedTo?.Party, (int)collisionData.InflictedDamage, false, CombatXpModel.MissionTypeEnum.Battle, out var xpAmount);
+                            ExplainedNumber xpAmount=  Campaign.Current.Models.CombatXpModel.GetXpFromHit(heroObject.CharacterObject, null, affectorCharacter, heroObject.PartyBelongedTo?.Party, (int)collisionData.InflictedDamage, false, CombatXpModel.MissionTypeEnum.Battle);
                             if (collisionData.CollisionResult == CombatCollisionResult.Blocked && collisionData.AttackBlockedWithShield)
                             {
-                                experience = xpAmount * 0.8f;
+                                experience = xpAmount.ResultNumber * 0.8f;
                             }
                             if (collisionData.CollisionResult == CombatCollisionResult.Parried || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked)
                             {
-                                experience = xpAmount * 1.2f;
+                                experience = xpAmount.ResultNumber * 1.2f;
                             }
                             WeaponComponentData parryWeapon = victimAgent.WieldedWeapon.CurrentUsageItem;
                             if (parryWeapon != null)
@@ -324,7 +324,7 @@ namespace RBMCombat
                 if (shouldCount && ____trainingProgress == 4)
                 {
                     shouldCount = false;
-                    EquipmentIndex ei = Mission.Current.MainAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                    EquipmentIndex ei = Mission.Current.MainAgent.GetPrimaryWieldedItemIndex();
                     if (ei != EquipmentIndex.None)
                     {
                         CharacterObject playerCharacter = (CharacterObject)CharacterObject.PlayerCharacter;
@@ -359,7 +359,7 @@ namespace RBMCombat
         {
             private static void Postfix(int ____trainingProgress, TutorialArea ____activeTutorialArea, int ____trainingSubTypeIndex)
             {
-                EquipmentIndex ei = Mission.Current.MainAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                EquipmentIndex ei = Mission.Current.MainAgent.GetPrimaryWieldedItemIndex();
                 if (ei != EquipmentIndex.None)
                 {
                     CharacterObject playerCharacter = (CharacterObject)CharacterObject.PlayerCharacter;
@@ -418,7 +418,7 @@ namespace RBMCombat
                 if (shouldCount && ____trainingProgress == 4)
                 {
                     shouldCount = false;
-                    EquipmentIndex ei = Mission.Current.MainAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                    EquipmentIndex ei = Mission.Current.MainAgent.GetPrimaryWieldedItemIndex();
                     if (ei != EquipmentIndex.None)
                     {
                         CharacterObject playerCharacter = (CharacterObject)CharacterObject.PlayerCharacter;
@@ -462,7 +462,7 @@ namespace RBMCombat
                 }
                 float defaultTime = 80f;
                 float timeFactor = defaultTime / ____timeScore;
-                EquipmentIndex ei = Mission.Current.MainAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                EquipmentIndex ei = Mission.Current.MainAgent.GetPrimaryWieldedItemIndex();
                 if (ei != EquipmentIndex.None)
                 {
                     CharacterObject playerCharacter = (CharacterObject)CharacterObject.PlayerCharacter;
@@ -513,153 +513,153 @@ namespace RBMCombat
         [HarmonyPatch(typeof(PerkHelper))]
         private class OverrideAddPerkBonusForParty
         {
-            private static void AddToStat(ref ExplainedNumber stat, SkillEffect.EffectIncrementType effectIncrementType, float number, TextObject text)
+            private static void AddToStat(ref ExplainedNumber stat, EffectIncrementType effectIncrementType, float number, TextObject text)
             {
                 switch (effectIncrementType)
                 {
-                    case SkillEffect.EffectIncrementType.Add:
+                    case EffectIncrementType.Add:
                         stat.Add(number, text);
                         break;
 
-                    case SkillEffect.EffectIncrementType.AddFactor:
+                    case EffectIncrementType.AddFactor:
                         stat.AddFactor(number * 0.01f, text);
                         break;
                 }
             }
 
-            [HarmonyPrefix]
-            [HarmonyPatch("AddPerkBonusForParty")]
-            private static bool PrefixAddPerkBonusForParty(PerkObject perk, MobileParty party, bool isPrimaryBonus, ref ExplainedNumber stat)
-            {
-                Hero hero = party?.LeaderHero;
-                if (hero == null)
-                {
-                    return false;
-                }
-                bool flag = isPrimaryBonus && perk.PrimaryRole == SkillEffect.PerkRole.PartyLeader;
-                bool flag2 = !isPrimaryBonus && perk.SecondaryRole == SkillEffect.PerkRole.PartyLeader;
-                if ((flag || flag2) && hero.GetPerkValue(perk))
-                {
-                    float num = (flag ? perk.PrimaryBonus : perk.SecondaryBonus);
-                    if (flag)
-                    {
-                        AddToStat(ref stat, perk.PrimaryIncrementType, num, perk.Name);
-                    }
-                    else
-                    {
-                        AddToStat(ref stat, perk.SecondaryIncrementType, num, perk.Name);
-                    }
-                }
-                flag = isPrimaryBonus && perk.PrimaryRole == SkillEffect.PerkRole.ClanLeader;
-                flag2 = !isPrimaryBonus && perk.SecondaryRole == SkillEffect.PerkRole.ClanLeader;
-                if ((flag || flag2) && hero.Clan.Leader != null && hero.Clan.Leader.GetPerkValue(perk))
-                {
-                    if (flag)
-                    {
-                        AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, perk.Name);
-                    }
-                    else
-                    {
-                        AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, perk.Name);
-                    }
-                }
-                flag = isPrimaryBonus && perk.PrimaryRole == SkillEffect.PerkRole.PartyMember;
-                flag2 = !isPrimaryBonus && perk.SecondaryRole == SkillEffect.PerkRole.PartyMember;
-                if (flag || flag2)
-                {
-                    if (hero.Clan != Clan.PlayerClan)
-                    {
-                        if (hero.GetPerkValue(perk))
-                        {
-                            AddToStat(ref stat, flag ? perk.PrimaryIncrementType : perk.SecondaryIncrementType, flag ? perk.PrimaryBonus : perk.SecondaryBonus, perk.Name);
-                        }
-                    }
-                    else
-                    {
-                        foreach (TroopRosterElement item in party.MemberRoster.GetTroopRoster())
-                        {
-                            if (item.Character.IsHero && item.Character.GetPerkValue(perk))
-                            {
-                                AddToStat(ref stat, flag ? perk.PrimaryIncrementType : perk.SecondaryIncrementType, flag ? perk.PrimaryBonus : perk.SecondaryBonus, perk.Name);
-                            }
-                        }
-                    }
-                }
-                if (hero.Clan != Clan.PlayerClan)
-                {
-                    return false;
-                }
-                flag = isPrimaryBonus && perk.PrimaryRole == SkillEffect.PerkRole.Engineer;
-                flag2 = !isPrimaryBonus && perk.SecondaryRole == SkillEffect.PerkRole.Engineer;
-                if (flag || flag2)
-                {
-                    Hero effectiveEngineer = party.EffectiveEngineer;
-                    if (effectiveEngineer != null && effectiveEngineer.GetPerkValue(perk))
-                    {
-                        if (flag)
-                        {
-                            AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, perk.Name);
-                        }
-                        else
-                        {
-                            AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, perk.Name);
-                        }
-                    }
-                }
-                flag = isPrimaryBonus && perk.PrimaryRole == SkillEffect.PerkRole.Scout;
-                flag2 = !isPrimaryBonus && perk.SecondaryRole == SkillEffect.PerkRole.Scout;
-                if (flag || flag2)
-                {
-                    Hero effectiveScout = party.EffectiveScout;
-                    if (effectiveScout != null && effectiveScout.GetPerkValue(perk))
-                    {
-                        if (flag)
-                        {
-                            AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, perk.Name);
-                        }
-                        else
-                        {
-                            AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, perk.Name);
-                        }
-                    }
-                }
-                flag = isPrimaryBonus && perk.PrimaryRole == SkillEffect.PerkRole.Surgeon;
-                flag2 = !isPrimaryBonus && perk.SecondaryRole == SkillEffect.PerkRole.Surgeon;
-                if (flag || flag2)
-                {
-                    Hero effectiveSurgeon = party.EffectiveSurgeon;
-                    if (effectiveSurgeon != null && effectiveSurgeon.GetPerkValue(perk))
-                    {
-                        if (flag)
-                        {
-                            AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, perk.Name);
-                        }
-                        else
-                        {
-                            AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, perk.Name);
-                        }
-                    }
-                }
-                flag = isPrimaryBonus && perk.PrimaryRole == SkillEffect.PerkRole.Quartermaster;
-                flag2 = !isPrimaryBonus && perk.SecondaryRole == SkillEffect.PerkRole.Quartermaster;
-                if (!(flag || flag2))
-                {
-                    return false;
-                }
-                Hero effectiveQuartermaster = party.EffectiveQuartermaster;
-                if (effectiveQuartermaster != null && effectiveQuartermaster.GetPerkValue(perk))
-                {
-                    if (flag)
-                    {
-                        AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, perk.Name);
-                    }
-                    else
-                    {
-                        AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, perk.Name);
-                    }
-                }
-                return false;
-            }
+            //    [HarmonyPrefix]
+            //    [HarmonyPatch("AddPerkBonusForParty")]
+            //    private static bool PrefixAddPerkBonusForParty(PerkObject perk, MobileParty party, bool isPrimaryBonus, ref ExplainedNumber stat)
+            //    {
+            //        Hero hero = party?.LeaderHero;
+            //        if (hero == null)
+            //        {
+            //            return false;
+            //        }
+            //        bool flag = isPrimaryBonus && perk.PrimaryRole == SkillEffect.PerkRole.PartyLeader;
+            //        bool flag2 = !isPrimaryBonus && perk.SecondaryRole == SkillEffect.PerkRole.PartyLeader;
+            //        if ((flag || flag2) && hero.GetPerkValue(perk))
+            //        {
+            //            float num = (flag ? perk.PrimaryBonus : perk.SecondaryBonus);
+            //            if (flag)
+            //            {
+            //                AddToStat(ref stat, perk.PrimaryIncrementType, num, perk.Name);
+            //            }
+            //            else
+            //            {
+            //                AddToStat(ref stat, perk.SecondaryIncrementType, num, perk.Name);
+            //            }
+            //        }
+            //        flag = isPrimaryBonus && perk.PrimaryRole == SkillEffect.PerkRole.ClanLeader;
+            //        flag2 = !isPrimaryBonus && perk.SecondaryRole == SkillEffect.PerkRole.ClanLeader;
+            //        if ((flag || flag2) && hero.Clan.Leader != null && hero.Clan.Leader.GetPerkValue(perk))
+            //        {
+            //            if (flag)
+            //            {
+            //                AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, perk.Name);
+            //            }
+            //            else
+            //            {
+            //                AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, perk.Name);
+            //            }
+            //        }
+            //        flag = isPrimaryBonus && perk.PrimaryRole == SkillEffect.PerkRole.PartyMember;
+            //        flag2 = !isPrimaryBonus && perk.SecondaryRole == SkillEffect.PerkRole.PartyMember;
+            //        if (flag || flag2)
+            //        {
+            //            if (hero.Clan != Clan.PlayerClan)
+            //            {
+            //                if (hero.GetPerkValue(perk))
+            //                {
+            //                    AddToStat(ref stat, flag ? perk.PrimaryIncrementType : perk.SecondaryIncrementType, flag ? perk.PrimaryBonus : perk.SecondaryBonus, perk.Name);
+            //                }
+            //            }
+            //            else
+            //            {
+            //                foreach (TroopRosterElement item in party.MemberRoster.GetTroopRoster())
+            //                {
+            //                    if (item.Character.IsHero && item.Character.GetPerkValue(perk))
+            //                    {
+            //                        AddToStat(ref stat, flag ? perk.PrimaryIncrementType : perk.SecondaryIncrementType, flag ? perk.PrimaryBonus : perk.SecondaryBonus, perk.Name);
+            //                    }
+            //                }
+            //            }
+            //        }
+            //        if (hero.Clan != Clan.PlayerClan)
+            //        {
+            //            return false;
+            //        }
+            //        flag = isPrimaryBonus && perk.PrimaryRole == SkillEffect.PerkRole.Engineer;
+            //        flag2 = !isPrimaryBonus && perk.SecondaryRole == SkillEffect.PerkRole.Engineer;
+            //        if (flag || flag2)
+            //        {
+            //            Hero effectiveEngineer = party.EffectiveEngineer;
+            //            if (effectiveEngineer != null && effectiveEngineer.GetPerkValue(perk))
+            //            {
+            //                if (flag)
+            //                {
+            //                    AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, perk.Name);
+            //                }
+            //                else
+            //                {
+            //                    AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, perk.Name);
+            //                }
+            //            }
+            //        }
+            //        flag = isPrimaryBonus && perk.PrimaryRole == SkillEffect.PerkRole.Scout;
+            //        flag2 = !isPrimaryBonus && perk.SecondaryRole == SkillEffect.PerkRole.Scout;
+            //        if (flag || flag2)
+            //        {
+            //            Hero effectiveScout = party.EffectiveScout;
+            //            if (effectiveScout != null && effectiveScout.GetPerkValue(perk))
+            //            {
+            //                if (flag)
+            //                {
+            //                    AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, perk.Name);
+            //                }
+            //                else
+            //                {
+            //                    AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, perk.Name);
+            //                }
+            //            }
+            //        }
+            //        flag = isPrimaryBonus && perk.PrimaryRole == SkillEffect.PerkRole.Surgeon;
+            //        flag2 = !isPrimaryBonus && perk.SecondaryRole == SkillEffect.PerkRole.Surgeon;
+            //        if (flag || flag2)
+            //        {
+            //            Hero effectiveSurgeon = party.EffectiveSurgeon;
+            //            if (effectiveSurgeon != null && effectiveSurgeon.GetPerkValue(perk))
+            //            {
+            //                if (flag)
+            //                {
+            //                    AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, perk.Name);
+            //                }
+            //                else
+            //                {
+            //                    AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, perk.Name);
+            //                }
+            //            }
+            //        }
+            //        flag = isPrimaryBonus && perk.PrimaryRole == SkillEffect.PerkRole.Quartermaster;
+            //        flag2 = !isPrimaryBonus && perk.SecondaryRole == SkillEffect.PerkRole.Quartermaster;
+            //        if (!(flag || flag2))
+            //        {
+            //            return false;
+            //        }
+            //        Hero effectiveQuartermaster = party.EffectiveQuartermaster;
+            //        if (effectiveQuartermaster != null && effectiveQuartermaster.GetPerkValue(perk))
+            //        {
+            //            if (flag)
+            //            {
+            //                AddToStat(ref stat, perk.PrimaryIncrementType, perk.PrimaryBonus, perk.Name);
+            //            }
+            //            else
+            //            {
+            //                AddToStat(ref stat, perk.SecondaryIncrementType, perk.SecondaryBonus, perk.Name);
+            //            }
+            //        }
+            //        return false;
+            //    }
         }
 
         [HarmonyPatch(typeof(SandboxAgentStatCalculateModel))]
@@ -936,7 +936,7 @@ namespace RBMCombat
                                 shoudReceiveUpgradedGear = true;
                                 break;
                             }
-                            foreach (Hero lord in kingdom.Lords)
+                            foreach (Hero lord in kingdom.AliveLords)
                             {
                                 if (lord != null && lord == hero)
                                 {

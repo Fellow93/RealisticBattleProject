@@ -410,7 +410,7 @@ namespace RBMTournament
             {
                 foreach (CharacterObject character in CharacterObject.All)
                 {
-                    if (character.Occupation == Occupation.Soldier && character.Culture == culture && !character.HiddenInEncylopedia)
+                    if (character.Occupation == Occupation.Soldier && character.Culture == culture && !character.HiddenInEncyclopedia)
                     {
                         if (!character.Name.Contains("Conspiracy"))
                         {
@@ -420,25 +420,25 @@ namespace RBMTournament
                 }
             }
 
-            public static void AddTroopsFromSubCulture(CultureCode code, ref List<CharacterObject> troops)
-            {
-                foreach (CharacterObject character in CharacterObject.All)
-                {
-                    if (character.Occupation == Occupation.Soldier && character.Culture.GetCultureCode() == code && !character.HiddenInEncylopedia)
-                    {
-                        if (!character.Name.Contains("Conspiracy"))
-                        {
-                            troops.Add(character);
-                        }
-                    }
-                }
-            }
+            //public static void AddTroopsFromSubCulture(CultureCode code, ref List<CharacterObject> troops)
+            //{
+            //    foreach (CharacterObject character in CharacterObject.All)
+            //    {
+            //        if (character.Occupation == Occupation.Soldier && character.Culture.GetCultureCode() == code && !character.HiddenInEncyclopedia)
+            //        {
+            //            if (!character.Name.Contains("Conspiracy"))
+            //            {
+            //                troops.Add(character);
+            //            }
+            //        }
+            //    }
+            //}
 
             public static void AddMercenaryTroops(ref List<CharacterObject> troops)
             {
                 foreach (CharacterObject character in CharacterObject.All)
                 {
-                    if (character.Occupation == Occupation.Mercenary && !character.HiddenInEncylopedia)
+                    if (character.Occupation == Occupation.Mercenary && !character.HiddenInEncyclopedia)
                     {
                         if (!character.Name.Contains("Conspiracy"))
                         {
@@ -455,24 +455,24 @@ namespace RBMTournament
 
                 AddTroopsFromCulture(culture, ref troops);
 
-                switch (culture.GetCultureCode())
-                {
-                    case CultureCode.Sturgia:
-                        {
-                            AddTroopsFromSubCulture(CultureCode.Nord, ref troops);
-                            break;
-                        }
-                    case CultureCode.Battania:
-                        {
-                            AddTroopsFromSubCulture(CultureCode.Vakken, ref troops);
-                            break;
-                        }
-                    case CultureCode.Aserai:
-                        {
-                            AddTroopsFromSubCulture(CultureCode.Darshi, ref troops);
-                            break;
-                        }
-                }
+                //switch (culture.GetCultureCode())
+                //{
+                //    case CultureCode.Sturgia:
+                //        {
+                //            AddTroopsFromSubCulture(CultureCode.Nord, ref troops);
+                //            break;
+                //        }
+                //    case CultureCode.Battania:
+                //        {
+                //            AddTroopsFromSubCulture(CultureCode.Vakken, ref troops);
+                //            break;
+                //        }
+                //    case CultureCode.Aserai:
+                //        {
+                //            AddTroopsFromSubCulture(CultureCode.Darshi, ref troops);
+                //            break;
+                //        }
+                //}
                 
                 AddMercenaryTroops(ref troops);
 

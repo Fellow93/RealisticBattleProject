@@ -407,7 +407,7 @@ namespace RBMCombat
                 DamageTypes damageType = (DamageTypes)attackCollisionData.DamageType;
                 if (attacker.IsHuman)
                 {
-                    EquipmentIndex slotIndex = attacker.GetWieldedItemIndex(HandIndex.MainHand);
+                    EquipmentIndex slotIndex = attacker.GetPrimaryWieldedItemIndex();
                     if (slotIndex != EquipmentIndex.None)
                     {
                         WeaponComponentData wcd = attackerWeapon.CurrentUsageItem;
@@ -425,10 +425,10 @@ namespace RBMCombat
                                 int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attacker, skill);
                                 float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
                                 float skillModifier = Utilities.CalculateSkillModifier(ef);
-                                if (attacker != null && attacker.Equipment != null && attacker.GetWieldedItemIndex(HandIndex.MainHand) != EquipmentIndex.None)
+                                if (attacker != null && attacker.Equipment != null && attacker.GetPrimaryWieldedItemIndex() != EquipmentIndex.None)
                                 {
-                                    itemModifier = attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].ItemModifier;
-                                    magnitude = Utilities.GetSkillBasedDamage(blow.BaseMagnitude, attacker.IsDoingPassiveAttack, weaponType.ToString(), damageType, effectiveSkill, skillModifier, (StrikeType)attackCollisionData.StrikeType, attacker.Equipment[attacker.GetWieldedItemIndex(HandIndex.MainHand)].GetWeight());
+                                    itemModifier = attacker.Equipment[attacker.GetPrimaryWieldedItemIndex()].ItemModifier;
+                                    magnitude = Utilities.GetSkillBasedDamage(blow.BaseMagnitude, attacker.IsDoingPassiveAttack, weaponType.ToString(), damageType, effectiveSkill, skillModifier, (StrikeType)attackCollisionData.StrikeType, attacker.Equipment[attacker.GetPrimaryWieldedItemIndex()].GetWeight());
                                 }
                                 else
                                 {
@@ -1348,7 +1348,7 @@ namespace RBMCombat
                             float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
 
                             swingSpeedReal = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
-                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Item.Weight, weaponData.Inertia, weaponData.CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Item.Weight, weaponData.TotalInertia, weaponData.CenterOfMass) * Utilities.thrustSpeedTransfer);
                             thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.1f) * thrustskillModifier);
                             handlingReal = MathF.Ceiling((handling * 0.83f) * handlingskillModifier);
                             break;
@@ -1360,7 +1360,7 @@ namespace RBMCombat
                             float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
 
                             swingSpeedReal = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
-                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Item.Weight, weaponData.Inertia, weaponData.CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Item.Weight, weaponData.TotalInertia, weaponData.CenterOfMass) * Utilities.thrustSpeedTransfer);
                             thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.05f) * thrustskillModifier);
                             handlingReal = MathF.Ceiling((handling * 0.83f) * handlingskillModifier);
                             break;
@@ -1372,7 +1372,7 @@ namespace RBMCombat
                             float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
 
                             swingSpeedReal = MathF.Ceiling((swingSpeed * 0.75f) * swingskillModifier);
-                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Item.Weight, weaponData.Inertia, weaponData.CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Item.Weight, weaponData.TotalInertia, weaponData.CenterOfMass) * Utilities.thrustSpeedTransfer);
                             thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 0.9f) * thrustskillModifier);
                             handlingReal = MathF.Ceiling((handling * 0.83f) * handlingskillModifier);
                             break;
@@ -1386,7 +1386,7 @@ namespace RBMCombat
                             float handlingskillModifier = 1f + (effectiveSkillDR / 800f);
 
                             swingSpeedReal = MathF.Ceiling((swingSpeed * 0.9f) * swingskillModifier);
-                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Item.Weight, weaponData.Inertia, weaponData.CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Item.Weight, weaponData.TotalInertia, weaponData.CenterOfMass) * Utilities.thrustSpeedTransfer);
                             thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.15f) * thrustskillModifier);
                             handlingReal = MathF.Ceiling((handling * 0.9f) * handlingskillModifier);
                             break;
@@ -1418,7 +1418,7 @@ namespace RBMCombat
                             float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
 
                             swingSpeedReal = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
-                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).TotalInertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
                             thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.1f) * thrustskillModifier);
                             handlingReal = MathF.Ceiling((handling * 0.83f) * handlingskillModifier);
                             break;
@@ -1430,7 +1430,7 @@ namespace RBMCombat
                             float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
 
                             swingSpeedReal = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
-                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).TotalInertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
                             thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.05f) * thrustskillModifier);
                             handlingReal = MathF.Ceiling((handling * 5f) * handlingskillModifier);
                             break;
@@ -1455,7 +1455,7 @@ namespace RBMCombat
                             float handlingskillModifier = 1f + (effectiveSkillDR / 800f);
 
                             swingSpeedReal = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
-                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).TotalInertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
                             thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.15f) * thrustskillModifier);
                             handlingReal = MathF.Ceiling((handling * 0.9f) * handlingskillModifier);
                             break;

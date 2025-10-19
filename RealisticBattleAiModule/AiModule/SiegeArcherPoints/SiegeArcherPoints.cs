@@ -88,7 +88,7 @@ public class SiegeArcherPoints : MissionLogic
                         (float)parsed[4], (float)parsed[5], (float)parsed[6], (float)parsed[7], (float)parsed[8], (float)parsed[9], (float)parsed[10], (float)parsed[11]);
 
                     GameEntity gameEntity = GameEntity.Instantiate(Mission.Current.Scene, "strategic_archer_point", matFrame);
-                    gameEntity.SetMobility(GameEntity.Mobility.dynamic);
+                    gameEntity.SetMobility(GameEntity.Mobility.Dynamic);
                     gameEntity.AddTag("PlayerStratPoint");
                     gameEntity.SetVisibilityExcludeParents(visible: true);
                     strategicArea = gameEntity.GetFirstScriptOfType<StrategicArea>();
@@ -98,7 +98,7 @@ public class SiegeArcherPoints : MissionLogic
                     BeerMark.AddTag("BeerMarkerPlayer");
                     BeerMark.SetVisibilityExcludeParents(visible: false);
                     BeerMark.GetGlobalScale().Normalize();
-                    BeerMark.SetMobility(GameEntity.Mobility.dynamic);
+                    BeerMark.SetMobility(GameEntity.Mobility.Dynamic);
                     strategicArea.IsActive = true;
                     Mission.Current.Teams.Defender.TeamAI.AddStrategicArea(strategicArea);
                 }

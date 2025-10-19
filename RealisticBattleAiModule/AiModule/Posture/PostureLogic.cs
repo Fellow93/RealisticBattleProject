@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using TaleWorlds.CampaignSystem.TournamentGames;
 using TaleWorlds.Core;
+using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
@@ -73,7 +74,7 @@ namespace RBMAI
                         float oldPosturePercentage = oldPosture / oldMaxPosture;
 
                         int usageIndex = 0;
-                        EquipmentIndex slotIndex = __instance.GetWieldedItemIndex(0);
+                        EquipmentIndex slotIndex = __instance.GetPrimaryWieldedItemIndex();
                         if (slotIndex != EquipmentIndex.None)
                         {
                             usageIndex = __instance.Equipment[slotIndex].CurrentUsageIndex;
@@ -208,7 +209,7 @@ namespace RBMAI
                                     if (defenderPosture.posture <= 0f)
                                     {
                                         float healthDamage = calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureDmg, __result, victimAgent);
-                                        EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
+                                        EquipmentIndex wieldedItemIndex = victimAgent.GetPrimaryWieldedItemIndex();
                                         if (wieldedItemIndex != EquipmentIndex.None)
                                         {
                                             MBTextManager.SetTextVariable("DMG", MathF.Floor(healthDamage));
@@ -282,7 +283,7 @@ namespace RBMAI
                                     if (defenderPosture.posture <= 0f)
                                     {
                                         float healthDamage = calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureDmg, __result, victimAgent);
-                                        EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
+                                        EquipmentIndex wieldedItemIndex = victimAgent.GetPrimaryWieldedItemIndex();
                                         if (wieldedItemIndex != EquipmentIndex.None)
                                         {
                                             MBTextManager.SetTextVariable("DMG", MathF.Floor(healthDamage));
@@ -360,7 +361,7 @@ namespace RBMAI
                                     addPosturedamageVisual(attackerAgent, victimAgent);
                                     if (defenderPosture.posture <= 0f)
                                     {
-                                        EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
+                                        EquipmentIndex wieldedItemIndex = victimAgent.GetPrimaryWieldedItemIndex();
                                         if (wieldedItemIndex != EquipmentIndex.None)
                                         {
                                             if (!victimAgent.HasMount)
@@ -412,7 +413,7 @@ namespace RBMAI
                                     if (defenderPosture.posture <= 0f)
                                     {
                                         damageShield(victimAgent, 150);
-                                        EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
+                                        EquipmentIndex wieldedItemIndex = victimAgent.GetPrimaryWieldedItemIndex();
                                         if (wieldedItemIndex != EquipmentIndex.None)
                                         {
                                             if (victimAgent.IsPlayerControlled)
@@ -466,7 +467,7 @@ namespace RBMAI
                                     if (defenderPosture.posture <= 0f)
                                     {
                                         damageShield(victimAgent, 125);
-                                        EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
+                                        EquipmentIndex wieldedItemIndex = victimAgent.GetPrimaryWieldedItemIndex();
                                         if (wieldedItemIndex != EquipmentIndex.None)
                                         {
                                             if (victimAgent.IsPlayerControlled)
@@ -518,7 +519,7 @@ namespace RBMAI
                                     if (defenderPosture.posture <= 0f)
                                     {
                                         damageShield(victimAgent, 100);
-                                        EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
+                                        EquipmentIndex wieldedItemIndex = victimAgent.GetPrimaryWieldedItemIndex();
                                         if (wieldedItemIndex != EquipmentIndex.None)
                                         {
                                             if (victimAgent.IsPlayerControlled)
@@ -594,7 +595,7 @@ namespace RBMAI
                                 addPosturedamageVisual(attackerAgent, victimAgent);
                                 if (defenderPosture.posture <= 0f)
                                 {
-                                    EquipmentIndex wieldedItemIndex = victimAgent.GetWieldedItemIndex(0);
+                                    EquipmentIndex wieldedItemIndex = victimAgent.GetPrimaryWieldedItemIndex();
                                     if (wieldedItemIndex != EquipmentIndex.None)
                                     {
                                         if (victimAgent.IsPlayerControlled)
@@ -773,7 +774,7 @@ namespace RBMAI
                             }
                     }
                     float weaponWeight = weapon.Item.Weight;
-                    float weaponInertia = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia;
+                    float weaponInertia = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).TotalInertia;
                     float weaponCOM = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass;
                     for (float currentSpot = 1f; currentSpot > 0.35f; currentSpot -= 0.01f)
                     {
@@ -801,7 +802,7 @@ namespace RBMAI
                     float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
 
                     float weaponWeight = weapon.Item.Weight;
-                    float weaponInertia = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia;
+                    float weaponInertia = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).TotalInertia;
                     float weaponCOM = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass;
 
                     switch (weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).WeaponClass)
@@ -1013,17 +1014,17 @@ namespace RBMAI
                     attackerWeaponWeight = weapon.GetWeight();
                 }
 
-                if (defenderAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand) != EquipmentIndex.None)
+                if (defenderAgent.GetPrimaryWieldedItemIndex() != EquipmentIndex.None)
                 {
-                    MissionWeapon defenderWeapon = defenderAgent.Equipment[defenderAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand)];
+                    MissionWeapon defenderWeapon = defenderAgent.Equipment[defenderAgent.GetPrimaryWieldedItemIndex()];
                     SkillObject defenderWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(defenderWeapon.CurrentUsageItem.WeaponClass);
                     if (defenderWeaponSkill != null)
                     {
                         defenderEffectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, defenderWeaponSkill);
                     }
-                    if (defenderAgent.GetWieldedItemIndex(Agent.HandIndex.OffHand) != EquipmentIndex.None)
+                    if (defenderAgent.GetOffhandWieldedItemIndex() != EquipmentIndex.None)
                     {
-                        if (defenderAgent.Equipment[defenderAgent.GetWieldedItemIndex(Agent.HandIndex.OffHand)].IsShield())
+                        if (defenderAgent.Equipment[defenderAgent.GetOffhandWieldedItemIndex()].IsShield())
                         {
                             defenderEffectiveWeaponSkill += 20f;
                         }
@@ -1055,10 +1056,10 @@ namespace RBMAI
                 bool attackBlockedByOneHanedWithoutShield = false;
                 if (!collisionData.AttackBlockedWithShield)
                 {
-                    EquipmentIndex ei = defenderAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                    EquipmentIndex ei = defenderAgent.GetPrimaryWieldedItemIndex();
                     if (ei != EquipmentIndex.None)
                     {
-                        WeaponClass ws = defenderAgent.Equipment[defenderAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand)].CurrentUsageItem.WeaponClass;
+                        WeaponClass ws = defenderAgent.Equipment[defenderAgent.GetPrimaryWieldedItemIndex()].CurrentUsageItem.WeaponClass;
                         if (ws == WeaponClass.OneHandedAxe || ws == WeaponClass.OneHandedPolearm || ws == WeaponClass.OneHandedSword || ws == WeaponClass.Mace)
                         {
                             attackBlockedByOneHanedWithoutShield = true;
@@ -1109,18 +1110,18 @@ namespace RBMAI
                 //}
 
                 WeaponClass defenderWeaponClass = WeaponClass.Undefined;
-                if (defenderAgent.GetWieldedItemIndex(Agent.HandIndex.OffHand) != EquipmentIndex.None)
+                if (defenderAgent.GetOffhandWieldedItemIndex() != EquipmentIndex.None)
                 {
-                    if (defenderAgent.Equipment[defenderAgent.GetWieldedItemIndex(Agent.HandIndex.OffHand)].IsShield())
+                    if (defenderAgent.Equipment[defenderAgent.GetOffhandWieldedItemIndex()].IsShield())
                     {
-                        defenderWeaponClass = defenderAgent.Equipment[defenderAgent.GetWieldedItemIndex(Agent.HandIndex.OffHand)].CurrentUsageItem.WeaponClass;
+                        defenderWeaponClass = defenderAgent.Equipment[defenderAgent.GetOffhandWieldedItemIndex()].CurrentUsageItem.WeaponClass;
                     }
                 }
                 else
                 {
-                    if (defenderAgent.GetWieldedItemIndex(0) != EquipmentIndex.None)
+                    if (defenderAgent.GetPrimaryWieldedItemIndex() != EquipmentIndex.None)
                     {
-                        defenderWeaponClass = defenderAgent.Equipment[defenderAgent.GetWieldedItemIndex(0)].CurrentUsageItem.WeaponClass;
+                        defenderWeaponClass = defenderAgent.Equipment[defenderAgent.GetPrimaryWieldedItemIndex()].CurrentUsageItem.WeaponClass;
                     }
                 }
                 switch (defenderWeaponClass)
@@ -1211,17 +1212,17 @@ namespace RBMAI
                     attackerWeaponWeight = weapon.GetWeight();
                 }
 
-                if (defenderAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand) != EquipmentIndex.None)
+                if (defenderAgent.GetPrimaryWieldedItemIndex() != EquipmentIndex.None)
                 {
-                    MissionWeapon defenderWeapon = defenderAgent.Equipment[defenderAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand)];
+                    MissionWeapon defenderWeapon = defenderAgent.Equipment[defenderAgent.GetPrimaryWieldedItemIndex()];
                     SkillObject defenderWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(defenderWeapon.CurrentUsageItem.WeaponClass);
                     if (defenderWeaponSkill != null)
                     {
                         defenderEffectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, defenderWeaponSkill);
                     }
-                    if (defenderAgent.GetWieldedItemIndex(Agent.HandIndex.OffHand) != EquipmentIndex.None)
+                    if (defenderAgent.GetOffhandWieldedItemIndex() != EquipmentIndex.None)
                     {
-                        if (defenderAgent.Equipment[defenderAgent.GetWieldedItemIndex(Agent.HandIndex.OffHand)].IsShield())
+                        if (defenderAgent.Equipment[defenderAgent.GetOffhandWieldedItemIndex()].IsShield())
                         {
                             defenderEffectiveWeaponSkill += 20f;
                         }
@@ -1253,10 +1254,10 @@ namespace RBMAI
                 bool attackBlockedByOneHanedWithoutShield = false;
                 if (!collisionData.AttackBlockedWithShield)
                 {
-                    EquipmentIndex ei = defenderAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                    EquipmentIndex ei = defenderAgent.GetPrimaryWieldedItemIndex();
                     if (ei != EquipmentIndex.None)
                     {
-                        WeaponClass ws = defenderAgent.Equipment[defenderAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand)].CurrentUsageItem.WeaponClass;
+                        WeaponClass ws = defenderAgent.Equipment[defenderAgent.GetPrimaryWieldedItemIndex()].CurrentUsageItem.WeaponClass;
                         if (ws == WeaponClass.OneHandedAxe || ws == WeaponClass.OneHandedPolearm || ws == WeaponClass.OneHandedSword || ws == WeaponClass.Mace)
                         {
                             attackBlockedByOneHanedWithoutShield = true;
@@ -1380,7 +1381,7 @@ namespace RBMAI
                 attackerAgent.RegisterBlow(newBLow, collisionData);
                 foreach (MissionBehavior missionBehaviour in mission.MissionBehaviors)
                 {
-                    missionBehaviour.OnRegisterBlow(victimAgent, attackerAgent, null, newBLow, ref collisionData, in attackerWeapon);
+                    missionBehaviour.OnRegisterBlow(victimAgent, attackerAgent, WeakGameEntity.Invalid, newBLow, ref collisionData, in attackerWeapon);
                 }
             }
 
@@ -1411,7 +1412,7 @@ namespace RBMAI
                 victimAgent.RegisterBlow(newBLow, collisionData);
                 foreach (MissionBehavior missionBehaviour in mission.MissionBehaviors)
                 {
-                    missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, null, newBLow, ref collisionData, in attackerWeapon);
+                    missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, WeakGameEntity.Invalid, newBLow, ref collisionData, in attackerWeapon);
                 }
             }
 
@@ -1443,7 +1444,7 @@ namespace RBMAI
                 victimAgent.RegisterBlow(newBLow, collisionData);
                 foreach (MissionBehavior missionBehaviour in mission.MissionBehaviors)
                 {
-                    missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, null, newBLow, ref collisionData, in attackerWeapon);
+                    missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, WeakGameEntity.Invalid, newBLow, ref collisionData, in attackerWeapon);
                 }
             }
 
@@ -1670,7 +1671,7 @@ namespace RBMAI
                     {
                         if (agent != null && agent.Mission != null && agent.IsActive())
                         {
-                            EquipmentIndex ei = agent.GetWieldedItemIndex(Agent.HandIndex.OffHand);
+                            EquipmentIndex ei = agent.GetOffhandWieldedItemIndex();
                             if (ei != EquipmentIndex.None)
                             {
                                 agent.DropItem(ei);
@@ -1710,7 +1711,7 @@ namespace RBMAI
                     {
                         if (agent != null && agent.Mission != null && agent.IsActive())
                         {
-                            EquipmentIndex ei = agent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                            EquipmentIndex ei = agent.GetPrimaryWieldedItemIndex();
                             if (ei != EquipmentIndex.None)
                             {
                                 agent.DropItem(ei);
