@@ -32,12 +32,12 @@ namespace RBMAI
                 {
                     return true;
                 }
-                if (mainInfantry != null && mainInfantry.CountOfUnits > 0 && mainInfantry.QuerySystem.ClosestEnemyFormation != null && mainInfantry.QuerySystem.ClosestEnemyFormation.Formation != null)
+                if (mainInfantry != null && mainInfantry.CountOfUnits > 0 && mainInfantry.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && mainInfantry.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation != null)
                 {
                     Formation enemyForamtion = RBMAI.Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false, true);
                     if (enemyForamtion != null)
                     {
-                        float distance = mainInfantry.QuerySystem.MedianPosition.AsVec2.Distance(enemyForamtion.QuerySystem.MedianPosition.AsVec2) + mainInfantry.Depth / 2f + enemyForamtion.Depth / 2f;
+                        float distance = mainInfantry.CachedMedianPosition.AsVec2.Distance(enemyForamtion.CachedMedianPosition.AsVec2) + mainInfantry.Depth / 2f + enemyForamtion.Depth / 2f;
                         return (distance <= (battleJoinRange + (hasBattleBeenJoined ? 5f : 0f)));
                     }
                 }
@@ -423,7 +423,7 @@ namespace RBMAI
             List<Formation> formations = new List<Formation>();
             if (formation != null)
             {
-                if (formation.QuerySystem.ClosestEnemyFormation != null)
+                if (formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                 {
                     foreach (Team team in Mission.Current.Teams.ToList())
                     {
@@ -461,7 +461,7 @@ namespace RBMAI
             List<Formation> formations = new List<Formation>();
             if (formation != null)
             {
-                if (formation.QuerySystem.ClosestEnemyFormation != null)
+                if (formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                 {
                     foreach (Team team in Mission.Current.Teams.ToList())
                     {
@@ -496,7 +496,7 @@ namespace RBMAI
 
             if (formation != null)
             {
-                if (formation.QuerySystem.ClosestEnemyFormation != null)
+                if (formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                 {
                     foreach (Team team in Mission.Current.Teams.ToList())
                     {
@@ -526,7 +526,7 @@ namespace RBMAI
                         }
                         if (formation != null && includeInfantry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
                         {
-                            float newDist = position.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                            float newDist = position.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
                             if (newDist < dist)
                             {
                                 significantEnemy = enemyFormation;
@@ -544,7 +544,7 @@ namespace RBMAI
                         }
                         if (formation != null && includeRanged && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
                         {
-                            float newDist = position.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                            float newDist = position.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
                             if (newDist < dist)
                             {
                                 significantEnemy = enemyFormation;
@@ -562,7 +562,7 @@ namespace RBMAI
                         }
                         //if (formation != null && includeCavalry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsCavalryFormation && !CheckIfMountedSkirmishFormation(enemyFormation) && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
                         //{
-                        //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                        //    float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
                         //    if (newDist < dist)
                         //    {
                         //        significantEnemy = enemyFormation;
@@ -571,7 +571,7 @@ namespace RBMAI
                         //}
                         //if (formation != null && includeMountedSkirmishers && enemyFormation.CountOfUnits > 0 && CheckIfMountedSkirmishFormation(enemyFormation))
                         //{
-                        //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                        //    float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
                         //    if (newDist < dist)
                         //    {
                         //        significantEnemy = enemyFormation;
@@ -580,7 +580,7 @@ namespace RBMAI
                         //}
                         //if (formation != null && includeHorseArchers && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedCavalryFormation)
                         //{
-                        //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                        //    float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
                         //    if (newDist < dist)
                         //    {
                         //        significantEnemy = enemyFormation;
@@ -596,7 +596,7 @@ namespace RBMAI
                             dist = 10000f;
                             foreach (Formation significantFormation in significantFormations)
                             {
-                                float newDist = position.AsVec2.Distance(significantFormation.QuerySystem.MedianPosition.AsVec2);
+                                float newDist = position.AsVec2.Distance(significantFormation.CachedMedianPosition.AsVec2);
                                 if (newDist < dist)
                                 {
                                     significantEnemy = significantFormation;
@@ -609,7 +609,7 @@ namespace RBMAI
                             dist = 10000f;
                             foreach (Formation significantFormation in allEnemyFormations)
                             {
-                                float newDist = position.AsVec2.Distance(significantFormation.QuerySystem.MedianPosition.AsVec2);
+                                float newDist = position.AsVec2.Distance(significantFormation.CachedMedianPosition.AsVec2);
                                 if (newDist < dist)
                                 {
                                     significantEnemy = significantFormation;
@@ -625,7 +625,7 @@ namespace RBMAI
                         foreach (Formation enemyFormation in allEnemyFormations)
                         {
                             float newUnitCountRatio = (float)(enemyFormation.CountOfUnits) / (float)formation.CountOfUnits;
-                            float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                            float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
                             if (newDist < dist * newUnitCountRatio * 1.5f)
                             {
                                 significantEnemy = enemyFormation;
@@ -651,7 +651,7 @@ namespace RBMAI
 
             if (formation != null)
             {
-                if (formation.QuerySystem.ClosestEnemyFormation != null)
+                if (formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                 {
                     foreach (Team team in Mission.Current.Teams.ToList())
                     {
@@ -674,7 +674,7 @@ namespace RBMAI
                     {
                         if (formation != null && includeInfantry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
                         {
-                            //float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                            //float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
                             //if (newDist < dist)
                             //{
                             //    significantEnemy = enemyFormation;
@@ -688,7 +688,7 @@ namespace RBMAI
                         }
                         if (formation != null && includeRanged && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
                         {
-                            //float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                            //float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
                             //if (newDist < dist)
                             //{
                             //    significantEnemy = enemyFormation;
@@ -702,7 +702,7 @@ namespace RBMAI
                         }
                         if (formation != null && includeCavalry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsCavalryFormation && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
                         {
-                            //float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                            //float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
                             //if (newDist < dist)
                             //{
                             //    significantEnemy = enemyFormation;
@@ -716,7 +716,7 @@ namespace RBMAI
                         }
                         //if (formation != null && includeMountedSkirmishers && enemyFormation.CountOfUnits > 0 && CheckIfMountedSkirmishFormation(enemyFormation))
                         //{
-                        //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                        //    float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
                         //    if (newDist < dist)
                         //    {
                         //        significantEnemy = enemyFormation;
@@ -725,7 +725,7 @@ namespace RBMAI
                         //}
                         if (formation != null && includeHorseArchers && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedCavalryFormation)
                         {
-                            //float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                            //float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
                             //if (newDist < dist)
                             //{
                             //    significantEnemy = enemyFormation;
@@ -753,7 +753,7 @@ namespace RBMAI
                                     isMain = significantFormation.AI.IsMainFormation;
                                 }
                                 float unitCount = (float)formation.CountOfUnits;
-                                float distance = formation.QuerySystem.MedianPosition.AsVec2.Distance(significantFormation.QuerySystem.MedianPosition.AsVec2);
+                                float distance = formation.CachedMedianPosition.AsVec2.Distance(significantFormation.CachedMedianPosition.AsVec2);
                                 float newFormationWeight = (distance / unitCount) / (isMain ? 1.5f : 1f);
 
                                 if (newFormationWeight < formationWeight)
@@ -770,7 +770,7 @@ namespace RBMAI
                             foreach (Formation enemyFormation in allEnemyFormations)
                             {
                                 float newUnitCountRatio = (float)(enemyFormation.CountOfUnits) / (float)formation.CountOfUnits;
-                                float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                                float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
                                 if (formation != null && includeInfantry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
                                 {
                                     if (newDist < dist * newUnitCountRatio * 1.5f)
@@ -813,7 +813,7 @@ namespace RBMAI
                             foreach (Formation enemyFormation in allEnemyFormations)
                             {
                                 float newUnitCountRatio = (float)(enemyFormation.CountOfUnits) / (float)formation.CountOfUnits;
-                                float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2);
+                                float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
                                 if (newDist < dist * newUnitCountRatio * 1.5f)
                                 {
                                     significantEnemy = enemyFormation;
@@ -837,7 +837,7 @@ namespace RBMAI
             {
                 if (formation != null)
                 {
-                    if (formation.QuerySystem.ClosestEnemyFormation != null)
+                    if (formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                     {
                         foreach (Team team in Mission.Current.Teams.ToList())
                         {
@@ -874,7 +874,7 @@ namespace RBMAI
             List<Formation> significantFormations = new List<Formation>();
             if (formation != null)
             {
-                if (formation.QuerySystem.ClosestEnemyFormation != null)
+                if (formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                 {
                     foreach (Team team in Mission.Current.Teams.ToList())
                     {
@@ -922,7 +922,7 @@ namespace RBMAI
                                 {
                                     if (formation != null && includeInfantry && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsInfantryFormation)
                                     {
-                                        float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(allyFormation.QuerySystem.MedianPosition.AsVec2);
+                                        float newDist = formation.CachedMedianPosition.AsVec2.Distance(allyFormation.CachedMedianPosition.AsVec2);
                                         if (newDist < dist)
                                         {
                                             significantAlly = allyFormation;
@@ -931,7 +931,7 @@ namespace RBMAI
                                     }
                                     if (formation != null && includeRanged && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsRangedFormation)
                                     {
-                                        float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(allyFormation.QuerySystem.MedianPosition.AsVec2);
+                                        float newDist = formation.CachedMedianPosition.AsVec2.Distance(allyFormation.CachedMedianPosition.AsVec2);
                                         if (newDist < dist)
                                         {
                                             significantAlly = allyFormation;
@@ -940,7 +940,7 @@ namespace RBMAI
                                     }
                                     if (formation != null && includeCavalry && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsCavalryFormation && !allyFormation.QuerySystem.IsRangedCavalryFormation)
                                     {
-                                        float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(allyFormation.QuerySystem.MedianPosition.AsVec2);
+                                        float newDist = formation.CachedMedianPosition.AsVec2.Distance(allyFormation.CachedMedianPosition.AsVec2);
                                         if (newDist < dist)
                                         {
                                             significantAlly = allyFormation;
@@ -949,7 +949,7 @@ namespace RBMAI
                                     }
                                     //if (formation != null && includeMountedSkirmishers && allyFormation.CountOfUnits > 0 && CheckIfMountedSkirmishFormation(allyFormation))
                                     //{
-                                    //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(allyFormation.QuerySystem.MedianPosition.AsVec2);
+                                    //    float newDist = formation.CachedMedianPosition.AsVec2.Distance(allyFormation.CachedMedianPosition.AsVec2);
                                     //    if (newDist < dist)
                                     //    {
                                     //        significantEnemy = allyFormation;
@@ -958,7 +958,7 @@ namespace RBMAI
                                     //}
                                     //if (formation != null && includeHorseArchers && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsRangedCavalryFormation)
                                     //{
-                                    //    float newDist = formation.QuerySystem.MedianPosition.AsVec2.Distance(allyFormation.QuerySystem.MedianPosition.AsVec2);
+                                    //    float newDist = formation.CachedMedianPosition.AsVec2.Distance(allyFormation.CachedMedianPosition.AsVec2);
                                     //    if (newDist < dist)
                                     //    {
                                     //        significantEnemy = allyFormation;
@@ -2056,7 +2056,7 @@ namespace RBMAI
                             float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
 
                             swingSpeedReal = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
-                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).TotalInertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
                             thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.1f) * thrustskillModifier);
                             handlingReal = MathF.Ceiling((handling * 0.83f) * handlingskillModifier);
                             break;
@@ -2068,7 +2068,7 @@ namespace RBMAI
                             float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
 
                             swingSpeedReal = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
-                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).TotalInertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
                             thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.05f) * thrustskillModifier);
                             handlingReal = MathF.Ceiling((handling * 5f) * handlingskillModifier);
                             break;
@@ -2093,7 +2093,7 @@ namespace RBMAI
                             float handlingskillModifier = 1f + (effectiveSkillDR / 800f);
 
                             swingSpeedReal = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
-                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.Weight, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).TotalInertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
                             thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.15f) * thrustskillModifier);
                             handlingReal = MathF.Ceiling((handling * 0.9f) * handlingskillModifier);
                             break;
@@ -2125,7 +2125,7 @@ namespace RBMAI
                             float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
 
                             swingSpeedReal = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
-                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.GetWeight(), weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.GetWeight(), weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).TotalInertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
                             thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.1f) * thrustskillModifier);
                             handlingReal = MathF.Ceiling((handling * 0.83f) * handlingskillModifier);
                             break;
@@ -2137,7 +2137,7 @@ namespace RBMAI
                             float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
 
                             swingSpeedReal = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
-                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.GetWeight(), weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.GetWeight(), weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).TotalInertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
                             thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.05f) * thrustskillModifier);
                             handlingReal = MathF.Ceiling((handling * 5f) * handlingskillModifier);
                             break;
@@ -2162,7 +2162,7 @@ namespace RBMAI
                             float handlingskillModifier = 1f + (effectiveSkillDR / 800f);
 
                             swingSpeedReal = MathF.Ceiling((swingSpeed * 0.83f) * swingskillModifier);
-                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.GetWeight(), weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).Inertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
+                            thrustSpeedReal = MathF.Floor(Utilities.CalculateThrustSpeed(weapon.GetWeight(), weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).TotalInertia, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass) * Utilities.thrustSpeedTransfer);
                             thrustSpeedReal = MathF.Ceiling((thrustSpeedReal * 1.15f) * thrustskillModifier);
                             handlingReal = MathF.Ceiling((handling * 0.9f) * handlingskillModifier);
                             break;

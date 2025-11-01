@@ -319,12 +319,12 @@ namespace RBMAI
         [HarmonyPatch("EarlyStart")]
         public class EarlyStartPatch
         {
-            public static void Postfix(ref IBattleCombatant ____attackerLeaderBattleCombatant, ref IBattleCombatant ____defenderLeaderBattleCombatant)
+            public static void Postfix(ref IBattleCombatant ___AttackerLeaderBattleCombatant, ref IBattleCombatant ___DefenderLeaderBattleCombatant)
             {
                 Frontline.aiDecisionCooldownDict.Clear();
                 agentDamage.Clear();
                 RBMAiPatcher.DoPatching();
-                AgentAi.OnTickAsAIPatch.itemPickupDistanceStorage.Clear();
+                AgentAi.OnTickPatch.itemPickupDistanceStorage.Clear();
                 PostureLogic.agentsToChangeFormation.Clear();
                 PostureLogic.agentsToDropWeapon.Clear();
                 PostureLogic.agentsToDropShield.Clear();
@@ -341,7 +341,7 @@ namespace RBMAI
                             if (team.Side == BattleSideEnum.Attacker)
                             {
                                 team.ClearTacticOptions();
-                                if (____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Empire)
+                                if (___AttackerLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "empire")
                                 {
                                     team.AddTacticOption(new RBMTacticEmbolon(team));
                                 }
@@ -349,15 +349,15 @@ namespace RBMAI
                                 {
                                     //team.AddTacticOption(new TacticFrontalCavalryCharge(team));
                                 }
-                                if (____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Aserai || ____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Darshi)
+                                if (___AttackerLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "aserai" || ___AttackerLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "darshi")
                                 {
                                     team.AddTacticOption(new RBMTacticAttackSplitSkirmishers(team));
                                 }
-                                if (____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Sturgia || ____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Nord)
+                                if (___AttackerLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "sturgia" || ___AttackerLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "nord")
                                 {
                                     team.AddTacticOption(new RBMTacticAttackSplitInfantry(team));
                                 }
-                                if (____attackerLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Battania)
+                                if (___AttackerLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "batania")
                                 {
                                     team.AddTacticOption(new RBMTacticAttackSplitArchers(team));
                                 }
@@ -367,13 +367,13 @@ namespace RBMAI
                             if (team.Side == BattleSideEnum.Defender)
                             {
                                 team.ClearTacticOptions();
-                                if (____defenderLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Battania)
+                                if (___DefenderLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "batania")
                                 {
                                     team.AddTacticOption(new RBMTacticDefendSplitArchers(team));
                                 }
                                 team.AddTacticOption(new TacticDefensiveEngagement(team));
                                 team.AddTacticOption(new TacticDefensiveLine(team));
-                                if (____defenderLeaderBattleCombatant?.BasicCulture?.GetCultureCode() == CultureCode.Sturgia)
+                                if (___DefenderLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "sturgia")
                                 {
                                     team.AddTacticOption(new RBMTacticDefendSplitInfantry(team));
                                 }
@@ -684,7 +684,7 @@ namespace RBMAI
             [HarmonyPatch("GetTacticWeight")]
             private static void PostfixGetTacticWeight(ref TacticRangedHarrassmentOffensive __instance, ref float __result)
             {
-                if (__instance.Team?.Leader?.Character?.Culture?.GetCultureCode() == CultureCode.Khuzait)
+                if (__instance.Team?.Leader?.Character?.Culture?.Id.ToString() == "khuzait")
                 {
                     __result *= 1.1f;
                 }
@@ -733,7 +733,7 @@ namespace RBMAI
                     {
                         if (agent != null && agent.IsHuman && !agent.IsRunningAway)
                         {
-                            EquipmentIndex wieldedItemIndex = agent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
+                            EquipmentIndex wieldedItemIndex = agent.GetPrimaryWieldedItemIndex();
                             bool isRanged = (wieldedItemIndex != EquipmentIndex.None && agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) && agent.Equipment.GetAmmoAmount(wieldedItemIndex) > 5) || (wieldedItemIndex != EquipmentIndex.None && agent.Equipment.HasRangedWeapon(WeaponClass.Bolt) && agent.Equipment.GetAmmoAmount(wieldedItemIndex) > 5);
                             if (agent.HasMount && isRanged)
                             {
@@ -773,23 +773,23 @@ namespace RBMAI
                 return true;
             }
 
-            [HarmonyPatch(typeof(MissionGauntletOrderOfBattleUIHandler))]
-            private class MissionGauntletOrderOfBattleUIHandlerPatch
-            {
-                [HarmonyPostfix]
-                [HarmonyPatch("OnDeploymentFinish")]
-                private static void PostfixOnDeploymentFinish()
-                {
-                    if (Mission.Current != null)
-                    {
-                        if (Mission.Current.MainAgent != null && Mission.Current.PlayerTeam != null && Mission.Current.IsSiegeBattle)
-                        {
-                            Mission.Current.MainAgent.Formation = Mission.Current.PlayerTeam.GetFormation(FormationClass.Infantry);
+            //[HarmonyPatch(typeof(Mission))]
+            //private class MissionPatch
+            //{
+            //    [HarmonyPostfix]
+            //    [HarmonyPatch("OnDeploymentFinish")]
+            //    private static void PostfixOnDeploymentFinish()
+            //    {
+            //        if (Mission.Current != null)
+            //        {
+            //            if (Mission.Current.MainAgent != null && Mission.Current.PlayerTeam != null && Mission.Current.IsSiegeBattle)
+            //            {
+            //                Mission.Current.MainAgent.Formation = Mission.Current.PlayerTeam.GetFormation(FormationClass.Infantry);
 
-                        }
-                    }
-                }
-            }
+            //            }
+            //        }
+            //    }
+            //}
 
         }
     }

@@ -35,16 +35,16 @@ namespace RBMAI
         {
             CalculateCurrentOrder();
             base.Formation.SetMovementOrder(base.CurrentOrder);
-            base.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
-            base.Formation.FacingOrder = FacingOrder.FacingOrderLookAtEnemy;
-            base.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
-            base.Formation.FormOrder = FormOrder.FormOrderWide;
+            base.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
+            base.Formation.SetFacingOrder( FacingOrder.FacingOrderLookAtEnemy);
+            base.Formation.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
+            base.Formation.SetFormOrder( FormOrder.FormOrderWide);
         }
 
         protected override void CalculateCurrentOrder()
         {
-            WorldPosition position = base.Formation.QuerySystem.MedianPosition;
-            Vec2 averagePosition = base.Formation.QuerySystem.AveragePosition;
+            WorldPosition position = base.Formation.CachedMedianPosition;
+            Vec2 averagePosition = base.Formation.CachedAveragePosition;
 
             float flankRange = 20f;
 
@@ -95,7 +95,7 @@ namespace RBMAI
             {
                 if (allyFormation != null)
                 {
-                    position = allyFormation.QuerySystem.MedianPosition;
+                    position = allyFormation.CachedMedianPosition;
                 }
                 else
                 {

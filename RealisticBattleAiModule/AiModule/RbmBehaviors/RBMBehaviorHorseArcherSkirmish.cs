@@ -113,18 +113,18 @@ namespace RBMAI
 
         protected override void CalculateCurrentOrder()
         {
-            WorldPosition position = base.Formation.QuerySystem.MedianPosition;
+            WorldPosition position = base.Formation.CachedMedianPosition;
             Formation targetFormation = RBMAI.Utilities.FindSignificantEnemy(base.Formation, true, true, false, false, false, true);
             _isEnemyReachable = targetFormation != null && (!(base.Formation.Team.TeamAI is TeamAISiegeComponent) || !TeamAISiegeComponent.IsFormationInsideCastle(targetFormation, includeOnlyPositionedUnits: false));
             if (!_isEnemyReachable)
             {
-                position.SetVec2(base.Formation.QuerySystem.AveragePosition);
+                position.SetVec2(base.Formation.CachedAveragePosition);
             }
             else
             {
                 bool num = (base.Formation.QuerySystem.AverageAllyPosition - base.Formation.Team.QuerySystem.AverageEnemyPosition).LengthSquared <= 3600f;
                 bool engaging = _engaging;
-                engaging = _engaging = num || ((!_engaging) ? ((base.Formation.QuerySystem.AveragePosition - base.Formation.QuerySystem.AverageAllyPosition).LengthSquared <= 3600f) : (!(base.Formation.QuerySystem.UnderRangedAttackRatio * 0.5f > base.Formation.QuerySystem.MakingRangedAttackRatio)));
+                engaging = _engaging = num || ((!_engaging) ? ((base.Formation.CachedAveragePosition - base.Formation.QuerySystem.AverageAllyPosition).LengthSquared <= 3600f) : (!(base.Formation.QuerySystem.UnderRangedAttackRatio * 0.5f > base.Formation.QuerySystem.MakingRangedAttackRatio)));
                 if (_engaging)
                 {
                     if (targetFormation != null)
@@ -134,20 +134,20 @@ namespace RBMAI
                         {
                             distance = 30f;
                         }
-                        Ellipse ellipse = new Ellipse(targetFormation.QuerySystem.MedianPosition.AsVec2, distance, targetFormation.Width * 0.5f, targetFormation.Direction);
-                        position.SetVec2(ellipse.GetTargetPos(Formation.QuerySystem.AveragePosition, 35f));
-                        CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(targetFormation.QuerySystem.AveragePosition);
-                        //Formation.FacingOrder = FacingOrder.FacingOrderLookAtDirection((targetFormation.QuerySystem.MedianPosition.AsVec2 - position.AsVec2).Normalized());
+                        Ellipse ellipse = new Ellipse(targetFormation.CachedMedianPosition.AsVec2, distance, targetFormation.Width * 0.5f, targetFormation.Direction);
+                        position.SetVec2(ellipse.GetTargetPos(Formation.CachedAveragePosition, 35f));
+                        CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(targetFormation.CachedAveragePosition);
+                        //Formation.SetFacingOrder( FacingOrder.FacingOrderLookAtDirection((targetFormation.CachedMedianPosition.AsVec2 - position.AsVec2).Normalized());
                     }
                 }
                 else
                 {
-                    position = new WorldPosition(Mission.Current.Scene, new Vec3(base.Formation.QuerySystem.AverageAllyPosition, base.Formation.Team.QuerySystem.MedianPosition.GetNavMeshZ() + 100f));
+                    position = new WorldPosition(Mission.Current.Scene, new Vec3(base.Formation.QuerySystem.AverageAllyPosition.x, base.Formation.QuerySystem.AverageAllyPosition.y, base.Formation.Team.GetMedianPosition(base.Formation.Team.GetAveragePosition()).GetNavMeshZ() + 100f));
                 }
             }
             if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(position.AsVec2))
             {
-                position = base.Formation.QuerySystem.MedianPosition;
+                position = base.Formation.CachedMedianPosition;
                 CurrentOrder = MovementOrder.MovementOrderMove(position);
             }
             else
@@ -160,17 +160,17 @@ namespace RBMAI
         {
             CalculateCurrentOrder();
             Formation.SetMovementOrder(CurrentOrder);
-            Formation.FacingOrder = CurrentFacingOrder;
+            Formation.SetFacingOrder( CurrentFacingOrder);
         }
 
         protected override void OnBehaviorActivatedAux()
         {
             CalculateCurrentOrder();
             base.Formation.SetMovementOrder(base.CurrentOrder);
-            base.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
-            base.Formation.FacingOrder = FacingOrder.FacingOrderLookAtEnemy;
-            base.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
-            base.Formation.FormOrder = FormOrder.FormOrderDeep;
+            base.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
+            base.Formation.SetFacingOrder( FacingOrder.FacingOrderLookAtEnemy);
+            base.Formation.SetFormOrder( FormOrder.FormOrderDeep);
+            base.Formation.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
         }
 
         protected override float GetAiWeight()
@@ -189,7 +189,7 @@ namespace RBMAI
             else if (base.Formation != null && base.Formation.QuerySystem.IsRangedCavalryFormation)
             {
                 Formation enemyFormation = RBMAI.Utilities.FindSignificantEnemy(base.Formation, false, false, true, false, false);
-                if (enemyFormation != null && enemyFormation.QuerySystem.IsCavalryFormation && base.Formation.QuerySystem.MedianPosition.AsVec2.Distance(enemyFormation.QuerySystem.MedianPosition.AsVec2) < 55f && enemyFormation.CountOfUnits >= base.Formation.CountOfUnits * 0.5f)
+                if (enemyFormation != null && enemyFormation.QuerySystem.IsCavalryFormation && base.Formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2) < 55f && enemyFormation.CountOfUnits >= base.Formation.CountOfUnits * 0.5f)
                 {
                     return 1000f;
                 }

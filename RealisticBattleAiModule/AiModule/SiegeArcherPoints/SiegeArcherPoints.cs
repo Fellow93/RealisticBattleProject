@@ -300,7 +300,7 @@ public class SiegeArcherPoints : MissionLogic
     //			____waitOrder = MovementOrder.MovementOrderMove(tempPos);
     //			____readyOrder = MovementOrder.MovementOrderMove(____readyOrderPosition);
     //			____currentOrder = ((____behaviorState == BehaviorState.Ready) ? ____readyOrder : ____waitOrder);
-    //			___CurrentFacingOrder = ((__instance.Formation.QuerySystem.ClosestEnemyFormation != null && TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation.QuerySystem.ClosestEnemyFormation.Formation, includeOnlyPositionedUnits: true)) ? FacingOrder.FacingOrderLookAtEnemy : ((____behaviorState == BehaviorState.Ready) ? ____readyFacingOrder : ____waitFacingOrder));
+    //			___CurrentFacingOrder = ((__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && TeamAISiegeComponent.IsFormationInsideCastle(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation, includeOnlyPositionedUnits: true)) ? FacingOrder.FacingOrderLookAtEnemy : ((____behaviorState == BehaviorState.Ready) ? ____readyFacingOrder : ____waitFacingOrder));
 
     //		}
     //	}

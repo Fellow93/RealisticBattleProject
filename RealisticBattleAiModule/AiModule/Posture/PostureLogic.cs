@@ -1744,11 +1744,11 @@ namespace RBMAI
         //                float distanceToArc = -1f;
         //                if (agent.Formation != null && isInfFormationActive)
         //                {
-        //                    distanceToInf = agent.Team.GetFormation(FormationClass.Infantry).QuerySystem.MedianPosition.AsVec2.Distance(agent.Formation.QuerySystem.MedianPosition.AsVec2);
+        //                    distanceToInf = agent.Team.GetFormation(FormationClass.Infantry).CachedMedianPosition.AsVec2.Distance(agent.Formation.CachedMedianPosition.AsVec2);
         //                }
         //                if (agent.Formation != null && isArcFormationActive)
         //                {
-        //                    distanceToArc = agent.Team.GetFormation(FormationClass.Ranged).QuerySystem.MedianPosition.AsVec2.Distance(agent.Formation.QuerySystem.MedianPosition.AsVec2);
+        //                    distanceToArc = agent.Team.GetFormation(FormationClass.Ranged).CachedMedianPosition.AsVec2.Distance(agent.Formation.CachedMedianPosition.AsVec2);
         //                }
         //                if (distanceToArc > 0f && distanceToArc < distanceToInf)
         //                {

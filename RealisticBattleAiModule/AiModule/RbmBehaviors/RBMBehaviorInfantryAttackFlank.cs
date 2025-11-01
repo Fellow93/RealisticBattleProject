@@ -45,17 +45,17 @@ namespace RBMAI
         {
             CalculateCurrentOrder();
             base.Formation.SetMovementOrder(base.CurrentOrder);
-            base.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
-            base.Formation.FacingOrder = FacingOrder.FacingOrderLookAtEnemy;
-            base.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
-            base.Formation.FormOrder = FormOrder.FormOrderDeep;
+            base.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
+            base.Formation.SetFacingOrder( FacingOrder.FacingOrderLookAtEnemy);
+            base.Formation.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
+            base.Formation.SetFormOrder( FormOrder.FormOrderDeep);
         }
 
         protected override void CalculateCurrentOrder()
         {
-            WorldPosition position = base.Formation.QuerySystem.MedianPosition;
+            WorldPosition position = base.Formation.CachedMedianPosition;
             _isEnemyReachable = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && (!(base.Formation.Team.TeamAI is TeamAISiegeComponent) || !TeamAISiegeComponent.IsFormationInsideCastle(base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation, includeOnlyPositionedUnits: false));
-            Vec2 averagePosition = base.Formation.QuerySystem.AveragePosition;
+            Vec2 averagePosition = base.Formation.CachedAveragePosition;
 
             if (!_isEnemyReachable)
             {
@@ -88,7 +88,7 @@ namespace RBMAI
                 {
                     case FlankMode.Flank:
                         {
-                            if (averagePosition.Distance(enemyFormation.QuerySystem.AveragePosition) < flankRange)
+                            if (averagePosition.Distance(enemyFormation.CachedAveragePosition) < flankRange)
                             {
                                 flankMode = FlankMode.Attack;
                             }
@@ -125,7 +125,7 @@ namespace RBMAI
                             {
                                 if (enemyFormation != null)
                                 {
-                                    position = enemyFormation.QuerySystem.MedianPosition;
+                                    position = enemyFormation.CachedMedianPosition;
                                 }
                                 else
                                 {
@@ -174,7 +174,7 @@ namespace RBMAI
                     //		{
                     //			if (allyFormation != null)
                     //			{
-                    //				position = allyFormation.QuerySystem.MedianPosition;
+                    //				position = allyFormation.CachedMedianPosition;
 
                     //			}
                     //			else
@@ -204,7 +204,7 @@ namespace RBMAI
         {
             CalculateCurrentOrder();
             Formation.SetMovementOrder(base.CurrentOrder);
-            Formation.FacingOrder = CurrentFacingOrder;
+            Formation.SetFacingOrder( CurrentFacingOrder);
         }
 
         public override TextObject GetBehaviorString()

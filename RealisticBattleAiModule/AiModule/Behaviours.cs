@@ -31,8 +31,8 @@ namespace RBMAI
             [HarmonyPatch("OnBehaviorActivatedAux")]
             private static void PostfixOnBehaviorActivatedAux(ref BehaviorSkirmishLine __instance)
             {
-                __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
-                __instance.Formation.FormOrder = FormOrder.FormOrderCustom(110f);
+                __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
+                __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(110f));
             }
         }
 
@@ -170,7 +170,7 @@ namespace RBMAI
                 method.DeclaringType.GetMethod("CalculateCurrentOrder");
                 method.Invoke(__instance, new object[] { });
                 __instance.Formation.SetMovementOrder(____currentOrder);
-                __instance.Formation.FacingOrder = ___CurrentFacingOrder;
+                __instance.Formation.SetFacingOrder(___CurrentFacingOrder);
                 return false;
             }
 
@@ -178,7 +178,7 @@ namespace RBMAI
             [HarmonyPatch("OnBehaviorActivatedAux")]
             private static void PostfixOnBehaviorActivatedAux(ref BehaviorScreenedSkirmish __instance)
             {
-                __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
+                __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
             }
         }
     }
@@ -472,7 +472,7 @@ namespace RBMAI
                 engaging = (____engaging = (num || ((!____engaging) ? ((__instance.Formation.QuerySystem.Formation.CachedAveragePosition - __instance.Formation.QuerySystem.AverageAllyPosition).LengthSquared <= 160000f) : (!(__instance.Formation.QuerySystem.UnderRangedAttackRatio * 0.2f > __instance.Formation.QuerySystem.MakingRangedAttackRatio)))));
                 if (!____engaging)
                 {
-                    position = new WorldPosition(Mission.Current.Scene, new Vec3(__instance.Formation.QuerySystem.AverageAllyPosition, __instance.Formation.Team.QuerySystem.MedianPosition.GetNavMeshZ() + 100f));
+                    position = new WorldPosition(Mission.Current.Scene, new Vec3(__instance.Formation.QuerySystem.AverageAllyPosition.x, __instance.Formation.QuerySystem.AverageAllyPosition.y, __instance.Formation.Team.GetMedianPosition(__instance.Formation.Team.GetAveragePosition()).GetNavMeshZ() + 100f));
                 }
                 else
                 {
@@ -849,7 +849,7 @@ namespace RBMAI
         {
             if (__instance.Formation != null && __instance.Formation.QuerySystem.IsInfantryFormation)
             {
-                __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
+                __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
             }
         }
 
@@ -979,14 +979,14 @@ namespace RBMAI
             method.Invoke(__instance, new object[] { });
 
             __instance.Formation.SetMovementOrder(____currentOrder);
-            __instance.Formation.FacingOrder = ___CurrentFacingOrder;
-            if (__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && __instance.Formation.QuerySystem.Formation.CachedAveragePosition.DistanceSquared(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MedianPosition.AsVec2) > 1600f && __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.2f - ((__instance.Formation.ArrangementOrder.OrderEnum == ArrangementOrder.ArrangementOrderEnum.Loose) ? 0.1f : 0f))
+            __instance.Formation.SetFacingOrder( ___CurrentFacingOrder);
+            if (__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && __instance.Formation.QuerySystem.Formation.CachedAveragePosition.DistanceSquared(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.CachedMedianPosition.AsVec2) > 1600f && __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.2f - ((__instance.Formation.ArrangementOrder.OrderEnum == ArrangementOrder.ArrangementOrderEnum.Loose) ? 0.1f : 0f))
             {
-                __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderSkein;
+                __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderSkein);
             }
             else
             {
-                __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderSkein;
+                __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderSkein);
             }
 
             return false;
@@ -996,8 +996,8 @@ namespace RBMAI
         [HarmonyPatch("OnBehaviorActivatedAux")]
         private static void PostfixOnBehaviorActivatedAux(ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder, BehaviorVanguard __instance)
         {
-            __instance.Formation.FormOrder = FormOrder.FormOrderDeep;
-            __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderSkein;
+            __instance.Formation.SetFormOrder( FormOrder.FormOrderDeep);
+            __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderSkein);
         }
     }
 
@@ -1173,14 +1173,14 @@ namespace RBMAI
                 if ((uint)(__instance.OrderEnum - 10) <= 1u)
                 {
                     FormationQuerySystem querySystem = f.QuerySystem;
-                    FormationQuerySystem closestEnemyFormation = querySystem.ClosestSignificantlyLargeEnemyFormation;
-                    if (closestEnemyFormation == null)
+                    FormationQuerySystem ClosestSignificantlyLargeEnemyFormation = querySystem.ClosestSignificantlyLargeEnemyFormation;
+                    if (ClosestSignificantlyLargeEnemyFormation == null)
                     {
                         directionAux = Vec2.One;
                     }
                     else
                     {
-                        directionAux = (closestEnemyFormation.MedianPosition.AsVec2 - querySystem.AveragePosition).Normalized();
+                        directionAux = (ClosestSignificantlyLargeEnemyFormation.Formation.CachedMedianPosition.AsVec2 - querySystem.Formation.CachedAveragePosition).Normalized();
                     }
                 }
                 else
@@ -1418,7 +1418,7 @@ namespace RBMAI
                     __result = 0f;
                     return false;
                 }
-                __result = MBMath.Lerp(0.1f, 1.2f, MBMath.ClampFloat(__instance.BehaviorCoherence * (querySystem.Formation.DeviationOfPositionsExcludeFarAgents + 1f) / (querySystem.IdealAverageDisplacement + 1f), 0f, 3f) / 3f);
+                __result = MBMath.Lerp(0.1f, 1.2f, MBMath.ClampFloat(__instance.BehaviorCoherence * (querySystem.Formation.CachedFormationIntegrityData.DeviationOfPositionsExcludeFarAgents + 1f) / (querySystem.IdealAverageDisplacement + 1f), 0f, 3f) / 3f);
                 return false;
             }
             return true;
@@ -1449,7 +1449,7 @@ namespace RBMAI
         [HarmonyPatch("TickOccasionally")]
         private static void PrefixTickOccasionally(ref BehaviorRegroup __instance)
         {
-            __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+            __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
         }
     }
 
@@ -1563,7 +1563,7 @@ namespace RBMAI
                     Vec2 vec = significantEnemy.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
                     WorldPosition positionNew = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
 
-                    float disper = __instance.Formation.QuerySystem.FormationIntegrityData.DeviationOfPositionsExcludeFarAgents;
+                    float disper = __instance.Formation.CachedFormationIntegrityData.DeviationOfPositionsExcludeFarAgents;
                     if (disper > 10f)
                     {
                         positionNew.SetVec2(positionNew.AsVec2 + vec.Normalized() * (20f + __instance.Formation.Depth));
@@ -1594,7 +1594,7 @@ namespace RBMAI
             method.Invoke(__instance, new object[] { });
 
             __instance.Formation.SetMovementOrder(__instance.CurrentOrder);
-            __instance.Formation.FacingOrder = ___CurrentFacingOrder;
+            __instance.Formation.SetFacingOrder( ___CurrentFacingOrder);
             if (__instance.Formation.QuerySystem.IsInfantryFormation)
             {
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
@@ -1605,11 +1605,11 @@ namespace RBMAI
                     {
                         if (significantEnemy.ArrangementOrder == ArrangementOrder.ArrangementOrderLine)
                         {
-                            __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+                            __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
                         }
                         else if (significantEnemy.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose)
                         {
-                            __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
+                            __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
                         }
                     }
                 }

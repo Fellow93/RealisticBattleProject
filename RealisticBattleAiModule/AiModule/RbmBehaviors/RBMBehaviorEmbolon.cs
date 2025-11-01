@@ -28,15 +28,15 @@ namespace RBMAI
             if (_mainFormation != null)
             {
                 direction = _mainFormation.Direction;
-                Vec2 vec = (base.Formation.QuerySystem.Team.MedianTargetFormationPosition.AsVec2 - _mainFormation.QuerySystem.MedianPosition.AsVec2).Normalized();
-                medianPosition = _mainFormation.QuerySystem.MedianPosition;
+                Vec2 vec = (base.Formation.QuerySystem.Team.MedianTargetFormationPosition.AsVec2 - _mainFormation.CachedMedianPosition.AsVec2).Normalized();
+                medianPosition = _mainFormation.CachedMedianPosition;
                 medianPosition.SetVec2(_mainFormation.CurrentPosition + vec * ((_mainFormation.Depth + base.Formation.Depth) * 0.5f + 20f));
             }
             else
             {
                 direction = base.Formation.Direction;
-                medianPosition = base.Formation.QuerySystem.MedianPosition;
-                medianPosition.SetVec2(base.Formation.QuerySystem.AveragePosition);
+                medianPosition = base.Formation.CachedMedianPosition;
+                medianPosition.SetVec2(base.Formation.CachedAveragePosition);
             }
             base.CurrentOrder = MovementOrder.MovementOrderMove(medianPosition);
             CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(direction);
@@ -52,14 +52,14 @@ namespace RBMAI
         {
             CalculateCurrentOrder();
             base.Formation.SetMovementOrder(base.CurrentOrder);
-            base.Formation.FacingOrder = CurrentFacingOrder;
-            //if (base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && base.Formation.QuerySystem.AveragePosition.DistanceSquared(base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MedianPosition.AsVec2) > 1600f && base.Formation.QuerySystem.UnderRangedAttackRatio > 0.2f - ((base.Formation.ArrangementOrder.OrderEnum == ArrangementOrder.ArrangementOrderEnum.Loose) ? 0.1f : 0f))
+            base.Formation.SetFacingOrder( CurrentFacingOrder);
+            //if (base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && base.Formation.CachedAveragePosition.DistanceSquared(base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MedianPosition.AsVec2) > 1600f && base.Formation.QuerySystem.UnderRangedAttackRatio > 0.2f - ((base.Formation.ArrangementOrder.OrderEnum == ArrangementOrder.ArrangementOrderEnum.Loose) ? 0.1f : 0f))
             //{
-            //	base.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
+            //	base.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose;
             //}
             //else
             //{
-            //	base.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+            //	base.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine;
             //}
         }
 
@@ -67,10 +67,10 @@ namespace RBMAI
         {
             CalculateCurrentOrder();
             base.Formation.SetMovementOrder(base.CurrentOrder);
-            base.Formation.FacingOrder = CurrentFacingOrder;
-            base.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderSkein;
-            base.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
-            base.Formation.FormOrder = FormOrder.FormOrderDeep;
+            base.Formation.SetFacingOrder( CurrentFacingOrder);
+            base.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderSkein);
+            base.Formation.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
+            base.Formation.SetFormOrder( FormOrder.FormOrderDeep);
         }
 
         public override TextObject GetBehaviorString()

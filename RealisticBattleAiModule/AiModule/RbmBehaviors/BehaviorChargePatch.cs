@@ -50,13 +50,13 @@ namespace RBMAI.AiModule.RbmBehaviors
 
                     if (significantEnemy != null)
                     {
-                        Vec2 signDirection = significantEnemy.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
+                        Vec2 signDirection = significantEnemy.CachedMedianPosition.AsVec2 - __instance.Formation.CachedMedianPosition.AsVec2;
                         signDist = signDirection.Normalize();
                     }
 
                     if (enemyCav != null)
                     {
-                        Vec2 cavDirection = enemyCav.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
+                        Vec2 cavDirection = enemyCav.CachedMedianPosition.AsVec2 - __instance.Formation.CachedMedianPosition.AsVec2;
                         cavDist = cavDirection.Normalize();
                     }
                     bool isOnlyCavReamining = RBMAI.Utilities.CheckIfOnlyCavRemaining(__instance.Formation);
@@ -64,8 +64,8 @@ namespace RBMAI.AiModule.RbmBehaviors
                     {
                         if (isOnlyCavReamining)
                         {
-                            Vec2 vec = enemyCav.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
-                            WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
+                            Vec2 vec = enemyCav.CachedMedianPosition.AsVec2 - __instance.Formation.CachedMedianPosition.AsVec2;
+                            WorldPosition positionNew = __instance.Formation.CachedMedianPosition;
 
                             WorldPosition storedPosition = WorldPosition.Invalid;
                             positionsStorage.TryGetValue(__instance.Formation, out storedPosition);
@@ -77,7 +77,7 @@ namespace RBMAI.AiModule.RbmBehaviors
                             }
                             else
                             {
-                                float storedPositonDistance = (storedPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2).Normalize();
+                                float storedPositonDistance = (storedPosition.AsVec2 - __instance.Formation.CachedMedianPosition.AsVec2).Normalize();
                                 if (storedPositonDistance > (__instance.Formation.Depth / 2f) + 10f)
                                 {
                                     positionsStorage.Remove(__instance.Formation);
@@ -107,15 +107,15 @@ namespace RBMAI.AiModule.RbmBehaviors
                             //{
                             //    positionsStorage.Remove(__instance.Formation);
                             //}
-                            __instance.Formation.ArrangementOrder = ArrangementOrderLine;
+                            __instance.Formation.SetArrangementOrder(ArrangementOrderLine);
                             return false;
                         }
                         else
                         {
                             if (!(__instance.Formation.AI?.Side == FormationAI.BehaviorSide.Left || __instance.Formation.AI?.Side == FormationAI.BehaviorSide.Right) && enemyCav.TargetFormation == __instance.Formation)
                             {
-                                Vec2 vec = enemyCav.QuerySystem.MedianPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2;
-                                WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
+                                Vec2 vec = enemyCav.CachedMedianPosition.AsVec2 - __instance.Formation.CachedMedianPosition.AsVec2;
+                                WorldPosition positionNew = __instance.Formation.CachedMedianPosition;
 
                                 WorldPosition storedPosition = WorldPosition.Invalid;
                                 positionsStorage.TryGetValue(__instance.Formation, out storedPosition);
@@ -127,7 +127,7 @@ namespace RBMAI.AiModule.RbmBehaviors
                                 }
                                 else
                                 {
-                                    float storedPositonDistance = (storedPosition.AsVec2 - __instance.Formation.QuerySystem.MedianPosition.AsVec2).Normalize();
+                                    float storedPositonDistance = (storedPosition.AsVec2 - __instance.Formation.CachedMedianPosition.AsVec2).Normalize();
                                     if (storedPositonDistance > (__instance.Formation.Depth / 2f) + 10f)
                                     {
                                         positionsStorage.Remove(__instance.Formation);
@@ -153,7 +153,7 @@ namespace RBMAI.AiModule.RbmBehaviors
                                 //        agent.SetFiringOrder(0);
                                 //    }
                                 //});
-                                __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+                                __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
                                 return false;
                             }
                         }
@@ -161,7 +161,7 @@ namespace RBMAI.AiModule.RbmBehaviors
                     }
                     else if (significantEnemy != null && !significantEnemy.QuerySystem.IsRangedFormation && signDist < 50f && RBMAI.Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.38f))
                     {
-                        WorldPosition positionNew = __instance.Formation.QuerySystem.MedianPosition;
+                        WorldPosition positionNew = __instance.Formation.CachedMedianPosition;
                         positionNew.SetVec2(positionNew.AsVec2 - __instance.Formation.Direction * 7f);
 
                         WorldPosition storedPosition = WorldPosition.Invalid;
@@ -176,7 +176,7 @@ namespace RBMAI.AiModule.RbmBehaviors
                         {
                             ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
                         }
-                        __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+                        __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
                         return false;
                         //__instance.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent) {
                         //    agent.SetMaximumSpeedLimit(0.1f, true);
@@ -187,20 +187,20 @@ namespace RBMAI.AiModule.RbmBehaviors
 
                 if (significantEnemy != null)
                 {
-                    __instance.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
+                    __instance.Formation.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
                     ____currentOrder = MovementOrder.MovementOrderChargeToTarget(significantEnemy);
                     if (__instance.Formation.TargetFormation != null && __instance.Formation.TargetFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall
                         && RBMAI.Utilities.ShouldFormationCopyShieldWall(__instance.Formation))
                     {
-                        __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderShieldWall;
+                        __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
                     }
                     else if (__instance.Formation.TargetFormation != null && __instance.Formation.TargetFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderLine)
                     {
-                        __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLine;
+                        __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
                     }
                     else if (__instance.Formation.TargetFormation != null && __instance.Formation.TargetFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose)
                     {
-                        __instance.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
+                        __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
                     }
                     return false;
                 }

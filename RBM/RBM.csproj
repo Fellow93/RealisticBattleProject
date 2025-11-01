@@ -262,6 +262,12 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RealisticBattleAiModule\RBMAI.csproj">
+      <Project>{7254e74d-4968-47c3-bb91-84d3fc207acb}</Project>
+      <Name>RBMAI</Name>
+    </ProjectReference>
+  </ItemGroup>
   <!-- Post-Build -->
   <PropertyGroup>
     <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBM_native_parameters_tweaks.xml" "$(SolutionDir)..\RBM\ModuleData\"

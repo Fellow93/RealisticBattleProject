@@ -46,7 +46,7 @@ namespace RBMAI
 
         protected override void CalculateCurrentOrder()
         {
-            WorldPosition medianPosition = base.Formation.QuerySystem.MedianPosition;
+            WorldPosition medianPosition = base.Formation.CachedMedianPosition;
             bool flag = false;
             Vec2 enemyFormationVector;
 
@@ -135,7 +135,7 @@ namespace RBMAI
                                 if (base.Formation.QuerySystem.IsRangedFormation && distanceToEnemyFormation < effectiveShootingRange * 0.4f)
                                 {
                                     Formation meleeFormation = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
-                                    if (meleeFormation != null && meleeFormation.QuerySystem.IsInfantryFormation && meleeFormation.QuerySystem.MedianPosition.AsVec2.Distance(base.Formation.QuerySystem.MedianPosition.AsVec2) <= base.Formation.QuerySystem.MissileRangeAdjusted)
+                                    if (meleeFormation != null && meleeFormation.QuerySystem.IsInfantryFormation && meleeFormation.CachedMedianPosition.AsVec2.Distance(base.Formation.CachedMedianPosition.AsVec2) <= base.Formation.QuerySystem.MissileRangeAdjusted)
                                     {
                                         rollPullBackAngle = MBRandom.RandomFloat;
                                         _behaviorState = BehaviorState.PullingBack;
@@ -189,7 +189,7 @@ namespace RBMAI
                     case BehaviorState.PullingBack:
                         {
                             Formation meleeFormationPull = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
-                            if (meleeFormationPull != null && meleeFormationPull.QuerySystem.MedianPosition.AsVec2.Distance(base.Formation.QuerySystem.MedianPosition.AsVec2) > base.Formation.QuerySystem.MissileRangeAdjusted)
+                            if (meleeFormationPull != null && meleeFormationPull.CachedMedianPosition.AsVec2.Distance(base.Formation.CachedMedianPosition.AsVec2) > base.Formation.QuerySystem.MissileRangeAdjusted)
                             {
                                 _behaviorState = BehaviorState.Shooting;
                                 flag = true;
@@ -239,7 +239,7 @@ namespace RBMAI
                     switch (_behaviorState)
                     {
                         case BehaviorState.Shooting:
-                            medianPosition.SetVec2(base.Formation.QuerySystem.AveragePosition);
+                            medianPosition.SetVec2(base.Formation.CachedAveragePosition);
                             break;
 
                         case BehaviorState.Approaching:
@@ -247,16 +247,16 @@ namespace RBMAI
 
                             if (side == 0)
                             {
-                                medianPosition.SetVec2(significantEnemy.QuerySystem.AveragePosition + significantEnemy.Direction.LeftVec().Normalized() * rollPullBackAngle * 70f);
+                                medianPosition.SetVec2(significantEnemy.CachedAveragePosition + significantEnemy.Direction.LeftVec().Normalized() * rollPullBackAngle * 70f);
                             }
                             else if (side == 1)
                             {
-                                medianPosition.SetVec2(significantEnemy.QuerySystem.AveragePosition + significantEnemy.Direction.RightVec().Normalized() * rollPullBackAngle * 70f);
+                                medianPosition.SetVec2(significantEnemy.CachedAveragePosition + significantEnemy.Direction.RightVec().Normalized() * rollPullBackAngle * 70f);
                             }
                             break;
 
                         case BehaviorState.PullingBack:
-                            medianPosition = significantEnemy.QuerySystem.MedianPosition;
+                            medianPosition = significantEnemy.CachedMedianPosition;
                             rollPullBackAngle = MBRandom.RandomFloat;
                             if (side == 0)
                             {
@@ -276,7 +276,7 @@ namespace RBMAI
                     {
                         Vec2 averageAllyFormationPosition = base.Formation.QuerySystem.Team.AveragePosition;
                         WorldPosition medianTargetFormationPosition = base.Formation.QuerySystem.Team.MedianTargetFormationPosition;
-                        CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection((medianTargetFormationPosition.AsVec2 - base.Formation.QuerySystem.AveragePosition).Normalized());
+                        CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection((medianTargetFormationPosition.AsVec2 - base.Formation.CachedAveragePosition).Normalized());
                     }
                     firstTime = false;
                 }
@@ -287,7 +287,7 @@ namespace RBMAI
         {
             CalculateCurrentOrder();
             base.Formation.SetMovementOrder(base.CurrentOrder);
-            base.Formation.FacingOrder = CurrentFacingOrder;
+            base.Formation.SetFacingOrder( CurrentFacingOrder);
         }
 
         protected override void OnBehaviorActivatedAux()
@@ -296,10 +296,10 @@ namespace RBMAI
             _cantShootTimer.Reset(Mission.Current.CurrentTime, MBMath.Lerp(5f, 10f, (MBMath.ClampFloat(base.Formation.CountOfUnits, 10f, 60f) - 10f) * 0.02f));
             CalculateCurrentOrder();
             base.Formation.SetMovementOrder(base.CurrentOrder);
-            base.Formation.FacingOrder = CurrentFacingOrder;
-            base.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
-            base.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
-            base.Formation.FormOrder = FormOrder.FormOrderWide;
+            base.Formation.SetFacingOrder( CurrentFacingOrder);
+            base.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
+            base.Formation.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
+            base.Formation.SetFormOrder( FormOrder.FormOrderWide);
         }
 
         protected override float GetAiWeight()

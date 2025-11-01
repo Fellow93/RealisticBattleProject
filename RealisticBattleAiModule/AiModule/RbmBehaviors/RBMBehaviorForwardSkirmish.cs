@@ -75,10 +75,10 @@ namespace RBMAI
         {
             CalculateCurrentOrder();
             base.Formation.SetMovementOrder(base.CurrentOrder);
-            base.Formation.ArrangementOrder = ArrangementOrder.ArrangementOrderLoose;
-            base.Formation.FacingOrder = FacingOrder.FacingOrderLookAtEnemy;
-            base.Formation.FiringOrder = FiringOrder.FiringOrderFireAtWill;
-            base.Formation.FormOrder = FormOrder.FormOrderDeep;
+            base.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
+            base.Formation.SetFacingOrder( FacingOrder.FacingOrderLookAtEnemy);
+            base.Formation.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
+            base.Formation.SetFormOrder( FormOrder.FormOrderDeep);
         }
 
         protected override void CalculateCurrentOrder()
@@ -91,9 +91,9 @@ namespace RBMAI
             {
                 mobilityModifier = 1f;
             }
-            WorldPosition position = base.Formation.QuerySystem.MedianPosition;
+            WorldPosition position = base.Formation.CachedMedianPosition;
             _isEnemyReachable = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && (!(base.Formation.Team.TeamAI is TeamAISiegeComponent) || !TeamAISiegeComponent.IsFormationInsideCastle(base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation, includeOnlyPositionedUnits: false));
-            Vec2 averagePosition = base.Formation.QuerySystem.AveragePosition;
+            Vec2 averagePosition = base.Formation.CachedAveragePosition;
 
             if (!_isEnemyReachable)
             {
@@ -123,7 +123,7 @@ namespace RBMAI
                             _returnTimer = null;
                             if (enemyFormation != null)
                             {
-                                if (averagePosition.Distance(enemyFormation.QuerySystem.AveragePosition) > skirmishRange)
+                                if (averagePosition.Distance(enemyFormation.CachedAveragePosition) > skirmishRange)
                                 {
                                     if (_reformTimer == null)
                                     {
@@ -163,7 +163,7 @@ namespace RBMAI
                                 {
                                     if (allyFormation != null)
                                     {
-                                        position = allyFormation.QuerySystem.MedianPosition;
+                                        position = allyFormation.CachedMedianPosition;
                                     }
                                     else
                                     {
@@ -217,7 +217,7 @@ namespace RBMAI
                             {
                                 if (allyFormation != null)
                                 {
-                                    position = allyFormation.QuerySystem.MedianPosition;
+                                    position = allyFormation.CachedMedianPosition;
                                 }
                                 else
                                 {
@@ -232,7 +232,7 @@ namespace RBMAI
                             if (enemyFormation != null)
                             {
                                 _reformTimer = null;
-                                if ((averagePosition.Distance(enemyFormation.QuerySystem.AveragePosition) < skirmishRange) || (base.Formation.QuerySystem.MakingRangedAttackRatio > 0.1f))
+                                if ((averagePosition.Distance(enemyFormation.CachedAveragePosition) < skirmishRange) || (base.Formation.QuerySystem.MakingRangedAttackRatio > 0.1f))
                                 {
                                     if (_attackTimer == null)
                                     {

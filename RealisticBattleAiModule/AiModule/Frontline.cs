@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -7,13 +8,14 @@ using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
+using static TaleWorlds.MountAndBlade.Formation;
 using static TaleWorlds.MountAndBlade.HumanAIComponent;
 
 namespace RBMAI
 {
     public static class Frontline
     {
-        public static Dictionary<Agent, AIDecision> aiDecisionCooldownDict = new Dictionary<Agent, AIDecision>();
+        public static ConcurrentDictionary<Agent, AIDecision> aiDecisionCooldownDict = new ConcurrentDictionary<Agent, AIDecision>();
         public static Random rnd = new Random();
         public static int aiDecisionCooldownTime = 3;
 
@@ -191,6 +193,11 @@ namespace RBMAI
                     bool isTargetArcher = false;
                     bool isAgentInDefensiveOrder = __instance.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall || __instance.ArrangementOrder == ArrangementOrder.ArrangementOrderCircle || __instance.ArrangementOrder == ArrangementOrder.ArrangementOrderSquare;
                     var targetAgent = Utilities.GetCorrectTarget(unit);
+                    unit.SetAutomaticTargetSelection(false);
+                    if (targetAgent !=null)
+                    {
+                        unit.SetTargetAgent(targetAgent);
+                    }
                     var vanillaTargetAgent = unit.GetTargetAgent();
                     int allyAgentsCountTreshold = 3;
                     int enemyAgentsCountTreshold = 3;
@@ -198,8 +205,8 @@ namespace RBMAI
                     int enemyAgentsCountCriticalTreshold = 6;
                     int hasShieldBonusNumber = 40;
                     int isAttackingArcherNumber = -60;
-                    int aggresivnesModifier = 0;
-                    float backStepDistance = 0.35f;
+                    int aggresivnesModifier = -15;
+                    float backStepDistance = 0.2f;
 
                     if (isAgentInDefensiveOrder)
                     {
@@ -207,9 +214,9 @@ namespace RBMAI
                         enemyAgentsCountTreshold = 3;
                         enemyAgentsCountDangerousTreshold = 4;
                         enemyAgentsCountCriticalTreshold = 6;
-                        backStepDistance = 0.35f;
+                        backStepDistance = 0.2f;
                         hasShieldBonusNumber = 40;
-                        aggresivnesModifier = 0;
+                        aggresivnesModifier = -15;
                     }
                     float weaponLengthModifier = unit.WieldedWeapon.CurrentUsageItem != null ? (unit.WieldedWeapon.CurrentUsageItem.GetRealWeaponLength() + 0.5f) : 1f;
                     float enemyWeaponLengthModifier = -1f;
@@ -308,9 +315,9 @@ namespace RBMAI
                             aiDecision.position = __result;
                             if (!unit.IsRangedCached)
                             {
-                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 5f, weaponLengthModifier, 10f, 20f, 10f);
-                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5f, weaponLengthModifier, 0f, 20f, 0f);
-                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
+                                unit.HumanAIComponent?.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 5f, weaponLengthModifier, 10f, 20f, 10f);
+                                unit.HumanAIComponent?.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 5f, weaponLengthModifier, 0f, 20f, 0f);
+                                unit.HumanAIComponent?.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
                             }
                             return false;
                         }
@@ -323,9 +330,9 @@ namespace RBMAI
                             }
                             if (!unit.IsRangedCached)
                             {
-                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, weaponLengthModifier, 4f, 10f, 6f);
-                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 5f, weaponLengthModifier, 1f, 10f, 0.01f);
-                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0.01f);
+                                unit.HumanAIComponent?.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, weaponLengthModifier, 4f, 10f, 6f);
+                                unit.HumanAIComponent?.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 5f, weaponLengthModifier, 1f, 10f, 0.01f);
+                                unit.HumanAIComponent?.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0.01f);
                             }
                             //if (IsInImportantFrontlineAction(unit))
                             //{
@@ -483,9 +490,9 @@ namespace RBMAI
                                     {
                                         if (!unit.IsRangedCached)
                                         {
-                                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, weaponLengthModifier, 4f, 10f, 6f);
-                                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 4f, weaponLengthModifier, 1f, 10f, 0.01f);
-                                            unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 8f, 0f, 20f, 0f);
+                                            unit.HumanAIComponent?.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, weaponLengthModifier, 4f, 10f, 6f);
+                                            unit.HumanAIComponent?.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 4f, weaponLengthModifier, 1f, 10f, 0.01f);
+                                            unit.HumanAIComponent?.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 8f, 0f, 20f, 0f);
                                         }
                                         __result = getNearbyAllyWorldPosition(mission, unitPosition, unit);
                                         aiDecision.position = __result; return false;
@@ -496,9 +503,9 @@ namespace RBMAI
                                         {
                                             if (!unit.IsRangedCached)
                                             {
-                                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, weaponLengthModifier, 4f, 10f, 6f);
-                                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 4f, weaponLengthModifier, 1f, 10f, 0.01f);
-                                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 8f, 0f, 20f, 0f);
+                                                unit.HumanAIComponent?.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, weaponLengthModifier, 4f, 10f, 6f);
+                                                unit.HumanAIComponent?.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 4f, weaponLengthModifier, 1f, 10f, 0.01f);
+                                                unit.HumanAIComponent?.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 8f, 0f, 20f, 0f);
                                             }
                                             __result = getNearbyAllyWorldPosition(mission, unitPosition, unit);
                                             aiDecision.position = __result; return false;
@@ -507,9 +514,9 @@ namespace RBMAI
                                         {
                                             if (!unit.IsRangedCached)
                                             {
-                                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, weaponLengthModifier, 4f, 10f, 6f);
-                                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Melee, 4f, weaponLengthModifier, 1f, 10f, 0.01f);
-                                                unit.HumanAIComponent?.SetBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 8f, 0f, 20f, 0f);
+                                                unit.HumanAIComponent?.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, weaponLengthModifier, 4f, 10f, 6f);
+                                                unit.HumanAIComponent?.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 4f, weaponLengthModifier, 1f, 10f, 0.01f);
+                                                unit.HumanAIComponent?.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 8f, 0f, 20f, 0f);
                                             }
                                             WorldPosition backPosition = unit.GetWorldPosition();
                                             backPosition.SetVec2(unitPosition - (unit.Formation.Direction + direction) * (backStepDistance + 0.5f));
@@ -799,18 +806,18 @@ namespace RBMAI
     internal class OverrideFormation
     {
         [HarmonyPrefix]
-        [HarmonyPatch("UpdateFormationMovement")]
-        private static void PostfixUpdateFormationMovement(ref HumanAIComponent __instance, ref Agent ___Agent)
+        [HarmonyPatch("ParallelUpdateFormationMovement")]
+        private static void PostfixParallelUpdateFormationMovement(ref HumanAIComponent __instance, ref Agent ___Agent)
         {
-            if (___Agent.Controller == Agent.ControllerType.AI && ___Agent.Formation != null && ___Agent.Formation.GetReadonlyMovementOrderReference().OrderEnum == MovementOrder.MovementOrderEnum.Move)
+            if (___Agent.Controller == AgentControllerType.AI && ___Agent.Formation != null && ___Agent.Formation.GetReadonlyMovementOrderReference().OrderEnum == MovementOrder.MovementOrderEnum.Move)
             {
                 PropertyInfo propertyShouldCatchUpWithFormation = typeof(HumanAIComponent).GetProperty("ShouldCatchUpWithFormation");
                 propertyShouldCatchUpWithFormation.DeclaringType.GetProperty("ShouldCatchUpWithFormation");
                 propertyShouldCatchUpWithFormation.SetValue(__instance, true, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
 
                 Vec2 currentGlobalPositionOfUnit = ___Agent.Formation.GetCurrentGlobalPositionOfUnit(___Agent, false);
-                FormationQuerySystem.FormationIntegrityDataGroup formationIntegrityData = ___Agent.Formation.QuerySystem.FormationIntegrityData;
-                ___Agent.SetFormationIntegrityData(currentGlobalPositionOfUnit, ___Agent.Formation.CurrentDirection, formationIntegrityData.AverageVelocityExcludeFarAgents, formationIntegrityData.AverageMaxUnlimitedSpeedExcludeFarAgents, formationIntegrityData.DeviationOfPositionsExcludeFarAgents);
+                FormationIntegrityDataGroup formationIntegrityData = ___Agent.Formation.CachedFormationIntegrityData;
+                ___Agent.SetFormationIntegrityData(currentGlobalPositionOfUnit, ___Agent.Formation.CurrentDirection, formationIntegrityData.AverageVelocityExcludeFarAgents, formationIntegrityData.AverageMaxUnlimitedSpeedExcludeFarAgents, formationIntegrityData.DeviationOfPositionsExcludeFarAgents, true);
             }
             //___Agent.SetDirectionChangeTendency(0.9f);
         }
@@ -849,7 +856,7 @@ namespace RBMAI
 
         [HarmonyPrefix]
         [HarmonyPatch("GetFormationFrame")]
-        private static bool PrefixGetFormationFrame(ref bool __result, ref Agent ___Agent, ref HumanAIComponent __instance, ref WorldPosition formationPosition, ref Vec2 formationDirection, ref float speedLimit, ref bool isSettingDestinationSpeed, ref bool limitIsMultiplier)
+        private static bool PrefixGetFormationFrame(ref bool __result, ref Agent ___Agent, ref HumanAIComponent __instance, ref WorldPosition formationPosition, ref Vec2 formationDirection, ref float speedLimit, ref bool limitIsMultiplier)
         {
             if (___Agent != null)
             {
@@ -860,7 +867,6 @@ namespace RBMAI
                     {
                         if (___Agent != null && formation != null)
                         {
-                            isSettingDestinationSpeed = false;
                             formationPosition = formation.GetOrderPositionOfUnit(___Agent);
                             if (___Agent.GetTargetAgent() != null)
                             {

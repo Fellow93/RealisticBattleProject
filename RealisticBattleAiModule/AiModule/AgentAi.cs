@@ -449,8 +449,8 @@ namespace RBMAI
         }
 
         [HarmonyPatch(typeof(HumanAIComponent))]
-        [HarmonyPatch("OnTickAsAI")]
-        public static class OnTickAsAIPatch
+        [HarmonyPatch("OnTick")]
+        public static class OnTickPatch
         {
             public static Dictionary<Agent, float> itemPickupDistanceStorage = new Dictionary<Agent, float> { };
 
