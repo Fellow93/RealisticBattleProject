@@ -159,7 +159,7 @@ namespace RBMCombat
         {
             [HarmonyPrefix]
             [HarmonyPatch("GetXpFromHit")]
-            private static bool PrefixGetXpFromHit(ref DefaultCombatXpModel __instance, CharacterObject attackerTroop, CharacterObject captain, CharacterObject attackedTroop, PartyBase party, int damage, bool isFatal, MissionTypeEnum missionType, out int xpAmount)
+            private static bool PrefixGetXpFromHit( ref ExplainedNumber __result, ref DefaultCombatXpModel __instance, CharacterObject attackerTroop, CharacterObject captain, CharacterObject attackedTroop, PartyBase party, int damage, bool isFatal, MissionTypeEnum missionType)
             {
                 if (missionType == MissionTypeEnum.Battle || missionType == MissionTypeEnum.PracticeFight || missionType == MissionTypeEnum.Tournament || missionType == MissionTypeEnum.SimulationBattle)
                 {
@@ -215,10 +215,10 @@ namespace RBMCombat
                     {
                         xpToGain.AddFactor(DefaultPerks.Leadership.InspiringLeader.SecondaryBonus, DefaultPerks.Leadership.InspiringLeader.Name);
                     }
-                    xpAmount = MathF.Round(xpToGain.ResultNumber);
+                    __result = xpToGain;
                     return false;
                 }
-                xpAmount = 0;
+                __result = new ExplainedNumber(0);
                 return true;
             }
         }

@@ -21,7 +21,7 @@ namespace RBMCombat
         [HarmonyPatch("GetEntityDamageMultiplier")]
         private class GetEntityDamageMultiplierPatch
         {
-            private static bool Prefix(bool isAttackerAgentDoingPassiveAttack, WeaponComponentData weapon, DamageTypes damageType, bool isWoodenBody, ref float __result)
+            private static bool Prefix(bool isAttackerAgentDoingPassiveAttack, WeaponComponentData weapon, DamageTypes damageType, bool isFlammable, ref float __result)
             {
                 float dmgMultiplier = 1f;
                 if (isAttackerAgentDoingPassiveAttack)
@@ -58,7 +58,7 @@ namespace RBMCombat
                             }
                             break;
                     }
-                    if (isWoodenBody && weapon.WeaponFlags.HasAnyFlag(WeaponFlags.Burning))
+                    if (isFlammable && weapon.WeaponFlags.HasAnyFlag(WeaponFlags.Burning))
                     {
                         dmgMultiplier *= 1.5f;
                     }
@@ -1497,7 +1497,7 @@ namespace RBMCombat
     [HarmonyPatch("GetAttackCollisionResults")]
     internal class GetAttackCollisionResultsPatch
     {
-        private static void Postfix(in AttackInformation attackInformation, bool crushedThrough, float momentumRemaining, in MissionWeapon attackerWeapon, bool cancelDamage, ref AttackCollisionData attackCollisionData, ref CombatLogData combatLog, int speedBonus)
+        private static void Postfix(in AttackInformation attackInformation, bool crushedThrough, float momentumRemaining, bool cancelDamage, ref AttackCollisionData attackCollisionData, ref CombatLogData combatLog, int speedBonus)
         {
             if (!attackCollisionData.IsColliderAgent && attackCollisionData.EntityExists)
             {

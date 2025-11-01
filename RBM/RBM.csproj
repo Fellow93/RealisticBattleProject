@@ -260,12 +260,6 @@
     <Compile Include="XmlLoadingPatches.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RealisticBattleAiModule\RBMAI.csproj">
-      <Project>{7254E74D-4968-47C3-BB91-84D3FC207ACB}</Project>
-      <Name>RBMAI</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <!-- Post-Build -->

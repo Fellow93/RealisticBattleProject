@@ -1,5 +1,5 @@
 ﻿using HarmonyLib;
-using RBMAI;
+//using RBMAI;
 using RBMCombat;
 using RBMTournament;
 using System;
@@ -16,7 +16,7 @@ namespace RBM
 {
     public static class HarmonyModules
     {
-        public static Harmony rbmaiHarmony = new Harmony("com.rbmai");
+        //public static Harmony rbmaiHarmony = new Harmony("com.rbmai");
         public static Harmony rbmtHarmony = new Harmony("com.rbmt");
         public static Harmony rbmcombatHarmony = new Harmony("com.rbmcombat");
         public static Harmony rbmHarmony = new Harmony("com.rbmmain");
@@ -38,14 +38,14 @@ namespace RBM
             {
                 HarmonyModules.rbmtHarmony.UnpatchAll(HarmonyModules.rbmtHarmony.Id);
             }
-            if (RBMConfig.RBMConfig.rbmAiEnabled)
-            {
-                RBMAiPatcher.FirstPatch(ref HarmonyModules.rbmaiHarmony);
-            }
-            else
-            {
-                HarmonyModules.rbmaiHarmony.UnpatchAll(HarmonyModules.rbmaiHarmony.Id);
-            }
+            //if (RBMConfig.RBMConfig.rbmAiEnabled)
+            //{
+            //    RBMAiPatcher.FirstPatch(ref HarmonyModules.rbmaiHarmony);
+            //}
+            //else
+            //{
+            //    HarmonyModules.rbmaiHarmony.UnpatchAll(HarmonyModules.rbmaiHarmony.Id);
+            //}
             if (RBMConfig.RBMConfig.rbmCombatEnabled)
             {
                 RBMCombatPatcher.DoPatching(ref HarmonyModules.rbmcombatHarmony);
@@ -58,10 +58,10 @@ namespace RBM
 
         public static void UnpatchAllRBM()
         {
-            RBMAiPatcher.patched = false;
+            //RBMAiPatcher.patched = false;
             HarmonyModules.rbmHarmony.UnpatchAll(HarmonyModules.rbmHarmony.Id);
             HarmonyModules.rbmtHarmony.UnpatchAll(HarmonyModules.rbmtHarmony.Id);
-            HarmonyModules.rbmaiHarmony.UnpatchAll(HarmonyModules.rbmaiHarmony.Id);
+            //HarmonyModules.rbmaiHarmony.UnpatchAll(HarmonyModules.rbmaiHarmony.Id);
             HarmonyModules.rbmcombatHarmony.UnpatchAll(HarmonyModules.rbmcombatHarmony.Id);
         }
 
@@ -93,28 +93,28 @@ namespace RBM
                             Mission.Current.SetFastForwardingFromUI(!Mission.Current.IsFastForward);
                             InformationManager.DisplayMessage(new InformationMessage("Vroom = " + Mission.Current.IsFastForward, Color.FromUint(4282569842u)));
                         }
-                        if (missionScreen.InputManager.IsKeyPressed(InputKey.Numpad2))
-                        {
-                            Frontline.normalCommand = !Frontline.normalCommand;
-                            Frontline.aggressiveCommand = !Frontline.normalCommand;
-                            Frontline.defensiveCommand = !Frontline.normalCommand;
-                            InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=8UBfIenN}Normal").ToString(), Color.FromUint(4282569842u)));
-                        }
-                        if (missionScreen.InputManager.IsKeyPressed(InputKey.Numpad1))
-                        {
-                            Frontline.aggressiveCommand = !Frontline.aggressiveCommand;
-                            Frontline.normalCommand = !Frontline.aggressiveCommand;
-                            Frontline.defensiveCommand = !Frontline.aggressiveCommand;
+                        //if (missionScreen.InputManager.IsKeyPressed(InputKey.Numpad2))
+                        //{
+                        //    Frontline.normalCommand = !Frontline.normalCommand;
+                        //    Frontline.aggressiveCommand = !Frontline.normalCommand;
+                        //    Frontline.defensiveCommand = !Frontline.normalCommand;
+                        //    InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=8UBfIenN}Normal").ToString(), Color.FromUint(4282569842u)));
+                        //}
+                        //if (missionScreen.InputManager.IsKeyPressed(InputKey.Numpad1))
+                        //{
+                        //    Frontline.aggressiveCommand = !Frontline.aggressiveCommand;
+                        //    Frontline.normalCommand = !Frontline.aggressiveCommand;
+                        //    Frontline.defensiveCommand = !Frontline.aggressiveCommand;
 
-                            InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=4Hdcxk0a}Aggressive").ToString(), Color.FromUint(4282569842u)));
-                        }
-                        if (missionScreen.InputManager.IsKeyPressed(InputKey.Numpad3))
-                        {
-                            Frontline.defensiveCommand = !Frontline.defensiveCommand;
-                            Frontline.normalCommand = !Frontline.defensiveCommand;
-                            Frontline.aggressiveCommand = !Frontline.defensiveCommand;
-                            InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=A3T5z4Mv}Defensive").ToString(), Color.FromUint(4282569842u)));
-                        }
+                        //    InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=4Hdcxk0a}Aggressive").ToString(), Color.FromUint(4282569842u)));
+                        //}
+                        //if (missionScreen.InputManager.IsKeyPressed(InputKey.Numpad3))
+                        //{
+                        //    Frontline.defensiveCommand = !Frontline.defensiveCommand;
+                        //    Frontline.normalCommand = !Frontline.defensiveCommand;
+                        //    Frontline.aggressiveCommand = !Frontline.defensiveCommand;
+                        //    InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=A3T5z4Mv}Defensive").ToString(), Color.FromUint(4282569842u)));
+                        //}
                     }
                 }
             }
@@ -132,10 +132,10 @@ namespace RBM
         public override void OnMissionBehaviorInitialize(Mission mission)
         {
             Game.Current.GameTextManager.LoadGameTexts();
-            if (RBMConfig.RBMConfig.developerMode)
-            {
-                mission.AddMissionBehavior((MissionBehavior)(object)new BattleStatsLogic());
-            }
+            //if (RBMConfig.RBMConfig.developerMode)
+            //{
+            //    mission.AddMissionBehavior((MissionBehavior)(object)new BattleStatsLogic());
+            //}
             if (RBMConfig.RBMConfig.rbmCombatEnabled)
             {
                 if (RBMConfig.RBMConfig.armorStatusUIEnabled)
@@ -143,30 +143,30 @@ namespace RBM
                     mission.AddMissionBehavior((MissionBehavior)(object)new PlayerArmorStatus());
                 }
             }
-            if (RBMConfig.RBMConfig.rbmAiEnabled)
-            {
-                if (RBMConfig.RBMConfig.postureEnabled && RBMConfig.RBMConfig.postureGUIEnabled)
-                {
-                    mission.AddMissionBehavior((MissionBehavior)(object)new PostureVisualLogic());
-                }
-                mission.AddMissionBehavior((MissionBehavior)(object)new SiegeArcherPoints());
-                mission.AddMissionBehavior((MissionBehavior)(object)new PostureLogic());
-            }
-            else
-            {
-                if (mission.GetMissionBehavior<SiegeArcherPoints>() != null)
-                {
-                    mission.RemoveMissionBehavior(mission.GetMissionBehavior<SiegeArcherPoints>());
-                }
-                if (mission.GetMissionBehavior<PostureVisualLogic>() != null)
-                {
-                    mission.RemoveMissionBehavior(mission.GetMissionBehavior<PostureVisualLogic>());
-                }
-                if (mission.GetMissionBehavior<PostureLogic>() != null)
-                {
-                    mission.RemoveMissionBehavior(mission.GetMissionBehavior<PostureLogic>());
-                }
-            }
+            //if (RBMConfig.RBMConfig.rbmAiEnabled)
+            //{
+            //    if (RBMConfig.RBMConfig.postureEnabled && RBMConfig.RBMConfig.postureGUIEnabled)
+            //    {
+            //        mission.AddMissionBehavior((MissionBehavior)(object)new PostureVisualLogic());
+            //    }
+            //    mission.AddMissionBehavior((MissionBehavior)(object)new SiegeArcherPoints());
+            //    mission.AddMissionBehavior((MissionBehavior)(object)new PostureLogic());
+            //}
+            //else
+            //{
+            //    if (mission.GetMissionBehavior<SiegeArcherPoints>() != null)
+            //    {
+            //        mission.RemoveMissionBehavior(mission.GetMissionBehavior<SiegeArcherPoints>());
+            //    }
+            //    if (mission.GetMissionBehavior<PostureVisualLogic>() != null)
+            //    {
+            //        mission.RemoveMissionBehavior(mission.GetMissionBehavior<PostureVisualLogic>());
+            //    }
+            //    if (mission.GetMissionBehavior<PostureLogic>() != null)
+            //    {
+            //        mission.RemoveMissionBehavior(mission.GetMissionBehavior<PostureLogic>());
+            //    }
+            //}
             base.OnMissionBehaviorInitialize(mission);
         }
     }

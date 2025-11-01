@@ -571,7 +571,7 @@ namespace RBMCombat
 
         [HarmonyPrefix]
         [HarmonyPatch("ShootProjectileAux")]
-        private static bool PrefixShootProjectileAux(ref RangedSiegeWeapon __instance, ref string[] ___SkeletonNames, ref ItemObject missileItem, ref Agent ____lastShooterAgent, ref ItemObject ___LoadedMissileItem)
+        private static bool PrefixShootProjectileAux(ref RangedSiegeWeapon __instance, ref string[] ___SkeletonNames, ref ItemObject missileItem, ref Agent ___LastShooterAgent)
         {
             if (___SkeletonNames != null && ___SkeletonNames.Length > 0 && ___SkeletonNames[0].Contains("trebuchet"))
             {
@@ -607,7 +607,7 @@ namespace RBMCombat
                     property2.DeclaringType.GetProperty("Projectile");
                     Vec3 ProjectileEntityCurrentGlobalPosition = ((SynchedMissionObject)property2.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null)).GameEntity.GetGlobalFrame().origin;
 
-                    Mission.Current.AddCustomMissile(____lastShooterAgent, new MissionWeapon(@object, null, ____lastShooterAgent.Origin?.Banner, 1), ProjectileEntityCurrentGlobalPosition, identity.f, identity, ___LoadedMissileItem.PrimaryWeapon.MissileSpeed, num, addRigidBody: false, __instance);
+                    Mission.Current.AddCustomMissile(___LastShooterAgent, new MissionWeapon(@object, null, ___LastShooterAgent.Origin?.Banner, 1), ProjectileEntityCurrentGlobalPosition, identity.f, identity, num, num, addRigidBody: false, __instance);
                 }
                 return false;
             }
@@ -635,7 +635,7 @@ namespace RBMCombat
                 property2.DeclaringType.GetProperty("Projectile");
                 Vec3 ProjectileEntityCurrentGlobalPosition = ((SynchedMissionObject)property2.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null)).GameEntity.GetGlobalFrame().origin;
 
-                Mission.Current.AddCustomMissile(____lastShooterAgent, new MissionWeapon(missileItem, null, null, 1), ProjectileEntityCurrentGlobalPosition, identity.f, identity, 60f, 60f, addRigidBody: false, __instance);
+                Mission.Current.AddCustomMissile(___LastShooterAgent, new MissionWeapon(missileItem, null, null, 1), ProjectileEntityCurrentGlobalPosition, identity.f, identity, 60f, 60f, addRigidBody: false, __instance);
                 return false;
             }
             else
@@ -757,11 +757,11 @@ namespace RBMCombat
     {
         [HarmonyPrefix]
         [HarmonyPatch("OnTick")]
-        private static bool PrefixOnTick(ref Mangonel __instance, ref float ___currentReleaseAngle)
+        private static bool PrefixOnTick(ref Mangonel __instance, ref float ___CurrentReleaseAngle)
         {
             float baseSpeed = 20f;
             float speedIncrease = 1.125f;
-            __instance.ProjectileSpeed = baseSpeed + (((___currentReleaseAngle * MathF.RadToDeg)) * speedIncrease);
+            __instance.ProjectileSpeed = baseSpeed + (((___CurrentReleaseAngle * MathF.RadToDeg)) * speedIncrease);
 
             return true;
         }
@@ -772,9 +772,9 @@ namespace RBMCombat
     {
         [HarmonyPrefix]
         [HarmonyPatch("HandleMissileCollisionReaction")]
-        private static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, int missileIndex, ref MissileCollisionReaction collisionReaction, MatrixFrame attachLocalFrame, Agent attackerAgent, Agent attachedAgent, bool attachedToShield, sbyte attachedBoneIndex, MissionObject attachedMissionObject, Vec3 bounceBackVelocity, Vec3 bounceBackAngularVelocity, int forcedSpawnIndex, bool isAttachedFrameLocal)
+        private static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missilesDictionary, int missileIndex, ref MissileCollisionReaction collisionReaction, MatrixFrame attachLocalFrame, Agent attackerAgent, Agent attachedAgent, bool attachedToShield, sbyte attachedBoneIndex, MissionObject attachedMissionObject, Vec3 bounceBackVelocity, Vec3 bounceBackAngularVelocity, int forcedSpawnIndex, bool isAttachedFrameLocal)
         {
-            Missile missile = ____missiles[missileIndex];
+            Missile missile = ____missilesDictionary[missileIndex];
             MissionObjectId missionObjectId = new MissionObjectId(-1, createdAtRuntime: true);
             switch (collisionReaction)
             {
@@ -882,10 +882,10 @@ namespace RBMCombat
     {
         [HarmonyPrefix]
         [HarmonyPatch("MissileHitCallback")]
-        private static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
+        private static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missilesDictionary, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
         {
             Missile missile;
-            if (____missiles.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out missile))
+            if (____missilesDictionary.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out missile))
             {
                 if (collisionData.CollidedWithShieldOnBack)
                 {
@@ -930,10 +930,10 @@ namespace RBMCombat
 
         [HarmonyPostfix]
         [HarmonyPatch("MissileHitCallback")]
-        private static void Postfix(ref Mission __instance, ref Dictionary<int, Missile> ____missiles, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
+        private static void Postfix(ref Mission __instance, ref Dictionary<int, Missile> ____missilesDictionary, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
         {
             Missile missile;
-            if (____missiles.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out missile))
+            if (____missilesDictionary.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out missile))
             {
                 if (missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.MultiplePenetration) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.CanPenetrateShield) ||
                         missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsArea) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsAreaBig))

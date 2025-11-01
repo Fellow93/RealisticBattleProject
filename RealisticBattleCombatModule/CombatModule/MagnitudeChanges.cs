@@ -28,8 +28,9 @@ namespace RBMCombat
         [HarmonyPatch("CalculateBaseMeleeBlowMagnitude")]
         public class CalculateBaseMeleeBlowMagnitudePatch
         {
-            public static bool Prefix(ref float __result, in AttackInformation attackInformation, in MissionWeapon weapon, StrikeType strikeType, float progressEffect, float impactPointAsPercent, float exraLinearSpeed)
+            public static bool Prefix(ref float __result, in AttackInformation attackInformation, StrikeType strikeType, float progressEffect, float impactPointAsPercent, float exraLinearSpeed)
             {
+                MissionWeapon weapon = attackInformation.AttackerWeapon;
                 WeaponComponentData currentUsageItem = weapon.CurrentUsageItem;
                 WeaponClass weaponClass = currentUsageItem.WeaponClass;
 
@@ -435,8 +436,9 @@ namespace RBMCombat
         [HarmonyPatch("ComputeBlowMagnitudeMissile")]
         private class ComputeBlowMagnitudeMissilePacth
         {
-            private static bool Prefix(in AttackInformation attackInformation, in AttackCollisionData collisionData, in MissionWeapon weapon, float momentumRemaining, in Vec2 victimVelocity, out float baseMagnitude, out float specialMagnitude)
+            private static bool Prefix(in AttackInformation attackInformation, in AttackCollisionData collisionData, float momentumRemaining, in Vec2 victimVelocity, out float baseMagnitude, out float specialMagnitude)
             {
+                MissionWeapon weapon = attackInformation.AttackerWeapon;
                 Vec3 missileVelocity = collisionData.MissileVelocity;
 
                 float missileTotalDamage = collisionData.MissileTotalDamage;
@@ -869,7 +871,7 @@ namespace RBMCombat
         [HarmonyPatch("SetWeaponComponentTooltip")]
         private class SetWeaponComponentTooltipPatch
         {
-            private static void Postfix(ref ItemMenuVM __instance, in EquipmentElement targetWeapon, int targetWeaponUsageIndex, EquipmentElement comparedWeapon, int comparedWeaponUsageIndex, bool isInit)
+            private static void Postfix(ref ItemMenuVM __instance, in EquipmentElement targetWeapon, int targetWeaponUsageIndex, EquipmentElement comparedWeapon, int comparedWeaponUsageIndex)
             {
                 MethodInfo methodAddFloatProperty = typeof(ItemMenuVM).GetMethod("AddFloatProperty", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(TextObject), typeof(float), typeof(float?), typeof(bool) }, null);
                 methodAddFloatProperty.DeclaringType.GetMethod("AddFloatProperty", new[] { typeof(TextObject), typeof(float), typeof(float?), typeof(bool) });

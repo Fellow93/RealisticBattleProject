@@ -98,6 +98,7 @@ namespace RBMCombat
             }
         }
 
+        [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
         [HarmonyPostfix]
         [HarmonyPatch("DecideWeaponCollisionReaction")]
         private static void DecideWeaponCollisionReactionMOD(Blow registeredBlow, in AttackCollisionData collisionData, Agent attacker, Agent defender, in MissionWeapon attackerWeapon, bool isFatalHit, bool isShruggedOff, out MeleeCollisionReaction colReaction)
