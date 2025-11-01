@@ -131,6 +131,7 @@
       <AvailablePiece id="battania_blade_4"/>
       <AvailablePiece id="battania_blade_5"/>
       <AvailablePiece id="battania_blade_6"/>
+	  <AvailablePiece id="battania_blade_7" />
 	  <AvailablePiece id="battania_blade_8"/>
       <AvailablePiece id="battania_blade_9"/>
       <AvailablePiece id="battania_blade_10"/>
@@ -628,6 +629,7 @@
       <AvailablePiece id="battania_blade_4"/>
       <AvailablePiece id="battania_blade_5"/>
       <AvailablePiece id="battania_blade_6"/>
+	  <AvailablePiece id="battania_blade_7" />
       <AvailablePiece id="wood_blade_1"/>
       <AvailablePiece id="empire_guard_1"/>
       <AvailablePiece id="empire_guard_2"/>
@@ -894,6 +896,7 @@
       <AvailablePiece id="battania_blade_4"/>
       <AvailablePiece id="battania_blade_5"/>
       <AvailablePiece id="battania_blade_6"/>
+	  <AvailablePiece id="battania_blade_7" />
       <AvailablePiece id="wood_blade_1"/>
       <AvailablePiece id="empire_guard_1"/>
       <AvailablePiece id="empire_guard_2"/>
@@ -1169,6 +1172,7 @@
       <AvailablePiece id="battania_blade_4"/>
       <AvailablePiece id="battania_blade_5"/>
       <AvailablePiece id="battania_blade_6"/>
+	  <AvailablePiece id="battania_blade_7" />
       <AvailablePiece id="wood_blade_1"/>
       <AvailablePiece id="empire_guard_1"/>
       <AvailablePiece id="empire_guard_2"/>
@@ -1412,7 +1416,7 @@
   </WeaponDescription>
   <WeaponDescription id="Dagger"
                      weapon_class="Dagger"
-                     item_usage_features="onehanded:block:shield:swing:thrust">
+                     item_usage_features="onehanded:block:shield:swing:thrust:dagger">
     <WeaponFlags>
       <WeaponFlag value="MeleeWeapon"/>
     </WeaponFlags>
@@ -1595,6 +1599,17 @@
       <AvailablePiece id="dagger_blade_13"/>
       <AvailablePiece id="dagger_blade_13_blunt"/>
       <AvailablePiece id="dagger_blade_14"/>
+			<AvailablePiece
+				id="dagger_blade_20" />
+			<AvailablePiece
+				id="dagger_blade_22" />
+			<AvailablePiece
+				id="dagger_blade_23" />
+			<AvailablePiece
+				id="dagger_blade_23_blunt" />
+			<AvailablePiece
+				id="dagger_blade_24" />
+
       <AvailablePiece id="mp_empire_pugio_blade"/>
       <AvailablePiece id="mp_empire_pugio_guard"/>
       <AvailablePiece id="mp_empire_pugio_grip"/>
@@ -1607,6 +1622,376 @@
       <!-- AvailablePieces,Dagger -->
     </AvailablePieces>
   </WeaponDescription>
+	<WeaponDescription
+  
+ 		id="DaggerAlternative"
+		weapon_class="Dagger"
+		item_usage_features="onehanded:shield:dagger">
+		<WeaponFlags>
+			<WeaponFlag
+				value="MeleeWeapon" />
+			<WeaponFlag
+				value="HeldBackwards" />
+		</WeaponFlags>
+		<AvailablePieces>
+			<AvailablePiece
+				id="mp_battania_dagger_guard" />
+			<AvailablePiece
+				id="mp_battania_dagger_grip" />
+			<AvailablePiece
+				id="mp_battania_dagger_pommel" />
+
+
+			<AvailablePiece
+				id="empire_dagger_guard_1" />
+			<AvailablePiece
+				id="empire_dagger_guard_2" />
+			<AvailablePiece
+				id="empire_dagger_guard_3" />
+			<AvailablePiece
+				id="empire_dagger_guard_4" />
+			<AvailablePiece
+				id="empire_dagger_guard_5" />
+			<AvailablePiece
+				id="empire_dagger_guard_6" />
+			<AvailablePiece
+				id="sturgian_dagger_guard_1" />
+			<AvailablePiece
+				id="sturgian_dagger_guard_2" />
+			<AvailablePiece
+				id="sturgian_dagger_guard_3" />
+			<AvailablePiece
+				id="sturgian_dagger_guard_4" />
+			<AvailablePiece
+				id="sturgian_dagger_guard_5" />
+			<AvailablePiece
+				id="sturgian_dagger_guard_6" />
+			<AvailablePiece
+				id="sturgian_dagger_guard_7" />
+			<AvailablePiece
+				id="sturgian_dagger_guard_8" />
+			<AvailablePiece
+				id="sturgian_dagger_guard_9" />
+			<AvailablePiece
+				id="sturgian_dagger_guard_10" />
+			<AvailablePiece
+				id="sturgian_dagger_guard_11" />
+			<AvailablePiece
+				id="sturgian_dagger_guard_12" />
+			<AvailablePiece
+				id="khuzait_dagger_guard_1" />
+			<AvailablePiece
+				id="khuzait_dagger_guard_2" />
+			<AvailablePiece
+				id="khuzait_dagger_guard_3" />
+			<AvailablePiece
+				id="khuzait_dagger_guard_4" />
+			<AvailablePiece
+				id="khuzait_dagger_guard_5" />
+			<AvailablePiece
+				id="khuzait_dagger_guard_6" />
+			<AvailablePiece
+				id="khuzait_dagger_guard_7" />
+			<AvailablePiece
+				id="khuzait_dagger_guard_8" />
+			<AvailablePiece
+				id="khuzait_dagger_guard_9" />
+			<AvailablePiece
+				id="vlandian_dagger_guard_1" />
+			<AvailablePiece
+				id="vlandian_dagger_guard_2" />
+			<AvailablePiece
+				id="vlandian_dagger_guard_3" />
+			<AvailablePiece
+				id="vlandian_dagger_guard_4" />
+			<AvailablePiece
+				id="vlandian_dagger_guard_5" />
+			<AvailablePiece
+				id="vlandian_dagger_guard_6" />
+			<AvailablePiece
+				id="vlandian_dagger_guard_7" />
+			<AvailablePiece
+				id="vlandian_dagger_guard_8" />
+			<AvailablePiece
+				id="aserai_dagger_guard_1" />
+			<AvailablePiece
+				id="aserai_dagger_guard_3" />
+			<AvailablePiece
+				id="aserai_dagger_guard_4" />
+			<AvailablePiece
+				id="aserai_dagger_guard_5" />
+			<AvailablePiece
+				id="aserai_dagger_guard_6" />
+			<AvailablePiece
+				id="aserai_dagger_guard_7" />
+			<AvailablePiece
+				id="aserai_dagger_guard_8" />
+			<AvailablePiece
+				id="aserai_guard_9" />
+			<AvailablePiece
+				id="battania_dagger_guard_1" />
+			<AvailablePiece
+				id="battania_dagger_guard_3" />
+			<AvailablePiece
+				id="battania_dagger_guard_5" />
+			<AvailablePiece
+				id="battania_dagger_guard_6" />
+			<AvailablePiece
+				id="battania_dagger_guard_7" />
+			<AvailablePiece
+				id="battania_dagger_guard_8" />
+			<AvailablePiece
+				id="battania_dagger_guard_9" />
+			<AvailablePiece
+				id="empire_grip_1" />
+			<AvailablePiece
+				id="empire_grip_2" />
+			<AvailablePiece
+				id="empire_grip_3" />
+			<AvailablePiece
+				id="empire_grip_4" />
+			<AvailablePiece
+				id="empire_grip_5" />
+			<AvailablePiece
+				id="empire_grip_6" />
+			<AvailablePiece
+				id="empire_grip_16" />
+			<AvailablePiece
+				id="sturgian_grip_1" />
+			<AvailablePiece
+				id="sturgian_grip_2" />
+			<AvailablePiece
+				id="sturgian_grip_3" />
+			<AvailablePiece
+				id="sturgian_grip_4" />
+			<AvailablePiece
+				id="sturgian_grip_5" />
+			<AvailablePiece
+				id="sturgian_grip_6" />
+			<AvailablePiece
+				id="sturgian_grip_7" />
+			<AvailablePiece
+				id="sturgian_grip_8" />
+			<AvailablePiece
+				id="sturgian_grip_9" />
+			<AvailablePiece
+				id="sturgian_grip_10" />
+			<AvailablePiece
+				id="sturgian_grip_11" />
+			<AvailablePiece
+				id="sturgian_grip_12" />
+			<AvailablePiece
+				id="sturgian_grip_13" />
+			<AvailablePiece
+				id="sturgian_grip_14" />
+			<AvailablePiece
+				id="sturgian_grip_34" />
+			<AvailablePiece
+				id="sturgian_grip_35" />
+			<AvailablePiece
+				id="sturgian_grip_37" />
+			<AvailablePiece
+				id="khuzait_grip_2" />
+			<AvailablePiece
+				id="khuzait_grip_4" />
+			<AvailablePiece
+				id="khuzait_grip_5" />
+			<AvailablePiece
+				id="khuzait_grip_7" />
+			<AvailablePiece
+				id="khuzait_grip_18" />
+			<AvailablePiece
+				id="vlandian_grip_1" />
+			<AvailablePiece
+				id="vlandian_grip_2" />
+			<AvailablePiece
+				id="vlandian_grip_3" />
+			<AvailablePiece
+				id="vlandian_grip_4" />
+			<AvailablePiece
+				id="vlandian_grip_5" />
+			<AvailablePiece
+				id="vlandian_grip_6" />
+			<AvailablePiece
+				id="vlandian_grip_21" />
+			<AvailablePiece
+				id="vlandian_grip_23" />
+			<AvailablePiece
+				id="cleaver_grip_1" />
+			<AvailablePiece
+				id="cleaver_grip_5" />
+			<AvailablePiece
+				id="aserai_grip_1" />
+			<AvailablePiece
+				id="aserai_grip_3" />
+			<AvailablePiece
+				id="aserai_grip_4" />
+			<AvailablePiece
+				id="aserai_grip_5" />
+			<AvailablePiece
+				id="aserai_grip_6" />
+			<AvailablePiece
+				id="aserai_grip_7" />
+			<AvailablePiece
+				id="aserai_grip_8" />
+			<AvailablePiece
+				id="aserai_grip_9" />
+			<AvailablePiece
+				id="aserai_grip_24" />
+			<AvailablePiece
+				id="aserai_grip_25" />
+			<AvailablePiece
+				id="aserai_grip_29" />
+			<AvailablePiece
+				id="battania_grip_1" />
+			<AvailablePiece
+				id="battania_grip_3" />
+			<AvailablePiece
+				id="wood_grip_1" />
+			<AvailablePiece
+				id="sickle_grip_1" />
+			<AvailablePiece
+				id="empire_pommel_1" />
+			<AvailablePiece
+				id="empire_pommel_2" />
+			<AvailablePiece
+				id="empire_pommel_3" />
+			<AvailablePiece
+				id="empire_pommel_4" />
+			<AvailablePiece
+				id="empire_pommel_5" />
+			<AvailablePiece
+				id="empire_pommel_6" />
+			<AvailablePiece
+				id="sturgian_pommel_1" />
+			<AvailablePiece
+				id="sturgian_pommel_2" />
+			<AvailablePiece
+				id="sturgian_pommel_3" />
+			<AvailablePiece
+				id="sturgian_pommel_4" />
+			<AvailablePiece
+				id="sturgian_pommel_5" />
+			<AvailablePiece
+				id="sturgian_pommel_6" />
+			<AvailablePiece
+				id="sturgian_pommel_7" />
+			<AvailablePiece
+				id="sturgian_pommel_8" />
+			<AvailablePiece
+				id="sturgian_pommel_9" />
+			<AvailablePiece
+				id="sturgian_pommel_10" />
+			<AvailablePiece
+				id="sturgian_pommel_11" />
+			<AvailablePiece
+				id="sturgian_pommel_12" />
+			<AvailablePiece
+				id="khuzait_pommel_1" />
+			<AvailablePiece
+				id="khuzait_pommel_2" />
+			<AvailablePiece
+				id="khuzait_pommel_3" />
+			<AvailablePiece
+				id="khuzait_pommel_4" />
+			<AvailablePiece
+				id="khuzait_pommel_5" />
+			<AvailablePiece
+				id="khuzait_pommel_6" />
+			<AvailablePiece
+				id="khuzait_pommel_7" />
+			<AvailablePiece
+				id="vlandian_pommel_1" />
+			<AvailablePiece
+				id="vlandian_pommel_2" />
+			<AvailablePiece
+				id="vlandian_pommel_3" />
+			<AvailablePiece
+				id="vlandian_pommel_4" />
+			<AvailablePiece
+				id="vlandian_pommel_5" />
+			<AvailablePiece
+				id="vlandian_pommel_6" />
+			<AvailablePiece
+				id="vlandian_pommel_7" />
+			<AvailablePiece
+				id="vlandian_pommel_8" />
+			<AvailablePiece
+				id="vlandian_pommel_9" />
+			<AvailablePiece
+				id="vlandian_pommel_10" />
+			<AvailablePiece
+				id="cleaver_pommel_1" />
+			<AvailablePiece
+				id="cleaver_pommel_2" />
+			<AvailablePiece
+				id="cleaver_pommel_3" />
+			<AvailablePiece
+				id="cleaver_pommel_4" />
+			<AvailablePiece
+				id="aserai_pommel_1" />
+			<AvailablePiece
+				id="aserai_pommel_2" />
+			<AvailablePiece
+				id="aserai_pommel_3" />
+			<AvailablePiece
+				id="aserai_pommel_4" />
+			<AvailablePiece
+				id="aserai_pommel_5" />
+			<AvailablePiece
+				id="aserai_pommel_6" />
+			<AvailablePiece
+				id="aserai_pommel_8" />
+			<AvailablePiece
+				id="aserai_pommel_9" />
+			<AvailablePiece
+				id="battania_pommel_1" />
+			<AvailablePiece
+				id="battania_pommel_2" />
+			<AvailablePiece
+				id="battania_pommel_3" />
+			<AvailablePiece
+				id="battania_pommel_4" />
+			<AvailablePiece
+				id="battania_pommel_5" />
+			<AvailablePiece
+				id="battania_pommel_6" />
+			<AvailablePiece
+				id="battania_pommel_7" />
+			<AvailablePiece
+				id="battania_pommel_8" />
+			<AvailablePiece
+				id="battania_pommel_9" />
+			<AvailablePiece
+				id="wood_pommel_1" />
+			<AvailablePiece
+				id="dagger_blade_1" />
+			<AvailablePiece
+				id="dagger_blade_2" />
+			<AvailablePiece
+				id="dagger_blade_3" />
+			<AvailablePiece
+				id="dagger_blade_5" />
+			<AvailablePiece
+				id="dagger_blade_6" />
+			<AvailablePiece
+				id="dagger_blade_7" />
+			<AvailablePiece
+				id="dagger_blade_8" />
+			<AvailablePiece
+				id="dagger_blade_9" />
+			<AvailablePiece
+				id="dagger_blade_20" />
+			<AvailablePiece
+				id="dagger_blade_22" />
+			<AvailablePiece
+				id="dagger_blade_23" />
+			<AvailablePiece
+				id="dagger_blade_24" />
+		</AvailablePieces>
+	</WeaponDescription>
+
+  
   <WeaponDescription id="ThrowingKnife"
                      weapon_class="ThrowingKnife"
                      item_usage_features="throwing:knife">
@@ -1617,6 +2002,8 @@
       <WeaponFlag value="UseHandAsThrowBase"/>
       <WeaponFlag value="AutoReload"/>
       <WeaponFlag value="UnloadWhenSheathed"/>
+	  <WeaponFlag value="CanBeUsedWhileCrouched" />
+
     </WeaponFlags>
     <AvailablePieces>
       <AvailablePiece id="empire_dagger_guard_1"/>
@@ -1750,6 +2137,7 @@
       <AvailablePiece id="dagger_blade_13"/>
       <AvailablePiece id="dagger_blade_13_blunt"/>
       <AvailablePiece id="dagger_blade_14"/>
+	  <AvailablePiece id="dagger_blade_4" />
       <AvailablePiece id="mp_empire_pugio_guard"/>
       <AvailablePiece id="mp_empire_pugio_grip"/>
       <AvailablePiece id="mp_empire_pugio_pommel"/>
@@ -1808,6 +2196,7 @@
       <AvailablePiece id="axe_craft_25_handle"/>
       <AvailablePiece id="axe_craft_26_handle"/>
       <AvailablePiece id="axe_craft_27_handle"/>
+	  <AvailablePiece id="axe_craft_33_handle" />
       <AvailablePiece id="default_polearm_pommel" />
       <AvailablePiece id="empire_pommel_1"/>
       <AvailablePiece id="empire_pommel_2"/>
@@ -2203,6 +2592,7 @@
       <AvailablePiece id="spear_blade_5"/>
       <AvailablePiece id="spear_blade_6"/>
       <AvailablePiece id="spear_blade_7"/>
+	  <AvailablePiece id="spear_blade_7_blunt" />
       <AvailablePiece id="spear_blade_8"/>
       <AvailablePiece id="spear_blade_9"/>
       <AvailablePiece id="spear_blade_10"/>
@@ -2239,12 +2629,14 @@
       <AvailablePiece id="spear_handle_6"/>
       <AvailablePiece id="spear_handle_8"/>
       <AvailablePiece id="spear_handle_13"/>
+	  <AvailablePiece id="spear_handle_13_2" />
       <AvailablePiece id="spear_handle_14"/>
       <AvailablePiece id="spear_handle_15"/>
       <AvailablePiece id="spear_handle_16"/>
       <AvailablePiece id="spear_handle_17"/>
       <AvailablePiece id="spear_handle_18"/>
       <AvailablePiece id="spear_handle_19"/>
+	  <AvailablePiece id="spear_handle_19_2" />
       <AvailablePiece id="spear_handle_20"/>
       <AvailablePiece id="spear_handle_21"/>
       <AvailablePiece id="spear_handle_22"/>
@@ -2523,6 +2915,7 @@
       <AvailablePiece id="spear_blade_5"/>
       <AvailablePiece id="spear_blade_6"/>
       <AvailablePiece id="spear_blade_7"/>
+	  <AvailablePiece id="spear_blade_7_blunt" />
       <AvailablePiece id="spear_blade_8"/>
       <AvailablePiece id="spear_blade_9"/>
       <AvailablePiece id="spear_blade_10"/>
@@ -2574,12 +2967,14 @@
       <AvailablePiece id="spear_handle_6"/>
       <AvailablePiece id="spear_handle_8"/>
       <AvailablePiece id="spear_handle_13"/>
+	  <AvailablePiece id="spear_handle_13_2" />
       <AvailablePiece id="spear_handle_14"/>
       <AvailablePiece id="spear_handle_15"/>
       <AvailablePiece id="spear_handle_16"/>
       <AvailablePiece id="spear_handle_17"/>
       <AvailablePiece id="spear_handle_18"/>
       <AvailablePiece id="spear_handle_19"/>
+	  <AvailablePiece id="spear_handle_19_2" />
       <AvailablePiece id="spear_handle_20"/>
       <AvailablePiece id="spear_handle_21"/>
       <AvailablePiece id="spear_handle_22"/>
@@ -2792,6 +3187,9 @@
       <AvailablePiece id="spear_blade_5"/>
       <AvailablePiece id="spear_blade_6"/>
       <AvailablePiece id="spear_blade_7"/>
+	  <AvailablePiece id="spear_blade_7_blunt" />
+	  <AvailablePiece id="spear_handle_13_2" />
+	  <AvailablePiece id="spear_blade_35" />
       <AvailablePiece id="spear_blade_8"/>
       <AvailablePiece id="spear_blade_9"/>
       <AvailablePiece id="spear_blade_10"/>
@@ -2966,6 +3364,7 @@
       <AvailablePiece id="spear_blade_5"/>
       <AvailablePiece id="spear_blade_6"/>
       <AvailablePiece id="spear_blade_7"/>
+	  <AvailablePiece id="spear_blade_7_blunt" />
       <AvailablePiece id="spear_blade_8"/>
       <AvailablePiece id="spear_blade_9"/>
       <AvailablePiece id="spear_blade_10"/>
@@ -3308,6 +3707,7 @@
       <AvailablePiece id="spear_blade_5"/>
       <AvailablePiece id="spear_blade_6"/>
       <AvailablePiece id="spear_blade_7"/>
+      <AvailablePiece id="spear_blade_7_blunt"/>
       <AvailablePiece id="spear_blade_8"/>
       <AvailablePiece id="spear_blade_9"/>
       <AvailablePiece id="spear_blade_10"/>
@@ -3343,6 +3743,7 @@
       <AvailablePiece id="spear_blade_43"/>
       <AvailablePiece id="spear_blade_45"/>
       <AvailablePiece id="spear_handle_14"/>
+      <AvailablePiece id="spear_handle_19.2"/>
       <AvailablePiece id="default_polearm_guard"/>
       <AvailablePiece id="spear_guard_1"/>
       <AvailablePiece id="spear_guard_2"/>
@@ -3702,7 +4103,6 @@
 	  <AvailablePiece id="mace_head_38"/>
 	  <AvailablePiece id="mace_head_39"/>
       <AvailablePiece id="spear_handle_1"/>
-      <AvailablePiece id="hammer_head_11"/>
       <AvailablePiece id="mp_sturgia_2hhammer_head"/>
       <AvailablePiece id="mp_battania_2hhammer_head"/>
       <AvailablePiece id="mp_aserai_maul_head"/>

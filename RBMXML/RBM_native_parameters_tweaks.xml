@@ -21,6 +21,14 @@
 	
     <native_parameter id="on_weapon_hit_slow_down_factor_swing" value="0.7"/>
     <native_parameter id="on_weapon_hit_slow_down_factor_thrust" value="0.7"/>
+	
+	<native_parameter id="percentage_to_quick_ready_chance_for_continued_action" value="0.85" />
+
+	<native_parameter id="passive_usage_minimum_relative_speed_for_friendly_collision" value="4.0" />
+	
+	<native_parameter id="back_angle_to_disable_collision_shield_blocking" value="30.0" />
+
+
 
   </native_parameters>
 </base>

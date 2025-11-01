@@ -170,23 +170,45 @@
       <WeaponDescription id="TwoHandedPolearm_Pike" />
       <WeaponDescription id="TwoHandedPolearm_Bracing" />
     </WeaponDescriptions>
-    <StatsData>
-      <StatData stat_type="Weight"
-                max_value="7.0" />
-      <StatData stat_type="WeaponReach"
-                max_value="600" />
-      <StatData stat_type="ThrustSpeed"
-                max_value="200" />
-      <StatData stat_type="SwingSpeed"
-                max_value="200" />
-      <StatData stat_type="ThrustDamage"
-                max_value="500" />
-      <StatData stat_type="SwingDamage"
-                max_value="500" />
-      <StatData stat_type="Handling"
-                max_value="200" />
-      <!--<StatData stat_type="FollowUp" max_value="200" />-->
-    </StatsData>
+		<StatsData
+			weapon_description="TwoHandedPolearm_Pike">
+			<StatData
+				stat_type="Weight"
+				max_value="7.0" />
+			<StatData
+				stat_type="WeaponReach"
+				max_value="600" />
+			<StatData
+				stat_type="ThrustSpeed"
+				max_value="200" />
+			<StatData
+				stat_type="ThrustDamage"
+				max_value="500" />
+			<StatData
+				stat_type="Handling"
+				max_value="200" />
+			<!--<StatData stat_type="FollowUp" max_value="200" />-->
+		</StatsData>
+		<StatsData
+			weapon_description="TwoHandedPolearm_Bracing">
+			<StatData
+				stat_type="Weight"
+				max_value="7.0" />
+			<StatData
+				stat_type="WeaponReach"
+				max_value="600" />
+			<StatData
+				stat_type="ThrustSpeed"
+				max_value="200" />
+			<StatData
+				stat_type="ThrustDamage"
+				max_value="500" />
+			<StatData
+				stat_type="Handling"
+				max_value="200" />
+			<!--<StatData stat_type="FollowUp" max_value="200" />-->
+		</StatsData>
+
     <UsablePieces>
       <UsablePiece piece_id="spear_blade_1" />
       <UsablePiece piece_id="spear_blade_2" />
@@ -195,6 +217,7 @@
       <UsablePiece piece_id="spear_blade_5" />
       <UsablePiece piece_id="spear_blade_6" />
       <UsablePiece piece_id="spear_blade_7" />
+      <UsablePiece piece_id="spear_blade_7_blunt" />
       <UsablePiece piece_id="spear_blade_8" />
       <UsablePiece piece_id="spear_blade_8_blunt" />
       <UsablePiece piece_id="spear_blade_9" />
@@ -439,23 +462,115 @@
       <WeaponDescription id="TwoHandedPolearm_Bracing" />
       <WeaponDescription id="TwoHandedPolearm_Thrown" />
     </WeaponDescriptions>
-    <StatsData>
-      <StatData stat_type="Weight"
-                max_value="7.0" />
-      <StatData stat_type="WeaponReach"
-                max_value="300" />
-      <StatData stat_type="ThrustSpeed"
-                max_value="200" />
-      <StatData stat_type="SwingSpeed"
-                max_value="200" />
-      <StatData stat_type="ThrustDamage"
-                max_value="500" />
-      <StatData stat_type="SwingDamage"
-                max_value="500" />
-      <StatData stat_type="Handling"
-                max_value="200" />
-      <!--<StatData stat_type="FollowUp" max_value="200" />-->
-    </StatsData>
+		<StatsData
+			weapon_description="OneHandedPolearm">
+			<StatData
+				stat_type="Weight"
+				max_value="7.0" />
+			<StatData
+				stat_type="WeaponReach"
+				max_value="300" />
+			<StatData
+				stat_type="ThrustSpeed"
+				max_value="200" />
+			<StatData
+				stat_type="SwingSpeed"
+				max_value="200" />
+			<StatData
+				stat_type="ThrustDamage"
+				max_value="500" />
+			<StatData
+				stat_type="SwingDamage"
+				max_value="500" />
+			<StatData
+				stat_type="Handling"
+				max_value="200" />
+			<!--<StatData stat_type="FollowUp" max_value="200" />-->
+		</StatsData>
+		<StatsData
+			weapon_description="TwoHandedPolearm">
+			<StatData
+				stat_type="Weight"
+				max_value="7.0" />
+			<StatData
+				stat_type="WeaponReach"
+				max_value="300" />
+			<StatData
+				stat_type="ThrustSpeed"
+				max_value="200" />
+			<StatData
+				stat_type="SwingSpeed"
+				max_value="200" />
+			<StatData
+				stat_type="ThrustDamage"
+				max_value="500" />
+			<StatData
+				stat_type="SwingDamage"
+				max_value="500" />
+			<StatData
+				stat_type="Handling"
+				max_value="200" />
+			<!--<StatData stat_type="FollowUp" max_value="200" />-->
+		</StatsData>
+		<StatsData
+			weapon_description="TwoHandedPolearm_Couchable">
+			<StatData
+				stat_type="Weight"
+				max_value="7.0" />
+			<StatData
+				stat_type="WeaponReach"
+				max_value="300" />
+			<StatData
+				stat_type="ThrustSpeed"
+				max_value="200" />
+			<StatData
+				stat_type="ThrustDamage"
+				max_value="500" />
+			<StatData
+				stat_type="Handling"
+				max_value="200" />
+			<!--<StatData stat_type="FollowUp" max_value="200" />-->
+		</StatsData>
+		<StatsData
+			weapon_description="TwoHandedPolearm_Bracing">
+			<StatData
+				stat_type="Weight"
+				max_value="7.0" />
+			<StatData
+				stat_type="WeaponReach"
+				max_value="300" />
+			<StatData
+				stat_type="ThrustSpeed"
+				max_value="200" />
+			<StatData
+				stat_type="ThrustDamage"
+				max_value="500" />
+			<StatData
+				stat_type="Handling"
+				max_value="200" />
+			<!--<StatData stat_type="FollowUp" max_value="200" />-->
+		</StatsData>
+		<StatsData
+			weapon_description="TwoHandedPolearm_Thrown">
+			<StatData
+				stat_type="Weight"
+				max_value="7.0" />
+			<StatData
+				stat_type="WeaponReach"
+				max_value="300" />
+			<StatData
+				stat_type="MissileDamage"
+				max_value="500" />
+			<StatData
+				stat_type="MissileSpeed"
+				max_value="200" />
+			<StatData
+				stat_type="Accuracy"
+				max_value="100" />
+			<StatData
+				stat_type="StackAmount"
+				max_value="5" />
+		</StatsData>
     <UsablePieces>
 	
       <UsablePiece piece_id="sturgian_guard_6"/>
@@ -471,6 +586,7 @@
       <UsablePiece piece_id="spear_blade_5" />
       <UsablePiece piece_id="spear_blade_6" />
       <UsablePiece piece_id="spear_blade_7" />
+      <UsablePiece piece_id="spear_blade_7_blunt" />
       <UsablePiece piece_id="spear_blade_8" />
       <UsablePiece piece_id="spear_blade_8_blunt" />
       <UsablePiece piece_id="spear_blade_9" />
@@ -523,12 +639,14 @@
       <UsablePiece piece_id="spear_handle_6" />
       <UsablePiece piece_id="spear_handle_8" />
       <UsablePiece piece_id="spear_handle_13" />
+      <UsablePiece piece_id="spear_handle_13_2" />
       <UsablePiece piece_id="spear_handle_14" />
       <UsablePiece piece_id="spear_handle_15" />
       <UsablePiece piece_id="spear_handle_16" />
       <UsablePiece piece_id="spear_handle_17" />
       <UsablePiece piece_id="spear_handle_18" />
       <UsablePiece piece_id="spear_handle_19" />
+      <UsablePiece piece_id="spear_handle_19_2" />
       <UsablePiece piece_id="spear_handle_20" />
       <UsablePiece piece_id="spear_handle_21" />
       <UsablePiece piece_id="spear_handle_22" />
@@ -1029,6 +1147,7 @@
       <UsablePiece piece_id="battania_blade_4" />
       <UsablePiece piece_id="battania_blade_5" />
       <UsablePiece piece_id="battania_blade_6" />
+	  <UsablePiece piece_id="battania_blade_7" />
       <UsablePiece piece_id="wood_blade_1" />
       <UsablePiece piece_id="empire_guard_1" />
       <UsablePiece piece_id="empire_guard_2" />
@@ -1276,8 +1395,6 @@
       <UsablePiece piece_id="mp_aserai_two_handed_sword_guard"
                    mp_piece="true" />
       <UsablePiece piece_id="mp_aserai_two_handed_sword_grip"
-                   mp_piece="true" />
-      <UsablePiece piece_id="mp_aserai_handed_sword_pommel"
                    mp_piece="true" />
       <UsablePiece piece_id="mp_aserai_handed_sword_pommel"
                    mp_piece="true" />
