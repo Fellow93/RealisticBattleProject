@@ -131,7 +131,6 @@
       <AvailablePiece id="battania_blade_4"/>
       <AvailablePiece id="battania_blade_5"/>
       <AvailablePiece id="battania_blade_6"/>
-	  <AvailablePiece id="battania_blade_7" />
 	  <AvailablePiece id="battania_blade_8"/>
       <AvailablePiece id="battania_blade_9"/>
       <AvailablePiece id="battania_blade_10"/>
@@ -629,7 +628,6 @@
       <AvailablePiece id="battania_blade_4"/>
       <AvailablePiece id="battania_blade_5"/>
       <AvailablePiece id="battania_blade_6"/>
-	  <AvailablePiece id="battania_blade_7" />
       <AvailablePiece id="wood_blade_1"/>
       <AvailablePiece id="empire_guard_1"/>
       <AvailablePiece id="empire_guard_2"/>
@@ -896,7 +894,6 @@
       <AvailablePiece id="battania_blade_4"/>
       <AvailablePiece id="battania_blade_5"/>
       <AvailablePiece id="battania_blade_6"/>
-	  <AvailablePiece id="battania_blade_7" />
       <AvailablePiece id="wood_blade_1"/>
       <AvailablePiece id="empire_guard_1"/>
       <AvailablePiece id="empire_guard_2"/>
@@ -1172,7 +1169,6 @@
       <AvailablePiece id="battania_blade_4"/>
       <AvailablePiece id="battania_blade_5"/>
       <AvailablePiece id="battania_blade_6"/>
-	  <AvailablePiece id="battania_blade_7" />
       <AvailablePiece id="wood_blade_1"/>
       <AvailablePiece id="empire_guard_1"/>
       <AvailablePiece id="empire_guard_2"/>
@@ -2845,6 +2841,7 @@
       <AvailablePiece id="spear_handle_10"/>
       <AvailablePiece id="spear_handle_11"/>
       <AvailablePiece id="spear_handle_12"/>
+	  <AvailablePiece id="spear_handle_13_2" />
       <AvailablePiece id="spear_handle_14"/>
       <AvailablePiece id="default_polearm_guard"/>
       <AvailablePiece id="spear_guard_15"/>
@@ -3742,6 +3739,7 @@
       <AvailablePiece id="spear_blade_42"/>
       <AvailablePiece id="spear_blade_43"/>
       <AvailablePiece id="spear_blade_45"/>
+	  <AvailablePiece id="spear_handle_13_2" />
       <AvailablePiece id="spear_handle_14"/>
       <AvailablePiece id="spear_handle_19.2"/>
       <AvailablePiece id="default_polearm_guard"/>
@@ -3856,6 +3854,7 @@
       <AvailablePiece id="spear_handle_10"/>
       <AvailablePiece id="spear_handle_11"/>
       <AvailablePiece id="spear_handle_12"/>
+	  <AvailablePiece id="spear_handle_13_2" />
       <AvailablePiece id="spear_handle_14"/>
       <AvailablePiece id="default_polearm_guard"/>
       <AvailablePiece id="spear_guard_15"/>
