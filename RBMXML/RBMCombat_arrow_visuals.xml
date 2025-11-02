@@ -26,7 +26,7 @@
 	</Item>
 	<Item id="tournament_bolts" name="{=RBM_ARR_004}Barbed Head Bolts 50 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_c" weight="0.05"  appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_bolt_bl_a_quiver" holster_mesh="bolt_bl_a_quiver" holster_mesh_with_weapon="bolt_bl_a_quiver" flying_mesh="bolt_bl_flying">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="30" weapon_length="47" thrust_damage="115" thrust_damage_type="Cut" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="30" weapon_length="47" thrust_damage="115" thrust_damage_type="Cut" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -50,7 +50,7 @@
 	</Item>
 	<Item id="bolt_e" name="{=RBM_ARR_007}Needle Bodkin Bolts 60 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_e" weight="0.06"  appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_bolt_bl_e_quiver" holster_mesh="bolt_bl_e_quiver" holster_mesh_with_weapon="bolt_bl_e_quiver" flying_mesh="bolt_bl_flying">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="40" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="40" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -82,7 +82,7 @@
 	</Item>
 	<Item id="bolt_d" name="{=RBM_ARR_011}Needle Bodkin Bolts 75 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_e" weight="0.075" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_bolt_bl_d_quiver" holster_mesh="bolt_bl_d_quiver" holster_mesh_with_weapon="bolt_bl_d_quiver" flying_mesh="bolt_bl_flying">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="50" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="50" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -98,7 +98,7 @@
 	</Item>
 	<Item id="bolt_c" name="{=RBM_ARR_013}Needle Bodkin Bolts 90 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_d" weight="0.09"  appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_bolt_bl_c_quiver" holster_mesh="bolt_bl_c_quiver" holster_mesh_with_weapon="bolt_bl_c_quiver" flying_mesh="bolt_bl_flying">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="65" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="65" weapon_length="37" thrust_damage="100" thrust_damage_type="Pierce" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -130,7 +130,7 @@
 	</Item>
 	<Item id="bolt_b" name="{=RBM_ARR_017}Heavy Needle Bodkin Bolts 120 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_d" weight="0.12"  appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_bolt_bl_b_quiver" holster_mesh="bolt_bl_b_quiver" holster_mesh_with_weapon="bolt_bl_b_quiver" flying_mesh="bolt_bl_flying">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="80" weapon_length="47" thrust_damage="100" thrust_damage_type="Pierce" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="80" weapon_length="47" thrust_damage="100" thrust_damage_type="Pierce" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -146,7 +146,7 @@
 	</Item>
 	<Item id="bolt_a" name="{=RBM_ARR_019}Very Heavy Needle Bodkin Bolts 150 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_d" weight="0.15" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_a_quiver" holster_mesh_with_weapon="bolt_bl_a_quiver" flying_mesh="bolt_bl_flying">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="95" weapon_length="47" thrust_damage="100" thrust_damage_type="Pierce" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="95" weapon_length="47" thrust_damage="100" thrust_damage_type="Pierce" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -181,7 +181,7 @@
 	</Item>
 	<Item id="GRE_tournament_bolts" name="{=RBM_ARR_023}Greased Barbed Head Bolts 50 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_c" weight="0.05"  appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_bolt_bl_a_quiver" holster_mesh="bolt_bl_a_quiver" holster_mesh_with_weapon="bolt_bl_a_quiver" flying_mesh="bolt_bl_flying">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="30" weapon_length="47" thrust_damage="125" thrust_damage_type="Cut" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="30" weapon_length="47" thrust_damage="125" thrust_damage_type="Cut" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -205,7 +205,7 @@
 	</Item>
 	<Item id="GRE_bolt_e" name="{=RBM_ARR_026}Greased Needle Bodkin Bolts 60 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_e" weight="0.06"  appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_bolt_bl_e_quiver" holster_mesh="bolt_bl_e_quiver" holster_mesh_with_weapon="bolt_bl_e_quiver" flying_mesh="bolt_bl_flying">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="40" weapon_length="37" thrust_damage="110" thrust_damage_type="Pierce" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="40" weapon_length="37" thrust_damage="110" thrust_damage_type="Pierce" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -237,7 +237,7 @@
 	</Item>
 	<Item id="GRE_bolt_d" name="{=RBM_ARR_030}Greased Needle Bodkin Bolts 75 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_e" weight="0.075" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_bolt_bl_d_quiver" holster_mesh="bolt_bl_d_quiver" holster_mesh_with_weapon="bolt_bl_d_quiver" flying_mesh="bolt_bl_flying">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="50" weapon_length="37" thrust_damage="110" thrust_damage_type="Pierce" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="50" weapon_length="37" thrust_damage="110" thrust_damage_type="Pierce" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -253,7 +253,7 @@
 	</Item>
 	<Item id="GRE_bolt_c" name="{=RBM_ARR_032}Greased Needle Bodkin Bolts 90 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_d" weight="0.09"  appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_bolt_bl_c_quiver" holster_mesh="bolt_bl_c_quiver" holster_mesh_with_weapon="bolt_bl_c_quiver" flying_mesh="bolt_bl_flying">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="65" weapon_length="37" thrust_damage="110" thrust_damage_type="Pierce" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="65" weapon_length="37" thrust_damage="110" thrust_damage_type="Pierce" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -285,7 +285,7 @@
 	</Item>
 	<Item id="GRE_bolt_b" name="{=RBM_ARR_036}Greased Heavy Needle Bodkin Bolts 120 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_d" weight="0.12" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_bolt_bl_b_quiver" holster_mesh="bolt_bl_b_quiver" holster_mesh_with_weapon="bolt_bl_b_quiver" flying_mesh="bolt_bl_flying">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="80" weapon_length="47" thrust_damage="110" thrust_damage_type="Pierce" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="80" weapon_length="47" thrust_damage="110" thrust_damage_type="Pierce" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -301,7 +301,7 @@
 	</Item>
 	<Item id="GRE_bolt_a" name="{=RBM_ARR_038}Greased Very Heavy Needle Bodkin Bolts 150 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_d" weight="0.15" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_a_quiver" holster_mesh_with_weapon="bolt_bl_a_quiver" flying_mesh="bolt_bl_flying">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="95" weapon_length="47" thrust_damage="110" thrust_damage_type="Pierce" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="95" weapon_length="47" thrust_damage="110" thrust_damage_type="Pierce" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -352,7 +352,7 @@
 	
 	<Item id="hardened_75_gr_bolts" name="{=RBM_ARR_044}Steel Hardened Barbed Bolts 75 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_c" weight="0.075"  appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_bolt_bl_c_quiver" holster_mesh="bolt_bl_d_quiver" holster_mesh_with_weapon="bolt_bl_d_quiver" flying_mesh="bolt_bl_flying" culture="Culture.Empire">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="75" weapon_length="37" thrust_damage="125" thrust_damage_type="Cut" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="75" weapon_length="37" thrust_damage="125" thrust_damage_type="Cut" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -360,7 +360,7 @@
 	</Item>
 	<Item id="hardened_90_gr_bolts" name="{=RBM_ARR_045}Steel Hardened Barbed Bolts 90 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_a" weight="0.09"  appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_c_quiver" holster_mesh_with_weapon="bolt_bl_c_quiver" flying_mesh="bolt_bl_flying" culture="Culture.Empire">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="90" weapon_length="37" thrust_damage="125" thrust_damage_type="Cut" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="90" weapon_length="37" thrust_damage="125" thrust_damage_type="Cut" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -368,7 +368,7 @@
 	</Item>
 	<Item id="hardened_120_gr_bolts" name="{=RBM_ARR_046}Steel Hardened Barbed Bolts 120 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_b" weight="0.12"  appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_b_quiver" holster_mesh_with_weapon="bolt_bl_b_quiver" flying_mesh="bolt_bl_flying" culture="Culture.Empire">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="120" weapon_length="47" thrust_damage="125" thrust_damage_type="Cut" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="120" weapon_length="47" thrust_damage="125" thrust_damage_type="Cut" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -376,7 +376,7 @@
 	</Item>
 	<Item id="hardened_150_gr_bolts" name="{=RBM_ARR_047}Steel Hardened Barbed Bolts 150 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_b" weight="0.15" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_a_quiver" holster_mesh_with_weapon="bolt_bl_a_quiver" flying_mesh="bolt_bl_flying" culture="Culture.Empire">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="150" weapon_length="47" thrust_damage="125" thrust_damage_type="Cut" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="150" weapon_length="47" thrust_damage="125" thrust_damage_type="Cut" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -428,7 +428,7 @@
 
 	<Item id="GRE_hardened_75_gr_bolts" name="{=RBM_ARR_053}Greased Steel Hardened Barbed Bolts 75 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_c" weight="0.075"  appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_d_quiver" holster_mesh_with_weapon="bolt_bl_d_quiver" flying_mesh="bolt_bl_flying" culture="Culture.Vlandia">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="50" weapon_length="37" thrust_damage="135" thrust_damage_type="Cut" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="50" weapon_length="37" thrust_damage="135" thrust_damage_type="Cut" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -436,7 +436,7 @@
 	</Item>
 	<Item id="GRE_hardened_90_gr_bolts" name="{=RBM_ARR_054}Greased Steel Hardened Barbed Bolts 90 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_a" weight="0.09"  appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_c_quiver" holster_mesh_with_weapon="bolt_bl_c_quiver" flying_mesh="bolt_bl_flying" culture="Culture.Vlandia">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="65" weapon_length="37" thrust_damage="135" thrust_damage_type="Cut" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="65" weapon_length="37" thrust_damage="135" thrust_damage_type="Cut" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -444,7 +444,7 @@
 	</Item>
 	<Item id="GRE_hardened_120_gr_bolts" name="{=RBM_ARR_055}Greased Steel Hardened Barbed Bolts 120 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_b" weight="0.12"  appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_bolt_bl_b_quiver" holster_mesh="bolt_bl_b_quiver" holster_mesh_with_weapon="bolt_bl_b_quiver" flying_mesh="bolt_bl_flying" culture="Culture.Vlandia">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="80" weapon_length="47" thrust_damage="135" thrust_damage_type="Cut" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="80" weapon_length="47" thrust_damage="135" thrust_damage_type="Cut" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -452,7 +452,7 @@
 	</Item>
 	<Item id="GRE_hardened_150_gr_bolts" name="{=RBM_ARR_056}Greased Steel Hardened Barbed Bolts 150 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_b" weight="0.15" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_bolt_bl_b_quiver" holster_mesh="bolt_bl_a_quiver" holster_mesh_with_weapon="bolt_bl_a_quiver" flying_mesh="bolt_bl_flying" culture="Culture.Vlandia">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="95" weapon_length="47" thrust_damage="135" thrust_damage_type="Cut" item_usage=" " physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="95" weapon_length="47" thrust_damage="135" thrust_damage_type="Cut" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -472,7 +472,7 @@
 	
 	<Item id="fire_bolts" name="{=RBM_ARR_058}Calradian fire bolts" body_name="bo_capsule_arrow" mesh="bolt_bl_b" weight="0.130" appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="false" holster_body_name="bo_axe_short" holster_mesh="bolt_bl_b_quiver" holster_mesh_with_weapon="bolt_bl_b_quiver" flying_mesh="bolt_bl_flying" culture="Culture.Empire">
 		<ItemComponent>
-			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="130" weapon_length="47" thrust_damage="20" thrust_damage_type="Blunt" item_usage=" " physics_material="burning_jar" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby" trail_particle_name="psys_game_missile_flame">
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="130" weapon_length="47" thrust_damage="20" thrust_damage_type="Blunt" item_usage="" physics_material="burning_jar" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby" trail_particle_name="psys_game_missile_flame">
 				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AttachAmmoToVisual="true" Burning="true" LeavesTrail="true" AffectsArea="true" CanKnockDown="true" AmmoCanBreakOnBounceBack="true"/>
 			</Weapon>
 		</ItemComponent>
