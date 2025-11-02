@@ -362,6 +362,7 @@
       <UsablePiece piece_id="spear_handle_12" />
       <UsablePiece piece_id="spear_handle_13_2" />
       <UsablePiece piece_id="spear_handle_14" />
+      <UsablePiece piece_id="spear_handle_19_2" />
 
       <UsablePiece piece_id="default_polearm_guard" />
       <UsablePiece piece_id="spear_guard_15" />
@@ -374,6 +375,8 @@
       <UsablePiece piece_id="default_polearm_pommel" />
       <UsablePiece piece_id="spear_pommel_5" />
       <UsablePiece piece_id="spear_pommel_12" />
+	  <UsablePiece piece_id="spear_banner_16"/>
+	  
       <UsablePiece piece_id="mp_default_polearm_pommel" />
       <UsablePiece piece_id="mp_spear_pommel_12" />
       <UsablePiece piece_id="mp_spear_pommel_8" />
@@ -1148,7 +1151,6 @@
       <UsablePiece piece_id="battania_blade_4" />
       <UsablePiece piece_id="battania_blade_5" />
       <UsablePiece piece_id="battania_blade_6" />
-	  <UsablePiece piece_id="battania_blade_7" />
       <UsablePiece piece_id="wood_blade_1" />
       <UsablePiece piece_id="empire_guard_1" />
       <UsablePiece piece_id="empire_guard_2" />

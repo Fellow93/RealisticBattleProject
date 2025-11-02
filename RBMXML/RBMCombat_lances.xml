@@ -647,8 +647,8 @@
              scale_factor="100" />
     </Pieces>
   </CraftedItem>
-  
-  <CraftedItem id="eastern_throwing_spear_1_t3"
+
+ <CraftedItem id="eastern_throwing_spear_1_t3"
                name="{=EgrNdBct}Jagged Throwing Spear"
                crafting_template="Javelin"
                culture="Culture.khuzait"
@@ -662,6 +662,7 @@
              scale_factor="130" />
     </Pieces>
   </CraftedItem>
+
   <!-- Pilum -->
   <!-- #region hewing spears -->
   <CraftedItem id="eastern_spear_5_t5"
