@@ -2551,6 +2551,9 @@
     </BladeData>
     <Flags>
       <Flag name="Civilian" type="ItemFlags" />
+	  <Flag
+				name="Stealth"
+				type="ItemFlags" />
     </Flags>
     <Materials>
       <Material id="Iron3" count="1" />
@@ -2580,9 +2583,13 @@
     <Flags>
       <Flag name="Civilian"
             type="ItemFlags" />
+						<Flag
+				name="Stealth"
+				type="ItemFlags" />
+
     </Flags>
     <Materials>
-      <Material id="Iron3"
+      <Material id="Iron4"
                 count="1" />
     </Materials>
   </CraftingPiece>
@@ -2606,6 +2613,10 @@
     <Flags>
       <Flag name="Civilian"
             type="ItemFlags" />
+						<Flag
+				name="Stealth"
+				type="ItemFlags" />
+
     </Flags>
     <Materials>
       <Material id="Iron3"
@@ -2634,6 +2645,10 @@
             type="ItemFlags" />
       <Flag name="Civilian"
             type="ItemFlags" />
+						<Flag
+				name="Stealth"
+				type="ItemFlags" />
+
     </Flags>
     <Materials>
       <Material id="Iron4"
@@ -2663,6 +2678,10 @@
             type="ItemFlags" />
       <Flag name="Civilian"
             type="ItemFlags" />
+						<Flag
+				name="Stealth"
+				type="ItemFlags" />
+
     </Flags>
     <Materials>
       <Material id="Iron4"
@@ -2674,7 +2693,7 @@
                  tier="3"
                  piece_type="Blade"
                  mesh="dagger_blade_4"
-                 length="38"
+                 length="38.2"
                  weight="0.32">
 
     <BladeData stack_amount="3"
@@ -2689,6 +2708,10 @@
     <Flags>
       <Flag name="Civilian"
             type="ItemFlags" />
+						<Flag
+				name="Stealth"
+				type="ItemFlags" />
+
     </Flags>
     <Materials>
       <Material id="Iron4"
@@ -2696,11 +2719,11 @@
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="dagger_blade_5"
-                 name="{=ZbSKazZG}Short Seax Blade"
+                 name="{=aS56bF5s}Short Chopping Knife"
                  tier="1"
                  piece_type="Blade"
                  mesh="dagger_blade_5"
-                 length="32"
+                 length="33"
                  weight="0.270">
 
     <BladeData stack_amount="3"
@@ -2715,9 +2738,12 @@
     <Flags>
       <Flag name="Civilian"
             type="ItemFlags" />
+		<Flag
+				name="Stealth"
+				type="ItemFlags" />	
     </Flags>
     <Materials>
-      <Material id="Iron2"
+      <Material id="Iron3"
                 count="1" />
     </Materials>
   </CraftingPiece>
@@ -2741,6 +2767,9 @@
     <Flags>
       <Flag name="Civilian"
             type="ItemFlags" />
+			<Flag
+				name="Stealth"
+				type="ItemFlags" />
     </Flags>
     <Materials>
       <Material id="Iron4"
@@ -2768,6 +2797,9 @@
     <Flags>
       <Flag name="Civilian"
             type="ItemFlags" />
+			<Flag
+				name="Stealth"
+				type="ItemFlags" />
     </Flags>
     <Materials>
       <Material id="Iron4"
@@ -2779,7 +2811,7 @@
                  tier="2"
                  piece_type="Blade"
                  mesh="dagger_blade_7"
-                 length="40"
+                 length="40.1"
                  weight="0.32">
 
     <BladeData stack_amount="3"
@@ -2794,9 +2826,12 @@
     <Flags>
       <Flag name="Civilian"
             type="ItemFlags" />
+			<Flag
+				name="Stealth"
+				type="ItemFlags" />
     </Flags>
     <Materials>
-      <Material id="Iron3"
+      <Material id="Iron5"
                 count="1" />
     </Materials>
   </CraftingPiece>
@@ -2820,6 +2855,9 @@
     <Flags>
       <Flag name="Civilian"
             type="ItemFlags" />
+			<Flag
+				name="Stealth"
+				type="ItemFlags" />
     </Flags>
     <Materials>
       <Material id="Iron4"
@@ -2846,6 +2884,9 @@
     <Flags>
       <Flag name="Civilian"
             type="ItemFlags" />
+			<Flag
+				name="Stealth"
+				type="ItemFlags" />
     </Flags>
     <Materials>
       <Material id="Iron4"
@@ -2853,7 +2894,7 @@
     </Materials>
   </CraftingPiece>
   <CraftingPiece id="dagger_blade_10"
-                 name="{=TLtaGEcB}Wide Makhaira Blade"
+                 name="{=85bQmjWX}Knife Blade"
                  tier="2"
                  piece_type="Blade"
                  mesh="dagger_blade_10"
@@ -2873,9 +2914,12 @@
     <Flags>
       <Flag name="Civilian"
             type="ItemFlags" />
+			<Flag
+				name="Stealth"
+				type="ItemFlags" />
     </Flags>
     <Materials>
-      <Material id="Iron3"
+      <Material id="Iron2"
                 count="1" />
     </Materials>
   </CraftingPiece>
@@ -2884,7 +2928,7 @@
                  tier="1"
                  piece_type="Blade"
                  mesh="dagger_blade_12"
-                 length="25.2"
+                 length="25.3"
                  weight="0.200"
                  is_default="true">
 
@@ -2901,6 +2945,9 @@
     <Flags>
       <Flag name="Civilian"
             type="ItemFlags" />
+			<Flag
+				name="Stealth"
+				type="ItemFlags" />
     </Flags>
     <Materials>
       <Material id="Iron2"
@@ -2912,7 +2959,7 @@
                  tier="2"
                  piece_type="Blade"
                  mesh="dagger_blade_13"
-                 length="29"
+                 length="28.2"
                  weight="0.240">
 
     <BladeData stack_amount="3"
@@ -2928,6 +2975,9 @@
     <Flags>
       <Flag name="Civilian"
             type="ItemFlags" />
+			<Flag
+				name="Stealth"
+				type="ItemFlags" />
     </Flags>
     <Materials>
       <Material id="Iron3"
@@ -2939,7 +2989,7 @@
                  tier="2"
                  piece_type="Blade"
                  mesh="dagger_blade_13"
-                 length="29"
+                 length="28.2"
                  weight="0.240"
                  is_hidden="true">
 
@@ -2956,6 +3006,9 @@
     <Flags>
       <Flag name="Civilian"
             type="ItemFlags" />
+			<Flag
+				name="Stealth"
+				type="ItemFlags" />
     </Flags>
     <Materials>
       <Material id="Iron3"
@@ -2983,11 +3036,195 @@
     <Flags>
       <Flag name="Civilian"
             type="ItemFlags" />
+			<Flag
+				name="Stealth"
+				type="ItemFlags" />
     </Flags>
     <Materials>
       <Material id="Iron4"
                 count="1" />
     </Materials>
   </CraftingPiece>
-  <!-- #endregion -->
+  <!-- #War sails -->
+  
+ 	<CraftingPiece
+		id="dagger_blade_20"
+		name="{=UqNbbdKN}Simple Knife Blade"
+		tier="1"
+		piece_type="Blade"
+		mesh="dagger_blade_10"
+		length="30"
+		weight="0.230">
+		<BladeData
+			stack_amount="3"
+			physics_material="metal_weapon"
+			body_name="bo_knife_a"
+			holster_mesh="dagger_blade_20_scabbard_20"
+			holster_mesh_length="35.8">
+			<Thrust
+				damage_type="Pierce"
+				damage_factor="0.65" />
+			<Swing
+				damage_type="Cut"
+				damage_factor="0.65" />
+		</BladeData>
+		<Flags>
+			<Flag
+				name="Civilian"
+				type="ItemFlags" />
+			<Flag
+				name="Stealth"
+				type="ItemFlags" />
+		</Flags>
+		<Materials>
+			<Material
+				id="Iron2"
+				count="1" />
+		</Materials>
+	</CraftingPiece>
+
+	<CraftingPiece
+		id="dagger_blade_22"
+		name="{=HysmKS5a}Ridged Wide Dagger Blade"
+		tier="1"
+		piece_type="Blade"
+		mesh="dagger_blade_12"
+		length="25.2"
+		weight="0.200"
+		is_default="true">
+		<BladeData
+			stack_amount="3"
+			physics_material="metal_weapon"
+			body_name="bo_knife_a"
+			holster_mesh="dagger_blade_22_scabbard_22"
+			holster_mesh_length="35.8">
+			<Thrust
+				damage_type="Pierce"
+				damage_factor="0.7" />
+			<Swing
+				damage_type="Cut"
+				damage_factor="0.6" />
+		</BladeData>
+		<Flags>
+			<Flag
+				name="Civilian"
+				type="ItemFlags" />
+			<Flag
+				name="Stealth"
+				type="ItemFlags" />
+		</Flags>
+		<Materials>
+			<Material
+				id="Iron2"
+				count="1" />
+		</Materials>
+	</CraftingPiece>
+
+	<CraftingPiece
+		id="dagger_blade_23"
+		name="{=5o5DaSHZ}Broad Dagger Blade"
+		tier="2"
+		piece_type="Blade"
+		mesh="dagger_blade_13"
+		length="28.2"
+		weight="0.215">
+		<BladeData
+			stack_amount="3"
+			physics_material="metal_weapon"
+			body_name="bo_knife_a"
+			holster_mesh="dagger_blade_23_scabbard_23"
+			holster_mesh_length="35.8">
+			<Thrust
+				damage_type="Pierce"
+				damage_factor="0.8" />
+			<Swing
+				damage_type="Cut"
+				damage_factor="0.8" />
+		</BladeData>
+		<Flags>
+			<Flag
+				name="Civilian"
+				type="ItemFlags" />
+			<Flag
+				name="Stealth"
+				type="ItemFlags" />
+		</Flags>
+		<Materials>
+			<Material
+				id="Iron3"
+				count="1" />
+		</Materials>
+	</CraftingPiece>
+
+	<CraftingPiece
+		id="dagger_blade_23_blunt"
+		name="{=GFBFgA7R}Broad Blunt Dagger Blade"
+		tier="2"
+		piece_type="Blade"
+		mesh="dagger_blade_13"
+		length="28.2"
+		weight="0.225"
+		is_hidden="true">
+		<BladeData
+			stack_amount="3"
+			physics_material="metal_weapon"
+			body_name="bo_knife_a"
+			holster_mesh="dagger_blade_23_scabbard_23_blunt"
+			holster_mesh_length="35.8">
+			<Thrust
+				damage_type="Pierce"
+				damage_factor="0.8" />
+			<Swing
+				damage_type="Cut"
+				damage_factor="0.8" />
+		</BladeData>
+		<Flags>
+			<Flag
+				name="Civilian"
+				type="ItemFlags" />
+			<Flag
+				name="Stealth"
+				type="ItemFlags" />
+		</Flags>
+		<Materials>
+			<Material
+				id="Iron3"
+				count="2" />
+		</Materials>
+	</CraftingPiece>
+
+	<CraftingPiece
+		id="dagger_blade_24"
+		name="{=QH0oIiIz}Long Broad Dagger Blade"
+		tier="3"
+		piece_type="Blade"
+		mesh="dagger_blade_14"
+		length="35"
+		weight="0.300">
+		<BladeData
+			stack_amount="3"
+			physics_material="metal_weapon"
+			body_name="bo_knife_a"
+			holster_mesh="dagger_blade_24_scabbard_24"
+			holster_mesh_length="35.8">
+			<Thrust
+				damage_type="Pierce"
+				damage_factor="1.05" />
+			<Swing
+				damage_type="Cut"
+				damage_factor="0.85" />
+		</BladeData>
+		<Flags>
+			<Flag
+				name="Civilian"
+				type="ItemFlags" />
+		</Flags>
+		<Materials>
+			<Material
+				id="Iron4"
+				count="1" />
+		</Materials>
+	</CraftingPiece>	
+  
+  <!-- #endregion --> 
 </CraftingPieces>
