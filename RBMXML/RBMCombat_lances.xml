@@ -604,22 +604,23 @@
 <!-- #sails -->  
   	<CraftedItem
 		id="imperial_throwing_spear_1_t4_2"
-		name="{=rkqaCud5}Pilum"
-		is_merchandise="false"
+		name="{=rkqaCud5}Heavy Pilum"
+		is_merchandise="True"
 		culture="Culture.empire"
 		modifier_group="spear_dart_throwing"
 		crafting_template="Javelin">
 		<Pieces>
 			<Piece
 				id="spear_blade_38"
-				Type="Blade" />
+				Type="Blade"
+				scale_factor="280" />
 			<Piece
 				id="default_polearm_guard"
 				Type="Guard" />
 			<Piece
-				id="spear_handle_13_2"
+				id="spear_handle_19_2"
 				Type="Handle"
-				scale_factor="110" />
+				scale_factor="62" />
 			<Piece
 				id="default_polearm_pommel"
 				Type="Pommel" />

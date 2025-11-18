@@ -214,6 +214,31 @@
         <BuildData previous_piece_offset="-11"/>
   </CraftingPiece>
   
+	<CraftingPiece
+		id="spear_blade_7_blunt"
+		name="{=n55UtbGg}Sparring Menavlion Head"
+		tier="5"
+		piece_type="Blade"
+		mesh="spear_blade_7"
+		length="30"
+		weight="0.3656"
+		excluded_item_usage_features="swing">
+		<BladeData
+			stack_amount="3"
+			physics_material="wood_weapon"
+			body_name="bo_spear_b">
+			<Thrust
+				damage_type="Blunt"
+				damage_factor="1.3" />
+		</BladeData>
+		<Materials>
+			<Material
+				id="Iron4"
+				count="1" />
+		</Materials>
+	</CraftingPiece>
+
+  
   <CraftingPiece id="spear_blade_18" name="{=qSV6C2tp}Swordstaff Head" tier="5" piece_type="Blade" mesh="spear_blade_18" length="45" weight="0.4096" excluded_item_usage_features="swing">
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_spear_b">
       <Thrust damage_type="Pierce" damage_factor="1.35" />
@@ -500,7 +525,7 @@
   </CraftingPiece>
 <!-- Pike -->   
   <CraftingPiece id="spear_blade_41" name="{=RBM_CLA_006}Thamaskene Steel Leaf Shaped Pike Head" tier="5" piece_type="Blade" mesh="spear_blade_41" length="53.2" weight="0.4792" excluded_item_usage_features="swing">
-    <BladeData stack_amount="1" physics_material="wood_weapon" body_name="bo_spear_b">
+    <BladeData stack_amount="1" physics_material="wood_weapon" body_name="bo_spear_b" holster_mesh="throwing_spear_quiver_4" holster_body_name="bo_throwing_spear_quiver_4" holster_mesh_length="96.2">
       <Thrust damage_type="Pierce" damage_factor="1.2" />
     </BladeData>
     <Materials>
@@ -610,9 +635,11 @@
                  tier="1"
                  piece_type="Blade"
                  mesh="spear_blade_31"
-                 length="7"
+                 distance_to_next_piece="4.29"
+				 distance_to_previous_piece="16.5"
                  weight="0.1"
                  excluded_item_usage_features="shield:thrust">
+	<BuildData   piece_offset="-13" />
     <BladeData stack_amount="3"
                physics_material="wood_weapon"
                body_name="bo_spear_b">
@@ -865,4 +892,40 @@
       <Flag name="NoBlood"/>
     </Flags>
   </CraftingPiece>
+ <!-- # pilum --> 
+
+	<CraftingPiece
+		id="spear_handle_19_2"
+		name="{=!}Heavy Pilum Handle"
+		tier="4"
+		piece_type="Handle"
+		mesh="spear_handle_13"
+		length="228"
+		weight="1.2"
+		CraftingCost="110"
+		is_hidden="true">
+		<BuildData
+			piece_offset="22.9" />
+	</CraftingPiece>
+
+	<CraftingPiece
+		id="spear_handle_13_2"
+		name="{=pocRP9dq}Long Ash Staff"
+		tier="4"
+		piece_type="Handle"
+		mesh="spear_handle_13"
+		length="228"
+		weight="1"
+		is_hidden="true"
+		CraftingCost="110">
+		<BuildData
+			piece_offset="22.9" />
+		<Materials>
+			<Material
+				id="Wood"
+				count="1" />
+		</Materials>
+	</CraftingPiece>
+
+
 </CraftingPieces>
