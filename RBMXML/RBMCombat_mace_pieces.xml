@@ -2,7 +2,10 @@
 <CraftingPieces>
   <!-- #region Mace Pieces -->
   <!-- #region Used Mace Blade Pieces -->
-  <CraftingPiece id="mace_head_22" name="{=lZoqaYmx}Spiked Club Head" tier="2" piece_type="Blade" mesh="mace_head_22" distance_to_next_piece="7.6" distance_to_previous_piece="4.1" weight="0.26" full_scale="true">
+  <CraftingPiece id="mace_head_22" name="{=lZoqaYmx}Spiked Club Head" tier="2" piece_type="Blade" mesh="mace_head_22" distance_to_next_piece="9.75" distance_to_previous_piece="9.75" weight="0.26" full_scale="true">
+  		<BuildData
+			piece_offset="-7" />
+
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Thrust damage_type="Pierce" damage_factor="0.8" />
@@ -12,7 +15,11 @@
       <Material id="Iron2" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="mace_head_16" name="{=YFy0t1NY}Fullered Western Mace Head" tier="4" piece_type="Blade" mesh="mace_head_16" length="16.5" weight="0.5" full_scale="true" excluded_item_usage_features="thrust">
+  
+  <CraftingPiece id="mace_head_16" name="{=YFy0t1NY}Fullered Western Mace Head" tier="4" piece_type="Blade" mesh="mace_head_16" length="16.6" weight="0.5" full_scale="true" excluded_item_usage_features="thrust">
+  		<BuildData
+			previous_piece_offset="0" />
+
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="0.9" />
@@ -21,7 +28,10 @@
       <Material id="Iron3" count="3" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_2" name="{=cag70E1F}Pernach Head" tier="5" piece_type="Blade" mesh="mace_head_2" length="17" weight="0.56" full_scale="true" excluded_item_usage_features="thrust">
+		<BuildData
+			previous_piece_offset="0" />
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="1.3" />
@@ -30,7 +40,10 @@
       <Material id="Iron4" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="mace_head_23" name="{=L3vLdPJT}Improved Spiked Club Head" tier="2" piece_type="Blade" mesh="mace_head_23" distance_to_next_piece="15.4" distance_to_previous_piece="8.2" weight="0.32" full_scale="true">
+  
+  <CraftingPiece id="mace_head_23" name="{=L3vLdPJT}Improved Spiked Club Head" tier="2" piece_type="Blade" mesh="mace_head_23" distance_to_next_piece="11.7" distance_to_previous_piece="11.7" weight="0.32" full_scale="true">
+		<BuildData
+			previous_piece_offset="0" />
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Thrust damage_type="Pierce" damage_factor="0.9" />
@@ -40,7 +53,10 @@
       <Material id="Iron2" count="2" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_20" name="{=hRtzRR6C}Imperial Light Mace Head" tier="3" piece_type="Blade" mesh="mace_head_20" length="6.1" weight="0.42" full_scale="true" excluded_item_usage_features="thrust">
+		<BuildData
+			previous_piece_offset="0" />
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="0.7" />
@@ -49,7 +65,10 @@
       <Material id="Iron3" count="2" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_8" name="{=trGnmFsh}Calradic Mace Head" tier="4" piece_type="Blade" mesh="mace_head_8" length="7" weight="0.45" full_scale="true" excluded_item_usage_features="thrust">
+		<BuildData
+			previous_piece_offset="0" />
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="0.9" />
@@ -58,7 +77,10 @@
       <Material id="Iron3" count="2" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_13" name="{=3Q3FFqu0}Light Royal Mace Head" tier="5" piece_type="Blade" mesh="mace_head_13" length="9.2" weight="0.45" full_scale="true" excluded_item_usage_features="thrust">
+		<BuildData
+			previous_piece_offset="0" />
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="1.3" />
@@ -71,7 +93,10 @@
       <Material id="Iron4" count="2" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_7" name="{=IR8UeIRp}Cataphracts Mace Head" tier="5" piece_type="Blade" mesh="mace_head_7" length="22" weight="0.6" full_scale="true" excluded_item_usage_features="thrust">
+		<BuildData
+			previous_piece_offset="0" />
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="1.1" />
@@ -80,61 +105,87 @@
       <Material id="Iron4" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="mace_head_1" name="{=sw5rAz73}Light Southern Mace Head" tier="1" piece_type="Blade" mesh="mace_head_1" length="11.5" weight="0.4" full_scale="true" excluded_item_usage_features="thrust" is_default="true">
+  
+  <CraftingPiece id="mace_head_1" name="{=sw5rAz73}Light Southern Mace Head" tier="1" piece_type="Blade" mesh="mace_head_1" distance_to_next_piece="7.35" distance_to_previous_piece="7.35" weight="0.4" full_scale="true" excluded_item_usage_features="thrust" is_default="true">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="0.3" />
     </BladeData>
+		<BuildData
+			piece_offset="-2.5" />
+
+	
     <Materials>
       <Material id="Iron2" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="mace_head_17" name="{=b9bboB3v}Southern Infantry Mace Head" tier="2" piece_type="Blade" mesh="mace_head_17" length="8.1" weight="0.46" full_scale="true" excluded_item_usage_features="thrust">
+  
+  <CraftingPiece id="mace_head_17" name="{=b9bboB3v}Southern Infantry Mace Head" tier="2" piece_type="Blade" mesh="mace_head_17" length="8.15" weight="0.46" full_scale="true" excluded_item_usage_features="thrust">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="0.5" />
     </BladeData>
+		<BuildData
+			previous_piece_offset="0" />
+
     <Materials>
       <Material id="Iron2" count="3" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_19" name="{=qQrmuHQ9}Heavy Horsemans Mace Head" tier="3" piece_type="Blade" mesh="mace_head_19" length="11" weight="0.52" full_scale="true" excluded_item_usage_features="thrust">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="0.7" />
     </BladeData>
+			<BuildData
+			previous_piece_offset="0" />
+
     <Materials>
       <Material id="Iron3" count="2" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_15" name="{=rSs1M2EJ}Spiralled Mace Head" tier="4" piece_type="Blade" mesh="mace_head_15" length="13.5" weight="0.49" full_scale="true" excluded_item_usage_features="thrust">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="0.9" />
     </BladeData>
+			<BuildData
+			previous_piece_offset="0" />
+
     <Materials>
       <Material id="Iron3" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="mace_head_14" name="{=1e9OaUWk}Eastern Light Mace Head" tier="2" piece_type="Blade" mesh="mace_head_14" length="20.8" weight="0.4" full_scale="true">
+  
+  <CraftingPiece id="mace_head_14" name="{=1e9OaUWk}Eastern Light Mace Head" tier="2" piece_type="Blade" mesh="mace_head_14" length="20.9" weight="0.4" full_scale="true">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Thrust damage_type="Pierce" damage_factor="0.9" />
       <Swing damage_type="Blunt" damage_factor="0.5" />
     </BladeData>
+			<BuildData
+			previous_piece_offset="0" />
+
     <Materials>
       <Material id="Iron2" count="2" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_11" name="{=fhbGCsdC}Eastern Heavy Mace Head" tier="4" piece_type="Blade" mesh="mace_head_11" length="18.3" weight="0.54" full_scale="true" excluded_item_usage_features="thrust">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="0.9" />
     </BladeData>
+		<BuildData
+			previous_piece_offset="0" />
+
     <Materials>
       <Material id="Iron3" count="5" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_10" name="{=yWvSjlnb}Eastern Fine Steel Mace Head" tier="4" piece_type="Blade" mesh="mace_head_10" length="17.6" weight="0.45" full_scale="true" excluded_item_usage_features="thrust">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
@@ -144,29 +195,38 @@
       <Material id="Iron4" count="3" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_6" name="{=knobbedclubcraftingpiece}Knobbed Club" tier="2" piece_type="Blade" mesh="mace_head_6" length="11.4" weight="0.28" full_scale="true" excluded_item_usage_features="thrust">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="0.5" />
     </BladeData>
+		<BuildData
+			previous_piece_offset="0" />
+
     <Materials>
       <Material id="Iron2" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="mace_head_5" name="{=0SpLcthg}Highland Spiked Club" tier="2" piece_type="Blade" mesh="mace_head_5" length="25.5" weight="0.45" full_scale="true">
+  
+  <CraftingPiece id="mace_head_5" name="{=0SpLcthg}Highland Spiked Club" tier="2" piece_type="Blade" mesh="mace_head_5" length="28.5" weight="0.45" full_scale="true">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Thrust damage_type="Pierce" damage_factor="0.85" />
       <Swing damage_type="Blunt" damage_factor="0.55" />
     </BladeData>
+		<BuildData
+			previous_piece_offset="0" />
+
     <Materials>
       <Material id="Iron2" count="2" />
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="blacksmith_hammer_tip_1" name="{=X1FY4VYe}Smith Hammer Head" tier="1" piece_type="Blade" mesh="blacksmith_hammer_tip" length="7.4" weight="0.3" full_scale="true" excluded_item_usage_features="thrust">
+  
+  <CraftingPiece id="blacksmith_hammer_tip_1" name="{=X1FY4VYe}Smith Hammer Head" tier="1" piece_type="Blade" mesh="blacksmith_hammer_tip" length="7.18" weight="0.3" full_scale="true" excluded_item_usage_features="thrust">
 
-    <BuildData piece_offset="-10" next_piece_offset="0" />
+    <BuildData piece_offset="-10" />
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="0.3" />
     </BladeData>
@@ -176,6 +236,10 @@
     <Flags>
       <Flag name="Civilian"
             type="ItemFlags"/>
+			<Flag
+				name="Stealth"
+				type="ItemFlags" />
+
     </Flags>
   </CraftingPiece>
 
@@ -194,11 +258,15 @@
       <Swing damage_type="Blunt"
              damage_factor="0.7" />
     </BladeData>
+		<BuildData
+			previous_piece_offset="0" />
+
     <Materials>
       <Material id="Iron3"
                 count="3" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_32"
                  name="{=WrvDoYKa}Heavy Long Flanged Mace Head"
                  tier="4"
@@ -214,11 +282,15 @@
       <Swing damage_type="Blunt"
              damage_factor="0.9" />
     </BladeData>
+		<BuildData
+			previous_piece_offset="0" />
+
     <Materials>
       <Material id="Iron4"
                 count="3" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_33"
                  name="{=MQEuR8Yz}Studded Long Heavy Mace Head"
                  tier="3"
@@ -234,11 +306,15 @@
       <Swing damage_type="Blunt"
              damage_factor="0.8" />
     </BladeData>
+		<BuildData
+			previous_piece_offset="0" />
+
     <Materials>
       <Material id="Iron3"
                 count="3" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_34"
                  name="{=qQrmuHQ9}Heavy Horsemans Mace Head"
                  tier="4"
@@ -254,17 +330,22 @@
       <Swing damage_type="Blunt"
              damage_factor="0.9" />
     </BladeData>
+		<BuildData
+			previous_piece_offset="0" />
+
     <Materials>
       <Material id="Iron5"
                 count="3" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_35"
                  name="{=LbnJhG2R}Heavy Spiked Club Head"
                  tier="2"
                  piece_type="Blade"
                  mesh="mace_head_35"
-                 length="22.2"
+                 distance_to_next_piece="11.1"
+				 distance_to_previous_piece="11.1"
                  weight="0.3"
                  full_scale="true"
                  is_default="true">
@@ -275,17 +356,22 @@
       <Swing damage_type="Blunt"
              damage_factor="0.5" />
     </BladeData>
+		<BuildData
+			previous_piece_offset="-5" />
+
     <Materials>
       <Material id="Iron3"
                 count="2" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_36"
                  name="{=hX6YZ5GJ}Heavy Large Spiked Club Head"
                  tier="2"
                  piece_type="Blade"
                  mesh="mace_head_36"
-                 length="34.7"
+				distance_to_next_piece="17.35"
+				distance_to_previous_piece="17.35"
                  weight="0.35"
                  full_scale="true">
     <BladeData stack_amount="3"
@@ -295,17 +381,21 @@
       <Swing damage_type="Blunt"
              damage_factor="0.6" />
     </BladeData>
+		<BuildData
+			piece_offset="0" />
+
     <Materials>
       <Material id="Iron3"
                 count="2" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_37"
                  name="{=AlRRkKut}Heavy Morning Star Head"
                  tier="3"
                  piece_type="Blade"
                  mesh="mace_head_37"
-                 length="17.3"
+                 length="17"
                  weight="0.55"
                  full_scale="true">
     <BladeData stack_amount="3"
@@ -315,11 +405,15 @@
       <Swing damage_type="Blunt"
              damage_factor="0.8" />
     </BladeData>
+		<BuildData
+			piece_offset="0" />
+
     <Materials>
       <Material id="Iron4"
                 count="2" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_38"
                  name="{=CeeJmlSq}Heavy Shishpar Head"
                  tier="4"
@@ -335,11 +429,15 @@
       <Swing damage_type="Blunt"
              damage_factor="0.9" />
     </BladeData>
+		<BuildData
+			piece_offset="0" />
+
     <Materials>
       <Material id="Iron5"
                 count="3" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_39"
                  name="{=fhbGCsdC}Eastern Heavy Mace Head"
                  tier="3"
@@ -355,6 +453,9 @@
       <Swing damage_type="Blunt"
              damage_factor="0.7" />
     </BladeData>
+		<BuildData
+			piece_offset="0" />
+
     <Materials>
       <Material id="Iron4"
                 count="3" />
@@ -367,15 +468,24 @@
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="0.3" />
     </BladeData>
+		<BuildData
+			piece_offset="-2" />
+
     <Materials>
       <Material id="Wood" count="2" />
     </Materials>
     <Flags>
       <Flag name="Civilian"
             type="ItemFlags"/>
+			<Flag
+				name="Stealth"
+				type="ItemFlags" />
+
     </Flags>
   </CraftingPiece>
-  <CraftingPiece id="sickle_blade_1" name="{=vxqrW5GN}Sickle Blade" tier="1" piece_type="Blade" mesh="sickle_blade_1" length="38.5" weight="0.1" full_scale="true" excluded_item_usage_features="thrust">
+  
+  
+  <CraftingPiece id="sickle_blade_1" name="{=vxqrW5GN}Sickle Blade" tier="1" piece_type="Blade" mesh="sickle_blade_1" length="38.7" weight="0.1" full_scale="true" excluded_item_usage_features="thrust">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Cut" damage_factor="0.3" />
@@ -386,70 +496,102 @@
     <Flags>
       <Flag name="Civilian"
             type="ItemFlags"/>
+			<Flag
+				name="Stealth"
+				type="ItemFlags" />
+
     </Flags>
   </CraftingPiece>
-  <CraftingPiece id="mace_head_3" name="{=1yEQNTG1}Long Shestopyor Head" tier="4" piece_type="Blade" mesh="mace_head_3" length="18.181" weight="0.49" full_scale="true" excluded_item_usage_features="thrust">
+  
+  <CraftingPiece id="mace_head_3" name="{=1yEQNTG1}Long Shestopyor Head" tier="4" piece_type="Blade" mesh="mace_head_3" length="20.4" weight="0.49" full_scale="true" excluded_item_usage_features="thrust">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="0.9" />
     </BladeData>
+		<BuildData
+			previous_piece_offset="0" />
+
     <Materials>
       <Material id="Iron3" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="mace_head_4" name="{=Zc2Mb991}Shestopyor Head" tier="3" piece_type="Blade" mesh="mace_head_4" length="16.5" weight="0.4" full_scale="true" excluded_item_usage_features="thrust">
+  
+  <CraftingPiece id="mace_head_4" name="{=Zc2Mb991}Shestopyor Head" tier="3" piece_type="Blade" mesh="mace_head_4" length="16.6" weight="0.4" full_scale="true" excluded_item_usage_features="thrust">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="0.7" />
     </BladeData>
+		<BuildData
+			previous_piece_offset="0" />
+
     <Materials>
       <Material id="Iron2" count="3" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_12" name="{=I9yrLqPc}Eastern Flanged Steel Mace Head" tier="5" piece_type="Blade" mesh="mace_head_12" length="20" weight="0.5" full_scale="true" excluded_item_usage_features="thrust">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="1.1" />
     </BladeData>
+		<BuildData
+			previous_piece_offset="0" />
+
     <Materials>
       <Material id="Iron4" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="mace_head_9" name="{=mU8oVsFW}Morningstar Head" tier="3" piece_type="Blade" mesh="mace_head_9" length="16.7" weight="0.426" full_scale="true">
+  
+  <CraftingPiece id="mace_head_9" name="{=mU8oVsFW}Morningstar Head" tier="3" piece_type="Blade" mesh="mace_head_9" length="16.8" weight="0.426" full_scale="true">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Thrust damage_type="Pierce" damage_factor="1" />
       <Swing damage_type="Blunt" damage_factor="0.7" />
     </BladeData>
+		<BuildData
+			previous_piece_offset="0" />
+
     <Materials>
       <Material id="Iron3" count="2" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_21" name="{=ntIEIQ0N}Light Shishpar Head" tier="4" piece_type="Blade" mesh="mace_head_21" length="6.5" weight="0.378" full_scale="true" excluded_item_usage_features="thrust">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="0.9" />
     </BladeData>
+		<BuildData
+			previous_piece_offset="0" />
+
     <Materials>
       <Material id="Iron3" count="2" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_26" name="{=o2kFafbu}Eastern Steel Mace Head" tier="4" piece_type="Blade" mesh="mace_head_26" length="21.4" weight="0.563" full_scale="true" excluded_item_usage_features="thrust">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="0.9" />
     </BladeData>
+		<BuildData
+			previous_piece_offset="0" />
+
     <Materials>
       <Material id="Iron4" count="2" />
     </Materials>
   </CraftingPiece>
+  
   <!-- #endregion -->
   <!-- #region Mace Blade Pieces -->
-  <CraftingPiece id="mace_head_18" name="{=6xkt7bxz}Heavy Royal Mace Head" tier="5" piece_type="Blade" mesh="mace_head_18" length="8.4" weight="0.632" full_scale="true" excluded_item_usage_features="thrust">
+  <CraftingPiece id="mace_head_18" name="{=6xkt7bxz}Heavy Royal Mace Head" tier="5" piece_type="Blade" mesh="mace_head_18" length="8.48" weight="0.632" full_scale="true" excluded_item_usage_features="thrust">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="1.3" />
     </BladeData>
+		<BuildData
+			previous_piece_offset="0" />
+
     <Flags>
       <Flag name="Civilian"
             type="ItemFlags" />
@@ -458,31 +600,43 @@
       <Material id="Iron4" count="3" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_head_25" name="{=45k6EEUu}Iron Bill Head" tier="2" piece_type="Blade" mesh="mace_head_25" length="35.5" weight="0.463" full_scale="true" excluded_item_usage_features="thrust">
 
     <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_mace_a">
       <Swing damage_type="Blunt" damage_factor="0.5" />
     </BladeData>
+		<BuildData
+			previous_piece_offset="0" />
+
     <Materials>
       <Material id="Iron2" count="2" />
     </Materials>
   </CraftingPiece>
+  
   <!-- #endregion -->
   <!-- #region Used Mace Handle Pieces -->
-  <CraftingPiece id="mace_handle_6" name="{=87BmkiMO}Gnarled Mace Handle" tier="2" piece_type="Handle" mesh="mace_handle_6" length="56.2" weight="0.146" CraftingCost="75">
+  <CraftingPiece id="mace_handle_6" name="{=87BmkiMO}Gnarled Mace Handle" tier="2" piece_type="Handle" mesh="mace_handle_6" length="56.2" weight="0.146" CraftingCost="75" item_holster_pos_shift="0,0,0.1">
+
 
     <BuildData piece_offset="15" />
     <Materials>
       <Material id="Wood" count="2" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="mace_handle_3" name="{=V3JMuFEg}Tied Mace Handle" tier="2" piece_type="Handle" mesh="mace_handle_3" length="60" weight="0.176" CraftingCost="75">
+  
+  <CraftingPiece id="mace_handle_3" name="{=V3JMuFEg}Tied Mace Handle" tier="2" piece_type="Handle" mesh="mace_handle_3" length="60" weight="0.176" CraftingCost="75" item_holster_pos_shift="0,0,0.15">
 
-    <BuildData piece_offset="13" />
+
+		<BuildData
+			piece_offset="13"
+			previous_piece_offset="0.2" />
+
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_handle_8" name="{=jMRMazLr}Decorated Pine Mace Handle" tier="2" piece_type="Handle" mesh="mace_handle_8" length="62.9" weight="0.196" item_holster_pos_shift="0,0,-0.05" CraftingCost="75">
 
     <BuildData piece_offset="19.3" />
@@ -494,6 +648,7 @@
             type="ItemFlags" />
     </Flags>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_handle_7" name="{=bfE00BnK}Iron Pommeled Mace Handle" tier="3" piece_type="Handle" mesh="mace_handle_7" length="62.1" weight="0.288" item_holster_pos_shift="0,0,-0.05" CraftingCost="80">
 
     <BuildData piece_offset="17.5" />
@@ -502,13 +657,15 @@
       <Material id="Iron3" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="mace_handle_10" name="{=kjw9c4M2}Steel Angular Mace Handle" tier="4" piece_type="Handle" mesh="mace_handle_10" length="52" weight="0.50" item_holster_pos_shift="0,0,0.05" CraftingCost="80">
+  
+  <CraftingPiece id="mace_handle_10" name="{=kjw9c4M2}Steel Angular Mace Handle" tier="4" piece_type="Handle" mesh="mace_handle_10" length="52" weight="0.50" item_holster_pos_shift="0,0,0.1" CraftingCost="80">
 
     <BuildData piece_offset="13.7" />
     <Materials>
       <Material id="Iron4" count="3" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_handle_9" name="{=k2MQ9kL0}Steel Mace Handle" tier="4" piece_type="Handle" mesh="mace_handle_9" length="61.5" weight="0.61" item_holster_pos_shift="0,0,-0.1" CraftingCost="90">
 
     <BuildData piece_offset="21.2" />
@@ -516,6 +673,7 @@
       <Material id="Iron4" count="3" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_handle_5" name="{=4VIUHmbP}Decorated Steel Mace Handle" tier="4" piece_type="Handle" mesh="mace_handle_5" length="61" weight="0.598" item_holster_pos_shift="0,0,-0.1" CraftingCost="90">
 
     <BuildData piece_offset="23" />
@@ -527,6 +685,7 @@
             type="ItemFlags" />
     </Flags>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_handle_4" name="{=9HMxA4AU}Iron Mace Handle" tier="3" piece_type="Handle" mesh="mace_handle_4" length="61" weight="0.55" item_holster_pos_shift="0,0,-0.05" CraftingCost="90">
 
     <BuildData piece_offset="20" />
@@ -534,6 +693,7 @@
       <Material id="Iron3" count="3" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_handle_13" name="{=AGfMPOWB}Angular Fine Steel Mace Handle" tier="5" piece_type="Handle" mesh="mace_handle_13" length="65" weight="0.54" item_holster_pos_shift="0,0,0.05">
 
     <BuildData piece_offset="13.7" />
@@ -541,20 +701,26 @@
       <Material id="Iron5" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="blacksmith_hammer_handle_1" name="{=reHxxC6K}Blacksmith Hammer Handle" tier="1" piece_type="Handle" mesh="blacksmith_hammer_handle" length="45" weight="0.1" item_holster_pos_shift="0,0,0.1" CraftingCost="75" is_default="true">
+  
+  <CraftingPiece id="blacksmith_hammer_handle_1" name="{=reHxxC6K}Blacksmith Hammer Handle" tier="1" piece_type="Handle" mesh="blacksmith_hammer_handle" length="45" weight="0.1" item_holster_pos_shift="0,0,0.25" CraftingCost="75" is_default="true">
 
-    <BuildData piece_offset="10.0" />
+		<BuildData
+			piece_offset="10.0"
+			next_piece_offset="0.5" />
+
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="mace_handle_15" name="{=NmkDgmWW}Steel Horsemans Mace Handle" tier="5" piece_type="Handle" mesh="mace_handle_15" length="80" weight="0.74" item_holster_pos_shift="0,0,0.05">
+  
+  <CraftingPiece id="mace_handle_15" name="{=NmkDgmWW}Steel Horsemans Mace Handle" tier="5" piece_type="Handle" mesh="mace_handle_15" length="80" weight="0.74" item_holster_pos_shift="0,0,-0.1">
 
     <BuildData piece_offset="13.7" />
     <Materials>
       <Material id="Iron4" count="3" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_handle_18"
                  name="{=xa3vFv52}Iron Topped Two Handed Mace Handle"
                  tier="3"
@@ -563,7 +729,10 @@
                  length="124"
                  weight="0.720"
                  CraftingCost="75">
-    <BuildData piece_offset="15" />
+		<BuildData
+			piece_offset="15"
+			next_piece_offset="0.6" />
+
     <Materials>
       <Material id="Iron3"
                 count="2" />
@@ -571,6 +740,7 @@
                 count="2" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_handle_19"
                  name="{=OwA6LLeY}Leather Wrapped Two Handed Mace Handle"
                  tier="2"
@@ -579,12 +749,16 @@
                  length="124.2"
                  weight="0.540"
                  CraftingCost="75">
-    <BuildData piece_offset="13" />
+		<BuildData
+			piece_offset="13"
+			next_piece_offset="1" />
+
     <Materials>
       <Material id="Wood"
                 count="2" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_handle_20"
                  name="{=NehOioZp}Iron Reinforced Two Handed Mace Handle"
                  tier="4"
@@ -594,7 +768,10 @@
                  weight="0.640"
                  item_holster_pos_shift="0,0,-0.05"
                  CraftingCost="75">
-    <BuildData piece_offset="19.3" />
+		<BuildData
+			piece_offset="19.3"
+			next_piece_offset="2" />
+
     <Materials>
       <Material id="Iron4"
                 count="2" />
@@ -602,6 +779,7 @@
                 count="2" />
     </Materials>
   </CraftingPiece>
+  
   <!-- #endregion -->
   <!-- #region Mace Handle Pieces -->
   <CraftingPiece id="mace_handle_1" name="{=FxCfO3zN}Iron Reinforced Mace Handle" tier="3" piece_type="Handle" mesh="mace_handle_1" length="62.5" weight="0.332" CraftingCost="75">
@@ -619,13 +797,15 @@
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="mace_handle_11" name="{=JCYmlrKF}Steel Reinforced Mace Handle" tier="4" piece_type="Handle" mesh="mace_handle_11" length="78" weight="0.34" item_holster_pos_shift="0,0,0.05">
+  
+  <CraftingPiece id="mace_handle_11" name="{=JCYmlrKF}Steel Reinforced Mace Handle" tier="4" piece_type="Handle" mesh="mace_handle_11" length="78" weight="0.34" item_holster_pos_shift="0,0,-0.05">
     <Materials>
       <Material id="Wood" count="1" />
       <Material id="Iron3" count="1" />
     </Materials>
 		<BuildData piece_offset="17"/>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_handle_12" name="{=qZYeu55z}Long Iron Bottomed Mace Handle" tier="3" piece_type="Handle" mesh="mace_handle_12" length="78" weight="0.32" item_holster_pos_shift="0,0,0.05">
     <Materials>
       <Material id="Wood" count="1" />
@@ -633,7 +813,8 @@
     </Materials>
 		<BuildData piece_offset="17"/>
   </CraftingPiece>
-  <CraftingPiece id="mace_handle_14" name="{=57DBqJd1}Leather Wrapped Thick Mace Handle" tier="2" piece_type="Handle" mesh="mace_handle_14" length="45" weight="0.2" item_holster_pos_shift="0,0,0.05">
+  
+  <CraftingPiece id="mace_handle_14" name="{=57DBqJd1}Leather Wrapped Thick Mace Handle" tier="2" piece_type="Handle" mesh="mace_handle_14" length="45" weight="0.2" item_holster_pos_shift="0,0,0.1">
 
     <BuildData piece_offset="13.7" />
     <Materials>
@@ -644,6 +825,7 @@
             type="ItemFlags" />
     </Flags>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_handle_16" name="{=YUDKID1R}Reinforced Long Ash Mace Handle" tier="4" piece_type="Handle" mesh="mace_handle_16" length="80" weight="0.34" item_holster_pos_shift="0,0,0.05">
 
     <BuildData piece_offset="13.7" />
@@ -652,6 +834,7 @@
       <Material id="Iron3" count="1" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="mace_handle_17" name="{=ybjDbw8p}Long Oaken Mace Handle" tier="2" piece_type="Handle" mesh="mace_handle_17" length="80" weight="0.26" item_holster_pos_shift="0,0,0.05">
 
     <BuildData piece_offset="13.7" />
@@ -659,9 +842,13 @@
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
+  
   <CraftingPiece id="sickle_handle_1" name="{=0kP9bf7n}Sickle Handle" tier="2" piece_type="Handle" mesh="sickle_handle_1" length="32.8" weight="0.1" item_holster_pos_shift="0,0,0.1" CraftingCost="75">
 
-    <BuildData piece_offset="13.7" />
+		<BuildData
+			piece_offset="13.7"
+			next_piece_offset="0.1" />
+
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
