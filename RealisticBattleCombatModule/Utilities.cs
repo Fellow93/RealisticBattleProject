@@ -1,8 +1,9 @@
-﻿using RBMConfig;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using RBMConfig;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.LinQuick;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.Core.ArmorComponent;
@@ -205,6 +206,7 @@ namespace RBMCombat
                         calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
                         break;
                     }
+                // case "Sling": calculatedThrowingSpeed * missile_speed (zo slingu, z tej equipnutej zbrane) * 0.01
                 case "osa_sling":
                     {
                         // 40 grams is added to the weight of projectiles, this results in 60 m/s at 80 grams with good sling, 70 m/s at 50 grams and some 80 ms at 30 grams
@@ -273,11 +275,7 @@ namespace RBMCombat
 
         public static int calculateThrowableSpeed(float ammoWeight, float effectiveSkill)
         {
-            int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt((60f + effectiveSkill * 1f) * 2f / ammoWeight));
-            if (calculatedThrowingSpeed > 32)
-            {
-                calculatedThrowingSpeed = 32;
-            }
+            int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt((MBMath.ClampFloat(ammoWeight * 147.7f, 60f, 200f) + (effectiveSkill * 0.5f)) * 2f / ammoWeight));
             return calculatedThrowingSpeed;
         }
 
@@ -329,6 +327,7 @@ namespace RBMCombat
             //property.SetValue(throwable.CurrentUsageItem, 25, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
             //throwable.CurrentUsageIndex = 0;
             return 25;
+            // mal by tam byt ten isty vzorec ako calculateThrowableSpeed v respektive to loadnut tie data
         }
 
         public static void initiateCheckForArmor(ref Agent victim, AttackCollisionData attackCollisionData, Blow blow, Agent affectorAgent, in MissionWeapon attackerWeapon)
