@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Items>
+<!--RBM_XML_TAG-->
 	<Item id="ladys_shoe" name="{=RU2EppgI}Ladies Shoes" mesh="woman_shoe_a" culture="Culture.neutral_culture" weight="0.6" appearance="1" Type="LegArmor">
 		<ItemComponent>
 			<Armor leg_armor="14" covers_legs="false" modifier_group="cloth_unarmoured" material_type="Cloth"/>

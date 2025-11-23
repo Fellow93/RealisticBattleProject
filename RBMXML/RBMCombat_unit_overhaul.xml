@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <NPCCharacters>
+<!--RBM_XML_TAG-->
   <!-- #region Tournament templates MOVE TEMPLATES TO ANOTHER XML-->
   <NPCCharacter id="tournament_template_aserai_one_participant_set_v1"
                 default_group="Infantry"

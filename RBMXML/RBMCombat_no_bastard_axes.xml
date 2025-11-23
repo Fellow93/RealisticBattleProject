@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
 <CraftingTemplates>
+<!--RBM_XML_TAG-->
 
   <CraftingTemplate id="TwoHandedAxe" item_type="TwoHandedWeapon" modifier_group="axe" item_holsters="axe_back:axe_back_2:axe_back_3:axe_back_4" default_item_holster_position_offset="0,0,-0.65" use_weapon_as_holster_mesh="true">
     <PieceDatas>

@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Items>
+<!--RBM_XML_TAG-->
   <!-- #region Horses -->
   <!-- #region Tier 0/1 -->
   <Item id="sumpter_horse" name="{=P1rL28RT}Sumpter Horse{@Plural}sumpter horses{\@}" mesh="horse_brown" item_category="sumpter_horse" difficulty="0" weight="450"  Type="Horse">

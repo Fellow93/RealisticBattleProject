@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Check SiegeEngines.xsd for available attributes-->
 <SiegeEngineTypes>
+<!--RBM_XML_TAG-->
   <SiegeEngineType id="preparations"
                    name="{=pa3E7810}Siege Preparations"
                    description="{=xBygO7kH}Fill in ditches, level the terrain and set up aracher positions in preparation of the assault."

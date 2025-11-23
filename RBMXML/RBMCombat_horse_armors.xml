@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Items>
+<!--RBM_XML_TAG-->
   <!-- #endregion Horse Armors -->
   <Item multiplayer_item="false"
         id="bandit_saddle_desert"

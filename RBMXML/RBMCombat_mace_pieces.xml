@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <CraftingPieces>
+<!--RBM_XML_TAG-->
   <!-- #region Mace Pieces -->
   <!-- #region Used Mace Blade Pieces -->
   <CraftingPiece id="mace_head_22" name="{=lZoqaYmx}Spiked Club Head" tier="2" piece_type="Blade" mesh="mace_head_22" distance_to_next_piece="9.75" distance_to_previous_piece="9.75" weight="0.26" full_scale="true">

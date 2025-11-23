@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 
 <WeaponDescriptions>
+<!--RBM_XML_TAG-->
   <WeaponDescription id="OneHandedSword"
                      weapon_class="OneHandedSword"
                      item_usage_features="onehanded:block:shield:swing:thrust">

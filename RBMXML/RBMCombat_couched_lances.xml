@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <CraftingPieces>
+<!--RBM_XML_TAG-->
 <!-- #region Used Spear Handle Pieces -->
   <CraftingPiece id="spear_handle_5" name="{=baQ99nza}Long Ash Shaft" tier="2" piece_type="Handle" mesh="spear_handle_5" length="229" weight="0.595" CraftingCost="110">
     <BuildData piece_offset="-11" />

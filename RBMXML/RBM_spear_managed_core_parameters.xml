@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="combat_parameters">
+<!--RBM_XML_TAG-->
   <managed_core_parameters>
     <!-- campaign related-->
     <!-- Set 1 for activating tutorials at the campaign-->

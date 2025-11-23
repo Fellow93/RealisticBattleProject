@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Items>
+<!--RBM_XML_TAG-->
 	<Item id="baggy_trunks" name="{=btrf2AXp}Baggy Trunks" mesh="bandit_1_a" culture="Culture.battania" weight="0.2" Type="BodyArmor" appearance="1" difficulty="0" subtype="body_armor">
 		<ItemComponent>
 			<Armor body_armor="0" leg_armor="22" covers_body="false" modifier_group="leather" material_type="Leather" has_gender_variations="false"/>

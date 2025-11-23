@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <CraftingPieces>
+<!--RBM_XML_TAG-->
   <!-- #region Sword Pieces -->
   <!-- #region Used Sword Blade Pieces -->
   <CraftingPiece id="wood_blade_1"

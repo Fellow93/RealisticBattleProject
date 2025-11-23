@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ItemModifiers>
+<!--RBM_XML_TAG-->
   <!-- Swords -->
 	<ItemModifier
 		modifier_group="ItemModifierGroup.sword"
