@@ -1,7 +1,11 @@
 ﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
+using TaleWorlds.ModuleManager;
 using TaleWorlds.ObjectSystem;
 
 namespace RBM
@@ -9,10 +13,20 @@ namespace RBM
     internal class XmlLoadingPatches
     {
         [HarmonyPatch(typeof(MBObjectManager))]
+        [HarmonyPatch("CreateMergedXmlFile")]
+        private class CreateMergedXmlFilePatch
+        {
+            private static bool Prefix(List<Tuple<string, string>> toBeMerged, List<string> xsltList, bool skipValidation)
+            {
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(MBObjectManager))]
         [HarmonyPatch("MergeTwoXmls")]
         private class MergeTwoXmlsPatch
         {
-            private static bool Prefix(ref XmlDocument xmlDocument1, ref XmlDocument xmlDocument2, ref XmlDocument __result)
+            private static bool Prefix(ref XmlDocument xmlDocument1, ref XmlDocument xmlDocument2, string xsdPath, bool keepDuplicates, ref XmlDocument __result)
             {
                 XDocument originalXml = MBObjectManager.ToXDocument(xmlDocument1);
                 XDocument mergedXml = MBObjectManager.ToXDocument(xmlDocument2);
@@ -28,11 +42,20 @@ namespace RBM
                     __result = MBObjectManager.ToXmlDocument(originalXml);
                     return false;
                 }
+                var comments = mergedXml.DescendantNodes().OfType<XComment>();
+                var isRbmXml = false;
+                foreach (XComment comment in comments)
+                {
+                    if (comment.Value.Contains("RBM_XML_TAG"))
+                    {
+                        isRbmXml = true;
+                    }
+                }
                 if (RBMConfig.RBMConfig.rbmCombatEnabled)
                 {
                     foreach (XElement origNode in originalXml.Root.Elements())
                     {
-                        if (origNode.Name == "ItemModifier" && xmlDocument2.BaseURI.Contains("RBM"))
+                        if (origNode.Name == "ItemModifier" && isRbmXml)
                         {
                             foreach (XElement mergedNode in mergedXml.Root.Elements())
                             {
@@ -46,7 +69,7 @@ namespace RBM
                             }
                         }
 
-                        if (origNode.Name == "CraftedItem" && xmlDocument2.BaseURI.Contains("RBM"))
+                        if (origNode.Name == "CraftedItem" && isRbmXml)
                         {
                             foreach (XElement mergedNode in mergedXml.Root.Elements())
                             {
@@ -60,7 +83,7 @@ namespace RBM
                             }
                         }
 
-                        if (origNode.Name == "Item" && xmlDocument2.BaseURI.Contains("RBM"))
+                        if (origNode.Name == "Item" && isRbmXml)
                         {
                             foreach (XElement mergedNode in mergedXml.Root.Elements())
                             {
@@ -79,7 +102,7 @@ namespace RBM
                             }
                         }
 
-                        if (origNode.Name == "NPCCharacter" && xmlDocument2.BaseURI.Contains("RBM"))
+                        if (origNode.Name == "NPCCharacter" && isRbmXml)
                         {
                             foreach (XElement nodeEquip in origNode.Elements())
                             {

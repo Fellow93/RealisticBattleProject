@@ -193,11 +193,11 @@ namespace RBMAI
                     bool isTargetArcher = false;
                     bool isAgentInDefensiveOrder = __instance.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall || __instance.ArrangementOrder == ArrangementOrder.ArrangementOrderCircle || __instance.ArrangementOrder == ArrangementOrder.ArrangementOrderSquare;
                     var targetAgent = Utilities.GetCorrectTarget(unit);
-                    unit.SetAutomaticTargetSelection(false);
-                    if (targetAgent !=null)
-                    {
-                        unit.SetTargetAgent(targetAgent);
-                    }
+                    //unit.SetAutomaticTargetSelection(false);
+                    //if (targetAgent !=null)
+                    //{
+                    //    unit.SetTargetAgent(targetAgent);
+                    //}
                     var vanillaTargetAgent = unit.GetTargetAgent();
                     int allyAgentsCountTreshold = 3;
                     int enemyAgentsCountTreshold = 3;

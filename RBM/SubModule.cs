@@ -3,6 +3,7 @@ using RBMAI;
 using RBMCombat;
 using RBMTournament;
 using System;
+using System.Collections.Generic;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.Core;
 using TaleWorlds.InputSystem;
@@ -123,10 +124,19 @@ namespace RBM
             }
         }
 
+        protected override void RegisterSubModuleTypes()
+        {
+            RBMConfig.RBMConfig.LoadConfig();
+            ApplyHarmonyPatches();
+            base.RegisterSubModuleTypes();
+        }
+
         protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
         {
             RBMConfig.RBMConfig.LoadConfig();
             ApplyHarmonyPatches();
+            base.OnGameStart(game, gameStarterObject);
+
         }
 
         public override void OnMissionBehaviorInitialize(Mission mission)
