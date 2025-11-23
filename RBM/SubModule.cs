@@ -61,7 +61,7 @@ namespace RBM
             //RBMAiPatcher.patched = false;
             HarmonyModules.rbmHarmony.UnpatchAll(HarmonyModules.rbmHarmony.Id);
             HarmonyModules.rbmtHarmony.UnpatchAll(HarmonyModules.rbmtHarmony.Id);
-            //HarmonyModules.rbmaiHarmony.UnpatchAll(HarmonyModules.rbmaiHarmony.Id);
+            HarmonyModules.rbmaiHarmony.UnpatchAll(HarmonyModules.rbmaiHarmony.Id);
             HarmonyModules.rbmcombatHarmony.UnpatchAll(HarmonyModules.rbmcombatHarmony.Id);
         }
 
@@ -132,10 +132,10 @@ namespace RBM
         public override void OnMissionBehaviorInitialize(Mission mission)
         {
             Game.Current.GameTextManager.LoadGameTexts();
-            //if (RBMConfig.RBMConfig.developerMode)
-            //{
-            //    mission.AddMissionBehavior((MissionBehavior)(object)new BattleStatsLogic());
-            //}
+            if (RBMConfig.RBMConfig.developerMode)
+            {
+                mission.AddMissionBehavior((MissionBehavior)(object)new BattleStatsLogic());
+            }
             if (RBMConfig.RBMConfig.rbmCombatEnabled)
             {
                 if (RBMConfig.RBMConfig.armorStatusUIEnabled)
@@ -143,30 +143,30 @@ namespace RBM
                     mission.AddMissionBehavior((MissionBehavior)(object)new PlayerArmorStatus());
                 }
             }
-            //if (RBMConfig.RBMConfig.rbmAiEnabled)
-            //{
-            //    if (RBMConfig.RBMConfig.postureEnabled && RBMConfig.RBMConfig.postureGUIEnabled)
-            //    {
-            //        mission.AddMissionBehavior((MissionBehavior)(object)new PostureVisualLogic());
-            //    }
-            //    mission.AddMissionBehavior((MissionBehavior)(object)new SiegeArcherPoints());
-            //    mission.AddMissionBehavior((MissionBehavior)(object)new PostureLogic());
-            //}
-            //else
-            //{
-            //    if (mission.GetMissionBehavior<SiegeArcherPoints>() != null)
-            //    {
-            //        mission.RemoveMissionBehavior(mission.GetMissionBehavior<SiegeArcherPoints>());
-            //    }
-            //    if (mission.GetMissionBehavior<PostureVisualLogic>() != null)
-            //    {
-            //        mission.RemoveMissionBehavior(mission.GetMissionBehavior<PostureVisualLogic>());
-            //    }
-            //    if (mission.GetMissionBehavior<PostureLogic>() != null)
-            //    {
-            //        mission.RemoveMissionBehavior(mission.GetMissionBehavior<PostureLogic>());
-            //    }
-            //}
+            if (RBMConfig.RBMConfig.rbmAiEnabled)
+            {
+                if (RBMConfig.RBMConfig.postureEnabled && RBMConfig.RBMConfig.postureGUIEnabled)
+                {
+                    mission.AddMissionBehavior((MissionBehavior)(object)new PostureVisualLogic());
+                }
+                mission.AddMissionBehavior((MissionBehavior)(object)new SiegeArcherPoints());
+                mission.AddMissionBehavior((MissionBehavior)(object)new PostureLogic());
+            }
+            else
+            {
+                if (mission.GetMissionBehavior<SiegeArcherPoints>() != null)
+                {
+                    mission.RemoveMissionBehavior(mission.GetMissionBehavior<SiegeArcherPoints>());
+                }
+                if (mission.GetMissionBehavior<PostureVisualLogic>() != null)
+                {
+                    mission.RemoveMissionBehavior(mission.GetMissionBehavior<PostureVisualLogic>());
+                }
+                if (mission.GetMissionBehavior<PostureLogic>() != null)
+                {
+                    mission.RemoveMissionBehavior(mission.GetMissionBehavior<PostureLogic>());
+                }
+            }
             base.OnMissionBehaviorInitialize(mission);
         }
     }

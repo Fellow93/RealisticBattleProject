@@ -12,7 +12,7 @@ namespace RBMConfig
         {
             base.OnInitialize();
             _viewModel = new RBMConfigViewModel();
-            _gauntletLayer = new GauntletLayer(1);
+            _gauntletLayer = new GauntletLayer("GauntletLayer", -1);
             _gauntletLayer.LoadMovie("RBMConfig", _viewModel);
             _gauntletLayer.InputRestrictions.SetInputRestrictions();
             AddLayer(_gauntletLayer);

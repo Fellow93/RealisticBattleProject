@@ -159,16 +159,16 @@ namespace RBMCombat
         {
             [HarmonyPrefix]
             [HarmonyPatch("GetXpFromHit")]
-            private static bool PrefixGetXpFromHit( ref ExplainedNumber __result, ref DefaultCombatXpModel __instance, CharacterObject attackerTroop, CharacterObject captain, CharacterObject attackedTroop, PartyBase party, int damage, bool isFatal, MissionTypeEnum missionType)
+            private static bool PrefixGetXpFromHit( ref ExplainedNumber __result, ref DefaultCombatXpModel __instance, CharacterObject attackerTroop, CharacterObject captain, CharacterObject attackedTroop, int damage, bool isFatal, MissionTypeEnum missionType)
             {
                 if (missionType == MissionTypeEnum.Battle || missionType == MissionTypeEnum.PracticeFight || missionType == MissionTypeEnum.Tournament || missionType == MissionTypeEnum.SimulationBattle)
                 {
                     float victimTroopPower = 0f;
                     float attackerTroopPower = 0f;
-                    if (party?.MapEvent != null)
+                    if (missionType == MissionTypeEnum.SimulationBattle)
                     {
-                        victimTroopPower = OverrideDefaultMilitaryPowerModel.GetTroopPowerBasedOnContextForXPVictim(attackedTroop, party.MapEvent?.EventType ?? MapEvent.BattleTypes.None, party.Side, missionType == MissionTypeEnum.SimulationBattle);
-                        attackerTroopPower = OverrideDefaultMilitaryPowerModel.GetTroopPowerBasedOnContextForXPAttacker(attackerTroop, party.MapEvent?.EventType ?? MapEvent.BattleTypes.None, party.Side, missionType == MissionTypeEnum.SimulationBattle);
+                        victimTroopPower = OverrideDefaultMilitaryPowerModel.GetTroopPowerBasedOnContextForXPVictim(attackedTroop, isSimulation: true);
+                        attackerTroopPower = OverrideDefaultMilitaryPowerModel.GetTroopPowerBasedOnContextForXPAttacker(attackerTroop, isSimulation: true);
                     }
                     else
                     {
@@ -205,12 +205,12 @@ namespace RBMCombat
                     //rawXpNum = rawXpNum * xpModifier * levelDiffModifier;
                     rawXpNum = rawXpNum * xpModifier;
                     ExplainedNumber xpToGain = new ExplainedNumber(rawXpNum);
-                    if (party != null)
-                    {
-                        MethodInfo method = typeof(DefaultCombatXpModel).GetMethod("GetBattleXpBonusFromPerks", BindingFlags.NonPublic | BindingFlags.Instance);
-                        method.DeclaringType.GetMethod("GetBattleXpBonusFromPerks");
-                        method.Invoke(__instance, new object[] { party, xpToGain, attackerTroop });
-                    }
+                    //if (party != null)
+                    //{
+                    //    MethodInfo method = typeof(DefaultCombatXpModel).GetMethod("GetBattleXpBonusFromPerks", BindingFlags.NonPublic | BindingFlags.Instance);
+                    //    method.DeclaringType.GetMethod("GetBattleXpBonusFromPerks");
+                    //    method.Invoke(__instance, new object[] { party, xpToGain, attackerTroop });
+                    //}
                     if (captain != null && captain.IsHero && captain.GetPerkValue(DefaultPerks.Leadership.InspiringLeader))
                     {
                         xpToGain.AddFactor(DefaultPerks.Leadership.InspiringLeader.SecondaryBonus, DefaultPerks.Leadership.InspiringLeader.Name);

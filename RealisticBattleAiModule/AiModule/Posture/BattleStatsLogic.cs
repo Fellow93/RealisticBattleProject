@@ -28,7 +28,7 @@ namespace RBMAI
         {
             MissionScreen missionScreen = TaleWorlds.ScreenSystem.ScreenManager.TopScreen as MissionScreen;
             _dataSource = new BattleStatsVM();
-            _gauntletLayer = new GauntletLayer(-1, "GauntletLayer");
+            _gauntletLayer = new GauntletLayer("GauntletLayer" ,- 1);
             missionScreen.AddLayer(_gauntletLayer);
             _gauntletLayer.LoadMovie("BattleStats", (ViewModel)_dataSource);
         }
