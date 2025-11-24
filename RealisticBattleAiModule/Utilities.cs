@@ -1656,6 +1656,11 @@ namespace RBMAI
                         damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_thrust, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);
                         break;
                     }
+                case "SlingStone":
+                    {
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor, 0f);
+                        break;
+                    }
                 default:
                     {
                         //InformationManager.DisplayMessage(new InformationMessage("POZOR DEFAULT !!!!"));

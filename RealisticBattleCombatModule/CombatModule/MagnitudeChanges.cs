@@ -335,6 +335,12 @@ namespace RBMCombat
                         missileTotalDamage *= 0.01f;
                         break;
                     }
+                case WeaponClass.SlingStone:
+                    {
+                        missileTotalDamage -= 100f;
+                        missileTotalDamage *= 0.01f;
+                        break;
+                    }
             }
 
             float physicalDamage = ((missileSpeed * missileSpeed) * (weaponWeight)) / 2;
@@ -418,7 +424,8 @@ namespace RBMCombat
                 baseMagnitude = (physicalDamage * momentumRemaining) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
             }
             if (weaponClass == WeaponClass.Arrow ||
-                weaponClass == WeaponClass.Bolt)
+                weaponClass == WeaponClass.Bolt ||
+                weaponClass == WeaponClass.SlingStone)
             {
                 if (damageType == DamageTypes.Cut || damageType == DamageTypes.Pierce)
                 {

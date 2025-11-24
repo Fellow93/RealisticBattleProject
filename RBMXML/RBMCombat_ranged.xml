@@ -348,7 +348,7 @@
 				missile_speed="10"
 				weapon_length="10"
 				thrust_damage="100"
-				thrust_damage_type="Blunt"
+				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
 				<WeaponFlags
@@ -388,7 +388,7 @@
 				missile_speed="10"
 				weapon_length="10"
 				thrust_damage="100"
-				thrust_damage_type="Blunt"
+				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
 				<WeaponFlags
@@ -428,7 +428,7 @@
 				missile_speed="10"
 				weapon_length="10"
 				thrust_damage="100"
-				thrust_damage_type="Blunt"
+				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
 				<WeaponFlags
@@ -468,7 +468,7 @@
 				missile_speed="10"
 				weapon_length="10"
 				thrust_damage="100"
-				thrust_damage_type="Blunt"
+				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
 				<WeaponFlags
@@ -508,7 +508,7 @@
 				missile_speed="10"
 				weapon_length="10"
 				thrust_damage="100"
-				thrust_damage_type="Blunt"
+				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
 				<WeaponFlags
@@ -548,7 +548,7 @@
 				missile_speed="10"
 				weapon_length="10"
 				thrust_damage="100"
-				thrust_damage_type="Blunt"
+				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
 				<WeaponFlags
@@ -588,7 +588,7 @@
 				missile_speed="10"
 				weapon_length="10"
 				thrust_damage="100"
-				thrust_damage_type="Blunt"
+				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
 				<WeaponFlags
@@ -628,7 +628,7 @@
 				missile_speed="10"
 				weapon_length="10"
 				thrust_damage="100"
-				thrust_damage_type="Blunt"
+				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
 				<WeaponFlags
@@ -667,8 +667,8 @@
 				speed_rating="0"
 				missile_speed="10"
 				weapon_length="10"
-				thrust_damage="5"
-				thrust_damage_type="Blunt"
+				thrust_damage="100"
+				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
 				<WeaponFlags
@@ -707,8 +707,8 @@
 				speed_rating="0"
 				missile_speed="10"
 				weapon_length="10"
-				thrust_damage="5"
-				thrust_damage_type="Blunt"
+				thrust_damage="100"
+				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
 				<WeaponFlags
@@ -747,8 +747,8 @@
 				speed_rating="0"
 				missile_speed="10"
 				weapon_length="10"
-				thrust_damage="5"
-				thrust_damage_type="Blunt"
+				thrust_damage="100"
+				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
 				<WeaponFlags
@@ -787,8 +787,8 @@
 				speed_rating="0"
 				missile_speed="10"
 				weapon_length="10"
-				thrust_damage="5"
-				thrust_damage_type="Blunt"
+				thrust_damage="100"
+				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
 				<WeaponFlags
@@ -828,8 +828,8 @@
 				speed_rating="0"
 				missile_speed="10"
 				weapon_length="10"
-				thrust_damage="9"
-				thrust_damage_type="Blunt"
+				thrust_damage="100"
+				thrust_damage_type="Pierce"
 				item_usage=""
 				passby_sound_code="">
 				<WeaponFlags
@@ -869,8 +869,8 @@
 				speed_rating="0"
 				missile_speed="10"
 				weapon_length="10"
-				thrust_damage="9"
-				thrust_damage_type="Blunt"
+				thrust_damage="100"
+				thrust_damage_type="Pierce"
 				item_usage=""
 				passby_sound_code="">
 				<WeaponFlags
@@ -884,7 +884,128 @@
 			Stealth="true"
 			ForceAttachOffHandPrimaryItemBone="true" />
 	</Item>
-
+<!-- Temporary soliution -->
+	<Item
+		id="sling_wool"
+		name="{=L5i5RgO0}Wool Sling 18 Inches"
+		body_name="bo_throwing_stone"
+		skeleton_name="sling_skeleton"
+		static_animation_name="sling_drop_weapon"
+		holster_body_name="bo_axe_short"
+		holster_mesh_with_weapon="sling_holster"
+		mesh="sling_c"
+		value="300"
+		weight="0.1"
+		appearance="1"
+		Type="Thrown"
+		AmmoOffset="-0.02, 0.0, 0.0"
+		item_holsters="throwing_stone:throwing_stone_2">
+		<ItemComponent>
+			<Weapon
+				weapon_class="Sling"
+				ammo_class="SlingStone"
+				ammo_limit="1"
+				accuracy="45"
+				thrust_speed="150"
+				speed_rating="105"
+				missile_speed="43"
+				weapon_length="20"
+				thrust_damage="100"
+				thrust_damage_type="Blunt"
+				item_usage="sling"
+				physics_material="wood_weapon"
+				center_of_mass="0,0,0.1">
+				<WeaponFlags
+					RangedWeapon="true"
+					AutoReload="true"
+					UnloadWhenSheathed="true"
+					UseHandAsThrowBase="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			Stealth="true" />
+	</Item>
+	<Item
+		id="sling_braided"
+		name="{=z3brrzJ9}Braided Sling 28 Inches"
+		body_name="bo_throwing_stone"
+		skeleton_name="sling_skeleton"
+		static_animation_name="sling_drop_weapon"
+		holster_body_name="bo_axe_short"
+		holster_mesh_with_weapon="sling_holster"
+		mesh="sling_b"
+		value="2750"
+		weight="0.1"
+		appearance="1"
+		Type="Thrown"
+		AmmoOffset="-0.02, 0.0, 0.0"
+		item_holsters="throwing_stone:throwing_stone_2">
+		<ItemComponent>
+			<Weapon
+				weapon_class="Sling"
+				ammo_class="SlingStone"
+				ammo_limit="1"
+				accuracy="60"
+				thrust_speed="150"
+				speed_rating="100"
+				missile_speed="63"
+				weapon_length="20"
+				thrust_damage="100"
+				thrust_damage_type="Blunt"
+				item_usage="sling"
+				physics_material="wood_weapon"
+				center_of_mass="0,0,0.1">
+				<WeaponFlags
+					RangedWeapon="true"
+					AutoReload="true"
+					UnloadWhenSheathed="true"
+					UseHandAsThrowBase="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			Stealth="true" />
+	</Item>
+	<Item
+		id="sling_reinforced"
+		name="{=qxYDHkKl}Reinforced Sling 41 Inches"
+		body_name="bo_throwing_stone"
+		skeleton_name="sling_skeleton"
+		static_animation_name="sling_drop_weapon"
+		holster_body_name="bo_axe_short"
+		holster_mesh_with_weapon="sling_holster"
+		mesh="sling_a"
+		value="6000"
+		weight="0.1"
+		appearance="1"
+		Type="Thrown"
+		AmmoOffset="-0.02, 0.0, 0.0"
+		item_holsters="throwing_stone:throwing_stone_2">
+		<ItemComponent>
+			<Weapon
+				weapon_class="Sling"
+				ammo_class="SlingStone"
+				ammo_limit="1"
+				accuracy="75"
+				thrust_speed="150"
+				speed_rating="120"
+				missile_speed="76"
+				weapon_length="20"
+				thrust_damage="100"
+				thrust_damage_type="Blunt"
+				item_usage="sling"
+				physics_material="wood_weapon"
+				center_of_mass="0,0,0.1">
+				<WeaponFlags
+					RangedWeapon="true"
+					AutoReload="true"
+					UnloadWhenSheathed="true"
+					UseHandAsThrowBase="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			Stealth="true" />
+	</Item>
+<!-- Will be implemented with new code
 	<Item
 		id="sling_wool"
 		name="{=L5i5RgO0}Wool Sling 18 Inches"
@@ -1005,5 +1126,5 @@
 		<Flags
 			Stealth="true" />
 	</Item>
-
+-->	
 </Items>
