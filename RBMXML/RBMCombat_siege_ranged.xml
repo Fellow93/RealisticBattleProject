@@ -124,7 +124,8 @@
                      LeavesTrail="true"
                      AmmoCanBreakOnBounceBack="true"
                      AffectsArea="false" 
-					 MultiplePenetration="true"/>
+					 MultiplePenetration="true"
+					 CanKillEvenIfBlunt="true"/>
       </Weapon>
     </ItemComponent>
     <Flags QuickFadeOut="true"
@@ -132,6 +133,60 @@
            DropOnWeaponChange="true"
            DropOnAnyAction="true" />
   </Item>
+  
+	<Item
+		multiplayer_item="false"
+		id="boulder_projectile"
+		name="{=pzfbPbWW}Boulder"
+		is_merchandise="false"
+		body_name="bo_projectile_rock"
+		holster_body_name="bo_axe_short"
+		mesh="projectile_rock"
+		holster_mesh=""
+		subtype="arrows"
+		weight="17.88"
+		difficulty="0"
+		appearance="1"
+		Type="Thrown"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="Boulder"
+				ammo_class="Boulder"
+				stack_amount="1"
+				position="0.05, -0.15, 0"
+				center_of_mass="0,0,0"
+				physics_material="boulder_stone"
+				thrust_speed="100"
+				speed_rating="0"
+				missile_speed="5"
+				weapon_length="95"
+				thrust_damage="5"
+				item_usage="heavy_stone"
+				flying_sound_code="event:/mission/combat/boulder/passby"
+				rotation_speed="2, 0.5, 0">
+				<WeaponFlags
+					RangedWeapon="true"
+					Consumable="true"
+					NotUsableWithOneHand="true"
+					TwoHandIdleOnMount="true"
+					CanPenetrateShield="true"
+					CanKnockDown="true"
+					MissileWithPhysics="true"
+					UseHandAsThrowBase="true"
+					LeavesTrail="true"
+					AmmoCanBreakOnBounceBack="true"
+					MultiplePenetration="true"
+					AffectsArea="false"
+					CanKillEvenIfBlunt="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			QuickFadeOut="true"
+			CannotBePickedUp="true"
+			DropOnWeaponChange="true"
+			DropOnAnyAction="true" />
+	</Item>
   
   <Item multiplayer_item="false"
         id="pot"
@@ -143,7 +198,7 @@
         mesh="projectile_pot"
         holster_mesh=""
         subtype="arrows"
-        weight="15"
+        weight="5"
         difficulty="0"
         appearance="1"
         Type="Thrown"
@@ -158,7 +213,7 @@
               speed_rating="0"
               missile_speed="5"
               weapon_length="95"
-              thrust_damage="33"
+              thrust_damage="5"
               thrust_damage_type="Blunt"
               item_usage="heavy_stone"
               flying_sound_code="event:/mission/combat/boulder/passby"
@@ -184,6 +239,63 @@
            DropOnAnyAction="true" />
   </Item>
   
+	<Item
+		multiplayer_item="false"
+		id="pot_projectile"
+		name="{=HP1GzM8l}Fire Pot"
+		is_merchandise="false"
+		body_name="bo_projectile_rock"
+		holster_body_name="bo_axe_short"
+		flying_mesh="projectile_pot"
+		mesh="projectile_pot"
+		holster_mesh=""
+		subtype="arrows"
+		weight="5"
+		difficulty="0"
+		appearance="1"
+		Type="Thrown"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="Boulder"
+				ammo_class="Boulder"
+				stack_amount="1"
+				position="0.05, -0.15, 0"
+				physics_material="burning_jar"
+				thrust_speed="100"
+				speed_rating="0"
+				missile_speed="5"
+				weapon_length="95"
+				thrust_damage_type="Blunt"
+				thrust_damage="5"
+				fire_damage="1000"
+				item_usage="heavy_stone"
+				flying_sound_code="event:/mission/combat/boulder/passby"
+				trail_particle_name="psys_game_burning_jar_trail"
+				rotation_speed="2, 0.5, 0">
+				<WeaponFlags
+					RangedWeapon="true"
+					NotUsableWithOneHand="true"
+					TwoHandIdleOnMount="true"
+					CanPenetrateShield="true"
+					MissileWithPhysics="true"
+					UseHandAsThrowBase="true"
+					Consumable="true"
+					LeavesTrail="true"
+					Burning="true"
+					AffectsArea="true"
+					AffectsAreaBig="false"
+					AmmoBreaksOnBounceBack="true"
+					CanKillEvenIfBlunt="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			QuickFadeOut="true"
+			CannotBePickedUp="true"
+			DropOnWeaponChange="true"
+			DropOnAnyAction="true" />
+	</Item>
+	
   <Item multiplayer_item="false"
         id="grapeshot_stack"
         name="{=ZeU1fvdz}Grapeshot Stack"
@@ -305,7 +417,7 @@
               speed_rating="0"
               missile_speed="8"
               weapon_length="95"
-              thrust_damage="30"
+              thrust_damage="10"
               thrust_damage_type="Blunt"
               item_usage="heavy_stone"
               flying_sound_code="event:/mission/combat/boulder/passby"
@@ -353,7 +465,7 @@
               speed_rating="0"
               missile_speed="8"
               weapon_length="95"
-              thrust_damage="40"
+              thrust_damage="14"
               thrust_damage_type="Blunt"
               item_usage="heavy_stone"
               flying_sound_code="event:/mission/combat/boulder/passby"
@@ -378,4 +490,5 @@
            DropOnWeaponChange="true"
            DropOnAnyAction="true" />
   </Item>
+
 </Items>

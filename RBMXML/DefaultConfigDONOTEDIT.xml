@@ -154,8 +154,8 @@
         <ExtraArmorSkillDamageAbsorb>1</ExtraArmorSkillDamageAbsorb>
       </ThrowingAxe>
 	  <SlingStone>
-        <ExtraBluntFactorCut>0.2</ExtraBluntFactorCut>
-        <ExtraBluntFactorPierce>0.2</ExtraBluntFactorPierce>
+        <ExtraBluntFactorCut>0.4</ExtraBluntFactorCut>
+        <ExtraBluntFactorPierce>0.4</ExtraBluntFactorPierce>
         <ExtraBluntFactorBlunt>1</ExtraBluntFactorBlunt>
         <ExtraArmorThresholdFactorPierce>4</ExtraArmorThresholdFactorPierce>
         <ExtraArmorThresholdFactorCut>6</ExtraArmorThresholdFactorCut>
