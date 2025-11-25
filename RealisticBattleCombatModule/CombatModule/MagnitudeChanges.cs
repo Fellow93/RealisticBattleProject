@@ -61,8 +61,8 @@ namespace RBMCombat
                         if (attacker != null)
                         {
                             bool isNonTipHit = false;
-                            
-                            if(weaponClass == WeaponClass.OneHandedSword || 
+
+                            if (weaponClass == WeaponClass.OneHandedSword ||
                                 weaponClass == WeaponClass.Dagger ||
                                 weaponClass == WeaponClass.TwoHandedSword)
                             {
@@ -85,7 +85,7 @@ namespace RBMCombat
                                     }
                                 }
                             }
-                            
+
                             SkillObject skill = weapon.CurrentUsageItem.RelevantSkill;
                             int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attacker, skill);
                             float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
@@ -157,11 +157,11 @@ namespace RBMCombat
                                         thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weapon.Item.Weight, effectiveSkillDR, thrustWeaponSpeed, exraLinearSpeed, attacker.AttackDirection);
                                         break;
                                     }
-                                //default:
-                                //    {
-                                //        thrustMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(attackerAgentCharacter, attackerCaptainCharacter, thrustWeaponSpeed, weapon.Item.Weight, weapon.Item, currentUsageItem, exraLinearSpeed, doesAttackerHaveMount);
-                                //        break;
-                                //    }
+                                    //default:
+                                    //    {
+                                    //        thrustMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(attackerAgentCharacter, attackerCaptainCharacter, thrustWeaponSpeed, weapon.Item.Weight, weapon.Item, currentUsageItem, exraLinearSpeed, doesAttackerHaveMount);
+                                    //        break;
+                                    //    }
                             }
                             //InformationManager.DisplayMessage(new InformationMessage("isNonTipHit : " + isNonTipHit, Color.FromUint(4289612505u)));
 
@@ -1303,9 +1303,23 @@ namespace RBMCombat
             }
         }
 
+        //[HarmonyPatch(typeof(EncyclopediaUnitPageVM))]
+        //[HarmonyPatch("RefreshValues")]
+        //private class EncyclopediaUnitPageVMRefreshValuesPatch
+        //{
+        //    private static void Postfix(ref EncyclopediaUnitPageVM __instance, CharacterObject ____character)
+        //    {
+        //        if (__instance.EquipmentSetSelector != null)
+        //        {
+        //            equipmentSetindex = __instance.EquipmentSetSelector.SelectedIndex;
+        //        }
+        //        currentSelectedChar = ____character;
+        //    }
+        //}
+
         [HarmonyPatch(typeof(EncyclopediaUnitPageVM))]
-        [HarmonyPatch("RefreshValues")]
-        private class EncyclopediaUnitPageVMRefreshValuesPatch
+        [HarmonyPatch("OnEquipmentSetChange")]
+        private class EncyclopediaUnitPageVOnEquipmentSetChangePatch
         {
             private static void Postfix(ref EncyclopediaUnitPageVM __instance, CharacterObject ____character)
             {
@@ -1314,19 +1328,6 @@ namespace RBMCombat
                     equipmentSetindex = __instance.EquipmentSetSelector.SelectedIndex;
                 }
                 currentSelectedChar = ____character;
-            }
-        }
-
-        [HarmonyPatch(typeof(EncyclopediaUnitPageVM))]
-        [HarmonyPatch("OnEquipmentSetChange")]
-        private class EncyclopediaUnitPageVOnEquipmentSetChangePatch
-        {
-            private static void Postfix(ref EncyclopediaUnitPageVM __instance)
-            {
-                if (__instance.EquipmentSetSelector != null)
-                {
-                    equipmentSetindex = __instance.EquipmentSetSelector.SelectedIndex;
-                }
             }
         }
 
