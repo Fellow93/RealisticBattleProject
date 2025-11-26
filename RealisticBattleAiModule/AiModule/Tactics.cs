@@ -307,7 +307,7 @@ namespace RBMAI
                 PostureLogic.agentsToDropShield.Clear();
                 PostureLogic.agentsToDropWeapon.Clear();
                 PostureLogic.agentsToChangeFormation.Clear();
-                RBMAiPatcher.DoPatching();
+                //RBMAiPatcher.DoPatching();
                 agentDamage.Clear();
             }
         }
@@ -323,7 +323,7 @@ namespace RBMAI
             {
                 Frontline.aiDecisionCooldownDict.Clear();
                 agentDamage.Clear();
-                RBMAiPatcher.DoPatching();
+                //RBMAiPatcher.DoPatching();
                 AgentAi.OnTickPatch.itemPickupDistanceStorage.Clear();
                 PostureLogic.agentsToChangeFormation.Clear();
                 PostureLogic.agentsToDropWeapon.Clear();

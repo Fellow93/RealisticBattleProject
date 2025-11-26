@@ -142,6 +142,7 @@ namespace RBM
 
         public override void OnMissionBehaviorInitialize(Mission mission)
         {
+            mission.AddMissionBehavior((MissionBehavior)(object)new RBMAIPatchLogic());
             Game.Current.GameTextManager.LoadGameTexts();
             if (RBMConfig.RBMConfig.developerMode)
             {
@@ -181,4 +182,14 @@ namespace RBM
             base.OnMissionBehaviorInitialize(mission);
         }
     }
+
+    public class RBMAIPatchLogic : MissionLogic
+    {
+
+        public override void EarlyStart()
+        {
+            RBMAiPatcher.DoPatching();
+        }
+    }
+
 }

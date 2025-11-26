@@ -11,12 +11,12 @@ namespace RBMAI
 
         public static void DoPatching()
         {
-            //var harmony = new Harmony("com.pf.rbai");
-            if (!patched)
-            {
-                harmony.PatchAll();
-                patched = true;
-            }
+            var harmony = new Harmony("com.pf.rbai");
+            //if (!patched)
+            //{
+            harmony.PatchAll();
+            //    patched = true;
+            //}
         }
 
         public static void FirstPatch(ref Harmony rbmaiHarmony)
