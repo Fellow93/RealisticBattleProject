@@ -1,14 +1,14 @@
 ﻿<Module>
   <Name value="(RBM) Realistic Battle Mod"/>
   <Id value="RBM"/>
-  <Version value="v4.0.1"/>
+  <Version value="v4.0.2"/>
   <DefaultModule value="true"/>
   <ModuleCategory value="Singleplayer"/>
   <DependedModules>
-    <DependedModule Id="Native" DependentVersion="v1.3.4" Optional="false"/>
-    <DependedModule Id="SandBoxCore" DependentVersion="v1.3.4" Optional="false"/>
-    <DependedModule Id="Sandbox" DependentVersion="v1.3.4" Optional="false"/>
-    <DependedModule Id="StoryMode" DependentVersion="v1.3.4" Optional="false"/>
+    <DependedModule Id="Native" DependentVersion="v1.3.6" Optional="false"/>
+    <DependedModule Id="SandBoxCore" DependentVersion="v1.3.6" Optional="false"/>
+    <DependedModule Id="Sandbox" DependentVersion="v1.3.6" Optional="false"/>
+    <DependedModule Id="StoryMode" DependentVersion="v1.3.6" Optional="false"/>
   </DependedModules>
   <SubModules>
     <SubModule>
