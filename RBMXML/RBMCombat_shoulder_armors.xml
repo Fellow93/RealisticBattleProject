@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Items>
 <!--RBM_XML_TAG-->
+<!--RBM_COMBAT_XML_TAG-->
 	<Item id="a_battania_cloak_a" name="{=Jm3AiUo3}Simple Cape" mesh="battania_cloak_a" culture="Culture.battania" weight="0.5" appearance="3" Type="Cape">
 		<ItemComponent>
 			<Armor body_armor="6" modifier_group="cloth_unarmoured" material_type="Cloth"/>

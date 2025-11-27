@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Items>
 <!--RBM_XML_TAG-->
+<!--RBM_COMBAT_XML_TAG-->
 	<Item id="adarga" name="{=QcKpipVr}Adarga" body_name="bo_cap_shield_aserai_cavalary_a" shield_body_name="bo_shield_aserai_cavalary_a" recalculate_body="false" mesh="shield_aserai_cavalary_a" using_tableau="true" weight="4.7" appearance="0.1" Type="Shield" item_holsters="shield:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.0,0" culture="Culture.aserai">
 		<ItemComponent>
 			<Weapon weapon_class="SmallShield" body_armor="4" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="60" center_of_mass="-0.0,0.0,0.05" hit_points="400">

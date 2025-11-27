@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Items>
 <!--RBM_XML_TAG-->
+<!--RBM_COMBAT_XML_TAG-->
 	<Item id="rough_tied_bracers" name="{=uEPRE33m}Rough Tied Bracers" mesh="bandit_3_wrist" culture="Culture.battania" weight="0.6" appearance="0.3" Type="HandArmor">
 		<ItemComponent>
 			<Armor arm_armor="21" modifier_group="cloth" material_type="Cloth" covers_hands="false"/>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Items>
 <!--RBM_XML_TAG-->
+<!--RBM_COMBAT_XML_TAG-->
 	<Item id="tournament_arrows" name="{=RBM_ARR_001}Flight Arrows 30 grams" body_name="bo_capsule_arrow" mesh="arrow_bl_i" weight="0.03"  appearance="1" Type="Arrows" item_holsters="quiver_back_middle:quiver_bolts:quiver_bolts_2" holster_position_shift="0.0,0.0,0.15" is_merchandise="true" holster_body_name="bo_axe_short" holster_mesh="arrow_bl_i_quiver" holster_mesh_with_weapon="arrow_bl_i_quiver" flying_mesh="arrow_bl_flying">
 		<ItemComponent>
 			<Weapon weapon_class="Arrow" modifier_group="arrow" thrust_speed="0" speed_rating="0" missile_speed="30" weapon_length="97" thrust_damage="115" thrust_damage_type="Cut" item_usage="arrow_right" physics_material="missile" center_of_mass="0,0,0" stack_amount="30" sticking_position="0,-0.97,0" sticking_rotation="90,0,0" rotation="0, -80, 25" passby_sound_code="event:/mission/combat/missile/passby">

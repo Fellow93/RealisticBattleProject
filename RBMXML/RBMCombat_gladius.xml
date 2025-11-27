@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Items>
 <!--RBM_XML_TAG-->
+<!--RBM_COMBAT_XML_TAG-->
   <CraftedItem id="gladius_b" name="{=lwxOPEPx}Gladius" crafting_template="Dagger" culture="Culture.empire" modifier_group="sword">
     <Pieces>
       <Piece id="dagger_blade_1" Type="Blade" scale_factor="170" />

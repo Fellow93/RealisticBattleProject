@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Items>
 <!--RBM_XML_TAG-->
+<!--RBM_COMBAT_XML_TAG-->
 	<Item id="aserai_civil_c_head" name="{=ZFETxZKP}Keffiyeh with Silken Band" mesh="aserai_civil_c_head" culture="Culture.aserai" weight="0.1" appearance="2" Type="HeadArmor">
 		<ItemComponent>
 			<Armor head_armor="6" body_armor="0" has_gender_variations="true" hair_cover_type="type2" modifier_group="cloth_unarmoured" material_type="Cloth"/>

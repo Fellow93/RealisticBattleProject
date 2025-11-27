@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Items>
 <!--RBM_XML_TAG-->	
+<!--RBM_COMBAT_XML_TAG-->
 	  <Item multiplayer_item="false"
         id="ballista_projectile"
         name="{=6Db7aDbF}Ballista Arrows"

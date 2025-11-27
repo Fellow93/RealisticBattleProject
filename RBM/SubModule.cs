@@ -4,6 +4,8 @@ using RBMCombat;
 using RBMTournament;
 using System;
 using System.Collections.Generic;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.Core;
 using TaleWorlds.InputSystem;
@@ -181,6 +183,26 @@ namespace RBM
             }
             base.OnMissionBehaviorInitialize(mission);
         }
+
+        public override void OnGameInitializationFinished(Game game)
+        {
+            MBList<Clan> clansToRemove = new MBList<Clan>();
+            foreach (var clan in Campaign.Current.Clans)
+            {
+                if (clan.Culture == null)
+                {
+                    clansToRemove.Add(clan);
+                    
+                }
+            }
+            foreach (var clan in clansToRemove)
+            {
+                DestroyClanAction.Apply(clan);
+                Campaign.Current.Clans.Remove(clan);
+            }
+
+        }
+
     }
 
     public class RBMAIPatchLogic : MissionLogic

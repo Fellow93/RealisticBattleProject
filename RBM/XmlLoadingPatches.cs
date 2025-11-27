@@ -1,10 +1,13 @@
 ﻿using HarmonyLib;
+using NavalDLC.CampaignBehaviors;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.ModuleManager;
 using TaleWorlds.ObjectSystem;
 
@@ -30,111 +33,125 @@ namespace RBM
             {
                 XDocument originalXml = MBObjectManager.ToXDocument(xmlDocument1);
                 XDocument mergedXml = MBObjectManager.ToXDocument(xmlDocument2);
-
-                List<XElement> nodesToRemoveArray = new List<XElement>();
-                if (!RBMConfig.RBMConfig.rbmCombatEnabled && xmlDocument2.BaseURI.Contains("RBMCombat"))
-                {
-                    __result = MBObjectManager.ToXmlDocument(originalXml);
-                    return false;
-                }
-                if ((!RBMConfig.RBMConfig.rbmCombatEnabled || !RBMConfig.RBMConfig.troopOverhaulActive) && xmlDocument2.BaseURI.Contains("unit_overhaul"))
-                {
-                    __result = MBObjectManager.ToXmlDocument(originalXml);
-                    return false;
-                }
                 var comments = mergedXml.DescendantNodes().OfType<XComment>();
+
                 var isRbmXml = false;
+                var isRbmCombatXml = false;
+                var isRbmUnitOverhaulXml = false;
                 foreach (XComment comment in comments)
                 {
                     if (comment.Value.Contains("RBM_XML_TAG"))
                     {
                         isRbmXml = true;
                     }
+                    if (comment.Value.Contains("RBM_COMBAT_OVERHAUL_XML_TAG"))
+                    {
+                        isRbmUnitOverhaulXml = true;
+                    }
+                    if (comment.Value.Contains("RBM_COMBAT_XML_TAG"))
+                    {
+                        isRbmCombatXml = true;
+                    }
                 }
+
+                List<XElement> nodesToRemoveArray = new List<XElement>();
+                if (!RBMConfig.RBMConfig.rbmCombatEnabled && isRbmCombatXml)
+                {
+                    __result = MBObjectManager.ToXmlDocument(originalXml);
+                    return false;
+                }
+                if ((!RBMConfig.RBMConfig.rbmCombatEnabled || !RBMConfig.RBMConfig.troopOverhaulActive) && isRbmUnitOverhaulXml)
+                {
+                    __result = MBObjectManager.ToXmlDocument(originalXml);
+                    return false;
+                }
+                
                 if (RBMConfig.RBMConfig.rbmCombatEnabled)
                 {
-                    foreach (XElement origNode in originalXml.Root.Elements())
-                    {
-                        if (origNode.Name == "ItemModifier" && isRbmXml)
+                    if (isRbmXml) { 
+                        foreach (XElement origNode in originalXml.Root.Elements())
                         {
-                            foreach (XElement mergedNode in mergedXml.Root.Elements())
+                            if (origNode.Name == "ItemModifier" && isRbmXml)
                             {
-                                if (mergedNode.Name == "ItemModifier")
+                                foreach (XElement mergedNode in mergedXml.Root.Elements())
                                 {
-                                    if (origNode.Attribute("id").Value.Equals(mergedNode.Attribute("id").Value) && origNode.Attribute("name").Value.Equals(mergedNode.Attribute("name").Value))
+                                    if (mergedNode.Name == "ItemModifier")
                                     {
-                                        nodesToRemoveArray.Add(origNode);
-                                    }
-                                }
-                            }
-                        }
-
-                        if (origNode.Name == "CraftedItem" && isRbmXml)
-                        {
-                            foreach (XElement mergedNode in mergedXml.Root.Elements())
-                            {
-                                if (mergedNode.Name == "CraftedItem")
-                                {
-                                    if (origNode.Attribute("id").Value.Equals(mergedNode.Attribute("id").Value))
-                                    {
-                                        nodesToRemoveArray.Add(origNode);
-                                    }
-                                }
-                            }
-                        }
-
-                        if (origNode.Name == "Item" && isRbmXml)
-                        {
-                            foreach (XElement mergedNode in mergedXml.Root.Elements())
-                            {
-                                if (mergedNode.Name == "Item")
-                                {
-                                    if (origNode.Attribute("id").Value.Equals(mergedNode.Attribute("id").Value))
-                                    {
-                                        nodesToRemoveArray.Add(origNode);
-                                    }
-
-                                    if (RBMConfig.RBMConfig.betterArrowVisuals && (mergedNode.Attribute("Type").Value.Equals("Arrows") || mergedNode.Attribute("Type").Value.Equals("Bolts")))
-                                    {
-                                        mergedNode.Attribute("flying_mesh").Value = mergedNode.Attribute("mesh").Value;
-                                    }
-                                }
-                            }
-                        }
-
-                        if (origNode.Name == "NPCCharacter" && isRbmXml)
-                        {
-                            foreach (XElement nodeEquip in origNode.Elements())
-                            {
-                                if (nodeEquip.Name == "Equipments")
-                                {
-                                    foreach (XElement nodeEquipRoster in nodeEquip.Elements())
-                                    {
-                                        if (nodeEquipRoster.Name == "EquipmentRoster")
+                                        if (origNode.Attribute("id").Value.Equals(mergedNode.Attribute("id").Value) && origNode.Attribute("name").Value.Equals(mergedNode.Attribute("name").Value))
                                         {
-                                            foreach (XElement mergedNode in mergedXml.Root.Elements())
+                                            nodesToRemoveArray.Add(origNode);
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (origNode.Name == "CraftedItem" && isRbmXml)
+                            {
+                                foreach (XElement mergedNode in mergedXml.Root.Elements())
+                                {
+                                    if (mergedNode.Name == "CraftedItem")
+                                    {
+                                        if (origNode.Attribute("id").Value.Equals(mergedNode.Attribute("id").Value))
+                                        {
+                                            nodesToRemoveArray.Add(origNode);
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (origNode.Name == "Item" && isRbmXml)
+                            {
+                                foreach (XElement mergedNode in mergedXml.Root.Elements())
+                                {
+                                    if (mergedNode.Name == "Item")
+                                    {
+                                        if (origNode.Attribute("id").Value.Equals(mergedNode.Attribute("id").Value))
+                                        {
+                                            nodesToRemoveArray.Add(origNode);
+                                        }
+
+                                        if (RBMConfig.RBMConfig.betterArrowVisuals && (mergedNode.Attribute("Type").Value.Equals("Arrows") || mergedNode.Attribute("Type").Value.Equals("Bolts")))
+                                        {
+                                            mergedNode.Attribute("flying_mesh").Value = mergedNode.Attribute("mesh").Value;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (origNode.Name == "NPCCharacter" && isRbmXml)
+                            {
+                                foreach (XElement nodeEquip in origNode.Elements())
+                                {
+                                    if (nodeEquip.Name == "Equipments")
+                                    {
+                                        foreach (XElement nodeEquipRoster in nodeEquip.Elements())
+                                        {
+                                            if (nodeEquipRoster.Name == "EquipmentRoster")
                                             {
-                                                if (origNode.Attribute("id").Value.Equals(mergedNode.Attribute("id").Value))
+                                                foreach (XElement mergedNode in mergedXml.Root.Elements())
                                                 {
-                                                    foreach (XElement mergedNodeEquip in mergedNode.Elements())
+                                                    if (origNode.Attribute("id").Value.Equals(mergedNode.Attribute("id").Value))
                                                     {
-                                                        if (mergedNodeEquip.Name == "Equipments")
+                                                        foreach (XElement mergedNodeEquip in mergedNode.Elements())
                                                         {
-                                                            foreach (XElement mergedNodeRoster in mergedNodeEquip.Elements())
+                                                            if (mergedNodeEquip.Name == "Equipments")
                                                             {
-                                                                if (mergedNodeRoster.Name == "EquipmentRoster")
+                                                                foreach (XElement mergedNodeRoster in mergedNodeEquip.Elements())
                                                                 {
-                                                                    if (!nodesToRemoveArray.Contains(origNode))
+                                                                    if (mergedNodeRoster.Name == "EquipmentRoster")
                                                                     {
-                                                                        nodesToRemoveArray.Add(origNode);
-                                                                    }
-                                                                    foreach (XElement equipmentNode in mergedNodeRoster.Elements())
-                                                                    {
-                                                                        if (equipmentNode.Name == "equipment")
+                                                                        if (!nodesToRemoveArray.Contains(origNode))
                                                                         {
-                                                                            if (equipmentNode.Attribute("id") != null && equipmentNode.Attribute("id").Value.Contains("shield_shoulder") && !RBMConfig.RBMConfig.passiveShoulderShields)
+                                                                            nodesToRemoveArray.Add(origNode);
+                                                                        }
+                                                                        foreach (XElement equipmentNode in mergedNodeRoster.Elements())
+                                                                        {
+                                                                            if (equipmentNode.Name == "equipment")
                                                                             {
-                                                                                equipmentNode.Attribute("id").Value = equipmentNode.Attribute("id").Value.Replace("shield_shoulder", "shield");
+                                                                                if (equipmentNode.Attribute("id") != null && equipmentNode.Attribute("id").Value.Contains("shield_shoulder") && !RBMConfig.RBMConfig.passiveShoulderShields)
+                                                                                {
+                                                                                    equipmentNode.Attribute("id").Value = equipmentNode.Attribute("id").Value.Replace("shield_shoulder", "shield");
+                                                                                }
                                                                             }
                                                                         }
                                                                     }
@@ -149,19 +166,19 @@ namespace RBM
                                 }
                             }
                         }
-                    }
 
-                    if (nodesToRemoveArray.Count > 0)
-                    {
-                        foreach (XElement node in nodesToRemoveArray)
+                        if (nodesToRemoveArray.Count > 0)
                         {
-                            node.Remove();
+                            foreach (XElement node in nodesToRemoveArray)
+                            {
+                                node.Remove();
+                            }
                         }
-                    }
 
-                    originalXml.Root.Add(mergedXml.Root.Elements());
-                    __result = MBObjectManager.ToXmlDocument(originalXml);
-                    return false;
+                        originalXml.Root.Add(mergedXml.Root.Elements());
+                        __result = MBObjectManager.ToXmlDocument(originalXml);
+                        return false;
+                    }
                 }
                 return true;
             }

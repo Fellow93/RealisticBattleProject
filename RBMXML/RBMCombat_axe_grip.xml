@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <item_usage_sets>
 <!--RBM_XML_TAG-->
+<!--RBM_COMBAT_XML_TAG-->
   <item_usage_set id="twohanded_widegrip_axe"
                   equip_sound="event:/mission/combat/equip/sword_equip"
                   unequip_sound="event:/mission/combat/equip/sword_unequip" >
