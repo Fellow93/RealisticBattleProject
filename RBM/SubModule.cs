@@ -186,21 +186,23 @@ namespace RBM
 
         public override void OnGameInitializationFinished(Game game)
         {
-            MBList<Clan> clansToRemove = new MBList<Clan>();
-            foreach (var clan in Campaign.Current.Clans)
+            if(Campaign.Current != null && Campaign.Current.Clans != null)
             {
-                if (clan.Culture == null)
+                MBList<Clan> clansToRemove = new MBList<Clan>();
+                foreach (var clan in Campaign.Current.Clans)
                 {
-                    clansToRemove.Add(clan);
+                    if (clan.Culture == null)
+                    {
+                        clansToRemove.Add(clan);
                     
+                    }
+                }
+                foreach (var clan in clansToRemove)
+                {
+                    DestroyClanAction.Apply(clan);
+                    Campaign.Current.Clans.Remove(clan);
                 }
             }
-            foreach (var clan in clansToRemove)
-            {
-                DestroyClanAction.Apply(clan);
-                Campaign.Current.Clans.Remove(clan);
-            }
-
         }
 
     }
