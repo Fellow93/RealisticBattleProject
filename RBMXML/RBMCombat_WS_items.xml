@@ -1,0 +1,2958 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Items>
+	<!--  #BodyArmor  -->
+	<Item
+		id="northman_raider_armor"
+		name="{=iVGuFOec}Northern Raider Armor"
+		mesh="northman_raider_armor"
+		culture="Culture.nord"
+		weight="18"
+		appearance="7"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="60"
+				leg_armor="15"
+				arm_armor="40"
+				has_gender_variations="true"
+				covers_body="true"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true"
+			Civilian="false" />
+	</Item>
+	<Item
+		id="naval_strappy_tunic"
+		name="{=7bOfcEzK}Nordic Luxury Tunic"
+		mesh="naval_strappy_tunic"
+		culture="Culture.nord"
+		weight="5"
+		appearance="5"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="25"
+				leg_armor="25"
+				arm_armor="27"
+				has_gender_variations="false"
+				covers_body="true"
+				modifier_group="cloth_unarmoured"
+				material_type="Cloth" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true"
+			Civilian="true" />
+	</Item>
+	<Item
+		id="nord_chainmail_armor"
+		name="{=ZAeQ7GpQ}Nordic Heavy Mail Armor"
+		mesh="naval_chainmail_armor"
+		culture="Culture.nord"
+		weight="17"
+		appearance="6"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="45"
+				leg_armor="45"
+				arm_armor="48"
+				has_gender_variations="true"
+				covers_body="true"
+				modifier_group="chain"
+				material_type="Chainmail" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true"
+			Civilian="false" />
+	</Item>
+	<Item
+		id="double_belted_leather_armor"
+		name="{=UTXYzNim}Long Leather Vest"
+		mesh="double_belted_leather_armor"
+		culture="Culture.nord"
+		weight="6"
+		appearance="5"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="28"
+				leg_armor="28"
+				arm_armor="18"
+				has_gender_variations="false"
+				covers_body="true"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true"
+			Civilian="true" />
+	</Item>
+	<Item
+		id="norse_chainmail_pleatedtrousers"
+		name="{=WCM38v9X}Norse Chainmail"
+		mesh="norse_chainmail_pleatedtrousers"
+		culture="Culture.nord"
+		weight="16"
+		appearance="5"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="38"
+				leg_armor="23"
+				arm_armor="38"
+				has_gender_variations="true"
+				covers_body="true"
+				modifier_group="chain"
+				material_type="Chainmail" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true"
+			Civilian="true" />
+	</Item>
+	<Item
+		id="heavy_gambeson_armor"
+		name="{=dpHDIwKz}Mariner Leather Gambeson"
+		mesh="heavy_gambeson_armor"
+		culture="Culture.nord"
+		weight="5.5"
+		appearance="1"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="35"
+				leg_armor="35"
+				arm_armor="40"
+				covers_body="true"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true"
+			Civilian="true" />
+	</Item>
+	<!-- #LegArmor -->
+	<Item
+		id="strapped_jackboots"
+		name="{=BvOMXDhA}Strapped Jackboots"
+		mesh="strapped_jackboots"
+		culture="Culture.nord"
+		weight="0.7"
+		appearance="4"
+		Type="LegArmor">
+		<ItemComponent>
+			<Armor
+				leg_armor="28"
+				covers_legs="true"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="northman_raider_boot"
+		name="{=8d8xLbBH}Northern Raider Boots"
+		mesh="northman_raider_boot"
+		culture="Culture.nord"
+		weight="0.4"
+		appearance="3"
+		Type="LegArmor">
+		<ItemComponent>
+			<Armor
+				leg_armor="30"
+				covers_legs="false"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<!-- #HandArmor -->
+	<Item
+		id="splinted_bracers"
+		name="{=3x5dzOFX}Splinted Bracers"
+		mesh="splinted_bracers"
+		culture="Culture.nord"
+		weight="1.1"
+		difficulty="0"
+		appearance="4"
+		Type="HandArmor">
+		<ItemComponent>
+			<Armor
+				arm_armor="29"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Civilian="false" />
+	</Item>
+	<Item
+		id="northman_wrist_armor"
+		name="{=96SmfRN8}Northmen Raider Wrist Guards"
+		mesh="northman_wrist_armor"
+		culture="Culture.nord"
+		weight="1.2"
+		difficulty="0"
+		appearance="4"
+		Type="HandArmor">
+		<ItemComponent>
+			<Armor
+				arm_armor="36"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="studded_arm_guards"
+		name="{=cahNTPOW}Studded Arm Guards"
+		mesh="studded_arm_guards"
+		culture="Culture.nord"
+		weight="1.1"
+		difficulty="0"
+		appearance="4"
+		Type="HandArmor">
+		<ItemComponent>
+			<Armor
+				arm_armor="21"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<!-- #Cape -->
+	<!--fur_cape_a and fur_cape_b should not be used -->
+	<Item
+		id="fur_cape_a"
+		name="{=DsV34PTX}Nordic Furry Mail Cape"
+		mesh="fur_cape_a"
+		culture="Culture.nord"
+		weight="1.5"
+		appearance="5"
+		is_merchandise="false"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="17"
+				arm_armor="8"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Civilian="true"
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="fur_cape_b"
+		name="{=2ubbCL20}Nordic Furry Cape"
+		mesh="fur_cape_b"
+		culture="Culture.nord"
+		weight="1.2"
+		appearance="4"
+		is_merchandise="false"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="40"
+				arm_armor="0"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Civilian="true"
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="northman_raider_cape"
+		name="{=wkgxuGvo}Northmen Raider Heavy Fur Cape"
+		mesh="northman_raider_cape"
+		culture="Culture.nord"
+		weight="2.3"
+		appearance="7"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="42"
+				arm_armor="0"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Civilian="true"
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="northman_raider_shoulder"
+		name="{=9jhbWP5f}Nordic Armored Shoulder Pads"
+		mesh="northman_raider_shoulder"
+		culture="Culture.nord"
+		weight="1.6"
+		appearance="7"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="21"
+				arm_armor="0"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			Civilian="false"
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="nord_shoulder_b"
+		name="{=viDpmCPa}Northern Lamellar Pauldrons"
+		mesh="nord_shoulder_b"
+		culture="Culture.nord"
+		weight="2.7"
+		appearance="3"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="20"
+				arm_armor="0"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="nord_shoulder_a"
+		name="{=4TsyBEUX}Reinforced Lamellar Pauldrons"
+		mesh="nord_shoulder_a"
+		culture="Culture.nord"
+		weight="2.5"
+		appearance="3"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="25"
+				arm_armor="0"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="nord_fur_shoulder"
+		name="{=7FJ3axqD}Long Linen Fur Cape"
+		mesh="nord_fur_shoulder"
+		culture="Culture.nord"
+		weight="3"
+		appearance="4"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="15"
+				arm_armor="0"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Civilian="true"
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="berserker_cloak"
+		name="{=KzwOR85I}Berserker Cloak"
+		mesh="berserker_cloak"
+		culture="Culture.nord"
+		weight="3.8"
+		appearance="4"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="25"
+				arm_armor="0"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Civilian="true"
+			UseTeamColor="false" />
+	</Item>
+	<!-- #HeadArmor -->
+	<Item
+		id="berserker_helmet"
+		name="{=stt6kTpR}Berserker Helmet"
+		subtype="berserker_helmet"
+		mesh="berserker_helmet"
+		culture="Culture.nord"
+		weight="2.0"
+		appearance="3"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="35"
+				body_armor="0"
+				arm_armor="10"
+				has_gender_variations="false"
+				hair_cover_type="none"
+				beard_cover_type="type1"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="false" />
+	</Item>
+	<Item
+		id="berserker_helmet_reinforced"
+		name="{=1RpDRgLe}Berserker Reinforced Cloak"
+		subtype="berserker_helmet_reinforced"
+		mesh="berserker_helmet_reinforced"
+		culture="Culture.nord"
+		weight="3.0"
+		appearance="3"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="65"
+				body_armor="8"
+				arm_armor="10"
+				has_gender_variations="false"
+				hair_cover_type="type1"
+				beard_cover_type="type2"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="false" />
+	</Item>
+	<Item
+		id="celtic_helmet"
+		name="{=VPICWkKq}Old Guard Helmet"
+		subtype="head_armor"
+		mesh="celtic_helmet"
+		culture="Culture.battania"
+		weight="2.5"
+		appearance="4"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="87"
+				hair_cover_type="type1"
+				beard_cover_type="none"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	<!-- #HeadArmor -->
+	<!--  NORD Civilian Armor-->
+	<Item
+		id="nordic_civilian_hat"
+		name="{=ZqQFHHvy}Nordic Civilian Hat"
+		subtype="nordic_civilian_hat"
+		mesh="nordic_civilian_hat"
+		culture="Culture.nord"
+		weight="0.5"
+		appearance="1"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="7"
+				has_gender_variations="false"
+				hair_cover_type="type2"
+				beard_cover_type="none"
+				modifier_group="cloth_unarmoured"
+				material_type="Cloth" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true"
+			Civilian="true" />
+	</Item>
+	<Item
+		id="nordic_civilian_hat_fur_brim"
+		name="{=jw8fKXRu}Nordic Civilian Hat with Fur Brim"
+		subtype="nordic_civilian_hat_fur_brim"
+		mesh="nordic_civilian_hat_fur_brim"
+		culture="Culture.nord"
+		weight="0.6"
+		appearance="1"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="7"
+				has_gender_variations="false"
+				hair_cover_type="type2"
+				beard_cover_type="none"
+				modifier_group="cloth_unarmoured"
+				material_type="Cloth" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true"
+			Civilian="true" />
+	</Item>
+	<Item
+		id="nordic_civilian_dress"
+		name="{=ja1tbR4y}Nordic Dress"
+		mesh="nordic_civilian_dress"
+		culture="Culture.nord"
+		weight="4"
+		appearance="1"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="8"
+				leg_armor="10"
+				arm_armor="5"
+				covers_body="true"
+				modifier_group="cloth_unarmoured"
+				material_type="Cloth" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true"
+			Civilian="true" />
+	</Item>
+	<Item
+		id="nordic_civilian_dress_plaid"
+		name="{=WTum1FXz}Nordic Plaid Dress"
+		mesh="nordic_civilian_dress_plaid"
+		culture="Culture.nord"
+		weight="4"
+		appearance="1"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="8"
+				leg_armor="10"
+				arm_armor="5"
+				covers_body="true"
+				modifier_group="cloth_unarmoured"
+				material_type="Cloth" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true"
+			Civilian="true" />
+	</Item>
+	<Item
+		id="dress_norse_lady"
+		name="{=KCYVy9fn}Northern Knotwork Tunic"
+		mesh="dress_norse_lady"
+		culture="Culture.nord"
+		weight="2"
+		appearance="8"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="12"
+				leg_armor="12"
+				arm_armor="7"
+				has_gender_variations="true"
+				covers_body="true"
+				modifier_group="cloth_unarmoured"
+				material_type="Cloth" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="false"
+			Civilian="true" />
+	</Item>
+	<Item
+		id="cape_norse_lady"
+		name="{=nrKlORwM}Northern Fur Cape"
+		mesh="cape_norse_lady"
+		culture="Culture.nord"
+		subtype="body_armor"
+		weight="1"
+		appearance="8"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="13"
+				arm_armor="0"
+				modifier_group="cloth_unarmoured"
+				material_type="Cloth" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="nord_casual_tunic"
+		name="{=er4Ewoeo}Nordic Woolen Tunic"
+		subtype="body_armor"
+		mesh="nord_casual_tunic"
+		culture="Culture.nord"
+		weight="3"
+		appearance="2"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="13"
+				leg_armor="13"
+				arm_armor="13"
+				has_gender_variations="true"
+				covers_body="true"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true"
+			Civilian="true" />
+	</Item>
+	<Item
+		id="nord_casual_cloak"
+		name="{=1sowgke0}Long Woolen Cloak"
+		mesh="nord_casual_cloak"
+		culture="Culture.nord"
+		subtype="body_armor"
+		weight="0.5"
+		appearance="3"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="8"
+				arm_armor="0"
+				modifier_group="cloth_unarmoured"
+				material_type="Cloth" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true"
+			Civilian="true" />
+	</Item>
+	<Item
+		id="nord_casual_boots"
+		name="{=5eUfSvDL}Short Flap Boots"
+		mesh="nord_casual_boots"
+		culture="Culture.nord"
+		weight="0.5"
+		appearance="1"
+		Type="LegArmor">
+		<ItemComponent>
+			<Armor
+				leg_armor="18"
+				covers_legs="true"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="nord_casual_bracers"
+		name="{=eeQ4v41t}Leather Bracers"
+		mesh="nord_casual_bracers"
+		culture="Culture.nord"
+		weight="0.6"
+		appearance="1"
+		Type="HandArmor">
+		<ItemComponent>
+			<Armor
+				arm_armor="21"
+				covers_hands="false"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="nord_poor_civil"
+		name="{=RkBmuucV}Old Linen Tunic"
+		subtype="body_armor"
+		mesh="nord_poor_civil"
+		culture="Culture.nord"
+		weight="3"
+		appearance="0.1"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="11"
+				leg_armor="8"
+				arm_armor="8"
+				has_gender_variations="true"
+				covers_body="true"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="nord_poor_boot"
+		name="{=mMEBkvP9}Worn Leather Boots"
+		mesh="nord_poor_boot"
+		culture="Culture.nord"
+		weight="0.5"
+		appearance="0.1"
+		Type="LegArmor">
+		<ItemComponent>
+			<Armor
+				leg_armor="17"
+				covers_legs="true"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<!-- #pirate -->
+	<Item
+		id="pirate_a_head"
+		name="{=LQ9X2e1A}Pirate Turban"
+		subtype="head_armor"
+		mesh="pirate_a_head"
+		culture="Culture.aserai"
+		weight="0.5"
+		appearance="1"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="12"
+				has_gender_variations="false"
+				hair_cover_type="all"
+				beard_cover_type="type3"
+				modifier_group="cloth_unarmoured"
+				material_type="Cloth" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="pirate_tier_2_head"
+		name="{=3FKW6OLa}Pirate Turban with Stone"
+		subtype="pirate_tier_2_head"
+		mesh="pirate_tier_2_head"
+		culture="Culture.aserai"
+		weight="0.6"
+		appearance="4"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="11"
+				has_gender_variations="false"
+				hair_cover_type="type2"
+				modifier_group="cloth_unarmoured"
+				material_type="Cloth"
+				beard_cover_type="none" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="pirate_tier_3_head"
+		name="{=nnEMKAcy}Pirate Helmet with Turban"
+		subtype="pirate_tier_3_head"
+		mesh="pirate_tier_3_head"
+		culture="Culture.aserai"
+		weight="2.3"
+		appearance="3"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="70"
+				body_armor="2"
+				has_gender_variations="false"
+				hair_cover_type="all"
+				beard_cover_type="type2"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="southern_pirate_head"
+		name="{=3z2G3Db5}Corsair Helmet"
+		subtype="southern_pirate_head"
+		mesh="southern_pirate_head"
+		culture="Culture.aserai"
+		weight="1.3"
+		appearance="1"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="15"
+				body_armor="10"
+				has_gender_variations="false"
+				hair_cover_type="all"
+				beard_cover_type="all"
+				modifier_group="cloth_unarmoured"
+				material_type="Cloth" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="southern_pirate_turban"
+		name="{=lDV710IL}Corsair Feathered Helmet"
+		subtype="head_armor"
+		mesh="southern_pirate_turban"
+		culture="Culture.aserai"
+		weight="1"
+		appearance="3"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="9"
+				hair_cover_type="type1"
+				beard_cover_type="none"
+				modifier_group="cloth_unarmoured"
+				material_type="Cloth" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true"
+			Civilian="true" />
+	</Item>
+	<Item
+		id="pirate_a"
+		name="{=sRNDwJ85}Pirate Cloth Armor"
+		mesh="pirate_a"
+		culture="Culture.nord"
+		weight="3"
+		appearance="1"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="11"
+				leg_armor="11"
+				arm_armor="11"
+				covers_body="true"
+				modifier_group="cloth"
+				material_type="Cloth" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true"
+			Civilian="true" />
+	</Item>
+	<Item
+		id="pirate_tier_2_body"
+		name="{=wwlSmzZ6}Pirate Leather Armor"
+		mesh="pirate_tier_2_body"
+		culture="Culture.nord"
+		weight="5"
+		appearance="2"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="26"
+				leg_armor="11"
+				arm_armor="11"
+				covers_body="true"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true"
+			Civilian="true" />
+	</Item>
+	<Item
+		id="pirate_tier_3_armor"
+		name="{=*}Sky Chain Armor"
+		mesh="pirate_tier_3_armor"
+		culture="Culture.nord"
+		weight="14"
+		appearance="2"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="62"
+				leg_armor="13"
+				arm_armor="38"
+				covers_body="true"
+				modifier_group="chain"
+				material_type="Chainmail" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="southern_pirate_armor"
+		name="{=na3nZMbV}Corsair Cloth Armor"
+		mesh="southern_pirate_armor"
+		culture="Culture.neutral_culture"
+		weight="4"
+		appearance="1"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="17"
+				leg_armor="17"
+				arm_armor="17"
+				covers_body="true"
+				modifier_group="cloth"
+				material_type="Cloth" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true"
+			Civilian="true" />
+	</Item>
+	<!--  COH ARMOR-->
+	<Item
+		id="tacky_bandit"
+		name="{=jYNggNHl}Gilded Raider Armor"
+		mesh="tacky_bandit"
+		culture="Culture.neutral_culture"
+		weight="18"
+		appearance="5"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="40"
+				leg_armor="8"
+				arm_armor="8"
+				covers_body="true"
+				modifier_group="chain"
+				material_type="Chainmail" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="tacky_bandit_helmet"
+		name="{=SbVmtrUw}Feathered Helmet"
+		subtype="tacky_bandit_helmet"
+		mesh="tacky_bandit_helmet"
+		culture="Culture.neutral_culture"
+		weight="2.5"
+		appearance="3"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="29"
+				hair_cover_type="all"
+				beard_cover_type="none"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="tacky_bandit_helmet_b"
+		name="{=LYjawjAg}Plumed Bandit Helmet"
+		subtype="tacky_bandit_helmet_b"
+		mesh="tacky_bandit_helmet_b"
+		culture="Culture.neutral_culture"
+		weight="3.0"
+		appearance="3.3"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="35"
+				hair_cover_type="all"
+				beard_cover_type="none"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="tacky_bandit_helmet_c"
+		name="{=4RGsWCZp}Serpenthide Plume Helmet"
+		subtype="tacky_bandit_helmet_c"
+		mesh="tacky_bandit_helmet_c"
+		culture="Culture.neutral_culture"
+		weight="2"
+		appearance="3.2"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="22"
+				hair_cover_type="all"
+				beard_cover_type="none"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="tacky_bandit_shoulder"
+		name="{=eigRPme7}Gilded Raider Shoulder"
+		mesh="tacky_bandit_shoulder"
+		culture="Culture.neutral_culture"
+		weight="3"
+		appearance="4"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="10"
+				arm_armor="9"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			Civilian="true"
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="tacky_bandit_shoulder_b"
+		name="{=aVqWDZFA}Plumed Serpenthide Shoulder"
+		mesh="tacky_bandit_shoulder_b"
+		culture="Culture.neutral_culture"
+		weight="2"
+		appearance="3"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="7"
+				arm_armor="4"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Civilian="true"
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="tacky_bandit_bracer"
+		name="{=lCaC2QVC}Gilded Raider Bracers"
+		mesh="tacky_bandit_bracer"
+		culture="Culture.neutral_culture"
+		weight="1.4"
+		appearance="4"
+		Type="HandArmor">
+		<ItemComponent>
+			<Armor
+				arm_armor="20"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			Civilian="false" />
+	</Item>
+	<Item
+		id="tacky_bandit_boot"
+		name="{=US2w3NXN}Gilded Raider Boots"
+		mesh="tacky_bandit_boot"
+		culture="Culture.neutral_culture"
+		weight="2.6"
+		appearance="3"
+		Type="LegArmor">
+		<ItemComponent>
+			<Armor
+				leg_armor="18"
+				covers_legs="true"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="bandit_hybrid_armor_helmet_a"
+		name="{=Y3RErkMr}Raider Fur Helmet"
+		subtype="head_armor"
+		mesh="bandit_hybrid_armor_helmet_a"
+		culture="Culture.neutral_culture"
+		weight="0.8"
+		appearance="2"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="13"
+				stealth_factor="15"
+				has_gender_variations="false"
+				hair_cover_type="all"
+				beard_cover_type="all"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Stealth="true" />
+	</Item>
+	<Item
+		id="bandit_hybrid_armor_helmet_b"
+		name="{=vkz9JMS4}Raider Reinforced Fur Helmet"
+		subtype="head_armor"
+		mesh="bandit_hybrid_armor_helmet_b"
+		culture="Culture.neutral_culture"
+		weight="2.1"
+		appearance="1.3"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="22"
+				stealth_factor="10"
+				has_gender_variations="false"
+				hair_cover_type="all"
+				beard_cover_type="all"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			Stealth="true" />
+	</Item>
+	<Item
+		id="bandit_hybrid_armor_shoulder_a"
+		name="{=MNVp3MUF}Raider Fur Shoulderguard"
+		mesh="bandit_hybrid_armor_shoulder_a"
+		culture="Culture.neutral_culture"
+		subtype="body_armor"
+		weight="0.85"
+		appearance="3"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="5"
+				arm_armor="2"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags />
+	</Item>
+	<Item
+		id="bandit_hybrid_armor_shoulder_b"
+		name="{=HabHagNK}Raider Reinforced Shoulderguard"
+		mesh="bandit_hybrid_armor_shoulder_b"
+		culture="Culture.neutral_culture"
+		subtype="body_armor"
+		weight="1.8"
+		appearance="3"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="14"
+				arm_armor="5"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags />
+	</Item>
+	<Item
+		id="bandit_hybrid_armor_a"
+		name="{=mWbA1P4z}Raider Bronze Clothing"
+		subtype="body_armor"
+		mesh="bandit_hybrid_armor_a"
+		culture="Culture.neutral_culture"
+		weight="4"
+		appearance="2"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="14"
+				arm_armor="2"
+				has_gender_variations="true"
+				covers_body="true"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="bandit_hybrid_armor_b"
+		name="{=ecc2QSuK}Raider Iron Clothing"
+		subtype="body_armor"
+		mesh="bandit_hybrid_armor_b"
+		culture="Culture.neutral_culture"
+		weight="4"
+		appearance="3"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="22"
+				arm_armor="2"
+				has_gender_variations="true"
+				covers_body="true"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="bandit_hybrid_armor_c"
+		name="{=beShQCIS}Raider Clothes"
+		subtype="body_armor"
+		mesh="bandit_hybrid_armor_c"
+		culture="Culture.neutral_culture"
+		weight="3"
+		appearance="1.5"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="6"
+				arm_armor="2"
+				has_gender_variations="true"
+				covers_body="true"
+				modifier_group="cloth_unarmoured"
+				material_type="Cloth" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="bandit_hybrid_armor_gloves_a"
+		name="{=9uJYaxe3}Raider Bronze Gloves"
+		mesh="bandit_hybrid_armor_gloves_a"
+		culture="Culture.neutral_culture"
+		weight="2"
+		appearance="3"
+		Type="HandArmor">
+		<ItemComponent>
+			<Armor
+				arm_armor="18"
+				covers_hands="true"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags />
+	</Item>
+	<Item
+		id="bandit_hybrid_armor_boots_a"
+		name="{=GL5XuZUs}Raider Bronze Boots"
+		mesh="bandit_hybrid_armor_boots_a"
+		culture="Culture.neutral_culture"
+		weight="2.4"
+		appearance="3"
+		Type="LegArmor">
+		<ItemComponent>
+			<Armor
+				leg_armor="18"
+				covers_legs="true"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<!-- #nord king armor -->
+	<Item
+		id="nord_king_armor"
+		name="{=ar8zJlCr}Mastercrafted Northern Armor"
+		mesh="nord_king_armor"
+		culture="Culture.nord"
+		weight="28"
+		appearance="6"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="55"
+				leg_armor="20"
+				arm_armor="12"
+				covers_body="true"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="nord_king_crown"
+		name="{=MX73rUwD}Northern Majestic Crown"
+		subtype="head_armor"
+		mesh="nord_king_crown"
+		culture="Culture.nord"
+		weight="0.3"
+		appearance="6"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="4"
+				has_gender_variations="false"
+				hair_cover_type="none"
+				beard_cover_type="none"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			Civilian="true"
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="nord_king_shoulder_armor"
+		name="{=PrUts5OS}Northern Majestic Shoulder"
+		mesh="nord_king_shoulder_armor"
+		culture="Culture.nord"
+		weight="1"
+		appearance="6"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="10"
+				arm_armor="4"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			Civilian="true"
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="hybrid_armor_boots_b"
+		name="{=YHmObN5p}Majectic Iron Boots"
+		mesh="bandit_hybrid_armor_boots_b"
+		culture="Culture.nord"
+		weight="2"
+		appearance="4"
+		Type="LegArmor">
+		<ItemComponent>
+			<Armor
+				leg_armor="22"
+				covers_legs="true"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="hybrid_armor_gloves_b"
+		name="{=CHhdu8A3}Majestic Gloves"
+		mesh="bandit_hybrid_armor_gloves_b"
+		culture="Culture.nord"
+		weight="1.8"
+		appearance="4"
+		Type="HandArmor">
+		<ItemComponent>
+			<Armor
+				arm_armor="22"
+				covers_hands="true"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags />
+	</Item>
+	<Item
+		id="nord_king_armor_b"
+		name="{=QELt180J}Gilded Noble Armor"
+		mesh="nord_king_armor_b"
+		culture="Culture.nord"
+		weight="28"
+		appearance="6"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="52"
+				leg_armor="10"
+				arm_armor="8"
+				covers_body="true"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="nord_king_shoulder_armor_b"
+		name="{=S7jzipVJ}Gilded Noble Shoulder"
+		mesh="nord_king_shoulder_armor_b"
+		culture="Culture.nord"
+		weight="1"
+		appearance="6"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="10"
+				arm_armor="2"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			Civilian="true"
+			UseTeamColor="true" />
+	</Item>
+	<!-- #End -->
+	<!-- #nord king armor -->
+	<Item
+		id="stealth_bow"
+		name="{=Mof8L5Oa}Whispering Shadow"
+		body_name="bo_short_bow_c"
+		mesh="stealth_bow"
+		weight="0.45"
+		difficulty="0"
+		appearance="1"
+		is_merchandise="false"
+		Type="Bow"
+		item_holsters="bow_hip:bow_hip_2">
+		<ItemComponent>
+			<Weapon
+				weapon_class="Bow"
+				ammo_class="Arrow"
+				ammo_limit="1"
+				thrust_speed="72"
+				speed_rating="67"
+				missile_speed="54"
+				weapon_length="106"
+				accuracy="99"
+				thrust_damage="30"
+				thrust_damage_type="Pierce"
+				item_usage="bow"
+				physics_material="wood_weapon"
+				center_of_mass="0.0,0,-0.1">
+				<WeaponFlags
+					RangedWeapon="true"
+					HasString="true"
+					StringHeldByHand="true"
+					NotUsableWithOneHand="true"
+					TwoHandIdleOnMount="true"
+					AutoReload="true"
+					UnloadWhenSheathed="true"
+					CanBeUsedWhileCrouched="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			Stealth="true"
+			ForceAttachOffHandPrimaryItemBone="true" />
+	</Item>
+	<Item
+		id="stealth_arrow"
+		name="{=peTfjzWZ}Whisper Arrows"
+		body_name="bo_capsule_arrow"
+		holster_body_name="bo_stealth_quiver"
+		mesh="stealth_arrow"
+		holster_mesh="stealth_quiver"
+		holster_mesh_with_weapon="stealth_quiver"
+		subtype="arrows"
+		flying_mesh="arrow_bl_flying"
+		weight="0.06"
+		difficulty="0"
+		appearance="1"
+		Type="Arrows"
+		item_holsters="quiver_back_lower:quiver_back_lower_2"
+		holster_position_shift="0,0,0.15">
+		<ItemComponent>
+			<Weapon
+				weapon_class="Arrow"
+				stack_amount="20"
+				thrust_speed="0"
+				speed_rating="0"
+				physics_material="missile"
+				missile_speed="5"
+				weapon_length="97"
+				thrust_damage="2"
+				thrust_damage_type="Pierce"
+				item_usage="arrow_top"
+				passby_sound_code="event:/mission/combat/missile/passby"
+				rotation="0, -80, 25"
+				sticking_position="0,-0.97,0"
+				sticking_rotation="90,0,0"
+				center_of_mass="0,0.0,-0.13"
+				modifier_group="arrow">
+				<WeaponFlags
+					Consumable="true"
+					AmmoSticksWhenShot="true"
+					AmmoBreaksOnBounceBack="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags />
+	</Item>
+	<!--  #Nord Shields  -->
+	<Item
+		id="nord_shield_tier_2_d"
+		name="{=F8ZJza3k}Ropebound Shield"
+		body_name="bo_cap_nord_shield_tier_2_d"
+		shield_body_name="bo_nord_shield_tier_2_d"
+		recalculate_body="false"
+		mesh="nord_shield_tier_2_d"
+		culture="Culture.nord"
+		using_tableau="true"
+		weight="4.4"
+		difficulty="0"
+		appearance="1"
+		Type="Shield"
+		item_holsters="shield_round:shield_4"
+		has_lower_holster_priority="true"
+		holster_position_shift="0,0,0.02">
+		<ItemComponent>
+			<Weapon
+				weapon_class="LargeShield"
+				body_armor="4"
+				thrust_speed="84"
+				thrust_damage="5"
+				thrust_damage_type="Blunt"
+				speed_rating="85"
+				physics_material="wood_shield"
+				item_usage="hand_shield"
+				position="0.0, 0.0, 0.0"
+				rotation="-94.30,-51.50,18.20"
+				weapon_length="70"
+				center_of_mass="0, 0, 0"
+				hit_points="300"
+				modifier_group="shield">
+				<WeaponFlags
+					CanBlockRanged="true"
+					HasHitPoints="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			WoodenParry="true"
+			ForceAttachOffHandPrimaryItemBone="true"
+			HeldInOffHand="true" />
+	</Item>
+	<Item
+		id="nord_shield_tier_3_a"
+		name="{=C9GW6OSF}Leather Round Shield"
+		body_name="bo_cap_nord_shield_tier_3_a"
+		shield_body_name="bo_nord_shield_tier_3_a"
+		recalculate_body="false"
+		mesh="nord_shield_tier_3_a"
+		culture="Culture.nord"
+		using_tableau="true"
+		weight="4.7"
+		difficulty="0"
+		appearance="1.4"
+		Type="Shield"
+		item_holsters="shield_round:shield_4"
+		has_lower_holster_priority="true"
+		holster_position_shift="0,0,0.02">
+		<ItemComponent>
+			<Weapon
+				weapon_class="LargeShield"
+				body_armor="4"
+				thrust_speed="82"
+				thrust_damage="5"
+				thrust_damage_type="Blunt"
+				speed_rating="82"
+				physics_material="wood_shield"
+				item_usage="hand_shield"
+				position="0.0, 0.01, 0.0"
+				rotation="-94.30,-51.50,18.20"
+				weapon_length="70"
+				center_of_mass="0, 0, 0"
+				hit_points="440"
+				modifier_group="shield">
+				<WeaponFlags
+					CanBlockRanged="true"
+					HasHitPoints="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			WoodenParry="true"
+			ForceAttachOffHandPrimaryItemBone="true"
+			HeldInOffHand="true" />
+	</Item>
+	<Item
+		id="nord_shield_tier_3_b"
+		name="{=0XaVL52l}Fur Round Shield"
+		body_name="bo_cap_nord_shield_tier_3_b"
+		shield_body_name="bo_nord_shield_tier_3_b"
+		recalculate_body="false"
+		mesh="nord_shield_tier_3_b"
+		culture="Culture.nord"
+		using_tableau="true"
+		weight="4.7"
+		difficulty="0"
+		appearance="1.2"
+		Type="Shield"
+		item_holsters="shield_round:shield_4"
+		has_lower_holster_priority="true"
+		holster_position_shift="0,0,0.02">
+		<ItemComponent>
+			<Weapon
+				weapon_class="LargeShield"
+				body_armor="4"
+				thrust_speed="82"
+				thrust_damage="5"
+				thrust_damage_type="Blunt"
+				speed_rating="82"
+				physics_material="wood_shield"
+				item_usage="hand_shield"
+				position="0.0, 0.01, 0.0"
+				rotation="-94.30,-51.50,18.20"
+				weapon_length="70"
+				center_of_mass="0, 0, 0"
+				hit_points="450"
+				modifier_group="shield">
+				<WeaponFlags
+					CanBlockRanged="true"
+					HasHitPoints="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			WoodenParry="true"
+			ForceAttachOffHandPrimaryItemBone="true"
+			HeldInOffHand="true" />
+	</Item>
+	<Item
+		id="nord_shield_tier_4_a"
+		name="{=GAJbg0Jx}Nordic Decorated Targe"
+		body_name="bo_cap_nord_shield_tier_4_a"
+		shield_body_name="bo_nord_shield_tier_4_a"
+		recalculate_body="false"
+		mesh="nord_shield_tier_4_a"
+		culture="Culture.nord"
+		using_tableau="true"
+		weight="4.7"
+		difficulty="0"
+		appearance="0.9"
+		Type="Shield"
+		item_holsters="shield_round:shield_4"
+		has_lower_holster_priority="true"
+		holster_position_shift="0,0,0.02">
+		<ItemComponent>
+			<Weapon
+				weapon_class="LargeShield"
+				body_armor="5"
+				thrust_speed="82"
+				thrust_damage="5"
+				thrust_damage_type="Blunt"
+				speed_rating="82"
+				physics_material="wood_shield"
+				item_usage="hand_shield"
+				position="0.0, 0.01, 0.0"
+				rotation="-94.30,-51.50,18.20"
+				weapon_length="70"
+				center_of_mass="0, 0, 0"
+				hit_points="500"
+				modifier_group="shield">
+				<WeaponFlags
+					CanBlockRanged="true"
+					HasHitPoints="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			WoodenParry="true"
+			ForceAttachOffHandPrimaryItemBone="true"
+			HeldInOffHand="true" />
+	</Item>
+	<Item
+		id="nord_shield_tier_4_b"
+		name="{=hJbTKM2u}Nordic Targe"
+		body_name="bo_cap_nord_shield_tier_4_b"
+		shield_body_name="bo_nord_shield_tier_4_b"
+		recalculate_body="false"
+		mesh="nord_shield_tier_4_b"
+		culture="Culture.nord"
+		using_tableau="true"
+		weight="4.7"
+		difficulty="0"
+		appearance="0.9"
+		Type="Shield"
+		item_holsters="shield_round:shield_4"
+		has_lower_holster_priority="true"
+		holster_position_shift="0,0,0.02">
+		<ItemComponent>
+			<Weapon
+				weapon_class="LargeShield"
+				body_armor="5"
+				thrust_speed="82"
+				thrust_damage="5"
+				thrust_damage_type="Blunt"
+				speed_rating="82"
+				physics_material="wood_shield"
+				item_usage="hand_shield"
+				position="0.0, 0.01, 0.0"
+				rotation="-94.30,-51.50,18.20"
+				weapon_length="70"
+				center_of_mass="0, 0, 0"
+				hit_points="500"
+				modifier_group="shield">
+				<WeaponFlags
+					CanBlockRanged="true"
+					HasHitPoints="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			WoodenParry="true"
+			ForceAttachOffHandPrimaryItemBone="true"
+			HeldInOffHand="true" />
+	</Item>
+	<Item
+		id="nord_shield_tier_5_a"
+		name="{=LUZRUXQg}Steel Cross Shield"
+		body_name="bo_cap_nord_shield_tier_5_a"
+		shield_body_name="bo_nord_shield_tier_5_a"
+		recalculate_body="false"
+		mesh="nord_shield_tier_5_a"
+		culture="Culture.nord"
+		using_tableau="true"
+		weight="4.8"
+		difficulty="0"
+		appearance="0.9"
+		Type="Shield"
+		item_holsters="shield_round:shield_4"
+		has_lower_holster_priority="true"
+		holster_position_shift="0,0,0.02">
+		<ItemComponent>
+			<Weapon
+				weapon_class="LargeShield"
+				body_armor="5"
+				thrust_speed="86"
+				thrust_damage="5"
+				thrust_damage_type="Blunt"
+				speed_rating="86"
+				physics_material="wood_shield"
+				item_usage="hand_shield"
+				position="0.0, 0.01, 0.0"
+				rotation="-94.30,-51.50,18.20"
+				weapon_length="70"
+				center_of_mass="0, 0, 0"
+				hit_points="520"
+				modifier_group="shield">
+				<WeaponFlags
+					CanBlockRanged="true"
+					HasHitPoints="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			WoodenParry="true"
+			ForceAttachOffHandPrimaryItemBone="true"
+			HeldInOffHand="true" />
+	</Item>
+	<Item
+		id="nord_shield_tier_5_b"
+		name="{=1vXF13ka}Steel Ornamented Shield"
+		body_name="bo_cap_nord_shield_tier_5_b"
+		shield_body_name="bo_nord_shield_tier_5_b"
+		recalculate_body="false"
+		mesh="nord_shield_tier_5_b"
+		culture="Culture.nord"
+		using_tableau="true"
+		weight="4.8"
+		difficulty="0"
+		appearance="0.9"
+		Type="Shield"
+		item_holsters="shield_round:shield_4"
+		has_lower_holster_priority="true"
+		holster_position_shift="0,0,0.02">
+		<ItemComponent>
+			<Weapon
+				weapon_class="LargeShield"
+				body_armor="5"
+				thrust_speed="86"
+				thrust_damage="5"
+				thrust_damage_type="Blunt"
+				speed_rating="86"
+				physics_material="wood_shield"
+				item_usage="hand_shield"
+				position="0.0, 0.01, 0.0"
+				rotation="-94.30,-51.50,18.20"
+				weapon_length="70"
+				center_of_mass="0, 0, 0"
+				hit_points="520"
+				modifier_group="shield">
+				<WeaponFlags
+					CanBlockRanged="true"
+					HasHitPoints="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			WoodenParry="true"
+			ForceAttachOffHandPrimaryItemBone="true"
+			HeldInOffHand="true" />
+	</Item>
+	<Item
+		id="nord_shield_tier_6_a"
+		name="{=3xujua9x}Decorated Nordic Shield"
+		body_name="bo_cap_nord_shield_tier_6_a"
+		shield_body_name="bo_nord_shield_tier_6_a"
+		recalculate_body="false"
+		mesh="nord_shield_tier_6_a"
+		culture="Culture.nord"
+		using_tableau="true"
+		weight="4.9"
+		difficulty="0"
+		appearance="1.5"
+		Type="Shield"
+		item_holsters="shield_round:shield_4"
+		has_lower_holster_priority="true"
+		holster_position_shift="0,0,0.02">
+		<ItemComponent>
+			<Weapon
+				weapon_class="LargeShield"
+				body_armor="5"
+				thrust_speed="86"
+				thrust_damage="5"
+				thrust_damage_type="Blunt"
+				speed_rating="86"
+				physics_material="metal_shield"
+				item_usage="hand_shield"
+				position="0.0, 0.01, 0.0"
+				rotation="-94.30,-51.50,18.20"
+				weapon_length="70"
+				center_of_mass="0, 0, 0"
+				hit_points="540"
+				modifier_group="shield">
+				<WeaponFlags
+					CanBlockRanged="true"
+					HasHitPoints="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			WoodenParry="true"
+			ForceAttachOffHandPrimaryItemBone="true"
+			HeldInOffHand="true" />
+	</Item>
+	<Item
+		id="nord_shield_tier_6_b"
+		name="{=aJsihC9U}Ornamented Nordic Shield"
+		body_name="bo_cap_nord_shield_tier_6_b"
+		shield_body_name="bo_nord_shield_tier_6_b"
+		recalculate_body="false"
+		mesh="nord_shield_tier_6_b"
+		culture="Culture.nord"
+		using_tableau="true"
+		weight="4.9"
+		difficulty="0"
+		appearance="1.5"
+		Type="Shield"
+		item_holsters="shield_round:shield_4"
+		has_lower_holster_priority="true"
+		holster_position_shift="0,0,0.02">
+		<ItemComponent>
+			<Weapon
+				weapon_class="LargeShield"
+				body_armor="5"
+				thrust_speed="88"
+				thrust_damage="5"
+				thrust_damage_type="Blunt"
+				speed_rating="88"
+				physics_material="metal_shield"
+				item_usage="hand_shield"
+				position="0.0, 0.01, 0.0"
+				rotation="-94.30,-51.50,18.20"
+				weapon_length="70"
+				center_of_mass="0, 0, 0"
+				hit_points="540"
+				modifier_group="shield">
+				<WeaponFlags
+					CanBlockRanged="true"
+					HasHitPoints="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			WoodenParry="true"
+			ForceAttachOffHandPrimaryItemBone="true"
+			HeldInOffHand="true" />
+	</Item>
+	<!--  #ballista  -->
+	<Item
+		multiplayer_item="false"
+		id="ballista_c_projectile"
+		name="{=6Db7aDbF}Ballista Arrows"
+		body_name="bo_ballista_projectile_a"
+		holster_body_name="bo_axe_short"
+		mesh="ballista_projectile_a"
+		holster_mesh="quiver"
+		is_merchandise="false"
+		subtype="arrows"
+		flying_mesh="ballista_projectile_flying"
+		weight="0.8"
+		difficulty="0"
+		appearance="1"
+		Type="Arrows"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="Arrow"
+				stack_amount="20"
+				physics_material="ballista_missile"
+				thrust_speed="0"
+				speed_rating="0"
+				missile_speed="80"
+				weapon_length="95"
+				thrust_damage="5000"
+				thrust_damage_type="Pierce"
+				item_usage=""
+				flying_sound_code="event:/mission/combat/missile/foley/passby"
+				sticking_rotation="90,0,0"
+				sticking_position="0,-1.2,0"
+				center_of_mass="0,0,-0.3">
+				<WeaponFlags
+					Consumable="true"
+					AmmoSticksWhenShot="true"
+					CanPenetrateShield="true"
+					MultiplePenetration="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			CannotBePickedUp="true" />
+	</Item>
+	<Item
+		multiplayer_item="false"
+		id="ballista_c_projectile_burning"
+		name="{=6Db7aDbF}Ballista Arrows"
+		prefab="burning_ballista_projectile"
+		body_name="bo_ballista_projectile_a"
+		holster_body_name="bo_axe_short"
+		mesh="ballista_projectile_b"
+		holster_mesh="quiver"
+		is_merchandise="false"
+		subtype="arrows"
+		flying_mesh="ballista_projectile_flying"
+		weight="0.8"
+		difficulty="0"
+		appearance="1"
+		Type="Arrows"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="Arrow"
+				stack_amount="20"
+				physics_material="burning_ballista"
+				thrust_speed="0"
+				speed_rating="0"
+				missile_speed="80"
+				weapon_length="95"
+				thrust_damage="3500"
+				fire_damage="750"
+				thrust_damage_type="Pierce"
+				item_usage=""
+				flying_sound_code="event:/mission/combat/missile/foley/passby"
+				trail_particle_name="psys_game_missile_flame"
+				sticking_rotation="90,0,0"
+				sticking_position="0,-1.2,0"
+				center_of_mass="0,0,-0.3">
+				<WeaponFlags
+					Consumable="true"
+					AmmoSticksWhenShot="true"
+					Burning="true"
+					CanPenetrateShield="true"
+					MultiplePenetration="true"
+					LeavesTrail="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			CannotBePickedUp="true" />
+	</Item>
+	<Item
+		multiplayer_item="false"
+		id="burning_arrows"
+		name="{=coP0JrWQ}Burning Arrows"
+		prefab="burning_arrow"
+		body_name="bo_capsule_arrow"
+		holster_body_name="bo_arrow_bl_i_quiver"
+		mesh="arrow_bl_i"
+		weight="0.043"
+		appearance="1"
+		holster_mesh="arrow_bl_i_quiver"
+		holster_mesh_with_weapon="arrow_bl_i_quiver"
+		Type="Arrows"
+		item_holsters="quiver_back_middle:quiver_bolts_2:quiver_bolts"
+		holster_position_shift="0.0,0.0,0.15">
+		<ItemComponent>
+			<Weapon
+				weapon_class="Arrow"
+				stack_amount="27"
+				thrust_speed="0"
+				speed_rating="0"
+				physics_material="missile"
+				missile_speed="10"
+				weapon_length="97"
+				thrust_damage="1"
+				fire_damage="16"
+				thrust_damage_type="Pierce"
+				item_usage="arrow_right"
+				passby_sound_code="event:/mission/combat/missile/passby"
+				rotation="0, -80, 25"
+				sticking_position="0,-0.97,0"
+				sticking_rotation="90,0,0"
+				center_of_mass="0,0,-0.13"
+				modifier_group="arrow">
+				<WeaponFlags
+					Consumable="true"
+					AmmoSticksWhenShot="true"
+					AmmoBreaksOnBounceBack="true"
+					Burning="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags />
+	</Item>
+	<Item
+		multiplayer_item="false"
+		id="burning_bolts"
+		name="{=uovbbXnc}Burning Bolts"
+		prefab="burning_bolt"
+		body_name="bo_capsule_arrow"
+		holster_body_name="bo_axe_short"
+		mesh="bolt_bl_c"
+		value="1"
+		is_merchandise="false"
+		holster_mesh="bolt_bl_c_quiver"
+		holster_mesh_with_weapon="bolt_bl_c_quiver"
+		weight="0.05"
+		appearance="1"
+		Type="Bolts"
+		item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top">
+		<ItemComponent>
+			<Weapon
+				weapon_class="Bolt"
+				stack_amount="25"
+				thrust_speed="0"
+				thrust_damage_type="Pierce"
+				thrust_damage="0"
+				fire_damage="17"
+				speed_rating="0"
+				missile_speed="10"
+				weapon_length="37"
+				item_usage=""
+				passby_sound_code="event:/mission/combat/missile/passby"
+				rotation="180, 0, 0"
+				physics_material="missile"
+				sticking_position="0,-0.37,0"
+				sticking_rotation="90,0,0"
+				center_of_mass="0,0,-0.1"
+				modifier_group="bolt">
+				<WeaponFlags
+					AttachAmmoToVisual="true"
+					Consumable="true"
+					AmmoSticksWhenShot="true"
+					Burning="true"
+					AmmoBreaksOnBounceBack="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			ForceAttachOffHandPrimaryItemBone="true" />
+	</Item>
+	<Item
+		multiplayer_item="false"
+		id="ballista_c_projectile_pot"
+		name="{=HP1GzM8l}Fire Pot"
+		is_merchandise="false"
+		body_name="bo_ballista_projectile_d"
+		holster_body_name="bo_axe_short"
+		flying_mesh="ballista_projectile_d"
+		mesh="ballista_projectile_d"
+		holster_mesh=""
+		subtype="arrows"
+		weight="15"
+		difficulty="0"
+		appearance="1"
+		Type="Thrown"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="BallistaBoulder"
+				ammo_class="Boulder"
+				stack_amount="1"
+				position="0.05, -0.15, 0"
+				physics_material="burning_jar"
+				thrust_speed="100"
+				speed_rating="0"
+				missile_speed="8"
+				weapon_length="95"
+				thrust_damage="350"
+				fire_damage="2500"
+				item_usage="heavy_stone"
+				flying_sound_code="event:/mission/combat/boulder/passby"
+				trail_particle_name="psys_game_burning_jar_trail"
+				rotation_speed="2, 0.5, 0">
+				<WeaponFlags
+					RangedWeapon="true"
+					NotUsableWithOneHand="true"
+					TwoHandIdleOnMount="true"
+					CanPenetrateShield="true"
+					MissileWithPhysics="true"
+					UseHandAsThrowBase="true"
+					Consumable="true"
+					LeavesTrail="true"
+					Burning="true"
+					AffectsAreaBig="true"
+					AmmoBreaksOnBounceBack="true"
+					CanKillEvenIfBlunt="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			QuickFadeOut="true"
+			CannotBePickedUp="true"
+			DropOnWeaponChange="true"
+			DropOnAnyAction="true" />
+	</Item>
+	<Item
+		multiplayer_item="false"
+		id="ballista_c_projectile_stone"
+		name="{=pzfbPbWW}Boulder"
+		is_merchandise="false"
+		body_name="bo_ballista_projectile_c"
+		holster_body_name="bo_axe_short"
+		mesh="ballista_projectile_c"
+		holster_mesh=""
+		flying_mesh="ballista_projectile_c"
+		subtype="arrows"
+		weight="15"
+		difficulty="0"
+		appearance="1"
+		Type="Thrown"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="BallistaBoulder"
+				ammo_class="Boulder"
+				stack_amount="1"
+				position="0.05, -0.15, 0"
+				center_of_mass="0,0,0"
+				physics_material="boulder_stone"
+				thrust_speed="100"
+				speed_rating="0"
+				missile_speed="8"
+				weapon_length="95"
+				thrust_damage="1650"
+				item_usage="heavy_stone"
+				flying_sound_code="event:/mission/combat/boulder/passby"
+				rotation_speed="2, 0.5, 0">
+				<WeaponFlags
+					RangedWeapon="true"
+					Consumable="true"
+					NotUsableWithOneHand="true"
+					TwoHandIdleOnMount="true"
+					CanPenetrateShield="true"
+					CanKnockDown="true"
+					MissileWithPhysics="true"
+					UseHandAsThrowBase="true"
+					LeavesTrail="true"
+					AmmoCanBreakOnBounceBack="true"
+					AffectsArea="true"
+					CanKillEvenIfBlunt="true"
+					MultiplePenetration="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			QuickFadeOut="true"
+			CannotBePickedUp="true"
+			DropOnWeaponChange="true"
+			DropOnAnyAction="true" />
+	</Item>
+	<Item
+		multiplayer_item="false"
+		id="ballista_c_projectile_iron"
+		name="{=pzfbPbWW}Iron"
+		is_merchandise="false"
+		body_name="bo_ballista_projectile_c"
+		holster_body_name="bo_axe_short"
+		mesh="ballista_projectile_g"
+		holster_mesh=""
+		flying_mesh="ballista_projectile_g_flying"
+		subtype="arrows"
+		weight="15"
+		difficulty="0"
+		appearance="1"
+		Type="Thrown"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="BallistaBoulder"
+				ammo_class="Boulder"
+				stack_amount="1"
+				position="0.05, -0.15, 0"
+				center_of_mass="0,0,0"
+				physics_material="boulder_stone"
+				thrust_speed="100"
+				speed_rating="0"
+				missile_speed="8"
+				weapon_length="95"
+				thrust_damage="2300"
+				item_usage="heavy_stone"
+				flying_sound_code="event:/mission/combat/boulder/passby"
+				rotation_speed="2, 0.5, 0">
+				<WeaponFlags
+					RangedWeapon="true"
+					Consumable="true"
+					NotUsableWithOneHand="true"
+					TwoHandIdleOnMount="true"
+					CanPenetrateShield="true"
+					CanKnockDown="true"
+					MissileWithPhysics="true"
+					UseHandAsThrowBase="true"
+					LeavesTrail="true"
+					AmmoCanBreakOnBounceBack="true"
+					AffectsArea="true"
+					CanKillEvenIfBlunt="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			QuickFadeOut="true"
+			CannotBePickedUp="true"
+			DropOnWeaponChange="true"
+			DropOnAnyAction="true" />
+	</Item>
+	<Item
+		multiplayer_item="false"
+		id="ballista_c_projectile_grape"
+		name="{=ZeU1fvdz}Grapeshot Stack"
+		is_merchandise="false"
+		body_name="bo_ballista_projectile_c"
+		holster_body_name="bo_axe_short"
+		mesh="ballista_projectile_c"
+		holster_mesh=""
+		flying_mesh="ballista_projectile_c"
+		subtype="arrows"
+		weight="15"
+		difficulty="0"
+		appearance="1"
+		Type="Thrown"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="BallistaBoulder"
+				ammo_class="Boulder"
+				stack_amount="1"
+				position="0.05, -0.15, 0"
+				center_of_mass="0,0,0"
+				physics_material="boulder_stone"
+				thrust_speed="100"
+				speed_rating="0"
+				missile_speed="8"
+				weapon_length="95"
+				thrust_damage="120"
+				item_usage="heavy_stone"
+				flying_sound_code="event:/mission/combat/boulder/passby"
+				rotation_speed="2, 0.5, 0">
+				<WeaponFlags
+					RangedWeapon="true"
+					Consumable="true"
+					NotUsableWithOneHand="true"
+					TwoHandIdleOnMount="true"
+					CanPenetrateShield="true"
+					CanKnockDown="true"
+					MissileWithPhysics="true"
+					UseHandAsThrowBase="true"
+					LeavesTrail="true"
+					AmmoCanBreakOnBounceBack="true"
+					CanKillEvenIfBlunt="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			QuickFadeOut="true"
+			CannotBePickedUp="true"
+			DropOnWeaponChange="true"
+			DropOnAnyAction="true" />
+	</Item>
+	<Item
+		multiplayer_item="false"
+		id="ballista_c_projectile_grape_projectile"
+		name="{=XGytILlt}Grapeshot Ammo"
+		is_merchandise="false"
+		body_name="bo_ballista_projectile_e"
+		holster_body_name="bo_axe_short"
+		mesh="ballista_projectile_e_flying"
+		holster_mesh=""
+		flying_mesh="ballista_projectile_e_flying"
+		subtype="arrows"
+		weight="15"
+		difficulty="0"
+		appearance="1"
+		Type="Thrown"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="BallistaStone"
+				ammo_class="Stone"
+				stack_amount="1"
+				position="0.05, -0.15, 0"
+				center_of_mass="0,0,0"
+				physics_material="boulder_stone"
+				thrust_speed="100"
+				speed_rating="0"
+				missile_speed="8"
+				weapon_length="95"
+				thrust_damage="125"
+				item_usage="heavy_stone"
+				flying_sound_code="event:/mission/combat/boulder/passby"
+				rotation_speed="2, 0.5, 0">
+				<WeaponFlags
+					RangedWeapon="true"
+					Consumable="true"
+					NotUsableWithOneHand="true"
+					TwoHandIdleOnMount="true"
+					CanPenetrateShield="true"
+					CanKnockDown="true"
+					MissileWithPhysics="true"
+					UseHandAsThrowBase="true"
+					LeavesTrail="true"
+					AmmoCanBreakOnBounceBack="true"
+					CanKillEvenIfBlunt="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			QuickFadeOut="true"
+			CannotBePickedUp="true"
+			DropOnWeaponChange="true"
+			DropOnAnyAction="true" />
+	</Item>
+	<Item
+		multiplayer_item="false"
+		id="ballista_c_projectile_grape_fire"
+		name="{=oiTOCwhg}Fire Grapeshot Stack"
+		is_merchandise="false"
+		body_name="bo_ballista_projectile_c"
+		holster_body_name="bo_axe_short"
+		mesh="ballista_projectile_f"
+		holster_mesh=""
+		flying_mesh="ballista_projectile_f_flying"
+		subtype="arrows"
+		weight="15"
+		difficulty="0"
+		appearance="1"
+		Type="Thrown"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="BallistaBoulder"
+				ammo_class="Boulder"
+				stack_amount="1"
+				position="0.05, -0.15, 0"
+				center_of_mass="0,0,0"
+				physics_material="boulder_stone"
+				thrust_speed="100"
+				speed_rating="0"
+				missile_speed="8"
+				weapon_length="95"
+				thrust_damage="120"
+				item_usage="heavy_stone"
+				flying_sound_code="event:/mission/combat/boulder/passby"
+				rotation_speed="2, 0.5, 0">
+				<WeaponFlags
+					RangedWeapon="true"
+					Consumable="true"
+					NotUsableWithOneHand="true"
+					TwoHandIdleOnMount="true"
+					CanPenetrateShield="true"
+					CanKnockDown="true"
+					MissileWithPhysics="true"
+					UseHandAsThrowBase="true"
+					LeavesTrail="true"
+					AmmoCanBreakOnBounceBack="true"
+					CanKillEvenIfBlunt="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			QuickFadeOut="true"
+			CannotBePickedUp="true"
+			DropOnWeaponChange="true"
+			DropOnAnyAction="true" />
+	</Item>
+	<Item
+		multiplayer_item="false"
+		id="ballista_c_projectile_grape_fire_projectile"
+		name="{=ic68RdeQ}Fire Grapeshot Ammo"
+		is_merchandise="false"
+		body_name="bo_ballista_projectile_e"
+		holster_body_name="bo_axe_short"
+		mesh="ballista_projectile_e_flying"
+		holster_mesh=""
+		flying_mesh="ballista_projectile_e_flying"
+		subtype="arrows"
+		weight="15"
+		difficulty="0"
+		appearance="1"
+		Type="Thrown"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="BallistaStone"
+				ammo_class="Stone"
+				stack_amount="1"
+				position="0.05, -0.15, 0"
+				center_of_mass="0,0,0"
+				physics_material="boulder_stone"
+				thrust_speed="100"
+				speed_rating="0"
+				missile_speed="8"
+				weapon_length="95"
+				thrust_damage="83"
+				fire_damage="125"
+				item_usage="heavy_stone"
+				flying_sound_code="event:/mission/combat/boulder/passby"
+				trail_particle_name="psys_game_burning_jar_trail"
+				rotation_speed="2, 0.5, 0">
+				<WeaponFlags
+					RangedWeapon="true"
+					Consumable="true"
+					NotUsableWithOneHand="true"
+					TwoHandIdleOnMount="true"
+					CanPenetrateShield="true"
+					CanKnockDown="true"
+					MissileWithPhysics="true"
+					UseHandAsThrowBase="true"
+					LeavesTrail="true"
+					Burning="true"
+					AmmoCanBreakOnBounceBack="true"
+					CanKillEvenIfBlunt="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			QuickFadeOut="true"
+			CannotBePickedUp="true"
+			DropOnWeaponChange="true"
+			DropOnAnyAction="true" />
+	</Item>
+	<Item
+		multiplayer_item="false"
+		id="mangonel_c_boulder"
+		name="{=pzfbPbWW}Boulder"
+		is_merchandise="false"
+		body_name="bo_projectile_rock"
+		holster_body_name="bo_axe_short"
+		mesh="projectile_rock"
+		holster_mesh=""
+		subtype="arrows"
+		weight="15"
+		difficulty="0"
+		appearance="1"
+		Type="Thrown"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="BallistaBoulder"
+				ammo_class="Boulder"
+				stack_amount="1"
+				position="0.05, -0.15, 0"
+				center_of_mass="0,0,0"
+				physics_material="boulder_stone"
+				thrust_speed="100"
+				speed_rating="0"
+				missile_speed="8"
+				weapon_length="95"
+				thrust_damage="100"
+				item_usage="heavy_stone"
+				flying_sound_code="event:/mission/combat/boulder/passby"
+				rotation_speed="2, 0.5, 0">
+				<WeaponFlags
+					RangedWeapon="true"
+					Consumable="true"
+					NotUsableWithOneHand="true"
+					TwoHandIdleOnMount="true"
+					CanPenetrateShield="true"
+					CanKnockDown="true"
+					MissileWithPhysics="true"
+					UseHandAsThrowBase="true"
+					LeavesTrail="true"
+					AmmoCanBreakOnBounceBack="true"
+					AffectsArea="true"
+					CanKillEvenIfBlunt="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			QuickFadeOut="true"
+			CannotBePickedUp="true"
+			DropOnWeaponChange="true"
+			DropOnAnyAction="true" />
+	</Item>
+	<Item
+		multiplayer_item="false"
+		id="mangonel_c_boulder_projectile"
+		name="{=pzfbPbWW}Boulder"
+		is_merchandise="false"
+		body_name="bo_projectile_rock"
+		holster_body_name="bo_axe_short"
+		mesh="projectile_rock"
+		holster_mesh=""
+		subtype="arrows"
+		weight="15"
+		difficulty="0"
+		appearance="1"
+		Type="Thrown"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="BallistaBoulder"
+				ammo_class="Boulder"
+				stack_amount="1"
+				position="0.05, -0.15, 0"
+				center_of_mass="0,0,0"
+				physics_material="boulder_stone"
+				thrust_speed="100"
+				speed_rating="0"
+				missile_speed="8"
+				weapon_length="95"
+				thrust_damage="2500"
+				item_usage="heavy_stone"
+				flying_sound_code="event:/mission/combat/boulder/passby"
+				rotation_speed="2, 0.5, 0">
+				<WeaponFlags
+					RangedWeapon="true"
+					Consumable="true"
+					NotUsableWithOneHand="true"
+					TwoHandIdleOnMount="true"
+					CanPenetrateShield="true"
+					CanKnockDown="true"
+					MissileWithPhysics="true"
+					UseHandAsThrowBase="true"
+					LeavesTrail="true"
+					AmmoCanBreakOnBounceBack="true"
+					AffectsArea="true"
+					CanKillEvenIfBlunt="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			QuickFadeOut="true"
+			CannotBePickedUp="true"
+			DropOnWeaponChange="true"
+			DropOnAnyAction="true" />
+	</Item>
+	<Item
+		multiplayer_item="false"
+		id="mangonel_c_pot"
+		name="{=HP1GzM8l}Fire Pot"
+		is_merchandise="false"
+		body_name="bo_projectile_rock"
+		holster_body_name="bo_axe_short"
+		flying_mesh="projectile_pot"
+		mesh="projectile_pot"
+		holster_mesh=""
+		subtype="arrows"
+		weight="15"
+		difficulty="0"
+		appearance="1"
+		Type="Thrown"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="BallistaBoulder"
+				ammo_class="Boulder"
+				stack_amount="1"
+				position="0.05, -0.15, 0"
+				physics_material="burning_jar"
+				thrust_speed="100"
+				speed_rating="0"
+				missile_speed="8"
+				weapon_length="95"
+				thrust_damage="200"
+				fire_damage="1000"
+				item_usage="heavy_stone"
+				flying_sound_code="event:/mission/combat/boulder/passby"
+				trail_particle_name="psys_game_burning_jar_trail"
+				rotation_speed="2, 0.5, 0">
+				<WeaponFlags
+					RangedWeapon="true"
+					NotUsableWithOneHand="true"
+					TwoHandIdleOnMount="true"
+					CanPenetrateShield="true"
+					MissileWithPhysics="true"
+					UseHandAsThrowBase="true"
+					Consumable="true"
+					LeavesTrail="true"
+					Burning="true"
+					AffectsAreaBig="true"
+					AmmoBreaksOnBounceBack="true"
+					CanKillEvenIfBlunt="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			QuickFadeOut="true"
+			CannotBePickedUp="true"
+			DropOnWeaponChange="true"
+			DropOnAnyAction="true" />
+	</Item>
+	<Item
+		multiplayer_item="false"
+		id="mangonel_c_pot_projectile"
+		name="{=HP1GzM8l}Fire Pot"
+		is_merchandise="false"
+		body_name="bo_projectile_rock"
+		holster_body_name="bo_axe_short"
+		flying_mesh="projectile_pot"
+		mesh="projectile_pot"
+		holster_mesh=""
+		subtype="arrows"
+		weight="15"
+		difficulty="0"
+		appearance="1"
+		Type="Thrown"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="BallistaBoulder"
+				ammo_class="Boulder"
+				stack_amount="1"
+				position="0.05, -0.15, 0"
+				physics_material="burning_jar"
+				thrust_speed="100"
+				speed_rating="0"
+				missile_speed="8"
+				weapon_length="95"
+				thrust_damage="2300"
+				fire_damage="1000"
+				item_usage="heavy_stone"
+				flying_sound_code="event:/mission/combat/boulder/passby"
+				trail_particle_name="psys_game_burning_jar_trail"
+				rotation_speed="2, 0.5, 0">
+				<WeaponFlags
+					RangedWeapon="true"
+					NotUsableWithOneHand="true"
+					TwoHandIdleOnMount="true"
+					CanPenetrateShield="true"
+					MissileWithPhysics="true"
+					UseHandAsThrowBase="true"
+					Consumable="true"
+					LeavesTrail="true"
+					Burning="true"
+					AffectsAreaBig="true"
+					AmmoBreaksOnBounceBack="true"
+					CanKillEvenIfBlunt="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			QuickFadeOut="true"
+			CannotBePickedUp="true"
+			DropOnWeaponChange="true"
+			DropOnAnyAction="true" />
+	</Item>
+	<Item
+		multiplayer_item="false"
+		id="mangonel_c_grapeshot_stack"
+		name="{=ZeU1fvdz}Grapeshot Stack"
+		is_merchandise="false"
+		body_name="bo_projectile_grapeshot_carry"
+		holster_body_name="bo_axe_short"
+		mesh="projectile_grapeshot_carry"
+		holster_mesh=""
+		subtype="arrows"
+		weight="15"
+		difficulty="0"
+		appearance="1"
+		Type="Thrown"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="BallistaBoulder"
+				ammo_class="Boulder"
+				stack_amount="1"
+				position="0.05, -0.15, 0"
+				center_of_mass="0,0,0"
+				physics_material="boulder_stone"
+				thrust_speed="100"
+				speed_rating="0"
+				missile_speed="8"
+				weapon_length="95"
+				thrust_damage="120"
+				item_usage="heavy_stone"
+				flying_sound_code="event:/mission/combat/boulder/passby"
+				rotation_speed="2, 0.5, 0">
+				<WeaponFlags
+					RangedWeapon="true"
+					Consumable="true"
+					NotUsableWithOneHand="true"
+					TwoHandIdleOnMount="true"
+					CanPenetrateShield="true"
+					CanKnockDown="true"
+					MissileWithPhysics="true"
+					UseHandAsThrowBase="true"
+					LeavesTrail="true"
+					AmmoCanBreakOnBounceBack="true"
+					CanKillEvenIfBlunt="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			QuickFadeOut="true"
+			CannotBePickedUp="true"
+			DropOnWeaponChange="true"
+			DropOnAnyAction="true" />
+	</Item>
+	<Item
+		multiplayer_item="false"
+		id="mangonel_c_grapeshot_fire_stack"
+		name="{=ZeU1fvdz}Grapeshot Stack"
+		is_merchandise="false"
+		body_name="bo_projectile_grapeshot_carry"
+		holster_body_name="bo_axe_short"
+		mesh="projectile_grapeshot_carry"
+		holster_mesh=""
+		subtype="arrows"
+		weight="15"
+		difficulty="0"
+		appearance="1"
+		Type="Thrown"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="BallistaBoulder"
+				ammo_class="Boulder"
+				stack_amount="1"
+				position="0.05, -0.15, 0"
+				center_of_mass="0,0,0"
+				physics_material="boulder_stone"
+				thrust_speed="100"
+				speed_rating="0"
+				missile_speed="8"
+				weapon_length="95"
+				thrust_damage="120"
+				item_usage="heavy_stone"
+				flying_sound_code="event:/mission/combat/boulder/passby"
+				rotation_speed="2, 0.5, 0">
+				<WeaponFlags
+					RangedWeapon="true"
+					Consumable="true"
+					NotUsableWithOneHand="true"
+					TwoHandIdleOnMount="true"
+					CanPenetrateShield="true"
+					CanKnockDown="true"
+					MissileWithPhysics="true"
+					UseHandAsThrowBase="true"
+					LeavesTrail="true"
+					AmmoCanBreakOnBounceBack="true"
+					CanKillEvenIfBlunt="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			QuickFadeOut="true"
+			CannotBePickedUp="true"
+			DropOnWeaponChange="true"
+			DropOnAnyAction="true" />
+	</Item>
+	<Item
+		multiplayer_item="false"
+		id="mangonel_c_grapeshot_projectile"
+		name="{=XGytILlt}Grapeshot Ammo"
+		is_merchandise="false"
+		body_name="bo_projectile_grapeshot_piece_a"
+		holster_body_name="bo_axe_short"
+		mesh="projectile_grapeshot_piece_a"
+		holster_mesh=""
+		subtype="arrows"
+		weight="15"
+		difficulty="0"
+		appearance="1"
+		Type="Thrown"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="BallistaBoulder"
+				ammo_class="Boulder"
+				stack_amount="1"
+				position="0.05, -0.15, 0"
+				center_of_mass="0,0,0"
+				physics_material="boulder_stone"
+				thrust_speed="100"
+				speed_rating="0"
+				missile_speed="8"
+				weapon_length="95"
+				thrust_damage="250"
+				item_usage="heavy_stone"
+				flying_sound_code="event:/mission/combat/boulder/passby"
+				rotation_speed="2, 0.5, 0">
+				<WeaponFlags
+					RangedWeapon="true"
+					Consumable="true"
+					NotUsableWithOneHand="true"
+					TwoHandIdleOnMount="true"
+					CanPenetrateShield="true"
+					CanKnockDown="true"
+					MissileWithPhysics="true"
+					UseHandAsThrowBase="true"
+					LeavesTrail="true"
+					AmmoCanBreakOnBounceBack="true"
+					CanKillEvenIfBlunt="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			QuickFadeOut="true"
+			CannotBePickedUp="true"
+			DropOnWeaponChange="true"
+			DropOnAnyAction="true" />
+	</Item>
+	<Item
+		multiplayer_item="false"
+		id="mangonel_c_grapeshot_fire_projectile"
+		name="{=XGytILlt}Grapeshot Ammo"
+		is_merchandise="false"
+		body_name="bo_projectile_grapeshot_piece_a"
+		holster_body_name="bo_axe_short"
+		mesh="projectile_grapeshot_piece_a"
+		holster_mesh=""
+		subtype="arrows"
+		weight="15"
+		difficulty="0"
+		appearance="1"
+		Type="Thrown"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="BallistaBoulder"
+				ammo_class="Boulder"
+				stack_amount="1"
+				position="0.05, -0.15, 0"
+				center_of_mass="0,0,0"
+				physics_material="boulder_stone"
+				thrust_speed="100"
+				speed_rating="0"
+				missile_speed="8"
+				weapon_length="95"
+				thrust_damage="250"
+				fire_damage="100"
+				item_usage="heavy_stone"
+				flying_sound_code="event:/mission/combat/boulder/passby"
+				trail_particle_name="mangonel_grapeshot_burning_projectile"
+				rotation_speed="2, 0.5, 0">
+				<WeaponFlags
+					RangedWeapon="true"
+					Consumable="true"
+					NotUsableWithOneHand="true"
+					TwoHandIdleOnMount="true"
+					CanPenetrateShield="true"
+					CanKnockDown="true"
+					MissileWithPhysics="true"
+					UseHandAsThrowBase="true"
+					LeavesTrail="true"
+					Burning="true"
+					AffectsArea="true"
+					AmmoCanBreakOnBounceBack="true"
+					CanKillEvenIfBlunt="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			QuickFadeOut="true"
+			CannotBePickedUp="true"
+			DropOnWeaponChange="true"
+			DropOnAnyAction="true" />
+	</Item>
+	<Item
+		id="walrus_tusk"
+		name="{=FhOkxlXJ}Walrus Tusk{@Plural}loads of walrus tusks{\@}"
+		mesh="kitchen_horn"
+		item_category="walrus_tusk"
+		value="400"
+		weight="10"
+		Type="Goods">
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="whale_oil"
+		name="{=0cQ3jk43}Whale Oil{@Plural}barrels of whale oil{\@}"
+		mesh="bd_barrel_a"
+		item_category="whale_oil"
+		value="200"
+		weight="10"
+		Type="Goods">
+		<Flags
+			Civilian="true" />
+	</Item>
+	<!-- Storyline Quest 5 Stealth Items-->
+	<Item
+		id="improved_assassin_boot_q5"
+		name="{=iqaRjMhe}Blackened Boots"
+		mesh="assassin_boot"
+		culture="Culture.nord"
+		weight="1"
+		appearance="4"
+		is_merchandise="false"
+		Type="LegArmor">
+		<ItemComponent>
+			<Armor
+				leg_armor="25"
+				stealth_factor="20"
+				covers_legs="true"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Stealth="true" />
+	</Item>
+	<Item
+		id="improved_assassin_armor_q5"
+		name="{=uZYqmBST}Blackened Armor"
+		subtype="body_armor"
+		mesh="assassin_armor"
+		culture="Culture.nord"
+		weight="5"
+		appearance="4"
+		is_merchandise="false"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="45"
+				leg_armor="15"
+				arm_armor="20"
+				stealth_factor="30"
+				has_gender_variations="true"
+				covers_body="true"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Stealth="true" />
+	</Item>
+	<Item
+		id="improved_assassin_shoulder_q5"
+		name="{=6CMYwYai}Blackened Cape"
+		mesh="assassin_shoulder"
+		culture="Culture.nord"
+		subtype="body_armor"
+		weight="0.85"
+		appearance="5"
+		is_merchandise="false"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="36"
+				arm_armor="12"
+				stealth_factor="15"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Civilian="true"
+			Stealth="true" />
+	</Item>
+	<Item
+		id="improved_assassin_hood_q5"
+		name="{=XrsKuPT5}Blackened Hood"
+		subtype="head_armor"
+		mesh="assassin_hood"
+		culture="Culture.nord"
+		weight="0.4"
+		appearance="4"
+		is_merchandise="false"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="48"
+				stealth_factor="25"
+				has_gender_variations="false"
+				hair_cover_type="all"
+				beard_cover_type="all"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Civilian="true"
+			Stealth="true" />
+	</Item>
+	<!-- Storyline Quest 3 Ballista Ammos-->
+	<Item
+		multiplayer_item="false"
+		id="ballista_c_projectile_pot_storyline"
+		name="{=HP1GzM8l}Fire Pot"
+		is_merchandise="false"
+		body_name="bo_ballista_projectile_d"
+		holster_body_name="bo_axe_short"
+		flying_mesh="ballista_projectile_d"
+		mesh="ballista_projectile_d"
+		holster_mesh=""
+		subtype="arrows"
+		weight="15"
+		difficulty="0"
+		appearance="1"
+		Type="Thrown"
+		item_holsters="">
+		<ItemComponent>
+			<Weapon
+				weapon_class="BallistaBoulder"
+				ammo_class="BallistaBoulder"
+				stack_amount="1"
+				position="0.05, -0.15, 0"
+				physics_material="burning_jar"
+				thrust_speed="100"
+				speed_rating="0"
+				missile_speed="8"
+				weapon_length="95"
+				thrust_damage="3500"
+				fire_damage="2500"
+				item_usage="heavy_stone"
+				flying_sound_code="event:/mission/combat/boulder/passby"
+				trail_particle_name="psys_game_burning_jar_trail"
+				rotation_speed="2, 0.5, 0">
+				<WeaponFlags
+					RangedWeapon="true"
+					NotUsableWithOneHand="true"
+					TwoHandIdleOnMount="true"
+					CanPenetrateShield="true"
+					MissileWithPhysics="true"
+					UseHandAsThrowBase="true"
+					Consumable="true"
+					LeavesTrail="true"
+					Burning="true"
+					AffectsAreaBig="true"
+					AmmoBreaksOnBounceBack="true"
+					CanKillEvenIfBlunt="true" />
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			QuickFadeOut="true"
+			CannotBePickedUp="true"
+			DropOnWeaponChange="true"
+			DropOnAnyAction="true" />
+	</Item>
+</Items>

@@ -341,7 +341,8 @@ namespace RBMCombat
                                 if (victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Brigandine over Hauberk") || 
                                     victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Khan's Coat of Plates") || 
                                     victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Rough Brigandine") || 
-                                    victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Mirrored Brigandine Armor") || 
+                                    victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Mirrored Brigandine Armor") ||
+                                    victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Northern Raider Armor") ||
                                     victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Rough Scale Mail"))
                                 {
                                     armorMaterial = ArmorMaterialTypes.Plate;
