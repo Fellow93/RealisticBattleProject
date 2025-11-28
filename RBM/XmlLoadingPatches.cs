@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using NavalDLC;
 using NavalDLC.CampaignBehaviors;
 using System;
 using System.Collections.Generic;
@@ -53,6 +54,8 @@ namespace RBM
                         isRbmCombatXml = true;
                     }
                 }
+
+                var isWSctive = ModuleHelper.IsModuleActive("NavalDLC");
 
                 List<XElement> nodesToRemoveArray = new List<XElement>();
                 if (!RBMConfig.RBMConfig.rbmCombatEnabled && isRbmCombatXml)

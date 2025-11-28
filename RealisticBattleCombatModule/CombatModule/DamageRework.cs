@@ -62,6 +62,10 @@ namespace RBMCombat
                     {
                         dmgMultiplier *= 1.5f;
                     }
+                    if(weapon.WeaponClass == WeaponClass.Boulder)
+                    {
+                        dmgMultiplier *= 10f;
+                    }
                 }
                 __result = dmgMultiplier;
                 return false;
