@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Items>
+<!--  RBM_XML_TAG  -->
+<!--  RBM_COMBAT_XML_TAG  -->
+<!--  RBM_WS_XML_TAG  -->
 	<!--  #BodyArmor  -->
 	<Item
 		id="northman_raider_armor"
@@ -436,7 +439,8 @@
 		Type="HeadArmor">
 		<ItemComponent>
 			<Armor
-				head_armor="87"
+				head_armor="47"
+				body_armor="12"
 				hair_cover_type="type1"
 				beard_cover_type="none"
 				modifier_group="plate"
@@ -747,7 +751,7 @@
 		Type="HeadArmor">
 		<ItemComponent>
 			<Armor
-				head_armor="70"
+				head_armor="40"
 				body_armor="2"
 				has_gender_variations="false"
 				hair_cover_type="all"
@@ -895,9 +899,9 @@
 		Type="BodyArmor">
 		<ItemComponent>
 			<Armor
-				body_armor="40"
-				leg_armor="8"
-				arm_armor="8"
+				body_armor="60"
+				leg_armor="55"
+				arm_armor="55"
 				covers_body="true"
 				modifier_group="chain"
 				material_type="Chainmail" />
@@ -916,7 +920,8 @@
 		Type="HeadArmor">
 		<ItemComponent>
 			<Armor
-				head_armor="29"
+				head_armor="45"
+				body_armor="8"
 				hair_cover_type="all"
 				beard_cover_type="none"
 				modifier_group="plate"
@@ -936,7 +941,8 @@
 		Type="HeadArmor">
 		<ItemComponent>
 			<Armor
-				head_armor="35"
+				head_armor="53"
+				body_armor="10"
 				hair_cover_type="all"
 				beard_cover_type="none"
 				modifier_group="plate"
@@ -956,7 +962,8 @@
 		Type="HeadArmor">
 		<ItemComponent>
 			<Armor
-				head_armor="22"
+				head_armor="55"
+				body_armor="10"
 				hair_cover_type="all"
 				beard_cover_type="none"
 				modifier_group="plate"
@@ -975,8 +982,8 @@
 		Type="Cape">
 		<ItemComponent>
 			<Armor
-				body_armor="10"
-				arm_armor="9"
+				body_armor="40"
+				arm_armor="0"
 				modifier_group="plate"
 				material_type="Plate" />
 		</ItemComponent>
@@ -994,8 +1001,8 @@
 		Type="Cape">
 		<ItemComponent>
 			<Armor
-				body_armor="7"
-				arm_armor="4"
+				body_armor="28"
+				arm_armor="0"
 				modifier_group="leather"
 				material_type="Leather" />
 		</ItemComponent>
@@ -1013,7 +1020,7 @@
 		Type="HandArmor">
 		<ItemComponent>
 			<Armor
-				arm_armor="20"
+				arm_armor="39"
 				modifier_group="plate"
 				material_type="Plate" />
 		</ItemComponent>
@@ -1030,7 +1037,7 @@
 		Type="LegArmor">
 		<ItemComponent>
 			<Armor
-				leg_armor="18"
+				leg_armor="50"
 				covers_legs="true"
 				modifier_group="plate"
 				material_type="Plate" />
@@ -1049,7 +1056,9 @@
 		Type="HeadArmor">
 		<ItemComponent>
 			<Armor
-				head_armor="13"
+				head_armor="25"
+				body_armor="12"
+				arm_armor="12"
 				stealth_factor="15"
 				has_gender_variations="false"
 				hair_cover_type="all"
@@ -1071,7 +1080,9 @@
 		Type="HeadArmor">
 		<ItemComponent>
 			<Armor
-				head_armor="22"
+				head_armor="65"
+				body_armor="12"
+				arm_armor="12"
 				stealth_factor="10"
 				has_gender_variations="false"
 				hair_cover_type="all"
@@ -1093,8 +1104,8 @@
 		Type="Cape">
 		<ItemComponent>
 			<Armor
-				body_armor="5"
-				arm_armor="2"
+				body_armor="10"
+				arm_armor="0"
 				modifier_group="leather"
 				material_type="Leather" />
 		</ItemComponent>
@@ -1111,10 +1122,10 @@
 		Type="Cape">
 		<ItemComponent>
 			<Armor
-				body_armor="14"
-				arm_armor="5"
-				modifier_group="leather"
-				material_type="Leather" />
+				body_armor="45"
+				arm_armor="0"
+				modifier_group="plate"
+				material_type="Plate" />
 		</ItemComponent>
 		<Flags />
 	</Item>
@@ -1129,12 +1140,13 @@
 		Type="BodyArmor">
 		<ItemComponent>
 			<Armor
-				body_armor="14"
-				arm_armor="2"
+				body_armor="20"
+				arm_armor="12"
+				leg_armor="12"
 				has_gender_variations="true"
 				covers_body="true"
-				modifier_group="plate"
-				material_type="Plate" />
+				modifier_group="cloth"
+				material_type="Cloth" />
 		</ItemComponent>
 		<Flags
 			UseTeamColor="true" />
@@ -1150,12 +1162,13 @@
 		Type="BodyArmor">
 		<ItemComponent>
 			<Armor
-				body_armor="22"
-				arm_armor="2"
+				body_armor="23"
+				arm_armor="12"
+				leg_armor="12"
 				has_gender_variations="true"
 				covers_body="true"
-				modifier_group="plate"
-				material_type="Plate" />
+				modifier_group="cloth"
+				material_type="Cloth" />
 		</ItemComponent>
 		<Flags
 			UseTeamColor="true" />
@@ -1171,8 +1184,9 @@
 		Type="BodyArmor">
 		<ItemComponent>
 			<Armor
-				body_armor="6"
-				arm_armor="2"
+				body_armor="12"
+				arm_armor="12"
+				leg_armor="12"
 				has_gender_variations="true"
 				covers_body="true"
 				modifier_group="cloth_unarmoured"
@@ -1191,7 +1205,7 @@
 		Type="HandArmor">
 		<ItemComponent>
 			<Armor
-				arm_armor="18"
+				arm_armor="42"
 				covers_hands="true"
 				modifier_group="plate"
 				material_type="Plate" />
@@ -1208,7 +1222,7 @@
 		Type="LegArmor">
 		<ItemComponent>
 			<Armor
-				leg_armor="18"
+				leg_armor="40"
 				covers_legs="true"
 				modifier_group="plate"
 				material_type="Plate" />
@@ -1227,9 +1241,9 @@
 		Type="BodyArmor">
 		<ItemComponent>
 			<Armor
-				body_armor="55"
-				leg_armor="20"
-				arm_armor="12"
+				body_armor="60"
+				leg_armor="55"
+				arm_armor="60"
 				covers_body="true"
 				modifier_group="plate"
 				material_type="Plate" />
@@ -1269,8 +1283,8 @@
 		Type="Cape">
 		<ItemComponent>
 			<Armor
-				body_armor="10"
-				arm_armor="4"
+				body_armor="50"
+				arm_armor="0"
 				modifier_group="plate"
 				material_type="Plate" />
 		</ItemComponent>
@@ -1288,7 +1302,7 @@
 		Type="LegArmor">
 		<ItemComponent>
 			<Armor
-				leg_armor="22"
+				leg_armor="59"
 				covers_legs="true"
 				modifier_group="plate"
 				material_type="Plate" />
@@ -1306,7 +1320,7 @@
 		Type="HandArmor">
 		<ItemComponent>
 			<Armor
-				arm_armor="22"
+				arm_armor="55"
 				covers_hands="true"
 				modifier_group="plate"
 				material_type="Plate" />
@@ -1323,9 +1337,9 @@
 		Type="BodyArmor">
 		<ItemComponent>
 			<Armor
-				body_armor="52"
-				leg_armor="10"
-				arm_armor="8"
+				body_armor="62"
+				leg_armor="57"
+				arm_armor="62"
 				covers_body="true"
 				modifier_group="plate"
 				material_type="Plate" />
@@ -1343,8 +1357,8 @@
 		Type="Cape">
 		<ItemComponent>
 			<Armor
-				body_armor="10"
-				arm_armor="2"
+				body_armor="52"
+				arm_armor="0"
 				modifier_group="plate"
 				material_type="Plate" />
 		</ItemComponent>
@@ -1360,7 +1374,7 @@
 		body_name="bo_short_bow_c"
 		mesh="stealth_bow"
 		weight="0.45"
-		difficulty="0"
+		difficulty="90"
 		appearance="1"
 		is_merchandise="false"
 		Type="Bow"
@@ -1369,17 +1383,18 @@
 			<Weapon
 				weapon_class="Bow"
 				ammo_class="Arrow"
-				ammo_limit="1"
-				thrust_speed="72"
-				speed_rating="67"
-				missile_speed="54"
+				ammo_limit="3"
+				thrust_speed="150"
+				speed_rating="70"
+				missile_speed="150"
 				weapon_length="106"
-				accuracy="99"
-				thrust_damage="30"
+				accuracy="80"
+				thrust_damage="100"
 				thrust_damage_type="Pierce"
 				item_usage="bow"
 				physics_material="wood_weapon"
-				center_of_mass="0.0,0,-0.1">
+				center_of_mass="0.0,0,-0.1"
+				modifier_group="bow">
 				<WeaponFlags
 					RangedWeapon="true"
 					HasString="true"
@@ -1395,48 +1410,7 @@
 			Stealth="true"
 			ForceAttachOffHandPrimaryItemBone="true" />
 	</Item>
-	<Item
-		id="stealth_arrow"
-		name="{=peTfjzWZ}Whisper Arrows"
-		body_name="bo_capsule_arrow"
-		holster_body_name="bo_stealth_quiver"
-		mesh="stealth_arrow"
-		holster_mesh="stealth_quiver"
-		holster_mesh_with_weapon="stealth_quiver"
-		subtype="arrows"
-		flying_mesh="arrow_bl_flying"
-		weight="0.06"
-		difficulty="0"
-		appearance="1"
-		Type="Arrows"
-		item_holsters="quiver_back_lower:quiver_back_lower_2"
-		holster_position_shift="0,0,0.15">
-		<ItemComponent>
-			<Weapon
-				weapon_class="Arrow"
-				stack_amount="20"
-				thrust_speed="0"
-				speed_rating="0"
-				physics_material="missile"
-				missile_speed="5"
-				weapon_length="97"
-				thrust_damage="2"
-				thrust_damage_type="Pierce"
-				item_usage="arrow_top"
-				passby_sound_code="event:/mission/combat/missile/passby"
-				rotation="0, -80, 25"
-				sticking_position="0,-0.97,0"
-				sticking_rotation="90,0,0"
-				center_of_mass="0,0.0,-0.13"
-				modifier_group="arrow">
-				<WeaponFlags
-					Consumable="true"
-					AmmoSticksWhenShot="true"
-					AmmoBreaksOnBounceBack="true" />
-			</Weapon>
-		</ItemComponent>
-		<Flags />
-	</Item>
+
 	<!--  #Nord Shields  -->
 	<Item
 		id="nord_shield_tier_2_d"
@@ -1459,7 +1433,7 @@
 				weapon_class="LargeShield"
 				body_armor="4"
 				thrust_speed="84"
-				thrust_damage="5"
+				thrust_damage="8"
 				thrust_damage_type="Blunt"
 				speed_rating="85"
 				physics_material="wood_shield"
@@ -1468,7 +1442,7 @@
 				rotation="-94.30,-51.50,18.20"
 				weapon_length="70"
 				center_of_mass="0, 0, 0"
-				hit_points="300"
+				hit_points="490"
 				modifier_group="shield">
 				<WeaponFlags
 					CanBlockRanged="true"
@@ -1499,9 +1473,9 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="LargeShield"
-				body_armor="4"
+				body_armor="5"
 				thrust_speed="82"
-				thrust_damage="5"
+				thrust_damage="8"
 				thrust_damage_type="Blunt"
 				speed_rating="82"
 				physics_material="wood_shield"
@@ -1510,7 +1484,7 @@
 				rotation="-94.30,-51.50,18.20"
 				weapon_length="70"
 				center_of_mass="0, 0, 0"
-				hit_points="440"
+				hit_points="580"
 				modifier_group="shield">
 				<WeaponFlags
 					CanBlockRanged="true"
@@ -1541,9 +1515,9 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="LargeShield"
-				body_armor="4"
+				body_armor="5"
 				thrust_speed="82"
-				thrust_damage="5"
+				thrust_damage="8"
 				thrust_damage_type="Blunt"
 				speed_rating="82"
 				physics_material="wood_shield"
@@ -1552,7 +1526,7 @@
 				rotation="-94.30,-51.50,18.20"
 				weapon_length="70"
 				center_of_mass="0, 0, 0"
-				hit_points="450"
+				hit_points="550"
 				modifier_group="shield">
 				<WeaponFlags
 					CanBlockRanged="true"
@@ -1583,9 +1557,9 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="LargeShield"
-				body_armor="5"
+				body_armor="6"
 				thrust_speed="82"
-				thrust_damage="5"
+				thrust_damage="9"
 				thrust_damage_type="Blunt"
 				speed_rating="82"
 				physics_material="wood_shield"
@@ -1594,7 +1568,7 @@
 				rotation="-94.30,-51.50,18.20"
 				weapon_length="70"
 				center_of_mass="0, 0, 0"
-				hit_points="500"
+				hit_points="680"
 				modifier_group="shield">
 				<WeaponFlags
 					CanBlockRanged="true"
@@ -1627,7 +1601,7 @@
 				weapon_class="LargeShield"
 				body_armor="5"
 				thrust_speed="82"
-				thrust_damage="5"
+				thrust_damage="9"
 				thrust_damage_type="Blunt"
 				speed_rating="82"
 				physics_material="wood_shield"
@@ -1636,7 +1610,7 @@
 				rotation="-94.30,-51.50,18.20"
 				weapon_length="70"
 				center_of_mass="0, 0, 0"
-				hit_points="500"
+				hit_points="650"
 				modifier_group="shield">
 				<WeaponFlags
 					CanBlockRanged="true"
@@ -1667,7 +1641,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="LargeShield"
-				body_armor="5"
+				body_armor="6"
 				thrust_speed="86"
 				thrust_damage="5"
 				thrust_damage_type="Blunt"
@@ -1678,7 +1652,7 @@
 				rotation="-94.30,-51.50,18.20"
 				weapon_length="70"
 				center_of_mass="0, 0, 0"
-				hit_points="520"
+				hit_points="750"
 				modifier_group="shield">
 				<WeaponFlags
 					CanBlockRanged="true"
@@ -1709,7 +1683,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="LargeShield"
-				body_armor="5"
+				body_armor="7"
 				thrust_speed="86"
 				thrust_damage="5"
 				thrust_damage_type="Blunt"
@@ -1720,7 +1694,7 @@
 				rotation="-94.30,-51.50,18.20"
 				weapon_length="70"
 				center_of_mass="0, 0, 0"
-				hit_points="520"
+				hit_points="750"
 				modifier_group="shield">
 				<WeaponFlags
 					CanBlockRanged="true"
@@ -1751,7 +1725,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="LargeShield"
-				body_armor="5"
+				body_armor="8"
 				thrust_speed="86"
 				thrust_damage="5"
 				thrust_damage_type="Blunt"
@@ -1762,7 +1736,7 @@
 				rotation="-94.30,-51.50,18.20"
 				weapon_length="70"
 				center_of_mass="0, 0, 0"
-				hit_points="540"
+				hit_points="820"
 				modifier_group="shield">
 				<WeaponFlags
 					CanBlockRanged="true"
@@ -1793,7 +1767,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="LargeShield"
-				body_armor="5"
+				body_armor="7"
 				thrust_speed="88"
 				thrust_damage="5"
 				thrust_damage_type="Blunt"
@@ -1804,7 +1778,7 @@
 				rotation="-94.30,-51.50,18.20"
 				weapon_length="70"
 				center_of_mass="0, 0, 0"
-				hit_points="540"
+				hit_points="840"
 				modifier_group="shield">
 				<WeaponFlags
 					CanBlockRanged="true"
