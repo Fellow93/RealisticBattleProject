@@ -85,10 +85,6 @@
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Core.ViewModelCollection.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="TaleWorlds.Diamond.AccessProvider.Epic.dll">
-      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.AccessProvider.Epic.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="TaleWorlds.Diamond.AccessProvider.GDK.dll">
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.AccessProvider.GDK.dll</HintPath>
       <Private>False</Private>
@@ -103,10 +99,6 @@
     </Reference>
     <Reference Include="TaleWorlds.Diamond.AccessProvider.Test.dll">
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.AccessProvider.Test.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="TaleWorlds.Diamond.ChatSystem.Library.dll">
-      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.ChatSystem.Library.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="TaleWorlds.Diamond.dll">
@@ -147,10 +139,6 @@
     </Reference>
     <Reference Include="TaleWorlds.GauntletUI.PrefabSystem.dll">
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.PrefabSystem.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="TaleWorlds.GauntletUI.TooltipExtensions.dll">
-      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.TooltipExtensions.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="TaleWorlds.InputSystem.dll">

@@ -108,8 +108,9 @@ namespace RBMCombat
         [HarmonyPatch("ComputeBlowDamage")]
         public class OverrideDamageCalc
         {
-            private static bool Prefix(ref AttackInformation attackInformation, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, ref DamageTypes damageType, float magnitude, int speedBonus, bool cancelDamage, out int inflictedDamage, out int absorbedByArmor)
+            private static bool Prefix(ref AttackInformation attackInformation, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, ref DamageTypes damageType, float magnitude, int speedBonus, bool cancelDamage, out int inflictedDamage, out int absorbedByArmor, out bool isSneakAttack)
             {
+                isSneakAttack = false;
                 float armorAmountFloat = attackInformation.ArmorAmountFloat;
                 if (!attackCollisionData.IsMissile)
                 {
@@ -661,6 +662,20 @@ namespace RBMCombat
 
                 inflictedDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(weaponType, damageType, magnitude, armorAmount, victimAgentAbsorbedDamageRatio, out _, out _, weaponDamageFactor, player, isPlayerVictim, armorMaterial)), 0, 2000);
                 inflictedDamage = MathF.Floor(inflictedDamage * dmgMultiplier);
+
+                //stealth calculation
+                float stealthDmgMultiplier = 1f;
+                if (!attackBlockedWithShield && !isFallDamage)
+                {
+                    if (MissionGameModels.Current.AgentApplyDamageModel.CanWeaponDealSneakAttack(in attackInformation, attackerWeapon))
+                    {
+                        float sneakAttackMultiplier = MissionGameModels.Current.AgentStatCalculateModel.GetSneakAttackMultiplier(attackInformation.AttackerAgent, attackerWeapon);
+                        stealthDmgMultiplier *= sneakAttackMultiplier;
+                        isSneakAttack = true;
+                    }
+                }
+
+                inflictedDamage = (int)(inflictedDamage * stealthDmgMultiplier);
 
                 //float dmgWithPerksSkills = MissionGameModels.Current.AgentApplyDamageModel.CalculateDamage(ref attackInformation, ref attackCollisionData, in attackerWeapon, inflictedDamage, out float bonusFromSkills);
 

@@ -1351,7 +1351,6 @@ namespace RBMAI
                         return 1f + ((attackerWeaponWeight / 2f) + relativeSpeed) / 3f;
                     }
                 }
-                return 1f;
             }
 
             private static void makePostureRiposteBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage, BlowFlags addedBlowFlag)

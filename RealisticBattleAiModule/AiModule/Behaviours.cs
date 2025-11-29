@@ -1281,45 +1281,51 @@ namespace RBMAI
         [HarmonyPatch("SetFiringOrder")]
         private static bool PrefixSetFiringOrder(ref Agent __instance, ref int order)
         {
-            if (__instance.Formation != null && __instance.Formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget)
+            if(
+                __instance == null || 
+                !__instance.IsActive() || 
+                __instance.Formation == null ||
+                __instance.Formation.IsSpawning ||
+                __instance.Formation.AI.ActiveBehavior ==  null ||
+                __instance.Formation.QuerySystem == null ||
+                __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation == null ||
+                __instance.Formation.GetReadonlyMovementOrderReference().OrderType != OrderType.ChargeWithTarget)
             {
-                if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
+                return true;
+            }
+            Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
+
+            if (__instance.Formation.QuerySystem.IsInfantryFormation && !RBMAI.Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
+            {
+                Formation enemyCav = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
+
+                if (enemyCav != null && !enemyCav.QuerySystem.IsCavalryFormation)
                 {
-                    Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
+                    enemyCav = null;
+                }
 
-                    if (__instance.Formation.QuerySystem.IsInfantryFormation && !RBMAI.Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
+                float cavDist = 0f;
+                float signDist = 1f;
+                if (enemyCav != null && significantEnemy != null)
+                {
+                    Vec2 cavDirection = enemyCav.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
+                    cavDist = cavDirection.Normalize();
+
+                    Vec2 signDirection = significantEnemy.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
+                    signDist = signDirection.Normalize();
+                }
+
+                if ((enemyCav != null) && (cavDist <= signDist) && (enemyCav.CountOfUnits > __instance.Formation.CountOfUnits / 10) && (signDist > 35f))
+                {
+                    if (enemyCav.TargetFormation == __instance.Formation && (enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge))
                     {
-                        Formation enemyCav = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
-
-                        if (enemyCav != null && !enemyCav.QuerySystem.IsCavalryFormation)
+                        if (RBMAI.Utilities.CheckIfCanBrace(__instance))
                         {
-                            enemyCav = null;
+                            order = 1;
                         }
-
-                        float cavDist = 0f;
-                        float signDist = 1f;
-                        if (enemyCav != null && significantEnemy != null)
+                        else
                         {
-                            Vec2 cavDirection = enemyCav.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
-                            cavDist = cavDirection.Normalize();
-
-                            Vec2 signDirection = significantEnemy.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
-                            signDist = signDirection.Normalize();
-                        }
-
-                        if ((enemyCav != null) && (cavDist <= signDist) && (enemyCav.CountOfUnits > __instance.Formation.CountOfUnits / 10) && (signDist > 35f))
-                        {
-                            if (enemyCav.TargetFormation == __instance.Formation && (enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge))
-                            {
-                                if (RBMAI.Utilities.CheckIfCanBrace(__instance))
-                                {
-                                    order = 1;
-                                }
-                                else
-                                {
-                                    order = 0;
-                                }
-                            }
+                            order = 0;
                         }
                     }
                 }
