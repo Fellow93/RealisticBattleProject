@@ -115,7 +115,10 @@ namespace RBM
 
                                         if (RBMConfig.RBMConfig.betterArrowVisuals && (mergedNode.Attribute("Type").Value.Equals("Arrows") || mergedNode.Attribute("Type").Value.Equals("Bolts")))
                                         {
-                                            mergedNode.Attribute("flying_mesh").Value = mergedNode.Attribute("mesh").Value;
+                                            if(mergedNode.Attribute("flying_mesh") != null && mergedNode.Attribute("mesh") != null)
+                                            {
+                                                mergedNode.Attribute("flying_mesh").Value = mergedNode.Attribute("mesh").Value;
+                                            }
                                         }
                                     }
                                 }
