@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Items>
-<!--  RBM_XML_TAG  -->
-<!--  RBM_COMBAT_XML_TAG  -->
-<!--  RBM_WS_XML_TAG  -->
+<!--RBM_XML_TAG-->
+<!--RBM_COMBAT_XML_TAG-->
+<!--RBM_WS_XML_TAG-->
 		<Item
 		id="stealth_arrow"
 		name="{=peTfjzWZ}Whisper Arrows"

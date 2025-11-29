@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Items>
-<!--  RBM_XML_TAG  -->
-<!--  RBM_COMBAT_XML_TAG  -->
-<!--  RBM_WS_XML_TAG  -->
+<!--RBM_XML_TAG-->
+<!--RBM_COMBAT_XML_TAG-->
+<!--RBM_WS_XML_TAG-->
 	<!--  #BodyArmor  -->
 	<Item
 		id="northman_raider_armor"
