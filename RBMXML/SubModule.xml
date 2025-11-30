@@ -254,6 +254,15 @@
 			<GameType value="EditorGame" />
 		</IncludedGameTypes>
 	</XmlNode>
+	<XmlNode>
+		<XmlName id="CraftingPieces" path="RBMCombat_WS_crafting_pieces"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+			<GameType value="EditorGame" />
+		</IncludedGameTypes>
+	</XmlNode>
 	
     <XmlNode>	
       <XmlName
