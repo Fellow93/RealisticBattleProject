@@ -449,6 +449,49 @@
 		<Flags
 			UseTeamColor="true" />
 	</Item>
+	<!-- #new nord culture already existing items from vanilla, just culture switch -->
+	<Item id="nasal_helmet" name="{=k4kivaf5}Steel Cap with Nose Guard" mesh="nasal_helmet_a" culture="Culture.nord" weight="1.8" appearance="2" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="50" body_armor="12" has_gender_variations="false" hair_cover_type="type1" modifier_group="plate" material_type="Plate"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="lendman_helmet_over_mail" name="{=VYmHTbTY}Warlord Helmet over Mail" mesh="sturgia_helmet_g" culture="Culture.nord" weight="1.9" appearance="3" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="119" body_armor="24" arm_armor="20" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="northern_goggled_helmet" name="{=ISCtxKub}Sea Raider Goggled Helmet" mesh="sturgia_helmet_k" culture="Culture.nord" weight="1.8" appearance="1.6" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="89" body_armor="24" arm_armor="20" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="nordic_helmet" name="{=OLkncAaD}Closed Mail Goggled Helmet" mesh="sturgia_masked_helm_a" culture="Culture.nord" weight="4.1" appearance="1" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="86" body_armor="40" arm_armor="40" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Plate" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="goggled_helmet_over_full_mail" name="{=mU5CY4bz}Closed Huscarl Helmet" mesh="sturgia_helmet_e" culture="Culture.nord" weight="4.4" appearance="1.6" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="114" body_armor="74" arm_armor="40" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Plate" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="closed_goggled_helmet" name="{=aYLCCpS4}Northern Closed Warlord Helmet" mesh="sturgia_helmet_l" culture="Culture.nord" weight="4.1" appearance="1.6" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="104" body_armor="64" arm_armor="40" has_gender_variations="false" hair_cover_type="all" modifier_group="chain" material_type="Plate" beard_cover_type="all"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
+	<Item id="goggled_helmet_over_mail" name="{=qc0P0b2r}Goggled Helmet over Mail" mesh="sturgia_helmet_c" culture="Culture.nord" weight="1.8" appearance="3.2" Type="HeadArmor">
+		<ItemComponent>
+			<Armor head_armor="106" body_armor="24" arm_armor="20" has_gender_variations="false" hair_cover_type="all" modifier_group="plate" material_type="Plate" beard_cover_type="none"/>
+		</ItemComponent>
+		<Flags/>
+	</Item>
 	<!-- #HeadArmor -->
 	<!--  NORD Civilian Armor-->
 	<Item
@@ -2761,28 +2804,7 @@
 			DropOnWeaponChange="true"
 			DropOnAnyAction="true" />
 	</Item>
-	<Item
-		id="walrus_tusk"
-		name="{=FhOkxlXJ}Walrus Tusk{@Plural}loads of walrus tusks{\@}"
-		mesh="kitchen_horn"
-		item_category="walrus_tusk"
-		value="400"
-		weight="10"
-		Type="Goods">
-		<Flags
-			Civilian="true" />
-	</Item>
-	<Item
-		id="whale_oil"
-		name="{=0cQ3jk43}Whale Oil{@Plural}barrels of whale oil{\@}"
-		mesh="bd_barrel_a"
-		item_category="whale_oil"
-		value="200"
-		weight="10"
-		Type="Goods">
-		<Flags
-			Civilian="true" />
-	</Item>
+
 	<!-- Storyline Quest 5 Stealth Items-->
 	<Item
 		id="improved_assassin_boot_q5"
@@ -2795,8 +2817,8 @@
 		Type="LegArmor">
 		<ItemComponent>
 			<Armor
-				leg_armor="25"
-				stealth_factor="20"
+				leg_armor="38"
+				stealth_factor="25"
 				covers_legs="true"
 				modifier_group="leather"
 				material_type="Leather" />
@@ -2816,10 +2838,10 @@
 		Type="BodyArmor">
 		<ItemComponent>
 			<Armor
-				body_armor="45"
-				leg_armor="15"
-				arm_armor="20"
-				stealth_factor="30"
+				body_armor="38"
+				leg_armor="32"
+				arm_armor="35"
+				stealth_factor="35"
 				has_gender_variations="true"
 				covers_body="true"
 				modifier_group="leather"
@@ -2840,9 +2862,8 @@
 		Type="Cape">
 		<ItemComponent>
 			<Armor
-				body_armor="36"
-				arm_armor="12"
-				stealth_factor="15"
+				body_armor="33"
+				stealth_factor="20"
 				modifier_group="leather"
 				material_type="Leather" />
 		</ItemComponent>
@@ -2862,8 +2883,10 @@
 		Type="HeadArmor">
 		<ItemComponent>
 			<Armor
-				head_armor="48"
-				stealth_factor="25"
+				head_armor="40"
+				body_armor="28"
+				arm_armor="40"
+				stealth_factor="30"
 				has_gender_variations="false"
 				hair_cover_type="all"
 				beard_cover_type="all"

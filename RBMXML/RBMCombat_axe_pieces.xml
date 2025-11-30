@@ -555,7 +555,7 @@
 
     <BuildData piece_offset="-16.5" />
     <BladeData stack_amount="3" blade_length="20.781" blade_width="30.384" physics_material="metal_weapon" body_name="bo_axe_longer_b">
-      <Swing damage_type="Cut" damage_factor="1.2" />
+      <Swing damage_type="Cut" damage_factor="1.25" />
     </BladeData>
     <Flags>
       <Flag name="CanBePickedUpFromCorpse" type="ItemFlags" />
