@@ -31,6 +31,7 @@
 	  <ArmorStatusUIEnabled>1</ArmorStatusUIEnabled>
 	  <RealisticArrowArc>0</RealisticArrowArc>
 	  <ThrustMagnitudeModifier>0.05</ThrustMagnitudeModifier>
+	  <SneakAttackInstaKill>0<SneakAttackInstaKill>
     </Global>
     <WeaponTypes>
       <Dagger>
