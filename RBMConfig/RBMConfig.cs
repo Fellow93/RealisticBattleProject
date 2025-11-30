@@ -42,6 +42,9 @@ namespace RBMConfig
         public static float maceBluntModifier = 1f;
         public static float armorThresholdModifier = 1f;
         public static float bluntTraumaBonus = 1f;
+
+        public static bool sneakAttackInstaKill = false;
+
         public static RBMCombatConfigPriceMultipliers priceMultipliers = new RBMCombatConfigPriceMultipliers();
         public static List<RBMCombatConfigWeaponType> weaponTypesFactors = new List<RBMCombatConfigWeaponType>();
 
@@ -137,6 +140,8 @@ namespace RBMConfig
             armorThresholdModifier = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorThresholdModifier").InnerText);
             bluntTraumaBonus = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BluntTraumaBonus").InnerText);
 
+            sneakAttackInstaKill = xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/SneakAttackInstaKill").InnerText.Equals("1");
+
             ThrustMagnitudeModifier = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ThrustMagnitudeModifier").InnerText);
             OneHandedThrustDamageBonus = 1f/ThrustMagnitudeModifier;
             TwoHandedThrustDamageBonus = 1f / ThrustMagnitudeModifier;
@@ -219,6 +224,7 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BetterArrowVisuals"), betterArrowVisuals);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/PassiveShoulderShields"), passiveShoulderShields);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/TroopOverhaulActive"), troopOverhaulActive);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/SneakAttackInstaKill"), sneakAttackInstaKill);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/RealisticRangedReload"), realisticRangedReload.ToString());
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/MaceBluntModifier"), maceBluntModifier.ToString());
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorThresholdModifier"), armorThresholdModifier.ToString());
