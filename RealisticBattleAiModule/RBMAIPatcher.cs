@@ -14,6 +14,7 @@ namespace RBMAI
             var harmony = new Harmony("com.pf.rbai");
             //if (!patched)
             //{
+            harmony.UnpatchAll();
             harmony.PatchAll();
             //    patched = true;
             //}
@@ -22,6 +23,7 @@ namespace RBMAI
         public static void FirstPatch(ref Harmony rbmaiHarmony)
         {
             harmony = rbmaiHarmony;
+            harmony.UnpatchAll();
             var original = AccessTools.Method(typeof(MissionCombatantsLogic), "EarlyStart");
             var postfix = AccessTools.Method(typeof(Tactics.EarlyStartPatch), nameof(Tactics.EarlyStartPatch.Postfix));
             harmony.Patch(original, null, new HarmonyMethod(postfix));
