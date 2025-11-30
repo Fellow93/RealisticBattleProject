@@ -678,7 +678,7 @@ namespace RBMCombat
                 inflictedDamage = (int)(inflictedDamage * stealthDmgMultiplier);
                 if (isSneakAttack && RBMConfig.RBMConfig.sneakAttackInstaKill)
                 {
-                    inflictedDamage = 300;
+                    inflictedDamage = 200;
                 }
 
                 //float dmgWithPerksSkills = MissionGameModels.Current.AgentApplyDamageModel.CalculateDamage(ref attackInformation, ref attackCollisionData, in attackerWeapon, inflictedDamage, out float bonusFromSkills);
