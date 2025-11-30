@@ -241,6 +241,7 @@ xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_axe_grip.xml" "$(SolutionDir)..\RBM\
 xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_WS_arrow_visuals.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_WS_items.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_WS_crafting_pieces.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_WS_unit_overhaul.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_WS_CraftingTemplates.xslt" "$(SolutionDir)..\RBM\ModuleData\XSLT\"
 xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_WS_WeaponDescriptions.xslt" "$(SolutionDir)..\RBM\ModuleData\XSLT\"</PostBuildEvent>
   </PropertyGroup>
