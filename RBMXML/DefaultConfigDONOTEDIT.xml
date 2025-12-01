@@ -24,6 +24,7 @@
       <BetterArrowVisuals>1</BetterArrowVisuals>
       <PassiveShoulderShields>0</PassiveShoulderShields>
       <TroopOverhaulActive>1</TroopOverhaulActive>
+	  <SneakAttackInstaKill>0</SneakAttackInstaKill>
       <RealisticRangedReload>2</RealisticRangedReload>
       <MaceBluntModifier>1</MaceBluntModifier>
       <ArmorThresholdModifier>1</ArmorThresholdModifier>
@@ -31,7 +32,6 @@
 	  <ArmorStatusUIEnabled>1</ArmorStatusUIEnabled>
 	  <RealisticArrowArc>0</RealisticArrowArc>
 	  <ThrustMagnitudeModifier>0.05</ThrustMagnitudeModifier>
-	  <SneakAttackInstaKill>0<SneakAttackInstaKill>
     </Global>
     <WeaponTypes>
       <Dagger>
