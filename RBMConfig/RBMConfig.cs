@@ -38,10 +38,10 @@ namespace RBMConfig
         public static bool betterArrowVisuals = true;
         public static bool passiveShoulderShields = false;
         public static bool troopOverhaulActive = true;
-        public static string realisticRangedReload = "1";
+        public static string realisticRangedReload = "2";
         public static float maceBluntModifier = 1f;
         public static float armorThresholdModifier = 1f;
-        public static float bluntTraumaBonus = 1f;
+        public static float bluntTraumaBonus = 0f;
 
         public static bool sneakAttackInstaKill = false;
 
@@ -50,7 +50,7 @@ namespace RBMConfig
 
         public static void LoadConfig()
         {
-            string defaultConfigFilePath = BasePath.Name + "Modules/RBM/DefaultConfigDONOTEDIT.xml"; 
+            Utilities.createWeaponTypesFactors(ref weaponTypesFactors);
             string configFolderPath = Utilities.GetConfigFolderPath();
             string configFilePath = Utilities.GetConfigFilePath();
 
@@ -62,14 +62,14 @@ namespace RBMConfig
             if (File.Exists(configFilePath))
             {
                 xmlConfig.Load(configFilePath);
+                parseXmlConfig();
             }
             else
             {
-                File.Copy(defaultConfigFilePath, configFilePath);
-                xmlConfig.Load(configFilePath);
+                Utilities.createXmlConfig(ref xmlConfig);
+                //saveXmlConfig();
             }
 
-            parseXmlConfig();
         }
 
         public static void parseXmlConfig()
@@ -166,15 +166,15 @@ namespace RBMConfig
             saveXmlConfig();
         }
 
-        public static void setInnerTextBoolean(XmlNode xmlConfig, bool value)
+        public static void setInnerTextBoolean(XmlNode node, bool value)
         {
             if (value)
             {
-                xmlConfig.InnerText = "1";
+                node.InnerText = "1";
             }
             else
             {
-                xmlConfig.InnerText = "0";
+                node.InnerText = "0";
             }
         }
 

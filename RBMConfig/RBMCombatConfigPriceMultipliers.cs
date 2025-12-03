@@ -2,10 +2,10 @@
 {
     public class RBMCombatConfigPriceMultipliers
     {
-        public float ArmorPriceModifier;
-        public float WeaponPriceModifier;
-        public float HorsePriceModifier;
-        public float TradePriceModifier;
+        public float ArmorPriceModifier = 1f;
+        public float WeaponPriceModifier = 1f;
+        public float HorsePriceModifier = 0.2f;
+        public float TradePriceModifier = 1f;
 
         public RBMCombatConfigPriceMultipliers()
         {
