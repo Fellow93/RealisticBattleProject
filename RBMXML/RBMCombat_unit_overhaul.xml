@@ -2189,7 +2189,7 @@
       <equipment slot="Head"
                  id="Item.closed_desert_helmet" />
       <equipment slot="Body"
-                 id="Item.aserai_archer_armor" />
+                 id="Item.aserai_robe_c_chain" />
       <equipment slot="Leg"
                  id="Item.wrapped_leather_boots" />
       <equipment slot="Gloves"
@@ -2205,7 +2205,7 @@
       <equipment slot="Item3"
                  id="Item.eastern_javelin_2_t3" />
       <equipment slot="Body"
-                 id="Item.aserai_archer_armor" />
+                 id="Item.aserai_robe_c_chain" />
       <equipment slot="Leg"
                  id="Item.wrapped_leather_boots" />
       <equipment slot="Cape"
@@ -2700,7 +2700,7 @@
       <equipment slot="Head"
                  id="Item.pointed_skullcap_over_mail" />
       <equipment slot="Body"
-                 id="Item.aserai_chain_plate_armor_a" />
+                 id="Item.aserai_archer_armor" />
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Cape"

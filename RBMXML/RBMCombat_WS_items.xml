@@ -439,8 +439,8 @@
 		Type="HeadArmor">
 		<ItemComponent>
 			<Armor
-				head_armor="47"
-				body_armor="12"
+				head_armor="63"
+				body_armor="0"
 				hair_cover_type="type1"
 				beard_cover_type="none"
 				modifier_group="plate"
