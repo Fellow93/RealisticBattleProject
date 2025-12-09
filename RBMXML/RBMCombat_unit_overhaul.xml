@@ -9872,6 +9872,8 @@
                  id="Item.patched_gambeson" />
       <equipment slot="Leg"
                  id="Item.sturgia_boots_d" />
+      <equipment slot="Gloves"
+                 id="Item.ragged_armwraps" />
       <equipment slot="Head"
                  id="Item.nasal_helmet" />
       </EquipmentRoster>
