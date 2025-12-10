@@ -830,22 +830,22 @@
 				value="10" />
 			<skill
 				id="OneHanded"
-				value="40" />
+				value="60" />
 			<skill
 				id="TwoHanded"
-				value="20" />
+				value="60" />
 			<skill
 				id="Polearm"
-				value="35" />
+				value="60" />
 			<skill
 				id="Bow"
-				value="10" />
+				value="20" />
 			<skill
 				id="Crossbow"
 				value="5" />
 			<skill
 				id="Throwing"
-				value="30" />
+				value="50" />
 		</skills>
 		<upgrade_targets>
 			<upgrade_target
@@ -855,19 +855,19 @@
 			<EquipmentRoster>
 				<equipment
 					slot="Item0"
-					id="Item.nord_battle_axe_6_t2" />
+					id="Item.nord_sword_1_t3" />
 				<equipment
 					slot="Item1"
-					id="Item.nord_spear_2_t2" />
+					id="Item.nord_spear_2_t3" />
 				<equipment
 					slot="Item2"
-					id="Item.nord_throwing_axe_1_t2" />
+					id="Item.northern_javelin_2_t3" />
 				<equipment
 					slot="Item3"
 					id="Item.nord_shield_tier_3_b" />
 				<equipment
 					slot="Cape"
-					id="Item.wrapped_scarf" />
+					id="Item.fur_cape_a" />
 				<equipment
 					slot="Body"
 					id="Item.heavy_gambeson_armor" />
@@ -876,59 +876,68 @@
 					id="Item.leather_boots" />
 				<equipment
 					slot="Head"
-					id="Item.fur_hat" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.nord_battle_axe_7_t2" />
-				<equipment
-					slot="Item1"
-					id="Item.nord_spear_1_t2" />
-				<equipment
-					slot="Item2"
-					id="Item.nord_throwing_axe_1_t2" />
-				<equipment
-					slot="Item3"
-					id="Item.nord_shield_tier_2_d" />
-				<equipment
-					slot="Body"
-					id="Item.heavy_gambeson_armor" />
+					id="Item.berserker_helmet_reinforced" />
 				<equipment
 					slot="Gloves"
-					id="Item.guarded_padded_vambrace" />
-				<equipment
-					slot="Head"
-					id="Item.nordic_leather_cap" />
-				<equipment
-					slot="Leg"
-					id="Item.leather_boots" />
+					id="Item.studded_arm_guards" />
 			</EquipmentRoster>
 			<EquipmentRoster>
 				<equipment
 					slot="Item0"
-					id="Item.nord_sword_1_t2" />
+					id="Item.northern_javelin_2_t3" />
 				<equipment
 					slot="Item1"
-					id="Item.nord_spear_2_t2" />
+					id="Item.nord_spear_2_t3" />
 				<equipment
 					slot="Item2"
-					id="Item.nord_throwing_axe_1_t2" />
+					id="Item.northern_javelin_2_t3" />
 				<equipment
 					slot="Item3"
-					id="Item.nord_shield_tier_2_d" />
+					id="Item.nord_shield_tier_3_b" />
 				<equipment
 					slot="Cape"
-					id="Item.wrapped_scarf" />
+					id="Item.fur_cape_a" />
 				<equipment
 					slot="Body"
-					id="Item.heavy_gambeson_armor" />
-				<equipment
-					slot="Head"
-					id="Item.nordic_leather_cap" />
+					id="Item.norse_chainmail_pleatedtrousers" />
 				<equipment
 					slot="Leg"
 					id="Item.leather_boots" />
+				<equipment
+					slot="Head"
+					id="Item.berserker_helmet_reinforced" />
+				<equipment
+					slot="Gloves"
+					id="Item.studded_arm_guards" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_javelin_2_t3" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_twohanded_axe_1_t3" />
+				<equipment
+					slot="Item2"
+					id="Item.northern_javelin_2_t3" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_shield_tier_3_b" />
+				<equipment
+					slot="Cape"
+					id="Item.fur_cape_a" />
+				<equipment
+					slot="Body"
+					id="Item.norse_chainmail_pleatedtrousers" />
+				<equipment
+					slot="Leg"
+					id="Item.leather_boots" />
+				<equipment
+					slot="Head"
+					id="Item.berserker_helmet_reinforced" />
+				<equipment
+					slot="Gloves"
+					id="Item.studded_arm_guards" />
 			</EquipmentRoster>
 			<EquipmentSet
 				id="nord_troop_civilian_template_t1"
@@ -954,19 +963,19 @@
 		<skills>
 			<skill
 				id="Athletics"
-				value="70" />
+				value="80" />
 			<skill
 				id="Riding"
 				value="30" />
 			<skill
 				id="OneHanded"
-				value="60" />
+				value="90" />
 			<skill
 				id="TwoHanded"
-				value="30" />
+				value="90" />
 			<skill
 				id="Polearm"
-				value="60" />
+				value="90" />
 			<skill
 				id="Bow"
 				value="30" />
@@ -975,7 +984,7 @@
 				value="10" />
 			<skill
 				id="Throwing"
-				value="60" />
+				value="80" />
 		</skills>
 		<upgrade_targets>
 			<upgrade_target
@@ -985,89 +994,118 @@
 			<EquipmentRoster>
 				<equipment
 					slot="Item0"
-					id="Item.nord_battle_axe_5_t3" />
-				<equipment
-					slot="Item1"
-					id="Item.nord_spear_2_t3" />
-				<equipment
-					slot="Item2"
-					id="Item.nord_shield_tier_3_a" />
-				<equipment
-					slot="Item3"
-					id="Item.nord_throwing_axe_1_t3" />
-				<equipment
-					slot="Body"
-					id="Item.nordic_hauberk" />
-				<equipment
-					slot="Leg"
-					id="Item.strapped_jackboots" />
-				<equipment
-					slot="Cape"
-					id="Item.nord_casual_cloak" />
-				<equipment
-					slot="Head"
-					id="Item.nasalhelm_over_leather" />
-				<equipment
-					slot="Gloves"
-					id="Item.guarded_padded_vambrace" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
 					id="Item.nord_battle_axe_4_t3" />
 				<equipment
 					slot="Item1"
-					id="Item.nord_spear_2_t3" />
+					id="Item.nord_spear_1_t4" />
 				<equipment
 					slot="Item2"
-					id="Item.nord_shield_tier_3_a" />
+					id="Item.nord_shield_tier_4_a" />
 				<equipment
 					slot="Item3"
-					id="Item.nord_throwing_axe_1_t3" />
+					id="Item.northern_javelin_3_t4" />
 				<equipment
 					slot="Body"
-					id="Item.nordic_hauberk" />
-				<equipment
-					slot="Cape"
-					id="Item.scarf" />
+					id="Item.nord_chainmail_armor" />
 				<equipment
 					slot="Leg"
-					id="Item.strapped_jackboots" />
+					id="Item.bandit_hybrid_armor_boots_a" />
+				<equipment
+					slot="Cape"
+					id="Item.berserker_cloak" />
 				<equipment
 					slot="Head"
-					id="Item.nasalhelm_over_mail" />
+					id="Item.nordic_helmet" />
 				<equipment
 					slot="Gloves"
-					id="Item.guarded_padded_vambrace" />
+					id="Item.splinted_bracers" />
 			</EquipmentRoster>
 			<EquipmentRoster>
 				<equipment
 					slot="Item0"
-					id="Item.nord_sword_1_t3" />
+					id="Item.nord_sword_4_t4" />
 				<equipment
 					slot="Item1"
-					id="Item.nord_spear_1_t3" />
+					id="Item.nord_spear_1_t4" />
 				<equipment
 					slot="Item2"
-					id="Item.nord_shield_tier_3_b" />
+					id="Item.nord_shield_tier_4_a" />
 				<equipment
 					slot="Item3"
-					id="Item.nord_throwing_axe_1_t3" />
+					id="Item.northern_javelin_3_t4" />
 				<equipment
 					slot="Body"
-					id="Item.nordic_hauberk" />
+					id="Item.nord_chainmail_armor" />
 				<equipment
 					slot="Leg"
-					id="Item.strapped_jackboots" />
+					id="Item.bandit_hybrid_armor_boots_a" />
 				<equipment
 					slot="Cape"
-					id="Item.nord_casual_cloak" />
+					id="Item.berserker_cloak" />
 				<equipment
 					slot="Head"
-					id="Item.nasalhelm_over_leather" />
+					id="Item.nordic_helmet" />
 				<equipment
 					slot="Gloves"
-					id="Item.guarded_padded_vambrace" />
+					id="Item.splinted_bracers" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_1_t4" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_4_a" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Body"
+					id="Item.nord_chainmail_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.bandit_hybrid_armor_boots_a" />
+				<equipment
+					slot="Cape"
+					id="Item.berserker_cloak" />
+				<equipment
+					slot="Head"
+					id="Item.nordic_helmet" />
+				<equipment
+					slot="Gloves"
+					id="Item.splinted_bracers" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_twohanded_axe_5_t4" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_4_a" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Body"
+					id="Item.nord_chainmail_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.bandit_hybrid_armor_boots_a" />
+				<equipment
+					slot="Cape"
+					id="Item.berserker_cloak" />
+				<equipment
+					slot="Head"
+					id="Item.nordic_helmet" />
+				<equipment
+					slot="Gloves"
+					id="Item.splinted_bracers" />
 			</EquipmentRoster>
 			<EquipmentSet
 				id="nord_troop_civilian_template_t2"
@@ -1099,13 +1137,13 @@
 				value="40" />
 			<skill
 				id="OneHanded"
-				value="110" />
+				value="120" />
 			<skill
 				id="TwoHanded"
-				value="35" />
+				value="120" />
 			<skill
 				id="Polearm"
-				value="110" />
+				value="120" />
 			<skill
 				id="Bow"
 				value="35" />
@@ -1124,89 +1162,118 @@
 			<EquipmentRoster>
 				<equipment
 					slot="Item0"
-					id="Item.nord_battle_axe_4_t3" />
+					id="Item.nord_sword_1_t5" />
 				<equipment
 					slot="Item1"
-					id="Item.nord_throwing_axe_2_t4" />
+					id="Item.nord_spear_2_t5" />
 				<equipment
 					slot="Item2"
-					id="Item.nord_spear_4_t5" />
+					id="Item.northern_javelin_3_t4" />
 				<equipment
 					slot="Item3"
 					id="Item.nord_shield_tier_4_a" />
 				<equipment
 					slot="Body"
-					id="Item.vlandia_chainmail" />
+					id="Item.tacky_bandit" />
 				<equipment
 					slot="Leg"
-					id="Item.battania_woodland_boots" />
+					id="Item.bandit_hybrid_armor_boots_a" />
 				<equipment
 					slot="Cape"
-					id="Item.nord_fur_shoulder" />
+					id="Item.northman_raider_cape" />
 				<equipment
 					slot="Head"
 					id="Item.closed_goggled_helmet" />
 				<equipment
 					slot="Gloves"
-					id="Item.hybrid_armor_gloves_b" />
+					id="Item.tacky_bandit_bracer" />
 			</EquipmentRoster>
 			<EquipmentRoster>
 				<equipment
 					slot="Item0"
-					id="Item.nord_battle_axe_3_t4" />
+					id="Item.nord_battle_axe_1_t5" />
 				<equipment
 					slot="Item1"
-					id="Item.nord_throwing_axe_2_t4" />
+					id="Item.nord_spear_2_t5" />
 				<equipment
 					slot="Item2"
-					id="Item.nord_spear_1_t4" />
+					id="Item.northern_javelin_3_t4" />
 				<equipment
 					slot="Item3"
-					id="Item.nord_shield_tier_4_b" />
+					id="Item.nord_shield_tier_4_a" />
 				<equipment
 					slot="Body"
-					id="Item.vlandia_chainmail" />
-				<equipment
-					slot="Cape"
-					id="Item.scarf" />
+					id="Item.nord_king_armor" />
 				<equipment
 					slot="Leg"
-					id="Item.strapped_jackboots" />
+					id="Item.bandit_hybrid_armor_boots_a" />
 				<equipment
 					slot="Cape"
-					id="Item.nord_fur_shoulder" />
+					id="Item.northman_raider_cape" />
 				<equipment
 					slot="Head"
 					id="Item.closed_goggled_helmet" />
 				<equipment
 					slot="Gloves"
-					id="Item.hybrid_armor_gloves_b" />
+					id="Item.tacky_bandit_bracer" />
 			</EquipmentRoster>
 			<EquipmentRoster>
 				<equipment
 					slot="Item0"
-					id="Item.nord_sword_4_t4" />
+					id="Item.northern_javelin_3_t4" />
 				<equipment
 					slot="Item1"
-					id="Item.nord_throwing_axe_1_t4" />
+					id="Item.nord_spear_2_t5" />
 				<equipment
 					slot="Item2"
-					id="Item.nord_spear_1_t4" />
+					id="Item.northern_javelin_3_t4" />
 				<equipment
 					slot="Item3"
-					id="Item.nord_shield_tier_4_b" />
+					id="Item.nord_shield_tier_4_a" />
 				<equipment
 					slot="Body"
-					id="Item.vlandia_chainmail" />
-				<equipment
-					slot="Cape"
-					id="Item.nord_fur_shoulder" />
+					id="Item.nord_king_armor_b" />
 				<equipment
 					slot="Leg"
-					id="Item.strapped_jackboots" />
+					id="Item.bandit_hybrid_armor_boots_a" />
+				<equipment
+					slot="Cape"
+					id="Item.northman_raider_cape" />
+				<equipment
+					slot="Head"
+					id="Item.closed_goggled_helmet" />
 				<equipment
 					slot="Gloves"
-					id="Item.hybrid_armor_gloves_b" />
+					id="Item.tacky_bandit_bracer" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_battle_axe_1_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_shield_tier_4_a" />
+				<equipment
+					slot="Body"
+					id="Item.nord_king_armor_b" />
+				<equipment
+					slot="Leg"
+					id="Item.bandit_hybrid_armor_boots_a" />
+				<equipment
+					slot="Cape"
+					id="Item.northman_raider_cape" />
+				<equipment
+					slot="Head"
+					id="Item.closed_goggled_helmet" />
+				<equipment
+					slot="Gloves"
+					id="Item.tacky_bandit_bracer" />
 			</EquipmentRoster>
 			<EquipmentSet
 				id="nord_troop_civilian_template_t3"
@@ -1238,13 +1305,13 @@
 				value="70" />
 			<skill
 				id="OneHanded"
-				value="140" />
+				value="150" />
 			<skill
 				id="TwoHanded"
-				value="70" />
+				value="150" />
 			<skill
 				id="Polearm"
-				value="140" />
+				value="150" />
 			<skill
 				id="Bow"
 				value="45" />
@@ -1266,86 +1333,115 @@
 					id="Item.nord_battle_axe_2_t5" />
 				<equipment
 					slot="Item1"
-					id="Item.nord_spear_2_t5" />
-				<equipment
-					slot="Item2"
-					id="Item.nord_shield_tier_5_a" />
-				<equipment
-					slot="Item3"
-					id="Item.nord_throwing_axe_1_t5" />
-				<equipment
-					slot="Head"
-					id="Item.closed_goggled_helmet" />
-				<equipment
-					slot="Body"
-					id="Item.northman_raider_armor" />
-				<equipment
-					slot="Cape"
-					id="Item.bandit_hybrid_armor_shoulder_b" />
-				<equipment
-					slot="Leg"
-					id="Item.plated_strip_boots" />
-				<equipment
-					slot="Gloves"
-					id="Item.northman_wrist_armor" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.nord_sword_3_t5" />
-				<equipment
-					slot="Item1"
-					id="Item.nord_spear_2_t5" />
-				<equipment
-					slot="Item2"
-					id="Item.nord_shield_tier_5_a" />
-				<equipment
-					slot="Item3"
-					id="Item.nord_throwing_axe_1_t5" />
-				<equipment
-					slot="Head"
-					id="Item.goggled_helmet_over_full_mail" />
-				<equipment
-					slot="Body"
-					id="Item.northman_raider_armor" />
-				<equipment
-					slot="Cape"
-					id="Item.bandit_hybrid_armor_shoulder_b" />
-				<equipment
-					slot="Leg"
-					id="Item.northman_raider_boot" />
-				<equipment
-					slot="Gloves"
-					id="Item.hybrid_armor_gloves_b" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.nord_battle_axe_3_t4" />
-				<equipment
-					slot="Item1"
-					id="Item.nord_spear_4_t5" />
+					id="Item.nord_spear_3_t5" />
 				<equipment
 					slot="Item2"
 					id="Item.nord_shield_tier_5_b" />
 				<equipment
 					slot="Item3"
-					id="Item.nord_throwing_axe_2_t5" />
-				<equipment
-					slot="Body"
-					id="Item.northman_raider_armor" />
-				<equipment
-					slot="Leg"
-					id="Item.northman_raider_boot" />
-				<equipment
-					slot="Cape"
-					id="Item.bandit_hybrid_armor_shoulder_b" />
-				<equipment
-					slot="Gloves"
-					id="Item.northman_wrist_armor" />
+					id="Item.northern_javelin_3_t4" />
 				<equipment
 					slot="Head"
-					id="Item.closed_goggled_helmet" />
+					id="Item.decorated_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.brass_lamellar_over_mail" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_king_shoulder_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.tacky_bandit_boot" />
+				<equipment
+					slot="Gloves"
+					id="Item.bandit_hybrid_armor_gloves_a" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_sword_2_t5" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_3_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_5_b" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Head"
+					id="Item.decorated_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.brass_lamellar_over_mail" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_king_shoulder_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.tacky_bandit_boot" />
+				<equipment
+					slot="Gloves"
+					id="Item.bandit_hybrid_armor_gloves_a" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_3_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_5_b" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Head"
+					id="Item.decorated_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.brass_lamellar_over_mail" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_king_shoulder_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.tacky_bandit_boot" />
+				<equipment
+					slot="Gloves"
+					id="Item.bandit_hybrid_armor_gloves_a" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_twohanded_axe_3_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_5_b" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Head"
+					id="Item.decorated_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.brass_lamellar_over_mail" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_king_shoulder_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.tacky_bandit_boot" />
+				<equipment
+					slot="Gloves"
+					id="Item.bandit_hybrid_armor_gloves_a" />
 			</EquipmentRoster>
 			<EquipmentSet
 				id="nord_troop_civilian_template_t2"
@@ -1389,7 +1485,7 @@
 		<skills>
 			<skill
 				id="Athletics"
-				value="160" />
+				value="200" />
 			<skill
 				id="Riding"
 				value="90" />
@@ -1398,7 +1494,7 @@
 				value="200" />
 			<skill
 				id="TwoHanded"
-				value="90" />
+				value="200" />
 			<skill
 				id="Polearm"
 				value="200" />
@@ -1417,86 +1513,118 @@
 			<EquipmentRoster>
 				<equipment
 					slot="Item0"
-					id="Item.nord_spear_3_t5" />
-				<equipment
-					slot="Item1"
-					id="Item.nord_shield_tier_6_a" />
-				<equipment
-					slot="Item2"
-					id="Item.nord_sword_2_t5" />
-				<equipment
-					slot="Item3"
-					id="Item.nord_throwing_axe_1_t5" />
-				<equipment
-					slot="Body"
-					id="Item.nord_king_armor_b" />
-				<equipment
-					slot="Leg"
-					id="Item.mail_chausses" />
-				<equipment
-					slot="Cape"
-					id="Item.northman_raider_cape" />
-				<equipment
-					slot="Head"
-					id="Item.nordic_helmet" />
-				<equipment
-					slot="Gloves"
-					id="Item.northman_wrist_armor" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.nord_spear_3_t5" />
-				<equipment
-					slot="Item1"
-					id="Item.nord_shield_tier_6_a" />
-				<equipment
-					slot="Item2"
 					id="Item.nord_battle_axe_2_t5" />
 				<equipment
-					slot="Item3"
-					id="Item.nord_throwing_axe_1_t5" />
-				<equipment
-					slot="Body"
-					id="Item.nord_king_armor_b" />
-				<equipment
-					slot="Leg"
-					id="Item.battania_woodland_boots" />
-				<equipment
-					slot="Cape"
-					id="Item.northman_raider_shoulder" />
-				<equipment
-					slot="Head"
-					id="Item.closed_goggled_helmet" />
-				<equipment
-					slot="Gloves"
-					id="Item.northman_wrist_armor" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
+					slot="Item1"
 					id="Item.nord_spear_4_t5" />
 				<equipment
-					slot="Item1"
-					id="Item.nord_shield_tier_6_b" />
-				<equipment
 					slot="Item2"
-					id="Item.nord_battle_axe_2_t5" />
+					id="Item.nord_shield_tier_5_b" />
 				<equipment
 					slot="Item3"
-					id="Item.nord_throwing_axe_1_t5" />
-				<equipment
-					slot="Body"
-					id="Item.nord_king_armor_b" />
-				<equipment
-					slot="Leg"
-					id="Item.mail_chausses" />
-				<equipment
-					slot="Cape"
-					id="Item.bandit_hybrid_armor_shoulder_b" />
+					id="Item.northern_javelin_3_t4" />
 				<equipment
 					slot="Head"
-					id="Item.goggled_helmet_over_full_mail" />
+					id="Item.decorated_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.sturgian_lamellar_fortified" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_king_shoulder_armor_b" />
+				<equipment
+					slot="Leg"
+					id="Item.hybrid_armor_boots_b" />
+				<equipment
+					slot="Gloves"
+					id="Item.hybrid_armor_gloves_b" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_sword_3_t5" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_4_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_5_b" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Head"
+					id="Item.decorated_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.sturgian_lamellar_fortified" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_king_shoulder_armor_b" />
+				<equipment
+					slot="Leg"
+					id="Item.hybrid_armor_boots_b" />
+				<equipment
+					slot="Gloves"
+					id="Item.hybrid_armor_gloves_b" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_4_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_5_b" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Head"
+					id="Item.decorated_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.sturgian_lamellar_fortified" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_king_shoulder_armor_b" />
+				<equipment
+					slot="Leg"
+					id="Item.hybrid_armor_boots_b" />
+				<equipment
+					slot="Gloves"
+					id="Item.hybrid_armor_gloves_b" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_long_two_handed_t6" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_5_b" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Head"
+					id="Item.decorated_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.sturgian_lamellar_fortified" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_king_shoulder_armor_b" />
+				<equipment
+					slot="Leg"
+					id="Item.hybrid_armor_boots_b" />
+				<equipment
+					slot="Gloves"
+					id="Item.hybrid_armor_gloves_b" />
 			</EquipmentRoster>
 			<EquipmentSet
 				id="nord_troop_civilian_template_t3"
