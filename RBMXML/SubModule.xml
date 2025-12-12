@@ -1,16 +1,16 @@
 ﻿<Module>
   <Name value="(RBM) Realistic Battle Mod"/>
   <Id value="RBM"/>
-  <Version value="v4.0.8"/>
+  <Version value="v4.0.9"/>
   <DefaultModule value="true"/>
   <ModuleCategory value="Singleplayer"/>
   <DependedModules>
-    <DependedModule Id="Native" DependentVersion="v1.4.0" Optional="false"/>
-    <DependedModule Id="SandBoxCore" DependentVersion="v1.4.0" Optional="false"/>
-    <DependedModule Id="Sandbox" DependentVersion="v1.4.0" Optional="false"/>
-    <DependedModule Id="StoryMode" DependentVersion="v1.4.0" Optional="false"/>
-	<DependedModule Id="CustomBattle" DependentVersion="v1.4.0" Optional="false"/>
-	<DependedModule Id="BirthAndDeath" DependentVersion="v1.4.0" Optional="true"/>
+    <DependedModule Id="Native" DependentVersion="v1.3.10" Optional="false"/>
+    <DependedModule Id="SandBoxCore" DependentVersion="v1.3.10" Optional="false"/>
+    <DependedModule Id="Sandbox" DependentVersion="v1.3.10" Optional="false"/>
+    <DependedModule Id="StoryMode" DependentVersion="v1.3.10" Optional="false"/>
+	<DependedModule Id="CustomBattle" DependentVersion="v1.3.10" Optional="false"/>
+	<DependedModule Id="BirthAndDeath" DependentVersion="v1.3.10" Optional="true"/>
     <DependedModule Id="NavalDLC" DependentVersion="v1.0.6" Optional="false"/>
   </DependedModules>
   <SubModules>
@@ -302,6 +302,12 @@
 				<GameType value = "CampaignStoryMode"/>
 				<GameType value = "CustomGame"/>
 				<GameType value = "EditorGame"/>
+			</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>                
+			<XmlName id="NPCCharacters" path="RBMCombat_WS_custom_battle"/>
+			<IncludedGameTypes>
+				<GameType value = "CustomGame"/>
 			</IncludedGameTypes>
 	</XmlNode>
 	

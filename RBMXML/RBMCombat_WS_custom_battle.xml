@@ -1,0 +1,2624 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<NPCCharacters>
+<!--RBM_XML_TAG-->
+<!--RBM_COMBAT_XML_TAG-->
+<!--RBM_COMBAT_OVERHAUL_XML_TAG-->
+<!--RBM_WS_XML_TAG-->
+	<NPCCharacter
+		id="RBM_nord_youngling"
+		default_group="Infantry"
+		level="6"
+		name="{=BylR8JFS}Nord Youngling"
+		occupation="Soldier"
+		is_basic_troop="true"
+		culture="Culture.sturgia">
+		<face>
+			<face_key_template
+				value="BodyProperty.fighter_nord" />
+		</face>
+		<Traits>
+			<Trait
+				id="NavalSoldier"
+				value="1" />
+		</Traits>
+    <skills>
+      <skill id="Athletics"
+             value="25" />
+      <skill id="Riding"
+             value="5" />
+      <skill id="OneHanded"
+             value="20" />
+      <skill id="TwoHanded"
+             value="10" />
+      <skill id="Polearm"
+             value="25" />
+      <skill id="Bow"
+             value="5" />
+      <skill id="Crossbow"
+             value="0" />
+      <skill id="Throwing"
+             value="20" />
+    </skills>
+		<upgrade_targets>
+			<upgrade_target
+				id="NPCCharacter.RBM_nord_drengr" />
+			<upgrade_target
+				id="NPCCharacter.RBM_nord_huntsman" />
+		</upgrade_targets>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_spear_1_t2" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_shield_tier_2_d" />
+				<equipment
+					slot="Body"
+					id="Item.nord_casual_tunic" />
+				<equipment
+					slot="Leg"
+					id="Item.nord_casual_boots" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_casual_cloak" />
+      <equipment slot="Gloves"
+                 id="Item.ragged_armwraps" />
+				<equipment slot="Head"
+					id="Item.nordic_fur_cap" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_spear_1_t2" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_shield_tier_2_d" />
+				<equipment
+					slot="Body"
+					id="Item.nord_casual_tunic" />
+				<equipment
+					slot="Leg"
+					id="Item.nord_casual_boots" />
+      <equipment slot="Gloves"
+                 id="Item.ragged_armwraps" />
+				<equipment slot="Head"
+					id="Item.nordic_fur_cap" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_spear_1_t2" />
+				<equipment
+					slot="Item1"
+					id="Item.northern_round_shield" />
+				<equipment
+					slot="Item2"
+					id="Item.western_javelin_1_t2" />
+				<equipment
+					slot="Body"
+					id="Item.nord_casual_tunic" />
+				<equipment
+					slot="Leg"
+					id="Item.nord_casual_boots" />
+      <equipment slot="Gloves"
+                 id="Item.ragged_armwraps" />
+				<equipment slot="Head"
+					id="Item.nasal_helmet" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_spear_1_t2" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_shield_tier_2_d" />
+				<equipment
+					slot="Body"
+					id="Item.heavy_nordic_tunic" />
+				<equipment
+					slot="Leg"
+					id="Item.nord_casual_boots" />
+      <equipment slot="Gloves"
+                 id="Item.ragged_armwraps" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_casual_cloak" />
+				<equipment slot="Head"
+					id="Item.nordic_fur_cap" />
+			</EquipmentRoster>
+			<EquipmentSet
+				id="nord_troop_civilian_template_t1"
+				civilian="true" />
+		</Equipments>
+	</NPCCharacter>
+	<NPCCharacter
+		id="RBM_nord_drengr"
+		default_group="Infantry"
+		level="11"
+		name="{=sXNNaJ7Q}Nord Warrior"
+		occupation="Soldier"
+		culture="Culture.sturgia">
+		<face>
+			<face_key_template
+				value="BodyProperty.fighter_nord" />
+		</face>
+		<Traits>
+			<Trait
+				id="NavalSoldier"
+				value="1" />
+		</Traits>
+    <skills>
+      <skill id="Athletics"
+             value="40" />
+      <skill id="Riding"
+             value="15" />
+      <skill id="OneHanded"
+             value="50" />
+      <skill id="TwoHanded"
+             value="20" />
+      <skill id="Polearm"
+             value="50" />
+      <skill id="Bow"
+             value="15" />
+      <skill id="Crossbow"
+             value="5" />
+      <skill id="Throwing"
+             value="40" />
+    </skills>
+		<upgrade_targets>
+			<upgrade_target
+				id="NPCCharacter.RBM_nord_axe_warrior" />
+			<upgrade_target
+				id="NPCCharacter.RBM_nord_spear_warrior" />
+		</upgrade_targets>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_battle_axe_6_t2" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_shield_tier_3_a" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_spear_1_t2" />
+				<equipment
+					slot="Item3"
+					id="Item.western_javelin_1_t2" />
+				<equipment
+					slot="Head"
+					id="Item.nasal_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.naval_strappy_tunic" />
+				<equipment
+					slot="Leg"
+					id="Item.strapped_jackboots" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_fur_shoulder" />
+				<equipment
+					slot="Gloves"
+					id="Item.nord_casual_bracers" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item1"
+					id="Item.nord_shield_tier_3_a" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_spear_1_t2" />
+				<equipment
+					slot="Item3"
+					id="Item.western_javelin_1_t2" />
+				<equipment
+					slot="Head"
+					id="Item.nasal_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.naval_strappy_tunic" />
+				<equipment
+					slot="Leg"
+					id="Item.strapped_jackboots" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_fur_shoulder" />
+				<equipment
+					slot="Gloves"
+					id="Item.nord_casual_bracers" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item1"
+					id="Item.nord_shield_tier_2_d" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_spear_1_t2" />
+				<equipment
+					slot="Item3"
+					id="Item.western_javelin_1_t2" />
+				<equipment
+					slot="Head"
+					id="Item.nasal_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.naval_strappy_tunic" />
+				<equipment
+					slot="Leg"
+					id="Item.strapped_jackboots" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_fur_shoulder" />
+				<equipment
+					slot="Gloves"
+					id="Item.nord_casual_bracers" />
+			</EquipmentRoster>
+			<EquipmentSet
+				id="nord_troop_civilian_template_t1"
+				civilian="true" />
+		</Equipments>
+	</NPCCharacter>
+	<NPCCharacter
+		id="RBM_nord_axe_warrior"
+		default_group="Infantry"
+		level="16"
+		name="{=NuEuEucc}Nord Axe Warrior"
+		occupation="Soldier"
+		culture="Culture.sturgia">
+		<face>
+			<face_key_template
+				value="BodyProperty.fighter_nord" />
+		</face>
+		<Traits>
+			<Trait
+				id="NavalSoldier"
+				value="1" />
+		</Traits>
+    <skills>
+      <skill id="Athletics"
+             value="70" />
+      <skill id="Riding"
+             value="30" />
+      <skill id="OneHanded"
+             value="90" />
+      <skill id="TwoHanded"
+             value="40" />
+      <skill id="Polearm"
+             value="70" />
+      <skill id="Bow"
+             value="30" />
+      <skill id="Crossbow"
+             value="10" />
+      <skill id="Throwing"
+             value="70" />
+    </skills>
+		<upgrade_targets>
+			<upgrade_target
+				id="NPCCharacter.RBM_nord_boandi" />
+			<upgrade_target
+				id="NPCCharacter.RBM_nord_hew-bearer" />
+		</upgrade_targets>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_spear_2_t3" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_shield_tier_3_a" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_battle_axe_5_t3" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_throwing_axe_2_t4" />
+				<equipment
+					slot="Head"
+					id="Item.northern_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.norse_chainmail_pleatedtrousers" />
+				<equipment
+					slot="Leg"
+					id="Item.northman_raider_boot" />
+				<equipment
+					slot="Cape"
+					id="Item.wolf_shoulder" />
+				<equipment
+					slot="Gloves"
+					id="Item.splinted_bracers" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_spear_2_t3" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_shield_tier_3_b" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_sword_1_t3" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_throwing_axe_2_t4" />
+				<equipment
+					slot="Head"
+					id="Item.northern_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.nord_chainmail_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.northman_raider_boot" />
+				<equipment
+					slot="Cape"
+					id="Item.wolf_shoulder" />
+				<equipment
+					slot="Gloves"
+					id="Item.splinted_bracers" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_spear_2_t3" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_shield_tier_3_a" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_throwing_axe_2_t4" />
+				<equipment
+					slot="Head"
+					id="Item.northern_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.norse_chainmail_pleatedtrousers" />
+				<equipment
+					slot="Leg"
+					id="Item.northman_raider_boot" />
+				<equipment
+					slot="Cape"
+					id="Item.wolf_shoulder" />
+				<equipment
+					slot="Gloves"
+					id="Item.splinted_bracers" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_spear_2_t3" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_shield_tier_3_b" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_battle_axe_5_t3" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_throwing_axe_2_t4" />
+				<equipment
+					slot="Head"
+					id="Item.northern_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.norse_chainmail_pleatedtrousers" />
+				<equipment
+					slot="Leg"
+					id="Item.northman_raider_boot" />
+				<equipment
+					slot="Cape"
+					id="Item.wolf_shoulder" />
+				<equipment
+					slot="Gloves"
+					id="Item.splinted_bracers" />
+			</EquipmentRoster>
+			<EquipmentSet
+				id="nord_troop_civilian_template_t2"
+				civilian="true" />
+		</Equipments>
+	</NPCCharacter>
+	<NPCCharacter
+		id="RBM_nord_spear_warrior"
+		default_group="Infantry"
+		level="16"
+		name="{=GriAus4K}Nord Spear Warrior"
+		occupation="Soldier"
+		culture="Culture.sturgia">
+		<face>
+			<face_key_template
+				value="BodyProperty.fighter_nord" />
+		</face>
+		<Traits>
+			<Trait
+				id="NavalSoldier"
+				value="1" />
+		</Traits>
+    <skills>
+      <skill id="Athletics"
+             value="70" />
+      <skill id="Riding"
+             value="30" />
+      <skill id="OneHanded"
+             value="70" />
+      <skill id="TwoHanded"
+             value="40" />
+      <skill id="Polearm"
+             value="90" />
+      <skill id="Bow"
+             value="30" />
+      <skill id="Crossbow"
+             value="10" />
+      <skill id="Throwing"
+             value="90" />
+    </skills>
+		<upgrade_targets>
+			<upgrade_target
+				id="NPCCharacter.RBM_nord_vargr" />
+		</upgrade_targets>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_shield_tier_3_b" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_javelin_1_t3" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_sword_2_t3" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_spear_1_t3" />
+				<equipment
+					slot="Body"
+					id="Item.nord_chainmail_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.northman_raider_boot" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_shoulder_b" />
+				<equipment
+					slot="Head"
+					id="Item.nordic_helmet" />
+				<equipment
+					slot="Gloves"
+					id="Item.northman_wrist_armor" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_shield_tier_3_b" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_javelin_1_t3" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_spear_javelin_1_t3" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_spear_1_t3" />
+				<equipment
+					slot="Head"
+					id="Item.nordic_helmet" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_shoulder_a" />
+				<equipment
+					slot="Body"
+					id="Item.norse_chainmail_pleatedtrousers" />
+				<equipment
+					slot="Leg"
+					id="Item.northman_raider_boot" />
+				<equipment
+					slot="Gloves"
+					id="Item.northman_wrist_armor" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_shield_tier_3_a" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_javelin_1_t3" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_spear_javelin_1_t3" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_spear_2_t3" />
+				<equipment
+					slot="Body"
+					id="Item.heavy_gambeson_armor" />
+				<equipment
+					slot="Head"
+					id="Item.nasal_helmet_with_mail" />
+				<equipment
+					slot="Leg"
+					id="Item.northman_raider_boot" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_shoulder_b" />
+				<equipment
+					slot="Gloves"
+					id="Item.northman_wrist_armor" />
+			</EquipmentRoster>
+			<EquipmentSet
+				id="nord_troop_civilian_template_t2"
+				civilian="true" />
+		</Equipments>
+	</NPCCharacter>
+	<NPCCharacter
+		id="RBM_nord_boandi"
+		default_group="Infantry"
+		level="21"
+		name="{=QaAsyLju}Nord Shield Biters"
+		occupation="Soldier"
+		culture="Culture.sturgia">
+		<face>
+			<face_key_template
+				value="BodyProperty.fighter_nord" />
+		</face>
+		<Traits>
+			<Trait
+				id="NavalSoldier"
+				value="1" />
+		</Traits>
+    <skills>
+      <skill id="Athletics"
+             value="100" />
+      <skill id="Riding"
+             value="45" />
+      <skill id="OneHanded"
+             value="110" />
+      <skill id="TwoHanded"
+             value="60" />
+      <skill id="Polearm"
+             value="110" />
+      <skill id="Bow"
+             value="45" />
+      <skill id="Crossbow"
+             value="15" />
+      <skill id="Throwing"
+             value="90" />
+    </skills>
+		<upgrade_targets>
+			<upgrade_target
+				id="NPCCharacter.RBM_nord_berserkr" />
+		</upgrade_targets>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_battle_axe_2_t5" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_shield_tier_4_a" />
+				<equipment
+					slot="Item2"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Body"
+					id="Item.nord_chainmail_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.bandit_hybrid_armor_boots_a" />
+				<equipment
+					slot="Head"
+					id="Item.goggled_helmet_over_mail" />
+				<equipment
+					slot="Cape"
+					id="Item.northman_raider_cape" />
+				<equipment
+					slot="Gloves"
+					id="Item.mail_mitten" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_battle_axe_2_t5" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_shield_tier_4_a" />
+				<equipment
+					slot="Item2"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Body"
+					id="Item.northman_raider_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.bandit_hybrid_armor_boots_a" />
+				<equipment
+					slot="Head"
+					id="Item.closed_goggled_helmet" />
+				<equipment
+					slot="Cape"
+					id="Item.northman_raider_cape" />
+				<equipment
+					slot="Gloves"
+					id="Item.mail_mitten" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_battle_axe_1_t5" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_shield_tier_4_b" />
+				<equipment
+					slot="Item2"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Body"
+					id="Item.sturgian_lamellar_base" />
+				<equipment
+					slot="Leg"
+					id="Item.bandit_hybrid_armor_boots_a" />
+				<equipment
+					slot="Head"
+					id="Item.closed_goggled_helmet" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_shoulder_a" />
+				<equipment
+					slot="Gloves"
+					id="Item.mail_mitten" />
+			</EquipmentRoster>
+			<EquipmentSet
+				id="nord_troop_civilian_template_t3"
+				civilian="true" />
+		</Equipments>
+	</NPCCharacter>
+	<NPCCharacter
+		id="RBM_nord_berserkr"
+		default_group="Infantry"
+		level="26"
+		name="{=d7XgM4EZ}Nord Berserkir"
+		occupation="Soldier"
+		culture="Culture.sturgia">
+		<face>
+			<face_key_template
+				value="BodyProperty.fighter_nord_berserkr" />
+		</face>
+		<Traits>
+			<Trait
+				id="NavalSoldier"
+				value="1" />
+		</Traits>
+    <skills>
+      <skill id="Athletics"
+             value="150" />
+      <skill id="Riding"
+             value="40" />
+      <skill id="OneHanded"
+             value="80" />
+      <skill id="TwoHanded"
+             value="155" />
+      <skill id="Polearm"
+             value="80" />
+      <skill id="Bow"
+             value="60" />
+      <skill id="Crossbow"
+             value="20" />
+      <skill id="Throwing"
+             value="100" />
+    </skills>
+		<upgrade_targets></upgrade_targets>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.berserkr_axe" />
+				<equipment
+					slot="Item1"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item2"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_shield_tier_5_a" />
+				<equipment
+					slot="Head"
+					id="Item.decorated_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.sturgian_lamellar_fortified" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_king_shoulder_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.tacky_bandit_boot" />
+				<equipment
+					slot="Gloves"
+					id="Item.bandit_hybrid_armor_gloves_a" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_twohanded_axe_3_t5" />
+				<equipment
+					slot="Item1"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item2"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_shield_tier_5_a" />
+				<equipment
+					slot="Head"
+					id="Item.goggled_helmet_over_full_mail" />
+				<equipment
+					slot="Body"
+					id="Item.northern_brass_lamellar_over_mail" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_king_shoulder_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.tacky_bandit_boot" />
+				<equipment
+					slot="Gloves"
+					id="Item.bandit_hybrid_armor_gloves_a" />
+			</EquipmentRoster>
+			<EquipmentSet
+				id="nord_troop_civilian_template_t2"
+				civilian="true" />
+		</Equipments>
+	</NPCCharacter>
+	<NPCCharacter
+		id="RBM_nord_ungmann"
+		default_group="Infantry"
+		level="11"
+		name="{=5PIe3Zia}Nord Scion"
+		occupation="Soldier"
+		is_basic_troop="true"
+		culture="Culture.sturgia">
+		<face>
+			<face_key_template
+				value="BodyProperty.fighter_nord" />
+		</face>
+		<Traits>
+			<Trait
+				id="NavalSoldier"
+				value="1" />
+		</Traits>
+		<skills>
+			<skill
+				id="Athletics"
+				value="40" />
+			<skill
+				id="Riding"
+				value="10" />
+			<skill
+				id="OneHanded"
+				value="60" />
+			<skill
+				id="TwoHanded"
+				value="60" />
+			<skill
+				id="Polearm"
+				value="60" />
+			<skill
+				id="Bow"
+				value="20" />
+			<skill
+				id="Crossbow"
+				value="5" />
+			<skill
+				id="Throwing"
+				value="50" />
+		</skills>
+		<upgrade_targets>
+			<upgrade_target
+				id="NPCCharacter.RBM_nord_thegn" />
+		</upgrade_targets>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_sword_1_t3" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_2_t3" />
+				<equipment
+					slot="Item2"
+					id="Item.northern_javelin_2_t3" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_shield_tier_3_b" />
+				<equipment
+					slot="Cape"
+					id="Item.fur_cape_a" />
+				<equipment
+					slot="Body"
+					id="Item.heavy_gambeson_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.leather_boots" />
+				<equipment
+					slot="Head"
+					id="Item.berserker_helmet_reinforced" />
+				<equipment
+					slot="Gloves"
+					id="Item.studded_arm_guards" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_javelin_2_t3" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_2_t3" />
+				<equipment
+					slot="Item2"
+					id="Item.northern_javelin_2_t3" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_shield_tier_3_b" />
+				<equipment
+					slot="Cape"
+					id="Item.fur_cape_a" />
+				<equipment
+					slot="Body"
+					id="Item.norse_chainmail_pleatedtrousers" />
+				<equipment
+					slot="Leg"
+					id="Item.leather_boots" />
+				<equipment
+					slot="Head"
+					id="Item.berserker_helmet_reinforced" />
+				<equipment
+					slot="Gloves"
+					id="Item.studded_arm_guards" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_javelin_2_t3" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_twohanded_axe_1_t3" />
+				<equipment
+					slot="Item2"
+					id="Item.northern_javelin_2_t3" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_shield_tier_3_b" />
+				<equipment
+					slot="Cape"
+					id="Item.fur_cape_a" />
+				<equipment
+					slot="Body"
+					id="Item.norse_chainmail_pleatedtrousers" />
+				<equipment
+					slot="Leg"
+					id="Item.leather_boots" />
+				<equipment
+					slot="Head"
+					id="Item.berserker_helmet_reinforced" />
+				<equipment
+					slot="Gloves"
+					id="Item.studded_arm_guards" />
+			</EquipmentRoster>
+			<EquipmentSet
+				id="nord_troop_civilian_template_t1"
+				civilian="true" />
+		</Equipments>
+	</NPCCharacter>
+	<NPCCharacter
+		id="RBM_nord_thegn"
+		default_group="Infantry"
+		level="16"
+		name="{=aztogWWW}Nord War-Proven"
+		occupation="Soldier"
+		culture="Culture.sturgia">
+		<face>
+			<face_key_template
+				value="BodyProperty.fighter_nord" />
+		</face>
+		<Traits>
+			<Trait
+				id="NavalSoldier"
+				value="1" />
+		</Traits>
+		<skills>
+			<skill
+				id="Athletics"
+				value="80" />
+			<skill
+				id="Riding"
+				value="30" />
+			<skill
+				id="OneHanded"
+				value="90" />
+			<skill
+				id="TwoHanded"
+				value="90" />
+			<skill
+				id="Polearm"
+				value="90" />
+			<skill
+				id="Bow"
+				value="30" />
+			<skill
+				id="Crossbow"
+				value="10" />
+			<skill
+				id="Throwing"
+				value="80" />
+		</skills>
+		<upgrade_targets>
+			<upgrade_target
+				id="NPCCharacter.RBM_nord_jarlsmann" />
+		</upgrade_targets>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_battle_axe_4_t3" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_1_t4" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_4_a" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Body"
+					id="Item.nord_chainmail_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.bandit_hybrid_armor_boots_a" />
+				<equipment
+					slot="Cape"
+					id="Item.berserker_cloak" />
+				<equipment
+					slot="Head"
+					id="Item.nordic_helmet" />
+				<equipment
+					slot="Gloves"
+					id="Item.splinted_bracers" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_sword_4_t4" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_1_t4" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_4_a" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Body"
+					id="Item.nord_chainmail_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.bandit_hybrid_armor_boots_a" />
+				<equipment
+					slot="Cape"
+					id="Item.berserker_cloak" />
+				<equipment
+					slot="Head"
+					id="Item.nordic_helmet" />
+				<equipment
+					slot="Gloves"
+					id="Item.splinted_bracers" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_1_t4" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_4_a" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Body"
+					id="Item.nord_chainmail_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.bandit_hybrid_armor_boots_a" />
+				<equipment
+					slot="Cape"
+					id="Item.berserker_cloak" />
+				<equipment
+					slot="Head"
+					id="Item.nordic_helmet" />
+				<equipment
+					slot="Gloves"
+					id="Item.splinted_bracers" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_twohanded_axe_5_t4" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_4_a" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Body"
+					id="Item.nord_chainmail_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.bandit_hybrid_armor_boots_a" />
+				<equipment
+					slot="Cape"
+					id="Item.berserker_cloak" />
+				<equipment
+					slot="Head"
+					id="Item.nordic_helmet" />
+				<equipment
+					slot="Gloves"
+					id="Item.splinted_bracers" />
+			</EquipmentRoster>
+			<EquipmentSet
+				id="nord_troop_civilian_template_t2"
+				civilian="true" />
+		</Equipments>
+	</NPCCharacter>
+	<NPCCharacter
+		id="RBM_nord_jarlsmann"
+		default_group="Infantry"
+		level="21"
+		name="{=iOaO8NGB}Nord Hearthguard"
+		occupation="Soldier"
+		culture="Culture.sturgia">
+		<face>
+			<face_key_template
+				value="BodyProperty.fighter_nord" />
+		</face>
+		<Traits>
+			<Trait
+				id="NavalSoldier"
+				value="1" />
+		</Traits>
+		<skills>
+			<skill
+				id="Athletics"
+				value="100" />
+			<skill
+				id="Riding"
+				value="40" />
+			<skill
+				id="OneHanded"
+				value="120" />
+			<skill
+				id="TwoHanded"
+				value="120" />
+			<skill
+				id="Polearm"
+				value="120" />
+			<skill
+				id="Bow"
+				value="35" />
+			<skill
+				id="Crossbow"
+				value="15" />
+			<skill
+				id="Throwing"
+				value="110" />
+		</skills>
+		<upgrade_targets>
+			<upgrade_target
+				id="NPCCharacter.RBM_nord_hirdmann" />
+		</upgrade_targets>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_sword_1_t5" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_2_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_shield_tier_4_a" />
+				<equipment
+					slot="Body"
+					id="Item.tacky_bandit" />
+				<equipment
+					slot="Leg"
+					id="Item.bandit_hybrid_armor_boots_a" />
+				<equipment
+					slot="Cape"
+					id="Item.northman_raider_cape" />
+				<equipment
+					slot="Head"
+					id="Item.closed_goggled_helmet" />
+				<equipment
+					slot="Gloves"
+					id="Item.tacky_bandit_bracer" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_battle_axe_1_t5" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_2_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_shield_tier_4_a" />
+				<equipment
+					slot="Body"
+					id="Item.nord_king_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.bandit_hybrid_armor_boots_a" />
+				<equipment
+					slot="Cape"
+					id="Item.northman_raider_cape" />
+				<equipment
+					slot="Head"
+					id="Item.closed_goggled_helmet" />
+				<equipment
+					slot="Gloves"
+					id="Item.tacky_bandit_bracer" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_2_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_shield_tier_4_a" />
+				<equipment
+					slot="Body"
+					id="Item.nord_king_armor_b" />
+				<equipment
+					slot="Leg"
+					id="Item.bandit_hybrid_armor_boots_a" />
+				<equipment
+					slot="Cape"
+					id="Item.northman_raider_cape" />
+				<equipment
+					slot="Head"
+					id="Item.closed_goggled_helmet" />
+				<equipment
+					slot="Gloves"
+					id="Item.tacky_bandit_bracer" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_battle_axe_1_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_shield_tier_4_a" />
+				<equipment
+					slot="Body"
+					id="Item.nord_king_armor_b" />
+				<equipment
+					slot="Leg"
+					id="Item.bandit_hybrid_armor_boots_a" />
+				<equipment
+					slot="Cape"
+					id="Item.northman_raider_cape" />
+				<equipment
+					slot="Head"
+					id="Item.closed_goggled_helmet" />
+				<equipment
+					slot="Gloves"
+					id="Item.tacky_bandit_bracer" />
+			</EquipmentRoster>
+			<EquipmentSet
+				id="nord_troop_civilian_template_t3"
+				civilian="true" />
+		</Equipments>
+	</NPCCharacter>
+	<NPCCharacter
+		id="RBM_nord_hirdmann"
+		default_group="Infantry"
+		level="26"
+		name="{=RRbpc6fr}Nord Shield-Companion"
+		occupation="Soldier"
+		culture="Culture.sturgia">
+		<face>
+			<face_key_template
+				value="BodyProperty.fighter_nord" />
+		</face>
+		<Traits>
+			<Trait
+				id="NavalSoldier"
+				value="1" />
+		</Traits>
+		<skills>
+			<skill
+				id="Athletics"
+				value="140" />
+			<skill
+				id="Riding"
+				value="70" />
+			<skill
+				id="OneHanded"
+				value="150" />
+			<skill
+				id="TwoHanded"
+				value="150" />
+			<skill
+				id="Polearm"
+				value="150" />
+			<skill
+				id="Bow"
+				value="45" />
+			<skill
+				id="Crossbow"
+				value="20" />
+			<skill
+				id="Throwing"
+				value="140" />
+		</skills>
+		<upgrade_targets>
+			<upgrade_target
+				id="NPCCharacter.RBM_nord_huscarl" />
+		</upgrade_targets>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_battle_axe_2_t5" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_3_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_5_b" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Head"
+					id="Item.decorated_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.brass_lamellar_over_mail" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_king_shoulder_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.tacky_bandit_boot" />
+				<equipment
+					slot="Gloves"
+					id="Item.bandit_hybrid_armor_gloves_a" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_sword_2_t5" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_3_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_5_b" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Head"
+					id="Item.decorated_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.brass_lamellar_over_mail" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_king_shoulder_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.tacky_bandit_boot" />
+				<equipment
+					slot="Gloves"
+					id="Item.bandit_hybrid_armor_gloves_a" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_3_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_5_b" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Head"
+					id="Item.decorated_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.brass_lamellar_over_mail" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_king_shoulder_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.tacky_bandit_boot" />
+				<equipment
+					slot="Gloves"
+					id="Item.bandit_hybrid_armor_gloves_a" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_twohanded_axe_3_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_5_b" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Head"
+					id="Item.decorated_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.brass_lamellar_over_mail" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_king_shoulder_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.tacky_bandit_boot" />
+				<equipment
+					slot="Gloves"
+					id="Item.bandit_hybrid_armor_gloves_a" />
+			</EquipmentRoster>
+			<EquipmentSet
+				id="nord_troop_civilian_template_t2"
+				civilian="true" />
+		</Equipments>
+	</NPCCharacter>
+	<NPCCharacter
+		id="RBM_nord_huscarl"
+		default_group="Infantry"
+		level="31"
+		name="{=JnwNuZb7}Nord Huscarl"
+		occupation="Soldier"
+		culture="Culture.sturgia">
+		<face>
+			<face_key_template
+				value="BodyProperty.fighter_nord_veteran" />
+			<tattoo_tags>
+				<tattoo_tag
+					name="Nord1" />
+				<tattoo_tag
+					name="Nord2" />
+				<tattoo_tag
+					name="Nord3" />
+				<tattoo_tag
+					name="Nord4" />
+				<tattoo_tag
+					name="Eastern10" />
+				<tattoo_tag
+					name="Sacr3" />
+				<tattoo_tag
+					name="Sacr5" />
+				<tattoo_tag
+					name="Sacr9" />
+			</tattoo_tags>
+		</face>
+		<Traits>
+			<Trait
+				id="NavalSoldier"
+				value="1" />
+		</Traits>
+		<skills>
+			<skill
+				id="Athletics"
+				value="200" />
+			<skill
+				id="Riding"
+				value="90" />
+			<skill
+				id="OneHanded"
+				value="200" />
+			<skill
+				id="TwoHanded"
+				value="200" />
+			<skill
+				id="Polearm"
+				value="200" />
+			<skill
+				id="Bow"
+				value="60" />
+			<skill
+				id="Crossbow"
+				value="25" />
+			<skill
+				id="Throwing"
+				value="190" />
+		</skills>
+		<upgrade_targets></upgrade_targets>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_battle_axe_2_t5" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_4_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_5_b" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Head"
+					id="Item.decorated_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.sturgian_lamellar_fortified" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_king_shoulder_armor_b" />
+				<equipment
+					slot="Leg"
+					id="Item.hybrid_armor_boots_b" />
+				<equipment
+					slot="Gloves"
+					id="Item.hybrid_armor_gloves_b" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_sword_3_t5" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_4_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_5_b" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Head"
+					id="Item.decorated_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.sturgian_lamellar_fortified" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_king_shoulder_armor_b" />
+				<equipment
+					slot="Leg"
+					id="Item.hybrid_armor_boots_b" />
+				<equipment
+					slot="Gloves"
+					id="Item.hybrid_armor_gloves_b" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_4_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_5_b" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Head"
+					id="Item.decorated_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.sturgian_lamellar_fortified" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_king_shoulder_armor_b" />
+				<equipment
+					slot="Leg"
+					id="Item.hybrid_armor_boots_b" />
+				<equipment
+					slot="Gloves"
+					id="Item.hybrid_armor_gloves_b" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_long_two_handed_t6" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_5_b" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Head"
+					id="Item.decorated_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.sturgian_lamellar_fortified" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_king_shoulder_armor_b" />
+				<equipment
+					slot="Leg"
+					id="Item.hybrid_armor_boots_b" />
+				<equipment
+					slot="Gloves"
+					id="Item.hybrid_armor_gloves_b" />
+			</EquipmentRoster>
+			<EquipmentSet
+				id="nord_troop_civilian_template_t3"
+				civilian="true" />
+		</Equipments>
+	</NPCCharacter>
+	<NPCCharacter
+		id="RBM_nord_huntsman"
+		default_group="Ranged"
+		level="11"
+		name="{=vWSJeIco}Nord Huntsman"
+		occupation="Soldier"
+		culture="Culture.sturgia">
+		<face>
+			<face_key_template
+				value="BodyProperty.fighter_nord" />
+		</face>
+		<Traits>
+			<Trait
+				id="NavalSoldier"
+				value="1" />
+		</Traits>
+    <skills>
+      <skill id="Athletics"
+             value="40" />
+      <skill id="Riding"
+             value="20" />
+      <skill id="OneHanded"
+             value="30" />
+      <skill id="TwoHanded"
+             value="30" />
+      <skill id="Polearm"
+             value="35" />
+      <skill id="Bow"
+             value="40" />
+      <skill id="Crossbow"
+             value="10" />
+      <skill id="Throwing"
+             value="30" />
+    </skills>
+		<upgrade_targets>
+			<upgrade_target
+				id="NPCCharacter.RBM_nord_freeman_archer" />
+		</upgrade_targets>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.mountain_hunting_bow" />
+				<equipment
+					slot="Item1"
+					id="Item.steppe_arrows" />
+				<equipment
+					slot="Item2"
+					id="Item.steppe_arrows" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_spear_1_t2" />
+				<equipment
+					slot="Body"
+					id="Item.nordic_sloven" />
+      <equipment slot="Gloves"
+                 id="Item.ragged_armwraps" />
+				<equipment
+					slot="Leg"
+					id="Item.ragged_boots" />
+				<equipment slot="Head"
+					id="Item.berserker_helmet" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.mountain_hunting_bow" />
+				<equipment
+					slot="Item1"
+					id="Item.steppe_arrows" />
+				<equipment
+					slot="Item2"
+					id="Item.steppe_arrows" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_spear_1_t2" />
+				<equipment
+					slot="Body"
+					id="Item.nordic_sloven" />
+				<equipment
+					slot="Leg"
+					id="Item.ragged_boots" />
+      <equipment slot="Gloves"
+                 id="Item.ragged_armwraps" />					
+				<equipment slot="Head"
+					id="Item.berserker_helmet" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.hunting_bow" />
+				<equipment
+					slot="Item1"
+					id="Item.steppe_arrows" />
+				<equipment
+					slot="Item2"
+					id="Item.steppe_arrows" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_spear_1_t2" />
+      <equipment slot="Gloves"
+                 id="Item.ragged_armwraps" />
+				<equipment
+					slot="Body"
+					id="Item.nordic_sloven" />
+				<equipment
+					slot="Leg"
+					id="Item.ragged_boots" />
+				<equipment slot="Head"
+					id="Item.berserker_helmet" />
+			</EquipmentRoster>
+			<EquipmentSet
+				id="nord_troop_civilian_template_t2"
+				civilian="true" />
+		</Equipments>
+	</NPCCharacter>
+	<NPCCharacter
+		id="RBM_nord_freeman_archer"
+		default_group="Ranged"
+		level="16"
+		name="{=riJbUCl9}Nord Freeman Archer"
+		occupation="Soldier"
+		culture="Culture.sturgia">
+		<face>
+			<face_key_template
+				value="BodyProperty.fighter_nord" />
+		</face>
+		<Traits>
+			<Trait
+				id="NavalSoldier"
+				value="1" />
+		</Traits>
+    <skills>
+      <skill id="Athletics"
+             value="70" />
+      <skill id="Riding"
+             value="40" />
+      <skill id="OneHanded"
+             value="50" />
+      <skill id="TwoHanded"
+             value="50" />
+      <skill id="Polearm"
+             value="50" />
+      <skill id="Bow"
+             value="60" />
+      <skill id="Crossbow"
+             value="10" />
+      <skill id="Throwing"
+             value="30" />
+    </skills>
+		<upgrade_targets>
+			<upgrade_target
+				id="NPCCharacter.RBM_nord_marksman" />
+		</upgrade_targets>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.highland_ranger_bow" />
+				<equipment
+					slot="Item1"
+					id="Item.GRE_bodkin_arrows_c" />
+				<equipment
+					slot="Item2"
+					id="Item.GRE_bodkin_arrows_c" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_spear_2_t3" />
+				<equipment
+					slot="Body"
+					id="Item.heavy_gambeson_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.battania_leather_boots" />
+				<equipment
+					slot="Head"
+					id="Item.berserker_helmet_reinforced" />
+				<equipment
+					slot="Gloves"
+					id="Item.splinted_bracers" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.highland_ranger_bow" />
+				<equipment
+					slot="Item1"
+					id="Item.GRE_bodkin_arrows_c" />
+				<equipment
+					slot="Item2"
+					id="Item.GRE_bodkin_arrows_c" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_spear_2_t3" />
+				<equipment
+					slot="Body"
+					id="Item.heavy_gambeson_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.battania_leather_boots" />
+				<equipment
+					slot="Head"
+					id="Item.berserker_helmet_reinforced" />
+				<equipment
+					slot="Gloves"
+					id="Item.splinted_bracers" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.highland_ranger_bow" />
+				<equipment
+					slot="Item1"
+					id="Item.GRE_bodkin_arrows_c" />
+				<equipment
+					slot="Item2"
+					id="Item.GRE_bodkin_arrows_c" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_spear_2_t3" />
+				<equipment
+					slot="Body"
+					id="Item.heavy_gambeson_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.battania_leather_boots" />
+				<equipment
+					slot="Head"
+					id="Item.berserker_helmet_reinforced" />
+				<equipment
+					slot="Gloves"
+					id="Item.splinted_bracers" />
+			</EquipmentRoster>
+			<EquipmentSet
+				id="nord_troop_civilian_template_t2"
+				civilian="true" />
+		</Equipments>
+	</NPCCharacter>
+	<NPCCharacter
+		id="RBM_nord_marksman"
+		default_group="Ranged"
+		level="21"
+		name="{=5LvI1bsQ}Nord Marksman"
+		occupation="Soldier"
+		culture="Culture.sturgia">
+		<face>
+			<face_key_template
+				value="BodyProperty.fighter_nord" />
+		</face>
+		<Traits>
+			<Trait
+				id="NavalSoldier"
+				value="1" />
+		</Traits>
+    <skills>
+      <skill id="Athletics"
+             value="100" />
+      <skill id="Riding"
+             value="90" />
+      <skill id="OneHanded"
+             value="80" />
+      <skill id="TwoHanded"
+             value="80" />
+      <skill id="Polearm"
+             value="80" />
+      <skill id="Bow"
+             value="90" />
+      <skill id="Crossbow"
+             value="15" />
+      <skill id="Throwing"
+             value="45" />
+    </skills>
+		<upgrade_targets>
+			<upgrade_target
+				id="NPCCharacter.RBM_nord_skathi" />
+		</upgrade_targets>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nordic_shortbow" />
+				<equipment
+					slot="Item1"
+					id="Item.GRE_heavy_steppe_arrows" />
+				<equipment
+					slot="Item2"
+					id="Item.GRE_heavy_steppe_arrows" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_spear_4_t5" />
+				<equipment
+					slot="Head"
+					id="Item.northern_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.nord_chainmail_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.battania_fur_boots" />
+				<equipment
+					slot="Gloves"
+					id="Item.reinforced_leather_vambraces" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nordic_shortbow" />
+				<equipment
+					slot="Item1"
+					id="Item.GRE_heavy_steppe_arrows" />
+				<equipment
+					slot="Item2"
+					id="Item.GRE_heavy_steppe_arrows" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_spear_4_t5" />
+				<equipment
+					slot="Head"
+					id="Item.northern_goggled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.nord_chainmail_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.battania_fur_boots" />
+				<equipment
+					slot="Gloves"
+					id="Item.reinforced_leather_vambraces" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nordic_shortbow" />
+				<equipment
+					slot="Item1"
+					id="Item.GRE_heavy_steppe_arrows" />
+				<equipment
+					slot="Item2"
+					id="Item.GRE_heavy_steppe_arrows" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_spear_4_t5" />
+				<equipment
+					slot="Body"
+					id="Item.nord_chainmail_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.battania_fur_boots" />
+				<equipment
+					slot="Head"
+					id="Item.goggled_helmet_over_leather" />
+				<equipment
+					slot="Gloves"
+					id="Item.reinforced_leather_vambraces" />
+			</EquipmentRoster>
+			<EquipmentSet
+				id="nord_troop_civilian_template_t2"
+				civilian="true" />
+		</Equipments>
+	</NPCCharacter>
+	<NPCCharacter
+		id="RBM_nord_skathi"
+		default_group="Ranged"
+		level="26"
+		name="{=mI7igoBF}Nord Sky-Gods Chosen"
+		occupation="Soldier"
+		culture="Culture.sturgia">
+		<face>
+			<face_key_template
+				value="BodyProperty.fighter_nord" />
+			<tattoo_tags>
+				<tattoo_tag
+					name="Eastern8" />
+			</tattoo_tags>
+		</face>
+		<Traits>
+			<Trait
+				id="NavalSoldier"
+				value="1" />
+		</Traits>
+    <skills>
+      <skill id="Athletics"
+             value="130" />
+      <skill id="Riding"
+             value="60" />
+      <skill id="OneHanded"
+             value="110" />
+      <skill id="TwoHanded"
+             value="110" />
+      <skill id="Polearm"
+             value="110" />
+      <skill id="Bow"
+             value="120" />
+      <skill id="Crossbow"
+             value="40" />
+      <skill id="Throwing"
+             value="80" />
+    </skills>
+		<upgrade_targets></upgrade_targets>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.longbow_recurve_desert_bow" />
+      <equipment slot="Item1"
+                 id="Item.GRE_vlandic_arrows" />
+      <equipment slot="Item2"
+                 id="Item.GRE_vlandic_arrows" />
+				<equipment
+					slot="Item3"
+					id="Item.eastern_spear_5_t5" />
+				<equipment
+					slot="Head"
+					id="Item.goggled_helmet_over_mail" />
+				<equipment
+					slot="Body"
+					id="Item.nord_king_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.mail_chausses" />
+				<equipment
+					slot="Gloves"
+					id="Item.northern_brass_bracers" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.longbow_recurve_desert_bow" />
+      <equipment slot="Item1"
+                 id="Item.GRE_vlandic_arrows" />
+      <equipment slot="Item2"
+                 id="Item.GRE_vlandic_arrows" />
+				<equipment
+					slot="Item3"
+					id="Item.eastern_spear_5_t5" />
+				<equipment
+					slot="Head"
+					id="Item.goggled_helmet_over_mail" />
+				<equipment
+					slot="Body"
+					id="Item.nord_king_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.mail_chausses" />
+				<equipment
+					slot="Gloves"
+					id="Item.northern_brass_bracers" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.longbow_recurve_desert_bow" />
+      <equipment slot="Item1"
+                 id="Item.GRE_vlandic_arrows" />
+      <equipment slot="Item2"
+                 id="Item.GRE_vlandic_arrows" />
+				<equipment
+					slot="Item3"
+					id="Item.eastern_spear_5_t5" />
+				<equipment
+					slot="Head"
+					id="Item.goggled_helmet_over_mail" />
+				<equipment
+					slot="Body"
+					id="Item.nord_king_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.mail_chausses" />
+				<equipment
+					slot="Gloves"
+					id="Item.northern_brass_bracers" />
+			</EquipmentRoster>
+			<EquipmentSet
+				id="nord_troop_civilian_template_t3"
+				civilian="true" />
+		</Equipments>
+	</NPCCharacter>
+	<NPCCharacter
+		id="RBM_nord_hew-bearer"
+		default_group="Infantry"
+		level="21"
+		name="{=lLPgEh9p}Nord Marauder"
+		occupation="Soldier"
+		culture="Culture.sturgia">
+		<face>
+			<face_key_template
+				value="BodyProperty.fighter_nord" />
+		</face>
+		<Traits>
+			<Trait
+				id="NavalSoldier"
+				value="1" />
+		</Traits>
+    <skills>
+      <skill id="Athletics"
+             value="110" />
+      <skill id="Riding"
+             value="45" />
+      <skill id="OneHanded"
+             value="60" />
+      <skill id="TwoHanded"
+             value="120" />
+      <skill id="Polearm"
+             value="40" />
+      <skill id="Bow"
+             value="45" />
+      <skill id="Crossbow"
+             value="15" />
+      <skill id="Throwing"
+             value="90" />
+    </skills>
+		<upgrade_targets>
+			<upgrade_target
+				id="NPCCharacter.RBM_nord_skjaldbrestir" />
+		</upgrade_targets>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_throwing_axe_1_t4" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_twohanded_axe_2_t4" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_4_b" />
+				<equipment
+					slot="Body"
+					id="Item.nord_king_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.leather_cavalier_boots" />
+				<equipment
+					slot="Head"
+					id="Item.sturgian_lord_helmet_b" />
+				<equipment
+					slot="Cape"
+					id="Item.bandit_hybrid_armor_shoulder_b" />
+				<equipment
+					slot="Gloves"
+					id="Item.mail_mitten" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_throwing_axe_1_t4" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_twohanded_axe_2_t4" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_4_b" />
+				<equipment
+					slot="Body"
+					id="Item.nord_king_armor_b" />
+				<equipment
+					slot="Leg"
+					id="Item.leather_cavalier_boots" />
+				<equipment
+					slot="Head"
+					id="Item.sturgian_lord_helmet_b" />
+				<equipment
+					slot="Cape"
+					id="Item.bandit_hybrid_armor_shoulder_b" />
+				<equipment
+					slot="Gloves"
+					id="Item.bandit_hybrid_armor_gloves_a" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_throwing_axe_2_t4" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_twohanded_axe_2_t4" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_shield_tier_4_b" />
+				<equipment
+					slot="Body"
+					id="Item.nord_king_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.leather_cavalier_boots" />
+				<equipment
+					slot="Head"
+					id="Item.sturgian_lord_helmet_b" />
+				<equipment
+					slot="Cape"
+					id="Item.bandit_hybrid_armor_shoulder_b" />
+				<equipment
+					slot="Gloves"
+					id="Item.bandit_hybrid_armor_gloves_a" />
+			</EquipmentRoster>
+			<EquipmentSet
+				id="nord_troop_civilian_template_t3"
+				civilian="true" />
+		</Equipments>
+	</NPCCharacter>
+	<NPCCharacter
+		id="RBM_nord_vargr"
+		default_group="Infantry"
+		level="21"
+		name="{=VpTQ5SyS}Nord Warfang"
+		occupation="Soldier"
+		culture="Culture.sturgia">
+		<face>
+			<face_key_template
+				value="BodyProperty.fighter_nord" />
+		</face>
+		<Traits>
+			<Trait
+				id="NavalSoldier"
+				value="1" />
+		</Traits>
+    <skills>
+      <skill id="Athletics"
+             value="110" />
+      <skill id="Riding"
+             value="45" />
+      <skill id="OneHanded"
+             value="60" />
+      <skill id="TwoHanded"
+             value="100" />
+      <skill id="Polearm"
+             value="120" />
+      <skill id="Bow"
+             value="45" />
+      <skill id="Crossbow"
+             value="15" />
+      <skill id="Throwing"
+             value="90" />
+    </skills>
+		<upgrade_targets>
+			<upgrade_target
+				id="NPCCharacter.RBM_nord_ulfhednar" />
+		</upgrade_targets>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_shield_tier_4_a" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_atgeir_1_t4" />
+				<equipment 
+					slot="Item2"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Body"
+					id="Item.tacky_bandit" />
+				<equipment
+					slot="Leg"
+					id="Item.mail_chausses" />
+				<equipment
+					slot="Head"
+					id="Item.closed_goggled_helmet" />
+				<equipment
+					slot="Cape"
+					id="Item.tacky_bandit_shoulder" />
+				<equipment
+					slot="Gloves"
+					id="Item.mail_mitten" />
+			</EquipmentRoster>
+			<EquipmentSet
+				id="nord_troop_civilian_template_t3"
+				civilian="true" />
+		</Equipments>
+	</NPCCharacter>
+	<NPCCharacter
+		id="RBM_nord_skjaldbrestir"
+		default_group="Infantry"
+		level="26"
+		name="{=2RnBNzlX}Nord Skjaldbrestir"
+		occupation="Soldier"
+		culture="Culture.sturgia">
+		<face>
+			<face_key_template
+				value="BodyProperty.fighter_nord" />
+		</face>
+		<Traits>
+			<Trait
+				id="NavalSoldier"
+				value="1" />
+		</Traits>
+    <skills>
+      <skill id="Athletics"
+             value="130" />
+      <skill id="Riding"
+             value="60" />
+      <skill id="OneHanded"
+             value="170" />
+      <skill id="TwoHanded"
+             value="80" />
+      <skill id="Polearm"
+             value="150" />
+      <skill id="Bow"
+             value="60" />
+      <skill id="Crossbow"
+             value="20" />
+      <skill id="Throwing"
+             value="110" />
+    </skills>
+		<upgrade_targets></upgrade_targets>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_throwing_axe_1_t5" />
+				<equipment 
+					slot="Item1"
+					id="Item.northern_spear_4_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_battle_axe_1_t5" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_shield_tier_5_b" />
+				<equipment
+					slot="Head"
+					id="Item.goggled_helmet_over_full_mail" />
+				<equipment
+					slot="Body"
+					id="Item.northern_brass_lamellar_over_mail" />
+				<equipment
+					slot="Cape"
+					id="Item.bandit_hybrid_armor_shoulder_b" />
+				<equipment
+					slot="Leg"
+					id="Item.tacky_bandit_boot" />
+				<equipment
+					slot="Gloves"
+					id="Item.hybrid_armor_gloves_b" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_throwing_axe_2_t5" />
+				<equipment 
+					slot="Item1"
+					id="Item.northern_spear_4_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.nord_battle_axe_1_t5" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_shield_tier_5_a" />
+				<equipment
+					slot="Head"
+					id="Item.lendman_helmet_over_full_mail" />
+				<equipment
+					slot="Cape"
+					id="Item.bandit_hybrid_armor_shoulder_b" />
+				<equipment
+					slot="Body"
+					id="Item.sturgian_lamellar_fortified" />
+				<equipment
+					slot="Leg"
+					id="Item.tacky_bandit_boot" />
+				<equipment
+					slot="Gloves"
+					id="Item.hybrid_armor_gloves_b" />
+			</EquipmentRoster>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_throwing_axe_1_t5" />
+				<equipment 
+					slot="Item1"
+					id="Item.northern_spear_4_t5" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_shield_tier_5_b" />
+				<equipment
+					slot="Head"
+					id="Item.lendman_helmet_over_full_mail" />
+				<equipment
+					slot="Body"
+					id="Item.northern_brass_lamellar_over_mail" />
+				<equipment
+					slot="Cape"
+					id="Item.nord_king_shoulder_armor" />
+				<equipment
+					slot="Leg"
+					id="Item.tacky_bandit_boot" />
+				<equipment
+					slot="Gloves"
+					id="Item.hybrid_armor_gloves_b" />
+			</EquipmentRoster>
+			<EquipmentSet
+				id="nord_troop_civilian_template_t2"
+				civilian="true" />
+		</Equipments>
+	</NPCCharacter>
+	<NPCCharacter
+		id="RBM_nord_ulfhednar"
+		default_group="Infantry"
+		level="26"
+		name="{=7T3mspgx}Nord Ulfhedinn"
+		occupation="Soldier"
+		culture="Culture.sturgia">
+		<face>
+			<face_key_template
+				value="BodyProperty.fighter_nord" />
+		</face>
+		<Traits>
+			<Trait
+				id="NavalSoldier"
+				value="1" />
+		</Traits>
+    <skills>
+      <skill id="Athletics"
+             value="130" />
+      <skill id="Riding"
+             value="45" />
+      <skill id="OneHanded"
+             value="60" />
+      <skill id="TwoHanded"
+             value="60" />
+      <skill id="Polearm"
+             value="150" />
+      <skill id="Bow"
+             value="75" />
+      <skill id="Crossbow"
+             value="15" />
+      <skill id="Throwing"
+             value="130" />
+    </skills>
+		<upgrade_targets></upgrade_targets>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.nord_shield_tier_5_b" />
+				<equipment
+					slot="Item1"
+					id="Item.nord_spear_atgeir_1_t5" />
+				<equipment
+					slot="Item2"
+					id="Item.northern_javelin_3_t4" />
+				<equipment
+					slot="Body"
+					id="Item.sturgian_lamellar_fortified" />
+				<equipment
+					slot="Head"
+					id="Item.decorated_goggled_helmet" />
+				<equipment
+					slot="Leg"
+					id="Item.tacky_bandit_boot" />
+				<equipment
+					slot="Cape"
+					id="Item.wolf_shoulder" />
+				<equipment
+					slot="Gloves"
+					id="Item.reinforced_mail_mitten" />
+			</EquipmentRoster>
+			<EquipmentSet
+				id="nord_troop_civilian_template_t2"
+				civilian="true" />
+		</Equipments>
+	</NPCCharacter>
+	
+	
+  <NPCCharacter id="RBM_skolderbrotva_tier_1"
+                default_group="Infantry"
+                level="16"
+                occupation="Soldier"
+                is_basic_troop="true"
+                culture="Culture.sturgia"
+                name="{=uViDMxLC}Skolder Recruit">
+    <face>
+      <face_key_template value="BodyProperty.fighter_sturgia" />
+    </face>
+    <skills>
+      <skill id="Athletics"
+             value="80" />
+      <skill id="Riding"
+             value="15" />
+      <skill id="OneHanded"
+             value="90" />
+      <skill id="TwoHanded"
+             value="20" />
+      <skill id="Polearm"
+             value="20" />
+      <skill id="Bow"
+             value="15" />
+      <skill id="Crossbow"
+             value="5" />
+      <skill id="Throwing"
+             value="20" />
+    </skills>
+    <upgrade_targets>
+      <upgrade_target id="NPCCharacter.skolderbrotva_tier_2" />
+    </upgrade_targets>
+    <Equipments>
+      <EquipmentRoster>
+      <equipment slot="Item1"
+                 id="Item.heavy_round_shield" />
+      <equipment slot="Item3"
+                 id="Item.sturgia_axe_3_t3" />
+      <equipment slot="Body"
+                 id="Item.sturgian_chainmale_shortsleeve" />
+      <equipment slot="Head"
+                 id="Item.northern_goggled_helmet" />
+      <equipment slot="Leg"
+                 id="Item.highland_leg_wrappings" />
+      <equipment slot="Gloves"
+                 id="Item.reinforced_padded_mitten" />
+      <equipment slot="Cape"
+                 id="Item.brass" />
+      </EquipmentRoster>
+      <EquipmentSet id="sturgia_troop_civilian_template_t1"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+  <NPCCharacter id="RBM_skolderbrotva_tier_2"
+                default_group="Infantry"
+                level="21"
+                occupation="Soldier"
+                culture="Culture.sturgia"
+                name="{=LXybWXde}Skolder Warrior Broda">
+    <face>
+      <face_key_template value="BodyProperty.fighter_sturgia" />
+    </face>
+    <skills>
+      <skill id="Athletics"
+             value="110" />
+      <skill id="Riding"
+             value="30" />
+      <skill id="OneHanded"
+             value="120" />
+      <skill id="TwoHanded"
+             value="40" />
+      <skill id="Polearm"
+             value="70" />
+      <skill id="Bow"
+             value="30" />
+      <skill id="Crossbow"
+             value="10" />
+      <skill id="Throwing"
+             value="70" />
+    </skills>
+    <upgrade_targets>
+      <upgrade_target id="NPCCharacter.skolderbrotva_tier_3" />
+    </upgrade_targets>
+    <Equipments>
+      <EquipmentRoster>
+      <equipment slot="Item1"
+                 id="Item.heavy_round_shield" />
+      <equipment slot="Item3"
+                 id="Item.sturgia_axe_4_t4" />
+      <equipment slot="Head"
+                 id="sturgian_helmet_b_close" />
+      <equipment slot="Body"
+                 id="Item.sturgian_lamellar_base" />
+      <equipment slot="Leg"
+                 id="Item.strapped_mail_chausses" />
+      <equipment slot="Gloves"
+                 id="Item.mail_mitten" />
+      <equipment slot="Cape"
+                 id="Item.a_brass_lamellar_shoulder_white_b" />
+      </EquipmentRoster>
+      <EquipmentSet id="sturgia_troop_civilian_template_t2"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+  <NPCCharacter id="RBM_skolderbrotva_tier_3"
+                default_group="Infantry"
+                level="31"
+                occupation="Soldier"
+                culture="Culture.sturgia"
+                name="{=YGexslSX}Skolder Veteran Broda">
+    <face>
+      <face_key_template value="BodyProperty.fighter_sturgia" />
+    </face>
+    <skills>
+      <skill id="Athletics"
+             value="160" />
+      <skill id="Riding"
+             value="30" />
+      <skill id="OneHanded"
+             value="200" />
+      <skill id="TwoHanded"
+             value="60" />
+      <skill id="Polearm"
+             value="110" />
+      <skill id="Bow"
+             value="40" />
+      <skill id="Crossbow"
+             value="15" />
+      <skill id="Throwing"
+             value="100" />
+    </skills>
+    <upgrade_targets></upgrade_targets>
+    <Equipments>
+      <EquipmentRoster>
+      <equipment slot="Item1"
+                 id="Item.heavy_round_shield" />
+      <equipment slot="Item3"
+                 id="Item.sturgia_axe_5_t5" />
+      <equipment slot="Head"
+                 id="lendman_helmet_over_full_mail" />
+      <equipment slot="Body"
+                 id="Item.sturgian_lamellar_fortified" />
+      <equipment slot="Leg"
+                 id="Item.northern_plated_boots" />
+      <equipment slot="Gloves"
+                 id="Item.northern_plated_gloves" />
+      <equipment slot="Cape"
+                 id="Item.brass_lamellar_shoulder_white" />
+      </EquipmentRoster>
+      <EquipmentSet id="sturgia_troop_civilian_template_t3"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>	
+</NPCCharacters>
