@@ -913,10 +913,10 @@
 			<EquipmentRoster>
 				<equipment
 					slot="Item0"
-					id="Item.northern_javelin_2_t3" />
+					id="Item.nord_twohanded_axe_1_t3" />
 				<equipment
 					slot="Item1"
-					id="Item.nord_twohanded_axe_1_t3" />
+					id="Item.nord_spear_2_t3" />
 				<equipment
 					slot="Item2"
 					id="Item.northern_javelin_2_t3" />
@@ -1081,10 +1081,10 @@
 			<EquipmentRoster>
 				<equipment
 					slot="Item0"
-					id="Item.northern_javelin_3_t4" />
+					id="Item.nord_twohanded_axe_5_t4" />
 				<equipment
 					slot="Item1"
-					id="Item.nord_twohanded_axe_5_t4" />
+					id="Item.nord_spear_1_t4" />
 				<equipment
 					slot="Item2"
 					id="Item.nord_shield_tier_4_a" />
@@ -1249,10 +1249,10 @@
 			<EquipmentRoster>
 				<equipment
 					slot="Item0"
-					id="Item.northern_javelin_3_t4" />
+					id="Item.nord_battle_axe_1_t5" />
 				<equipment
 					slot="Item1"
-					id="Item.nord_battle_axe_1_t5" />
+					id="Item.nord_spear_2_t5" />
 				<equipment
 					slot="Item2"
 					id="Item.northern_javelin_3_t4" />
@@ -1417,10 +1417,10 @@
 			<EquipmentRoster>
 				<equipment
 					slot="Item0"
-					id="Item.northern_javelin_3_t4" />
+					id="Item.nord_twohanded_axe_3_t5" />
 				<equipment
 					slot="Item1"
-					id="Item.nord_twohanded_axe_3_t5" />
+					id="Item.nord_spear_3_t5" />
 				<equipment
 					slot="Item2"
 					id="Item.nord_shield_tier_5_b" />
@@ -1600,10 +1600,10 @@
 			<EquipmentRoster>
 				<equipment
 					slot="Item0"
-					id="Item.northern_javelin_3_t4" />
+					id="Item.nord_long_two_handed_t6" />
 				<equipment
 					slot="Item1"
-					id="Item.nord_long_two_handed_t6" />
+					id="Item.nord_spear_3_t5" />
 				<equipment
 					slot="Item2"
 					id="Item.nord_shield_tier_5_b" />
@@ -2941,40 +2941,6 @@
       </EquipmentRoster>
 		</Equipments>
 	</NPCCharacter>
-	<NPCCharacter
-		id="tournament_master_nord"
-		default_group="Infantry"
-		is_hero="false"
-		occupation="ArenaMaster"
-		culture="Culture.nord"
-		name="{=IHKXNP9H}Tournament Master"
-		skill_template="SkillSet.infantry_heavyinfantry_level1_template_skills">
-		<face>
-			<face_key_template
-				value="BodyProperty.villager_nord" />
-		</face>
-		<skills></skills>
-		<Equipments>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.nord_sword_2_t3" />
-				<equipment
-					slot="Body"
-					id="Item.heavy_gambeson_armor" />
-				<equipment
-					slot="Head"
-					id="Item.nordic_civilian_hat_fur_brim" />
-				<equipment
-					slot="Leg"
-					id="Item.strapped_leather_boots" />
-			</EquipmentRoster>
-			<EquipmentSet
-				id="npc_wanderer_equipment_template_nord"
-				civilian="true" />
-		</Equipments>
-	</NPCCharacter>
-
 	<!--<Marine Troops -->
 	<NPCCharacter
 		id="vlandian_marine_t4"
