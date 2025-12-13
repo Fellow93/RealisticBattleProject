@@ -3,7 +3,6 @@ using RBMAI;
 using RBMCombat;
 using RBMTournament;
 using System;
-using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.MapEvents;
@@ -135,7 +134,7 @@ namespace RBM
         }
 
         protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
-        { 
+        {
             RBMConfig.RBMConfig.LoadConfig();
             ApplyHarmonyPatches();
             base.OnGameStart(game, gameStarterObject);
@@ -144,7 +143,6 @@ namespace RBM
 
         public override void OnMissionBehaviorInitialize(Mission mission)
         {
-            mission.AddMissionBehavior((MissionBehavior)(object)new RBMAIPatchLogic());
             Game.Current.GameTextManager.LoadGameTexts();
             if (RBMConfig.RBMConfig.developerMode)
             {
@@ -159,6 +157,7 @@ namespace RBM
             }
             if (RBMConfig.RBMConfig.rbmAiEnabled)
             {
+                mission.AddMissionBehavior((MissionBehavior)(object)new RBMAIPatchLogic());
                 if (RBMConfig.RBMConfig.postureEnabled && RBMConfig.RBMConfig.postureGUIEnabled)
                 {
                     mission.AddMissionBehavior((MissionBehavior)(object)new PostureVisualLogic());
@@ -186,7 +185,7 @@ namespace RBM
 
         public override void OnGameInitializationFinished(Game game)
         {
-            if(Campaign.Current != null && Campaign.Current.Clans != null)
+            if (Campaign.Current != null && Campaign.Current.Clans != null)
             {
                 MBList<Clan> clansToRemove = new MBList<Clan>();
                 foreach (var clan in Campaign.Current.Clans)
@@ -194,7 +193,7 @@ namespace RBM
                     if (clan.Culture == null)
                     {
                         clansToRemove.Add(clan);
-                    
+
                     }
                 }
                 foreach (var clan in clansToRemove)
@@ -209,7 +208,6 @@ namespace RBM
 
     public class RBMAIPatchLogic : MissionLogic
     {
-
         public override void EarlyStart()
         {
             RBMAiPatcher.DoPatching();

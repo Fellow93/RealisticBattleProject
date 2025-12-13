@@ -1,14 +1,11 @@
 ﻿using HarmonyLib;
-using NavalDLC;
-using NavalDLC.CampaignBehaviors;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.CraftingSystem;
 using TaleWorlds.ModuleManager;
 using TaleWorlds.ObjectSystem;
 
@@ -16,6 +13,21 @@ namespace RBM
 {
     internal class XmlLoadingPatches
     {
+
+        [HarmonyPatch(typeof(CraftingOrder))]
+        [HarmonyPatch("InitializeCraftingOrderOnLoad")]
+        public class CraftingPatch
+        {
+            static Exception Finalizer(CraftingOrder __instance)
+            {
+                if (__instance.PreCraftedWeaponDesignItem == null)
+                {
+                    __instance.PreCraftedWeaponDesignItem = DefaultItems.Trash;
+                }
+                return null;
+            }
+        }
+
         [HarmonyPatch(typeof(MBObjectManager))]
         [HarmonyPatch("CreateMergedXmlFile")]
         private class CreateMergedXmlFilePatch
@@ -68,10 +80,11 @@ namespace RBM
                     __result = MBObjectManager.ToXmlDocument(originalXml);
                     return false;
                 }
-                
+
                 if (RBMConfig.RBMConfig.rbmCombatEnabled)
                 {
-                    if (isRbmXml) { 
+                    if (isRbmXml)
+                    {
                         foreach (XElement origNode in originalXml.Root.Elements())
                         {
                             if (origNode.Name == "ItemModifier" && isRbmXml)
@@ -115,7 +128,7 @@ namespace RBM
 
                                         if (RBMConfig.RBMConfig.betterArrowVisuals && (mergedNode.Attribute("Type").Value.Equals("Arrows") || mergedNode.Attribute("Type").Value.Equals("Bolts")))
                                         {
-                                            if(mergedNode.Attribute("flying_mesh") != null && mergedNode.Attribute("mesh") != null)
+                                            if (mergedNode.Attribute("flying_mesh") != null && mergedNode.Attribute("mesh") != null)
                                             {
                                                 mergedNode.Attribute("flying_mesh").Value = mergedNode.Attribute("mesh").Value;
                                             }
