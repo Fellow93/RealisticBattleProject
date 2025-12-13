@@ -27,17 +27,17 @@ namespace RBMCombat
                     {
                         case ArmorComponent.ArmorMaterialTypes.Cloth:
                             {
-                                materialPriceModifier = 20f;
+                                materialPriceModifier = 5f;
                                 break;
                             }
                         case ArmorComponent.ArmorMaterialTypes.Leather:
                             {
-                                materialPriceModifier = 50f;
+                                materialPriceModifier = 15f;
                                 break;
                             }
                         case ArmorComponent.ArmorMaterialTypes.Chainmail:
                             {
-                                materialPriceModifier = 100f;
+                                materialPriceModifier = 80f;
                                 break;
                             }
                         case ArmorComponent.ArmorMaterialTypes.Plate:
@@ -83,11 +83,11 @@ namespace RBMCombat
                     price = (500f + (tier * 100f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
                     if (item.ItemType == ItemObject.ItemTypeEnum.Polearm)
                     {
-                        price *= 0.4f;
+                        price *= 0.3f;
                     }
                     if (item.ItemType == ItemObject.ItemTypeEnum.Thrown)
                     {
-                        price *= 0.3f;
+                        price *= 0.25f;
                     }
                     if (item.ItemType == ItemObject.ItemTypeEnum.TwoHandedWeapon)
                     {
@@ -95,11 +95,11 @@ namespace RBMCombat
                     }
                     if (item.ItemType == ItemObject.ItemTypeEnum.Shield)
                     {
-                        price *= 0.5f;
+                        price *= 0.3f;
                     }
-                    if (item.ItemType == ItemObject.ItemTypeEnum.Arrows || item.ItemType == ItemObject.ItemTypeEnum.Bolts)
+                    if (item.ItemType == ItemObject.ItemTypeEnum.Arrows || item.ItemType == ItemObject.ItemTypeEnum.Bolts || item.ItemType == ItemObject.ItemTypeEnum.SlingStones)
                     {
-                        price = (50f + (tier * 10f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
+                        price = (30f + (tier * 10f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
                     }
                 }
                 else if (item.ItemComponent is HorseComponent)

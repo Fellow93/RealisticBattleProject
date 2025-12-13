@@ -724,36 +724,7 @@
 
   <!-- #endregion -->
   <!-- #region Used Throwing Axe Handle Pieces -->
-  <CraftingPiece id="axe_craft_12_handle" name="{=Wkhv9ESv}Hardened Oaken Throwing Axe Handle" tier="4" piece_type="Handle" mesh="axe_craft_12_handle" length="45" weight="0.154">
-    		<BuildData
-			piece_offset="8.175"
-			next_piece_offset="0"
-			previous_piece_offset="0" />
 
-    <Materials>
-      <Material id="Wood" count="1" />
-    </Materials>
-  </CraftingPiece>
-  <CraftingPiece id="axe_craft_11_handle" name="{=Rh3h5NIg}Hardened Short Hardwood Throwing Axe Handle" tier="4" piece_type="Handle" mesh="axe_craft_11_handle" length="45" weight="0.146">
-    		<BuildData
-			piece_offset="7.2"
-			next_piece_offset="0"
-			previous_piece_offset="0" />
-
-    <Materials>
-      <Material id="Iron3" count="1" />
-    </Materials>
-  </CraftingPiece>
-  <CraftingPiece id="axe_craft_28_handle" name="{=bQzz8mc3}Simple Pinewood Throwing Axe Handle" tier="1" piece_type="Handle" mesh="axe_craft_28_handle" length="45" weight="0.134" is_default="true">
-    		<BuildData
-			piece_offset="8.175"
-			next_piece_offset="0"
-			previous_piece_offset="0" />
-
-    <Materials>
-      <Material id="Wood" count="1" />
-    </Materials>
-  </CraftingPiece>
   <!-- #endregion -->
   <!-- #region Axe Handle Pieces -->
   
