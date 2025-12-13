@@ -93,8 +93,12 @@ namespace RBMAI
             [HarmonyPatch("GetOrderPositionOfUnit")]
             private static bool PrefixGetOrderPositionOfUnit(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ____detachedUnits, ref WorldPosition __result)
             {
+                if (!unit.IsActive())
+                {
+                    return true;
+                }
                 Mission mission = Mission.Current;
-                if(mission != null && !mission.IsFieldBattle)
+                if (mission != null && !mission.IsFieldBattle)
                 {
                     //everyone charge if close to enemy in non-field battle
                     MBList<Agent> enemiesCloseBy = new MBList<Agent>();
@@ -108,7 +112,7 @@ namespace RBMAI
                 if (mission != null && mission.IsFieldBattle && unit != null && (__instance.QuerySystem.IsCavalryFormation || __instance.QuerySystem.IsRangedCavalryFormation))
                 {
                     //cav cahrge if no mount
-                    if(unit != null && unit.MountAgent == null)
+                    if (unit != null && unit.MountAgent == null)
                     {
                         __result = WorldPosition.Invalid;
                         return false;
@@ -132,7 +136,7 @@ namespace RBMAI
                         return false;
                     }
                 }
-                if(mission != null && unit != null &&  mission.IsFieldBattle && __instance.QuerySystem.IsRangedFormation)
+                if (mission != null && unit != null && mission.IsFieldBattle && __instance.QuerySystem.IsRangedFormation)
                 {
                     //ranged charge if close to enemy
                     MBList<Agent> enemiesCloseBy = new MBList<Agent>();
@@ -144,9 +148,10 @@ namespace RBMAI
                     }
 
                     //ranged charge if they are skirmishing but not attacking
-                    if(__instance.AI != null && __instance.AI.ActiveBehavior != null)
+                    if (__instance.AI != null && __instance.AI.ActiveBehavior != null)
                     {
-                        if(unit.LastRangedAttackTime > 0){
+                        if (unit.LastRangedAttackTime > 0)
+                        {
                             Type activeBehaviorType = __instance.AI.ActiveBehavior.GetType();
                             if (activeBehaviorType == typeof(RBMBehaviorArcherFlank) || activeBehaviorType == typeof(RBMBehaviorArcherSkirmish)
                                 || activeBehaviorType == typeof(BehaviorSkirmish) || activeBehaviorType == typeof(BehaviorSkirmishBehindFormation) || activeBehaviorType == typeof(BehaviorSkirmishLine))
@@ -172,10 +177,10 @@ namespace RBMAI
                         }
                     }
                 }
-                if(mission != null && mission.IsFieldBattle && unit != null && __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsCavalryFormation)
+                if (mission != null && mission.IsFieldBattle && unit != null && __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsCavalryFormation)
                 {
                     var targetAgent = Utilities.GetCorrectTarget(unit);
-                    if(targetAgent != null)
+                    if (targetAgent != null)
                     {
                         float distance = targetAgent != null ? (targetAgent.Position - unit.Position).Length : 0f;
                         if (distance > 60f)
@@ -206,7 +211,7 @@ namespace RBMAI
                     int hasShieldBonusNumber = 40;
                     int isAttackingArcherNumber = -60;
                     int aggresivnesModifier = -15;
-                    float backStepDistance = 0.2f;
+                    float backStepDistance = 0.5f;
 
                     if (isAgentInDefensiveOrder)
                     {
@@ -214,13 +219,13 @@ namespace RBMAI
                         enemyAgentsCountTreshold = 3;
                         enemyAgentsCountDangerousTreshold = 4;
                         enemyAgentsCountCriticalTreshold = 6;
-                        backStepDistance = 0.2f;
+                        backStepDistance = 0.5f;
                         hasShieldBonusNumber = 40;
                         aggresivnesModifier = -15;
                     }
                     float weaponLengthModifier = unit.WieldedWeapon.CurrentUsageItem != null ? (unit.WieldedWeapon.CurrentUsageItem.GetRealWeaponLength() + 0.5f) : 1f;
                     float enemyWeaponLengthModifier = -1f;
-                    if(targetAgent != null)
+                    if (targetAgent != null)
                     {
                         enemyWeaponLengthModifier = targetAgent.WieldedWeapon.CurrentUsageItem != null ? (targetAgent.WieldedWeapon.CurrentUsageItem.GetRealWeaponLength()) : 1f;
                     }
@@ -235,7 +240,7 @@ namespace RBMAI
                     }
 
                     aggresivnesModifier += weaponLengthAgressivnessModifier;
-                    aggresivnesModifier *= (int)MBMath.ClampFloat(enemyWeaponLengthModifier/weaponLengthModifier, 1f, 2f);
+                    aggresivnesModifier *= (int)MBMath.ClampFloat(enemyWeaponLengthModifier / weaponLengthModifier, 1f, 2f);
 
                     if (__instance.Captain != null && __instance.Captain.IsPlayerTroop)
                     {
@@ -311,7 +316,7 @@ namespace RBMAI
 
                         if (targetAgent != null && unit != null && targetAgent != vanillaTargetAgent && vanillaTargetAgent.HasMount || vanillaTargetAgent.IsRunningAway)
                         {
-                            __result = targetAgent!= null ? targetAgent.GetWorldPosition() : WorldPosition.Invalid;
+                            __result = targetAgent != null ? targetAgent.GetWorldPosition() : WorldPosition.Invalid;
                             aiDecision.position = __result;
                             if (!unit.IsRangedCached)
                             {
@@ -558,7 +563,7 @@ namespace RBMAI
                             enemyAgentsImmidiateCount = 0;
                             enemyAgentsCloseCount = 0;
                         }
-                        if(attackingTogether == 50)
+                        if (attackingTogether == 50)
                         {
                             enemyAgentsCountCriticalTreshold *= 1;
                             enemyAgentsCountDangerousTreshold *= 1;
@@ -748,7 +753,7 @@ namespace RBMAI
             {
                 MBList<Agent> nearbyAllyAgents = new MBList<Agent>();
                 nearbyAllyAgents = mission.GetNearbyAllyAgents(unitPosition, 1.5f, unit.Team, nearbyAllyAgents);
-                if(nearbyAllyAgents.Count() == 0)
+                if (nearbyAllyAgents.Count() == 0)
                 {
                     nearbyAllyAgents = mission.GetNearbyAllyAgents(unitPosition, 3f, unit.Team, nearbyAllyAgents);
                 }

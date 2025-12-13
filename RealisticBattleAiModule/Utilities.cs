@@ -170,7 +170,7 @@ namespace RBMAI
                             return RBMAI.Utilities.NearestAgentFromMultipleFormations(agent.Position.AsVec2, formations, priorityFormation);
                         }
                     }
-                    if(formation.QuerySystem.IsCavalryFormation && movementOrder.OrderType == OrderType.ChargeWithTarget)
+                    if (formation.QuerySystem.IsCavalryFormation && movementOrder.OrderType == OrderType.ChargeWithTarget)
                     {
                         formations = RBMAI.Utilities.FindSignificantFormations(formation);
                         Formation priorityFormation = null;
@@ -421,33 +421,30 @@ namespace RBMAI
         public static List<Formation> FindSignificantFormations(Formation formation, bool includeCavalry = false)
         {
             List<Formation> formations = new List<Formation>();
-            if (formation != null)
+            if (formation?.QuerySystem?.ClosestSignificantlyLargeEnemyFormation != null)
             {
-                if (formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
+                foreach (Team team in Mission.Current.Teams.ToList())
                 {
-                    foreach (Team team in Mission.Current.Teams.ToList())
+                    if (team.IsEnemyOf(formation.Team))
                     {
-                        if (team.IsEnemyOf(formation.Team))
+                        if (team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList().Count == 1)
                         {
-                            if (team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList().Count == 1)
+                            formations.Add(team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0]);
+                            return formations;
+                        }
+                        foreach (Formation enemyFormation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
+                        {
+                            if (enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
                             {
-                                formations.Add(team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0]);
-                                return formations;
+                                formations.Add(enemyFormation);
                             }
-                            foreach (Formation enemyFormation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
+                            if (enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
                             {
-                                if (formation != null && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
-                                {
-                                    formations.Add(enemyFormation);
-                                }
-                                if (formation != null && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
-                                {
-                                    formations.Add(enemyFormation);
-                                }
-                                if (includeCavalry && formation != null && enemyFormation.CountOfUnits > 0 && (enemyFormation.QuerySystem.IsCavalryFormation || enemyFormation.QuerySystem.IsRangedCavalryFormation))
-                                {
-                                    formations.Add(enemyFormation);
-                                }
+                                formations.Add(enemyFormation);
+                            }
+                            if (includeCavalry && enemyFormation.CountOfUnits > 0 && (enemyFormation.QuerySystem.IsCavalryFormation || enemyFormation.QuerySystem.IsRangedCavalryFormation))
+                            {
+                                formations.Add(enemyFormation);
                             }
                         }
                     }
