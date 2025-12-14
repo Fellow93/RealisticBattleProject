@@ -80,12 +80,16 @@ namespace RBMCombat
                 }
                 else if (item.ItemComponent is WeaponComponent)
                 {
-                    price = (500f + (tier * 100f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
+                    price = (500f + (tier * 100f)) * 0.7f * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
                     if (item.ItemType == ItemObject.ItemTypeEnum.Polearm)
                     {
                         price *= 0.3f;
                     }
                     if (item.ItemType == ItemObject.ItemTypeEnum.Thrown)
+                    {
+                        price *= 0.25f;
+                    }
+                    if (item.ItemType == ItemObject.ItemTypeEnum.Sling)
                     {
                         price *= 0.25f;
                     }
