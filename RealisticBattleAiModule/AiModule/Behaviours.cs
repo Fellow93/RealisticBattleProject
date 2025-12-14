@@ -879,7 +879,16 @@ namespace RBMAI
         [HarmonyPatch("AdjustSpeedLimit")]
         private static bool AdjustSpeedLimitPrefix(ref HumanAIComponent __instance, ref Agent agent, ref float desiredSpeed, ref bool limitIsMultiplier, ref Agent ___Agent)
         {
-            if (agent.Formation != null && (agent.Formation.QuerySystem.IsRangedCavalryFormation || agent.Formation.QuerySystem.IsCavalryFormation))
+            if (___Agent == null ||
+                !___Agent.IsActive() ||
+                agent.Formation == null ||
+                agent.Formation.QuerySystem == null ||
+                agent.Formation.AI == null ||
+                agent.Formation.AI.ActiveBehavior == null)
+            {
+                return true;
+            }
+            if (agent.Formation.QuerySystem.IsRangedCavalryFormation || agent.Formation.QuerySystem.IsCavalryFormation)
             {
                 if (agent.MountAgent != null)
                 {
@@ -889,17 +898,15 @@ namespace RBMAI
                     return false;
                 }
             }
-            else if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
-                (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorForwardSkirmish) ||
-                agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorInfantryAttackFlank)))
+            else if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorForwardSkirmish) ||
+                agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorInfantryAttackFlank))
             {
                 if (limitIsMultiplier && desiredSpeed < 0.85f)
                 {
                     desiredSpeed = 0.85f;
                 }
             }
-            if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
-                (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorProtectFlank)))
+            if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorProtectFlank))
             {
                 if (desiredSpeed < 0.85f)
                 {
@@ -907,32 +914,28 @@ namespace RBMAI
                     desiredSpeed = 0.85f;
                 }
             }
-            if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
-                (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorRegroup)))
+            if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorRegroup))
             {
                 if (limitIsMultiplier && desiredSpeed < 0.95f)
                 {
                     desiredSpeed = 0.95f;
                 }
             }
-            if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
-                (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorCharge)))
+            if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorCharge))
             {
                 if (limitIsMultiplier && desiredSpeed < 0.85f)
                 {
                     desiredSpeed = 0.85f;
                 }
             }
-            if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
-                (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorArcherFlank)))
+            if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorArcherFlank))
             {
                 if (limitIsMultiplier && desiredSpeed < 0.9f)
                 {
                     desiredSpeed = 0.9f;
                 }
             }
-            if (agent.Formation != null && agent.Formation.AI != null && agent.Formation.AI.ActiveBehavior != null &&
-                (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorArcherSkirmish)))
+            if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorArcherSkirmish))
             {
                 if (limitIsMultiplier && desiredSpeed < 0.9f)
                 {
@@ -979,7 +982,7 @@ namespace RBMAI
             method.Invoke(__instance, new object[] { });
 
             __instance.Formation.SetMovementOrder(____currentOrder);
-            __instance.Formation.SetFacingOrder( ___CurrentFacingOrder);
+            __instance.Formation.SetFacingOrder(___CurrentFacingOrder);
             if (__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && __instance.Formation.QuerySystem.Formation.CachedAveragePosition.DistanceSquared(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.CachedMedianPosition.AsVec2) > 1600f && __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.2f - ((__instance.Formation.ArrangementOrder.OrderEnum == ArrangementOrder.ArrangementOrderEnum.Loose) ? 0.1f : 0f))
             {
                 __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderSkein);
@@ -996,7 +999,7 @@ namespace RBMAI
         [HarmonyPatch("OnBehaviorActivatedAux")]
         private static void PostfixOnBehaviorActivatedAux(ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder, BehaviorVanguard __instance)
         {
-            __instance.Formation.SetFormOrder( FormOrder.FormOrderDeep);
+            __instance.Formation.SetFormOrder(FormOrder.FormOrderDeep);
             __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderSkein);
         }
     }
@@ -1019,14 +1022,14 @@ namespace RBMAI
             }
             if (Mission.Current.SceneName.Contains("arena"))
             {
-                if(___Agent != null && ___Agent.SpawnEquipment!= null && ___Agent.IsRangedCached)
+                if (___Agent != null && ___Agent.SpawnEquipment != null && ___Agent.IsRangedCached)
                 {
                     __instance.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
                     __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 5.5f, 3f, 4f, 10f, 0.01f);
                     __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 3f, 2f, 10f, 20f);
                 }
             }
-            if(___Agent != null && ___Agent.Formation != null)
+            if (___Agent != null && ___Agent.Formation != null)
             {
                 if (behaviorValueSet == BehaviorValueSet.Charge)
                 {
@@ -1115,7 +1118,7 @@ namespace RBMAI
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 5f, 3f, 20f, 0.01f);
                     }
                     return;
-                }             
+                }
             }
         }
     }
@@ -1281,12 +1284,12 @@ namespace RBMAI
         [HarmonyPatch("SetFiringOrder")]
         private static bool PrefixSetFiringOrder(ref Agent __instance, ref int order)
         {
-            if(
-                __instance == null || 
-                !__instance.IsActive() || 
+            if (
+                __instance == null ||
+                !__instance.IsActive() ||
                 __instance.Formation == null ||
                 __instance.Formation.IsSpawning ||
-                __instance.Formation.AI.ActiveBehavior ==  null ||
+                __instance.Formation.AI.ActiveBehavior == null ||
                 __instance.Formation.QuerySystem == null ||
                 __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation == null ||
                 __instance.Formation.GetReadonlyMovementOrderReference().OrderType != OrderType.ChargeWithTarget)
@@ -1600,7 +1603,7 @@ namespace RBMAI
             method.Invoke(__instance, new object[] { });
 
             __instance.Formation.SetMovementOrder(__instance.CurrentOrder);
-            __instance.Formation.SetFacingOrder( ___CurrentFacingOrder);
+            __instance.Formation.SetFacingOrder(___CurrentFacingOrder);
             if (__instance.Formation.QuerySystem.IsInfantryFormation)
             {
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
@@ -1632,8 +1635,8 @@ namespace RBMAI
         [HarmonyPatch("SwitchUnitLocations")]
         private static bool PrefixSwitchUnitLocations(ref BehaviorRegroup __instance, IFormationUnit firstUnit, IFormationUnit secondUnit)
         {
-            if(firstUnit != null && ((Agent)firstUnit).Formation != null && ((Agent)firstUnit).IsActive() && 
-                secondUnit != null && ((Agent)secondUnit).Formation != null && ((Agent)secondUnit).IsActive() )
+            if (firstUnit != null && ((Agent)firstUnit).Formation != null && ((Agent)firstUnit).IsActive() &&
+                secondUnit != null && ((Agent)secondUnit).Formation != null && ((Agent)secondUnit).IsActive())
             {
                 return true;
             }
