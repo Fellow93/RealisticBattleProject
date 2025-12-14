@@ -130,20 +130,22 @@ namespace RBMAI
                     agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.1f;
                     agentDrivenProperties.WeaponBestAccuracyWaitTime = 0.1f;
                 }
+
                 //if (RBMConfig.RBMConfig.postureEnabled)
                 //{
                 //    Posture posture = null;
                 //    AgentPostures.values.TryGetValue(agent, out posture);
-                //    if (agent != null && posture != null && posture.maxPostureLossCount >= 1)
+                //    if (agent != null && posture != null)
                 //    {
-                //        agentDrivenProperties.WeaponInaccuracy += posture.maxPostureLossCount * ( agentDrivenProperties.WeaponInaccuracy * 0.15f);
+                //        float postureLevel = posture.posture / posture.maxPosture;
+                //        if (postureLevel < 0.33f)
+                //        {
+                //            //agentDrivenProperties.AiAttackCalculationMaxTimeFactor = meleeLevel *2f;
+                //            //agentDrivenProperties.AIAttackOnDecideChance = 0.02f;
+                //            agentDrivenProperties.HandlingMultiplier = 0.5f;
+                //            //agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier = 0.8f;
+                //        }
                 //    }
-                //}
-
-                //if (agent.IsAIControlled)
-                //{
-                //    agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
-                //    agentDrivenProperties.WeaponBestAccuracyWaitTime = 1.5f;
                 //}
 
                 agentDrivenProperties.AiRangerLeadErrorMin = (float)((0.0 - (double)num4) * 0.349999994039536) + 0.3f;
@@ -228,8 +230,8 @@ namespace RBMAI
                         {
                             effectiveSkill = 150;
                         }
-                        SkillHelper.AddSkillBonusForCharacter( DefaultSkillEffects.OneHandedSpeed, characterObject, ref stat);
-                        SkillHelper.AddSkillBonusForCharacter( DefaultSkillEffects.OneHandedSpeed, characterObject, ref stat2);
+                        SkillHelper.AddSkillBonusForCharacter(DefaultSkillEffects.OneHandedSpeed, characterObject, ref stat);
+                        SkillHelper.AddSkillBonusForCharacter(DefaultSkillEffects.OneHandedSpeed, characterObject, ref stat2);
                     }
                     else if (equippedWeaponComponent.RelevantSkill == DefaultSkills.TwoHanded)
                     {
@@ -246,7 +248,7 @@ namespace RBMAI
                         {
                             effectiveSkill = 150;
                         }
-                        SkillHelper.AddSkillBonusForCharacter( DefaultSkillEffects.PolearmSpeed, characterObject, ref stat);
+                        SkillHelper.AddSkillBonusForCharacter(DefaultSkillEffects.PolearmSpeed, characterObject, ref stat);
                         SkillHelper.AddSkillBonusForCharacter(DefaultSkillEffects.PolearmSpeed, characterObject, ref stat2);
                     }
                     else if (equippedWeaponComponent.RelevantSkill == DefaultSkills.Crossbow)
@@ -379,7 +381,7 @@ namespace RBMAI
                         return;
 
                     default:
-                        __result = Agent.UsageDirection.None;
+                        //__result = Agent.UsageDirection.None;
                         return;
                 }
             }
@@ -453,77 +455,6 @@ namespace RBMAI
         public static class OnTickPatch
         {
             public static Dictionary<Agent, float> itemPickupDistanceStorage = new Dictionary<Agent, float> { };
-
-            //private static bool Prefix(ref HumanAIComponent __instance, ref SpawnedItemEntity ____itemToPickUp, ref Agent ___Agent, ref MissionTimer ____itemPickUpTickTimer, ref bool ____disablePickUpForAgent, ref GameEntity[] ____tempPickableEntities, ref UIntPtr[] ____pickableItemsId)
-            //{
-            //    bool timer = ____itemPickUpTickTimer.Check(reset: true);
-            //    bool mended = ___Agent.Mission.MissionEnded;
-            //    bool hasWeapon = false;
-
-            //    for (int i = 0; i < 5; i++)
-            //    {
-            //        WeaponComponentData currentUsageItem = ___Agent.Equipment[i].CurrentUsageItem;
-            //        if (currentUsageItem != null && currentUsageItem.WeaponFlags.HasAnyFlag(WeaponFlags.MeleeWeapon))
-            //        {
-            //            hasWeapon = true;
-            //        }
-            //    }
-
-            //    if (timer && !mended && !hasWeapon)
-            //    {
-            //        EquipmentIndex wieldedItemIndex = ___Agent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
-            //        bool flag = ((wieldedItemIndex == EquipmentIndex.None) ? null : ___Agent.Equipment[wieldedItemIndex].CurrentUsageItem)?.IsRangedWeapon ?? false;
-            //        if ( ___Agent.CanBeAssignedForScriptedMovement() && ___Agent.CurrentWatchState == Agent.WatchState.Alarmed && (___Agent.GetAgentFlags() & AgentFlag.CanAttack) != 0)
-            //        {
-            //            Agent targetAgent = ___Agent.GetTargetAgent();
-            //            float maximumForwardUnlimitedSpeed = ___Agent.MaximumForwardUnlimitedSpeed;
-            //            if (____itemToPickUp == null)
-            //            {
-            //                Vec3 bMin = ___Agent.Position - new Vec3(50f, 50f, 1f);
-            //                Vec3 bMax = ___Agent.Position + new Vec3(50f, 50f, 1.8f);
-
-            //                Vec3 v = ((targetAgent == null) ? Vec3.Invalid : (targetAgent.Position - ___Agent.Position));
-            //                int num = ___Agent.Mission.Scene.SelectEntitiesInBoxWithScriptComponent<SpawnedItemEntity>(ref bMin, ref bMax, ____tempPickableEntities, ____pickableItemsId);
-            //                float num2 = -1f;
-            //                SpawnedItemEntity result = null;
-            //                for (int i = 0; i < num; i++)
-            //                {
-            //                    SpawnedItemEntity firstScriptOfType = ____tempPickableEntities[i].GetFirstScriptOfType<SpawnedItemEntity>();
-            //                    bool flag2 = false;
-            //                    if (firstScriptOfType != null)
-            //                    {
-            //                        MissionWeapon weaponCopy = firstScriptOfType.WeaponCopy;
-            //                        flag2 = !weaponCopy.IsEmpty && (!weaponCopy.IsShield() && !weaponCopy.IsBanner() && !firstScriptOfType.IsStuckMissile() && !firstScriptOfType.IsQuiverAndNotEmpty());
-            //                    }
-            //                    if (!flag2 || firstScriptOfType.HasUser || (firstScriptOfType.HasAIMovingTo && !firstScriptOfType.IsAIMovingTo(___Agent)) || !(firstScriptOfType.GameEntityWithWorldPosition.WorldPosition.GetNavMesh() != UIntPtr.Zero))
-            //                    {
-            //                        continue;
-            //                    }
-            //                    Vec3 v2 = firstScriptOfType.GetUserFrameForAgent(___Agent).Origin.GetGroundVec3() - ___Agent.Position;
-            //                    v2.Normalize();
-            //                    EquipmentIndex equipmentIndex = MissionEquipment.SelectWeaponPickUpSlot(___Agent, firstScriptOfType.WeaponCopy, firstScriptOfType.IsStuckMissile());
-            //                    WorldPosition worldPosition = firstScriptOfType.GameEntityWithWorldPosition.WorldPosition;
-            //                    if (equipmentIndex != EquipmentIndex.None && worldPosition.GetNavMesh() != UIntPtr.Zero && ___Agent.Equipment[equipmentIndex].IsEmpty && ___Agent.CanMoveDirectlyToPosition(worldPosition.AsVec2))
-            //                    {
-            //                        float itemScoreForAgent = MissionGameModels.Current.ItemPickupModel.GetItemScoreForAgent(firstScriptOfType, ___Agent);
-            //                        if (itemScoreForAgent > num2)
-            //                        {
-            //                            result = firstScriptOfType;
-            //                            num2 = itemScoreForAgent;
-            //                        }
-            //                    }
-            //                }
-            //                ____itemToPickUp = result;
-            //                if (____itemToPickUp != null)
-            //                {
-            //                    ____itemToPickUp.MovingAgent?.StopUsingGameObject(isSuccessful: false);
-            //                    __instance.MoveToUsableGameObject(result, null);
-            //                }
-            //            }
-            //        }
-            //    }
-            //    return true;
-            //}
 
             private static void Postfix(ref SpawnedItemEntity ____itemToPickUp, ref Agent ___Agent)
             {
