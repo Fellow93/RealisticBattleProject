@@ -198,13 +198,23 @@ namespace RBMCombat
                 case "crossbow": // composite horn-sinew crossbow
                 case "crossbow_fast":
                     {
-                        float powerstroke = (8f * 0.0254f); // in inches then converted to metres
-                        float materialEfficiency = 0.85f; // composite > wood > steel
+                        // Easter / Chinese style crossbows
+                        float powerstroke = (18f * 0.0254f); // in inches then converted to metres
+                        float materialEfficiency = 0.88f; // composite bow + bit of drag
                         double potentialEnergy = 0.5f * (drawWeight * 4.448f) * powerstroke * materialEfficiency; // draw weight is in pounds and then multiplied to newton metres
-                        float virtualArrow = drawWeight * 0.00014f;// virtual arrow - weight of limbs and string added to the weight of the arrow
+                        float virtualArrow = drawWeight * 0.00015f;// virtual arrow - weight of limbs and string added to the weight of the arrow
                         ammoWeight += virtualArrow;
                         calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
                         break;
+
+                        //European crossbows
+                        //float powerstroke = (8f * 0.0254f); // in inches then converted to metres
+                        //float materialEfficiency = 0.85f; // composite > wood > steel
+                        //double potentialEnergy = 0.5f * (drawWeight * 4.448f) * powerstroke * materialEfficiency; // draw weight is in pounds and then multiplied to newton metres
+                        //float virtualArrow = drawWeight * 0.00014f;// virtual arrow - weight of limbs and string added to the weight of the arrow
+                        //ammoWeight += virtualArrow;
+                        //calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
+                        //break;
                     }
                 // case "Sling": calculatedThrowingSpeed * missile_speed (zo slingu, z tej equipnutej zbrane) * 0.01
                 case "osa_sling":
