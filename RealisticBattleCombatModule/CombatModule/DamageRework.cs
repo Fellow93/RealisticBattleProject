@@ -1376,142 +1376,18 @@ namespace RBMCombat
         [HarmonyPatch("HandleBlow")]
         private class HandleBlowPatch
         {
-            private static ArmorMaterialTypes GetProtectorArmorMaterialOfBone(Agent agent, sbyte boneIndex)
+            private static void Postfix(ref Agent __instance, ref Blow b, AgentLastHitInfo ____lastHitInfo, in AttackCollisionData collisionData)
             {
-                if (agent != null && agent.SpawnEquipment != null)
-                {
-                    if (boneIndex >= 0)
-                    {
-                        EquipmentIndex equipmentIndex = EquipmentIndex.None;
-                        switch (agent.AgentVisuals.GetBoneTypeData(boneIndex).BodyPartType)
-                        {
-                            case BoneBodyPartType.Chest:
-                            case BoneBodyPartType.Abdomen:
-                            case BoneBodyPartType.ShoulderLeft:
-                            case BoneBodyPartType.ShoulderRight:
-                                equipmentIndex = EquipmentIndex.Body;
-                                break;
-
-                            case BoneBodyPartType.ArmLeft:
-                            case BoneBodyPartType.ArmRight:
-                                equipmentIndex = EquipmentIndex.Gloves;
-                                break;
-
-                            case BoneBodyPartType.Legs:
-                                equipmentIndex = EquipmentIndex.Leg;
-                                break;
-
-                            case BoneBodyPartType.Head:
-                            case BoneBodyPartType.Neck:
-                                equipmentIndex = EquipmentIndex.NumAllWeaponSlots;
-                                break;
-                        }
-                        if (equipmentIndex != EquipmentIndex.None && agent.SpawnEquipment[equipmentIndex].Item != null)
-                        {
-                            if (agent.SpawnEquipment[equipmentIndex].Item.ArmorComponent != null)
-                            {
-                                return agent.SpawnEquipment[equipmentIndex].Item.ArmorComponent.MaterialType;
-                            }
-                        }
-                    }
-                }
-                return ArmorComponent.ArmorMaterialTypes.None;
-            }
-
-            private static bool Prefix(ref Agent __instance, ref Blow b, AgentLastHitInfo ____lastHitInfo, in AttackCollisionData collisionData)
-            {
-                b.BaseMagnitude = Math.Min(b.BaseMagnitude, 1000f) / 8f;
-                Agent agent = (b.OwnerId != -1) ? __instance.Mission.FindAgentWithIndex(b.OwnerId) : __instance;
-                if (!b.BlowFlag.HasAnyFlag(BlowFlags.NoSound))
-                {
-                    bool isCriticalBlow = b.IsBlowCrit(__instance.Monster.HitPoints * 4);
-                    bool isLowBlow = b.IsBlowLow(__instance.Monster.HitPoints);
-                    bool isOwnerHumanoid = agent?.IsHuman ?? false;
-                    bool isNonTipThrust = b.BlowFlag.HasAnyFlag(BlowFlags.NonTipThrust);
-                    int hitSound = b.WeaponRecord.GetHitSound(isOwnerHumanoid, isCriticalBlow, isLowBlow, isNonTipThrust, b.AttackType, b.DamageType);
-                    float soundParameterForArmorType = 0.1f * (float)GetProtectorArmorMaterialOfBone(__instance, b.BoneIndex);
-                    SoundEventParameter parameter = new SoundEventParameter("Armor Type", soundParameterForArmorType);
-                    __instance.Mission.MakeSound(hitSound, b.GlobalPosition, soundCanBePredicted: false, isReliable: true, b.OwnerId, __instance.Index, ref parameter);
-                    if (b.IsMissile && agent != null)
-                    {
-                        int soundCodeMissionCombatPlayerhit = CombatSoundContainer.SoundCodeMissionCombatPlayerhit;
-                        __instance.Mission.MakeSoundOnlyOnRelatedPeer(soundCodeMissionCombatPlayerhit, b.GlobalPosition, agent.Index);
-                    }
-                    __instance.Mission.AddSoundAlarmFactorToAgents(__instance, b.GlobalPosition, 15f);
-                }
-                b.DamagedPercentage = (float)b.InflictedDamage / __instance.HealthLimit;
-
-                MethodInfo method = typeof(Agent).GetMethod("UpdateLastAttackAndHitTimes", BindingFlags.NonPublic | BindingFlags.Instance);
-                method.DeclaringType.GetMethod("UpdateLastAttackAndHitTimes");
-                method.Invoke(__instance, new object[] { agent, b.IsMissile });
-
                 bool isKnockBack = ((b.BlowFlag & BlowFlags.NonTipThrust) != 0) || ((b.BlowFlag & BlowFlags.KnockDown) != 0) || ((b.BlowFlag & BlowFlags.KnockBack) != 0);
-
-                float health = __instance.Health;
-                float damagedHp = (((float)b.InflictedDamage > health) ? health : ((float)b.InflictedDamage));
-                float newHp = health - damagedHp;
-
-                if (b.AttackType == AgentAttackType.Bash || b.AttackType == AgentAttackType.Kick)
-                {
-                    if (b.InflictedDamage <= 0)
-                    {
-                        b.InflictedDamage = 1;
-                    }
-                }
-                if (b.InflictedDamage == 0 && isKnockBack)
+                bool isBash = b.AttackType == AgentAttackType.Bash || b.AttackType == AgentAttackType.Kick;
+                if ((isKnockBack || isBash) && b.InflictedDamage <= 0)
                 {
                     b.InflictedDamage = 1;
-                }
-                if (b.InflictedDamage == 1 && isKnockBack)
-                {
-                }
-                else
-                {
-                    if (newHp < 0f)
-                    {
-                        newHp = 0f;
-                    }
-                    if (__instance.CurrentMortalityState != MortalityState.Immortal && !Mission.Current.DisableDying)
-                    {
-                        __instance.Health = newHp;
-                    }
+                    MethodInfo method2 = typeof(Agent).GetMethod("HandleBlowAux", BindingFlags.NonPublic | BindingFlags.Instance);
+                    method2.DeclaringType.GetMethod("HandleBlowAux");
+                    method2.Invoke(__instance, new object[] { b });
                 }
 
-                if (agent != null && agent != __instance && __instance.IsHuman)
-                {
-                    if (agent.IsMount && agent.RiderAgent != null)
-                    {
-                        ____lastHitInfo.RegisterLastBlow(agent.RiderAgent.Index, b.AttackType);
-                    }
-                    else if (agent.IsHuman)
-                    {
-                        ____lastHitInfo.RegisterLastBlow(b.OwnerId, b.AttackType);
-                    }
-                }
-
-                MethodInfo method3 = typeof(Mission).GetMethod("OnAgentHit", BindingFlags.NonPublic | BindingFlags.Instance);
-                method3.DeclaringType.GetMethod("OnAgentHit");
-                bool isBlocked = false;
-                if (collisionData.CollisionResult == CombatCollisionResult.Blocked || collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked || collisionData.CollisionResult == CombatCollisionResult.Parried)
-                {
-                    isBlocked = true;
-                }
-
-                method3.Invoke(__instance.Mission, new object[] { __instance, agent, b, collisionData, isBlocked, damagedHp });
-                if (__instance.Health < 1f)
-                {
-                    KillInfo overrideKillInfo = (b.IsFallDamage ? KillInfo.Gravity : KillInfo.Invalid);
-                    if (__instance.IsActive())
-                    {
-                        __instance.Die(b, overrideKillInfo);
-                    }
-                }
-
-                MethodInfo method2 = typeof(Agent).GetMethod("HandleBlowAux", BindingFlags.NonPublic | BindingFlags.Instance);
-                method2.DeclaringType.GetMethod("HandleBlowAux");
-                method2.Invoke(__instance, new object[] { b });
-
-                return false;
             }
         }
     }
