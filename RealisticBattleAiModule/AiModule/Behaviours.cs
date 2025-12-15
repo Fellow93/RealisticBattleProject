@@ -882,9 +882,9 @@ namespace RBMAI
             if (___Agent == null ||
                 !___Agent.IsActive() ||
                 agent.Formation == null ||
-                agent.Formation.QuerySystem == null ||
-                agent.Formation.AI == null ||
-                agent.Formation.AI.ActiveBehavior == null)
+                agent.Formation?.QuerySystem == null ||
+                agent.Formation?.AI == null ||
+                agent.Formation?.AI?.ActiveBehavior == null)
             {
                 return true;
             }
@@ -1401,19 +1401,28 @@ namespace RBMAI
         [HarmonyPatch("SetMovementOrder")]
         private static bool PrefixSetOrder(Formation __instance, ref MovementOrder input)
         {
-            if (input == null ||
+            try
+            {
+                if (input == null ||
                 __instance == null ||
-                __instance?.QuerySystem == null ||
-                __instance?.QuerySystem?.ClosestSignificantlyLargeEnemyFormation == null ||
-                __instance?.QuerySystem?.ClosestSignificantlyLargeEnemyFormation?.Formation == null)
+                __instance.IsDeployment ||
+                __instance.QuerySystem == null ||
+                __instance.QuerySystem.ClosestSignificantlyLargeEnemyFormation == null ||
+                __instance.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation == null)
+                {
+                    return true;
+                }
+                if (input.OrderType == OrderType.Charge)
+                {
+                    input = MovementOrder.MovementOrderChargeToTarget(__instance.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                }
+            }
+            catch (Exception e)
             {
                 return true;
             }
-            if (input.OrderType == OrderType.Charge)
-            {
-                input = MovementOrder.MovementOrderChargeToTarget(__instance.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
-            }
             return true;
+
         }
     }
 
