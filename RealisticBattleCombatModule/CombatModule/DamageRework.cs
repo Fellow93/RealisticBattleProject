@@ -3,7 +3,6 @@ using SandBox.GameComponents;
 using SandBox.Missions.MissionLogics;
 using System;
 using System.Reflection;
-using TaleWorlds.CampaignSystem.ViewModelCollection.WeaponCrafting.WeaponDesign;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -62,7 +61,7 @@ namespace RBMCombat
                     {
                         dmgMultiplier *= 1.5f;
                     }
-                    if(weapon.WeaponClass == WeaponClass.Boulder)
+                    if (weapon.WeaponClass == WeaponClass.Boulder)
                     {
                         dmgMultiplier *= 10f;
                     }
@@ -136,7 +135,7 @@ namespace RBMCombat
 
                 if (!isFallDamage)
                 {
-                    float adjustedArmor = MissionGameModels.Current.StrikeMagnitudeModel.CalculateAdjustedArmorForBlow(attackInformation,attackCollisionData, armorAmountFloat, attackerAgentCharacter, attackerCaptainCharacter, victimAgentCharacter, victimCaptainCharacter, attackerWeapon);
+                    float adjustedArmor = MissionGameModels.Current.StrikeMagnitudeModel.CalculateAdjustedArmorForBlow(attackInformation, attackCollisionData, armorAmountFloat, attackerAgentCharacter, attackerCaptainCharacter, victimAgentCharacter, victimCaptainCharacter, attackerWeapon);
                     armorAmount = adjustedArmor;
                 }
                 //float num2 = (float)armorAmount;
@@ -168,7 +167,7 @@ namespace RBMCombat
                     damageType = DamageTypes.Blunt;
                 }
                 bool isThrustCut = false;
-                if(attackerWeapon != null && attacker != null)
+                if (attackerWeapon != null && attacker != null)
                 {
                     if (attackerWeapon.WeaponClass == WeaponClass.OneHandedSword ||
                                attackerWeapon.WeaponClass == WeaponClass.Dagger ||
@@ -343,16 +342,16 @@ namespace RBMCombat
                             armorMaterial = victim.SpawnEquipment[EquipmentIndex.Body].Item.ArmorComponent.MaterialType;
                             if (victim.SpawnEquipment[EquipmentIndex.Body].Item.ArmorComponent.MaterialType == ArmorMaterialTypes.Plate)
                             {
-                                if (victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Brigandine over Hauberk") || 
-                                    victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Khan's Coat of Plates") || 
-                                    victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Rough Brigandine") || 
+                                if (victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Brigandine over Hauberk") ||
+                                    victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Khan's Coat of Plates") ||
+                                    victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Rough Brigandine") ||
                                     victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Mirrored Brigandine Armor") ||
                                     victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Northern Raider Armor") ||
                                     victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Rough Scale Mail"))
                                 {
                                     armorMaterial = ArmorMaterialTypes.Plate;
                                 }
-                                else 
+                                else
                                 {
                                     armorMaterial = ArmorMaterialTypes.Chainmail;
                                 }
@@ -647,7 +646,7 @@ namespace RBMCombat
                     weaponDamageFactor = (float)Math.Sqrt((attackCollisionData.StrikeType == (int)StrikeType.Thrust)
                         ? Utilities.getThrustDamageFactor(attackerWeapon, itemModifier)
                         : Utilities.getSwingDamageFactor(attackerWeapon, itemModifier));
-                    if(attackCollisionData.StrikeType == (int)StrikeType.Thrust && damageType == DamageTypes.Cut)
+                    if (attackCollisionData.StrikeType == (int)StrikeType.Thrust && damageType == DamageTypes.Cut)
                     {
                         weaponDamageFactor = (float)Math.Sqrt(Utilities.getSwingDamageFactor(attackerWeapon, itemModifier));
                     }

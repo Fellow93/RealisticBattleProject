@@ -91,7 +91,7 @@ namespace RBMAI.AiModule
 
                         MissionSpawnSettings spawnSettings = new MissionSpawnSettings(MissionSpawnSettings.InitialSpawnMethod.BattleSizeAllocating,
                         MissionSpawnSettings.ReinforcementTimingMethod.GlobalTimer,
-                        MissionSpawnSettings.ReinforcementSpawnMethod.Balanced,
+                        MissionSpawnSettings.ReinforcementSpawnMethod.Wave,
                         3f, 0f, 0f, 0.5f,
                         reinforcementWaveCount,
                         defenderAdvantageFactor: defenderAdvantage);
@@ -133,7 +133,7 @@ namespace RBMAI.AiModule
 
                     MissionSpawnSettings spawnSettings = new MissionSpawnSettings(MissionSpawnSettings.InitialSpawnMethod.BattleSizeAllocating,
                         MissionSpawnSettings.ReinforcementTimingMethod.GlobalTimer,
-                        MissionSpawnSettings.ReinforcementSpawnMethod.Balanced,
+                        MissionSpawnSettings.ReinforcementSpawnMethod.Wave,
                         3f, 0f, 0f, 0.5f,
                         defenderAdvantageFactor: defenderAdvantage);
 
@@ -172,7 +172,7 @@ namespace RBMAI.AiModule
 
                     MissionSpawnSettings spawnSettings = new MissionSpawnSettings(MissionSpawnSettings.InitialSpawnMethod.BattleSizeAllocating,
                         MissionSpawnSettings.ReinforcementTimingMethod.GlobalTimer,
-                        MissionSpawnSettings.ReinforcementSpawnMethod.Balanced,
+                        MissionSpawnSettings.ReinforcementSpawnMethod.Wave,
                         3f, 0f, 0f, 0.5f,
                         defenderAdvantageFactor: defenderAdvantage);
 
@@ -214,7 +214,7 @@ namespace RBMAI.AiModule
 
                         MissionSpawnSettings spawnSettings = new MissionSpawnSettings(MissionSpawnSettings.InitialSpawnMethod.BattleSizeAllocating,
                         MissionSpawnSettings.ReinforcementTimingMethod.GlobalTimer,
-                        MissionSpawnSettings.ReinforcementSpawnMethod.Balanced,
+                        MissionSpawnSettings.ReinforcementSpawnMethod.Wave,
                         3f, 0f, 0f, 0.5f,
                         reinforcementWaveCount,
                         defenderAdvantageFactor: defenderAdvantage);

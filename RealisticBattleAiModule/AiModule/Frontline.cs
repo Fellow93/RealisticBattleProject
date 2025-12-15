@@ -212,22 +212,29 @@ namespace RBMAI
             [HarmonyPatch("GetOrderPositionOfUnit")]
             private static bool PrefixGetOrderPositionOfUnit(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ____detachedUnits, ref WorldPosition __result)
             {
-                if (!unit.IsActive())
+
+                Mission mission = Mission.Current;
+
+                if (unit == null || !unit.IsActive() || mission == null || !mission.IsDeploymentFinished)
                 {
                     return true;
                 }
-                Mission mission = Mission.Current;
-                //if (mission != null && !mission.IsFieldBattle)
-                //{
-                //    //everyone charge if close to enemy in non-field battle
-                //    MBList<Agent> enemiesCloseBy = new MBList<Agent>();
-                //    enemiesCloseBy = mission?.GetNearbyEnemyAgents(unit.Position.AsVec2, 2.5f, unit.Team, enemiesCloseBy);
-                //    if (enemiesCloseBy?.Count() > 0)
-                //    {
-                //        __result = WorldPosition.Invalid;
-                //        return false;
-                //    }
-                //}
+
+                if (mission.IsSiegeBattle)
+                {
+                    if (unit.Position == null || unit.Team == null)
+                    {
+                        return true;
+                    }
+                    //everyone charge if close to enemy in siege battle
+                    MBList<Agent> enemiesCloseBy = new MBList<Agent>();
+                    enemiesCloseBy = mission?.GetNearbyEnemyAgents(unit.Position.AsVec2, 2.25f, unit.Team, enemiesCloseBy);
+                    if (enemiesCloseBy?.Count() > 0)
+                    {
+                        __result = WorldPosition.Invalid;
+                        return false;
+                    }
+                }
                 //for cavalry
                 if (mission != null && mission.IsFieldBattle && unit != null && (__instance.QuerySystem.IsCavalryFormation || __instance.QuerySystem.IsRangedCavalryFormation))
                 {
