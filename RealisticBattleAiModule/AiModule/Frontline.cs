@@ -315,8 +315,23 @@ namespace RBMAI
                 //if (__instance.Team.ActiveAgents.Count() * __instance.Team.QuerySystem.InfantryRatio <= 30) { return true; } // frontline system disabled for small infantry battles
                 if (mission != null && mission.IsFieldBattle && unit != null && (__instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation) && !____detachedUnits.Contains(unit))
                 {
-                    var targetAgent = Utilities.GetCorrectTarget(unit);
-                    var vanillaTargetAgent = unit.GetTargetAgent();
+                    Agent targetAgent;
+                    var vanillaTargetAgent = targetAgent = unit.GetTargetAgent();
+                    if (__instance.IsAIControlled)
+                    {
+                        targetAgent = Utilities.GetCorrectTarget(unit);
+                    }
+                    else
+                    {
+                        if (__instance.TargetFormation == null)
+                        {
+                            targetAgent = Utilities.GetCorrectTarget(unit);
+                        }
+                        else
+                        {
+                            targetAgent = Utilities.NearestAgentFromFormation(unit.GetWorldPosition().AsVec2, __instance.TargetFormation);
+                        }
+                    }
 
                     if (targetAgent != null && vanillaTargetAgent != null)
                     {
@@ -382,14 +397,16 @@ namespace RBMAI
 
                         //float weaponLengthModifier = unit.WieldedWeapon.CurrentUsageItem != null ? (unit.WieldedWeapon.CurrentUsageItem.GetRealWeaponLength()) : 1f;
 
-                        //unit.HumanAIComponent?.OverrideBehaviorParams(HumanAIComponent.AISimpleBehaviorKind.GoToPos, 10f, weaponLengthModifier, 4f, 10f, 6f);
-                        //unit.HumanAIComponent?.OverrideBehaviorParams(HumanAIComponent.AISimpleBehaviorKind.Melee, 0f, weaponLengthModifier, 0f, 10f, 0.0f);
-                        //unit.HumanAIComponent?.OverrideBehaviorParams(HumanAIComponent.AISimpleBehaviorKind.Ranged, 0f, 8f, 0f, 20f, 0f);
-
                         switch (decision)
                         {
                             case AIMindset.AIDecision.Attack:
                                 {
+                                    if (__instance.IsAIControlled && targetAgent != null && targetAgent.IsActive() && vanillaTargetAgent.IsActive() && unit != null && targetAgent != vanillaTargetAgent && vanillaTargetAgent.HasMount || vanillaTargetAgent.IsRunningAway)
+                                    {
+                                        __result = targetAgent != null ? targetAgent.GetWorldPosition() : WorldPosition.Invalid;
+                                        aiDecision.position = __result;
+                                        return false;
+                                    }
                                     return true;
                                 }
                             case AIMindset.AIDecision.BackStep:

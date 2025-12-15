@@ -1633,7 +1633,7 @@ namespace RBMAI
     {
         [HarmonyPrefix]
         [HarmonyPatch("SwitchUnitLocations")]
-        private static bool PrefixSwitchUnitLocations(ref BehaviorRegroup __instance, IFormationUnit firstUnit, IFormationUnit secondUnit)
+        private static bool PrefixSwitchUnitLocations(ref LineFormation __instance, IFormationUnit firstUnit, IFormationUnit secondUnit)
         {
             if (firstUnit != null && ((Agent)firstUnit).Formation != null && ((Agent)firstUnit).IsActive() &&
                 secondUnit != null && ((Agent)secondUnit).Formation != null && ((Agent)secondUnit).IsActive())

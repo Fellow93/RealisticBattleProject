@@ -192,7 +192,7 @@ namespace RBMAI
         {
             Agent targetAgent = null;
             float distance = 10000f;
-            targetFormation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+            targetFormation?.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
             {
                 float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
                 if (newDist < distance)
