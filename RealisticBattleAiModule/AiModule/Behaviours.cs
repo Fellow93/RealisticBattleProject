@@ -1403,25 +1403,27 @@ namespace RBMAI
         {
             try
             {
-                if (input == null ||
-                __instance == null ||
-                __instance.IsDeployment ||
-                __instance.QuerySystem == null ||
-                __instance.QuerySystem.ClosestSignificantlyLargeEnemyFormation == null ||
-                __instance.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation == null)
+                if (__instance == null ||
+                    __instance.IsDeployment ||
+                    __instance.QuerySystem == null ||
+                    input == null
+                    )
                 {
                     return true;
                 }
                 if (input.OrderType == OrderType.Charge)
                 {
-                    input = MovementOrder.MovementOrderChargeToTarget(__instance.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                    if (__instance.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
+                    {
+                        input = MovementOrder.MovementOrderChargeToTarget(__instance.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                    }
                 }
+                return true;
             }
             catch (Exception e)
             {
                 return true;
             }
-            return true;
 
         }
     }
