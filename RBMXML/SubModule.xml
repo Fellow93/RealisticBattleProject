@@ -311,5 +311,15 @@
 			</IncludedGameTypes>
 	</XmlNode>
 	
+	<XmlNode>
+		<XmlName id="Items" path="RBMCombat_WS_Weapons"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+			<GameType value="EditorGame" />
+		</IncludedGameTypes>
+	</XmlNode>
+	
   </Xmls>
 </Module>

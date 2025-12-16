@@ -6904,7 +6904,7 @@
       <equipment slot="Item1"
                  id="Item.stronger_reinforced_kite_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.imperial_throwing_spear_1_t4" />
+                 id="Item.imperial_throwing_spear_1_t4_2" />
       <equipment slot="Item3"
                  id="Item.wide_leaf_spear_t4" />	
       <equipment slot="Body"
@@ -6924,7 +6924,7 @@
       <equipment slot="Item1"
                  id="Item.stronger_reinforced_kite_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.imperial_throwing_spear_1_t4" />
+                 id="Item.imperial_throwing_spear_1_t4_2" />
       <equipment slot="Item3"
                  id="Item.wide_leaf_spear_t4" />	
       <equipment slot="Body"
@@ -6944,7 +6944,7 @@
       <equipment slot="Item1"
                  id="Item.stronger_reinforced_kite_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.imperial_throwing_spear_1_t4" />
+                 id="Item.imperial_throwing_spear_1_t4_2" />
       <equipment slot="Item3"
                  id="Item.wide_leaf_spear_t4" />	
       <equipment slot="Body"
@@ -6962,7 +6962,7 @@
       <equipment slot="Item1"
                  id="Item.stronger_reinforced_kite_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.imperial_throwing_spear_1_t4" />
+                 id="Item.imperial_throwing_spear_1_t4_2" />
       <equipment slot="Item3"
                  id="Item.wide_leaf_spear_t4" />	
       <equipment slot="Body"
@@ -10449,7 +10449,7 @@
       <skill id="OneHanded"
              value="90" />
       <skill id="TwoHanded"
-             value="10" />
+             value="90" />
       <skill id="Polearm"
              value="70" />
       <skill id="Bow"
@@ -10559,7 +10559,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_2haxe_1_t4" />
+                 id="Item.sturgia_mace_1_t3" />
       <equipment slot="Item1"
                  id="Item.viking_round_shield" />
       <equipment slot="Item3"
@@ -10577,7 +10577,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_2haxe_1_t4" />
+                 id="Item.sturgia_mace_1_t3" />
       <equipment slot="Item1"
                  id="Item.viking_round_shield" />
       <equipment slot="Item3"
@@ -10595,7 +10595,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_2haxe_1_t4" />
+                 id="Item.sturgia_mace_1_t3" />
       <equipment slot="Item1"
                  id="Item.leather_round_shield" />
       <equipment slot="Item3"
@@ -10655,7 +10655,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_lance_1_t4" />
       <equipment slot="Item1"
-                 id="Item.sturgia_2haxe_2_t5" />
+                 id="Item.sturgia_mace_2_t4" />
       <equipment slot="Item2"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item3"
@@ -10679,7 +10679,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_lance_1_t4" />
       <equipment slot="Item1"
-                 id="Item.sturgia_2haxe_2_t5" />
+                 id="Item.sturgia_mace_2_t4" />
       <equipment slot="Item2"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item3"
@@ -10703,7 +10703,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_lance_1_t4" />
       <equipment slot="Item1"
-                 id="Item.sturgia_2haxe_2_t5" />
+                 id="Item.sturgia_mace_2_t4" />
       <equipment slot="Item2"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item3"
@@ -10761,7 +10761,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_lance_2_t5" />
       <equipment slot="Item1"
-                 id="Item.sturgia_2haxe_2_t5" />
+                 id="Item.sturgia_mace_2_t4" />
       <equipment slot="Item2"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item3"
@@ -10785,7 +10785,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_lance_2_t5" />
       <equipment slot="Item1"
-                 id="Item.sturgia_2haxe_2_t5" />
+                 id="Item.sturgia_mace_2_t4" />
       <equipment slot="Item2"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item3"
@@ -10809,7 +10809,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_lance_2_t5" />
       <equipment slot="Item1"
-                 id="Item.sturgia_2haxe_2_t5" />
+                 id="Item.sturgia_mace_2_t4" />
       <equipment slot="Item2"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item3"

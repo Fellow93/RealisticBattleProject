@@ -244,7 +244,8 @@ xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_WS_crafting_pieces.xml" "$(SolutionD
 xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_WS_unit_overhaul.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_WS_CraftingTemplates.xslt" "$(SolutionDir)..\RBM\ModuleData\XSLT\"
 xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_WS_WeaponDescriptions.xslt" "$(SolutionDir)..\RBM\ModuleData\XSLT\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_WS_custom_battle.xml" "$(SolutionDir)..\RBM\ModuleData\"</PostBuildEvent>
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_WS_custom_battle.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_WS_Weapons.xml" "$(SolutionDir)..\RBM\ModuleData\"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>

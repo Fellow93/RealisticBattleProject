@@ -476,9 +476,6 @@
         <xsl:attribute name="id">nord_spear_pommel_7</xsl:attribute>
       </xsl:element>
       <xsl:element name="AvailablePiece">
-        <xsl:attribute name="id">nord_spear_blade_13</xsl:attribute>
-      </xsl:element>
-      <xsl:element name="AvailablePiece">
         <xsl:attribute name="id">nord_spear_blade_2_blunt</xsl:attribute>
       </xsl:element>
       <xsl:element name="AvailablePiece">
