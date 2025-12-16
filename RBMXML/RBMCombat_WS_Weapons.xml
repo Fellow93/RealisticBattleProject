@@ -1,0 +1,235 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Items>
+<!--RBM_XML_TAG-->
+<!--RBM_COMBAT_XML_TAG-->
+<!--RBM_WS_XML_TAG-->
+
+	<!--<Item
+		id="northman_raider_weapon"
+		name="northman_raider_weapon"
+		mesh="northman_raider_armor"
+		culture="Culture.aserai"
+		weight="1.6"
+		appearance="1"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="2"
+				leg_armor="2"
+				arm_armor="1"
+				has_gender_variations="true"
+				covers_body="true"
+				modifier_group="cloth_unarmoured"
+				material_type="Cloth" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true"
+			Civilian="false" />
+	</Item>-->
+	<CraftedItem
+		id="berserkr_axe"
+		name="{=j18j5Qq6}Berserkr Axe"
+		crafting_template="TwoHandedAxe">
+		<Pieces>
+			<Piece
+				id="coh_axe_head_1"
+				Type="Blade" />
+			<Piece
+				id="naval_axe_handle02"
+				Type="Handle"
+				scale_factor="110" />
+		</Pieces>
+		<!-- Length: 88 Weight: 0.93 -->
+	</CraftedItem>
+	<CraftedItem
+		id="nord_long_two_handed_t6"
+		name="{=VAl57s9g}Swift Wing Axe"
+		crafting_template="TwoHandedAxe"
+		culture="Culture.nord"
+		modifier_group="axe">
+		<Pieces>
+			<Piece
+				id="naval_axe_head_08_2"
+				Type="Blade"
+				scale_factor="90" />
+			<Piece
+				id="naval_axe_handle12_2"
+				Type="Handle"
+				scale_factor="140" />
+		</Pieces>
+	</CraftedItem>
+
+	<CraftedItem
+		id="nord_twohanded_axe_1_t3"
+		name="{=BTjW1WU1}Nord Axe"
+		culture="Culture.nord"
+		crafting_template="TwoHandedAxe">
+		<Pieces>
+			<Piece
+				id="naval_axe_head_03"
+				Type="Blade" />
+			<Piece
+				id="naval_axe_handle12"
+				Type="Handle" 
+				scale_factor="130" />
+			<Piece
+				id="default_polearm_pommel"
+				Type="Pommel" />
+		</Pieces>
+		<!-- Length: 100 Weight: 1.68 -->
+	</CraftedItem>
+	<CraftedItem
+		id="nord_twohanded_axe_2_t4"
+		name="{=dQgzH73b}Hollowed Wing Axe"
+		culture="Culture.nord"
+		crafting_template="TwoHandedAxe">
+		<Pieces>
+			<Piece
+				id="naval_axe_head_07"
+				Type="Blade" />
+			<Piece
+				id="naval_axe_handle05"
+				Type="Handle" 
+				scale_factor="130"/>
+			<Piece
+				id="default_polearm_pommel"
+				Type="Pommel" />
+		</Pieces>
+		<!-- Length: 89 Weight: 1.48 -->
+	</CraftedItem>
+	<CraftedItem
+		id="nord_twohanded_axe_3_t5"
+		name="{=qX8OuuUy}Reinforced Ravens Wing Axe"
+		culture="Culture.nord"
+		crafting_template="TwoHandedAxe">
+		<Pieces>
+			<Piece
+				id="naval_axe_head_08"
+				Type="Blade" />
+			<Piece
+				id="axe_craft_4_handle"
+				Type="Handle" 
+				scale_factor="130" />
+			<Piece
+				id="default_polearm_pommel"
+				Type="Pommel" />
+		</Pieces>
+		<!-- Length: 128 Weight: 1.35 -->
+	</CraftedItem>
+	<CraftedItem
+		id="nord_twohanded_axe_4_t5"
+		name="{=CHIq1ODq}Ravens Wing Axe"
+		culture="Culture.nord"
+		crafting_template="TwoHandedAxe">
+		<Pieces>
+			<Piece
+				id="naval_axe_head_08"
+				Type="Blade" />
+			<Piece
+				id="axe_craft_1_handle"
+				Type="Handle"
+				scale_factor="130" />
+			<Piece
+				id="default_polearm_pommel"
+				Type="Pommel" />
+		</Pieces>
+		<!-- Length: 129 Weight: 1.26 -->
+	</CraftedItem>
+	<CraftedItem
+		id="nord_twohanded_axe_5_t4"
+		name="{=cQPMKMvU}Reinforced Hollowed Wing Axe"
+		culture="Culture.nord"
+		crafting_template="TwoHandedAxe">
+		<Pieces>
+			<Piece
+				id="naval_axe_head_07"
+				Type="Blade" />
+			<Piece
+				id="axe_craft_10_handle"
+				Type="Handle" 
+				scale_factor="130" />
+			<Piece
+				id="default_polearm_pommel"
+				Type="Pommel" />
+		</Pieces>
+		<!-- Length: 107 Weight: 1.46 -->
+	</CraftedItem>
+	<CraftedItem
+		id="nord_twohanded_axe_6_t4"
+		name="{=qxDt8gnY}Reinforced Nord Axe"
+		culture="Culture.nord"
+		crafting_template="TwoHandedAxe">
+		<Pieces>
+			<Piece
+				id="naval_axe_head_03"
+				Type="Blade" />
+			<Piece
+				id="axe_craft_4_handle"
+				Type="Handle" 
+				scale_factor="130" />
+			<Piece
+				id="default_polearm_pommel"
+				Type="Pommel" />
+		</Pieces>
+		<!-- Length: 126 Weight: 1.54 -->
+	</CraftedItem>
+
+	<CraftedItem
+		id="nord_2haxe_blunt"
+		name="{=HZzitkbA}Nord Hollow Two Handed Axe"
+		crafting_template="TwoHandedAxe"
+		is_merchandise="false"
+		culture="Culture.nord"
+		has_modifier="false">
+		<Pieces>
+			<Piece
+				id="naval_axe_head_07_blunt"
+				Type="Blade"
+				scale_factor="100" />
+			<Piece
+				id="naval_axe_handle05"
+				Type="Handle"
+				scale_factor="130" />
+		</Pieces>
+	</CraftedItem>
+
+	<!-- END Tournament_weapons -->
+	<!-- Tournament Elite Reward Weapons -->
+	<CraftedItem
+		id="head_breaker_2haxe"
+		name="{=6JDP59hC}Head Breaker"
+		crafting_template="TwoHandedAxe"
+		is_merchandise="false">
+		<Pieces>
+			<Piece
+				id="naval_axe_head_08"
+				Type="Blade" />
+			<Piece
+				id="naval_axe_handle12"
+				Type="Handle" 
+				scale_factor="130" />
+		</Pieces>
+		<!-- Length: 100 Weight: 1.48 -->
+	</CraftedItem>
+	<!-- END Tournament Elite Reward Weapons -->
+	<!-- END Tournament Elite Reward Weapons -->
+	<!-- Coh weapons -->
+	<CraftedItem
+		id="barghasts_great_axe"
+		name="{=EvQfwcbG}Barghasts Great Axe"
+		crafting_template="TwoHandedAxe">
+		<Pieces>
+			<Piece
+				id="coh_axe_head_1"
+				Type="Blade" />
+			<Piece
+				id="coh_axe_handle_1"
+				Type="Handle"
+				scale_factor="125" />
+			<Piece
+				id="coh_axe_pommel_1"
+				Type="Pommel" />
+		</Pieces>
+		<!-- Length: 119 Weight: 1.31 -->
+	</CraftedItem>
+</Items>
