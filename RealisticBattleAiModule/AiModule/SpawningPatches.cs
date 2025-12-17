@@ -46,12 +46,41 @@ namespace RBMAI.AiModule
                             {
                                 return true;
                             }
-                            WorldPosition tempWorldPosition = Mission.Current.GetClosestFleePositionForFormation(formation);
-                            Vec2 tempPos = tempWorldPosition.AsVec2;
+                            WorldPosition tempWorldPosition = agentTeam.GetMedianPosition(agentTeam.GetAveragePosition());
+                            Vec2 playerDirection;
+                            Vec3 spawnPosition = tempWorldPosition.GetGroundVec3MT();
+                            Vec3 closestBoundaryPosition = __instance.DeploymentPlan.GetClosestDeploymentBoundaryPosition(agentTeam, tempWorldPosition.AsVec2).ToVec3();
+                            MBReadOnlyList<FleePosition> fleePositions = __instance.GetFleePositionsForSide(BattleSideEnum.Defender);
+                            fleePositions.AddRange(__instance.GetFleePositionsForSide(BattleSideEnum.Attacker));
+                            fleePositions.AddRange(__instance.GetFleePositionsForSide(BattleSideEnum.None));
+                            float minDistance = 10000f;
+                            foreach (var position in fleePositions)
+                            {
+                                float distance = position.GameEntity.GlobalPosition.Distance(closestBoundaryPosition);
+                                if (distance == -1f)
+                                {
+                                    distance = minDistance;
+                                }
+                                else
+                                {
+                                    if (distance < minDistance)
+                                    {
+                                        minDistance = distance;
+                                        spawnPosition = position.GameEntity.GlobalPosition;
+                                    }
+                                }
+
+                            }
+                            Vec2 tempPos = spawnPosition.AsVec2;
                             tempPos.x = tempPos.x + MBRandom.RandomInt(20);
                             tempPos.y = tempPos.y + MBRandom.RandomInt(20);
 
-                            initialPosition = Mission.Current.DeploymentPlan?.GetClosestDeploymentBoundaryPosition(agentTeam, tempPos).ToVec3();
+                            if (!__instance.IsPositionInsideHardBoundaries(tempPos))
+                            {
+                                tempPos = spawnPosition.AsVec2;
+                            }
+
+                            initialPosition = tempPos.ToVec3();
                             initialDirection = tempPos - formation.CurrentPosition;
                         }
                     }

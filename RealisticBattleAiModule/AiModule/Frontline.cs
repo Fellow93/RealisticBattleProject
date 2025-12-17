@@ -390,7 +390,7 @@ namespace RBMAI
 
                         int findAlly = enemiesFront.Count() - alliesLeft.Count() - alliesRight.Count() - alliesFront.Count();
                         int fallback = (int)(alliesFront.Count() * 1.5f) + enemiesFront.Count();
-                        int attack = -(int)(alliesFront.Count() * 2.5f) + alliesLeft.Count() + alliesRight.Count() - enemiesFront.Count() + Math.Max(0, 3 - (unitTier - 1)) + (isSoldier ? 0 : 2);
+                        int attack = -(int)(alliesFront.Count() * 2.5f) + alliesLeft.Count() + alliesRight.Count() - (int)(enemiesFront.Count() * 1.5f) + Math.Max(0, 3 - (unitTier)) + (isSoldier ? 0 : 2);
                         int flankAllyLeft = (int)(alliesFront.Count() * 1.5f) + alliesRight.Count() - enemiesFront.Count();
                         int flankAllyRight = (int)(alliesFront.Count() * 1.5f) + alliesLeft.Count() - enemiesFront.Count();
 
