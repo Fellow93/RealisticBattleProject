@@ -1406,12 +1406,13 @@ namespace RBMAI
                 if (__instance == null ||
                     __instance.IsDeployment ||
                     __instance.QuerySystem == null ||
+                    Mission.Current == null ||
                     input == null
                     )
                 {
                     return true;
                 }
-                if (input.OrderType == OrderType.Charge)
+                if (Mission.Current.IsFieldBattle && input.OrderType == OrderType.Charge)
                 {
                     if (__instance.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                     {
