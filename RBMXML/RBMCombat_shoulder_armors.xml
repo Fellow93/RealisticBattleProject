@@ -4,21 +4,21 @@
 <!--RBM_COMBAT_XML_TAG-->
 	<Item id="a_battania_cloak_a" name="{=Jm3AiUo3}Simple Cape" mesh="battania_cloak_a" culture="Culture.battania" weight="0.5" appearance="3" Type="Cape">
 		<ItemComponent>
-			<Armor body_armor="6" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor body_armor="6" modifier_group="cloth_unarmoured" material_type="Cloth" stealth_factor="5"/>
 		</ItemComponent>
-		<Flags Civilian="true" UseTeamColor="true"/>
+		<Flags Civilian="true" UseTeamColor="true" Stealth="true" />
 	</Item>
 	<Item id="battania_civil_cloak" name="{=e6WOD7Ra}Fringed Cape" mesh="battania_civil_cloak" culture="Culture.battania" weight="1" appearance="4" Type="Cape" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="6" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor body_armor="6" modifier_group="cloth_unarmoured" material_type="Cloth" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Stealth="true" />
 	</Item>
 	<Item id="battania_cloak" name="{=NZjbiEXg}Tartan Cloak" mesh="battania_cloak" culture="Culture.battania" weight="0.5" appearance="2" Type="Cape">
 		<ItemComponent>
-			<Armor body_armor="6" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor body_armor="6" modifier_group="cloth_unarmoured" material_type="Cloth" stealth_factor="5"/>
 		</ItemComponent>
-		<Flags Civilian="true" UseTeamColor="true"/>
+		<Flags Civilian="true" UseTeamColor="true" Stealth="true"/>
 	</Item>
 	<Item id="female_hood" name="{=FItBDuqh}Cotton Hood" mesh="female_peasant_cape_a" culture="Culture.neutral_culture" weight="0.5" appearance="1" Type="Cape">
 		<ItemComponent>
@@ -28,9 +28,9 @@
 	</Item>
 	<Item id="scarf" name="{=GNdVXMue}Scarf" mesh="sturgia_cape_a" culture="Culture.neutral_culture" weight="0.5" appearance="3" Type="Cape" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="6" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor body_armor="6" modifier_group="cloth_unarmoured" material_type="Cloth" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags Civilian="true" UseTeamColor="true"/>
+		<Flags Civilian="true" UseTeamColor="true" Stealth="true"/>
 	</Item>
 	<Item id="southern_shawl" name="{=1EhlbySK}Short Cloak" mesh="aserai_female_costume_cloak" culture="Culture.neutral_culture" weight="0.4" appearance="4" Type="Cape">
 		<ItemComponent>
@@ -40,21 +40,21 @@
 	</Item>
 	<Item id="wrapped_scarf" name="{=h1bcf5zn}Shawl" mesh="aserai_shoulder_a" culture="Culture.neutral_culture" weight="0.5" appearance="2" Type="Cape" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="6" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor body_armor="6" modifier_group="cloth_unarmoured" material_type="Cloth" stealth_factor="5"/>
 		</ItemComponent>
-		<Flags Civilian="true" UseTeamColor="true"/>
+		<Flags Civilian="true" UseTeamColor="true" Stealth="true"/>
 	</Item>
 	<Item id="battania_civil_cape" name="{=5uqExwWb}Woodland Fur Cloak" mesh="battania_civil_cape" culture="Culture.battania" weight="1.5" appearance="3" Type="Cape" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="7" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor body_armor="7" modifier_group="cloth_unarmoured" material_type="Cloth" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags/>
+		<Flags Stealth="true" />
 	</Item>
 	<Item id="green_hood" name="{=UvOa4elc}Green Hood" mesh="shoulder_cape_a" culture="Culture.vlandia" weight="0.5" appearance="3" Type="Cape" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="7" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor body_armor="7" modifier_group="cloth_unarmoured" material_type="Cloth" stealth_factor="5"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="a_brass_lamellar_shoulder_a" name="{=NuWovN18}Bronze Lamellar Shoulder Guards" mesh="brass_lamellar_shoulder_a" culture="Culture.khuzait" weight="1" appearance="4" Type="Cape">
 		<ItemComponent>
@@ -64,9 +64,9 @@
 	</Item>
 	<Item id="female_scarf" name="{=HJdIkdm2}Thick Scarf" mesh="female_peasant_cape_b" culture="Culture.neutral_culture" weight="0.6" appearance="2" Type="Cape">
 		<ItemComponent>
-			<Armor body_armor="8" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor body_armor="8" modifier_group="cloth_unarmoured" material_type="Cloth" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags Civilian="true" UseTeamColor="true"/>
+		<Flags Civilian="true" UseTeamColor="true" Stealth="true"/>
 	</Item>
 	<Item id="desert_fabric_shoulderpad" name="{=EyQTfFS6}Woven Shoulder Pad" mesh="aserai_bigchain_shoulder_fabric" culture="Culture.neutral_culture" weight="1.8" appearance="2" Type="Cape">
 		<ItemComponent>
@@ -76,9 +76,9 @@
 	</Item>
 	<Item id="hood" name="{=lbVB6KPl}Hood" mesh="shoulder_cape_multicolor" culture="Culture.vlandia" weight="0.4" appearance="4" Type="Cape" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="9" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor body_armor="9" modifier_group="cloth_unarmoured" material_type="Cloth" stealth_factor="5"/>
 		</ItemComponent>
-		<Flags Civilian="true" UseTeamColor="true"/>
+		<Flags Civilian="true" UseTeamColor="true" Stealth="true" />
 	</Item>
 	<Item id="a_brass_lamellar_shoulder_white_a" name="{=QlpyR6uc}Lamellar Shoulder Guards" mesh="brass_lamellar_shoulder_white_a" culture="Culture.sturgia" weight="1" appearance="5" Type="Cape">
 		<ItemComponent>
@@ -100,9 +100,9 @@
 	</Item>
 	<Item id="battanian_leather_shoulder_a" name="{=ICsecuVv}Cured Leather Shoulder Pieces" mesh="battanian_leather_shoulder_a" culture="Culture.battania" weight="1.2" appearance="3" Type="Cape" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="12" modifier_group="leather" material_type="Leather"/>
+			<Armor body_armor="12" modifier_group="leather" material_type="Leather" stealth_factor="5"/>
 		</ItemComponent>
-		<Flags/>
+		<Flags Stealth="true" />
 	</Item>
 	<Item id="empire_cape_a" name="{=KQ9h5eAe}Heavy Cloak" mesh="empire_cape_a" culture="Culture.neutral_culture" weight="0.5" appearance="3" Type="Cape" subtype="body_armor" difficulty="0">
 		<ItemComponent>
@@ -112,9 +112,9 @@
 	</Item>
 	<Item id="desert_leather_shoulderpad" name="{=9w40yGlZ}Leather Shoulder Guard" mesh="aserai_bigchain_shoulder" culture="Culture.neutral_culture" weight="1.8" appearance="3" Type="Cape">
 		<ItemComponent>
-			<Armor body_armor="13" modifier_group="leather" material_type="Leather"/>
+			<Armor body_armor="13" modifier_group="leather" material_type="Leather" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags/>
+		<Flags Stealth="true" />
 	</Item>
 	<Item id="leopard_pelt" name="{=QxzcuhmA}Leopard Pelt" mesh="leopard_pelt" culture="Culture.aserai" weight="2" appearance="7" Type="Cape">
 		<ItemComponent>
@@ -130,9 +130,9 @@
 	</Item>
 	<Item id="battania_scarf_a" name="{=ectdzWNx}Heavy Tartan Scarf" mesh="battania_scarf_a" culture="Culture.battania" weight="0.55" appearance="1.5" Type="Cape" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="13" modifier_group="cloth_unarmoured" material_type="Cloth"/>
+			<Armor body_armor="13" modifier_group="cloth_unarmoured" material_type="Cloth" stealth_factor="5"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Stealth="true"/>
 	</Item>
 	<Item id="a_khuzait_leather_shoulder_b_b" name="{=Q19xluDy}Reinforced Studded Neckguard" mesh="khuzait_leather_shoulder_b_b" culture="Culture.khuzait" weight="2.3" appearance="6" Type="Cape">
 		<ItemComponent>
@@ -142,9 +142,9 @@
 	</Item>
 	<Item id="battania_cloak_b" name="{=lVtoBMhp}Tartan Cape" mesh="battania_cloak_b" culture="Culture.battania" weight="3.2" appearance="3" Type="Cape" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="14" modifier_group="cloth" material_type="Cloth"/>
+			<Armor body_armor="14" modifier_group="cloth" material_type="Cloth" stealth_factor="10" />
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Stealth="true" />
 	</Item>
 	<Item id="battania_shoulder_strap" name="{=y1YTxkmn}Shoulder Harness" mesh="battania_shoulder_strap" culture="Culture.battania" weight="1" appearance="3" Type="Cape">
 		<ItemComponent>
@@ -160,9 +160,9 @@
 	</Item>
 	<Item id="stitched_leather_shoulders" name="{=WrwO8xsN}Stitched Leather Shoulders" mesh="aserai_plated_shoulder" culture="Culture.sturgia" weight="1.5" appearance="3" Type="Cape">
 		<ItemComponent>
-			<Armor body_armor="14" modifier_group="leather" material_type="Leather"/>
+			<Armor body_armor="14" modifier_group="leather" material_type="Leather" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags/>
+		<Flags Stealth="true" />
 	</Item>
 	<Item id="a_aserai_scale_b_shoulder_b" name="{=U0zBG3F9}Scale Pauldrons" mesh="aserai_scale_b_shoulder_b" culture="Culture.aserai" weight="2" appearance="5" Type="Cape">
 		<ItemComponent>
@@ -196,9 +196,9 @@
 	</Item>
 	<Item id="battania_woodland_cloak" name="{=hjYFbvcy}Woodland Cape" mesh="battania_woodland_cloak" culture="Culture.battania" weight="1.4" appearance="3" Type="Cape" subtype="body_armor" difficulty="0">
 		<ItemComponent>
-			<Armor body_armor="15" modifier_group="leather" material_type="Leather" arm_armor="0"/>
+			<Armor body_armor="15" modifier_group="leather" material_type="Leather" arm_armor="0" stealth_factor="5" />
 		</ItemComponent>
-		<Flags/>
+		<Flags Stealth="true" />
 	</Item>
 	<Item id="battania_shoulder_strap_cloak" name="{=vRBg9ICF}Tartan Shoulder Harness" mesh="battania_shoulder_strap_cloak" culture="Culture.battania" weight="1.3" appearance="4" Type="Cape">
 		<ItemComponent>

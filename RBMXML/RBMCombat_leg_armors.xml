@@ -16,9 +16,9 @@
 	</Item>
 	<Item id="leather_shoes" name="{=Kgnm0FkE}Leather Shoes" mesh="boot_e" culture="Culture.neutral_culture" weight="0.7" appearance="0.3" Type="LegArmor" difficulty="0">
 		<ItemComponent>
-			<Armor leg_armor="19" covers_legs="true" modifier_group="leather" material_type="Leather"/>
+			<Armor leg_armor="19" covers_legs="true" modifier_group="leather" material_type="Leather" stealth_factor="5"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="fine_town_boots" name="{=uUGAMReu}Fine Town Boots" mesh="casual_02_boots" culture="Culture.empire" weight="0.5" appearance="2" Type="LegArmor">
 		<ItemComponent>
@@ -34,15 +34,15 @@
 	</Item>
 	<Item id="strapped_shoes" name="{=LOPavWRp}Strapped Shoes" mesh="strapped_shoes" culture="Culture.neutral_culture" weight="0.7" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
-			<Armor leg_armor="22" covers_legs="true" modifier_group="cloth" material_type="Cloth"/>
+			<Armor leg_armor="22" covers_legs="true" modifier_group="cloth" material_type="Cloth" stealth_factor="5"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="sturgia_boots_c" name="{=4KZekKff}Tied Boots" mesh="sturgia_boots_c" culture="Culture.sturgia" weight="1.2" appearance="1" Type="LegArmor">
 		<ItemComponent>
-			<Armor leg_armor="23" covers_legs="true" modifier_group="leather" material_type="Leather"/>
+			<Armor leg_armor="23" covers_legs="true" modifier_group="leather" material_type="Leather" stealth_factor="15"/>
 		</ItemComponent>
-		<Flags Civilian="true" UseTeamColor="true"/>
+		<Flags Civilian="true" UseTeamColor="true" Stealth="true"/>
 	</Item>
 	<Item id="folded_town_boots" name="{=oH8iFEv7}Folded Town Boots" mesh="casual_01_boots" culture="Culture.empire" weight="1" appearance="1" Type="LegArmor">
 		<ItemComponent>
@@ -58,15 +58,15 @@
 	</Item>
 	<Item id="ragged_boots" name="{=Szuxa9Bs}Ragged Boots" mesh="sneak_costume_foot" culture="Culture.neutral_culture" weight="0.8" appearance="0.3" Type="LegArmor" difficulty="0">
 		<ItemComponent>
-			<Armor leg_armor="26" covers_legs="true" modifier_group="cloth" material_type="Cloth"/>
+			<Armor leg_armor="26" covers_legs="true" modifier_group="cloth" material_type="Cloth" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="highland_boots" name="{=FQqaVHq2}Forester Boots" mesh="pict_armor_boot" culture="Culture.battania" weight="1" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
-			<Armor leg_armor="26" covers_legs="true" modifier_group="leather" material_type="Leather"/>
+			<Armor leg_armor="26" covers_legs="true" modifier_group="leather" material_type="Leather" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="sturgia_boots_a" name="{=DhHBBpPf}Simple Leather Boots" mesh="sturgia_boots_a" culture="Culture.sturgia" weight="1.55" appearance="1" Type="LegArmor">
 		<ItemComponent>
@@ -76,9 +76,9 @@
 	</Item>
 	<Item id="battania_woodland_boots" name="{=L7qYlJqn}Woodland Boots" mesh="battania_woodland_boots" culture="Culture.battania" weight="1" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
-			<Armor leg_armor="28" covers_legs="true" modifier_group="leather" material_type="Leather"/>
+			<Armor leg_armor="28" covers_legs="true" modifier_group="leather" material_type="Leather" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="khuzait_curved_boots" name="{=D9JrTpwU}Curved Boots" mesh="khuzait_leather_boots" culture="Culture.khuzait" weight="0.9" appearance="1" Type="LegArmor">
 		<ItemComponent>
@@ -106,21 +106,21 @@
 	</Item>
 	<Item id="steppe_leather_boots" name="{=VpxHysbZ}Sturdy Leather Boots" mesh="khuzait_leather_armor_foot" culture="Culture.khuzait" weight="0.8" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
-			<Armor leg_armor="29" covers_legs="true" modifier_group="leather" material_type="Leather"/>
+			<Armor leg_armor="29" covers_legs="true" modifier_group="leather" material_type="Leather" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="sturgia_boots_b" name="{=6QNQosHv}Tied Leather Boots" mesh="sturgia_boots_b" culture="Culture.sturgia" weight="1.8" appearance="1" Type="LegArmor">
 		<ItemComponent>
-			<Armor leg_armor="29" covers_legs="true" modifier_group="leather" material_type="Leather"/>
+			<Armor leg_armor="29" covers_legs="true" modifier_group="leather" material_type="Leather" stealth_factor="15"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true" />
 	</Item>
 	<Item id="highland_leg_wrappings" name="{=xqE9aycc}Woodland Leg Wrappings" mesh="battania_boot_a" culture="Culture.battania" weight="1" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
-			<Armor leg_armor="30" covers_legs="true" modifier_group="cloth" material_type="Cloth"/>
+			<Armor leg_armor="30" covers_legs="true" modifier_group="cloth" material_type="Cloth" stealth_factor="5"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="strapped_leather_boots" name="{=tMwsE9IR}Strapped Leather Boots" mesh="boot_g" culture="Culture.empire" weight="0.9" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
@@ -130,9 +130,9 @@
 	</Item>
 	<Item id="rough_tied_boots" name="{=Oo0baNaq}Rough Tied Boots" mesh="bandit_3_boot" culture="Culture.battania" weight="0.9" appearance="1" Type="LegArmor">
 		<ItemComponent>
-			<Armor leg_armor="30" covers_legs="true" modifier_group="leather" material_type="Leather"/>
+			<Armor leg_armor="30" covers_legs="true" modifier_group="leather" material_type="Leather" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="woven_leather_boots" name="{=J00AF9Qv}Woven Leather Boots" mesh="bandit_10_boots" culture="Culture.khuzait" weight="0.7" appearance="1" Type="LegArmor">
 		<ItemComponent>
@@ -142,9 +142,9 @@
 	</Item>
 	<Item id="leather_boots" name="{=IOOTPpYj}Fur Rimmed Curved Boots" mesh="boot_f" culture="Culture.khuzait" weight="0.8" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
-			<Armor leg_armor="30" covers_legs="true" modifier_group="leather" material_type="Leather"/>
+			<Armor leg_armor="30" covers_legs="true" modifier_group="leather" material_type="Leather" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="battania_leather_boots" name="{=4Ygp7P0Y}Highborn Leather Boots" mesh="battania_leather_boots_a" culture="Culture.battania" weight="1" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
@@ -160,9 +160,9 @@
 	</Item>
 	<Item id="wrapped_leather_boots" name="{=WahziEXA}Wrapped Leather Boots" mesh="bandit_leather_boots" culture="Culture.battania" weight="1" appearance="1" Type="LegArmor">
 		<ItemComponent>
-			<Armor leg_armor="33" covers_legs="true" modifier_group="leather" material_type="Leather"/>
+			<Armor leg_armor="33" covers_legs="true" modifier_group="leather" material_type="Leather" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="battania_fur_boots" name="{=jVK5B86k}Fur Boots" mesh="battania_fur_boot_a" culture="Culture.battania" weight="1.5" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>
@@ -172,9 +172,9 @@
 	</Item>
 	<Item id="wrapped_shoes" name="{=4YxbZlbi}Wrapped Shoes" mesh="wrapped_shoes" culture="Culture.aserai" weight="0.8" appearance="1" Type="LegArmor">
 		<ItemComponent>
-			<Armor leg_armor="35" covers_legs="true" modifier_group="cloth" material_type="Cloth"/>
+			<Armor leg_armor="35" covers_legs="true" modifier_group="cloth" material_type="Cloth" stealth_factor="15"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="reinforced_suede_boots" name="{=9Eyd2qGo}Reinforced Suede Boots" mesh="khuzait_suede_leather_foot" culture="Culture.khuzait" weight="1" appearance="1" Type="LegArmor" difficulty="0">
 		<ItemComponent>

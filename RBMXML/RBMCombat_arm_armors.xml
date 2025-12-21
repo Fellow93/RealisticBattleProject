@@ -12,20 +12,20 @@
 		<ItemComponent>
 			<Armor arm_armor="22" modifier_group="cloth" material_type="Cloth"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="ragged_armwraps" name="{=jIwjYOVj}Ragged Armwraps" mesh="sneak_costume_hand" culture="Culture.battania" weight="0.4" appearance="0.3" Type="HandArmor" difficulty="0">
 		<ItemComponent>
-			<Armor arm_armor="22" modifier_group="cloth" material_type="Cloth" covers_hands="false"/>
+			<Armor arm_armor="22" modifier_group="cloth" material_type="Cloth" covers_hands="false" stealth_factor="5"/>
 		</ItemComponent>
 		<Flags Civilian="true"
 		       UseTeamColor="true"/>
 	</Item>
 	<Item id="leather_gloves" name="{=lIJ1EVBh}Leather Gloves" mesh="crossbow_armor_hand" culture="Culture.neutral_culture" weight="0.4" appearance="1" Type="HandArmor">
 		<ItemComponent>
-			<Armor arm_armor="24" modifier_group="leather" material_type="Leather" covers_hands="true"/>
+			<Armor arm_armor="24" modifier_group="leather" material_type="Leather" covers_hands="true" stealth_factor="5"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="buttoned_leather_bracers" name="{=iD0ePqi7}Buttoned Leather Bracers" mesh="bandit_leather_wristbands" culture="Culture.battania" weight="0.5" appearance="1" Type="HandArmor">
 		<ItemComponent>
@@ -41,15 +41,15 @@
 	</Item>
 	<Item id="eastern_wrapped_armguards" name="{=b2EDkbhD}Wrapped Armguards" mesh="plated_leather_armor_glove_a" culture="Culture.khuzait" weight="0.3" appearance="1" Type="HandArmor">
 		<ItemComponent>
-			<Armor arm_armor="25" modifier_group="cloth" material_type="Cloth" covers_hands="false"/>
+			<Armor arm_armor="25" modifier_group="cloth" material_type="Cloth" covers_hands="false" stealth_factor="5"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true" />
 	</Item>
 	<Item id="guarded_armwraps" name="{=a1BGHdaU}Guarded Armwraps" mesh="battania_armwraps_b" culture="Culture.battania" weight="0.4" appearance="0.4" Type="HandArmor" difficulty="0">
 		<ItemComponent>
-			<Armor arm_armor="25" modifier_group="cloth" material_type="Cloth"/>
+			<Armor arm_armor="25" modifier_group="cloth" material_type="Cloth" stealth_factor="5"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="studded_vambraces" name="{=8uBew3nD}Studded Vambraces" mesh="bandit_1_wristband" culture="Culture.khuzait" weight="0.7" appearance="1" Type="HandArmor" difficulty="0">
 		<ItemComponent>
@@ -59,15 +59,15 @@
 	</Item>
 	<Item id="strapped_leather_bracers" name="{=DOYS7dmq}Strapped Leather Bracers" mesh="bandit_10_wristband" culture="Culture.battania" weight="0.5" appearance="0.4" Type="HandArmor">
 		<ItemComponent>
-			<Armor arm_armor="25" modifier_group="leather" material_type="Leather" covers_hands="false"/>
+			<Armor arm_armor="25" modifier_group="leather" material_type="Leather" covers_hands="false" stealth_factor="5"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="padded_vambrace" name="{=MamotK0a}Padded Vambraces" mesh="padded_vambrace_a" culture="Culture.neutral_culture" weight="0.1" appearance="1" Type="HandArmor" difficulty="0">
 		<ItemComponent>
-			<Armor arm_armor="26" modifier_group="cloth" material_type="Cloth"/>
+			<Armor arm_armor="26" modifier_group="cloth" material_type="Cloth" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags/>
+		<Flags Stealth="true" />
 	</Item>
 	<Item id="woven_leather_bracers" name="{=fUmehyHq}Woven Leather Bracers" mesh="vlandia_leather_stripes_bracers" culture="Culture.empire" weight="0.8" appearance="1" Type="HandArmor">
 		<ItemComponent>
@@ -77,15 +77,15 @@
 	</Item>
 	<Item id="guarded_padded_vambrace" name="{=whvMZZba}Guarded Padded Vambraces" mesh="padded_vambrace_a_handguard" culture="Culture.aserai" weight="0.6" appearance="1" Type="HandArmor" difficulty="0">
 		<ItemComponent>
-			<Armor arm_armor="29" modifier_group="cloth" material_type="Cloth"/>
+			<Armor arm_armor="29" modifier_group="cloth" material_type="Cloth" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="highland_gloves" name="{=4HcrY0S2}Fur Rimmed Leather Gloves" mesh="pict_armor_glove" culture="Culture.battania" weight="0.8" appearance="1" Type="HandArmor" difficulty="0">
 		<ItemComponent>
-			<Armor arm_armor="30" modifier_group="leather" material_type="Leather" covers_hands="true"/>
+			<Armor arm_armor="30" modifier_group="leather" material_type="Leather" covers_hands="true" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags Civilian="true"/>
+		<Flags Civilian="true" Stealth="true" />
 	</Item>
 	<Item id="padded_mitten" name="{=J3YHMkL3}Padded Mittens" mesh="padded_vambrace_a_mitten" culture="Culture.empire" weight="0.6" appearance="1" Type="HandArmor" difficulty="0">
 		<ItemComponent>
@@ -143,9 +143,9 @@
 	</Item>
 	<Item id="eastern_plated_leather_vambraces" name="{=mvTueU1y}Plated Leather Vambraces" mesh="plated_leather_armor_glove_b" culture="Culture.khuzait" weight="1.7" appearance="1" Type="HandArmor">
 		<ItemComponent>
-			<Armor arm_armor="44" modifier_group="plate" material_type="Plate" covers_hands="false"/>
+			<Armor arm_armor="44" modifier_group="plate" material_type="Plate" covers_hands="false" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags/>
+		<Flags Stealth="true" />
 	</Item>
 	<Item id="mail_mitten" name="{=g51zVsKU}Mail Mittens" mesh="mail_mitten_c" culture="Culture.vlandia" weight="1.4" appearance="1.6" Type="HandArmor" difficulty="0">
 		<ItemComponent>

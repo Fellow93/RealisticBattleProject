@@ -574,9 +574,9 @@
 	</Item>
 	<Item id="battania_civil_b" name="{=qH5VV8In}Villager Leather Tunic" mesh="battania_civil_b" culture="Culture.battania" weight="0.4" Type="BodyArmor" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="13" leg_armor="11" covers_body="true" modifier_group="leather" material_type="Leather" arm_armor="7"/>
+			<Armor body_armor="13" leg_armor="11" covers_body="true" modifier_group="leather" material_type="Leather" arm_armor="7" stealth_factor="15"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
+		<Flags UseTeamColor="true" Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="khuzait_dress_b" name="{=NMSEAA4A}Dress with Fur" mesh="khuzait_dress_b" culture="Culture.khuzait" weight="0.9" Type="BodyArmor" appearance="1">
 		<ItemComponent>
@@ -712,9 +712,9 @@
 	</Item>
 	<Item id="gambeson_b" name="{=7b8Cwogx}Aketon" mesh="gambeson_b" culture="Culture.vlandia" weight="2" Type="BodyArmor" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="18" leg_armor="18" covers_body="true" modifier_group="cloth" material_type="Cloth" has_gender_variations="false" arm_armor="18"/>
+			<Armor body_armor="18" leg_armor="18" covers_body="true" modifier_group="cloth" material_type="Cloth" has_gender_variations="false" arm_armor="18" stealth_factor="5"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
+		<Flags UseTeamColor="true" Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="leather_coat_over_cloth" name="{=wKucIANJ}Leather Coat Over Cloth" mesh="walker_costume_b" culture="Culture.vlandia" weight="0.7" Type="BodyArmor" appearance="1" difficulty="0" subtype="body_armor" multiplayer_item="false">
 		<ItemComponent>
@@ -724,9 +724,9 @@
 	</Item>
 	<Item id="leather_tunic" name="{=ZqTFQeai}Leather Tunic" mesh="leather_tunic" culture="Culture.empire" weight="2.1" Type="BodyArmor" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="18" leg_armor="23" covers_body="true" modifier_group="leather" material_type="Leather" has_gender_variations="true" arm_armor="15"/>
+			<Armor body_armor="18" leg_armor="23" covers_body="true" modifier_group="leather" material_type="Leather" has_gender_variations="true" arm_armor="15" stealth_factor="15"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
+		<Flags UseTeamColor="true" Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="short_padded_robe" name="{=QzAvlan7}Short Padded Robe" mesh="sarranid_gambeson_v3" culture="Culture.aserai" weight="1" Type="BodyArmor" appearance="1" difficulty="0" subtype="body_armor" lod_atlas_index="11">
 		<ItemComponent>
@@ -772,21 +772,21 @@
 	</Item>
 	<Item id="battania_woodland_outfit" name="{=46orXtt0}Woodland Garments" mesh="battania_woodland_outfit" culture="Culture.battania" weight="1.2" Type="BodyArmor" appearance="1.2" difficulty="0" subtype="body_armor">
 		<ItemComponent>
-			<Armor body_armor="20" leg_armor="22" covers_body="true" modifier_group="leather" material_type="Leather" has_gender_variations="true" arm_armor="14"/>
+			<Armor body_armor="20" leg_armor="22" covers_body="true" modifier_group="leather" material_type="Leather" has_gender_variations="true" arm_armor="14" stealth_factor="15"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
+		<Flags UseTeamColor="true" Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="belted_leather_cuirass" name="{=CLYcnUra}Belted Leather Cuirass" mesh="bandit_11" culture="Culture.khuzait" weight="1.9" Type="BodyArmor" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="20" leg_armor="20" covers_body="true" modifier_group="leather" material_type="Leather" has_gender_variations="true" arm_armor="12"/>
+			<Armor body_armor="20" leg_armor="20" covers_body="true" modifier_group="leather" material_type="Leather" has_gender_variations="true" arm_armor="12" stealth_factor="5"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Stealth="true"/>
 	</Item>
 	<Item id="layered_leather_tunic" name="{=4KYF5iCd}Layered Leather Tunic" mesh="leather_tunic_2" culture="Culture.sturgia" weight="1.2" Type="BodyArmor" appearance="1" difficulty="0" subtype="body_armor">
 		<ItemComponent>
-			<Armor body_armor="20" leg_armor="21" covers_body="true" modifier_group="leather" material_type="Leather" arm_armor="14"/>
+			<Armor body_armor="20" leg_armor="21" covers_body="true" modifier_group="leather" material_type="Leather" arm_armor="14" stealth_factor="15"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
+		<Flags UseTeamColor="true" Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="long_padded_robe" name="{=0SsLGsXk}Long Padded Robe" mesh="sarranid_gambeson_v2" culture="Culture.aserai" weight="22.3" Type="BodyArmor" appearance="1" lod_atlas_index="10">
 		<ItemComponent>
@@ -796,9 +796,9 @@
 	</Item>
 	<Item id="rough_fur_armor" name="{=qo8hwDNU}Rough Fur Armor" mesh="bandit_3_a" culture="Culture.looters" weight="1.3" Type="BodyArmor" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="20" leg_armor="21" covers_body="true" modifier_group="leather" material_type="Leather" arm_armor="13"/>
+			<Armor body_armor="20" leg_armor="21" covers_body="true" modifier_group="leather" material_type="Leather" arm_armor="13" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Stealth="true"/>
 	</Item>
 	<Item id="khuzait_sturdy_armor" name="{=1WLiLoL5}Mirrored Leather Armor" mesh="khuzait_sturdy_armor" culture="Culture.khuzait" weight="2.4" Type="BodyArmor" appearance="1">
 		<ItemComponent>
@@ -814,9 +814,9 @@
 	</Item>
 	<Item id="khuzait_leather_stitched" name="{=z7oMeRl3}Thick Brigandine Vest" mesh="khuzait_leather_stitch_a" culture="Culture.empire" weight="2.5" Type="BodyArmor" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="22" leg_armor="22" covers_body="true" modifier_group="leather" material_type="Leather" has_gender_variations="false" arm_armor="10"/>
+			<Armor body_armor="22" leg_armor="22" covers_body="true" modifier_group="leather" material_type="Leather" has_gender_variations="false" arm_armor="10" stealth_factor="15"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
+		<Flags UseTeamColor="true" Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="empire_warrior_padded_armor_c" name="{=cEhDJAQp}Infantryman Gambeson with Skirts" mesh="empire_warrior_padded_armor_c" culture="Culture.empire" weight="2" Type="BodyArmor" appearance="1">
 		<ItemComponent>
@@ -850,15 +850,15 @@
 	</Item>
 	<Item id="woven_leather_vest" name="{=LgftnHPs}Woven Leather Vest" mesh="archers_leather_vest" culture="Culture.vlandia" weight="4.7" Type="BodyArmor" appearance="1" difficulty="0" subtype="body_armor">
 		<ItemComponent>
-			<Armor body_armor="22" leg_armor="18" covers_body="true" modifier_group="leather" material_type="Leather" has_gender_variations="true" arm_armor="12"/>
+			<Armor body_armor="22" leg_armor="18" covers_body="true" modifier_group="leather" material_type="Leather" has_gender_variations="true" arm_armor="12" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Stealth="true"/>
 	</Item>
 	<Item id="padded_short_coat" name="{=4pqIsPhp}Padded Short Coat" mesh="padded_coat_c" culture="Culture.vlandia" weight="2.2" Type="BodyArmor" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="23" leg_armor="19" covers_body="true" modifier_group="cloth" material_type="Cloth" has_gender_variations="true" arm_armor="18"/>
+			<Armor body_armor="23" leg_armor="19" covers_body="true" modifier_group="cloth" material_type="Cloth" has_gender_variations="true" arm_armor="18" stealth_factor="10"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Stealth="true"/>
 	</Item>
 	<Item id="sleeveless_padded_coat" name="{=lZ93DOrn}Sleeveless Padded Coat" mesh="padded_coat_b" culture="Culture.vlandia" weight="2.2" Type="BodyArmor" appearance="1" difficulty="0" subtype="body_armor">
 		<ItemComponent>
@@ -868,15 +868,15 @@
 	</Item>
 	<Item id="sleeveless_padded_short_coat" name="{=bz5lXkHS}Sleeveless Padded Short Coat" mesh="padded_coat_d" culture="Culture.vlandia" weight="2" Type="BodyArmor" appearance="1" difficulty="0" subtype="body_armor">
 		<ItemComponent>
-			<Armor body_armor="23" leg_armor="20" covers_body="true" modifier_group="cloth" material_type="Cloth" has_gender_variations="true" arm_armor="10"/>
+			<Armor body_armor="23" leg_armor="20" covers_body="true" modifier_group="cloth" material_type="Cloth" has_gender_variations="true" arm_armor="10" stealth_factor="15"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
+		<Flags UseTeamColor="true" Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="leather_scale_armor" name="{=PL5SG9hI}Leather Scale Armor" mesh="vlandia_leather_scale_armor" culture="Culture.vlandia" weight="8.6" Type="BodyArmor" appearance="1" difficulty="0" subtype="body_armor" multiplayer_item="false">
 		<ItemComponent>
-			<Armor body_armor="24" leg_armor="22" covers_body="true" modifier_group="leather" material_type="Leather" arm_armor="18"/>
+			<Armor body_armor="24" leg_armor="22" covers_body="true" modifier_group="leather" material_type="Leather" arm_armor="18" stealth_factor="15"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
+		<Flags UseTeamColor="true" Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="reinforced_suede_armor" name="{=XU9WgcIO}Reinforced Suede Armor" mesh="khuzait_suede_leather" culture="Culture.khuzait" weight="2.3" Type="BodyArmor" appearance="1" difficulty="0" subtype="body_armor">
 		<ItemComponent>
@@ -886,15 +886,15 @@
 	</Item>
 	<Item id="nordic_sloven_leather" name="{=FRWm800F}Sloven Leather" mesh="nordic_sloven_c" culture="Culture.sturgia" weight="2.9" Type="BodyArmor" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="25" leg_armor="25" covers_body="true" modifier_group="leather" material_type="Leather" has_gender_variations="true" arm_armor="25"/>
+			<Armor body_armor="25" leg_armor="25" covers_body="true" modifier_group="leather" material_type="Leather" has_gender_variations="true" arm_armor="25" stealth_factor="20"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Stealth="true"/>
 	</Item>
 	<Item id="nordic_sloven" name="{=c7wcTevc}Leather Armor over Heavy Cloth" mesh="nordic_sloven_b" culture="Culture.sturgia" weight="1.8" Type="BodyArmor" appearance="1" difficulty="0" subtype="body_armor">
 		<ItemComponent>
-			<Armor body_armor="25" leg_armor="25" covers_body="true" modifier_group="leather" material_type="Leather" has_gender_variations="true" arm_armor="22"/>
+			<Armor body_armor="25" leg_armor="25" covers_body="true" modifier_group="leather" material_type="Leather" has_gender_variations="true" arm_armor="22" stealth_factor="20"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
+		<Flags UseTeamColor="true" Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="battania_light_armor_a" name="{=aSJbMKdb}Highland Tartan with Chest Plate" mesh="battania_light_armor_a" culture="Culture.battania" weight="6.5" Type="BodyArmor" appearance="1.7" difficulty="0" subtype="body_armor">
 		<ItemComponent>
@@ -964,9 +964,9 @@
 	</Item>
 	<Item id="eastern_stitched_leather_coat" name="{=PeozdF9h}Stitched Cured Leather Coat" mesh="khuzait_leather_plate" culture="Culture.khuzait" weight="13.9" Type="BodyArmor" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="32" leg_armor="38" covers_body="true" modifier_group="leather" material_type="Leather" arm_armor="25"/>
+			<Armor body_armor="32" leg_armor="38" covers_body="true" modifier_group="leather" material_type="Leather" arm_armor="25" stealth_factor="5"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Stealth="true"/>
 	</Item>
 	<Item id="eastern_studded_leather" name="{=n7e0y95m}Cured Studded Leather Armor" mesh="khuzait_leather_armor_b" culture="Culture.empire" weight="3" Type="BodyArmor" appearance="1">
 		<ItemComponent>
@@ -1018,9 +1018,9 @@
 	</Item>
 	<Item id="veteran_mercenary_armor" name="{=EezWSI6v}Fortified Mercenary Armor" mesh="veteran_mercenary_armor" culture="Culture.vlandia" weight="8.2" Type="BodyArmor" appearance="1.4" difficulty="0" subtype="body_armor">
 		<ItemComponent>
-			<Armor body_armor="37" leg_armor="33" covers_body="true" modifier_group="chain" material_type="Chainmail" has_gender_variations="true" arm_armor="13"/>
+			<Armor body_armor="37" leg_armor="33" covers_body="true" modifier_group="chain" material_type="Chainmail" has_gender_variations="true" arm_armor="13" stealth_factor="15"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true"/>
+		<Flags UseTeamColor="true" Stealth="true"/>
 	</Item>
 	<Item id="nordic_lamellar_vest" name="{=QaTkvy56}Bronze Scale Vest" mesh="sturgia_costume_k" culture="Culture.sturgia" weight="12" Type="BodyArmor" appearance="1.2">
 		<ItemComponent>
