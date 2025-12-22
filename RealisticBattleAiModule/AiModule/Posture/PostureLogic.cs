@@ -172,11 +172,28 @@ namespace RBMAI
                 EquipmentIndex wieldedItemIndex = victimAgent.GetPrimaryWieldedItemIndex();
                 if (wieldedItemIndex != EquipmentIndex.None)
                 {
-                    agentsToDropWeapon.Add(victimAgent);
-                    if (!agentsToDropWeapon.Contains(victimAgent))
+                    int numOfMeleeWeapons = 0;
+                    for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                    {
+                        if (victimAgent.Equipment != null && !victimAgent.Equipment[equipmentIndex].IsEmpty)
+                        {
+                            victimAgent.Equipment[equipmentIndex].GatherInformationFromWeapon(out var weaponHasMelee, out var _, out var _, out var _, out var weaponHasThrown, out var _);
+                            if (weaponHasMelee && !weaponHasThrown)
+                            {
+                                numOfMeleeWeapons++;
+                            }
+                        }
+                    }
+                    EquipmentIndex ei = victimAgent.GetPrimaryWieldedItemIndex();
+                    if (ei != EquipmentIndex.None && numOfMeleeWeapons > 1)
                     {
                         agentsToDropWeapon.Add(victimAgent);
+                        if (!agentsToDropWeapon.Contains(victimAgent))
+                        {
+                            agentsToDropWeapon.Add(victimAgent);
+                        }
                     }
+
                 }
             }
 
@@ -1565,20 +1582,8 @@ namespace RBMAI
                     {
                         if (agent != null && agent.Mission != null && agent.IsActive())
                         {
-                            int numOfMeleeWeapons = 0;
-                            for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-                            {
-                                if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
-                                {
-                                    agent.Equipment[equipmentIndex].GatherInformationFromWeapon(out var weaponHasMelee, out var _, out var _, out var _, out var _, out var _);
-                                    if (weaponHasMelee)
-                                    {
-                                        numOfMeleeWeapons++;
-                                    }
-                                }
-                            }
                             EquipmentIndex ei = agent.GetPrimaryWieldedItemIndex();
-                            if (ei != EquipmentIndex.None && numOfMeleeWeapons > 1)
+                            if (ei != EquipmentIndex.None)
                             {
                                 agent.DropItem(ei);
                                 agent.UpdateAgentProperties();
