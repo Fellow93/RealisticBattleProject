@@ -1389,6 +1389,11 @@ namespace RBMAI
                     unitSpacing = 2;
                 }
                 unitSpacing = 2;
+                if (__instance.QuerySystem != null && __instance.QuerySystem.IsRangedFormation)
+                {
+                    unitSpacing = 4;
+
+                }
             }
             return true;
         }

@@ -276,49 +276,51 @@ namespace RBMAI
             }
         }
 
+        public static bool IsActivelyAttacking(Agent agent)
+        {
+            switch (agent.AttackDirection)
+            {
+                case Agent.UsageDirection.AttackDown:
+                case Agent.UsageDirection.AttackLeft:
+                case Agent.UsageDirection.AttackRight:
+                case Agent.UsageDirection.AttackEnd:
+                case Agent.UsageDirection.AttackAny:
+                    {
+                        return true;
+                    }
+            }
+            Agent.ActionCodeType currentActionType = agent.GetCurrentActionType(1);
+            if (
+                currentActionType == Agent.ActionCodeType.ReadyMelee ||
+                currentActionType == Agent.ActionCodeType.ReleaseRanged ||
+                currentActionType == Agent.ActionCodeType.ReleaseThrowing)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         [HarmonyPatch(typeof(ArrangementOrder))]
         [HarmonyPatch("GetShieldDirectionOfUnit")]
         internal class HoldTheDoor
         {
             private static void Postfix(ref Agent.UsageDirection __result, Formation formation, Agent unit, ArrangementOrderEnum orderEnum)
             {
-                //if (!formation.QuerySystem.IsCavalryFormation && !formation.QuerySystem.IsRangedCavalryFormation)
-                //{
-                //    if(Mission.Current != null)
-                //    {
-                //        float currentTime = Mission.Current.CurrentTime;
-                //        if (currentTime - unit.LastRangedAttackTime < 7f)
-                //        {
-                //            __result = Agent.UsageDirection.None;
-                //            return;
-                //        }
-                //        switch (orderEnum)
-                //        {
-                //            case ArrangementOrderEnum.Line:
-                //            case ArrangementOrderEnum.Loose:
-                //                {
-                //                    float lastMeleeAttackTime = unit.LastMeleeAttackTime;
-                //                    float lastMeleeHitTime = unit.LastMeleeHitTime;
-                //                    float lastRangedHit = unit.LastRangedHitTime;
-                //                    if ((currentTime - lastMeleeAttackTime < 4f) || (currentTime - lastMeleeHitTime < 4f))
-                //                    {
-                //                        __result = Agent.UsageDirection.None;
-                //                        return;
-                //                    }
-                //                    if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && formation.QuerySystem.IsInfantryFormation && (((currentTime - lastRangedHit < 2f) || formation.QuerySystem.UnderRangedAttackRatio >= 0.08f)))
-                //                    {
-                //                        __result = Agent.UsageDirection.DefendDown;
-                //                        return;
-                //                    }
-                //                    break;
-                //                }
-                //        }
-                //    }
-                //}
                 if (unit.IsDetachedFromFormation)
                 {
                     __result = Agent.UsageDirection.None;
                     return;
+                }
+                if (Mission.Current != null && Mission.Current.IsSiegeBattle && unit.Team != null && unit.IsActive() &&
+                    unit.Team.IsAttacker && !unit.IsRangedCached && unit.HasShieldCached && !IsActivelyAttacking(unit))
+                {
+                    if (__result == Agent.UsageDirection.None)
+                    {
+                        __result = Agent.UsageDirection.DefendUp;
+                    }
                 }
                 bool test = true;
                 switch (orderEnum)
