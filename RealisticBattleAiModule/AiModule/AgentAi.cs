@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using SandBox.GameComponents;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
@@ -131,6 +132,8 @@ namespace RBMAI
                     agentDrivenProperties.WeaponBestAccuracyWaitTime = 0.1f;
                 }
 
+                //agentDrivenProperties.AiWeaponFavorMultiplierPolearm
+
                 //if (RBMConfig.RBMConfig.postureEnabled)
                 //{
                 //    Posture posture = null;
@@ -201,6 +204,20 @@ namespace RBMAI
                     agent.SetScriptedCombatFlags(agent.GetScriptedCombatFlags() | Agent.AISpecialCombatModeFlags.IgnoreAmmoLimitForRangeCalculation);
                     //agent.ResetAiWaitBeforeShootFactor();
                 }
+                if (agent != null && agent.IsActive() && Mission.Current != null && Mission.Current.IsDeploymentFinished)
+                {
+                    MBList<Agent> enemiesVeryClose = new MBList<Agent>();
+                    enemiesVeryClose = Mission.Current.GetNearbyEnemyAgents(agent.GetWorldPosition().AsVec2, 1.75f, agent.Team, enemiesVeryClose);
+                    if (enemiesVeryClose.Count() > 0)
+                    {
+                        agent.AgentDrivenProperties.AiWeaponFavorMultiplierMelee = 35f;
+                    }
+                    else
+                    {
+                        agent.AgentDrivenProperties.AiWeaponFavorMultiplierPolearm = 35f;
+                    }
+                }
+
                 agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, 1f);
                 //agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, 0f);
 
