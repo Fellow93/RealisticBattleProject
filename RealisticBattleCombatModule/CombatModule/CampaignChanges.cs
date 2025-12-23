@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 using Helpers;
-using SandBox.GameComponents;
+using JetBrains.Annotations;
 using StoryMode.GameComponents;
 using StoryMode.Missions;
 using System.Collections.Generic;
@@ -12,10 +12,8 @@ using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
-using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
-using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.CampaignSystem.ComponentInterfaces.CombatXpModel;
 using static TaleWorlds.CampaignSystem.MapEvents.MapEvent;
@@ -159,7 +157,7 @@ namespace RBMCombat
         {
             [HarmonyPrefix]
             [HarmonyPatch("GetXpFromHit")]
-            private static bool PrefixGetXpFromHit( ref ExplainedNumber __result, ref DefaultCombatXpModel __instance, CharacterObject attackerTroop, CharacterObject captain, CharacterObject attackedTroop, int damage, bool isFatal, MissionTypeEnum missionType)
+            private static bool PrefixGetXpFromHit(ref ExplainedNumber __result, ref DefaultCombatXpModel __instance, CharacterObject attackerTroop, PartyBase attackerParty, CharacterObject captain, CharacterObject attackedTroop, int damage, bool isFatal, MissionTypeEnum missionType)
             {
                 if (missionType == MissionTypeEnum.Battle || missionType == MissionTypeEnum.PracticeFight || missionType == MissionTypeEnum.Tournament || missionType == MissionTypeEnum.SimulationBattle)
                 {
@@ -205,12 +203,12 @@ namespace RBMCombat
                     //rawXpNum = rawXpNum * xpModifier * levelDiffModifier;
                     rawXpNum = rawXpNum * xpModifier;
                     ExplainedNumber xpToGain = new ExplainedNumber(rawXpNum);
-                    //if (party != null)
-                    //{
-                    //    MethodInfo method = typeof(DefaultCombatXpModel).GetMethod("GetBattleXpBonusFromPerks", BindingFlags.NonPublic | BindingFlags.Instance);
-                    //    method.DeclaringType.GetMethod("GetBattleXpBonusFromPerks");
-                    //    method.Invoke(__instance, new object[] { party, xpToGain, attackerTroop });
-                    //}
+                    if (attackerParty != null)
+                    {
+                        MethodInfo method = typeof(DefaultCombatXpModel).GetMethod("GetBattleXpBonusFromPerks", BindingFlags.NonPublic | BindingFlags.Static);
+                        method.DeclaringType.GetMethod("GetBattleXpBonusFromPerks");
+                        method.Invoke(__instance, new object[] { attackerParty, xpToGain, attackerTroop });
+                    }
                     if (captain != null && captain.IsHero && captain.GetPerkValue(DefaultPerks.Leadership.InspiringLeader))
                     {
                         xpToGain.AddFactor(DefaultPerks.Leadership.InspiringLeader.SecondaryBonus, DefaultPerks.Leadership.InspiringLeader.Name);
@@ -220,6 +218,38 @@ namespace RBMCombat
                 }
                 __result = new ExplainedNumber(0);
                 return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(Mission))]
+        [HarmonyPatch("OnAgentShootMissile")]
+        [UsedImplicitly]
+        [MBCallback]
+        private class OverrideOnAgentShootMissile
+        {
+            private static void Postfix(ref Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
+            {
+                if (shooterAgent.IsHero && Campaign.Current != null)
+                {
+                    CharacterObject shooterCharacter = (CharacterObject)shooterAgent.Character;
+                    WeaponClass wc = shooterAgent.Equipment[weaponIndex].CurrentUsageItem.WeaponClass;
+                    SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, false);
+                    if (wc == WeaponClass.Bow)
+                    {
+                        shooterCharacter.HeroObject.AddSkillXp(skillForWeapon, 10f);
+                        return;
+                    }
+                    if (wc == WeaponClass.Crossbow)
+                    {
+                        shooterCharacter.HeroObject.AddSkillXp(skillForWeapon, 20f);
+                        return;
+                    }
+                    if (wc == WeaponClass.Javelin || wc == WeaponClass.ThrowingAxe || wc == WeaponClass.ThrowingKnife)
+                    {
+                        shooterCharacter.HeroObject.AddSkillXp(skillForWeapon, 10f);
+                        return;
+                    }
+                }
             }
         }
 
@@ -241,7 +271,7 @@ namespace RBMCombat
                             CharacterObject affectorCharacter = (CharacterObject)attackerAgent.Character;
 
                             float experience = 1f;
-                            ExplainedNumber xpAmount=  Campaign.Current.Models.CombatXpModel.GetXpFromHit(heroObject.CharacterObject, null, affectorCharacter, heroObject.PartyBelongedTo?.Party, (int)collisionData.InflictedDamage, false, CombatXpModel.MissionTypeEnum.Battle);
+                            ExplainedNumber xpAmount = Campaign.Current.Models.CombatXpModel.GetXpFromHit(heroObject.CharacterObject, null, affectorCharacter, heroObject.PartyBelongedTo?.Party, (int)collisionData.InflictedDamage, false, CombatXpModel.MissionTypeEnum.Battle);
                             if (collisionData.CollisionResult == CombatCollisionResult.Blocked && collisionData.AttackBlockedWithShield)
                             {
                                 experience = xpAmount.ResultNumber * 0.8f;
@@ -510,87 +540,6 @@ namespace RBMCombat
             }
         }
 
-        [HarmonyPatch(typeof(SandboxAgentStatCalculateModel))]
-        private class OverrideGetEffectiveMaxHealth
-        {
-            [HarmonyPrefix]
-            [HarmonyPatch("GetEffectiveMaxHealth")]
-            private static bool PrefixGetEffectiveMaxHealth(ref SandboxAgentStatCalculateModel __instance, ref float __result, Agent agent)
-            {
-                float baseHealthLimit = agent.BaseHealthLimit;
-                ExplainedNumber stat = new ExplainedNumber(baseHealthLimit);
-                if (agent.IsHuman && !agent.IsHero)
-                {
-                    CharacterObject characterObject = agent.Character as CharacterObject;
-                    IAgentOriginBase agentOriginBase = agent?.Origin;
-                    MobileParty mobileParty = ((PartyBase)(agentOriginBase?.BattleCombatant))?.MobileParty;
-                    //CharacterObject partyLeader = mobileParty?.LeaderHero?.CharacterObject;
-                    CharacterObject captain = agent?.Formation?.Captain?.Character as CharacterObject;
-                    if (characterObject != null && captain != null)
-                    {
-                        if (captain.GetPerkValue(DefaultPerks.TwoHanded.ThickHides))
-                        {
-                            PerkHelper.AddPerkBonusForParty(DefaultPerks.TwoHanded.ThickHides, mobileParty, isPrimaryBonus: false, ref stat);
-                        }
-                        if (captain.GetPerkValue(DefaultPerks.Polearm.HardyFrontline))
-                        {
-                            PerkHelper.AddPerkBonusForParty(DefaultPerks.Polearm.HardyFrontline, mobileParty, isPrimaryBonus: true, ref stat);
-                        }
-                        if (characterObject.IsRanged)
-                        {
-                            if (captain.GetPerkValue(DefaultPerks.Crossbow.PickedShots))
-                            {
-                                PerkHelper.AddPerkBonusForParty(DefaultPerks.Crossbow.PickedShots, mobileParty, isPrimaryBonus: false, ref stat);
-                            }
-                        }
-                        if (!agent.HasMount)
-                        {
-                            if (captain.GetPerkValue(DefaultPerks.Athletics.WellBuilt))
-                            {
-                                PerkHelper.AddPerkBonusForParty(DefaultPerks.Athletics.WellBuilt, mobileParty, isPrimaryBonus: false, ref stat);
-                            }
-                            if (characterObject.IsInfantry)
-                            {
-                                if (captain.GetPerkValue(DefaultPerks.Polearm.HardKnock))
-                                {
-                                    PerkHelper.AddPerkBonusForParty(DefaultPerks.Polearm.HardKnock, mobileParty, isPrimaryBonus: false, ref stat);
-                                }
-                                if (captain.GetPerkValue(DefaultPerks.OneHanded.UnwaveringDefense))
-                                {
-                                    PerkHelper.AddPerkBonusForParty(DefaultPerks.OneHanded.UnwaveringDefense, mobileParty, isPrimaryBonus: false, ref stat);
-                                }
-                            }
-                        }
-                        if (captain.GetPerkValue(DefaultPerks.Medicine.MinisterOfHealth))
-                        {
-                            int num = MathF.Max(__instance.GetEffectiveSkill(agent, DefaultSkills.Medicine) - 200, 0) / 10;
-                            if (num > 0)
-                            {
-                                stat.Add(num);
-                            }
-                        }
-                    }
-                }
-                else if (!agent.IsHuman)
-                {
-                    Agent riderAgent = agent.RiderAgent;
-                    if (riderAgent != null)
-                    {
-                        CharacterObject character = riderAgent?.Character as CharacterObject;
-                        IAgentOriginBase agentOriginBase = agent?.Origin;
-                        MobileParty mobileParty = ((PartyBase)(agentOriginBase?.BattleCombatant))?.MobileParty;
-                        CharacterObject partyLeader = mobileParty?.LeaderHero?.CharacterObject;
-                        CharacterObject captain = agent?.Formation?.Captain?.Character as CharacterObject;
-                        PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Medicine.Sledges, captain, ref stat);
-                        PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Riding.WellStraped, character, isPrimaryBonus: true, ref stat);
-                        PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Riding.WellStraped, captain, ref stat);
-                    }
-                }
-                __result = stat.ResultNumber;
-                return false;
-            }
-        }
-
         [HarmonyPatch(typeof(CharacterObject))]
         private class OverrideCharacterObject
         {
@@ -681,43 +630,6 @@ namespace RBMCombat
         [HarmonyPatch(typeof(DefaultMilitaryPowerModel))]
         public class OverrideDefaultMilitaryPowerModel
         {
-            //[HarmonyPrefix]
-            //[HarmonyPatch("GetTroopPowerBasedOnContext")]
-            //private static bool PrefixGetTroopPowerBasedOnContext(ref float __result, CharacterObject troop, MapEvent.BattleTypes battleType = MapEvent.BattleTypes.None, BattleSideEnum battleSideEnum = BattleSideEnum.None, bool isSimulation = false)
-            //{
-
-            //    int tier = (troop.IsHero ? (troop.HeroObject.Level / 4 + 1) : troop.Tier);
-            //    bool isNoble = false;
-            //    if (troop.Culture != null)
-            //    {
-            //        CharacterObject EliteBasicTroop = troop.Culture.EliteBasicTroop;
-            //        if (troop == EliteBasicTroop)
-            //        {
-            //            isNoble = true;
-            //        }
-            //        else
-            //        {
-            //            List<CharacterObject> cultureNobleTroopList = FillTroopListUntilTier(troop.Culture.EliteBasicTroop, 10);
-            //            foreach (CharacterObject co in cultureNobleTroopList)
-            //            {
-            //                if (co == troop)
-            //                {
-            //                    isNoble = true;
-            //                }
-            //            }
-            //        }
-            //    }
-            //    float origPower = (float)((2f + tier) * (8f + tier)) * 0.02f * (troop.IsHero ? 1.5f : (troop.IsMounted ? 1.2f : 1f));
-            //    float modifiedTier = (tier - 1) * 3f;
-            //    modifiedTier = MathF.Clamp(modifiedTier, 1f, modifiedTier);
-            //    if (battleType == BattleTypes.Siege)
-            //    {
-            //        __result = (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * (troop.IsHero ? 1.5f : 1f);
-            //        return false;
-            //    }
-            //    __result = (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * (troop.IsHero ? 1.5f : 1f) * (troop.IsMounted ? 1.5f : 1f) * (isNoble ? 1.5f : 1f);
-            //    return false;
-            //}
 
             [HarmonyPatch(typeof(CommonAIComponent))]
             [HarmonyPatch("InitializeMorale")]
@@ -736,35 +648,6 @@ namespace RBMCombat
                     return false;
                 }
             }
-
-            //[HarmonyPatch(typeof(Equipment))]
-            //[HarmonyPatch("GetRandomEquipmentElements")]
-            //class GetRandomEquipmentElementsPatch
-            //{
-            //    static bool Prefix(ref Equipment __result, BasicCharacterObject character, bool randomEquipmentModifier, bool isCivilianEquipment = false, int seed = -1)
-            //    {
-            //        if(seed == -1)
-            //        {
-            //            return true;
-            //        }
-            //        Equipment equipment = new Equipment(isCivilianEquipment);
-            //        List<Equipment> list = character.AllEquipments.Where((Equipment eq) => eq.IsCivilian == isCivilianEquipment && !eq.IsEmpty()).ToList();
-            //        if (list.IsEmpty())
-            //        {
-            //            __result = equipment;
-            //            return false;
-            //        }
-            //        int count = list.Count;
-            //        //Random random = new Random(seed);
-            //        int weaponSetNo = MBRandom.RandomInt(count);
-            //        for (int i = 0; i < 12; i++)
-            //        {
-            //            equipment[i] = list[weaponSetNo].GetEquipmentFromSlot((EquipmentIndex)i);
-            //        }
-            //        __result = equipment;
-            //        return false;
-            //    }
-            //}
 
             [HarmonyPatch(typeof(Agent))]
             [HarmonyPatch("InitializeSpawnEquipment")]

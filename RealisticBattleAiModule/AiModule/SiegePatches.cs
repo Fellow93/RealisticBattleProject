@@ -405,12 +405,39 @@ namespace RBMAI
         {
             [HarmonyPrefix]
             [HarmonyPatch("ApplyMoraleEffectOnAgentIncapacitated")]
-            private static bool PrefixAfterStart(Agent affectedAgent, Agent affectorAgent, float affectedSideMaxMoraleLoss, float affectorSideMoraleMaxGain, float effectRadius)
+            private static bool PrefixAfterStart(Agent affectedAgent, Agent affectorAgent, ref float affectedSideMaxMoraleLoss, ref float affectorSideMoraleMaxGain, ref float effectRadius)
             {
                 if (affectedAgent != null)
                 {
                     if (Mission.Current.IsSiegeBattle && affectedAgent.Team.IsDefender)
                     {
+                        //if (affectedAgent.Team.ActiveAgents.Count < 50)
+                        //{
+                        //    float defenderPower = Mission.Current.Teams.Where(team => team.IsDefender).Sum(team =>
+                        //    {
+                        //        float power = 0f;
+                        //        foreach (Agent agent in team.ActiveAgents)
+                        //        {
+                        //            power += agent.CharacterPowerCached;
+                        //        }
+                        //        return power;
+                        //    });
+                        //    float attackerPower = Mission.Current.Teams.Where(team => team.IsAttacker).Sum(team =>
+                        //    {
+                        //        float power = 0f;
+                        //        foreach (Agent agent in team.ActiveAgents)
+                        //        {
+                        //            power += agent.CharacterPowerCached;
+                        //        }
+                        //        return power;
+                        //    });
+                        //    if (defenderPower / attackerPower < 0.2f)
+                        //    {
+                        //        affectedSideMaxMoraleLoss *= 2f;
+                        //        effectRadius = 500f;
+                        //        return true;
+                        //    }
+                        //}
                         return false;
                     }
                 }
