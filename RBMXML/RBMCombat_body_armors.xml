@@ -1156,7 +1156,7 @@
 	</Item>
 	<Item id="sturgian_lamellar_gambeson_heavy" name="{=luoXhz19}Heavy Lamellar Vest" mesh="sturgian_lamellar_gambeson_heavy" culture="Culture.sturgia" weight="8.3" Type="BodyArmor" appearance="1.8" difficulty="0" subtype="body_armor">
 		<ItemComponent>
-			<Armor body_armor="47" leg_armor="25" covers_body="true" modifier_group="plate" material_type="Plate" has_gender_variations="true" arm_armor="15"/>
+			<Armor body_armor="73" leg_armor="40" covers_body="true" modifier_group="plate" material_type="Plate" has_gender_variations="true" arm_armor="25"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>

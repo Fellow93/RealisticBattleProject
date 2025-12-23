@@ -14466,6 +14466,8 @@
                  id="Item.battania_large_shield_b" />
       <equipment slot="Item2"
                  id="Item.imperial_throwing_spear_1_t4_2" />
+      <equipment slot="Item3"
+                 id="Item.gladius_b" />
       <equipment slot="Body"
                  id="Item.empire_legion_b" />
       <equipment slot="Leg"
@@ -16163,9 +16165,9 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_2hsword_t3" />
+                 id="Item.western_2hsword_t4" />
       <equipment slot="Item1"
-                 id="Item.flat_heater_shield_shoulder" />
+                 id="Item.small_heater_shield_shoulder" />
       <equipment slot="Body"
                  id="Item.imperial_mail_over_stripped_leather" />
       <equipment slot="Head"
@@ -16214,9 +16216,9 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.war_razor_2hsword_t4" />
+                 id="Item.ridged_2hsword_t4" />
       <equipment slot="Item1"
-                 id="Item.wide_heater_shield_shoulder" />
+                 id="Item.small_heater_shield_shoulder" />
       <equipment slot="Body"
                  id="Item.legionary_mail" />
       <equipment slot="Gloves"
@@ -16265,7 +16267,7 @@
       <equipment slot="Item0"
                  id="Item.vlandia_2hsword_2_t5" />
       <equipment slot="Item1"
-                 id="Item.tall_heater_shield_shoulder" />
+                 id="Item.small_heater_shield_shoulder" />
       <equipment slot="Cape"
                  id="Item.noble_pauldron_with_cape" />
       <equipment slot="Body"
@@ -17730,7 +17732,9 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.ridged_2hsword_t4" />
+                 id="Item.battania_2hsword_3_t3" />
+      <equipment slot="Item1"
+                 id="Item.small_heater_shield_shoulder" />
         <equipment slot="Cape"
                    id="Item.varangian_bra_mail" />
         <equipment slot="Body"
@@ -17745,6 +17749,8 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.southern_broad_2hsword_t4" />
+      <equipment slot="Item1"
+                 id="Item.small_heater_shield_shoulder" />
         <equipment slot="Cape"
                    id="Item.brass_lamellar_shoulder_white" />
         <equipment slot="Body"
@@ -17758,7 +17764,9 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.western_2hsword_t4" />
+      <equipment slot="Item1"
+                 id="Item.small_heater_shield_shoulder" />
         <equipment slot="Cape"
                    id="Item.imperial_studded_strip_shoulders" />
         <equipment slot="Body"
