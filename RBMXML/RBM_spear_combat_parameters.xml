@@ -2163,7 +2163,7 @@
 
     <!--- ranged combat parameters -->
     <combat_parameter id="bow_ready_release"
-                      vertical_rot_limit_multiplier_up="0.6"
+                      vertical_rot_limit_multiplier_up="0.7"
                       vertical_rot_limit_multiplier_down="0.6"
                       left_rider_min_rot_limit="bow_rider_min_rot_limit_left"
                       right_rider_min_rot_limit="bow_rider_min_rot_limit_right"
@@ -2174,7 +2174,7 @@
                       right_ladder_rot_limit="bow_ladder_rot_limit_right" />
 
     <combat_parameter id="bow_reload"
-                      vertical_rot_limit_multiplier_up="0.6"
+                      vertical_rot_limit_multiplier_up="0.7"
                       vertical_rot_limit_multiplier_down="0.6"
                       left_rider_min_rot_limit="bow_rider_min_rot_limit_left"
                       right_rider_min_rot_limit="bow_rider_min_rot_limit_right"
@@ -2185,7 +2185,7 @@
                       right_ladder_rot_limit="bow_ladder_rot_limit_right" />
 
     <combat_parameter id="crossbow_ready_release"
-                      vertical_rot_limit_multiplier_up="0.6"
+                      vertical_rot_limit_multiplier_up="0.7"
                       vertical_rot_limit_multiplier_down="0.6"
                       left_rider_min_rot_limit="crossbow_rider_min_rot_limit_left"
                       right_rider_min_rot_limit="crossbow_rider_min_rot_limit_right"
@@ -2203,7 +2203,7 @@
                         left_ladder_rot_limit="crossbow_ladder_rot_limit_left" right_ladder_rot_limit="crossbow_ladder_rot_limit_right" />-->
 
     <combat_parameter id="javelin_ready_release"
-                      vertical_rot_limit_multiplier_up="0.5"
+                      vertical_rot_limit_multiplier_up="0.7"
                       vertical_rot_limit_multiplier_down="bow_vertical_rot_limit"
                       left_rider_rot_limit="throwing_rider_rot_limit_left"
                       right_rider_rot_limit="throwing_rider_rot_limit_right"
@@ -2215,7 +2215,7 @@
                       weapon_offset="0,0,-0.2"/>
 
     <combat_parameter id="throwing_ready_release"
-                      vertical_rot_limit_multiplier_up="0.5"
+                      vertical_rot_limit_multiplier_up="0.7"
                       vertical_rot_limit_multiplier_down="bow_vertical_rot_limit"
                       left_rider_rot_limit="throwing_rider_rot_limit_left"
                       right_rider_rot_limit="throwing_rider_rot_limit_right"
@@ -2228,8 +2228,8 @@
     <combat_parameter id="throwing_ready_release_horseback"
                       collision_check_starting_percent="0.32"
                       collision_check_ending_percent="0.48"
-                      vertical_rot_limit_multiplier_up="0.2"
-                      vertical_rot_limit_multiplier_down="0.1"
+                      vertical_rot_limit_multiplier_up="0.5"
+                      vertical_rot_limit_multiplier_down="0.5"
                       left_rider_rot_limit="right_swing_rider_rot_limit_left"
                       left_rider_min_rot_limit="right_min_rider_rot_limit_left"
                       right_rider_rot_limit="right_swing_rider_rot_limit_right"
