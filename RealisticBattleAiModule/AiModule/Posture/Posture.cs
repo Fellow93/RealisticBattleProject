@@ -49,7 +49,7 @@ namespace RBMAI
         public const float ONEHANDEDSWORD_THRUST_DRAIN = 25f;
         public const float ONEHANDEDSWORD_OVERHEAD_DRAIN = 35f;
         public const float ONEHANDEDSWORD_BLOCK_COST = 0f;
-        public const float ONEHANDEDSWORD_PARRY_COST = -5f;
+        public const float ONEHANDEDSWORD_PARRY_COST = -10f;
         public const float ONEHANDEDSWORD_HIT_COST = 20f;
         public const float ONEHANDEDSWORD_BLOCK_REFLECT = 5f;
         public const float ONEHANDEDSWORD_PARRY_REFLECT = 20f;
@@ -61,7 +61,7 @@ namespace RBMAI
         public const float DAGGER_THRUST_DRAIN = 25f;
         public const float DAGGER_OVERHEAD_DRAIN = 35f;
         public const float DAGGER_BLOCK_COST = 5f;
-        public const float DAGGER_PARRY_COST = 0f;
+        public const float DAGGER_PARRY_COST = -5f;
         public const float DAGGER_HIT_COST = 20f;
         public const float DAGGER_BLOCK_REFLECT = 0f;
         public const float DAGGER_PARRY_REFLECT = 15f;
@@ -73,7 +73,7 @@ namespace RBMAI
         public const float TWOHANDEDSWORD_THRUST_DRAIN = 35f;
         public const float TWOHANDEDSWORD_OVERHEAD_DRAIN = 49f;
         public const float TWOHANDEDSWORD_BLOCK_COST = -5f;
-        public const float TWOHANDEDSWORD_PARRY_COST = -10f;
+        public const float TWOHANDEDSWORD_PARRY_COST = -15f;
         public const float TWOHANDEDSWORD_HIT_COST = 28f;
         public const float TWOHANDEDSWORD_BLOCK_REFLECT = 15f;
         public const float TWOHANDEDSWORD_PARRY_REFLECT = 30f;
@@ -85,7 +85,7 @@ namespace RBMAI
         public const float ONEHANDEDAXE_THRUST_DRAIN = 27f;
         public const float ONEHANDEDAXE_OVERHEAD_DRAIN = 37f;
         public const float ONEHANDEDAXE_BLOCK_COST = 5f;
-        public const float ONEHANDEDAXE_PARRY_COST = 0f;
+        public const float ONEHANDEDAXE_PARRY_COST = -5f;
         public const float ONEHANDEDAXE_HIT_COST = 25f;
         public const float ONEHANDEDAXE_BLOCK_REFLECT = 0f;
         public const float ONEHANDEDAXE_PARRY_REFLECT = 25f;
@@ -97,7 +97,7 @@ namespace RBMAI
         public const float TWOHANDEDAXE_THRUST_DRAIN = 38f;
         public const float TWOHANDEDAXE_OVERHEAD_DRAIN = 52f;
         public const float TWOHANDEDAXE_BLOCK_COST = 0f;
-        public const float TWOHANDEDAXE_PARRY_COST = -5f;
+        public const float TWOHANDEDAXE_PARRY_COST = -10f;
         public const float TWOHANDEDAXE_HIT_COST = 35f;
         public const float TWOHANDEDAXE_BLOCK_REFLECT = 5f;
         public const float TWOHANDEDAXE_PARRY_REFLECT = 40f;
@@ -109,7 +109,7 @@ namespace RBMAI
         public const float MACE_THRUST_DRAIN = 30f;
         public const float MACE_OVERHEAD_DRAIN = 40f;
         public const float MACE_BLOCK_COST = 7f;
-        public const float MACE_PARRY_COST = 0f;
+        public const float MACE_PARRY_COST = -3f;
         public const float MACE_HIT_COST = 30f;
         public const float MACE_BLOCK_REFLECT = 0f;
         public const float MACE_PARRY_REFLECT = 10f;
@@ -121,7 +121,7 @@ namespace RBMAI
         public const float TWOHANDEDMACE_THRUST_DRAIN = 42f;
         public const float TWOHANDEDMACE_OVERHEAD_DRAIN = 56f;
         public const float TWOHANDEDMACE_BLOCK_COST = 3f;
-        public const float TWOHANDEDMACE_PARRY_COST = -3f;
+        public const float TWOHANDEDMACE_PARRY_COST = -8f;
         public const float TWOHANDEDMACE_HIT_COST = 42f;
         public const float TWOHANDEDMACE_BLOCK_REFLECT = 5f;
         public const float TWOHANDEDMACE_PARRY_REFLECT = 10f;
@@ -133,7 +133,7 @@ namespace RBMAI
         public const float ONEHANDEDPOLEARM_THRUST_DRAIN = 30f;
         public const float ONEHANDEDPOLEARM_OVERHEAD_DRAIN = 35f;
         public const float ONEHANDEDPOLEARM_BLOCK_COST = 10f;
-        public const float ONEHANDEDPOLEARM_PARRY_COST = 5f;
+        public const float ONEHANDEDPOLEARM_PARRY_COST = -5f;
         public const float ONEHANDEDPOLEARM_HIT_COST = 20f;
         public const float ONEHANDEDPOLEARM_BLOCK_REFLECT = 0f;
         public const float ONEHANDEDPOLEARM_PARRY_REFLECT = 5f;
@@ -145,22 +145,22 @@ namespace RBMAI
         public const float TWOHANDEDPOLEARM_THRUST_DRAIN = 42f;
         public const float TWOHANDEDPOLEARM_OVERHEAD_DRAIN = 49f;
         public const float TWOHANDEDPOLEARM_BLOCK_COST = 0f;
-        public const float TWOHANDEDPOLEARM_PARRY_COST = -5f;
+        public const float TWOHANDEDPOLEARM_PARRY_COST = -10f;
         public const float TWOHANDEDPOLEARM_HIT_COST = 28f;
         public const float TWOHANDEDPOLEARM_BLOCK_REFLECT = 5f;
         public const float TWOHANDEDPOLEARM_PARRY_REFLECT = 20f;
 
         public const float SMALLSHIELD_INCORRECT_BLOCK_COST = 0f;
         public const float SMALLSHIELD_BLOCK_COST = -5f;
-        public const float SMALLSHIELD_PARRY_COST = -10f;
+        public const float SMALLSHIELD_PARRY_COST = -15f;
         public const float SMALLSHIELD_HIT_COST = 15f;
         public const float SMALLSHIELD_INCORRECT_BLOCK_REFLECT = 0f;
-        public const float SMALLSHIELD_BLOCK_REFLECT = 5f;
+        public const float SMALLSHIELD_BLOCK_REFLECT = 0f;
         public const float SMALLSHIELD_PARRY_REFLECT = 15f;
 
         public const float LARGESHIELD_INCORRECT_BLOCK_COST = -5f;
         public const float LARGESHIELD_BLOCK_COST = -10f;
-        public const float LARGESHIELD_PARRY_COST = -15f;
+        public const float LARGESHIELD_PARRY_COST = -20f;
         public const float LARGESHIELD_HIT_COST = 15f;
         public const float LARGESHIELD_INCORRECT_BLOCK_REFLECT = 0f;
         public const float LARGESHIELD_BLOCK_REFLECT = 0f;
