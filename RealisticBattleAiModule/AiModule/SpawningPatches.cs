@@ -6,6 +6,7 @@ using System.Linq;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.Core;
+using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.MissionSpawnHandlers;
@@ -78,7 +79,7 @@ namespace RBMAI.AiModule
                             {
                                 return true;
                             }
-                            //WorldPosition tempWorldPosition = agentTeam.GetMedianPosition(agentTeam.GetAveragePosition());
+                            WorldPosition tempWorldPosition = agentTeam.GetMedianPosition(agentTeam.GetAveragePosition());
                             Vec2 playerDirection;
                             MBReadOnlyList<Vec2> deploymentBoundaries = new MBReadOnlyList<Vec2>();
                             foreach (var item in __instance.DeploymentPlan.GetDeploymentBoundaries(agentTeam))
@@ -90,52 +91,58 @@ namespace RBMAI.AiModule
                             }
                             Vec2 centerOfDeployment = ComputePolygonCentroid(deploymentBoundaries);
                             //Vec3 closestBoundaryPosition = __instance.DeploymentPlan.GetClosestDeploymentBoundaryPosition(agentTeam, tempWorldPosition.AsVec2).ToVec3();
-                            Vec3 furthestBoundaryPosition = __instance.DeploymentPlan.GetClosestDeploymentBoundaryPosition(agentTeam, centerOfDeployment).ToVec3();
-                            float maxDistance = 0f;
-                            foreach (var item in __instance.DeploymentPlan.GetDeploymentBoundaries(agentTeam))
-                            {
-                                foreach (var item1 in item.points)
-                                {
-                                    float distance = item1.Distance(agentTeam.GetAveragePosition());
-                                    if (distance > maxDistance)
-                                    {
-                                        maxDistance = distance;
-                                        furthestBoundaryPosition = item1.ToVec3();
-                                    }
-                                }
-                            }
-                            MBReadOnlyList<FleePosition> fleePositions = __instance.GetFleePositionsForSide(BattleSideEnum.Defender);
-                            fleePositions.AddRange(__instance.GetFleePositionsForSide(BattleSideEnum.Attacker));
-                            fleePositions.AddRange(__instance.GetFleePositionsForSide(BattleSideEnum.None));
-                            float minDistance = 10000f;
-                            foreach (var position in fleePositions)
-                            {
-                                float distance = position.GameEntity.GlobalPosition.Distance(furthestBoundaryPosition);
-                                if (distance == -1f)
-                                {
-                                    distance = minDistance;
-                                }
-                                else
-                                {
-                                    if (distance < minDistance)
-                                    {
-                                        minDistance = distance;
-                                        centerOfDeployment = position.GameEntity.GlobalPosition.AsVec2;
-                                    }
-                                }
+                            //Vec3 furthestBoundaryPosition = __instance.DeploymentPlan.GetClosestDeploymentBoundaryPosition(agentTeam, centerOfDeployment).ToVec3();
+                            //float maxDistance = 0f;
+                            //foreach (var item in __instance.DeploymentPlan.GetDeploymentBoundaries(agentTeam))
+                            //{
+                            //    foreach (var item1 in item.points)
+                            //    {
+                            //        float distance = item1.Distance(agentTeam.GetAveragePosition());
+                            //        if (distance > maxDistance)
+                            //        {
+                            //            maxDistance = distance;
+                            //            furthestBoundaryPosition = item1.ToVec3();
+                            //        }
+                            //    }
+                            //}
+                            //MBReadOnlyList<FleePosition> fleePositions = __instance.GetFleePositionsForSide(BattleSideEnum.Defender);
+                            //fleePositions.AddRange(__instance.GetFleePositionsForSide(BattleSideEnum.Attacker));
+                            //fleePositions.AddRange(__instance.GetFleePositionsForSide(BattleSideEnum.None));
+                            //float minDistance = 10000f;
+                            //foreach (var position in fleePositions)
+                            //{
+                            //    float distance = position.GameEntity.GlobalPosition.Distance(furthestBoundaryPosition);
+                            //    if (distance == -1f)
+                            //    {
+                            //        distance = minDistance;
+                            //    }
+                            //    else
+                            //    {
+                            //        if (distance < minDistance)
+                            //        {
+                            //            minDistance = distance;
+                            //            centerOfDeployment = position.GameEntity.GlobalPosition.AsVec2;
+                            //        }
+                            //    }
 
-                            }
-                            Vec2 tempPos = centerOfDeployment;
-                            tempPos.x = tempPos.x + MBRandom.RandomInt(20);
-                            tempPos.y = tempPos.y + MBRandom.RandomInt(20);
+                            //}
+                            //Vec2 tempPos = centerOfDeployment;
+                            //tempPos.x = tempPos.x + MBRandom.RandomInt(20);
+                            //tempPos.y = tempPos.y + MBRandom.RandomInt(20);
 
-                            if (!__instance.IsPositionInsideHardBoundaries(tempPos))
+                            //if (!__instance.IsPositionInsideHardBoundaries(tempPos))
+                            //{
+                            //    tempPos = centerOfDeployment;
+                            //}
+                            //float waterLevel = Mission.Current.Scene.GetWaterLevelAtPosition(centerOfDeployment, false, false);
+                            tempWorldPosition.SetVec2(centerOfDeployment);
+                            float positionPenalty = 0f;
+                            if (Mission.Current.IsPositionInsideAnyBlockerNavMeshFace2D(centerOfDeployment))
                             {
-                                tempPos = centerOfDeployment;
+                                return true;
                             }
-
-                            initialPosition = tempPos.ToVec3();
-                            initialDirection = tempPos - formation.CurrentPosition;
+                            initialPosition = Mission.Current.GetAlternatePositionForNavmeshlessOrOutOfBoundsPosition(agentTeam.GetAveragePosition(), tempWorldPosition, ref positionPenalty).GetGroundVec3();
+                            initialDirection = centerOfDeployment - formation.CurrentPosition;
                         }
                     }
                 }
