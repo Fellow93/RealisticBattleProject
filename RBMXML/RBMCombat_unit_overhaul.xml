@@ -654,9 +654,11 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.western_2hsword_t4" />
       <equipment slot="Item1"
                  id="Item.western_kite_sparring_shield" />
+      <equipment slot="Item2"
+                 id="Item.imperial_throwing_spear_1_t4" />
       </EquipmentRoster>
       <EquipmentSet id="npc_wanderer_equipment_template_empire_civilian"
                     civilian="true" />
@@ -676,13 +678,13 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.western_2hsword_t4" />
       <equipment slot="Item1"
                  id="Item.western_kite_sparring_shield" />
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.western_2hsword_t4" />
       <equipment slot="Item1"
                  id="Item.western_kite_sparring_shield" />
       </EquipmentRoster>
@@ -704,7 +706,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.western_2hsword_t4" />
       <equipment slot="Item1"
                  id="Item.western_kite_sparring_shield" />
       </EquipmentRoster>
@@ -712,7 +714,7 @@
       <equipment slot="Item0"
                  id="Item.generic_javelin_1_t3" />
       <equipment slot="Item1"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.western_2hsword_t4" />
       <equipment slot="Item2"
                  id="Item.generic_javelin_1_t3" />
       </EquipmentRoster>
@@ -734,7 +736,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.gladius_b" />
       <equipment slot="Item1"
                  id="Item.western_kite_sparring_shield" />
       </EquipmentRoster>
@@ -772,7 +774,7 @@
       <equipment slot="Item0"
                  id="Item.generic_javelin_1_t3" />
       <equipment slot="Item1"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.gladius_b" />
       <equipment slot="Item2"
                  id="Item.generic_javelin_1_t3" />
       </EquipmentRoster>
@@ -788,7 +790,7 @@
       <equipment slot="Item0"
                  id="Item.empire_lance_3_t5" />
       <equipment slot="Item3"
-                 id="Item.empire_mace_5_t5" />
+                 id="Item.empire_sword_6_t5" />
       <equipment slot="Horse"
                  id="Item.empire_horse_tournament" />
       <equipment slot="HorseHarness"
