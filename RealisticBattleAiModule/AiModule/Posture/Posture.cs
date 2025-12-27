@@ -170,6 +170,7 @@ namespace RBMAI
         public const float SHIELD_ON_BACK_HIT_REFLECT = 0f;
 
         public const float AGENT_HIT_COST = 0f;
+        public const float AGENT_HIT_REFLECT = 10f;
 
         public static string getWeaponClassString(WeaponClass wc)
         {
@@ -307,6 +308,10 @@ namespace RBMAI
                     {
                         //TODO: decide chamber block posture damage
                         return (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_PARRY_REFLECT").GetValue(null) * 2f;
+                    }
+                case MeleeHitType.AgentHit:
+                    {
+                        return AGENT_HIT_REFLECT;
                     }
                 default:
                     {

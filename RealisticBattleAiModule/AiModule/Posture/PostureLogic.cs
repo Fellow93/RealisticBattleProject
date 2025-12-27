@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using TaleWorlds.CampaignSystem.TournamentGames;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
@@ -20,8 +21,10 @@ namespace RBMAI
         //private static int tickCooldownReset = 30;
         //private static int tickCooldown = 0;
         private static float timeToCalc = 0.5f;
+        private static float timeToUpdateAgents = 3f;
 
         private static float currentDt = 0f;
+        private static float currentDtToUpdateAgents = 0f;
         private static int postureEffectCheck = 0;
         private static int postureEffectCheckCooldown = 15;
 
@@ -811,7 +814,7 @@ namespace RBMAI
                 basePostureDamage = basePostureDamage * ((1f + attackerEffectiveStrengthSkill + attackerEffectiveWeaponSkill) / (1f + defenderEffectiveStrengthSkill + defenderEffectiveWeaponSkill)) * lwrpostureModifier;
 
                 //actionTypeDamageModifier += actionTypeDamageModifier * 0.5f * comHitModifier;
-                result = basePostureDamage * actionTypeDamageModifier * defenderPostureDamageModifier * comHitModifier; ;
+                result = basePostureDamage * actionTypeDamageModifier * defenderPostureDamageModifier * comHitModifier;
                 //InformationManager.DisplayMessage(new InformationMessage("Deffender PD: " + result));
                 return result;
             }
@@ -820,7 +823,6 @@ namespace RBMAI
             {
 
                 float result = 0f;
-                float postureDamageModifier = 1f; // terms and conditions may apply
 
                 float strengthSkillModifier = 500f;
                 float weaponSkillModifier = 500f;
@@ -918,7 +920,7 @@ namespace RBMAI
                 basePostureDamage = basePostureDamage * ((1f + defenderEffectiveStrengthSkill + defenderEffectiveWeaponSkill) / (1f + attackerEffectiveStrengthSkill + attackerEffectiveWeaponSkill)) * lwrpostureModifier;
 
                 //actionTypeDamageModifier += actionTypeDamageModifier * 0.5f * comHitModifier;
-                result = basePostureDamage * actionTypeDamageModifier * postureDamageModifier * comHitModifier;
+                result = basePostureDamage * actionTypeDamageModifier * comHitModifier;
                 //InformationManager.DisplayMessage(new InformationMessage("Attacker PD: " + result));
                 return result;
             }
@@ -1449,16 +1451,28 @@ namespace RBMAI
             }
         }
 
-        public void handlePostureLevelEffects(Agent agent, Posture posture)
-        {
-            agent.UpdateAgentStats();
-        }
+        //public void handlePostureLevelEffects(Agent agent, Posture posture)
+        //{
+        //    agent.UpdateAgentStats();
+        //}
 
         public override void OnMissionTick(float dt)
         {
             base.OnMissionTick(dt);
             if (RBMConfig.RBMConfig.postureEnabled && Mission.Current.AllowAiTicking)
             {
+                if (currentDtToUpdateAgents < timeToUpdateAgents)
+                {
+                    currentDtToUpdateAgents += dt;
+                }
+                else
+                {
+                    foreach (var agent in Mission.Current.Agents.Where((Agent a) => a.IsActive() && a.IsHuman))
+                    {
+                        agent.UpdateAgentStats();
+                    }
+                    currentDtToUpdateAgents = 0f;
+                }
                 if (currentDt < timeToCalc)
                 {
                     currentDt += dt;
@@ -1473,7 +1487,6 @@ namespace RBMAI
                             inactiveAgents.Add(entry.Key);
                             continue;
                         }
-                        handlePostureLevelEffects(entry.Key, entry.Value);
                         if (entry.Key.IsPlayerControlled)
                         {
                             if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)

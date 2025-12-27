@@ -1276,6 +1276,18 @@ namespace RBMAI
         public static float GetComHitModifier(in AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
         {
             WeaponComponentData currentUsageItem = attackerWeapon.CurrentUsageItem;
+            if (collisionData.StrikeType == (int)StrikeType.Thrust)
+            {
+                if (collisionData.CollisionHitResultFlags == CombatHitResultFlags.NormalHit)
+                {
+                    return 1f;
+                }
+                else
+                {
+                    return 0.3f;
+                }
+            }
+
             float comHitModifier = 0f;
             if (attackerWeapon.Item != null && currentUsageItem != null && attackerWeapon.Item.WeaponDesign != null &&
                 attackerWeapon.Item.WeaponDesign.UsedPieces != null && attackerWeapon.Item.WeaponDesign.UsedPieces.Length > 0)
@@ -1284,8 +1296,28 @@ namespace RBMAI
                 float comAsPercent = MBMath.ClampFloat(currentUsageItem.CenterOfMass, -0.2f, currentUsageItem.GetRealWeaponLength()) / currentUsageItem.GetRealWeaponLength();
                 comHitModifier = 1f - Math.Abs(comAsPercent - impactPointAsPercent);
                 if (attackerWeapon.CurrentUsageItem != null)
+                {
                     switch (attackerWeapon.CurrentUsageItem.WeaponClass)
                     {
+                        case WeaponClass.OneHandedAxe:
+                        case WeaponClass.TwoHandedAxe:
+                        case WeaponClass.Mace:
+                        case WeaponClass.TwoHandedMace:
+                        case WeaponClass.TwoHandedPolearm:
+                            {
+                                if (collisionData.StrikeType == (int)StrikeType.Swing)
+                                {
+                                    if (HitWithWeaponBlade(collisionData, attackerWeapon))
+                                    {
+                                        return 1f;
+                                    }
+                                    else
+                                    {
+                                        return 0.3f;
+                                    }
+                                }
+                                break;
+                            }
                         case WeaponClass.Dagger:
                         case WeaponClass.OneHandedSword:
                         case WeaponClass.TwoHandedSword:
@@ -1294,11 +1326,12 @@ namespace RBMAI
                                 float realWeaponLength = currentUsageItem.GetRealWeaponLength();
                                 if (collisionData.CollisionDistanceOnWeapon < (realWeaponLength - bladeLength))
                                 {
-                                    comHitModifier = 1f;
+                                    return 1f;
                                 }
                                 break;
                             }
                     }
+                }
             }
             return comHitModifier;
         }
