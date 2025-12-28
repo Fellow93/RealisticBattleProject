@@ -12,6 +12,8 @@
     <DependedModule Id="StoryMode" DependentVersion="v1.3.13" Optional="false"/>
 	<DependedModule Id="CustomBattle" DependentVersion="v1.3.13" Optional="false"/>
 	<DependedModule Id="BirthAndDeath" DependentVersion="v1.3.13" Optional="true"/>
+	<DependedModule Id="RTSCamera" Optional="true"/>
+	<DependedModule Id="RTSCamera.CommandSystem" Optional="true"/>
 
   </DependedModules>
   <SubModules>

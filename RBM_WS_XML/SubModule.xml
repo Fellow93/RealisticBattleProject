@@ -5,6 +5,7 @@
   <DefaultModule value="true"/>
   <ModuleCategory value="Singleplayer"/>
   <DependedModules>
+  
     <DependedModule Id="Native" DependentVersion="v1.3.12" Optional="false"/>
     <DependedModule Id="SandBoxCore" DependentVersion="v1.3.12" Optional="false"/>
     <DependedModule Id="Sandbox" DependentVersion="v1.3.12" Optional="false"/>
@@ -13,6 +14,9 @@
 	<DependedModule Id="BirthAndDeath" DependentVersion="v1.3.12" Optional="true"/>
     <DependedModule Id="NavalDLC" DependentVersion="v1.1.0" Optional="false"/>
 	<DependedModule Id="RBM" DependentVersion="v1.1.0" Optional="false"/>
+	<DependedModule Id="RTSCamera" Optional="true"/>
+	<DependedModule Id="RTSCamera.CommandSystem" Optional="true"/>
+	
   </DependedModules>
   <SubModules>
   </SubModules>
