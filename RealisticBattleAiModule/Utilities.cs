@@ -1332,6 +1332,18 @@ namespace RBMAI
                             }
                     }
                 }
+                if (comHitModifier > 0.66f)
+                {
+                    return 1f;
+                }
+                else if (comHitModifier > 0.33f)
+                {
+                    return 0.66f;
+                }
+                else
+                {
+                    return 0.33f;
+                }
             }
             return comHitModifier;
         }

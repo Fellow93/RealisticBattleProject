@@ -91,6 +91,7 @@ namespace RBMAI
                                 effectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, weaponSkill);
                             }
 
+                            float basePosture = 30f;
                             float athleticBase = 20f;
                             float weaponSkillBase = 80f;
                             float strengthSkillModifier = 500f;
@@ -99,16 +100,17 @@ namespace RBMAI
                             float weaponSkillRegenBase = 0.064f;
                             float baseModifier = 1f;
 
+                            posture.maxPosture = basePosture;
                             if (__instance.HasMount)
                             {
                                 int effectiveRidingSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, DefaultSkills.Riding);
-                                posture.maxPosture = (athleticBase * (baseModifier + (effectiveRidingSkill / strengthSkillModifier))) + (weaponSkillBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier))) + 30f; //+30f just trying something
+                                posture.maxPosture += (athleticBase * (baseModifier + (effectiveRidingSkill / strengthSkillModifier))) + (weaponSkillBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
                                 posture.regenPerTick = (athleticRegenBase * (baseModifier + (effectiveRidingSkill / strengthSkillModifier))) + (weaponSkillRegenBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
                             }
                             else
                             {
                                 int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, DefaultSkills.Athletics);
-                                posture.maxPosture = (athleticBase * (baseModifier + (effectiveAthleticSkill / strengthSkillModifier))) + (weaponSkillBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier))) + 30f; //+30f just trying something
+                                posture.maxPosture += (athleticBase * (baseModifier + (effectiveAthleticSkill / strengthSkillModifier))) + (weaponSkillBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
                                 posture.regenPerTick = (athleticRegenBase * (baseModifier + (effectiveAthleticSkill / strengthSkillModifier))) + (weaponSkillRegenBase * (baseModifier + (effectiveWeaponSkill / weaponSkillModifier)));
                             }
 
@@ -322,11 +324,12 @@ namespace RBMAI
                 if (posture != null)
                 {
                     float postureDmg = calculateAttackerPostureDamage(victimAgent, attackerAgent, actionModifier, ref collisionData, attackerWeapon, comHitModifier, meleeHitType);
+                    float postureOverkill = Math.Abs(posture.posture - postureDmg);
                     posture.posture = Math.Max(0f, posture.posture - postureDmg);
                     addPosturedamageVisual(attackerAgent, victimAgent);
                     if (posture.posture <= 0f)
                     {
-                        if (postureDmg >= posture.maxPosture * 0.5f)
+                        if (postureOverkill >= posture.maxPosture * 0.5f)
                         {
                             if (dropWeapon)
                             {
@@ -810,18 +813,19 @@ namespace RBMAI
                         }
                     }
                 }
-                float lwrpostureModifier = calculateDefenderLWRPostureModifier(attackerAgent, defenderAgent, attackerWeaponLength, defenderWeaponLength, attackerWeaponWeight, attackBlockedByOneHanedWithoutShield, collisionData.AttackBlockedWithShield);
-                basePostureDamage = basePostureDamage * ((1f + attackerEffectiveStrengthSkill + attackerEffectiveWeaponSkill) / (1f + defenderEffectiveStrengthSkill + defenderEffectiveWeaponSkill)) * lwrpostureModifier;
+                //float lwrpostureModifier = calculateDefenderLWRPostureModifier(attackerAgent, defenderAgent, attackerWeaponLength, defenderWeaponLength, attackerWeaponWeight, attackBlockedByOneHanedWithoutShield, collisionData.AttackBlockedWithShield);
+                float skillModifier = (1f + attackerEffectiveStrengthSkill + attackerEffectiveWeaponSkill) / (1f + defenderEffectiveStrengthSkill + defenderEffectiveWeaponSkill);
+                float aditiveSpeedModifier = getRelativeSpeedPostureModifier(attackerAgent, defenderAgent);
+                basePostureDamage = (basePostureDamage + aditiveSpeedModifier) * skillModifier;
 
                 //actionTypeDamageModifier += actionTypeDamageModifier * 0.5f * comHitModifier;
                 result = basePostureDamage * actionTypeDamageModifier * defenderPostureDamageModifier * comHitModifier;
-                //InformationManager.DisplayMessage(new InformationMessage("Deffender PD: " + result));
+                InformationManager.DisplayMessage(new InformationMessage("Deffender PD: " + result));
                 return result;
             }
 
             private static float calculateAttackerPostureDamage(Agent defenderAgent, Agent attackerAgent, float actionTypeDamageModifier, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier, MeleeHitType meleeHitType)
             {
-
                 float result = 0f;
 
                 float strengthSkillModifier = 500f;
@@ -916,59 +920,72 @@ namespace RBMAI
                     }
                 }
 
-                float lwrpostureModifier = calculateAttackerLWRPostureModifier(attackerAgent, defenderAgent, attackerWeaponLength, defenderWeaponLength, attackerWeaponWeight, defenderWeaponWeight, attackBlockedByOneHanedWithoutShield, collisionData.AttackBlockedWithShield);
-                basePostureDamage = basePostureDamage * ((1f + defenderEffectiveStrengthSkill + defenderEffectiveWeaponSkill) / (1f + attackerEffectiveStrengthSkill + attackerEffectiveWeaponSkill)) * lwrpostureModifier;
+                //float lwrpostureModifier = calculateAttackerLWRPostureModifier(attackerAgent, defenderAgent, attackerWeaponLength, defenderWeaponLength, attackerWeaponWeight, defenderWeaponWeight, attackBlockedByOneHanedWithoutShield, collisionData.AttackBlockedWithShield);
+                float skillModifier = (1f + defenderEffectiveStrengthSkill + defenderEffectiveWeaponSkill) / (1f + attackerEffectiveStrengthSkill + attackerEffectiveWeaponSkill);
+                float aditiveSpeedModifier = getRelativeSpeedPostureModifier(attackerAgent, defenderAgent);
+                basePostureDamage = (basePostureDamage + aditiveSpeedModifier) * skillModifier;
 
                 //actionTypeDamageModifier += actionTypeDamageModifier * 0.5f * comHitModifier;
                 result = basePostureDamage * actionTypeDamageModifier * comHitModifier;
-                //InformationManager.DisplayMessage(new InformationMessage("Attacker PD: " + result));
+                InformationManager.DisplayMessage(new InformationMessage("Attacker PD: " + result));
                 return result;
             }
 
-            public static float calculateDefenderLWRPostureModifier(
-                Agent attackerAgent, Agent defenderAgent,
-                float attackerWeaponLength, float defenderWeaponLength, float attackerWeaponWeight, bool attackBlockedByOneHanded, bool attackBlockedByShield)
+            public static float getRelativeSpeedPostureModifier(Agent attackerAgent, Agent defenderAgent)
             {
-                float relativeSpeed = (defenderAgent.Velocity - attackerAgent.Velocity).Length * relativeSpeedPostureFactor;
-                if (attackBlockedByShield)
+                float retVal = 0f;
+                float relativeSpeed = (defenderAgent.Velocity - attackerAgent.Velocity).Length;
+                if (relativeSpeed > 0f)
                 {
-                    return 1f + ((attackerWeaponWeight / 2f) + relativeSpeed) / 4f;
+                    retVal = relativeSpeed * 4f;
                 }
-                else
-                {
-                    if (attackBlockedByOneHanded)
-                    {
-                        return 1f + ((attackerWeaponWeight / 2f) + relativeSpeed) / 2f;
-                    }
-                    else
-                    {
-                        return 1f + ((attackerWeaponWeight / 2f) + relativeSpeed) / 3f;
-                    }
-                }
+                return retVal;
             }
 
-            public static float calculateAttackerLWRPostureModifier(
-                Agent attackerAgent, Agent defenderAgent,
-                float attackerWeaponLength, float defenderWeaponLength,
-                float attackerWeaponWeight, float defenderWeaponWeight, bool attackBlockedByOneHanded, bool attackBlockedByShield)
-            {
-                float relativeSpeed = (defenderAgent.Velocity - attackerAgent.Velocity).Length * relativeSpeedPostureFactor;
-                if (attackBlockedByShield)
-                {
-                    return 1f + (relativeSpeed) / 2f;
-                }
-                else
-                {
-                    if (attackBlockedByOneHanded)
-                    {
-                        return 1f + (relativeSpeed) / 4f;
-                    }
-                    else
-                    {
-                        return 1f + (relativeSpeed) / 3f;
-                    }
-                }
-            }
+            //public static float calculateDefenderLWRPostureModifier(
+            //    Agent attackerAgent, Agent defenderAgent,
+            //    float attackerWeaponLength, float defenderWeaponLength, float attackerWeaponWeight, bool attackBlockedByOneHanded, bool attackBlockedByShield)
+            //{
+            //    float relativeSpeed = (defenderAgent.Velocity - attackerAgent.Velocity).Length * relativeSpeedPostureFactor;
+            //    if (attackBlockedByShield)
+            //    {
+            //        return 1f + ((attackerWeaponWeight / 2f) + relativeSpeed) / 4f;
+            //    }
+            //    else
+            //    {
+            //        if (attackBlockedByOneHanded)
+            //        {
+            //            return 1f + ((attackerWeaponWeight / 2f) + relativeSpeed) / 2f;
+            //        }
+            //        else
+            //        {
+            //            return 1f + ((attackerWeaponWeight / 2f) + relativeSpeed) / 3f;
+            //        }
+            //    }
+            //}
+
+            //public static float calculateAttackerLWRPostureModifier(
+            //    Agent attackerAgent, Agent defenderAgent,
+            //    float attackerWeaponLength, float defenderWeaponLength,
+            //    float attackerWeaponWeight, float defenderWeaponWeight, bool attackBlockedByOneHanded, bool attackBlockedByShield)
+            //{
+            //    float relativeSpeed = (defenderAgent.Velocity - attackerAgent.Velocity).Length * relativeSpeedPostureFactor;
+            //    if (attackBlockedByShield)
+            //    {
+            //        return 1f + (relativeSpeed) / 2f;
+            //    }
+            //    else
+            //    {
+            //        if (attackBlockedByOneHanded)
+            //        {
+            //            return 1f + (relativeSpeed) / 4f;
+            //        }
+            //        else
+            //        {
+            //            return 1f + (relativeSpeed) / 3f;
+            //        }
+            //    }
+            //}
 
             private static void makePostureRiposteBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, BlowFlags addedBlowFlag)
             {
