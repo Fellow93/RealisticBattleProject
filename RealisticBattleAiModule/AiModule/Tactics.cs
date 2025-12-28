@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
-using TaleWorlds.MountAndBlade.GauntletUI.Mission.Singleplayer;
 using TaleWorlds.MountAndBlade.ViewModelCollection.HUD.FormationMarker;
 using static TaleWorlds.Core.ItemObject;
 
@@ -312,8 +311,8 @@ namespace RBMAI
             }
         }
 
-        private static float originalDefenderPower = 0f;
-        private static float originalAttackerPower = 0f;
+        //private static float originalDefenderPower = 0f;
+        //private static float originalAttackerPower = 0f;
 
         [HarmonyPatch(typeof(MissionCombatantsLogic))]
         [HarmonyPatch("EarlyStart")]
@@ -329,15 +328,15 @@ namespace RBMAI
                 PostureLogic.agentsToDropWeapon.Clear();
                 PostureLogic.agentsToDropShield.Clear();
                 AgentPostures.values.Clear();
-                originalDefenderPower = 0f;
-                originalAttackerPower = 0f;
+                //originalDefenderPower = 0f;
+                //originalAttackerPower = 0f;
                 if (Mission.Current.Teams.Any())
                 {
                     if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
                     {
                         foreach (Team team in Mission.Current.Teams.Where((Team t) => t.HasTeamAi).ToList())
                         {
-                            
+
                             if (team.Side == BattleSideEnum.Attacker)
                             {
                                 team.ClearTacticOptions();
@@ -373,7 +372,7 @@ namespace RBMAI
                                 }
                                 team.AddTacticOption(new TacticDefensiveEngagement(team));
                                 team.AddTacticOption(new TacticDefensiveLine(team));
-                                if (___DefenderLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "sturgia")
+                                if (___DefenderLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "sturgia" || ___AttackerLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "nord")
                                 {
                                     team.AddTacticOption(new RBMTacticDefendSplitInfantry(team));
                                 }
@@ -393,84 +392,52 @@ namespace RBMAI
             [HarmonyPatch("GetTacticWeight")]
             private static bool PrefixGetTacticWeight(ref TacticCoordinatedRetreat __instance, ref float __result)
             {
-                float defenderPower = 0f;
-                float attackerPower = 0f;
-
+                bool defederHasOnlyCavalry = true;
+                bool attackerHasOnlyCavalry = true;
                 if (Mission.Current != null)
                 {
-                    if(originalDefenderPower == 0f)
+                    Mission.Current.Teams.Where(team => team.IsDefender).ToList().ForEach(team =>
                     {
-                        originalDefenderPower = Mission.Current.Teams.Where(team => team.IsDefender).Sum(team =>
+                        if (team.ActiveAgents.Where(a => !a.HasMount).Count() > 0)
                         {
-                            float power = team.QuerySystem.BattlePowerLogic.GetTotalTeamPower(team);
-                            return power;
-                        });
-                    }
-
-                    if (originalAttackerPower == 0f)
-                    {
-                        originalAttackerPower = Mission.Current.Teams.Where(team => team.IsAttacker).Sum(team =>
-                        {
-                            float power = team.QuerySystem.BattlePowerLogic.GetTotalTeamPower(team);
-                            return power;
-                        });
-                    }
-                    
-                    defenderPower = Mission.Current.Teams.Where(team => team.IsDefender).Sum(team =>
-                    {
-                        float power = 0f;
-                        foreach (Agent agent in team.ActiveAgents)
-                        {
-                            power += agent.CharacterPowerCached;
+                            defederHasOnlyCavalry = false;
                         }
-                        return power;
                     });
-                    attackerPower = Mission.Current.Teams.Where(team => team.IsAttacker).Sum(team =>
+                    Mission.Current.Teams.Where(team => team.IsAttacker).ToList().ForEach(team =>
                     {
-                        float power = 0f;
-                        foreach (Agent agent in team.ActiveAgents)
+                        if (team.ActiveAgents.Where(a => !a.HasMount).Count() > 0)
                         {
-                            power += agent.CharacterPowerCached;
+                            attackerHasOnlyCavalry = false;
                         }
-                        return power;
                     });
-
-                    if (originalDefenderPower < defenderPower)
-                    {
-                        originalDefenderPower = defenderPower;
-                    }
-                    if (originalAttackerPower < attackerPower)
-                    {
-                        originalAttackerPower = attackerPower;
-                    }
                 }
                 if (__instance.Team.IsDefender)
                 {
-                    if (__instance.Team.IsDefender && originalDefenderPower > 0f && 
-                        (defenderPower / originalDefenderPower <= 0.15f) && 
-                        __instance.Team.QuerySystem.RemainingPowerRatio < 0.5f)
+                    if (__instance.Team.IsDefender && __instance.Team.QuerySystem.RemainingPowerRatio < 0.1f && defederHasOnlyCavalry)
                     {
-                        foreach (Formation formation in __instance.Team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
+                        Mission.Current.Teams.Where(team => team.IsDefender).ToList().ForEach(team =>
                         {
-                            formation.AI.ResetBehaviorWeights();
-                            formation.AI.SetBehaviorWeight<BehaviorRetreat>(100f);
-                        }
-                        __result = 1000f;
+                            team.ActiveAgents.ToList().ForEach(agent =>
+                            {
+                                agent.SetMorale(0f);
+                            });
+                        });
+                        __result = 0f;
                         return false;
                     }
                 }
                 else
                 {
-                    if (__instance.Team.IsAttacker && originalAttackerPower > 0f && 
-                        (attackerPower / originalAttackerPower <= 0.15f) && 
-                        __instance.Team.QuerySystem.RemainingPowerRatio < 0.5f)
+                    if (__instance.Team.IsAttacker && __instance.Team.QuerySystem.RemainingPowerRatio < 0.1f && attackerHasOnlyCavalry)
                     {
-                        foreach (Formation formation in __instance.Team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
+                        Mission.Current.Teams.Where(team => team.IsAttacker).ToList().ForEach(team =>
                         {
-                            formation.AI.ResetBehaviorWeights();
-                            formation.AI.SetBehaviorWeight<BehaviorRetreat>(100f);
-                        }
-                        __result = 1000f;
+                            team.ActiveAgents.ToList().ForEach(agent =>
+                            {
+                                agent.SetMorale(0f);
+                            });
+                        });
+                        __result = 0f;
                         return false;
                     }
                 }
