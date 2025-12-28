@@ -1,0 +1,107 @@
+﻿<Module>
+  <Name value="(RBM) Realistic Battle Mod War Sails"/>
+  <Id value="RBM_WS"/>
+  <Version value="v4.1.3"/>
+  <DefaultModule value="true"/>
+  <ModuleCategory value="Singleplayer"/>
+  <DependedModules>
+    <DependedModule Id="Native" DependentVersion="v1.3.12" Optional="false"/>
+    <DependedModule Id="SandBoxCore" DependentVersion="v1.3.12" Optional="false"/>
+    <DependedModule Id="Sandbox" DependentVersion="v1.3.12" Optional="false"/>
+    <DependedModule Id="StoryMode" DependentVersion="v1.3.12" Optional="false"/>
+	<DependedModule Id="CustomBattle" DependentVersion="v1.3.12" Optional="false"/>
+	<DependedModule Id="BirthAndDeath" DependentVersion="v1.3.12" Optional="true"/>
+    <DependedModule Id="NavalDLC" DependentVersion="v1.1.0" Optional="false"/>
+	<DependedModule Id="RBM" DependentVersion="v1.1.0" Optional="false"/>
+  </DependedModules>
+  <SubModules>
+  </SubModules>
+  <Xmls>
+
+	<XmlNode>
+		<XmlName id="Items" path="RBMCombat_WS_items"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+			<GameType value="EditorGame" />
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="Items" path="RBMCombat_WS_arrow_visuals"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+			<GameType value="EditorGame" />
+		</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="CraftingPieces" path="RBMCombat_WS_crafting_pieces"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+			<GameType value="EditorGame" />
+		</IncludedGameTypes>
+	</XmlNode>
+	
+    <XmlNode>	
+      <XmlName
+        path="XSLT/RBMCombat_WS_CraftingTemplates"
+        id="CraftingTemplates" />
+      <IncludedGameTypes>
+        <GameType
+          value="Campaign" />
+        <GameType
+          value="CampaignStoryMode" />
+        <GameType
+          value="CustomGame" />
+        <GameType
+          value="EditorGame" />
+      </IncludedGameTypes>
+    </XmlNode>
+    <XmlNode>
+      <XmlName
+        path="XSLT/RBMCombat_WS_WeaponDescriptions"
+        id="WeaponDescriptions" />
+      <IncludedGameTypes>
+        <GameType
+          value="Campaign" />
+        <GameType
+          value="CampaignStoryMode" />
+        <GameType
+          value="CustomGame" />
+        <GameType
+          value="EditorGame" />
+      </IncludedGameTypes>
+    </XmlNode>
+
+	<XmlNode>                
+			<XmlName id="NPCCharacters" path="RBMCombat_WS_unit_overhaul"/>
+			<IncludedGameTypes>
+				<GameType value = "Campaign"/>
+				<GameType value = "CampaignStoryMode"/>
+				<GameType value = "CustomGame"/>
+				<GameType value = "EditorGame"/>
+			</IncludedGameTypes>
+	</XmlNode>
+	<XmlNode>                
+			<XmlName id="NPCCharacters" path="RBMCombat_WS_custom_battle"/>
+			<IncludedGameTypes>
+				<GameType value = "CustomGame"/>
+			</IncludedGameTypes>
+	</XmlNode>
+	
+	<XmlNode>
+		<XmlName id="Items" path="RBMCombat_WS_Weapons"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+			<GameType value="EditorGame" />
+		</IncludedGameTypes>
+	</XmlNode>
+	
+  </Xmls>
+</Module>

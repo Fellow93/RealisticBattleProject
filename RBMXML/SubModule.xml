@@ -5,6 +5,7 @@
   <DefaultModule value="true"/>
   <ModuleCategory value="Singleplayer"/>
   <DependedModules>
+<<<<<<< Updated upstream
     <DependedModule Id="Native" DependentVersion="v1.3.13" Optional="false"/>
     <DependedModule Id="SandBoxCore" DependentVersion="v1.3.13" Optional="false"/>
     <DependedModule Id="Sandbox" DependentVersion="v1.3.13" Optional="false"/>
@@ -12,6 +13,14 @@
 	<DependedModule Id="CustomBattle" DependentVersion="v1.3.13" Optional="false"/>
 	<DependedModule Id="BirthAndDeath" DependentVersion="v1.3.13" Optional="true"/>
     <DependedModule Id="NavalDLC" DependentVersion="v1.1.1" Optional="false"/>
+=======
+    <DependedModule Id="Native" DependentVersion="v1.3.12" Optional="false"/>
+    <DependedModule Id="SandBoxCore" DependentVersion="v1.3.12" Optional="false"/>
+    <DependedModule Id="Sandbox" DependentVersion="v1.3.12" Optional="false"/>
+    <DependedModule Id="StoryMode" DependentVersion="v1.3.12" Optional="false"/>
+	<DependedModule Id="CustomBattle" DependentVersion="v1.3.12" Optional="false"/>
+	<DependedModule Id="BirthAndDeath" DependentVersion="v1.3.12" Optional="true"/>
+>>>>>>> Stashed changes
   </DependedModules>
   <SubModules>
     <SubModule>
