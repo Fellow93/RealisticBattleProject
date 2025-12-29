@@ -1,19 +1,19 @@
 ﻿<Module>
-  <Name value="(RBM) Realistic Battle Mod War Sails"/>
+  <Name value="(RBM WS) Realistic Battle Mod War Sails Submod"/>
   <Id value="RBM_WS"/>
-  <Version value="v4.1.3"/>
+  <Version value="v4.1.5"/>
   <DefaultModule value="true"/>
   <ModuleCategory value="Singleplayer"/>
   <DependedModules>
   
-    <DependedModule Id="Native" DependentVersion="v1.3.12" Optional="false"/>
-    <DependedModule Id="SandBoxCore" DependentVersion="v1.3.12" Optional="false"/>
-    <DependedModule Id="Sandbox" DependentVersion="v1.3.12" Optional="false"/>
-    <DependedModule Id="StoryMode" DependentVersion="v1.3.12" Optional="false"/>
-	<DependedModule Id="CustomBattle" DependentVersion="v1.3.12" Optional="false"/>
-	<DependedModule Id="BirthAndDeath" DependentVersion="v1.3.12" Optional="true"/>
-    <DependedModule Id="NavalDLC" DependentVersion="v1.1.0" Optional="false"/>
-	<DependedModule Id="RBM" DependentVersion="v1.1.0" Optional="false"/>
+    <DependedModule Id="Native" DependentVersion="v1.3.13" Optional="false"/>
+    <DependedModule Id="SandBoxCore" DependentVersion="v1.3.13" Optional="false"/>
+    <DependedModule Id="Sandbox" DependentVersion="v1.3.13" Optional="false"/>
+    <DependedModule Id="StoryMode" DependentVersion="v1.3.13" Optional="false"/>
+	<DependedModule Id="CustomBattle" DependentVersion="v1.3.13" Optional="false"/>
+	<DependedModule Id="BirthAndDeath" DependentVersion="v1.3.13" Optional="true"/>
+    <DependedModule Id="NavalDLC" DependentVersion="v1.1.1" Optional="false"/>
+	<DependedModule Id="RBM" DependentVersion="v4.1.5" Optional="false"/>
 	<DependedModule Id="RTSCamera" Optional="true"/>
 	<DependedModule Id="RTSCamera.CommandSystem" Optional="true"/>
 	
