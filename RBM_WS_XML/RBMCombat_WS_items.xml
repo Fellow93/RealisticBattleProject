@@ -1907,7 +1907,7 @@
 				thrust_damage_type="Pierce"
 				item_usage=""
 				flying_sound_code="event:/mission/combat/missile/foley/passby"
-				trail_particle_name="psys_game_missile_flame"
+				trail_particle_name="mangonel_grapeshot_burning_projectile"
 				sticking_rotation="90,0,0"
 				sticking_position="0,-1.2,0"
 				center_of_mass="0,0,-0.3">
@@ -1931,7 +1931,7 @@
 		body_name="bo_capsule_arrow"
 		holster_body_name="bo_arrow_bl_i_quiver"
 		mesh="arrow_bl_i"
-		weight="0.043"
+		weight="0.050"
 		appearance="1"
 		holster_mesh="arrow_bl_i_quiver"
 		holster_mesh_with_weapon="arrow_bl_i_quiver"
@@ -1941,14 +1941,15 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="Arrow"
-				stack_amount="27"
+				trail_particle_name="mangonel_grapeshot_burning_projectile"
+				stack_amount="30"
 				thrust_speed="0"
 				speed_rating="0"
 				physics_material="missile"
-				missile_speed="10"
+				missile_speed="60"
 				weapon_length="97"
-				thrust_damage="1"
-				fire_damage="16"
+				thrust_damage="150"
+				fire_damage="50"
 				thrust_damage_type="Pierce"
 				item_usage="arrow_right"
 				passby_sound_code="event:/mission/combat/missile/passby"
@@ -1961,7 +1962,8 @@
 					Consumable="true"
 					AmmoSticksWhenShot="true"
 					AmmoBreaksOnBounceBack="true"
-					Burning="true" />
+					Burning="true"
+					LeavesTrail="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags />
@@ -1974,7 +1976,6 @@
 		body_name="bo_capsule_arrow"
 		holster_body_name="bo_axe_short"
 		mesh="bolt_bl_c"
-		value="1"
 		is_merchandise="false"
 		holster_mesh="bolt_bl_c_quiver"
 		holster_mesh_with_weapon="bolt_bl_c_quiver"
@@ -1985,13 +1986,14 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="Bolt"
-				stack_amount="25"
+				trail_particle_name="mangonel_grapeshot_burning_projectile"
+				stack_amount="30"
 				thrust_speed="0"
 				thrust_damage_type="Pierce"
-				thrust_damage="0"
-				fire_damage="17"
+				thrust_damage="150"
+				fire_damage="50"
 				speed_rating="0"
-				missile_speed="10"
+				missile_speed="60"
 				weapon_length="37"
 				item_usage=""
 				passby_sound_code="event:/mission/combat/missile/passby"
@@ -2006,7 +2008,8 @@
 					Consumable="true"
 					AmmoSticksWhenShot="true"
 					Burning="true"
-					AmmoBreaksOnBounceBack="true" />
+					AmmoBreaksOnBounceBack="true" 
+					LeavesTrail="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags

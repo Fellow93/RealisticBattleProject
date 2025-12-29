@@ -1,7 +1,7 @@
 ﻿<Module>
   <Name value="(RBM WS) Realistic Battle Mod War Sails Submod"/>
   <Id value="RBM_WS"/>
-  <Version value="v4.1.5"/>
+  <Version value="v4.1.6"/>
   <DefaultModule value="true"/>
   <ModuleCategory value="Singleplayer"/>
   <DependedModules>

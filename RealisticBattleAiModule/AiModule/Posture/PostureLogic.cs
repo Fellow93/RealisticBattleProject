@@ -927,7 +927,7 @@ namespace RBMAI
 
                 //actionTypeDamageModifier += actionTypeDamageModifier * 0.5f * comHitModifier;
                 result = basePostureDamage * actionTypeDamageModifier * comHitModifier;
-                InformationManager.DisplayMessage(new InformationMessage("Attacker PD: " + result));
+                //InformationManager.DisplayMessage(new InformationMessage("Attacker PD: " + result));
                 return result;
             }
 
