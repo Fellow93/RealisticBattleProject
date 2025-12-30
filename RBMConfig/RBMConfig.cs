@@ -1,10 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using TaleWorlds.Engine;
-using TaleWorlds.Library;
-using TaleWorlds.ModuleManager;
-using TaleWorlds.MountAndBlade;
 
 namespace RBMConfig
 {
@@ -50,6 +46,7 @@ namespace RBMConfig
 
         public static void LoadConfig()
         {
+            weaponTypesFactors.Clear();
             Utilities.createWeaponTypesFactors(ref weaponTypesFactors);
             string configFolderPath = Utilities.GetConfigFolderPath();
             string configFilePath = Utilities.GetConfigFilePath();
@@ -143,9 +140,10 @@ namespace RBMConfig
             sneakAttackInstaKill = xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/SneakAttackInstaKill").InnerText.Equals("1");
 
             ThrustMagnitudeModifier = float.Parse(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ThrustMagnitudeModifier").InnerText);
-            OneHandedThrustDamageBonus = 1f/ThrustMagnitudeModifier;
+            OneHandedThrustDamageBonus = 1f / ThrustMagnitudeModifier;
             TwoHandedThrustDamageBonus = 1f / ThrustMagnitudeModifier;
 
+            weaponTypesFactors.Clear();
             foreach (XmlNode weaponTypeNode in xmlConfig.SelectSingleNode("/Config/RBMCombat/WeaponTypes").ChildNodes)
             {
                 RBMCombatConfigWeaponType weaponTypeFactors = new RBMCombatConfigWeaponType();
