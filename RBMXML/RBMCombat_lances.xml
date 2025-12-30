@@ -607,7 +607,7 @@
   	<CraftedItem
 		id="imperial_throwing_spear_1_t4_2"
 		name="{=rkqaCud5}Heavy Pilum"
-		is_merchandise="True"
+		is_merchandise="true"
 		culture="Culture.empire"
 		modifier_group="spear_dart_throwing"
 		crafting_template="Javelin">
