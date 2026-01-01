@@ -41,10 +41,11 @@ public class SiegeArcherPoints : MissionLogic
                                                        select amo as StrategicArea).ToList();
                 foreach (StrategicArea _strategicArea in _strategicAreas)
                 {
-                    Mission.Current.Teams.DefenderAlly.TeamAI.RemoveStrategicArea(_strategicArea);
-                    _strategicArea.GameEntity.RemoveAllChildren();
-                    _strategicArea.GameEntity.Remove(1);
                     Mission.Current.Teams.Defender.TeamAI.RemoveStrategicArea(_strategicArea);
+                    if (Mission.Current.Teams.DefenderAlly != null)
+                    {
+                        Mission.Current.Teams.DefenderAlly.TeamAI.RemoveStrategicArea(_strategicArea);
+                    }
                     _strategicArea.GameEntity.RemoveAllChildren();
                     _strategicArea.GameEntity.Remove(1);
                 }
@@ -55,7 +56,10 @@ public class SiegeArcherPoints : MissionLogic
                         if (g2.GetFirstScriptOfType<StrategicArea>().IsUsableBy(BattleSideEnum.Defender))
                         {
                             Mission.Current.Teams.Defender.TeamAI.RemoveStrategicArea(g2.GetFirstScriptOfType<StrategicArea>());
-                            Mission.Current.Teams.DefenderAlly.TeamAI.RemoveStrategicArea(g2.GetFirstScriptOfType<StrategicArea>());
+                            if (Mission.Current.Teams.DefenderAlly != null)
+                            {
+                                Mission.Current.Teams.DefenderAlly.TeamAI.RemoveStrategicArea(g2.GetFirstScriptOfType<StrategicArea>());
+                            }
                             g2.RemoveAllChildren();
                             g2.Remove(1);
                         }
@@ -72,7 +76,10 @@ public class SiegeArcherPoints : MissionLogic
                 foreach (GameEntity g in ListG)
                 {
                     Mission.Current.Teams.Defender.TeamAI.RemoveStrategicArea(g.GetFirstScriptOfType<StrategicArea>());
-                    Mission.Current.Teams.DefenderAlly.TeamAI.RemoveStrategicArea(g.GetFirstScriptOfType<StrategicArea>());
+                    if (Mission.Current.Teams.DefenderAlly != null)
+                    {
+                        Mission.Current.Teams.DefenderAlly.TeamAI.RemoveStrategicArea(g.GetFirstScriptOfType<StrategicArea>());
+                    }
                     g.RemoveAllChildren();
                     g.Remove(1);
                 }
@@ -106,7 +113,10 @@ public class SiegeArcherPoints : MissionLogic
                     BeerMark.SetMobility(GameEntity.Mobility.Dynamic);
                     strategicArea.IsActive = true;
                     Mission.Current.Teams.Defender.TeamAI.AddStrategicArea(strategicArea);
-                    Mission.Current.Teams.DefenderAlly.TeamAI.AddStrategicArea(strategicArea);
+                    if (Mission.Current.Teams.DefenderAlly != null)
+                    {
+                        Mission.Current.Teams.DefenderAlly.TeamAI.AddStrategicArea(strategicArea);
+                    }
                 }
             }
 
