@@ -587,28 +587,5 @@ namespace RBMAI
                 return false;
             }
         }
-
-        [HarmonyPatch(typeof(StrategicArea))]
-        [HarmonyPatch("GetTemplateCostsOfAgent")]
-        public class OverrideGetTemplateCostsOfAgent
-        {
-            private static bool Prefix(Agent candidate, List<float> oldValue, List<float> __result)
-            {
-                try
-                {
-                    if (candidate == null || !candidate.IsActive())
-                    {
-                        __result = oldValue;
-                        return false;
-                    }
-                }
-                catch (Exception e)
-                {
-                    __result = oldValue;
-                    return false;
-                }
-                return true;
-            }
-        }
     }
 }
