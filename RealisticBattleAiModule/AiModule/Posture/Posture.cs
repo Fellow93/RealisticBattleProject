@@ -74,9 +74,9 @@ namespace RBMAI
         public const float DAGGER_PARRY_REFLECT = -5f;
 
         // TWO-HANDED SWORD
-        public const float TWOHANDEDSWORD_SWING_COST = +1f;
-        public const float TWOHANDEDSWORD_THRUST_COST = -2f;
-        public const float TWOHANDEDSWORD_OVERHEAD_COST = +4f;
+        public const float TWOHANDEDSWORD_SWING_COST = -5f;
+        public const float TWOHANDEDSWORD_THRUST_COST = -7f;
+        public const float TWOHANDEDSWORD_OVERHEAD_COST = -3f;
         public const float TWOHANDEDSWORD_SWING_DRAIN = +22f;
         public const float TWOHANDEDSWORD_THRUST_DRAIN = +15f;
         public const float TWOHANDEDSWORD_OVERHEAD_DRAIN = +29f;
@@ -100,9 +100,9 @@ namespace RBMAI
         public const float ONEHANDEDAXE_PARRY_REFLECT = +5f;
 
         // TWO-HANDED AXE
-        public const float TWOHANDEDAXE_SWING_COST = +5f;
-        public const float TWOHANDEDAXE_THRUST_COST = +2f;
-        public const float TWOHANDEDAXE_OVERHEAD_COST = +8f;
+        public const float TWOHANDEDAXE_SWING_COST = -2f;
+        public const float TWOHANDEDAXE_THRUST_COST = -4f;
+        public const float TWOHANDEDAXE_OVERHEAD_COST = +0f;
         public const float TWOHANDEDAXE_SWING_DRAIN = +18f;
         public const float TWOHANDEDAXE_THRUST_DRAIN = +18f;
         public const float TWOHANDEDAXE_OVERHEAD_DRAIN = +32f;
@@ -126,9 +126,9 @@ namespace RBMAI
         public const float MACE_PARRY_REFLECT = -10f;
 
         // TWO-HANDED MACE
-        public const float TWOHANDEDMACE_SWING_COST = +8f;
-        public const float TWOHANDEDMACE_THRUST_COST = +5f;
-        public const float TWOHANDEDMACE_OVERHEAD_COST = +11f;
+        public const float TWOHANDEDMACE_SWING_COST = +0f;
+        public const float TWOHANDEDMACE_THRUST_COST = -2f;
+        public const float TWOHANDEDMACE_OVERHEAD_COST = +2f;
         public const float TWOHANDEDMACE_SWING_DRAIN = +29f;
         public const float TWOHANDEDMACE_THRUST_DRAIN = +22f;
         public const float TWOHANDEDMACE_OVERHEAD_DRAIN = +36f;
@@ -152,9 +152,9 @@ namespace RBMAI
         public const float ONEHANDEDPOLEARM_PARRY_REFLECT = -15f;
 
         // TWO-HANDED POLEARM
-        public const float TWOHANDEDPOLEARM_SWING_COST = +7f;
-        public const float TWOHANDEDPOLEARM_THRUST_COST = +1f;
-        public const float TWOHANDEDPOLEARM_OVERHEAD_COST = +9f;
+        public const float TWOHANDEDPOLEARM_SWING_COST = -3f;
+        public const float TWOHANDEDPOLEARM_THRUST_COST = -5f;
+        public const float TWOHANDEDPOLEARM_OVERHEAD_COST = -1f;
         public const float TWOHANDEDPOLEARM_SWING_DRAIN = +36f;
         public const float TWOHANDEDPOLEARM_THRUST_DRAIN = +22f;
         public const float TWOHANDEDPOLEARM_OVERHEAD_DRAIN = +29f;
@@ -165,18 +165,18 @@ namespace RBMAI
         public const float TWOHANDEDPOLEARM_PARRY_REFLECT = +0f;
 
         // SMALL SHIELD
-        public const float SMALLSHIELD_INCORRECT_BLOCK_COST = -20f;
-        public const float SMALLSHIELD_BLOCK_COST = -25f;
-        public const float SMALLSHIELD_PARRY_COST = -35f;
+        public const float SMALLSHIELD_INCORRECT_BLOCK_COST = -25f;
+        public const float SMALLSHIELD_BLOCK_COST = -30f;
+        public const float SMALLSHIELD_PARRY_COST = -40f;
         public const float SMALLSHIELD_HIT_COST = -5f;
         public const float SMALLSHIELD_INCORRECT_BLOCK_REFLECT = -20f;
         public const float SMALLSHIELD_BLOCK_REFLECT = -20f;
         public const float SMALLSHIELD_PARRY_REFLECT = -5f;
 
         // LARGE SHIELD
-        public const float LARGESHIELD_INCORRECT_BLOCK_COST = -25f;
-        public const float LARGESHIELD_BLOCK_COST = -30f;
-        public const float LARGESHIELD_PARRY_COST = -40f;
+        public const float LARGESHIELD_INCORRECT_BLOCK_COST = -30f;
+        public const float LARGESHIELD_BLOCK_COST = -35f;
+        public const float LARGESHIELD_PARRY_COST = -45f;
         public const float LARGESHIELD_HIT_COST = -5f;
         public const float LARGESHIELD_INCORRECT_BLOCK_REFLECT = -20f;
         public const float LARGESHIELD_BLOCK_REFLECT = -20f;

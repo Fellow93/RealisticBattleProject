@@ -37,7 +37,7 @@
 	<Item id="crossbow_c" name="{=RBM_RAN_005}200 Pound Eastern Crossbow" body_name="bo_cross_bow_heavy" mesh="crossbow_c" weight="3" difficulty="40" appearance="1" Type="Crossbow" value="5000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.24675" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
 			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="80" missile_speed="200" weapon_length="95" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce" reload_phase_count="2" modifier_group="crossbow">
-				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="false" HasString="true"/>
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" HasString="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
@@ -45,7 +45,7 @@
 	<Item id="crossbow_b" name="{=RBM_RAN_006}160 Pound Eastern Crossbow" body_name="bo_cross_bow_heavy" mesh="crossbow_b" weight="2.7" difficulty="30" appearance="1" Type="Crossbow" value="4000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.24975" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
 			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="80" missile_speed="160" weapon_length="95" thrust_damage="100" item_usage="crossbow" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce" reload_phase_count="2" modifier_group="crossbow">
-				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="false" HasString="true"/>
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" HasString="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
@@ -53,7 +53,7 @@
 	<Item id="crossbow_a" name="{=RBM_RAN_007}120 Pound Eastern Crossbow" body_name="bo_cross_bow_heavy" mesh="crossbow_a" weight="1" difficulty="20" appearance="0.3" Type="Crossbow" value="2000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" AmmoOffset="0.0, 0.02131, 0.24650" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
 			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="80" missile_speed="120" weapon_length="95" thrust_damage="100" item_usage="crossbow_fast" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="95" thrust_damage_type="Pierce" reload_phase_count="2" modifier_group="crossbow">
-				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="false" HasString="true" CanBeUsedWhileCrouched="true"/>
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" HasString="true" CanBeUsedWhileCrouched="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true" Stealth="true" />
@@ -91,11 +91,10 @@
 				center_of_mass="0,0,0.4"
 				modifier_group="crossbow">
 				<WeaponFlags
+					CanBeUsedWhileCrouched="true"
 					RangedWeapon="true"
 					HasString="true"
-					CantReloadOnHorseback="false"
-					NotUsableWithOneHand="true"
-					TwoHandIdleOnMount="true" />
+					NotUsableWithOneHand="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags
@@ -138,8 +137,7 @@
 					CanBeUsedWhileCrouched="true"
 					RangedWeapon="true"
 					HasString="true"
-					NotUsableWithOneHand="true"
-					TwoHandIdleOnMount="false" />
+					NotUsableWithOneHand="true"/>
 			</Weapon>
 		</ItemComponent>
 		<Flags

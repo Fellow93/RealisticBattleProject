@@ -1,7 +1,7 @@
 ﻿<Module>
   <Name value="(RBM) Realistic Battle Mod Bannerlord"/>
   <Id value="RBM"/>
-  <Version value="v4.1.8"/>
+  <Version value="v4.1.9"/>
   <DefaultModule value="true"/>
   <ModuleCategory value="Singleplayer"/>
   <DependedModules>
