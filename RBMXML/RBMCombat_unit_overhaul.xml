@@ -7738,7 +7738,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_e" />
+                 id="Item.crossbow_c" />
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
@@ -7758,7 +7758,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_e" />
+                 id="Item.crossbow_c" />
       <equipment slot="Item1"
                  id="Item.GRE_bolt_c" />
       <equipment slot="Item2"
@@ -7778,7 +7778,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_e" />
+                 id="Item.crossbow_c" />
       <equipment slot="Item1"
                  id="Item.GRE_bolt_c" />
       <equipment slot="Item2"
@@ -7831,7 +7831,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_g" />
+                 id="Item.crossbow_d" />
       <equipment slot="Item1"
                  id="Item.GRE_bolt_b" />
       <equipment slot="Item2"
@@ -7851,7 +7851,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_g" />
+                 id="Item.crossbow_d" />
       <equipment slot="Item1"
                  id="Item.GRE_bolt_b" />
       <equipment slot="Item2"
@@ -7871,7 +7871,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_g" />
+                 id="Item.crossbow_d" />
       <equipment slot="Item1"
                  id="Item.GRE_bolt_b" />
       <equipment slot="Item2"
@@ -7891,7 +7891,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_g" />
+                 id="Item.crossbow_d" />
       <equipment slot="Item1"
                  id="Item.hardened_120_gr_bolts" />
       <equipment slot="Item2"
@@ -13036,7 +13036,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_a" />
+                 id="Item.crossbow_h" />
       <equipment slot="Item1"
                  id="Item.bolt_e" />
       <equipment slot="Item2"
@@ -13056,7 +13056,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_a" />
+                 id="Item.crossbow_h" />
       <equipment slot="Item1"
                  id="Item.bolt_e" />
       <equipment slot="Item2"
@@ -13076,7 +13076,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_a" />
+                 id="Item.crossbow_i" />
       <equipment slot="Item1"
                  id="Item.GRE_bolt_e" />
       <equipment slot="Item2"
@@ -13131,7 +13131,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_b" />
+                 id="Item.crossbow_a" />
       <equipment slot="Item1"
                  id="Item.GRE_hardened_75_gr_bolts" />
       <equipment slot="Item2"
@@ -13151,7 +13151,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_b" />
+                 id="Item.crossbow_a" />
       <equipment slot="Item1"
                  id="Item.GRE_bolt_d" />
       <equipment slot="Item2"
@@ -13226,7 +13226,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_d" />
+                 id="Item.crossbow_c" />
       <equipment slot="Item1"
                  id="Item.GRE_bolt_b" />
       <equipment slot="Item2"
@@ -13246,7 +13246,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_d" />
+                 id="Item.crossbow_c" />
       <equipment slot="Item1"
                  id="Item.GRE_hardened_120_gr_bolts" />
       <equipment slot="Item2"
@@ -13266,7 +13266,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_d" />
+                 id="Item.crossbow_e" />
       <equipment slot="Item1"
                  id="Item.GRE_hardened_120_gr_bolts" />
       <equipment slot="Item2"
@@ -13318,7 +13318,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_f" />
+                 id="Item.crossbow_d" />
       <equipment slot="Item1"
                  id="Item.GRE_hardened_150_gr_bolts" />
       <equipment slot="Item2"
@@ -13338,7 +13338,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_f" />
+                 id="Item.crossbow_d" />
       <equipment slot="Item1"
                  id="Item.GRE_hardened_150_gr_bolts" />
       <equipment slot="Item2"
@@ -13358,7 +13358,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_f" />
+                 id="Item.crossbow_g" />
       <equipment slot="Item1"
                  id="Item.GRE_hardened_150_gr_bolts" />
       <equipment slot="Item2"
@@ -14739,7 +14739,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_d" />
+                 id="Item.crossbow_e" />
       <equipment slot="Item1"
                  id="Item.GRE_hardened_90_gr_bolts" />
       <equipment slot="Item2"
@@ -18783,7 +18783,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_f" />
+                 id="Item.crossbow_d" />
       <equipment slot="Item1"
                  id="Item.GRE_hardened_120_gr_bolts" />
       <equipment slot="Item2"
@@ -18803,7 +18803,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_f" />
+                 id="Item.crossbow_d" />
       <equipment slot="Item1"
                  id="Item.GRE_hardened_120_gr_bolts" />
       <equipment slot="Item2"
@@ -18823,7 +18823,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_f" />
+                 id="Item.crossbow_d" />
       <equipment slot="Item1"
                  id="Item.GRE_hardened_120_gr_bolts" />
       <equipment slot="Item2"
@@ -19400,7 +19400,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_e" />
+                 id="Item.crossbow_a" />
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
@@ -19420,7 +19420,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_e" />
+                 id="Item.crossbow_a" />
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
@@ -19440,7 +19440,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_e" />
+                 id="Item.crossbow_a" />
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
@@ -19460,7 +19460,7 @@
       </EquipmentRoster>
       <EquipmentRoster civilian="true">
       <equipment slot="Item0"
-                 id="Item.crossbow_e" />
+                 id="Item.crossbow_a" />
       <equipment slot="Item1"
                  id="Item.bolt_c" />
       <equipment slot="Item2"
@@ -19511,7 +19511,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_g" />
+                 id="Item.crossbow_c" />
       <equipment slot="Item1"
                  id="Item.bolt_b" />
       <equipment slot="Item2"
@@ -19531,7 +19531,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_g" />
+                 id="Item.crossbow_c" />
       <equipment slot="Item1"
                  id="Item.bolt_b" />
       <equipment slot="Item2"
@@ -19551,7 +19551,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_g" />
+                 id="Item.crossbow_c" />
       <equipment slot="Item1"
                  id="Item.bolt_b" />
       <equipment slot="Item2"
@@ -19571,7 +19571,7 @@
       </EquipmentRoster>
       <EquipmentRoster civilian="true">
       <equipment slot="Item0"
-                 id="Item.crossbow_g" />
+                 id="Item.crossbow_c" />
       <equipment slot="Item1"
                  id="Item.bolt_b" />
       <equipment slot="Item2"
