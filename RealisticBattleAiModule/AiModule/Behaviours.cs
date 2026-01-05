@@ -1464,10 +1464,22 @@ namespace RBMAI
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
                 if (significantEnemy != null)
                 {
+                    Vec2 direction = (significantEnemy.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedAveragePosition).Normalized();
                     WorldPosition medianPosition = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
+                    for (int i = 20; i < 100; i++)
+                    {
+                        medianPosition.SetVec2(medianPosition.AsVec2 + direction.Normalized() * (i + __instance.Formation.Depth));
+                        if (!Mission.Current.IsPositionInsideBoundaries(medianPosition.AsVec2) || medianPosition.GetNavMesh() == UIntPtr.Zero)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
                     ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
 
-                    Vec2 direction = (significantEnemy.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedAveragePosition).Normalized();
                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(direction);
 
                     return false;
@@ -1591,16 +1603,29 @@ namespace RBMAI
 
                 if (significantEnemy != null)
                 {
-                    Vec2 vec = significantEnemy.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
+                    Vec2 vec = significantEnemy.CachedAveragePosition - __instance.Formation.CachedAveragePosition;
                     WorldPosition positionNew = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
 
                     float disper = __instance.Formation.CachedFormationIntegrityData.DeviationOfPositionsExcludeFarAgents;
                     if (disper > 10f)
                     {
-                        positionNew.SetVec2(positionNew.AsVec2 + vec.Normalized() * (20f + __instance.Formation.Depth));
-                        if (!Mission.Current.IsPositionInsideBoundaries(positionNew.AsVec2) || positionNew.GetNavMesh() == UIntPtr.Zero)
+                        //positionNew.SetVec2(positionNew.AsVec2 + vec.Normalized() * (10f + __instance.Formation.Depth));
+                        //Mission.Current.GetAlternatePositionForNavmeshlessOrOutOfBoundsPosition(positionNew.)
+                        //if (!Mission.Current.IsPositionInsideBoundaries(positionNew.AsVec2) || positionNew.GetNavMesh() == UIntPtr.Zero)
+                        //{
+                        for (int i = 20; i < 100; i++)
                         {
-                            positionNew.SetVec2(significantEnemy.CurrentPosition);
+                            positionNew.SetVec2(positionNew.AsVec2 + vec.Normalized() * (i + __instance.Formation.Depth));
+                            if (!Mission.Current.IsPositionInsideBoundaries(positionNew.AsVec2) || positionNew.GetNavMesh() == UIntPtr.Zero)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            //positionNew.SetVec2(significantEnemy.CurrentPosition);
+                            //}
                         }
                     }
                     else

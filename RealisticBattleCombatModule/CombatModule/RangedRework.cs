@@ -12,7 +12,6 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.Core.ItemObject;
-using static TaleWorlds.MountAndBlade.Agent;
 using static TaleWorlds.MountAndBlade.Mission;
 
 namespace RBMCombat
@@ -36,7 +35,7 @@ namespace RBMCombat
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionAxe, 0.01f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionKnife, 0.01f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.MissileMinimumDamageToStick, 12.5f);
-
+                ManagedParameters.SetParameter(ManagedParametersEnum.BipedalRadius, 0.48f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.MakesRearAttackDamageThreshold, 13f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.NonTipThrustHitDamageMultiplier, 1f);
             }

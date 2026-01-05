@@ -469,6 +469,21 @@ namespace RBMAI
             }
         }
 
+        [HarmonyPatch(typeof(Agent))]
+        [HarmonyPatch("IsInWater")]
+        internal class IsInWaterFix
+        {
+            private static bool Prefix(ref Agent __instance, ref bool __result)
+            {
+                if (Mission.Current != null && Mission.Current.IsFieldBattle)
+                {
+                    __result = false;
+                    return false;
+                }
+                return true;
+            }
+        }
+
         [HarmonyPatch(typeof(HumanAIComponent))]
         [HarmonyPatch("OnTick")]
         public static class OnTickPatch
