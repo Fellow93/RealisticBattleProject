@@ -148,7 +148,7 @@ namespace RBM
             var isRBMWSActive = ModuleHelper.IsModuleActive("RBM_WS");
             if (isWSActive && isRBMActive && !isRBMWSActive)
             {
-                InformationManager.ShowInquiry(new InquiryData("RBM War Sails submodule is missing!", "RBM War Sails submodule is required when using both RBM and the War Sails DLC. Please enable the RBM War Sails submodule to avoid potential issues, like Nords having no weapons etc.", true, false, "OK", "OK", null, null), false, true);
+                InformationManager.ShowInquiry(new InquiryData("RBM War Sails submodule is missing!", "RBM War Sails submod is required when using both RBM and the War Sails DLC. Please install and enable the RBM War Sails submod to avoid potential issues, like Nords having no weapons etc.", true, false, "OK", "OK", null, null), false, true);
             }
         }
 
