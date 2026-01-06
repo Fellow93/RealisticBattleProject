@@ -9,6 +9,7 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.MountAndBlade.Formation;
+using static TaleWorlds.MountAndBlade.MovementOrder;
 
 namespace RBMAI
 {
@@ -578,7 +579,8 @@ namespace RBMAI
         [HarmonyPatch("ParallelUpdateFormationMovement")]
         private static void PostfixParallelUpdateFormationMovement(ref HumanAIComponent __instance, ref Agent ___Agent)
         {
-            if (___Agent.Controller == AgentControllerType.AI && ___Agent.Formation != null && ___Agent.Formation.GetReadonlyMovementOrderReference().OrderEnum == MovementOrder.MovementOrderEnum.Move)
+            MovementOrderEnum orderType = ___Agent.Formation.GetReadonlyMovementOrderReference().OrderEnum;
+            if (___Agent.Controller == AgentControllerType.AI && ___Agent.Formation != null && orderType == MovementOrderEnum.Move)
             {
                 PropertyInfo propertyShouldCatchUpWithFormation = typeof(HumanAIComponent).GetProperty("ShouldCatchUpWithFormation");
                 propertyShouldCatchUpWithFormation.DeclaringType.GetProperty("ShouldCatchUpWithFormation");
@@ -588,11 +590,14 @@ namespace RBMAI
                 FormationIntegrityDataGroup formationIntegrityData = ___Agent.Formation.CachedFormationIntegrityData;
                 ___Agent.SetFormationIntegrityData(currentGlobalPositionOfUnit, ___Agent.Formation.CurrentDirection, formationIntegrityData.AverageVelocityExcludeFarAgents, formationIntegrityData.AverageMaxUnlimitedSpeedExcludeFarAgents, formationIntegrityData.DeviationOfPositionsExcludeFarAgents, true);
             }
-            if (___Agent.Controller == AgentControllerType.AI && ___Agent.Formation != null && ___Agent.Formation.GetReadonlyMovementOrderReference().OrderEnum == MovementOrder.MovementOrderEnum.ChargeToTarget)
+            if (___Agent.Controller == AgentControllerType.AI && ___Agent.Formation != null && orderType == MovementOrderEnum.ChargeToTarget)
             {
 
             }
-            //___Agent.SetDirectionChangeTendency(0.1f);
+            if (___Agent.Formation != null && (orderType == MovementOrderEnum.Charge || orderType == MovementOrderEnum.ChargeToTarget))
+            {
+                ___Agent.SetFormationFrameDisabled();
+            }
         }
     }
 
