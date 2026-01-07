@@ -590,11 +590,7 @@ namespace RBMAI
                 FormationIntegrityDataGroup formationIntegrityData = ___Agent.Formation.CachedFormationIntegrityData;
                 ___Agent.SetFormationIntegrityData(currentGlobalPositionOfUnit, ___Agent.Formation.CurrentDirection, formationIntegrityData.AverageVelocityExcludeFarAgents, formationIntegrityData.AverageMaxUnlimitedSpeedExcludeFarAgents, formationIntegrityData.DeviationOfPositionsExcludeFarAgents, true);
             }
-            if (___Agent.Controller == AgentControllerType.AI && ___Agent.Formation != null && orderType == MovementOrderEnum.ChargeToTarget)
-            {
-
-            }
-            if (___Agent.Formation != null && (orderType == MovementOrderEnum.Charge || orderType == MovementOrderEnum.ChargeToTarget))
+            if (___Agent.IsActive() && ___Agent.Formation != null && (orderType == MovementOrderEnum.Charge || orderType == MovementOrderEnum.ChargeToTarget))
             {
                 ___Agent.SetFormationFrameDisabled();
             }
