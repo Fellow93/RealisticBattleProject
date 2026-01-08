@@ -249,7 +249,7 @@ namespace RBMAI
                     }
                 }
                 //for cavalry
-                if (mission != null && mission.IsFieldBattle && unit != null && (__instance.QuerySystem.IsCavalryFormation || __instance.QuerySystem.IsRangedCavalryFormation))
+                if (mission != null && mission.IsFieldBattle && unit != null && __instance.IsAIControlled && (__instance.QuerySystem.IsCavalryFormation || __instance.QuerySystem.IsRangedCavalryFormation))
                 {
                     //cav cahrge if no mount
                     if (unit != null && unit.MountAgent == null)
@@ -278,7 +278,11 @@ namespace RBMAI
                 }
                 if (mission != null && mission.IsFieldBattle && unit != null && __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsCavalryFormation)
                 {
-                    var targetAgent = Utilities.GetCorrectTarget(unit);
+                    var targetAgent = unit.GetTargetAgent();
+                    if (__instance.IsAIControlled)
+                    {
+                        targetAgent = Utilities.GetCorrectTarget(unit);
+                    }
                     if (targetAgent != null)
                     {
                         float distance = targetAgent != null ? (targetAgent.Position - unit.Position).Length : 0f;
@@ -291,7 +295,7 @@ namespace RBMAI
                     }
                 }
                 //for range
-                if (mission != null && unit != null && mission.IsFieldBattle && __instance.QuerySystem.IsRangedFormation)
+                if (mission != null && unit != null && __instance.IsAIControlled && mission.IsFieldBattle && __instance.QuerySystem.IsRangedFormation)
                 {
                     //ranged charge if close to enemy
                     MBList<Agent> enemiesCloseBy = new MBList<Agent>();
@@ -579,8 +583,12 @@ namespace RBMAI
         [HarmonyPatch("ParallelUpdateFormationMovement")]
         private static void PostfixParallelUpdateFormationMovement(ref HumanAIComponent __instance, ref Agent ___Agent)
         {
+            if (___Agent.IsActive() == false || ___Agent.Formation == null)
+            {
+                return;
+            }
             MovementOrderEnum orderType = ___Agent.Formation.GetReadonlyMovementOrderReference().OrderEnum;
-            if (___Agent.Controller == AgentControllerType.AI && ___Agent.Formation != null && orderType == MovementOrderEnum.Move)
+            if (___Agent.Controller == AgentControllerType.AI && orderType == MovementOrderEnum.Move)
             {
                 PropertyInfo propertyShouldCatchUpWithFormation = typeof(HumanAIComponent).GetProperty("ShouldCatchUpWithFormation");
                 propertyShouldCatchUpWithFormation.DeclaringType.GetProperty("ShouldCatchUpWithFormation");
@@ -590,7 +598,7 @@ namespace RBMAI
                 FormationIntegrityDataGroup formationIntegrityData = ___Agent.Formation.CachedFormationIntegrityData;
                 ___Agent.SetFormationIntegrityData(currentGlobalPositionOfUnit, ___Agent.Formation.CurrentDirection, formationIntegrityData.AverageVelocityExcludeFarAgents, formationIntegrityData.AverageMaxUnlimitedSpeedExcludeFarAgents, formationIntegrityData.DeviationOfPositionsExcludeFarAgents, true);
             }
-            if (___Agent.IsActive() && ___Agent.Formation != null && (orderType == MovementOrderEnum.Charge || orderType == MovementOrderEnum.ChargeToTarget))
+            if (orderType == MovementOrderEnum.Charge || orderType == MovementOrderEnum.ChargeToTarget)
             {
                 ___Agent.SetFormationFrameDisabled();
             }

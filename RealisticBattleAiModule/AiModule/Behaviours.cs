@@ -1092,6 +1092,12 @@ namespace RBMAI
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 10f, 15f, 0.065f, 30f, 0.065f);
                         return;
                     }
+                    if (___Agent.Formation.QuerySystem.IsCavalryFormation)
+                    {
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 7f, 4f, 20f, 6f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 0.0f, 2f, 0f, 20f, 0f);
+                        return;
+                    }
                 }
                 if (behaviorValueSet == BehaviorValueSet.DefaultMove)
                 {
