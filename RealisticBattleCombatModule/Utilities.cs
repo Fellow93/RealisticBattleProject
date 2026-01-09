@@ -1,13 +1,11 @@
-﻿using System;
+﻿using RBMConfig;
+using System;
 using System.Collections.Generic;
-using RBMConfig;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
-using TaleWorlds.LinQuick;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.Core.ArmorComponent;
-using static TaleWorlds.MountAndBlade.Agent;
 
 namespace RBMCombat
 {
@@ -306,8 +304,9 @@ namespace RBMCombat
         {
             //float ammoWeight = throwable.GetWeight() / throwable.Amount;
             float shieldTypeModifier = 1f;
-            float equipmentWeightModifier = (float)Math.Sqrt(MBMath.ClampFloat(1f - (equipmentWeight * 0.012f),0.5f, 1f));
-            switch ( shieldType ){
+            float equipmentWeightModifier = (float)Math.Sqrt(MBMath.ClampFloat(1f - (equipmentWeight * 0.012f), 0.5f, 1f));
+            switch (shieldType)
+            {
                 case WeaponClass.LargeShield:
                     {
                         shieldTypeModifier = 0.87f;
@@ -401,7 +400,7 @@ namespace RBMCombat
         public static void lowerArmorQualityCheck(ref Agent agent, EquipmentIndex equipmentIndex, ItemObject.ItemTypeEnum itemType, AttackCollisionData attackCollisionData, Blow blow, Agent attacker, in MissionWeapon attackerWeapon)
         {
             EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
-             if (equipmentElement.Item != null && equipmentElement.Item.ItemType == itemType && !attackerWeapon.IsEmpty && blow.InflictedDamage > 1 && !blow.IsFallDamage)
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == itemType && !attackerWeapon.IsEmpty && blow.InflictedDamage > 1 && !blow.IsFallDamage)
             {
                 WeaponClass weaponType = attackerWeapon.CurrentUsageItem.WeaponClass;
 
@@ -459,7 +458,7 @@ namespace RBMCombat
                 {
                     case DamageTypes.Pierce:
                         {
-                            if(rbmCombatConfigWeaponType != null)
+                            if (rbmCombatConfigWeaponType != null)
                             {
                                 armorThreshold = rbmCombatConfigWeaponType.ExtraArmorThresholdFactorPierce;
                             }
@@ -806,6 +805,16 @@ namespace RBMCombat
                         }
                         break;
                     }
+                case "unarmedAttack":
+                    {
+
+                        float value = magnitude * (effectiveSkill * 0.2f);
+                        float min = 1f * (1 + skillModifier);
+                        float max = 10f * (1 + (2 * skillModifier));
+                        skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 2f);
+                        magnitude = skillBasedDamage;
+                        break;
+                    }
                 case "TwoHandedMace":
                     {
                         if (damageType == DamageTypes.Pierce)
@@ -1008,7 +1017,7 @@ namespace RBMCombat
         public static float RBMComputeDamage(string weaponType, DamageTypes damageType, float magnitude, float armorEffectiveness, float absorbedDamageRatio, out float penetratedDamage, out float bluntTraumaAfterArmor, float weaponDamageFactor = 1f, BasicCharacterObject player = null, bool isPlayerVictim = false, ArmorMaterialTypes armorMaterial = ArmorMaterialTypes.None)
         {
 
-            if(armorMaterial != ArmorMaterialTypes.None)
+            if (armorMaterial != ArmorMaterialTypes.None)
             {
                 if (armorMaterial != ArmorMaterialTypes.Plate && damageType == DamageTypes.Pierce && (weaponType.Contains("Arrow") || weaponType.Contains("Bolt")))
                 {

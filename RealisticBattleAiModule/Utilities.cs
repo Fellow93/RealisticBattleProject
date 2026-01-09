@@ -10,6 +10,7 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
+using static TaleWorlds.Core.ArmorComponent;
 using static TaleWorlds.Core.ItemObject;
 
 namespace RBMAI
@@ -1863,6 +1864,16 @@ namespace RBMAI
                         }
                         break;
                     }
+                case "unarmedAttack":
+                    {
+
+                        float value = magnitude + (effectiveSkill * 0.2f);
+                        float min = 5f * (1 + skillModifier);
+                        float max = 10f * (1 + (2 * skillModifier));
+                        skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 2.5f);
+                        magnitude = skillBasedDamage;
+                        break;
+                    }
                 case "TwoHandedMace":
                     {
                         if (damageType == DamageTypes.Pierce)
@@ -2060,6 +2071,40 @@ namespace RBMAI
                     }
             }
             return magnitude;
+        }
+
+        public static ArmorMaterialTypes getArmArmorMaterial(Agent agent)
+        {
+            ArmorMaterialTypes material = 0f;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            {
+                EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
+                {
+                    if (equipmentElement.Item.ArmorComponent != null)
+                    {
+                        return equipmentElement.Item.ArmorComponent.MaterialType;
+                    }
+                }
+            }
+            return material;
+        }
+
+        public static float getGauntletWeight(Agent agent)
+        {
+            float weight = 0f;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            {
+                EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
+                {
+                    if (equipmentElement.Item.ArmorComponent != null)
+                    {
+                        return equipmentElement.Item.Weight / 2f;
+                    }
+                }
+            }
+            return weight;
         }
 
         public static void CalculateVisualSpeeds(EquipmentElement weapon, int weaponUsageIndex, float effectiveSkillDR, out int swingSpeedReal, out int thrustSpeedReal, out int handlingReal)

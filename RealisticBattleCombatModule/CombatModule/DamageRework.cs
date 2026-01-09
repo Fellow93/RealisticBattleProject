@@ -130,7 +130,6 @@ namespace RBMCombat
                 BasicCharacterObject victimAgentCharacter = attackInformation.VictimAgentCharacter;
                 BasicCharacterObject victimCaptainCharacter = attackInformation.VictimCaptainCharacter;
 
-
                 float armorAmount = 0f;
 
                 if (!isFallDamage)
@@ -156,6 +155,48 @@ namespace RBMCombat
                     {
                         attacker = agent;
                     }
+                }
+
+                bool isUnarmedAttack = false;
+                //detect unarmed attack
+                if (attackerWeapon == null && attacker != null && victim != null && damageType == DamageTypes.Blunt)
+                {
+                    isUnarmedAttack = true;
+                }
+                if (isUnarmedAttack)
+                {
+                    magnitude = 1f;
+                    ArmorMaterialTypes gauntletMaterial = ArmorRework.GetArmorMaterialForBodyPartRBM(attacker, BoneBodyPartType.ArmRight);
+                    switch (gauntletMaterial)
+                    {
+                        case ArmorMaterialTypes.None:
+                            {
+                                magnitude *= 0.4f;
+                                break;
+                            }
+                        case ArmorMaterialTypes.Cloth:
+                            {
+                                magnitude *= 0.3f;
+                                break;
+                            }
+                        case ArmorMaterialTypes.Leather:
+                            {
+                                magnitude *= 0.3f;
+                                break;
+                            }
+                        case ArmorMaterialTypes.Chainmail:
+                            {
+                                magnitude *= 0.75f;
+                                break;
+                            }
+                        case ArmorMaterialTypes.Plate:
+                            {
+                                magnitude *= 1f;
+                                break;
+                            }
+                    }
+                    float gauntletWeight = ArmorRework.getGauntletWeight(attacker);
+                    magnitude += gauntletWeight;
                 }
 
                 ArmorMaterialTypes armorMaterial = ArmorRework.GetArmorMaterialForBodyPartRBM(victim, attackCollisionData.VictimHitBodyPart);
@@ -396,6 +437,13 @@ namespace RBMCombat
                 {
                     weaponType = attackerWeapon.WeaponClass.ToString();
                 }
+                else
+                {
+                    if (isUnarmedAttack)
+                    {
+                        weaponType = "unarmedAttack";
+                    }
+                }
 
                 IAgentOriginBase attackerAgentOrigin = attackInformation.AttackerAgentOrigin;
                 Formation attackerFormation = attackInformation.AttackerFormation;
@@ -416,6 +464,10 @@ namespace RBMCombat
                         else
                         {
                             //float lel = 0;
+                        }
+                        if (isUnarmedAttack)
+                        {
+                            magnitude = Utilities.GetSkillBasedDamage(magnitude, attackInformation.IsAttackerAgentDoingPassiveAttack, weaponType, damageType, effectiveSkill, skillModifier, (StrikeType)attackCollisionData.StrikeType, 5f);
                         }
                     }
                 }
@@ -1149,6 +1201,7 @@ namespace RBMCombat
         {
             private static void Postfix(ref Mission __instance, ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
             {
+
                 string weaponType = "otherDamage";
                 if (attackerWeapon.Item != null && attackerWeapon.CurrentUsageItem != null)
                 {
@@ -1293,6 +1346,17 @@ namespace RBMCombat
                     attacker.CreateBlowFromBlowAsReflection(in b, in collisionData, out var outBlow, out var outCollisionData);
                     attacker.RegisterBlow(outBlow, in outCollisionData);
                 }
+
+                //detect unarmed attack
+                if (attackerWeapon.IsEmpty && attacker != null && victim != null && collisionData.DamageType == (int)DamageTypes.Blunt)
+                {
+                    float attackerArmArmror = attacker.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ArmLeft);
+                    //b.SelfInflictedDamage = MathF.Ceiling(b.BaseMagnitude / 6f);
+                    b.SelfInflictedDamage = MBMath.ClampInt(MathF.Ceiling(MissionGameModels.Current.StrikeMagnitudeModel.ComputeRawDamage(DamageTypes.Blunt, b.BaseMagnitude / 2f, attackerArmArmror, 1f)), 0, 2000);
+                    attacker.CreateBlowFromBlowAsReflection(in b, in collisionData, out var outBlow, out var outCollisionData);
+                    attacker.RegisterBlow(outBlow, in outCollisionData);
+                }
+
                 //if(victim != null && collisionData.CollidedWithShieldOnBack && collisionData.IsMissile)
                 //{
                 //    for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)

@@ -48,6 +48,18 @@ namespace RBMAI
         public const float BASE_DEFENSE_COST = 20f;
         public const float BASE_REFLECT = 20f;
 
+        // UNARMED
+        public const float UNARMED_SWING_COST = 10f;
+        public const float UNARMED_THRUST_COST = 10f;
+        public const float UNARME_DOVERHEAD_COST = 10f;
+        public const float UNARMED_SWING_DRAIN = 0f;
+        public const float UNARMED_THRUST_DRAIN = 0f;
+        public const float UNARMED_OVERHEAD_DRAIN = 0f;
+        public const float UNARMED_BLOCK_COST = 20f;
+        public const float UNARMED_PARRY_COST = 10f;
+        public const float UNARMED_BLOCK_REFLECT = 0f;
+        public const float UNARMED_PARRY_REFLECT = 0f;
+
         // ONE-HANDED SWORD
         public const float ONEHANDEDSWORD_SWING_COST = -5f;
         public const float ONEHANDEDSWORD_THRUST_COST = -7f;
@@ -220,6 +232,7 @@ namespace RBMAI
         public static float getDefenseCost(WeaponClass wc, MeleeHitType hitType)
         {
             float retVal = BASE_DEFENSE_COST;
+            string weaponClassString = wc == WeaponClass.Undefined ? "UNARMED" : wc.ToString().ToUpper();
             try
             {
                 switch (hitType)
@@ -227,13 +240,13 @@ namespace RBMAI
                     case MeleeHitType.WeaponBlock:
                     case MeleeHitType.ShieldBlock:
                         {
-                            retVal += (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_BLOCK_COST").GetValue(null);
+                            retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_BLOCK_COST").GetValue(null);
                             break;
                         }
                     case MeleeHitType.WeaponParry:
                     case MeleeHitType.ShieldParry:
                         {
-                            retVal += (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_PARRY_COST").GetValue(null);
+                            retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_PARRY_COST").GetValue(null);
                             break;
                         }
                     case MeleeHitType.AgentHit:
@@ -245,7 +258,7 @@ namespace RBMAI
                         {
                             if (wc == WeaponClass.SmallShield || wc == WeaponClass.LargeShield)
                             {
-                                retVal += (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_INCORRECT_BLOCK_COST").GetValue(null);
+                                retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_INCORRECT_BLOCK_COST").GetValue(null);
                             }
                             else
                             {
@@ -256,7 +269,7 @@ namespace RBMAI
                         }
                     case MeleeHitType.ChamberBlock:
                         {
-                            retVal += (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_PARRY_COST").GetValue(null) * 0.5f;
+                            retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_PARRY_COST").GetValue(null) * 0.5f;
                             break;
                         }
                     default:
@@ -276,22 +289,23 @@ namespace RBMAI
         public static float getAttackDrain(WeaponClass wc, Agent.UsageDirection attackDirection, StrikeType strikeType)
         {
             float retVal = BASE_DRAIN;
+            string weaponClassString = wc == WeaponClass.Undefined ? "UNARMED" : wc.ToString().ToUpper();
             try
             {
                 if (strikeType == StrikeType.Swing)
                 {
                     if (attackDirection == Agent.UsageDirection.AttackUp)
                     {
-                        retVal += (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_OVERHEAD_DRAIN").GetValue(null);
+                        retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_OVERHEAD_DRAIN").GetValue(null);
                     }
                     else
                     {
-                        retVal += (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_SWING_DRAIN").GetValue(null);
+                        retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_SWING_DRAIN").GetValue(null);
                     }
                 }
                 else
                 {
-                    retVal += (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_THRUST_DRAIN").GetValue(null);
+                    retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_THRUST_DRAIN").GetValue(null);
                 }
             }
             catch
@@ -304,22 +318,23 @@ namespace RBMAI
         public static float getAttackCost(WeaponClass wc, Agent.UsageDirection attackDirection, StrikeType strikeType)
         {
             float retVal = BASE_DEFENSE_COST;
+            string weaponClassString = wc == WeaponClass.Undefined ? "UNARMED" : wc.ToString().ToUpper();
             try
             {
                 if (strikeType == StrikeType.Swing)
                 {
                     if (attackDirection == Agent.UsageDirection.AttackUp)
                     {
-                        retVal += (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_OVERHEAD_COST").GetValue(null);
+                        retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_OVERHEAD_COST").GetValue(null);
                     }
                     else
                     {
-                        retVal += (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_SWING_COST").GetValue(null);
+                        retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_SWING_COST").GetValue(null);
                     }
                 }
                 else
                 {
-                    retVal += (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_THRUST_COST").GetValue(null);
+                    retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_THRUST_COST").GetValue(null);
                 }
             }
             catch
@@ -332,6 +347,7 @@ namespace RBMAI
         public static float getDefenseReflect(WeaponClass wc, MeleeHitType hitType)
         {
             float retVal = BASE_REFLECT;
+            string weaponClassString = wc == WeaponClass.Undefined ? "UNARMED" : wc.ToString().ToUpper();
             try
             {
                 switch (hitType)
@@ -339,20 +355,20 @@ namespace RBMAI
                     case MeleeHitType.WeaponBlock:
                     case MeleeHitType.ShieldBlock:
                         {
-                            retVal += (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_BLOCK_REFLECT").GetValue(null);
+                            retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_BLOCK_REFLECT").GetValue(null);
                             break;
                         }
                     case MeleeHitType.WeaponParry:
                     case MeleeHitType.ShieldParry:
                         {
-                            retVal += (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_PARRY_REFLECT").GetValue(null);
+                            retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_PARRY_REFLECT").GetValue(null);
                             break;
                         }
                     case MeleeHitType.ShieldIncorrectBlock:
                         {
                             if (wc == WeaponClass.SmallShield || wc == WeaponClass.LargeShield)
                             {
-                                retVal += (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_INCORRECT_BLOCK_REFLECT").GetValue(null);
+                                retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_INCORRECT_BLOCK_REFLECT").GetValue(null);
                             }
                             else
                             {
@@ -363,7 +379,7 @@ namespace RBMAI
                     case MeleeHitType.ChamberBlock:
                         {
                             //TODO: decide chamber block posture damage
-                            retVal += (float)typeof(PostureDamage).GetField(wc.ToString().ToUpper() + "_PARRY_REFLECT").GetValue(null) * 2f;
+                            retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_PARRY_REFLECT").GetValue(null) * 2f;
                             break;
                         }
                     case MeleeHitType.AgentHit:

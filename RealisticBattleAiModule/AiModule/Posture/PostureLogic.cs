@@ -11,6 +11,7 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using static RBMAI.PostureDamage;
+using static TaleWorlds.Core.ArmorComponent;
 using static TaleWorlds.Core.ItemObject;
 using static TaleWorlds.MountAndBlade.Agent;
 
@@ -163,11 +164,11 @@ namespace RBMAI
             //how much posture is regained after posture break while holding shield
             static float shieldPostureResetModifier = 0.4f;
 
-            public static void ResetPostureForAgent(ref Posture posture, float postureResetModifier)
+            public static void ResetPostureForAgent(ref Posture posture, float resetModifier)
             {
                 if (posture != null)
                 {
-                    posture.posture += posture.maxPosture * 0.75f;
+                    posture.posture += posture.maxPosture * resetModifier;
                     posture.posture = Math.Max(0f, posture.posture);
                 }
             }
@@ -268,11 +269,11 @@ namespace RBMAI
             public static void handleDefender(Posture posture, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData,
                 MissionWeapon attackerWeapon, float comHitModifier, ref Blow blow, ref Mission mission,
                 float actionModifier, float staggerActionSpeed, bool dropWeapon, bool dropShield,
-                bool damageShield, bool stagger, bool resetPosture, MeleeHitType meleeHitType, bool crushThrough)
+                bool damageShield, bool stagger, bool resetPosture, MeleeHitType meleeHitType, bool crushThrough, bool isUnarmedAttack)
             {
                 if (posture != null)
                 {
-                    float postureDmg = calculateDefenderPostureDamage(victimAgent, attackerAgent, actionModifier, ref collisionData, attackerWeapon, comHitModifier, meleeHitType);
+                    float postureDmg = calculateDefenderPostureDamage(victimAgent, attackerAgent, actionModifier, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, isUnarmedAttack);
                     float postureOverkill = Math.Abs(posture.posture - postureDmg);
                     posture.posture = Math.Max(0f, posture.posture - postureDmg);
                     addPosturedamageVisual(attackerAgent, victimAgent);
@@ -291,7 +292,7 @@ namespace RBMAI
                         }
                         if (crushThrough)
                         {
-                            int hpDamage = (int)Math.Floor(calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureOverkill, blow));
+                            int hpDamage = (int)Math.Floor(calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureOverkill, blow, isUnarmedAttack));
                             makePostureCrashThroughBlow(ref mission, blow, attackerAgent, victimAgent, hpDamage, ref collisionData, attackerWeapon);
                             MBTextManager.SetTextVariable("DMG", hpDamage);
                             if (victimAgent.IsPlayerControlled)
@@ -319,11 +320,11 @@ namespace RBMAI
 
             public static void handleAttacker(Posture posture, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData,
                 MissionWeapon attackerWeapon, float comHitModifier, ref Blow blow, ref Mission mission,
-                float actionModifier, float staggerActionSpeed, bool dropWeapon, bool stagger, bool resetPosture, bool tired, MeleeHitType meleeHitType)
+                float actionModifier, float staggerActionSpeed, bool dropWeapon, bool stagger, bool resetPosture, bool tired, MeleeHitType meleeHitType, bool isUnarmedAttack)
             {
                 if (posture != null)
                 {
-                    float postureDmg = calculateAttackerPostureDamage(victimAgent, attackerAgent, actionModifier, ref collisionData, attackerWeapon, comHitModifier, meleeHitType);
+                    float postureDmg = calculateAttackerPostureDamage(victimAgent, attackerAgent, actionModifier, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, isUnarmedAttack);
                     float postureOverkill = Math.Abs(posture.posture - postureDmg);
                     posture.posture = Math.Max(0f, posture.posture - postureDmg);
                     addPosturedamageVisual(attackerAgent, victimAgent);
@@ -346,7 +347,14 @@ namespace RBMAI
                         }
                         if (resetPosture)
                         {
-                            ResetPostureForAgent(ref posture, postureResetModifier);
+                            if (meleeHitType == MeleeHitType.AgentHit)
+                            {
+                                ResetPostureForAgent(ref posture, 0.33f);
+                            }
+                            else
+                            {
+                                ResetPostureForAgent(ref posture, postureResetModifier);
+                            }
                         }
                     }
                     addPosturedamageVisual(attackerAgent, victimAgent);
@@ -356,7 +364,7 @@ namespace RBMAI
             public static void handleDefenderChamberBlock(Posture defenderPosture, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MissionWeapon attackerWeapon, float comHitModifier, ref Blow blow, ref Mission mission, MeleeHitType meleeHitType)
             {
                 float defenderChamberBlockAction = 0.25f;
-                defenderPosture.posture = defenderPosture.posture - calculateDefenderPostureDamage(victimAgent, attackerAgent, defenderChamberBlockAction, ref collisionData, attackerWeapon, comHitModifier, meleeHitType);
+                defenderPosture.posture = defenderPosture.posture - calculateDefenderPostureDamage(victimAgent, attackerAgent, defenderChamberBlockAction, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, false);
                 addPosturedamageVisual(attackerAgent, victimAgent);
                 if (defenderPosture.posture <= 0f)
                 {
@@ -377,7 +385,7 @@ namespace RBMAI
             public static void handleAttackerChamberBlock(Posture attackerPosture, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MissionWeapon attackerWeapon, float comHitModifier, ref Blow blow, ref Mission mission, MeleeHitType meleeHitType)
             {
                 float attackerChamberBlockAction = 2f;
-                float postureDmg = calculateAttackerPostureDamage(victimAgent, attackerAgent, attackerChamberBlockAction, ref collisionData, attackerWeapon, comHitModifier, meleeHitType);
+                float postureDmg = calculateAttackerPostureDamage(victimAgent, attackerAgent, attackerChamberBlockAction, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, false);
                 attackerPosture.posture = attackerPosture.posture - postureDmg;
                 addPosturedamageVisual(attackerAgent, victimAgent);
                 if (attackerPosture.posture <= 0f)
@@ -406,7 +414,7 @@ namespace RBMAI
             {
                 //sanity gate
                 if (!(new StackTrace()).GetFrame(3).GetMethod().Name.Contains("MeleeHit") || victimAgent == null || !victimAgent.IsHuman ||
-                    !RBMConfig.RBMConfig.postureEnabled || attackerAgent == null || victimAgent == null || attackerAgent.IsFriendOf(victimAgent) || attackerWeapon.CurrentUsageItem == null)
+                    !RBMConfig.RBMConfig.postureEnabled || attackerAgent == null || victimAgent == null || attackerAgent.IsFriendOf(victimAgent))
                 {
                     return;
                 }
@@ -416,11 +424,18 @@ namespace RBMAI
                 AgentPostures.values.TryGetValue(victimAgent, out defenderPosture);
                 AgentPostures.values.TryGetValue(attackerAgent, out attackerPosture);
 
+                bool isUnarmedAttack = false;
+                //detect unarmed attack
+                if (attackerWeapon.IsEmpty && attackerAgent != null && victimAgent != null && collisionData.DamageType == (int)DamageTypes.Blunt)
+                {
+                    isUnarmedAttack = true;
+                }
+
                 Blow blow = __result;
                 Mission mission = __instance;
 
                 //modifier of psoture damage, loser the hit is to COM ( center of mass ), higher the Modifier
-                float comHitModifier = Utilities.GetComHitModifier(in collisionData, in attackerWeapon);
+                float comHitModifier = isUnarmedAttack ? 1f : Utilities.GetComHitModifier(in collisionData, in attackerWeapon);
 
                 //weapon block
                 if (!collisionData.AttackBlockedWithShield)
@@ -440,7 +455,8 @@ namespace RBMAI
                                 dropWeapon: true,
                                 dropShield: false,
                                 damageShield: false,
-                                meleeHitType: MeleeHitType.WeaponBlock
+                                meleeHitType: MeleeHitType.WeaponBlock,
+                                isUnarmedAttack: isUnarmedAttack
                                 );
                         }
                         if (attackerPosture != null)
@@ -453,7 +469,8 @@ namespace RBMAI
                                 staggerActionSpeed: 0.95f,
                                 dropWeapon: true,
                                 tired: false,
-                                meleeHitType: MeleeHitType.WeaponBlock
+                                meleeHitType: MeleeHitType.WeaponBlock,
+                                isUnarmedAttack: isUnarmedAttack
                                 );
                         }
                     }
@@ -472,7 +489,8 @@ namespace RBMAI
                                 dropWeapon: true,
                                 dropShield: false,
                                 damageShield: false,
-                                meleeHitType: MeleeHitType.WeaponParry
+                                meleeHitType: MeleeHitType.WeaponParry,
+                                isUnarmedAttack: isUnarmedAttack
                                 );
                         }
                         if (attackerPosture != null)
@@ -485,7 +503,8 @@ namespace RBMAI
                                 staggerActionSpeed: 0.85f,
                                 dropWeapon: true,
                                 tired: false,
-                                meleeHitType: MeleeHitType.WeaponParry
+                                meleeHitType: MeleeHitType.WeaponParry,
+                                isUnarmedAttack: isUnarmedAttack
                                 );
                         }
                     }
@@ -504,7 +523,8 @@ namespace RBMAI
                                 dropWeapon: false,
                                 dropShield: false,
                                 damageShield: false,
-                                meleeHitType: MeleeHitType.AgentHit
+                                meleeHitType: MeleeHitType.AgentHit,
+                                isUnarmedAttack: isUnarmedAttack
                                 );
                         }
                         if (attackerPosture != null)
@@ -513,11 +533,12 @@ namespace RBMAI
                             handleAttacker(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
                                 actionModifier: 0.5f,
                                 stagger: false,
-                                resetPosture: false,
+                                resetPosture: true,
                                 staggerActionSpeed: 1f,
                                 dropWeapon: false,
                                 tired: true,
-                                meleeHitType: MeleeHitType.AgentHit
+                                meleeHitType: MeleeHitType.AgentHit,
+                                isUnarmedAttack: isUnarmedAttack
                                 );
                         }
                     }
@@ -540,7 +561,8 @@ namespace RBMAI
                                 dropWeapon: false,
                                 dropShield: true,
                                 damageShield: true,
-                                meleeHitType: MeleeHitType.ShieldIncorrectBlock
+                                meleeHitType: MeleeHitType.ShieldIncorrectBlock,
+                                isUnarmedAttack: isUnarmedAttack
                                 );
                         }
                         if (attackerPosture != null)
@@ -553,7 +575,8 @@ namespace RBMAI
                                 staggerActionSpeed: 1f,
                                 dropWeapon: false,
                                 tired: true,
-                                meleeHitType: MeleeHitType.ShieldIncorrectBlock
+                                meleeHitType: MeleeHitType.ShieldIncorrectBlock,
+                                isUnarmedAttack: isUnarmedAttack
                                 );
                         }
                     }
@@ -572,7 +595,8 @@ namespace RBMAI
                                 dropWeapon: false,
                                 dropShield: true,
                                 damageShield: true,
-                                meleeHitType: MeleeHitType.ShieldBlock
+                                meleeHitType: MeleeHitType.ShieldBlock,
+                                isUnarmedAttack: isUnarmedAttack
                                 );
                         }
                         if (attackerPosture != null)
@@ -585,7 +609,8 @@ namespace RBMAI
                                 staggerActionSpeed: 0.9f,
                                 dropWeapon: false,
                                 tired: false,
-                                meleeHitType: MeleeHitType.ShieldBlock
+                                meleeHitType: MeleeHitType.ShieldBlock,
+                                isUnarmedAttack: isUnarmedAttack
                                 );
                         }
                     }
@@ -604,7 +629,8 @@ namespace RBMAI
                                 dropWeapon: false,
                                 dropShield: true,
                                 damageShield: true,
-                                meleeHitType: MeleeHitType.ShieldParry
+                                meleeHitType: MeleeHitType.ShieldParry,
+                                isUnarmedAttack: isUnarmedAttack
                                 );
                         }
                         if (attackerPosture != null)
@@ -617,7 +643,8 @@ namespace RBMAI
                                 staggerActionSpeed: 0.85f,
                                 dropWeapon: true,
                                 tired: false,
-                                meleeHitType: MeleeHitType.ShieldParry
+                                meleeHitType: MeleeHitType.ShieldParry,
+                                isUnarmedAttack: isUnarmedAttack
                                 );
                         }
                     }
@@ -720,7 +747,7 @@ namespace RBMAI
                 }
             }
 
-            private static float calculateDefenderPostureDamage(Agent defenderAgent, Agent attackerAgent, float actionTypeDamageModifier, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier, MeleeHitType meleeHitType)
+            private static float calculateDefenderPostureDamage(Agent defenderAgent, Agent attackerAgent, float actionTypeDamageModifier, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier, MeleeHitType meleeHitType, bool isUnarmedAttack)
             {
                 float result = 0f;
                 float defenderPostureDamageModifier = 1f; // terms and conditions may apply
@@ -730,7 +757,7 @@ namespace RBMAI
                 float basePostureDamage = getDefenderPostureDamage(defenderAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, meleeHitType);
                 actionTypeDamageModifier = 1f;
 
-                SkillObject attackerWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(weapon.CurrentUsageItem.WeaponClass);
+                SkillObject attackerWeaponSkill = isUnarmedAttack ? null : WeaponComponentData.GetRelevantSkillFromWeaponClass(weapon.CurrentUsageItem.WeaponClass);
                 float attackerEffectiveWeaponSkill = 0;
                 float attackerEffectiveStrengthSkill = 0;
                 if (attackerWeaponSkill != null)
@@ -749,18 +776,6 @@ namespace RBMAI
                 float defenderEffectiveWeaponSkill = 0;
                 float defenderEffectiveStrengthSkill = 0;
 
-                float defenderWeaponLength = -1f;
-                float attackerWeaponLength = -1f;
-
-                float attackerWeaponWeight = -1f;
-                float defenderWeaponWeight = -1f;
-
-                if (weapon.CurrentUsageItem != null)
-                {
-                    attackerWeaponLength = weapon.CurrentUsageItem.WeaponLength;
-                    attackerWeaponWeight = weapon.GetWeight();
-                }
-
                 if (defenderAgent.GetPrimaryWieldedItemIndex() != EquipmentIndex.None)
                 {
                     MissionWeapon defenderWeapon = defenderAgent.Equipment[defenderAgent.GetPrimaryWieldedItemIndex()];
@@ -776,14 +791,6 @@ namespace RBMAI
                             defenderEffectiveWeaponSkill += 20f;
                         }
                     }
-                    else
-                    {
-                        if (defenderWeapon.CurrentUsageItem != null)
-                        {
-                            defenderWeaponLength = defenderWeapon.CurrentUsageItem.WeaponLength;
-                            defenderWeaponWeight = defenderWeapon.GetWeight();
-                        }
-                    }
                 }
                 if (defenderAgent.HasMount)
                 {
@@ -792,6 +799,11 @@ namespace RBMAI
                 else
                 {
                     defenderEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, DefaultSkills.Athletics);
+                }
+
+                if (isUnarmedAttack)
+                {
+                    attackerEffectiveWeaponSkill = defenderEffectiveStrengthSkill;
                 }
 
                 defenderEffectiveWeaponSkill = defenderEffectiveWeaponSkill / weaponSkillModifier;
@@ -824,7 +836,7 @@ namespace RBMAI
                 return result;
             }
 
-            private static float calculateAttackerPostureDamage(Agent defenderAgent, Agent attackerAgent, float actionTypeDamageModifier, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier, MeleeHitType meleeHitType)
+            private static float calculateAttackerPostureDamage(Agent defenderAgent, Agent attackerAgent, float actionTypeDamageModifier, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier, MeleeHitType meleeHitType, bool isUnarmedAttack)
             {
                 float result = 0f;
 
@@ -834,7 +846,7 @@ namespace RBMAI
                 float basePostureDamage = getAttackerPostureDamage(defenderAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, meleeHitType);
                 actionTypeDamageModifier = 1f;
 
-                SkillObject attackerWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(weapon.CurrentUsageItem.WeaponClass);
+                SkillObject attackerWeaponSkill = isUnarmedAttack ? null : WeaponComponentData.GetRelevantSkillFromWeaponClass(weapon.CurrentUsageItem.WeaponClass);
 
                 float attackerEffectiveWeaponSkill = 0;
                 float attackerEffectiveStrengthSkill = 0;
@@ -855,18 +867,6 @@ namespace RBMAI
                 float defenderEffectiveWeaponSkill = 0;
                 float defenderEffectiveStrengthSkill = 0;
 
-                float defenderWeaponLength = -1f;
-                float attackerWeaponLength = -1f;
-
-                float attackerWeaponWeight = -1f;
-                float defenderWeaponWeight = -1f;
-
-                if (weapon.CurrentUsageItem != null)
-                {
-                    attackerWeaponLength = weapon.CurrentUsageItem.WeaponLength;
-                    attackerWeaponWeight = weapon.GetWeight();
-                }
-
                 if (defenderAgent.GetPrimaryWieldedItemIndex() != EquipmentIndex.None)
                 {
                     MissionWeapon defenderWeapon = defenderAgent.Equipment[defenderAgent.GetPrimaryWieldedItemIndex()];
@@ -881,14 +881,6 @@ namespace RBMAI
                         {
                             defenderEffectiveWeaponSkill += 20f;
                         }
-                        else
-                        {
-                            if (defenderWeapon.CurrentUsageItem != null)
-                            {
-                                defenderWeaponLength = defenderWeapon.CurrentUsageItem.WeaponLength;
-                                defenderWeaponWeight = defenderWeapon.GetWeight();
-                            }
-                        }
                     }
                 }
                 if (defenderAgent.HasMount)
@@ -898,6 +890,11 @@ namespace RBMAI
                 else
                 {
                     defenderEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, DefaultSkills.Athletics);
+                }
+
+                if (isUnarmedAttack)
+                {
+                    attackerEffectiveWeaponSkill = defenderEffectiveStrengthSkill;
                 }
 
                 defenderEffectiveWeaponSkill = defenderEffectiveWeaponSkill / weaponSkillModifier;
@@ -1224,7 +1221,7 @@ namespace RBMAI
                 return thrustMagnitude;
             }
 
-            public static float calculateHealthDamage(MissionWeapon targetWeapon, Agent attacker, Agent victimAgent, float overPostureDamage, Blow b)
+            public static float calculateHealthDamage(MissionWeapon targetWeapon, Agent attacker, Agent victimAgent, float overPostureDamage, Blow b, bool isUnarmedAttack)
             {
                 float armorSumPosture = victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Head);
                 armorSumPosture += victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Neck);
@@ -1250,6 +1247,64 @@ namespace RBMAI
                     float sweetSpot = 0f;
                     int targetWeaponUsageIndex = targetWeapon.CurrentUsageIndex;
                     BasicCharacterObject currentSelectedChar = attacker.Character;
+
+                    if (currentSelectedChar != null && isUnarmedAttack)
+                    {
+                        int realDamage = 0;
+                        int effectiveSkill = currentSelectedChar.GetSkillValue(DefaultSkills.Athletics);
+                        float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(effectiveSkill);
+                        float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill);
+
+                        float magnitude = 1f;
+
+                        if (isUnarmedAttack)
+                        {
+                            ArmorMaterialTypes gauntletMaterial = Utilities.getArmArmorMaterial(attacker);
+                            switch (gauntletMaterial)
+                            {
+                                case ArmorMaterialTypes.None:
+                                    {
+                                        magnitude *= 0.25f;
+                                        break;
+                                    }
+                                case ArmorMaterialTypes.Cloth:
+                                    {
+                                        magnitude *= 0.4f;
+                                        break;
+                                    }
+                                case ArmorMaterialTypes.Leather:
+                                    {
+                                        magnitude *= 0.5f;
+                                        break;
+                                    }
+                                case ArmorMaterialTypes.Chainmail:
+                                    {
+                                        magnitude *= 0.75f;
+                                        break;
+                                    }
+                                case ArmorMaterialTypes.Plate:
+                                    {
+                                        magnitude *= 1f;
+                                        break;
+                                    }
+                            }
+                            float gauntletWeight = Utilities.getGauntletWeight(attacker);
+                            magnitude += gauntletWeight;
+                        }
+
+                        float skillBasedDamage = Utilities.GetSkillBasedDamage(magnitude, false, "unarmedAttack", DamageTypes.Blunt, effectiveSkillDR, skillModifier, StrikeType.Swing, 5f);
+
+                        realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage("unarmedAttack", DamageTypes.Blunt, skillBasedDamage, armorSumPosture, 1f, out float penetratedDamage, out float bluntForce, swingDamageFactor, null, false)), 0, 2000);
+                        realDamage = MathF.Floor(realDamage * 1f);
+                        if (overPostureDamage > threshold)
+                        {
+                            return realDamage;
+                        }
+                        else
+                        {
+                            return realDamage * (overPostureDamage / threshold);
+                        }
+                    }
 
                     if (currentSelectedChar != null && !targetWeapon.IsEmpty && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex) != null && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).IsMeleeWeapon)
                     {
@@ -1313,11 +1368,11 @@ namespace RBMAI
                 int weaponDamage = 0;
                 if (b.StrikeType == StrikeType.Swing)
                 {
-                    weaponDamage = targetWeapon.GetModifiedSwingDamageForCurrentUsage();
+                    weaponDamage = isUnarmedAttack ? 4 : targetWeapon.GetModifiedSwingDamageForCurrentUsage();
                 }
                 else
                 {
-                    weaponDamage = targetWeapon.GetModifiedThrustDamageForCurrentUsage();
+                    weaponDamage = isUnarmedAttack ? 4 : targetWeapon.GetModifiedThrustDamageForCurrentUsage();
                 }
 
                 int hpDamage = MBMath.ClampInt(MathF.Ceiling(MissionGameModels.Current.StrikeMagnitudeModel.ComputeRawDamage(b.DamageType, weaponDamage, armorSumPosture, 1f)), 0, 2000);

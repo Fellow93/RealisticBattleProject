@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using System;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -170,9 +169,9 @@ namespace RBMCombat
                 {
                     if (equipmentElement.Item.ArmorComponent != null)
                     {
-                        if(equipmentElement.Item.ArmorComponent.MaterialType == ArmorMaterialTypes.Plate)
+                        if (equipmentElement.Item.ArmorComponent.MaterialType == ArmorMaterialTypes.Plate)
                         {
-                            if(equipmentElement.GetModifiedItemName().Contains("mail") || equipmentElement.GetModifiedItemName().Contains("Mail"))
+                            if (equipmentElement.GetModifiedItemName().Contains("mail") || equipmentElement.GetModifiedItemName().Contains("Mail"))
                             {
                                 return ArmorMaterialTypes.Chainmail;
                             }
@@ -274,6 +273,23 @@ namespace RBMCombat
                 }
             }
             return material;
+        }
+
+        public static float getGauntletWeight(Agent agent)
+        {
+            float weight = 0f;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            {
+                EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
+                {
+                    if (equipmentElement.Item.ArmorComponent != null)
+                    {
+                        return equipmentElement.Item.Weight / 2f;
+                    }
+                }
+            }
+            return weight;
         }
 
         public static float getLegArmor(Agent agent)
@@ -579,7 +595,7 @@ namespace RBMCombat
         public static ArmorMaterialTypes GetArmorMaterialForBodyPartRBM(Agent agent, BoneBodyPartType bodyPart)
         {
             ArmorMaterialTypes result = ArmorMaterialTypes.None;
-            if(agent != null)
+            if (agent != null)
             {
                 if (!agent.IsHuman)
                 {
