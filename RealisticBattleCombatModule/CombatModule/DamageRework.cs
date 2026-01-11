@@ -159,7 +159,7 @@ namespace RBMCombat
 
                 bool isUnarmedAttack = false;
                 //detect unarmed attack
-                if (attackerWeapon == null && attacker != null && victim != null && damageType == DamageTypes.Blunt)
+                if (attackerWeapon == null && attacker != null && victim != null && damageType == DamageTypes.Blunt && !attackCollisionData.IsFallDamage && !attackCollisionData.IsHorseCharge)
                 {
                     isUnarmedAttack = true;
                 }
@@ -1348,7 +1348,7 @@ namespace RBMCombat
                 }
 
                 //detect unarmed attack
-                if (attackerWeapon.IsEmpty && attacker != null && victim != null && collisionData.DamageType == (int)DamageTypes.Blunt)
+                if (attackerWeapon.IsEmpty && attacker != null && victim != null && collisionData.DamageType == (int)DamageTypes.Blunt && !collisionData.IsFallDamage && !collisionData.IsHorseCharge)
                 {
                     float attackerArmArmror = attacker.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ArmLeft);
                     //b.SelfInflictedDamage = MathF.Ceiling(b.BaseMagnitude / 6f);

@@ -426,7 +426,7 @@ namespace RBMAI
 
                 bool isUnarmedAttack = false;
                 //detect unarmed attack
-                if (attackerWeapon.IsEmpty && attackerAgent != null && victimAgent != null && collisionData.DamageType == (int)DamageTypes.Blunt)
+                if (attackerWeapon.IsEmpty && attackerAgent != null && victimAgent != null && collisionData.DamageType == (int)DamageTypes.Blunt && !collisionData.IsFallDamage && !collisionData.IsHorseCharge)
                 {
                     isUnarmedAttack = true;
                 }

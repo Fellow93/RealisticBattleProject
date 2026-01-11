@@ -21,6 +21,8 @@ namespace RBMAI
         {
             public Timer AIDecisionTimer = null;
             public AIDecision currentDecision = AIDecision.Attack;
+
+            public Boolean shouldClearTargetFrame = false;
             public enum AIDecision
             {
                 Attack,
@@ -232,7 +234,6 @@ namespace RBMAI
                 {
                     return true;
                 }
-                unit.ClearTargetFrame();
                 if (mission.IsSiegeBattle)
                 {
                     if (unit.Position == null || unit.Team == null)
@@ -336,8 +337,21 @@ namespace RBMAI
                     }
                 }
 
+                AIDecision aiDecision;
+                if (!aiDecisionCooldownDict.TryGetValue(unit, out aiDecision))
+                {
+                    aiDecisionCooldownDict[unit] = new AIDecision();
+                    aiDecisionCooldownDict.TryGetValue(unit, out aiDecision);
+                }
+
+                if (aiDecision.AIMindset.shouldClearTargetFrame)
+                {
+                    unit.ClearTargetFrame();
+                    aiDecision.AIMindset.shouldClearTargetFrame = false;
+                }
+
                 //if (__instance.Team.ActiveAgents.Count * __instance.Team.QuerySystem.InfantryRatio <= 30) { return true; } // frontline system disabled for small infantry battles
-                if (mission != null && mission.IsFieldBattle && unit != null && (__instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation) && !____detachedUnits.Contains(unit))
+                if (mission != null && mission.IsFieldBattle && (__instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation) && !____detachedUnits.Contains(unit))
                 {
                     Agent targetAgent;
                     var vanillaTargetAgent = targetAgent = unit.GetTargetAgent();
@@ -380,13 +394,6 @@ namespace RBMAI
                         alliesRight = mission.GetNearbyAllyAgents(unitPosition + rightVec * 1.35f, 1.35f, unit.Team, alliesRight);
 
                         enemiesFront = mission.GetNearbyEnemyAgents(unitPosition + direction, 2f, unit.Team, enemiesFront);
-
-                        AIDecision aiDecision;
-                        if (!aiDecisionCooldownDict.TryGetValue(unit, out aiDecision))
-                        {
-                            aiDecisionCooldownDict[unit] = new AIDecision();
-                            aiDecisionCooldownDict.TryGetValue(unit, out aiDecision);
-                        }
 
                         float postureModifier = 1f;
                         if (RBMConfig.RBMConfig.postureEnabled)
@@ -463,19 +470,26 @@ namespace RBMAI
                             }
                         }
 
+                        aiDecision.AIMindset.shouldClearTargetFrame = true;
+
                         switch (aiDecision.AIMindset.currentDecision)
                         {
                             case AIMindset.AIDecision.Rest:
                                 {
                                     __result = unit.GetWorldPosition();
+                                    unit.SetTargetPosition(unit.GetWorldPosition().AsVec2);
                                     return false;
                                 }
                             case AIMindset.AIDecision.Attack:
                                 {
                                     if (__instance.IsAIControlled && targetAgent != null && targetAgent.IsActive() && vanillaTargetAgent.IsActive() && unit != null && targetAgent != vanillaTargetAgent && vanillaTargetAgent.HasMount || vanillaTargetAgent.IsRunningAway)
                                     {
-                                        __result = targetAgent != null ? targetAgent.GetWorldPosition() : WorldPosition.Invalid;
-                                        return false;
+                                        if (targetAgent != null)
+                                        {
+                                            __result = targetAgent.GetWorldPosition();
+                                            unit.SetTargetPosition(targetAgent.GetWorldPosition().AsVec2);
+                                            return false;
+                                        }
                                     }
                                     return true;
                                 }
@@ -483,7 +497,6 @@ namespace RBMAI
                                 {
                                     WorldPosition backPosition = unit.GetWorldPosition();
                                     backPosition.SetVec2(unitPosition - direction * MBRandom.RandomFloatRanged(0.15f, 0.3f));
-
                                     unit.SetTargetPosition(backPosition.AsVec2);
                                     __result = backPosition;
                                     return false;
@@ -498,8 +511,9 @@ namespace RBMAI
                                 {
                                     WorldPosition leftPosition = unit.GetWorldPosition();
                                     leftPosition.SetVec2(unitPosition + leftVec * MBRandom.RandomFloatRanged(0.15f, 0.3f));
+                                    __result = leftPosition;
                                     unit.SetTargetPosition(leftPosition.AsVec2);
-                                    return false;
+                                    return true;
                                 }
                             case AIMindset.AIDecision.FlankAllyRight:
                                 {
