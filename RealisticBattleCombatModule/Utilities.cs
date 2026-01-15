@@ -11,12 +11,9 @@ namespace RBMCombat
 {
     public static class Utilities
     {
-        public static int numOfHits = 0;
-        public static int numOfDurabilityDowngrade = 0;
-        public static float throwableCorrectionSpeed = 7f;
-
-        public static float swingSpeedTransfer = 4.5454545f;
-        public static float thrustSpeedTransfer = 11.7647057f;
+        public const float throwableCorrectionSpeed = 7f;
+        public const float swingSpeedTransfer = 4.5454545f;
+        public const float thrustSpeedTransfer = 11.7647057f;
 
         public static bool ThurstWithTip(in AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
         {
