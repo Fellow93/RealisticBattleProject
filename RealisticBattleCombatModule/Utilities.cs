@@ -300,11 +300,11 @@ namespace RBMCombat
             //throwable.CurrentUsageIndex = 0;
         }
 
-        public static int assignThrowableMissileSpeed(float ammoWeight, int correctiveMissileSpeed, float effectiveSkill, float equipmentWeight, WeaponClass shieldType)
+        public static int assignThrowableMissileSpeed(float ammoWeight, int correctiveMissileSpeed, float effectiveSkill, float armorModifier, WeaponClass shieldType)
         {
             //float ammoWeight = throwable.GetWeight() / throwable.Amount;
             float shieldTypeModifier = 1f;
-            float equipmentWeightModifier = (float)Math.Sqrt(MBMath.ClampFloat(1f - (equipmentWeight * 0.012f), 0.5f, 1f));
+            float equipmentWeightModifier = (float)Math.Sqrt(MBMath.ClampFloat(1f - (armorModifier * 0.012f), 0.5f, 1f));
             switch (shieldType)
             {
                 case WeaponClass.LargeShield:

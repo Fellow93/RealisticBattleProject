@@ -97,16 +97,19 @@ namespace RBMCombat
                                     }
                                 }
                             }
-                            float equipmentWeight = __instance.SpawnEquipment.GetTotalWeightOfArmor(true); //+ __instance.Equipment.GetTotalWeightOfWeapons();
+                            //float equipmentWeight = __instance.SpawnEquipment.GetTotalWeightOfArmor(true); //+ __instance.Equipment.GetTotalWeightOfWeapons();
+                            float armorModifier = 0;
                             WeaponClass typeOfShieldEquipped = WeaponClass.Undefined;
                             for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                             {
                                 if (__instance.Equipment != null && !__instance.Equipment[equipmentIndex].IsEmpty && __instance.Equipment[equipmentIndex].IsShield())
                                 {
                                     typeOfShieldEquipped = __instance.Equipment[equipmentIndex].CurrentUsageItem.WeaponClass;
-
                                 }
                             }
+                            armorModifier += ArmorRework.getShoulderArmor(__instance);
+                            armorModifier += ArmorRework.getArmArmor(__instance);
+
                             switch (weaponStatsData[i].WeaponClass)
                             {
                                 case (int)WeaponClass.OneHandedPolearm:
@@ -117,7 +120,7 @@ namespace RBMCombat
                                             ammoWeight,
                                             (int)Utilities.throwableCorrectionSpeed,
                                             effectiveSkillDR,
-                                            equipmentWeight,
+                                            armorModifier,
                                             typeOfShieldEquipped
                                             );
                                         break;
@@ -129,7 +132,7 @@ namespace RBMCombat
                                             ammoWeight,
                                             (int)Utilities.throwableCorrectionSpeed,
                                             effectiveSkillDR,
-                                            equipmentWeight,
+                                            armorModifier,
                                             typeOfShieldEquipped
                                             );
                                         break;
@@ -145,7 +148,7 @@ namespace RBMCombat
                                             ammoWeight,
                                             (int)Utilities.throwableCorrectionSpeed,
                                             effectiveSkillDR,
-                                            equipmentWeight,
+                                            armorModifier,
                                             typeOfShieldEquipped
                                             );
                                         break;
