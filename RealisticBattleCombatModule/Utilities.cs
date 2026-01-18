@@ -304,7 +304,8 @@ namespace RBMCombat
         {
             //float ammoWeight = throwable.GetWeight() / throwable.Amount;
             float shieldTypeModifier = 1f;
-            float equipmentWeightModifier = (float)Math.Sqrt(MBMath.ClampFloat(1f - (armorModifier * 0.005f), 0.7f, 1f));
+            float weightTraining = MBMath.ClampFloat(effectiveSkill * 0.001f, 0f, 0.2f); // until we have perk
+            float equipmentWeightModifier = (float)Math.Sqrt(MBMath.ClampFloat(1f - (armorModifier * 0.005f) + weightTraining, 0.7f, 1f));
             switch (shieldType)
             {
                 case WeaponClass.LargeShield:
