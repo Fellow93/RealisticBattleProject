@@ -13,7 +13,7 @@ namespace RBMCombat
     {
         public static int numOfHits = 0;
         public static int numOfDurabilityDowngrade = 0;
-        public static float throwableCorrectionSpeed = 7f;
+        public static float throwableCorrectionSpeed = 0f;
 
         public static float swingSpeedTransfer = 4.5454545f;
         public static float thrustSpeedTransfer = 11.7647057f;
@@ -283,7 +283,7 @@ namespace RBMCombat
 
         public static int calculateThrowableSpeed(float ammoWeight, float effectiveSkill)
         {
-            int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt((MBMath.ClampFloat(ammoWeight * 147.7f, 60f, 200f) + (effectiveSkill * 0.5f)) * 2f / ammoWeight));
+            int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt((MBMath.ClampFloat(ammoWeight * 70f, 60f, 250f) + (effectiveSkill * 0.75f)) * 2f / ammoWeight));
             return calculatedThrowingSpeed;
         }
 
@@ -294,7 +294,7 @@ namespace RBMCombat
             //PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
             //property.DeclaringType.GetProperty("MissileSpeed");
             //throwable.CurrentUsageIndex = index;
-            calculatedThrowingSpeed += correctiveMissileSpeed;
+            //calculatedThrowingSpeed += correctiveMissileSpeed;
             return calculatedThrowingSpeed;
             //property.SetValue(throwable.CurrentUsageItem, calculatedThrowingSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
             //throwable.CurrentUsageIndex = 0;
@@ -304,7 +304,7 @@ namespace RBMCombat
         {
             //float ammoWeight = throwable.GetWeight() / throwable.Amount;
             float shieldTypeModifier = 1f;
-            float equipmentWeightModifier = (float)Math.Sqrt(MBMath.ClampFloat(1f - (armorModifier * 0.012f), 0.5f, 1f));
+            float equipmentWeightModifier = (float)Math.Sqrt(MBMath.ClampFloat(1f - (armorModifier * 0.005f), 0.7f, 1f));
             switch (shieldType)
             {
                 case WeaponClass.LargeShield:
@@ -322,7 +322,7 @@ namespace RBMCombat
             //PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
             //property.DeclaringType.GetProperty("MissileSpeed");
             //throwable.CurrentUsageIndex = index;
-            calculatedThrowingSpeed += correctiveMissileSpeed;
+            //calculatedThrowingSpeed += correctiveMissileSpeed;
             return calculatedThrowingSpeed;
             //property.SetValue(throwable.CurrentUsageItem, calculatedThrowingSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
             //throwable.CurrentUsageIndex = 0;

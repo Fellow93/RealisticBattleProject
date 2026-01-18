@@ -127,7 +127,7 @@ namespace RBMAI
                 }
                 else
                 {
-                    agentDrivenProperties.AiShooterError = 0.02f - (0.020f * effectiveSkillLevel);
+                    agentDrivenProperties.AiShooterError = 0.01f - (0.010f * effectiveSkillLevel);
                     agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.1f;
                     agentDrivenProperties.WeaponBestAccuracyWaitTime = 0.1f;
                 }
@@ -179,8 +179,8 @@ namespace RBMAI
                 }
                 else
                 {
-                    agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.03f - effectiveSkill * 0.0001f, 0.01f, 0.03f);// javelins and axes etc
-                    agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.03f - effectiveSkill * 0.0001f, 0.01f, 0.03f);// javelins and axes etc
+                    agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.03f - effectiveSkill * 0.0001f, 0.01f, 0.02f);// javelins and axes etc
+                    agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.03f - effectiveSkill * 0.0001f, 0.01f, 0.02f);// javelins and axes etc
                 }
 
                 agentDrivenProperties.AiShootFreq = MBMath.ClampFloat(effectiveSkillLevel * 1.5f, 0.1f, 0.9f); // when set to 0 AI never shoots

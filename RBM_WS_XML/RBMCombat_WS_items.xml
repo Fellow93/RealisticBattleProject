@@ -1427,7 +1427,7 @@
 				weapon_class="Bow"
 				ammo_class="Arrow"
 				ammo_limit="3"
-				thrust_speed="150"
+				thrust_speed="189"
 				speed_rating="70"
 				missile_speed="150"
 				weapon_length="106"

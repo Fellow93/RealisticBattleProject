@@ -74,7 +74,7 @@ namespace RBMCombat
                                 if (RBMConfig.RBMConfig.realisticRangedReload.Equals("1") || RBMConfig.RBMConfig.realisticRangedReload.Equals("2"))
                                 {
                                     float DrawSpeedskillModifier = 1 + (ef * 0.01f);
-                                    weaponStatsData[i].ThrustSpeed = MathF.Ceiling((thrustSpeed * 0.1f) * DrawSpeedskillModifier);
+                                    weaponStatsData[i].ThrustSpeed = MathF.Ceiling((thrustSpeed * 0.2f) * DrawSpeedskillModifier);
                                 }
                                 if (RBMConfig.RBMConfig.realisticRangedReload.Equals("0"))
                                 {
@@ -107,8 +107,8 @@ namespace RBMCombat
                                     typeOfShieldEquipped = __instance.Equipment[equipmentIndex].CurrentUsageItem.WeaponClass;
                                 }
                             }
-                            armorModifier += ArmorRework.getShoulderArmor(__instance);
-                            armorModifier += ArmorRework.getArmArmor(__instance);
+                            armorModifier += MBMath.ClampFloat(ArmorRework.getShoulderArmor(__instance) - 20f, 0f, 100f);
+                            armorModifier += MBMath.ClampFloat(ArmorRework.getArmArmor(__instance) - 20f, 0f, 100f);
 
                             switch (weaponStatsData[i].WeaponClass)
                             {
@@ -668,12 +668,12 @@ namespace RBMCombat
                                     case "bow":
                                     case "long_bow":
                                         {
-                                            agentDrivenProperties.ReloadSpeed = 0.25f * (1.5f + (0.012f * effectiveSkill));
+                                            agentDrivenProperties.ReloadSpeed = 0.25f * (0.85f + (0.0184f * effectiveSkill));
                                             break;
                                         }
                                     case "crossbow_fast":
                                         {
-                                            agentDrivenProperties.ReloadSpeed = 0.4f * (1f + (0.0045f * effectiveSkill));
+                                            agentDrivenProperties.ReloadSpeed = 0.3f * (1f + (0.0045f * effectiveSkill));
                                             break;
                                         }
                                     case "crossbow":
@@ -732,12 +732,12 @@ namespace RBMCombat
                                 case "bow":
                                 case "long_bow":
                                     {
-                                        agentDrivenProperties.ReloadSpeed = 0.25f * (1.5f + (0.012f * effectiveSkill));
+                                        agentDrivenProperties.ReloadSpeed = 0.25f * (1f + (0.016f * effectiveSkill));
                                         break;
                                     }
                                 case "crossbow_fast":
                                     {
-                                        agentDrivenProperties.ReloadSpeed = 0.4f * (1f + (0.0045f * effectiveSkill));
+                                        agentDrivenProperties.ReloadSpeed = 0.3f * (1f + (0.0045f * effectiveSkill));
                                         break;
                                     }
                                 case "crossbow":
