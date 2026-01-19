@@ -289,7 +289,7 @@ namespace RBMCombat
                 case WeaponClass.ThrowingKnife:
                 case WeaponClass.Dagger:
                     {
-                        //missileSpeed -= Utilities.throwableCorrectionSpeed;
+                        missileSpeed -= Utilities.throwableCorrectionSpeed;
                         if (missileSpeed < 5.0f)
                         {
                             missileSpeed = 5f;
@@ -298,7 +298,7 @@ namespace RBMCombat
                     }
                 case WeaponClass.Javelin:
                     {
-                        //missileSpeed -= Utilities.throwableCorrectionSpeed;
+                        missileSpeed -= Utilities.throwableCorrectionSpeed;
                         if (missileSpeed < 5.0f)
                         {
                             missileSpeed = 5f;
@@ -307,7 +307,7 @@ namespace RBMCombat
                     }
                 case WeaponClass.OneHandedPolearm:
                     {
-                        //missileSpeed -= Utilities.throwableCorrectionSpeed;
+                        missileSpeed -= Utilities.throwableCorrectionSpeed;
                         if (missileSpeed < 5.0f)
                         {
                             missileSpeed = 5f;
@@ -316,7 +316,7 @@ namespace RBMCombat
                     }
                 case WeaponClass.LowGripPolearm:
                     {
-                        //missileSpeed -= Utilities.throwableCorrectionSpeed;
+                        missileSpeed -= Utilities.throwableCorrectionSpeed;
                         if (missileSpeed < 5.0f)
                         {
                             missileSpeed = 5f;

@@ -13,7 +13,7 @@ namespace RBMCombat
     {
         public static int numOfHits = 0;
         public static int numOfDurabilityDowngrade = 0;
-        public static float throwableCorrectionSpeed = 0f;
+        public static float throwableCorrectionSpeed = 3f;
 
         public static float swingSpeedTransfer = 4.5454545f;
         public static float thrustSpeedTransfer = 11.7647057f;
@@ -294,7 +294,7 @@ namespace RBMCombat
             //PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
             //property.DeclaringType.GetProperty("MissileSpeed");
             //throwable.CurrentUsageIndex = index;
-            //calculatedThrowingSpeed += correctiveMissileSpeed;
+            calculatedThrowingSpeed += correctiveMissileSpeed;
             return calculatedThrowingSpeed;
             //property.SetValue(throwable.CurrentUsageItem, calculatedThrowingSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
             //throwable.CurrentUsageIndex = 0;
@@ -323,7 +323,7 @@ namespace RBMCombat
             //PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");
             //property.DeclaringType.GetProperty("MissileSpeed");
             //throwable.CurrentUsageIndex = index;
-            //calculatedThrowingSpeed += correctiveMissileSpeed;
+            calculatedThrowingSpeed += correctiveMissileSpeed;
             return calculatedThrowingSpeed;
             //property.SetValue(throwable.CurrentUsageItem, calculatedThrowingSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
             //throwable.CurrentUsageIndex = 0;
