@@ -634,7 +634,7 @@
     </skills>
 		<upgrade_targets>
 			<upgrade_target
-				id="NPCCharacter.nord_berserkr" />
+				id="NPCCharacter.nord_skjaldbrestir" />
 		</upgrade_targets>
 		<Equipments>
 			<EquipmentRoster>
@@ -649,7 +649,7 @@
 					id="Item.northern_javelin_3_t4" />
 				<equipment
 					slot="Item3"
-					id="Item.northern_javelin_3_t4" />
+					id="Item.nord_spear_2_t3" />
 				<equipment
 					slot="Body"
 					id="Item.nord_chainmail_armor" />
@@ -678,7 +678,7 @@
 					id="Item.northern_javelin_3_t4" />
 				<equipment
 					slot="Item3"
-					id="Item.northern_javelin_3_t4" />
+					id="Item.nord_spear_2_t3" />
 				<equipment
 					slot="Body"
 					id="Item.northman_raider_armor" />
@@ -707,7 +707,7 @@
 					id="Item.northern_javelin_3_t4" />
 				<equipment
 					slot="Item3"
-					id="Item.northern_javelin_3_t4" />
+					id="Item.nord_spear_2_t3" />
 				<equipment
 					slot="Body"
 					id="Item.sturgian_lamellar_base" />
@@ -755,7 +755,7 @@
       <skill id="TwoHanded"
              value="155" />
       <skill id="Polearm"
-             value="80" />
+             value="130" />
       <skill id="Bow"
              value="60" />
       <skill id="Crossbow"
@@ -771,10 +771,10 @@
 					id="Item.berserkr_axe" />
 				<equipment
 					slot="Item1"
-					id="Item.northern_javelin_3_t4" />
+					id="Item.northern_spear_4_t5" />
 				<equipment
 					slot="Item2"
-					id="Item.northern_javelin_3_t4" />
+					id="Item.nord_throwing_axe_1_t5" />
 				<equipment
 					slot="Item3"
 					id="Item.nord_shield_tier_5_a" />
@@ -800,10 +800,10 @@
 					id="Item.nord_twohanded_axe_3_t5" />
 				<equipment
 					slot="Item1"
-					id="Item.northern_javelin_3_t4" />
+					id="Item.northern_spear_4_t5" />
 				<equipment
 					slot="Item2"
-					id="Item.northern_javelin_3_t4" />
+					id="Item.nord_throwing_axe_1_t5" />
 				<equipment
 					slot="Item3"
 					id="Item.nord_shield_tier_5_a" />
@@ -830,7 +830,7 @@
 	</NPCCharacter>
 	<NPCCharacter
 		id="nord_ungmann"
-		default_group="Infantry"
+		default_group="Cavalry"
 		level="11"
 		name="{=5PIe3Zia}Nord Scion"
 		occupation="Soldier"
@@ -970,7 +970,7 @@
 	</NPCCharacter>
 	<NPCCharacter
 		id="nord_thegn"
-		default_group="Infantry"
+		default_group="Cavalry"
 		level="16"
 		name="{=aztogWWW}Nord War-Proven"
 		occupation="Soldier"
@@ -1138,7 +1138,7 @@
 	</NPCCharacter>
 	<NPCCharacter
 		id="nord_jarlsmann"
-		default_group="Infantry"
+		default_group="Cavalry"
 		level="21"
 		name="{=iOaO8NGB}Nord Hearthguard"
 		occupation="Soldier"
@@ -1306,7 +1306,7 @@
 	</NPCCharacter>
 	<NPCCharacter
 		id="nord_hirdmann"
-		default_group="Infantry"
+		default_group="Cavalry"
 		level="26"
 		name="{=RRbpc6fr}Nord Shield-Companion"
 		occupation="Soldier"
@@ -1474,7 +1474,7 @@
 	</NPCCharacter>
 	<NPCCharacter
 		id="nord_huscarl"
-		default_group="Infantry"
+		default_group="Cavalry"
 		level="31"
 		name="{=JnwNuZb7}Nord Huscarl"
 		occupation="Soldier"
@@ -2168,7 +2168,7 @@
     </skills>
 		<upgrade_targets>
 			<upgrade_target
-				id="NPCCharacter.nord_skjaldbrestir" />
+				id="NPCCharacter.nord_berserkr" />
 		</upgrade_targets>
 		<Equipments>
 			<EquipmentRoster>
@@ -2181,6 +2181,9 @@
 				<equipment
 					slot="Item2"
 					id="Item.nord_shield_tier_4_b" />
+				<equipment
+					slot="Item3"
+					id="Item.nord_spear_2_t3" />
 				<equipment
 					slot="Body"
 					id="Item.nord_king_armor" />
@@ -2208,6 +2211,9 @@
 					slot="Item2"
 					id="Item.nord_shield_tier_4_b" />
 				<equipment
+					slot="Item3"
+					id="Item.nord_spear_2_t3" />
+				<equipment
 					slot="Body"
 					id="Item.nord_king_armor_b" />
 				<equipment
@@ -2234,6 +2240,9 @@
 					slot="Item2"
 					id="Item.nord_shield_tier_4_b" />
 				<equipment
+					slot="Item3"
+					id="Item.nord_spear_2_t3" />
+				<equipment
 					slot="Body"
 					id="Item.nord_king_armor" />
 				<equipment
@@ -2256,7 +2265,7 @@
 	</NPCCharacter>
 	<NPCCharacter
 		id="nord_vargr"
-		default_group="Infantry"
+		default_group="Cavalry"
 		level="21"
 		name="{=VpTQ5SyS}Nord Warfang"
 		occupation="Soldier"
@@ -2274,7 +2283,7 @@
       <skill id="Athletics"
              value="110" />
       <skill id="Riding"
-             value="45" />
+             value="110" />
       <skill id="OneHanded"
              value="60" />
       <skill id="TwoHanded"
@@ -2356,14 +2365,14 @@
       <skill id="Crossbow"
              value="20" />
       <skill id="Throwing"
-             value="110" />
+             value="130" />
     </skills>
 		<upgrade_targets></upgrade_targets>
 		<Equipments>
 			<EquipmentRoster>
 				<equipment
 					slot="Item0"
-					id="Item.nord_throwing_axe_1_t5" />
+					id="Item.northern_javelin_3_t4" />
 				<equipment 
 					slot="Item1"
 					id="Item.northern_spear_4_t5" />
@@ -2392,7 +2401,7 @@
 			<EquipmentRoster>
 				<equipment
 					slot="Item0"
-					id="Item.nord_throwing_axe_2_t5" />
+					id="Item.northern_javelin_3_t4" />
 				<equipment 
 					slot="Item1"
 					id="Item.northern_spear_4_t5" />
@@ -2421,7 +2430,7 @@
 			<EquipmentRoster>
 				<equipment
 					slot="Item0"
-					id="Item.nord_throwing_axe_1_t5" />
+					id="Item.northern_javelin_3_t4" />
 				<equipment
 					slot="Item2"
 					id="Item.nord_sword_1_t5" />
@@ -2454,7 +2463,7 @@
 	</NPCCharacter>
 	<NPCCharacter
 		id="nord_ulfhednar"
-		default_group="Infantry"
+		default_group="Cavalry"
 		level="26"
 		name="{=7T3mspgx}Nord Ulfhedinn"
 		occupation="Soldier"
