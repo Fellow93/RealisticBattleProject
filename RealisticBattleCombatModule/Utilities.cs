@@ -196,7 +196,7 @@ namespace RBMCombat
                 case "crossbow": // composite horn-sinew crossbow
                 case "crossbow_fast":
                     {
-                        // Easter / Chinese style crossbows
+                        // Eastern / Chinese style crossbows
                         float powerstroke = (20f * 0.0254f); // in inches then converted to metres
                         float materialEfficiency = 0.88f; // composite bow + bit of drag
                         double potentialEnergy = 0.5f * (drawWeight * 4.448f) * powerstroke * materialEfficiency; // draw weight is in pounds and then multiplied to newton metres
