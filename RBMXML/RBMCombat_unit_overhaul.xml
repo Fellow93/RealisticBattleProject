@@ -9933,7 +9933,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.sturgia_old_shield_b" />
+                 id="Item.old_kite_sparring_shield_shoulder" />
       <equipment slot="Item1"
                  id="Item.northern_spear_1_t2" />
       <equipment slot="Item2"
@@ -9969,7 +9969,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_round_shield" />
+                 id="Item.old_kite_shield_shoulder" />
       <equipment slot="Item1"
                  id="Item.northern_spear_1_t2" />
       <equipment slot="Item3"
@@ -10042,7 +10042,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_round_shield" />
+                 id="Item.worn_kite_shield_shoulder" />
       <equipment slot="Item1"
                  id="Item.northern_spear_1_t2" />
       <equipment slot="Item2"
@@ -10140,7 +10140,7 @@
       <equipment slot="Item0"
                  id="Item.northern_spear_2_t3" />
       <equipment slot="Item1"
-                 id="Item.sturgia_old_shield_c" />
+                 id="Item.leather_bound_kite_shield_shoulder" />
       <equipment slot="Item2"
                  id="Item.sturgia_axe_3_t3" />
       <equipment slot="Item3"
@@ -10160,7 +10160,7 @@
       <equipment slot="Item0"
                  id="Item.northern_spear_2_t3" />
       <equipment slot="Item1"
-                 id="Item.sturgia_old_shield_c" />
+                 id="Item.leather_bound_kite_shield_shoulder" />
       <equipment slot="Item2"
                  id="Item.sturgia_axe_3_t3" />
       <equipment slot="Item3"
@@ -10180,7 +10180,7 @@
       <equipment slot="Item0"
                  id="Item.northern_spear_2_t3" />
       <equipment slot="Item1"
-                 id="Item.sturgia_old_shield_a" />
+                 id="Item.leather_bound_kite_shield_shoulder" />
       <equipment slot="Item2"
                  id="Item.sturgia_sword_2_t3" />
       <equipment slot="Item3"
@@ -10361,7 +10361,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_axe_5_t5" />
       <equipment slot="Item1"
-                 id="Item.strapped_round_shield" />
+                 id="Item.stronger_reinforced_kite_shield_shoulder" />
       <equipment slot="Item2"
                  id="Item.northern_javelin_3_t4" />
       <equipment slot="Item3"
@@ -10421,7 +10421,7 @@
       <equipment slot="Item0"
                  id="Item.sturgia_sword_5_t5" />
       <equipment slot="Item1"
-                 id="Item.heavy_round_shield" />
+                 id="Item.stronger_reinforced_kite_shield_shoulder" />
       <equipment slot="Item2"
                  id="Item.northern_javelin_3_t4" />
       <equipment slot="Item3"
@@ -11501,7 +11501,7 @@
       <equipment slot="Item2"
                  id="Item.GRE_bolt_d" />
       <equipment slot="Item3"
-                 id="Item.northern_spear_3_t4" />
+                 id="Item.morningstar_mace_t3" />
       <equipment slot="Head"
                  id="Item.nasalhelm_over_mail" />
       <equipment slot="Body"
@@ -11553,7 +11553,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_spear_4_t5" />
+                 id="Item.eastern_steel_mace_t4" />
       <equipment slot="Item1"
                  id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
@@ -11577,7 +11577,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.ridged_2hsword_t4" />
+                 id="Item.eastern_steel_mace_t4" />
       <equipment slot="Item1"
                  id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
@@ -11772,7 +11772,7 @@
       <equipment slot="Item0"
                  id="Item.northern_spear_3_t4" />
       <equipment slot="Item1"
-                 id="Item.leather_round_shield" />
+                 id="Item.reinforced_kite_shield_shoulder" />
       <equipment slot="Item2"
                  id="Item.khuzait_mace_3_t4" />
       <equipment slot="Item3"
@@ -11792,7 +11792,7 @@
       <equipment slot="Item0"
                  id="Item.northern_spear_3_t4" />
       <equipment slot="Item1"
-                 id="Item.strapped_round_shield" />
+                 id="Item.reinforced_kite_shield_shoulder" />
       <equipment slot="Item2"
                  id="Item.sturgia_sword_5_t4" />
       <equipment slot="Item3"
@@ -12125,7 +12125,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_1_t2" />
+                 id="Item.simple_pike_t2" />
       <equipment slot="Item1"
                  id="Item.ironrim_kite_shield_shoulder" />
       <equipment slot="Item2"
@@ -12215,7 +12215,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.western_spear_4_t4" />
+                 id="Item.military_fork_pike_t3" />
       <equipment slot="Item1"
                  id="Item.tall_heater_shield_shoulder" />
       <equipment slot="Item2"
@@ -12301,7 +12301,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.vlandia_2haxe_1_t4" />
+                 id="Item.military_fork_pike_t3" />
       <equipment slot="Body"
                  id="Item.red_coat_over_mail" />
       <equipment slot="Leg"
@@ -12350,7 +12350,7 @@
       <equipment slot="Item0"
                  id="Item.vlandia_polearm_1_t5" />
       <equipment slot="Body"
-                 id="Item.coat_of_plates_over_mail" />
+                 id="Item.hauberk" />
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Head"
@@ -12364,11 +12364,11 @@
       <equipment slot="Item0"
                  id="Item.vlandia_polearm_1_t5" />
       <equipment slot="Body"
-                 id="Item.coat_of_plates_over_mail" />
+                 id="Item.hauberk" />
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Head"
-                 id="Item.visored_helmet_over_mail_coif" />
+                 id="Item.peaked_helmet_over_mail" />
       <equipment slot="Gloves"
                  id="Item.reinforced_mail_mitten" />
       <equipment slot="Cape"
@@ -12429,7 +12429,7 @@
       <equipment slot="Item2"
                  id="Item.vlandia_sword_5_t5" />
       <equipment slot="Body"
-                 id="Item.sturgian_fortified_armor" />
+                 id="Item.hauberk" />
 	  <equipment slot="Cape"
                  id="Item.noble_pauldron" />
       <equipment slot="Leg"
@@ -12447,13 +12447,13 @@
       <equipment slot="Item2"
                  id="Item.vlandia_sword_5_t5" />
       <equipment slot="Body"
-                 id="Item.sturgian_fortified_armor" />
+                 id="Item.hauberk" />
 	  <equipment slot="Cape"
                  id="Item.noble_pauldron" />
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Head"
-                 id="Item.full_helm_over_padded_cap" />
+                 id="Item.peaked_helmet_over_mail_coif" />
       <equipment slot="Gloves"
                  id="Item.reinforced_mail_mitten" />
       </EquipmentRoster>
@@ -12465,13 +12465,13 @@
       <equipment slot="Item2"
                  id="Item.vlandia_mace_3_t5" />
       <equipment slot="Body"
-                 id="Item.sturgian_fortified_armor" />
+                 id="Item.coat_of_plates_over_mail" />
 	  <equipment slot="Cape"
                  id="Item.noble_pauldron" />
       <equipment slot="Leg"
                  id="Item.plated_strip_boots" />
       <equipment slot="Head"
-                 id="Item.full_helm_over_arming_coif" />
+                 id="Item.peaked_helmet_over_mail" />
       <equipment slot="Gloves"
                  id="Item.reinforced_mail_mitten" />
       </EquipmentRoster>
@@ -12747,7 +12747,7 @@
       <equipment slot="Item1"
                  id="Item.stronger_reinforced_kite_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.vlandia_lance_1_t3" />
+                 id="Item.western_spear_4_t4" />
       <equipment slot="Body"
                  id="Item.coat_of_plates_over_mail" />
       <equipment slot="Leg"
@@ -12765,13 +12765,13 @@
       <equipment slot="Item1"
                  id="Item.stronger_reinforced_kite_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.vlandia_lance_1_t3" />
+                 id="Item.western_spear_4_t4" />
       <equipment slot="Body"
-                 id="Item.coat_of_plates_over_mail" />
+                 id="Item.hauberk" />
       <equipment slot="Leg"
                  id="Item.northern_plated_boots" />
       <equipment slot="Head"
-                 id="Item.full_helm_over_cloth_headwrap" />
+                 id="Item.peaked_helmet_over_mail" />
       <equipment slot="Gloves"
                  id="Item.lordly_mail_mitten" />
       <equipment slot="Cape"
@@ -12783,13 +12783,13 @@
       <equipment slot="Item1"
                  id="Item.stronger_reinforced_kite_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.vlandia_lance_1_t3" />
+                 id="Item.western_spear_4_t4" />
       <equipment slot="Body"
-                 id="Item.coat_of_plates_over_mail" />
+                 id="Item.hauberk" />
       <equipment slot="Leg"
                  id="Item.northern_plated_boots" />
       <equipment slot="Head"
-                 id="Item.full_helm_over_laced_coif" />
+                 id="Item.peaked_helmet_over_mail_coif" />
       <equipment slot="Gloves"
                  id="Item.lordly_mail_mitten" />
       <equipment slot="Cape"
@@ -12801,13 +12801,13 @@
       <equipment slot="Item1"
                  id="Item.stronger_reinforced_kite_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.vlandia_lance_1_t3" />
+                 id="Item.western_spear_4_t4" />
       <equipment slot="Body"
-                 id="Item.coat_of_plates_over_mail" />
+                 id="Item.hauberk" />
       <equipment slot="Leg"
                  id="Item.mail_chausses" />
       <equipment slot="Head"
-                 id="Item.visored_helmet_over_mail_coif" />
+                 id="Item.peaked_helmet_over_mail_coif" />
       <equipment slot="Gloves"
                  id="Item.lordly_mail_mitten" />
       <equipment slot="Cape"
@@ -12893,7 +12893,7 @@
       <equipment slot="Item2"
                  id="Item.vlandia_axe_2_t4" />
       <equipment slot="Body"
-                 id="Item.white_coat_over_mail" />
+                 id="Item.hauberk" />
       <equipment slot="Leg"
                  id="Item.strapped_mail_chausses" />
       <equipment slot="Head"
@@ -12952,7 +12952,7 @@
       <equipment slot="Leg"
                  id="Item.mail_chausses" />
       <equipment slot="Head"
-                 id="Item.full_helm_over_cloth_headwrap" />
+                 id="Item.visored_helmet_over_padded_cloth" />
       <equipment slot="Gloves"
                  id="Item.reinforced_mail_mitten" />
       <equipment slot="Cape"
@@ -12970,7 +12970,7 @@
       <equipment slot="Leg"
                  id="Item.mail_chausses" />
       <equipment slot="Head"
-                 id="Item.full_helm_over_laced_coif" />
+                 id="Item.visored_helmet_over_padded_coif" />
       <equipment slot="Gloves"
                  id="Item.reinforced_mail_mitten" />
       <equipment slot="Cape"

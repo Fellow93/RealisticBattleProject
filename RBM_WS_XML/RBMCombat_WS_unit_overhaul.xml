@@ -2310,8 +2310,12 @@
 				<equipment
 					slot="Item1"
 					id="Item.nord_spear_atgeir_1_t4" />
-
-
+				<equipment
+					slot="Item2"
+					id="Item.northern_javelin_2_t3" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_2_t3" />
 				<equipment
 					slot="Body"
 					id="Item.tacky_bandit" />
@@ -2508,8 +2512,12 @@
 				<equipment
 					slot="Item1"
 					id="Item.nord_spear_atgeir_1_t5" />
-
-
+				<equipment
+					slot="Item2"
+					id="Item.northern_javelin_2_t3" />
+				<equipment
+					slot="Item3"
+					id="Item.northern_javelin_2_t3" />
 				<equipment
 					slot="Body"
 					id="Item.sturgian_lamellar_fortified" />
@@ -5225,7 +5233,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_round_shield" />
+                 id="Item.worn_kite_shield_shoulder" />
       <equipment slot="Item1"
                  id="Item.northern_spear_1_t2" />
       <equipment slot="Item2"
@@ -5326,7 +5334,7 @@
       <equipment slot="Item0"
                  id="Item.northern_spear_2_t3" />
       <equipment slot="Item1"
-                 id="Item.sturgia_old_shield_c" />
+                 id="Item.leather_bound_kite_shield_shoulder" />
       <equipment slot="Item2"
                  id="Item.sturgia_axe_3_t3" />
       <equipment slot="Item3"
@@ -5346,7 +5354,7 @@
       <equipment slot="Item0"
                  id="Item.northern_spear_2_t3" />
       <equipment slot="Item1"
-                 id="Item.sturgia_old_shield_c" />
+                 id="Item.leather_bound_kite_shield_shoulder" />
       <equipment slot="Item2"
                  id="Item.sturgia_axe_3_t3" />
       <equipment slot="Item3"
@@ -5366,7 +5374,7 @@
       <equipment slot="Item0"
                  id="Item.northern_spear_2_t3" />
       <equipment slot="Item1"
-                 id="Item.sturgia_old_shield_a" />
+                 id="Item.leather_bound_kite_shield_shoulder" />
       <equipment slot="Item2"
                  id="Item.sturgia_sword_2_t3" />
       <equipment slot="Item3"
@@ -5485,7 +5493,7 @@
       <equipment slot="Item0"
                  id="Item.northern_spear_3_t4" />
       <equipment slot="Item1"
-                 id="Item.leather_round_shield" />
+                 id="Item.reinforced_kite_shield_shoulder" />
       <equipment slot="Item2"
                  id="Item.khuzait_mace_3_t4" />
       <equipment slot="Item3"
@@ -5505,7 +5513,7 @@
       <equipment slot="Item0"
                  id="Item.northern_spear_3_t4" />
       <equipment slot="Item1"
-                 id="Item.strapped_round_shield" />
+                 id="Item.reinforced_kite_shield_shoulder" />
       <equipment slot="Item2"
                  id="Item.sturgia_sword_5_t4" />
       <equipment slot="Item3"

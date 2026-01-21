@@ -1340,7 +1340,7 @@
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
-	<Item id="hauberk" name="{=RBM_ARM_001}Double Mail Hauberk" mesh="mail_hauberk" culture="Culture.vlandia" weight="7.3" Type="BodyArmor" appearance="1" difficulty="0" subtype="body_armor">
+	<Item id="hauberk" name="{=RBM_ARM_001}Double Mail Hauberk" mesh="mail_hauberk" culture="Culture.vlandia" weight="12.3" Type="BodyArmor" appearance="1" difficulty="0" subtype="body_armor">
 		<ItemComponent>
 			<Armor body_armor="77" leg_armor="44" covers_body="true" modifier_group="chain" material_type="Chainmail" has_gender_variations="true" arm_armor="44"/>
 		</ItemComponent>
