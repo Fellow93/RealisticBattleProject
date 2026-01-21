@@ -5384,7 +5384,7 @@
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="battanian_highborn_youth"
-                default_group="Ranged"
+                default_group="HorseArcher"
                 level="11"
                 name="{=cZms8Ivb}Battanian Highborn Youth"
                 occupation="Soldier"
@@ -5480,7 +5480,7 @@
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="battanian_highborn_warrior"
-                default_group="Ranged"
+                default_group="HorseArcher"
                 level="16"
                 name="{=IHczn7ti}Battanian Highborn Warrior"
                 occupation="Soldier"
@@ -5575,7 +5575,7 @@
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="battanian_hero"
-                default_group="Ranged"
+                default_group="HorseArcher"
                 level="21"
                 name="{=ac8MZYne}Battanian Hero"
                 occupation="Soldier"
@@ -5670,7 +5670,7 @@
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="battanian_fian"
-                default_group="Ranged"
+                default_group="HorseArcher"
                 level="26"
                 name="{=Btb7p3mD}Battanian Fian"
                 occupation="Soldier"
@@ -5765,7 +5765,7 @@
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="battanian_fian_champion"
-                default_group="Ranged"
+                default_group="HorseArcher"
                 level="31"
                 name="{=1zObCG2o}Battanian Fian Champion"
                 occupation="Soldier"
@@ -11414,9 +11414,9 @@
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="sturgian_hardened_brigand"
-                default_group="Cavalry"
+                default_group="HorseArcher"
                 level="21"
-                name="{=VbWtdAWn}Sturgian Hardened Brigand"
+                name="{=VbWtdAWn}Sturgian Strzelcy"
                 upgrade_requires="ItemCategory.horse"
                 occupation="Soldier"
                 culture="Culture.sturgia">
@@ -11437,7 +11437,7 @@
       <skill id="Bow"
              value="45" />
       <skill id="Crossbow"
-             value="15" />
+             value="110" />
       <skill id="Throwing"
              value="110" />
     </skills>
@@ -11447,11 +11447,11 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.crossbow_a" />
       <equipment slot="Item1"
                  id="Item.northern_horsemans_shield" />
       <equipment slot="Item2"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.GRE_bolt_d" />
       <equipment slot="Item3"
                  id="Item.ridged_sabre_sword_t4" />
       <equipment slot="Head"
@@ -11471,11 +11471,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.crossbow_a" />
       <equipment slot="Item1"
                  id="Item.northern_horsemans_shield" />
       <equipment slot="Item2"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.GRE_bolt_d" />
       <equipment slot="Item3"
                  id="Item.pointed_falchion_sword_t4" />
       <equipment slot="Head"
@@ -11495,11 +11495,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.crossbow_a" />
       <equipment slot="Item1"
                  id="Item.northern_horsemans_shield" />
       <equipment slot="Item2"
-                 id="Item.northern_javelin_2_t3" />
+                 id="Item.GRE_bolt_d" />
       <equipment slot="Item3"
                  id="Item.northern_spear_3_t4" />
       <equipment slot="Head"
@@ -11522,9 +11522,9 @@
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="sturgian_horse_raider"
-                default_group="Cavalry"
+                default_group="HorseArcher"
                 level="26"
-                name="{=xnzpQbwQ}Sturgian Horse Raider"
+                name="{=xnzpQbwQ}Sturgian Heavy Strzelcy"
                 upgrade_requires="ItemCategory.war_horse"
                 occupation="Soldier"
                 culture="Culture.sturgia">
@@ -11545,7 +11545,7 @@
       <skill id="Bow"
              value="60" />
       <skill id="Crossbow"
-             value="20" />
+             value="140" />
       <skill id="Throwing"
              value="140" />
     </skills>
@@ -11557,9 +11557,9 @@
       <equipment slot="Item1"
                  id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.crossbow_e" />
       <equipment slot="Item3"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.GRE_bolt_b" />
       <equipment slot="Head"
                  id="Item.sturgian_helmet_b_open" />
       <equipment slot="Body"
@@ -11581,9 +11581,9 @@
       <equipment slot="Item1"
                  id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.crossbow_e" />
       <equipment slot="Item3"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.GRE_bolt_b" />
       <equipment slot="Head"
                  id="Item.sturgian_helmet_b_open" />
       <equipment slot="Body"
@@ -11605,9 +11605,9 @@
       <equipment slot="Item1"
                  id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.crossbow_e" />
       <equipment slot="Item3"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.GRE_bolt_b" />
       <equipment slot="Head"
                  id="Item.northern_goggled_helmet" />
       <equipment slot="Body"
