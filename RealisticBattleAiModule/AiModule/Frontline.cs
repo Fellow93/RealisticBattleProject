@@ -13,6 +13,14 @@ using static TaleWorlds.MountAndBlade.MovementOrder;
 
 namespace RBMAI
 {
+    public class AgentPanicFix : MissionLogic
+    {
+        public override void OnAgentPanicked(Agent affectedAgent)
+        {
+            affectedAgent.ClearTargetFrame();
+        }
+    }
+
     public static class Frontline
     {
         public static ConcurrentDictionary<Agent, AIDecision> aiDecisionCooldownDict = new ConcurrentDictionary<Agent, AIDecision>();
@@ -435,9 +443,16 @@ namespace RBMAI
                             hasTwoHandedEquippedAddtive += 1;
                         }
 
+                        bool isBannerBearer = false;
+                        if (!unit.WieldedOffhandWeapon.IsEmpty && unit.WieldedOffhandWeapon.CurrentUsageItem != null && unit.WieldedOffhandWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Banner)
+                        {
+                            isBannerBearer = true;
+                        }
+                        bool isHero = unit.Character.IsHero;
+
                         int findAlly = (int)(enemiesFrontCount) - alliesRightCount - alliesLeftCount + hasShieldAdditive + (enemiesFrontCount > 0 && (alliesRightCount < 2 || alliesLeftCount < 2) ? 3 : 0);
                         int fallback = (int)(alliesFrontCount) + enemiesFrontCount;
-                        int attack = hasTwoHandedEquippedAddtive - alliesFrontCount + alliesLeftCount + alliesRightCount - enemiesFrontCount + (isSoldier ? 0 : 2);//+ Math.Max(0, 3 - (unitTier))
+                        int attack = hasTwoHandedEquippedAddtive - alliesFrontCount + alliesLeftCount + alliesRightCount - enemiesFrontCount + (isSoldier ? 0 : 2) + (isBannerBearer ? -3 : 0) + (isHero ? -3 : 0);//+ Math.Max(0, 3 - (unitTier)) 
                         int flankAllyLeft = (int)(alliesFrontCount) + (int)(alliesRightCount) - (int)(alliesLeftCount) - enemiesFrontCount + hasTwoHandedEquippedAddtive;
                         int flankAllyRight = (int)(alliesFrontCount) + (int)(alliesLeftCount) - (int)(alliesRightCount) - enemiesFrontCount + hasTwoHandedEquippedAddtive;
 

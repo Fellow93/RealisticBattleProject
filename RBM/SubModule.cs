@@ -168,6 +168,7 @@ namespace RBM
             }
             if (RBMConfig.RBMConfig.rbmAiEnabled)
             {
+                mission.AddMissionBehavior((MissionBehavior)(object)new AgentPanicFix());
                 mission.AddMissionBehavior((MissionBehavior)(object)new RBMAIPatchLogic());
                 if (RBMConfig.RBMConfig.postureEnabled && RBMConfig.RBMConfig.postureGUIEnabled)
                 {
