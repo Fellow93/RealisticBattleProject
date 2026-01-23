@@ -9,6 +9,7 @@
         private string enemyName = "";
 
         private string postureLabel = new TextObject("{=RBM_AI_023}Posture").ToString();
+        private string staminaLabel = new TextObject("{=RBM_AI_024}Stamina").ToString();
 
         private bool showEnemyStatus = false;
 
@@ -27,6 +28,12 @@
 
         private int playerPostureMax = 50;
         private string playerPostureMaxText = "50";
+
+        private int playerStamina = 100;
+        private string playerStaminaText = "100";
+
+        private int playerStaminaMax = 50;
+        private string playerStaminaMaxText = "50";
 
         [DataSourceProperty]
         public string EnemyName
@@ -54,7 +61,20 @@
             {
                 postureLabel = value;
                 OnPropertyChanged("PostureLabel");
-                //OnPropertyChanged("DisplayText");
+            }
+        }
+
+        [DataSourceProperty]
+        public string StaminaLabel
+        {
+            get
+            {
+                return staminaLabel;
+            }
+            set
+            {
+                staminaLabel = value;
+                OnPropertyChanged("StaminaLabel");
             }
         }
 
@@ -161,7 +181,6 @@
             {
                 playerPosture = value;
                 OnPropertyChangedWithValue(value, "PlayerPosture");
-                //OnPropertyChanged("DisplayText");
             }
         }
 
@@ -176,7 +195,6 @@
             {
                 playerPostureMax = value;
                 OnPropertyChangedWithValue(value, "PlayerPostureMax");
-                //OnPropertyChanged("DisplayText");
             }
         }
 
@@ -205,6 +223,62 @@
             {
                 playerPostureMaxText = value;
                 OnPropertyChangedWithValue(value, "PlayerPostureMaxText");
+            }
+        }
+
+        [DataSourceProperty]
+        public int PlayerStamina
+        {
+            get
+            {
+                return playerStamina;
+            }
+            set
+            {
+                playerStamina = value;
+                OnPropertyChangedWithValue(value, "PlayerStamina");
+            }
+        }
+
+        [DataSourceProperty]
+        public int PlayerStaminaMax
+        {
+            get
+            {
+                return playerStaminaMax;
+            }
+            set
+            {
+                playerStaminaMax = value;
+                OnPropertyChangedWithValue(value, "PlayerStaminaMax");
+            }
+        }
+
+        [DataSourceProperty]
+        public string PlayerStaminaText
+        {
+            get
+            {
+                return playerStaminaText;
+            }
+            set
+            {
+                playerStaminaText = value;
+                OnPropertyChangedWithValue(value, "PlayerStaminaText");
+            }
+        }
+
+        [DataSourceProperty]
+        public string PlayerStaminaMaxText
+        {
+            get
+            {
+                return playerStaminaMaxText;
+            }
+            set
+            {
+                playerStaminaMaxText = value;
+                OnPropertyChangedWithValue(value, "PlayerStaminaMaxText");
             }
         }
     }

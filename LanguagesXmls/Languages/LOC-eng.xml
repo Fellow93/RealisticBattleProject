@@ -28,6 +28,7 @@
 	<string id="RBM_AI_021" text="You received {DMG1} blunt trauma, {DMG2} armor penetration damage" />
 	<string id="RBM_AI_022" text="You dealt {DMG1} blunt trauma, {DMG2} armor penetration damage" />
 	<string id="RBM_AI_023" text="Posture" />
+	<string id="RBM_AI_024" text="Stamina" />
 	<!-- Combat Module Strings -->
 	<string id="RBM_COM_001" text="{TYPE} hit" />
 	<string id="RBM_COM_002" text="{TYPE} hit" />

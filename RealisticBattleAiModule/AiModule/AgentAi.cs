@@ -185,9 +185,9 @@ namespace RBMAI
                         agentDrivenProperties.WeaponRotationalAccuracyPenaltyInRadians = 0.010f;
                     }
                     else
-                    { 
-                    agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.020f - effectiveSkill * 0.0001f, 0.005f, 0.020f);//crossbow
-                    agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.020f - effectiveSkill * 0.0001f, 0.005f, 0.020f);//crossbow
+                    {
+                        agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.020f - effectiveSkill * 0.0001f, 0.005f, 0.020f);//crossbow
+                        agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.020f - effectiveSkill * 0.0001f, 0.005f, 0.020f);//crossbow
                     }
                 }
                 else
@@ -202,10 +202,10 @@ namespace RBMAI
                         agentDrivenProperties.WeaponMaxUnsteadyAccuracyPenalty *= 0.3f;
                         agentDrivenProperties.WeaponRotationalAccuracyPenaltyInRadians = 0.010f;
                     }
-                    else 
+                    else
                     {
-                    agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.03f - effectiveSkill * 0.0001f, 0.005f, 0.02f);// javelins and axes etc
-                    agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.03f - effectiveSkill * 0.0001f, 0.005f, 0.02f);// javelins and axes etc
+                        agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.03f - effectiveSkill * 0.0001f, 0.005f, 0.02f);// javelins and axes etc
+                        agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.03f - effectiveSkill * 0.0001f, 0.005f, 0.02f);// javelins and axes etc
                     }
                 }
 

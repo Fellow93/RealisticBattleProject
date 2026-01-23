@@ -6,6 +6,13 @@
       <Style Name="Default" FontColor="#FAF4DEFF" TextGlowColor="#000000FF" FontSize="15" />
     </Styles>
   </Brush>
+  <Brush Name="RBMLabels" Font="Galahad" >
+    <Layers>
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#FAF4DEFF" TextGlowColor="#000000FF" FontSize="14" />
+    </Styles>
+  </Brush>
   <Brush Name="EnemyHealthBarBrush">
     <Layers>
       <BrushLayer Name="EmptyFill" Sprite="BlankWhiteSquare" ColorFactor="1" Color="#404040FF" />
@@ -33,6 +40,17 @@
       <BrushLayer Name="EmptyFill" Sprite="BlankWhiteSquare" Color="#009900FF" />
       <BrushLayer Name="DefaultFill"  Sprite="BlankWhiteSquare" Color="#009900FF" />
       <BrushLayer Name="ChangeFill" Sprite="BlankWhiteSquare" Color="#009900FF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="PlayerStaminaBarBrush">
+    <Layers>
+      <BrushLayer Name="EmptyFill" Sprite="BlankWhiteSquare" Color="#FFFF00FF" />
+      <BrushLayer Name="DefaultFill"  Sprite="BlankWhiteSquare" Color="#FFFF00FF" />
+      <BrushLayer Name="ChangeFill" Sprite="BlankWhiteSquare" Color="#FFFF00FF" />
     </Layers>
     <Styles>
       <Style Name="Default">

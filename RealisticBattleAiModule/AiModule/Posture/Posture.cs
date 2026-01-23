@@ -8,19 +8,27 @@ namespace RBMAI
         public float posture;
         public float maxPosture = 100f;
         public float regenPerTick = 0.01f;
-        public int maxPostureLossCount = 0;
-        public float lastPostureLossTime = 0f;
+
+        public float stamina;
+        public float maxStamina = 1500f;
+        public float staminaRegenPerTick = 0.01f;
 
         public Posture()
         {
             this.posture = this.maxPosture;
+
+            this.stamina = this.maxStamina;
         }
 
-        public Posture(float maxPosture, float regenPerTick)
+        public Posture(float maxPosture, float regenPerTick, float maxStamina, float staminaRegenPerTick)
         {
             this.maxPosture = maxPosture;
             this.regenPerTick = regenPerTick;
             this.posture = this.maxPosture;
+
+            this.maxStamina = maxStamina;
+            this.staminaRegenPerTick = staminaRegenPerTick;
+            this.stamina = this.maxStamina;
         }
     }
 
