@@ -22,10 +22,12 @@ namespace RBMAI
         //private static int tickCooldownReset = 30;
         //private static int tickCooldown = 0;
         private static float timeToCalc = 0.5f;
+        private static float timeToCalcStaminaHealth = 10f;
         private static float timeToUpdateAgents = 3f;
 
         private static float currentDt = 0f;
         private static float currentDtToUpdateAgents = 0f;
+        private static float currentDtToUpdateStaminaHealth = 0f;
         private static int postureEffectCheck = 0;
         private static int postureEffectCheckCooldown = 15;
 
@@ -52,6 +54,13 @@ namespace RBMAI
                 if (__instance.IsHuman)
                 {
                     AgentPostures.values[__instance] = new Posture();
+                    Posture posture = AgentPostures.values[__instance];
+                    float athleticBase = 1000f;
+                    int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, DefaultSkills.Athletics);
+                    float athleticSkillModifier = 500f;
+                    posture.maxStamina = athleticBase * (1f + (effectiveAthleticSkill / athleticSkillModifier));
+                    posture.stamina = athleticBase * (1f + (effectiveAthleticSkill / athleticSkillModifier));
+                    posture.staminaRegenPerTick = 0.02f * (1f + (effectiveAthleticSkill / athleticSkillModifier));
                 }
             }
         }
@@ -70,13 +79,13 @@ namespace RBMAI
                     if (posture == null)
                     {
                         AgentPostures.values[__instance] = new Posture();
-                        float athleticBase = 1300f;
+                        float athleticBase = 1000f;
                         int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, DefaultSkills.Athletics);
                         float athleticSkillModifier = 500f;
                         posture = AgentPostures.values[__instance];
                         posture.maxStamina = athleticBase * (1f + (effectiveAthleticSkill / athleticSkillModifier));
                         posture.stamina = athleticBase * (1f + (effectiveAthleticSkill / athleticSkillModifier));
-                        posture.staminaRegenPerTick = 0.05f * (1f + (effectiveAthleticSkill / athleticSkillModifier));
+                        posture.staminaRegenPerTick = 0.075f * (1f + (effectiveAthleticSkill / athleticSkillModifier));
                     }
                     AgentPostures.values.TryGetValue(__instance, out posture);
                     if (posture != null)
@@ -1573,6 +1582,9 @@ namespace RBMAI
                     }
                     currentDtToUpdateAgents = 0f;
                 }
+
+                currentDtToUpdateStaminaHealth += dt;
+
                 if (currentDt < timeToCalc)
                 {
                     currentDt += dt;
@@ -1587,7 +1599,7 @@ namespace RBMAI
                             inactiveAgents.Add(entry.Key);
                             continue;
                         }
-                        if (entry.Key.IsPlayerControlled)
+                        if (entry.Key.IsPlayerControlled || entry.Key.IsPlayerUnit)
                         {
                             if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
                             {
@@ -1618,6 +1630,18 @@ namespace RBMAI
                         {
                             entry.Value.stamina += entry.Value.staminaRegenPerTick * 30f;
                         }
+                        float staminaLevel = entry.Value.stamina / entry.Value.maxStamina;
+                        if (currentDtToUpdateStaminaHealth > timeToCalcStaminaHealth)
+                        {
+                            if (staminaLevel > 0.85f)
+                            {
+                                entry.Key.Health = Math.Min(entry.Key.HealthLimit, entry.Key.Health + 0.9f);
+                            }
+                        }
+                    }
+                    if (currentDtToUpdateStaminaHealth > timeToCalcStaminaHealth)
+                    {
+                        currentDtToUpdateStaminaHealth = 0f;
                     }
                     foreach (Agent agent in inactiveAgents)
                     {

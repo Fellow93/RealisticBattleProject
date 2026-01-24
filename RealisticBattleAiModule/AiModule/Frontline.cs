@@ -48,8 +48,8 @@ namespace RBMAI
             public float flankAllyRight = 0;
 
             public float fallBackBase = 0;
-            public float attackBase = 10;
-            public float findAllyBase = 0;
+            public float attackBase = 5;
+            public float findAllyBase = 3;
             public float flankAllyLeftBase = 0;
             public float flankAllyRightBase = 0;
 
@@ -401,9 +401,10 @@ namespace RBMAI
                         alliesLeft = mission.GetNearbyAllyAgents(unitPosition + leftVec * 1.35f, 1.35f, unit.Team, alliesLeft);
                         alliesRight = mission.GetNearbyAllyAgents(unitPosition + rightVec * 1.35f, 1.35f, unit.Team, alliesRight);
 
-                        enemiesFront = mission.GetNearbyEnemyAgents(unitPosition + direction, 2f, unit.Team, enemiesFront);
+                        enemiesFront = mission.GetNearbyEnemyAgents(unitPosition + direction * 1.5f, 2f, unit.Team, enemiesFront);
 
                         float postureModifier = 1f;
+                        float staminaModifier = 1f;
                         if (RBMConfig.RBMConfig.postureEnabled)
                         {
                             __result = targetAgent != null ? targetAgent.GetWorldPosition() : WorldPosition.Invalid;
@@ -412,6 +413,7 @@ namespace RBMAI
                             if (unit != null && posture != null)
                             {
                                 postureModifier = ((posture.posture / posture.maxPosture));
+                                staminaModifier = ((posture.stamina / posture.maxStamina));
                             }
                         }
 
@@ -450,11 +452,13 @@ namespace RBMAI
                         }
                         bool isHero = unit.Character.IsHero;
 
-                        int findAlly = (int)(enemiesFrontCount) - alliesRightCount - alliesLeftCount + hasShieldAdditive + (enemiesFrontCount > 0 && (alliesRightCount < 2 || alliesLeftCount < 2) ? 3 : 0);
+                        int findAlly = (int)(enemiesFrontCount) + (int)(alliesFrontCount) - alliesRightCount - alliesLeftCount + hasShieldAdditive + (enemiesFrontCount > 0 && (alliesRightCount < 2 || alliesLeftCount < 2) ? 3 : 0);
                         int fallback = (int)(alliesFrontCount) + enemiesFrontCount;
                         int attack = hasTwoHandedEquippedAddtive - alliesFrontCount + alliesLeftCount + alliesRightCount - enemiesFrontCount + (isSoldier ? 0 : 2) + (isBannerBearer ? -3 : 0) + (isHero ? -3 : 0);//+ Math.Max(0, 3 - (unitTier)) 
                         int flankAllyLeft = (int)(alliesFrontCount) + (int)(alliesRightCount) - (int)(alliesLeftCount) - enemiesFrontCount + hasTwoHandedEquippedAddtive;
                         int flankAllyRight = (int)(alliesFrontCount) + (int)(alliesLeftCount) - (int)(alliesRightCount) - enemiesFrontCount + hasTwoHandedEquippedAddtive;
+
+                        attack = attack > 0 ? (int)(attack * staminaModifier) : attack;
 
                         aiDecision.AIMindset.SetValue(AIMindset.AIDecision.Attack, attack > 0 ? attack * (postureModifier * healthModifier) : attack);
                         aiDecision.AIMindset.SetValue(AIMindset.AIDecision.BackStep, fallback > 0 ? (int)(fallback * (2 - postureModifier)) : fallback);
@@ -511,7 +515,7 @@ namespace RBMAI
                             case AIMindset.AIDecision.BackStep:
                                 {
                                     WorldPosition backPosition = unit.GetWorldPosition();
-                                    backPosition.SetVec2(unitPosition - direction * MBRandom.RandomFloatRanged(0.15f, 0.3f));
+                                    backPosition.SetVec2(unitPosition - direction * MBRandom.RandomFloatRanged(0.15f, 0.3f) * (enemiesFrontCount > 0 ? enemiesFrontCount : 1f));
                                     unit.SetTargetPosition(backPosition.AsVec2);
                                     __result = backPosition;
                                     return false;

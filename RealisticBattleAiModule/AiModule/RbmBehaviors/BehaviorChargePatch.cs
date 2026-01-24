@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
-using TaleWorlds.CampaignSystem;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -107,7 +107,7 @@ namespace RBMAI.AiModule.RbmBehaviors
                             //{
                             //    positionsStorage.Remove(__instance.Formation);
                             //}
-                            __instance.Formation.SetArrangementOrder(ArrangementOrderLine);
+                            //__instance.Formation.SetArrangementOrder(ArrangementOrderLine);
                             return false;
                         }
                         else
@@ -153,7 +153,7 @@ namespace RBMAI.AiModule.RbmBehaviors
                                 //        agent.SetFiringOrder(0);
                                 //    }
                                 //});
-                                __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
+                                //__instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
                                 return false;
                             }
                         }
@@ -176,7 +176,7 @@ namespace RBMAI.AiModule.RbmBehaviors
                         {
                             ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
                         }
-                        __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
+                        //__instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
                         return false;
                         //__instance.Formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent) {
                         //    agent.SetMaximumSpeedLimit(0.1f, true);
@@ -189,6 +189,20 @@ namespace RBMAI.AiModule.RbmBehaviors
                 {
                     __instance.Formation.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
                     ____currentOrder = MovementOrder.MovementOrderChargeToTarget(significantEnemy);
+                    bool isWithoutThrowing = __instance.Formation.QuerySystem.HasThrowingUnitRatioReadOnly < 0.4f;
+                    bool isShock = __instance.Formation.QuerySystem.HasShieldUnitRatio < 0.4f;
+                    if (isShock)
+                    {
+                        __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
+                        __instance.Formation.SetMovementOrder(__instance.CurrentOrder);
+                        return false;
+                    }
+                    if (isWithoutThrowing)
+                    {
+                        __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
+                        __instance.Formation.SetMovementOrder(__instance.CurrentOrder);
+                        return false;
+                    }
                     if (__instance.Formation.TargetFormation != null && __instance.Formation.TargetFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall
                         && RBMAI.Utilities.ShouldFormationCopyShieldWall(__instance.Formation))
                     {

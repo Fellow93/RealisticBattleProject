@@ -910,26 +910,40 @@ namespace RBMAI
             {
                 if (desiredSpeed < 0.85f)
                 {
-                    limitIsMultiplier = true;
                     desiredSpeed = 0.85f;
                 }
             }
-            //if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorAdvance))
-            //{
-
-            //}
+            if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorAdvance))
+            {
+                if (limitIsMultiplier)
+                {
+                    float oldDesiredSpeed = desiredSpeed;
+                    desiredSpeed = (float)Math.Pow(desiredSpeed, 1.25f);
+                }
+            }
             if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorRegroup))
             {
-                if (limitIsMultiplier && desiredSpeed < 0.95f)
+                if (limitIsMultiplier)
                 {
-                    desiredSpeed = 0.95f;
+                    float oldDesiredSpeed = desiredSpeed;
+                    desiredSpeed = (float)Math.Pow(desiredSpeed, 1.25f);
                 }
             }
             if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorCharge))
             {
-                if (limitIsMultiplier && desiredSpeed < 0.85f)
+                if (agent.Formation.ArrangementOrder.OrderType == OrderType.ArrangementCloseOrder)
                 {
-                    desiredSpeed = 0.85f;
+                    if (limitIsMultiplier && desiredSpeed > 0.5f)
+                    {
+                        desiredSpeed = 0.5f;
+                    }
+                }
+                else
+                {
+                    if (limitIsMultiplier && desiredSpeed < 0.85f)
+                    {
+                        desiredSpeed = 0.85f;
+                    }
                 }
             }
             if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorArcherFlank))
@@ -1647,7 +1661,39 @@ namespace RBMAI
             method.Invoke(__instance, new object[] { });
 
             __instance.Formation.SetMovementOrder(__instance.CurrentOrder);
+            switch (__instance.Formation.ArrangementOrder.OrderType)
+            {
+                case OrderType.ArrangementLine:
+                    {
+                        __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(__instance.Formation.CountOfUnitsWithoutDetachedOnes / 4f), true);
+                        break;
+                    }
+                case OrderType.ArrangementLoose:
+                    {
+                        __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(__instance.Formation.CountOfUnitsWithoutDetachedOnes / 2.75f), true);
+                        break;
+                    }
+                case OrderType.ArrangementCloseOrder:
+                    {
+                        __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(__instance.Formation.CountOfUnitsWithoutDetachedOnes / 7f), true);
+                        break;
+                    }
+            }
             __instance.Formation.SetFacingOrder(___CurrentFacingOrder);
+            bool isWithoutThrowing = __instance.Formation.QuerySystem.HasThrowingUnitRatioReadOnly < 0.4f;
+            bool isShock = __instance.Formation.QuerySystem.HasShieldUnitRatio < 0.4f;
+            if (isShock)
+            {
+                __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
+                __instance.Formation.SetMovementOrder(__instance.CurrentOrder);
+                return false;
+            }
+            if (isWithoutThrowing)
+            {
+                __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
+                __instance.Formation.SetMovementOrder(__instance.CurrentOrder);
+                return false;
+            }
             if (__instance.Formation.QuerySystem.IsInfantryFormation)
             {
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
@@ -1663,6 +1709,10 @@ namespace RBMAI
                         else if (significantEnemy.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose)
                         {
                             __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
+                        }
+                        else if (significantEnemy.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall)
+                        {
+                            __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
                         }
                     }
                 }
