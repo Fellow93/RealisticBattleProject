@@ -480,4 +480,32 @@
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true" Civilian="true"/>
 	</Item>
+	
+	<Item id="repeater_light_bolts" name="Poisoned Repeater Bolts 25 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_c" weight="0.025"  appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_bolt_bl_a_quiver" holster_mesh="bolt_bl_a_quiver" holster_mesh_with_weapon="bolt_bl_a_quiver" flying_mesh="bolt_bl_flying">
+		<ItemComponent>
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="30" weapon_length="47" thrust_damage="150" thrust_damage_type="Pierce" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="120" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true" Civilian="true" Stealth="true"/>
+	</Item>
+
+	<Item id="repeater_medium_bolts" name="Poisoned Repeater Bolts 30 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_c" weight="0.03"  appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_bolt_bl_a_quiver" holster_mesh="bolt_bl_a_quiver" holster_mesh_with_weapon="bolt_bl_a_quiver" flying_mesh="bolt_bl_flying">
+		<ItemComponent>
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="30" weapon_length="47" thrust_damage="150" thrust_damage_type="Pierce" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="100" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true" Civilian="true" Stealth="true"/>
+	</Item>
+	
+	<Item id="repeater_heavy_bolts" name="Poisoned Repeater Bolts 40 grams" body_name="bo_capsule_arrow" mesh="bolt_bl_c" weight="0.04"  appearance="1" Type="Bolts" item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top" is_merchandise="true" holster_body_name="bo_bolt_bl_a_quiver" holster_mesh="bolt_bl_a_quiver" holster_mesh_with_weapon="bolt_bl_a_quiver" flying_mesh="bolt_bl_flying">
+		<ItemComponent>
+			<Weapon weapon_class="Bolt" modifier_group="bolt" thrust_speed="0" speed_rating="0" missile_speed="30" weapon_length="47" thrust_damage="150" thrust_damage_type="Pierce" item_usage="" physics_material="missile" center_of_mass="0,0,0" stack_amount="80" sticking_position="0,-0.47,0" sticking_rotation="90,0,0" rotation="180, 0, 0" passby_sound_code="event:/mission/combat/missile/passby">
+				<WeaponFlags Consumable="true" AmmoSticksWhenShot="true" AmmoBreaksOnBounceBack="true" AttachAmmoToVisual="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags ForceAttachOffHandPrimaryItemBone="true" Civilian="true" Stealth="true"/>
+	</Item>
+	
 </Items>

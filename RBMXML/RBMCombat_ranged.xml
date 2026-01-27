@@ -65,7 +65,7 @@
 		body_name="bo_cross_bow_heavy"
 		mesh="crossbow_b"
 		culture="Culture.empire"
-
+		value="1500"
 		weight="3.0"
 		appearance="0.4"
 		difficulty="10"
@@ -129,6 +129,135 @@
 				ammo_limit="1"
 				thrust_damage_type="Pierce"
 				item_usage="crossbow_fast"
+				reload_phase_count="2"
+				physics_material="wood_weapon"
+				center_of_mass="0,0,0.4"
+				modifier_group="crossbow">
+				<WeaponFlags
+					CanBeUsedWhileCrouched="true"
+					RangedWeapon="true"
+					HasString="true"
+					NotUsableWithOneHand="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			Stealth="true"
+			Civilian="true"	/>
+	</Item>
+
+<Item
+		id="crossbow_repeating_heavy_RBM"
+		name="Heavy 80 Pound Repeating Crossbow"
+		body_name="bo_cross_bow_heavy"
+		mesh="crossbow_a"
+		culture="Culture.vlandia"
+		weight="1.0"
+		appearance="0.4"
+		difficulty="30"
+		Type="Crossbow"
+		value="10000"
+		AmmoOffset="0.0, 0.02131, 0.24650"
+		item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2"
+		holster_position_shift="0.02,0,-0.4">
+		<ItemComponent>
+			<Weapon
+				weapon_class="Crossbow"
+				ammo_class="Bolt"
+				missile_speed="80"
+				accuracy="80"
+				thrust_damage="100"
+				thrust_speed="40"
+				speed_rating="80"
+				weapon_length="95"
+				ammo_limit="8"
+				thrust_damage_type="Pierce"
+				item_usage="crossbow"
+				reload_phase_count="2"
+				physics_material="wood_weapon"
+				center_of_mass="0,0,0.4"
+				modifier_group="crossbow">
+				<WeaponFlags
+					CanBeUsedWhileCrouched="true"
+					RangedWeapon="true"
+					HasString="true"
+					NotUsableWithOneHand="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			Stealth="true"
+			Civilian="true"	/>
+	</Item>
+
+	<Item
+		id="crossbow_repeating_medium_RBM"
+		name="Medium 60 Pound Repeating Crossbow"
+		body_name="bo_cross_bow_heavy"
+		mesh="crossbow_a"
+		culture="Culture.vlandia"
+		weight="1.0"
+		appearance="0.4"
+		difficulty="30"
+		Type="Crossbow"
+		value="5000"
+		AmmoOffset="0.0, 0.02131, 0.24650"
+		item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2"
+		holster_position_shift="0.02,0,-0.4">
+		<ItemComponent>
+			<Weapon
+				weapon_class="Crossbow"
+				ammo_class="Bolt"
+				missile_speed="60"
+				accuracy="80"
+				thrust_damage="100"
+				thrust_speed="40"
+				speed_rating="80"
+				weapon_length="95"
+				ammo_limit="10"
+				thrust_damage_type="Pierce"
+				item_usage="crossbow"
+				reload_phase_count="2"
+				physics_material="wood_weapon"
+				center_of_mass="0,0,0.4"
+				modifier_group="crossbow">
+				<WeaponFlags
+					CanBeUsedWhileCrouched="true"
+					RangedWeapon="true"
+					HasString="true"
+					NotUsableWithOneHand="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			Stealth="true"
+			Civilian="true"	/>
+	</Item>
+	
+	<Item
+		id="crossbow_repeating_light_RBM"
+		name="Light 45 Pound Repeating Crossbow"
+		body_name="bo_cross_bow_heavy"
+		mesh="crossbow_a"
+		culture="Culture.vlandia"
+		weight="1.0"
+		appearance="0.4"
+		difficulty="0"
+		Type="Crossbow"
+		value="2000"
+		AmmoOffset="0.0, 0.02131, 0.24650"
+		item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2"
+		holster_position_shift="0.02,0,-0.4">
+		<ItemComponent>
+			<Weapon
+				weapon_class="Crossbow"
+				ammo_class="Bolt"
+				missile_speed="45"
+				accuracy="80"
+				thrust_damage="100"
+				thrust_speed="40"
+				speed_rating="80"
+				weapon_length="95"
+				ammo_limit="12"
+				thrust_damage_type="Pierce"
+				item_usage="crossbow"
 				reload_phase_count="2"
 				physics_material="wood_weapon"
 				center_of_mass="0,0,0.4"
