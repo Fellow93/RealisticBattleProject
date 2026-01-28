@@ -17642,10 +17642,12 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_d" />
+                 id="Item.crossbow_repeating_medium_RBM" />
       <equipment slot="Item1"
-                 id="Item.hardened_120_gr_bolts" />
+                 id="Item.repeater_medium_bolts" />
         <equipment slot="Item2"
+                   id="Item.western_2hsword_t3" />
+        <equipment slot="Item3"
                    id="Item.military_fork_pike_t3" />
         <equipment slot="Cape"
                    id="Item.scale_shoulder_armor" />
@@ -17660,9 +17662,9 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_d" />
+                 id="Item.crossbow_repeating_medium_RBM" />
       <equipment slot="Item1"
-                 id="Item.hardened_120_gr_bolts" />
+                 id="Item.repeater_medium_bolts" />
         <equipment slot="Item2"
                    id="Item.kaskara_2hsword_t3" />
         <equipment slot="Cape"
@@ -17678,9 +17680,9 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_d" />
+                 id="Item.crossbow_repeating_medium_RBM" />
       <equipment slot="Item1"
-                 id="Item.hardened_120_gr_bolts" />
+                 id="Item.repeater_medium_bolts" />
         <equipment slot="Item2"
                    id="Item.western_2hsword_t3" />
         <equipment slot="Cape"
@@ -17723,7 +17725,7 @@
       <skill id="Bow"
              value="60" />
       <skill id="Crossbow"
-             value="60" />
+             value="110" />
       <skill id="Throwing"
              value="60" />
     </skills>
@@ -17737,6 +17739,10 @@
                  id="Item.battania_2hsword_3_t3" />
       <equipment slot="Item1"
                  id="Item.small_heater_shield_shoulder" />
+      <equipment slot="Item2"
+                 id="Item.crossbow_repeating_heavy_RBM" />
+      <equipment slot="Item3"
+                 id="Item.repeater_heavy_bolts" />
         <equipment slot="Cape"
                    id="Item.varangian_bra_mail" />
         <equipment slot="Body"
@@ -17753,6 +17759,10 @@
                  id="Item.southern_broad_2hsword_t4" />
       <equipment slot="Item1"
                  id="Item.small_heater_shield_shoulder" />
+      <equipment slot="Item2"
+                 id="Item.crossbow_repeating_heavy_RBM" />
+      <equipment slot="Item3"
+                 id="Item.repeater_heavy_bolts_bolts" />
         <equipment slot="Cape"
                    id="Item.brass_lamellar_shoulder_white" />
         <equipment slot="Body"
@@ -17769,6 +17779,10 @@
                  id="Item.western_2hsword_t4" />
       <equipment slot="Item1"
                  id="Item.small_heater_shield_shoulder" />
+      <equipment slot="Item2"
+                 id="Item.crossbow_repeating_heavy_RBM" />
+      <equipment slot="Item3"
+                 id="Item.repeater_heavy_bolts_bolts" />
         <equipment slot="Cape"
                    id="Item.imperial_studded_strip_shoulders" />
         <equipment slot="Body"
@@ -22865,7 +22879,7 @@
 	<!-- #region Caravans -->
 	<NPCCharacter
 		id="caravan_master_aserai"
-		default_group="Infantry"
+		default_group="Ranged"
 		level="26"
 		name="{=nDoENDqD}Aserai Caravan Master"
 		occupation="CaravanGuard"
@@ -22895,93 +22909,38 @@
 				value="80" />
 			<skill
 				id="Crossbow"
-				value="20" />
+				value="100" />
 			<skill
 				id="Throwing"
 				value="50" />
 		</skills>
 		<upgrade_targets></upgrade_targets>
 		<Equipments>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.aserai_sword_3_t3" />
-				<equipment
-					slot="Head"
-					id="Item.aserai_civil_c_head" />
-				<equipment
-					slot="Body"
-					id="Item.aserai_archer_armor" />
-				<equipment
-					slot="Gloves"
-					id="Item.buttoned_leather_bracers" />
-				<equipment
-					slot="Leg"
-					id="Item.khuzait_curved_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.aserai_sword_3_t3" />
-				<equipment
-					slot="Head"
-					id="Item.aserai_civil_d_hscarf" />
-				<equipment
-					slot="Body"
-					id="Item.aserai_archer_armor" />
-				<equipment
-					slot="Gloves"
-					id="Item.buttoned_leather_bracers" />
-				<equipment
-					slot="Cape"
-					id="Item.scarf" />
-				<equipment
-					slot="Leg"
-					id="Item.khuzait_curved_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.aserai_sword_3_t3" />
-				<equipment
-					slot="Head"
-					id="Item.aserai_civil_d_hscarf" />
-				<equipment
-					slot="Body"
-					id="Item.tassled_southern_robes" />
-				<equipment
-					slot="Gloves"
-					id="Item.buttoned_leather_bracers" />
-				<equipment
-					slot="Cape"
-					id="Item.leopard_pelt" />
-				<equipment
-					slot="Leg"
-					id="Item.khuzait_curved_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster
-				civilian="true">
-				<equipment
-					slot="Item0"
-					id="Item.aserai_sword_3_t3" />
-				<equipment
-					slot="Head"
-					id="Item.aserai_civil_c_head" />
-				<equipment
-					slot="Body"
-					id="Item.aserai_archer_armor" />
-				<equipment
-					slot="Gloves"
-					id="Item.buttoned_leather_bracers" />
-				<equipment
-					slot="Leg"
-					id="Item.khuzait_curved_boots" />
-			</EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_heavy_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_heavy_bolts" />
+      <equipment slot="Item2"
+                 id="Item.aserai_mace_4_t4" />
+      <equipment slot="Item3"
+                 id="Item.large_adarga" />
+      <equipment slot="Head"
+                 id="Item.brass_aserai_helmet_b_open" />
+      <equipment slot="Cape"
+                 id="" />
+      <equipment slot="Body"
+                 id="Item.aserai_chain_plate_armor_a" />
+      <equipment slot="Leg"
+                 id="Item.battania_warlord_boots" />
+      <equipment slot="Gloves"
+                 id="Item.reinforced_leather_vambraces" />
+      </EquipmentRoster>
 		</Equipments>
 	</NPCCharacter>
 	<NPCCharacter
 		id="caravan_master_battania"
-		default_group="Infantry"
+		default_group="Ranged"
 		level="26"
 		name="{=LKb8DXby}Battanian Caravan Master"
 		occupation="CaravanGuard"
@@ -22999,96 +22958,48 @@
 				value="130" />
 			<skill
 				id="OneHanded"
-				value="160" />
+				value="100" />
 			<skill
 				id="TwoHanded"
 				value="80" />
 			<skill
 				id="Polearm"
-				value="60" />
+				value="160" />
 			<skill
 				id="Bow"
 				value="80" />
 			<skill
 				id="Crossbow"
-				value="20" />
+				value="100" />
 			<skill
 				id="Throwing"
 				value="50" />
 		</skills>
 		<upgrade_targets></upgrade_targets>
 		<Equipments>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.battania_sword_2_t3" />
-				<equipment
-					slot="Head"
-					id="Item.ridged_northernhelm" />
-				<equipment
-					slot="Body"
-					id="Item.ranger_mail" />
-				<equipment
-					slot="Cape"
-					id="Item.battania_shoulder_furr" />
-				<equipment
-					slot="Leg"
-					id="Item.wrapped_leather_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.battania_sword_2_t3" />
-				<equipment
-					slot="Body"
-					id="Item.battania_mercenary_armor" />
-				<equipment
-					slot="Cape"
-					id="Item.battania_civil_cape" />
-				<equipment
-					slot="Leg"
-					id="Item.wrapped_leather_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.battania_sword_2_t3" />
-				<equipment
-					slot="Head"
-					id="Item.battania_fur_helmet" />
-				<equipment
-					slot="Body"
-					id="Item.ranger_mail" />
-				<equipment
-					slot="Cape"
-					id="Item.bearskin" />
-				<equipment
-					slot="Leg"
-					id="Item.wrapped_leather_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster
-				civilian="true">
-				<equipment
-					slot="Item0"
-					id="Item.battania_sword_2_t3" />
-				<equipment
-					slot="Head"
-					id="Item.ridged_northernhelm" />
-				<equipment
-					slot="Body"
-					id="Item.ranger_mail" />
-				<equipment
-					slot="Cape"
-					id="Item.battania_shoulder_furr" />
-				<equipment
-					slot="Leg"
-					id="Item.wrapped_leather_boots" />
-			</EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.battania_polearm_1_t5" />
+      <equipment slot="Item1"
+                 id="Item.crossbow_repeating_heavy_RBM" />
+      <equipment slot="Item2"
+                 id="Item.repeater_heavy_bolts" />
+      <equipment slot="Body"
+                 id="Item.battanian_scale_armor_a" />
+      <equipment slot="Head"
+                 id="Item.battanian_noble_helmet_with_feather" />
+      <equipment slot="Leg"
+                 id="Item.battania_warlord_boots" />
+      <equipment slot="Gloves"
+                 id="Item.reinforced_mail_mitten" />
+      <equipment slot="Cape"
+                 id="Item.battanian_chainmail_shoulder_b" />
+      </EquipmentRoster>
 		</Equipments>
 	</NPCCharacter>
 	<NPCCharacter
 		id="caravan_master_empire"
-		default_group="Infantry"
+		default_group="Ranged"
 		level="26"
 		name="{=TpECDErA}Imperial Caravan Master"
 		occupation="CaravanGuard"
@@ -23118,93 +23029,38 @@
 				value="80" />
 			<skill
 				id="Crossbow"
-				value="20" />
+				value="100" />
 			<skill
 				id="Throwing"
 				value="50" />
 		</skills>
 		<upgrade_targets></upgrade_targets>
 		<Equipments>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.empire_sword_1_t2" />
-				<equipment
-					slot="Head"
-					id="Item.merchants_hat" />
-				<equipment
-					slot="Cape"
-					id="Item.studded_imperial_neckguard" />
-				<equipment
-					slot="Body"
-					id="Item.legionary_mail" />
-				<equipment
-					slot="Gloves"
-					id="Item.highland_gloves" />
-				<equipment
-					slot="Leg"
-					id="Item.leather_shoes" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.empire_sword_1_t2" />
-				<equipment
-					slot="Cape"
-					id="Item.scarf" />
-				<equipment
-					slot="Body"
-					id="Item.empire_horseman_armor" />
-				<equipment
-					slot="Gloves"
-					id="Item.highland_gloves" />
-				<equipment
-					slot="Leg"
-					id="Item.leather_shoes" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.empire_sword_1_t2" />
-				<equipment
-					slot="Head"
-					id="Item.cervelliere_over_laced_coif" />
-				<equipment
-					slot="Body"
-					id="Item.empire_horseman_armor" />
-				<equipment
-					slot="Gloves"
-					id="Item.highland_gloves" />
-				<equipment
-					slot="Leg"
-					id="Item.leather_shoes" />
-			</EquipmentRoster>
-			<EquipmentRoster
-				civilian="true">
-				<equipment
-					slot="Item0"
-					id="Item.empire_sword_1_t2" />
-				<equipment
-					slot="Head"
-					id="Item.merchants_hat" />
-				<equipment
-					slot="Cape"
-					id="Item.studded_imperial_neckguard" />
-				<equipment
-					slot="Body"
-					id="Item.legionary_mail" />
-				<equipment
-					slot="Gloves"
-					id="Item.highland_gloves" />
-				<equipment
-					slot="Leg"
-					id="Item.leather_shoes" />
-			</EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_heavy_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_heavy_bolts" />
+      <equipment slot="Item2"
+                 id="Item.empire_mace_5_t5" />
+      <equipment slot="Item3"
+                 id="Item.battania_targe_b" />
+      <equipment slot="Body"
+                 id="Item.empire_legion_b" />
+      <equipment slot="Leg"
+                 id="Item.decorated_imperial_boots" />
+      <equipment slot="Head"
+                 id="Item.empire_lord_helmet" />
+      <equipment slot="Gloves"
+                 id="Item.decorated_imperial_gauntlets" />
+      <equipment slot="Cape"
+                 id="" />
+      </EquipmentRoster>
 		</Equipments>
 	</NPCCharacter>
 	<NPCCharacter
 		id="caravan_master_khuzait"
-		default_group="Infantry"
+		default_group="Ranged"
 		level="26"
 		name="{=WEHDGbEE}Khuzait Caravan Master"
 		occupation="CaravanGuard"
@@ -23234,96 +23090,38 @@
 				value="80" />
 			<skill
 				id="Crossbow"
-				value="20" />
+				value="100" />
 			<skill
 				id="Throwing"
 				value="50" />
 		</skills>
 		<upgrade_targets></upgrade_targets>
 		<Equipments>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.khuzait_sword_3_t3" />
-				<equipment
-					slot="Head"
-					id="Item.plumed_fur_lined_helmet" />
-				<equipment
-					slot="Body"
-					id="Item.northern_leather_tabard" />
-				<equipment
-					slot="Gloves"
-					id="Item.northern_brass_bracers" />
-				<equipment
-					slot="Cape"
-					id="Item.brass_scale_shoulders" />
-				<equipment
-					slot="Leg"
-					id="Item.woven_leather_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.khuzait_sword_3_t3" />
-				<equipment
-					slot="Head"
-					id="Item.plumed_fur_lined_helmet" />
-				<equipment
-					slot="Body"
-					id="Item.khuzait_sturdy_armor" />
-				<equipment
-					slot="Gloves"
-					id="Item.northern_brass_bracers" />
-				<equipment
-					slot="Cape"
-					id="Item.brass_scale_shoulders" />
-				<equipment
-					slot="Leg"
-					id="Item.woven_leather_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.khuzait_sword_3_t3" />
-				<equipment
-					slot="Head"
-					id="Item.nomad_helmet" />
-				<equipment
-					slot="Body"
-					id="Item.khuzait_belt_leather" />
-				<equipment
-					slot="Cape"
-					id="Item.eastern_studded_shoulders" />
-				<equipment
-					slot="Leg"
-					id="Item.woven_leather_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster
-				civilian="true">
-				<equipment
-					slot="Item0"
-					id="Item.khuzait_sword_3_t3" />
-				<equipment
-					slot="Head"
-					id="Item.plumed_fur_lined_helmet" />
-				<equipment
-					slot="Body"
-					id="Item.khuzait_sturdy_armor" />
-				<equipment
-					slot="Gloves"
-					id="Item.northern_brass_bracers" />
-				<equipment
-					slot="Cape"
-					id="Item.brass_scale_shoulders" />
-				<equipment
-					slot="Leg"
-					id="Item.woven_leather_boots" />
-			</EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_heavy_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_heavy_bolts" />
+      <equipment slot="Item2"
+                 id="Item.noyans_shield" />
+      <equipment slot="Item3"
+                 id="Item.khuzait_mace_4_t5" />
+      <equipment slot="Body"
+                 id="Item.eastern_lamellar_armor" />
+      <equipment slot="Head"
+                 id="Item.spiked_helmet" />
+      <equipment slot="Leg"
+                 id="Item.plated_strip_boots" />
+      <equipment slot="Gloves"
+                 id="Item.eastern_plated_leather_vambraces" />
+      <equipment slot="Cape"
+                 id="Item.a_metal_lamellar_armor_shoulder_a" />
+      </EquipmentRoster>
 		</Equipments>
 	</NPCCharacter>
 	<NPCCharacter
 		id="caravan_master_sturgia"
-		default_group="Infantry"
+		default_group="Ranged"
 		level="26"
 		name="{=uDseaKcb}Sturgian Caravan Master"
 		occupation="CaravanGuard"
@@ -23341,10 +23139,10 @@
 				value="130" />
 			<skill
 				id="OneHanded"
-				value="160" />
+				value="100" />
 			<skill
 				id="TwoHanded"
-				value="80" />
+				value="160" />
 			<skill
 				id="Polearm"
 				value="60" />
@@ -23353,96 +23151,36 @@
 				value="80" />
 			<skill
 				id="Crossbow"
-				value="20" />
+				value="100" />
 			<skill
 				id="Throwing"
 				value="50" />
 		</skills>
 		<upgrade_targets></upgrade_targets>
 		<Equipments>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.star_falchion_sword_t3" />
-				<equipment
-					slot="Head"
-					id="Item.nordic_fur_cap" />
-				<equipment
-					slot="Body"
-					id="Item.northern_leather_tabard" />
-				<equipment
-					slot="Gloves"
-					id="Item.northern_brass_bracers" />
-				<equipment
-					slot="Leg"
-					id="Item.battania_leather_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.star_falchion_sword_t3" />
-				<equipment
-					slot="Head"
-					id="Item.northern_fur_cap" />
-				<equipment
-					slot="Body"
-					id="Item.northern_leather_tabard" />
-				<equipment
-					slot="Gloves"
-					id="Item.northern_brass_bracers" />
-				<equipment
-					slot="Cape"
-					id="Item.scarf" />
-				<equipment
-					slot="Leg"
-					id="Item.battania_leather_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.star_falchion_sword_t3" />
-				<equipment
-					slot="Head"
-					id="Item.nordic_fur_cap" />
-				<equipment
-					slot="Body"
-					id="Item.nordic_lamellar_vest" />
-				<equipment
-					slot="Gloves"
-					id="Item.northern_brass_bracers" />
-				<equipment
-					slot="Cape"
-					id="Item.scarf" />
-				<equipment
-					slot="Leg"
-					id="Item.battania_leather_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster
-				civilian="true">
-				<equipment
-					slot="Item0"
-					id="Item.star_falchion_sword_t3" />
-				<equipment
-					slot="Head"
-					id="Item.northern_fur_cap" />
-				<equipment
-					slot="Body"
-					id="Item.northern_leather_tabard" />
-				<equipment
-					slot="Gloves"
-					id="Item.northern_brass_bracers" />
-				<equipment
-					slot="Cape"
-					id="Item.scarf" />
-				<equipment
-					slot="Leg"
-					id="Item.battania_leather_boots" />
-			</EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_heavy_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_heavy_bolts" />
+      <equipment slot="Item3"
+                 id="Item.sturgia_2haxe_1_t4" />
+      <equipment slot="Head"
+                 id="Item.sturgian_helmet_b_open" />
+      <equipment slot="Body"
+                 id="Item.sturgian_chainmale_longsleeve" />
+      <equipment slot="Leg"
+                 id="Item.mail_chausses" />
+      <equipment slot="Gloves"
+                 id="Item.northern_brass_bracers" />
+      <equipment slot="Cape"
+                 id="" />
+      </EquipmentRoster>
 		</Equipments>
 	</NPCCharacter>
 	<NPCCharacter
 		id="caravan_master_vlandia"
-		default_group="Infantry"
+		default_group="Ranged"
 		level="26"
 		name="{=QbSjMefR}Vlandian Caravan Master"
 		occupation="CaravanGuard"
@@ -23472,70 +23210,33 @@
 				value="80" />
 			<skill
 				id="Crossbow"
-				value="20" />
+				value="100" />
 			<skill
 				id="Throwing"
 				value="50" />
 		</skills>
 		<upgrade_targets></upgrade_targets>
 		<Equipments>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.vlandia_sword_2_t3" />
-				<equipment
-					slot="Head"
-					id="Item.pointed_skullcap_over_laced_coif" />
-				<equipment
-					slot="Body"
-					id="Item.banded_leather_over_mail" />
-				<equipment
-					slot="Leg"
-					id="Item.battania_leather_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.vlandia_sword_2_t3" />
-				<equipment
-					slot="Head"
-					id="Item.kettle_helmet_over_padded_cap" />
-				<equipment
-					slot="Body"
-					id="Item.mail_shirt" />
-				<equipment
-					slot="Leg"
-					id="Item.battania_leather_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.vlandia_sword_2_t3" />
-				<equipment
-					slot="Head"
-					id="Item.kettle_hat_over_padded_cloth" />
-				<equipment
-					slot="Body"
-					id="Item.padded_short_coat" />
-				<equipment
-					slot="Leg"
-					id="Item.battania_leather_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster
-				civilian="true">
-				<equipment
-					slot="Item0"
-					id="Item.vlandia_sword_2_t3" />
-				<equipment
-					slot="Head"
-					id="Item.pointed_skullcap_over_laced_coif" />
-				<equipment
-					slot="Body"
-					id="Item.banded_leather_over_mail" />
-				<equipment
-					slot="Leg"
-					id="Item.battania_leather_boots" />
-			</EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_heavy_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_heavy_bolts" />
+      <equipment slot="Item2"
+                 id="Item.vlandia_mace_2_t4" />
+      <equipment slot="Item3"
+                 id="Item.battania_shield_targe_a" />
+      <equipment slot="Body"
+                 id="Item.hauberk" />
+      <equipment slot="Leg"
+                 id="Item.strapped_mail_chausses" />
+      <equipment slot="Head"
+                 id="Item.guards_kettle_over_mail_coif" />
+      <equipment slot="Gloves"
+                 id="Item.mail_mitten" />
+      <equipment slot="Cape"
+                 id="Item.pauldron_over_scale_armor" />
+      </EquipmentRoster>
 		</Equipments>
 	</NPCCharacter>
 	<NPCCharacter
@@ -23577,37 +23278,82 @@
 				value="30" />
 		</skills>
 		<upgrade_targets></upgrade_targets>
-		<Equipments>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.glen_ranger_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.default_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.aserai_sword_2_t2" />
-				<equipment
-					slot="Body"
-					id="Item.short_padded_robe" />
-				<equipment
-					slot="Leg"
-					id="Item.khuzait_curved_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster
-				civilian="true">
-				<equipment
-					slot="Item2"
-					id="Item.aserai_sword_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.aserai_civil_c" />
-				<equipment
-					slot="Leg"
-					id="Item.khuzait_curved_boots" />
-			</EquipmentRoster>
-		</Equipments>
+    <Equipments>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+      <equipment slot="Item3"
+                 id="Item.aserai_sword_1_t2" />
+      <equipment slot="Head"
+                 id="Item.desert_helmet" />
+      <equipment slot="Body"
+                 id="Item.ringed_desert_armor" />
+      <equipment slot="Leg"
+                 id="Item.leather_boots" />
+      <equipment slot="Gloves"
+                 id="Item.guarded_padded_vambrace" />
+      <equipment slot="Cape"
+                 id="" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.aserai_sword_2_t2" />
+      <equipment slot="Head"
+                 id="Item.desert_helmet" />
+      <equipment slot="Body"
+                 id="Item.ringed_desert_armor" />
+      <equipment slot="Gloves"
+                 id="Item.guarded_padded_vambrace" />
+      <equipment slot="Leg"
+                 id="Item.eastern_leather_boots" />
+      <equipment slot="Cape"
+                 id="" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.aserai_sword_2_t2" />
+      <equipment slot="Head"
+                 id="Item.loose_wrapped_desert_helmet" />
+      <equipment slot="Body"
+                 id="Item.aserai_archer_armor" />
+      <equipment slot="Leg"
+                 id="Item.khuzait_curved_boots" />
+      <equipment slot="Gloves"
+                 id="Item.guarded_padded_vambrace" />
+      <equipment slot="Cape"
+                 id="" />
+      </EquipmentRoster>
+      <EquipmentRoster civilian="true">
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+      <equipment slot="Item3"
+                 id="Item.aserai_sword_2_t2" />
+      <equipment slot="Head"
+                 id="Item.loose_wrapped_desert_helmet" />
+      <equipment slot="Body"
+                 id="Item.aserai_archer_armor" />
+      <equipment slot="Leg"
+                 id="Item.khuzait_curved_boots" />
+      <equipment slot="Gloves"
+                 id="Item.guarded_padded_vambrace" />
+      <equipment slot="Cape"
+                 id="" />
+      </EquipmentRoster>
+    </Equipments>
 	</NPCCharacter>
 	<NPCCharacter
 		id="armed_trader_battania"
@@ -23648,125 +23394,84 @@
 				value="30" />
 		</skills>
 		<upgrade_targets></upgrade_targets>
-		<Equipments>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.glen_ranger_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.default_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.battania_axe_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.battania_civil_a" />
-				<equipment
-					slot="Leg"
-					id="Item.battania_fur_boots" />
-				<equipment
-					slot="Cape"
-					id="Item.battania_woodland_cloak" />
-				<equipment
-					slot="Head"
-					id="Item.tall_helmet" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.glen_ranger_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.range_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.battania_axe_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.battania_civil_b" />
-				<equipment
-					slot="Leg"
-					id="Item.battania_leather_boots" />
-				<equipment
-					slot="Cape"
-					id="Item.scarf" />
-				<equipment
-					slot="Head"
-					id="Item.battania_fur_helmet" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.glen_ranger_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.range_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.battania_axe_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.battania_woodland_outfit" />
-				<equipment
-					slot="Leg"
-					id="Item.highland_boots" />
-				<equipment
-					slot="Cape"
-					id="Item.battania_civil_cloak" />
-				<equipment
-					slot="Head"
-					id="Item.tall_helmet" />
-			</EquipmentRoster>
-			<EquipmentRoster
-				civilian="true">
-				<equipment
-					slot="Item0"
-					id="Item.glen_ranger_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.range_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.battania_axe_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.battania_woodland_outfit" />
-				<equipment
-					slot="Leg"
-					id="Item.highland_boots" />
-				<equipment
-					slot="Cape"
-					id="Item.battania_civil_cloak" />
-				<equipment
-					slot="Head"
-					id="Item.tall_helmet" />
-			</EquipmentRoster>
-			<EquipmentRoster
-				civilian="true">
-				<equipment
-					slot="Item0"
-					id="Item.glen_ranger_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.range_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.battania_axe_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.battania_civil_b" />
-				<equipment
-					slot="Leg"
-					id="Item.battania_leather_boots" />
-				<equipment
-					slot="Cape"
-					id="Item.scarf" />
-				<equipment
-					slot="Head"
-					id="Item.battania_fur_helmet" />
-			</EquipmentRoster>
-		</Equipments>
+    <Equipments>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.woodland_axe_t3" />
+      <equipment slot="Body"
+                 id="Item.battanian_chainmail_armor_b" />
+      <equipment slot="Leg"
+                 id="Item.highland_leg_wrappings" />
+      <equipment slot="Cape"
+                 id="" />
+      <equipment slot="Head"
+                 id="Item.ridged_northernhelm" />
+      <equipment slot="Gloves"
+                 id="Item.guarded_padded_vambrace" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.woodland_axe_t3" />
+      <equipment slot="Body"
+                 id="Item.battanian_chainmail_armor_b" />
+      <equipment slot="Leg"
+                 id="Item.highland_leg_wrappings" />
+      <equipment slot="Cape"
+                 id="" />
+      <equipment slot="Head"
+                 id="Item.ridged_northernhelm" />
+      <equipment slot="Gloves"
+                 id="Item.guarded_padded_vambrace" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.woodland_axe_t3" />
+      <equipment slot="Body"
+                 id="Item.battanian_chainmail_armor_c" />
+      <equipment slot="Leg"
+                 id="Item.highland_leg_wrappings" />
+      <equipment slot="Cape"
+                 id="" />
+      <equipment slot="Head"
+                 id="Item.ridged_northernhelm" />
+      <equipment slot="Gloves"
+                 id="Item.guarded_padded_vambrace" />
+      </EquipmentRoster>
+      <EquipmentRoster civilian="true">
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.battania_sword_2_t3" />
+      <equipment slot="Body"
+                 id="Item.battanian_chainmail_armor_c" />
+      <equipment slot="Leg"
+                 id="Item.highland_leg_wrappings" />
+      <equipment slot="Cape"
+                 id="" />
+      <equipment slot="Head"
+                 id="Item.ridged_northernhelm" />
+      <equipment slot="Gloves"
+                 id="Item.guarded_padded_vambrace" />
+      </EquipmentRoster>
+    </Equipments>
 	</NPCCharacter>
 	<NPCCharacter
 		id="armed_trader_empire"
@@ -23807,98 +23512,78 @@
 				value="30" />
 		</skills>
 		<upgrade_targets></upgrade_targets>
-		<Equipments>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.glen_ranger_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.default_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.vlandia_mace_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.tunic_with_shoulder_pads" />
-				<equipment
-					slot="Leg"
-					id="Item.strapped_leather_boots" />
-				<equipment
-					slot="Head"
-					id="Item.imperial_leather_coif" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.glen_ranger_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.range_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.battania_mace_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.footmans_tunic" />
-				<equipment
-					slot="Leg"
-					id="Item.leather_shoes" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.glen_ranger_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.range_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.vlandia_mace_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.footmans_tunic" />
-				<equipment
-					slot="Leg"
-					id="Item.leather_shoes" />
-			</EquipmentRoster>
-			<EquipmentRoster
-				civilian="true">
-				<equipment
-					slot="Item0"
-					id="Item.glen_ranger_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.range_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.vlandia_mace_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.footmans_tunic" />
-				<equipment
-					slot="Leg"
-					id="Item.leather_shoes" />
-			</EquipmentRoster>
-			<EquipmentRoster
-				civilian="true">
-				<equipment
-					slot="Item0"
-					id="Item.glen_ranger_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.range_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.vlandia_mace_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.footmans_tunic" />
-				<equipment
-					slot="Leg"
-					id="Item.leather_shoes" />
-			</EquipmentRoster>
-		</Equipments>
+    <Equipments>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.imperial_axe_t3" />
+      <equipment slot="Head"
+                 id="Item.roundkettle_over_imperial_padding" />
+      <equipment slot="Cape"
+                 id="" />
+      <equipment slot="Body"
+                 id="Item.imperial_mail_over_leather" />
+      <equipment slot="Leg"
+                 id="Item.empire_horseman_boots" />
+      <equipment slot="Gloves"
+                 id="Item.woven_leather_bracers" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.imperial_axe_t3" />
+      <equipment slot="Head"
+                 id="Item.roundkettle_over_imperial_padding" />
+      <equipment slot="Body"
+                 id="Item.imperial_mail_over_leather" />
+      <equipment slot="Leg"
+                 id="Item.empire_horseman_boots" />
+      <equipment slot="Gloves"
+                 id="Item.woven_leather_bracers" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.imperial_axe_t3" />
+      <equipment slot="Head"
+                 id="Item.roundkettle_over_imperial_padding" />
+      <equipment slot="Body"
+                 id="Item.imperial_mail_over_stripped_leather" />
+      <equipment slot="Leg"
+                 id="Item.empire_horseman_boots" />
+      <equipment slot="Gloves"
+                 id="Item.woven_leather_bracers" />
+      </EquipmentRoster>
+      <EquipmentRoster civilian="true">
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.imperial_axe_t3" />
+      <equipment slot="Head"
+                 id="Item.roundkettle_over_imperial_padding" />
+      <equipment slot="Body"
+                 id="Item.imperial_mail_over_stripped_leather" />
+      <equipment slot="Leg"
+                 id="Item.empire_horseman_boots" />
+      <equipment slot="Gloves"
+                 id="Item.woven_leather_bracers" />
+      </EquipmentRoster>
+    </Equipments>
 	</NPCCharacter>
 	<NPCCharacter
 		id="armed_trader_khuzait"
@@ -23915,125 +23600,108 @@
 		<skills>
 			<skill
 				id="Athletics"
-				value="130" />
+				value="70" />
 			<skill
 				id="Riding"
-				value="130" />
+				value="10" />
 			<skill
 				id="OneHanded"
-				value="160" />
+				value="70" />
 			<skill
 				id="TwoHanded"
-				value="80" />
+				value="40" />
 			<skill
 				id="Polearm"
-				value="60" />
+				value="40" />
 			<skill
 				id="Bow"
-				value="80" />
+				value="70" />
 			<skill
 				id="Crossbow"
-				value="20" />
+				value="30" />
 			<skill
 				id="Throwing"
-				value="50" />
+				value="30" />
 		</skills>
 		<upgrade_targets></upgrade_targets>
-		<Equipments>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.steppe_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.default_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.khuzait_sword_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.khuzait_belt_leather" />
-				<equipment
-					slot="Leg"
-					id="Item.khuzait_curved_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.steppe_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.range_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.khuzait_sword_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.khuzait_civil_coat_b" />
-				<equipment
-					slot="Leg"
-					id="Item.khuzait_curved_boots" />
-				<equipment
-					slot="Cape"
-					id="Item.eastern_studded_shoulders" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.steppe_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.range_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.khuzait_sword_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.khuzait_belt_leather" />
-				<equipment
-					slot="Leg"
-					id="Item.khuzait_curved_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster
-				civilian="true">
-				<equipment
-					slot="Item0"
-					id="Item.steppe_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.range_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.khuzait_sword_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.khuzait_belt_leather" />
-				<equipment
-					slot="Leg"
-					id="Item.khuzait_curved_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster
-				civilian="true">
-				<equipment
-					slot="Item0"
-					id="Item.steppe_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.range_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.khuzait_sword_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.khuzait_civil_coat_b" />
-				<equipment
-					slot="Leg"
-					id="Item.khuzait_curved_boots" />
-				<equipment
-					slot="Cape"
-					id="Item.eastern_studded_shoulders" />
-			</EquipmentRoster>
-		</Equipments>
+    <Equipments>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.khuzait_sword_2_t3" />
+      <equipment slot="Head"
+                 id="Item.plumed_fur_lined_helmet" />
+      <equipment slot="Body"
+                 id="Item.eastern_plated_leather_vest" />
+      <equipment slot="Leg"
+                 id="Item.khuzait_curved_boots" />
+      <equipment slot="Gloves"
+                 id="Item.eastern_wrapped_armguards" />
+      <equipment slot="Cape"
+                 id="" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.broad_ild_sword_t3" />
+      <equipment slot="Head"
+                 id="Item.plumed_fur_lined_helmet" />
+      <equipment slot="Body"
+                 id="Item.eastern_plated_leather_vest" />
+      <equipment slot="Leg"
+                 id="Item.khuzait_curved_boots" />
+      <equipment slot="Gloves"
+                 id="Item.eastern_wrapped_armguards" />
+      <equipment slot="Cape"
+                 id="" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.light_mace_t3" />
+      <equipment slot="Head"
+                 id="Item.plumed_fur_lined_helmet" />
+      <equipment slot="Body"
+                 id="Item.khuzait_lamellar_strapped" />
+      <equipment slot="Leg"
+                 id="Item.khuzait_curved_boots" />
+      <equipment slot="Gloves"
+                 id="Item.eastern_wrapped_armguards" />
+      <equipment slot="Cape"
+                 id="" />
+      </EquipmentRoster>
+      <EquipmentRoster civilian="true">
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.light_mace_t3" />
+      <equipment slot="Head"
+                 id="Item.plumed_fur_lined_helmet" />
+      <equipment slot="Body"
+                 id="Item.khuzait_lamellar_strapped" />
+      <equipment slot="Leg"
+                 id="Item.khuzait_curved_boots" />
+      <equipment slot="Gloves"
+                 id="Item.eastern_wrapped_armguards" />
+      <equipment slot="Cape"
+                 id="" />
+      </EquipmentRoster>
+    </Equipments>
 	</NPCCharacter>
 	<NPCCharacter
 		id="armed_trader_sturgia"
@@ -24074,116 +23742,80 @@
 				value="30" />
 		</skills>
 		<upgrade_targets></upgrade_targets>
-		<Equipments>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.highland_ranger_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.default_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.sturgia_axe_2_t2" />
-				<equipment
-					slot="Body"
-					id="Item.northern_padded_gambeson" />
-				<equipment
-					slot="Leg"
-					id="Item.battania_woodland_boots" />
-				<equipment
-					slot="Cape"
-					id="Item.scarf" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.highland_ranger_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.range_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.sturgia_axe_2_t2" />
-				<equipment
-					slot="Body"
-					id="Item.heavy_nordic_tunic" />
-				<equipment
-					slot="Leg"
-					id="Item.ragged_boots" />
-				<equipment
-					slot="Cape"
-					id="Item.scarf" />
-				<equipment
-					slot="Head"
-					id="Item.northern_fur_cap" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.highland_ranger_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.range_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.sturgia_axe_2_t2" />
-				<equipment
-					slot="Body"
-					id="Item.heavy_nordic_tunic" />
-				<equipment
-					slot="Leg"
-					id="Item.highland_leg_wrappings" />
-				<equipment
-					slot="Head"
-					id="Item.northern_fur_cap" />
-			</EquipmentRoster>
-			<EquipmentRoster
-				civilian="true">
-				<equipment
-					slot="Item0"
-					id="Item.highland_ranger_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.range_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.sturgia_axe_2_t2" />
-				<equipment
-					slot="Body"
-					id="Item.heavy_nordic_tunic" />
-				<equipment
-					slot="Leg"
-					id="Item.highland_leg_wrappings" />
-				<equipment
-					slot="Head"
-					id="Item.northern_fur_cap" />
-			</EquipmentRoster>
-			<EquipmentRoster
-				civilian="true">
-				<equipment
-					slot="Item0"
-					id="Item.highland_ranger_bow" />
-				<equipment
-					slot="Item1"
-					id="Item.range_arrows" />
-				<equipment
-					slot="Item2"
-					id="Item.sturgia_axe_2_t2" />
-				<equipment
-					slot="Body"
-					id="Item.heavy_nordic_tunic" />
-				<equipment
-					slot="Leg"
-					id="Item.ragged_boots" />
-				<equipment
-					slot="Cape"
-					id="Item.scarf" />
-				<equipment
-					slot="Head"
-					id="Item.northern_fur_cap" />
-			</EquipmentRoster>
-		</Equipments>
+    <Equipments>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.sturgia_axe_3_t3" />
+      <equipment slot="Head"
+                 id="Item.nasal_helmet" />
+      <equipment slot="Body"
+                 id="Item.sturgian_chainmale_shortsleeve" />
+      <equipment slot="Cape"
+                 id="" />
+      <equipment slot="Gloves"
+                 id="Item.highland_gloves" />
+      <equipment slot="Leg"
+                 id="Item.highland_leg_wrappings" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.sturgia_axe_3_t3" />
+      <equipment slot="Head"
+                 id="Item.nasal_helmet" />
+      <equipment slot="Body"
+                 id="Item.leather_and_iron_plate_armor" />
+      <equipment slot="Gloves"
+                 id="Item.highland_gloves" />
+      <equipment slot="Cape"
+                 id="" />
+      <equipment slot="Leg"
+                 id="Item.highland_leg_wrappings" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.sturgia_axe_3_t3" />
+      <equipment slot="Head"
+                 id="Item.nasal_helmet_with_leather" />
+      <equipment slot="Body"
+                 id="Item.nordic_lamellar_vest" />
+      <equipment slot="Gloves"
+                 id="Item.highland_gloves" />
+      <equipment slot="Leg"
+                 id="Item.highland_leg_wrappings" />
+      </EquipmentRoster>
+      <EquipmentRoster civilian="true">
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.sturgia_axe_3_t3" />
+      <equipment slot="Head"
+                 id="Item.nasal_helmet_with_leather" />
+      <equipment slot="Body"
+                 id="Item.sturgian_lamellar_gambeson" />
+      <equipment slot="Gloves"
+                 id="Item.highland_gloves" />
+      <equipment slot="Leg"
+                 id="Item.highland_leg_wrappings" />
+      </EquipmentRoster>
+    </Equipments>
 	</NPCCharacter>
 	<NPCCharacter
 		id="armed_trader_vlandia"
@@ -24206,7 +23838,7 @@
 				value="10" />
 			<skill
 				id="OneHanded"
-				value="60" />
+				value="70" />
 			<skill
 				id="TwoHanded"
 				value="40" />
@@ -24218,107 +23850,90 @@
 				value="30" />
 			<skill
 				id="Crossbow"
-				value="70" />
+				value="30" />
 			<skill
 				id="Throwing"
 				value="30" />
 		</skills>
 		<upgrade_targets></upgrade_targets>
-		<Equipments>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.crossbow_a" />
-				<equipment
-					slot="Item1"
-					id="Item.bolt_a" />
-				<equipment
-					slot="Item2"
-					id="Item.vlandia_sword_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.layered_leather_tunic" />
-				<equipment
-					slot="Leg"
-					id="Item.leather_cavalier_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.crossbow_a" />
-				<equipment
-					slot="Item1"
-					id="Item.bolt_a" />
-				<equipment
-					slot="Item2"
-					id="Item.vlandia_sword_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.gambeson_b" />
-				<equipment
-					slot="Leg"
-					id="Item.leather_cavalier_boots" />
-				<equipment
-					slot="Cape"
-					id="Item.hood" />
-			</EquipmentRoster>
-			<EquipmentRoster>
-				<equipment
-					slot="Item0"
-					id="Item.crossbow_a" />
-				<equipment
-					slot="Item1"
-					id="Item.bolt_a" />
-				<equipment
-					slot="Item2"
-					id="Item.vlandia_sword_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.layered_leather_tunic" />
-				<equipment
-					slot="Leg"
-					id="Item.leather_cavalier_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster
-				civilian="true">
-				<equipment
-					slot="Item0"
-					id="Item.crossbow_a" />
-				<equipment
-					slot="Item1"
-					id="Item.bolt_a" />
-				<equipment
-					slot="Item2"
-					id="Item.vlandia_sword_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.layered_leather_tunic" />
-				<equipment
-					slot="Leg"
-					id="Item.leather_cavalier_boots" />
-			</EquipmentRoster>
-			<EquipmentRoster
-				civilian="true">
-				<equipment
-					slot="Item0"
-					id="Item.crossbow_a" />
-				<equipment
-					slot="Item1"
-					id="Item.bolt_a" />
-				<equipment
-					slot="Item2"
-					id="Item.vlandia_sword_1_t2" />
-				<equipment
-					slot="Body"
-					id="Item.gambeson_b" />
-				<equipment
-					slot="Leg"
-					id="Item.leather_cavalier_boots" />
-				<equipment
-					slot="Cape"
-					id="Item.hood" />
-			</EquipmentRoster>
-		</Equipments>
+    <Equipments>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.vlandia_mace_1_t2" />
+      <equipment slot="Head"
+                 id="Item.kettle_helmet_over_mail" />
+      <equipment slot="Gloves"
+                 id="Item.guarded_padded_vambrace" />
+      <equipment slot="Body"
+                 id="Item.mail_shirt" />
+      <equipment slot="Leg"
+                 id="Item.wrapped_leather_boots" />
+      <equipment slot="Cape"
+                 id="Item.scarf" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.vlandia_mace_1_t2" />
+      <equipment slot="Head"
+                 id="Item.kettle_helmet_over_mail" />
+      <equipment slot="Gloves"
+                 id="Item.guarded_padded_vambrace" />
+      <equipment slot="Body"
+                 id="Item.mail_shirt" />
+      <equipment slot="Leg"
+                 id="Item.wrapped_leather_boots" />
+      <equipment slot="Cape"
+                 id="Item.scarf" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.vlandia_mace_1_t2" />
+      <equipment slot="Head"
+                 id="Item.kettle_helmet_with_mail" />
+      <equipment slot="Gloves"
+                 id="Item.guarded_padded_vambrace" />
+      <equipment slot="Body"
+                 id="Item.mail_shirt" />
+      <equipment slot="Leg"
+                 id="Item.wrapped_leather_boots" />
+      <equipment slot="Cape"
+                 id="Item.scarf" />
+      </EquipmentRoster>
+      <EquipmentRoster civilian="true">
+      <equipment slot="Item0"
+                 id="Item.crossbow_repeating_light_RBM" />
+      <equipment slot="Item1"
+                 id="Item.repeater_light_bolts" />
+
+      <equipment slot="Item3"
+                 id="Item.vlandia_mace_1_t2" />
+      <equipment slot="Head"
+                 id="Item.kettle_helmet_with_mail" />
+      <equipment slot="Gloves"
+                 id="Item.guarded_padded_vambrace" />
+      <equipment slot="Body"
+                 id="Item.mail_shirt" />
+      <equipment slot="Leg"
+                 id="Item.wrapped_leather_boots" />
+      <equipment slot="Cape"
+                 id="Item.scarf" />
+      </EquipmentRoster>
+    </Equipments>
 	</NPCCharacter>
 	<NPCCharacter
 		id="caravan_guard_aserai"
