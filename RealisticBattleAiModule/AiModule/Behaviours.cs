@@ -883,11 +883,11 @@ namespace RBMAI
                 !___Agent.IsActive() ||
                 agent.Formation == null ||
                 agent.Formation?.QuerySystem == null ||
-                agent.Formation?.AI == null ||
-                agent.Formation?.AI?.ActiveBehavior == null)
+                agent.Formation?.AI == null)
             {
                 return true;
             }
+
             if (agent.Formation.QuerySystem.IsRangedCavalryFormation || agent.Formation.QuerySystem.IsCavalryFormation)
             {
                 if (agent.MountAgent != null)
@@ -896,9 +896,17 @@ namespace RBMAI
                     ___Agent.SetMaximumSpeedLimit(speed, false);
                     agent.MountAgent.SetMaximumSpeedLimit(speed, false);
                     return false;
+                    if (limitIsMultiplier && desiredSpeed < 0.95f)
+                    {
+                        desiredSpeed = 0.95f;
+                    }
                 }
             }
-            else if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorForwardSkirmish) ||
+            if (agent.Formation?.AI?.ActiveBehavior == null)
+            {
+                return true;
+            }
+            if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorForwardSkirmish) ||
                 agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorInfantryAttackFlank))
             {
                 if (limitIsMultiplier && desiredSpeed < 0.85f)
@@ -931,11 +939,12 @@ namespace RBMAI
             }
             if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorCharge))
             {
+                float currentTime = MBCommon.GetTotalMissionTime();
                 if (agent.Formation.ArrangementOrder.OrderType == OrderType.ArrangementCloseOrder)
                 {
-                    if (limitIsMultiplier && desiredSpeed > 0.5f)
+                    if (limitIsMultiplier && desiredSpeed > 0.6f)
                     {
-                        desiredSpeed = 0.5f;
+                        desiredSpeed = 0.6f;
                     }
                 }
                 else
@@ -1665,7 +1674,7 @@ namespace RBMAI
             {
                 case OrderType.ArrangementLine:
                     {
-                        __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(__instance.Formation.CountOfUnitsWithoutDetachedOnes / 4f), true);
+                        __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(__instance.Formation.CountOfUnitsWithoutDetachedOnes / 4.5f), true);
                         break;
                     }
                 case OrderType.ArrangementLoose:
@@ -1680,7 +1689,7 @@ namespace RBMAI
                     }
             }
             __instance.Formation.SetFacingOrder(___CurrentFacingOrder);
-            bool isWithoutThrowing = __instance.Formation.QuerySystem.HasThrowingUnitRatioReadOnly < 0.4f;
+            bool isWithoutThrowing = __instance.Formation.QuerySystem.HasThrowingUnitRatio < 0.4f;
             bool isShock = __instance.Formation.QuerySystem.HasShieldUnitRatio < 0.4f;
             if (isShock)
             {
@@ -1696,26 +1705,27 @@ namespace RBMAI
             }
             if (__instance.Formation.QuerySystem.IsInfantryFormation)
             {
-                Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
-                if (significantEnemy != null)
-                {
-                    float num = __instance.Formation.QuerySystem.Formation.CachedAveragePosition.Distance(significantEnemy.QuerySystem.Formation.CachedMedianPosition.AsVec2);
-                    if (num < 150f)
-                    {
-                        if (significantEnemy.ArrangementOrder == ArrangementOrder.ArrangementOrderLine)
-                        {
-                            __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
-                        }
-                        else if (significantEnemy.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose)
-                        {
-                            __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
-                        }
-                        else if (significantEnemy.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall)
-                        {
-                            __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
-                        }
-                    }
-                }
+                //Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
+                //if (significantEnemy != null)
+                //{
+                //    float num = __instance.Formation.QuerySystem.Formation.CachedAveragePosition.Distance(significantEnemy.QuerySystem.Formation.CachedMedianPosition.AsVec2);
+                //    if (num < 150f)
+                //    {
+                //        if (significantEnemy.ArrangementOrder == ArrangementOrder.ArrangementOrderLine)
+                //        {
+                //            __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
+                //        }
+                //        else if (significantEnemy.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose)
+                //        {
+                //            __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
+                //        }
+                //        else if (significantEnemy.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall)
+                //        {
+                //            __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
+                //        }
+                //    }
+                //}
+                __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
             }
             __instance.Formation.SetMovementOrder(__instance.CurrentOrder);
             return false;
