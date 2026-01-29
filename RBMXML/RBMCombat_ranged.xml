@@ -1252,5 +1252,14 @@
 		<Flags
 			Stealth="true" />
 	</Item>
--->	
+-->
+
+	<Item id="Flamethrower_RBM" name="Imperial Cheirosiphon" body_name="bo_cross_bow_heavy" mesh="crossbow_f" weight="5" difficulty="100" appearance="1" Type="Crossbow" value="50000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
+		<ItemComponent>
+			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="70" missile_speed="20" weapon_length="200" thrust_damage="100" item_usage="crossbow_fast" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="90" thrust_damage_type="Pierce" reload_phase_count="2" modifier_group="crossbow">
+				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags Civilian="true"/>
+	</Item>	
 </Items>

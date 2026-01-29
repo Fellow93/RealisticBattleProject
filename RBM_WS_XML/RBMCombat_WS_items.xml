@@ -2963,4 +2963,57 @@
 			DropOnWeaponChange="true"
 			DropOnAnyAction="true" />
 	</Item>
+	
+	
+	<Item
+		multiplayer_item="false"
+		id="calradian_fire_RBM"
+		name="Calradian Liquid Fire"
+		prefab="burning_bolt"
+		body_name="bo_projectile_rock"
+		holster_body_name="bo_axe_short"
+		mesh="bolt_bl_c"
+		is_merchandise="false"
+		holster_mesh="bolt_bl_c_quiver"
+		holster_mesh_with_weapon="bolt_bl_c_quiver"
+		weight="0.08"
+		appearance="1"
+		Type="Bolts"
+		item_holsters="quiver_bolts:quiver_bolts_2:quiver_back_middle:quiver_back_top">
+		<ItemComponent>
+			<Weapon
+				weapon_class="Bolt"
+				trail_particle_name="psys_game_burning_jar_trail"
+				stack_amount="10"
+				thrust_speed="0"
+				thrust_damage_type="Blunt"
+				thrust_damage="1500"
+				fire_damage="50"
+				speed_rating="0"
+				missile_speed="60"
+				weapon_length="37"
+				item_usage=""
+				passby_sound_code="event:/mission/combat/missile/passby"
+				rotation="180, 0, 0"
+				physics_material="missile"
+				sticking_position="0,-0.37,0"
+				sticking_rotation="90,0,0"
+				center_of_mass="0,0,-0.1"
+				modifier_group="bolt">
+				<WeaponFlags
+					AttachAmmoToVisual="true"
+					Consumable="true"
+					Burning="true"
+					AmmoBreaksOnBounceBack="true" 
+					LeavesTrail="true"					
+					CanPenetrateShield="true"
+					MissileWithPhysics="true"
+					CanKillEvenIfBlunt="true"
+					MultiplePenetration="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags
+			ForceAttachOffHandPrimaryItemBone="true" />
+	</Item>
+	
 </Items>
