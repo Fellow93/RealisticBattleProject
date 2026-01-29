@@ -189,7 +189,7 @@ namespace RBMAI.AiModule.RbmBehaviors
                 {
                     __instance.Formation.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
                     ____currentOrder = MovementOrder.MovementOrderChargeToTarget(significantEnemy);
-                    bool isWithoutThrowing = __instance.Formation.QuerySystem.HasThrowingUnitRatioReadOnly < 0.4f;
+                    bool isWithoutThrowing = __instance.Formation.QuerySystem.HasThrowingUnitRatio < 0.4f;
                     bool isShock = __instance.Formation.QuerySystem.HasShieldUnitRatio < 0.4f;
                     if (isShock)
                     {
