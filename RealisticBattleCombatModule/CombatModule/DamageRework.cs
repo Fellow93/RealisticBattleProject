@@ -711,6 +711,12 @@ namespace RBMCombat
                 //    victim.Equipment[EquipmentIndex.]
                 //}
 
+                //special javelin case
+                if (attackerWeapon.WeaponClass == WeaponClass.Javelin && attackerWeapon.WeaponFlags.HasFlag(WeaponFlags.BonusAgainstShield))
+                {
+                    weaponDamageFactor *= 3f;
+                }
+
                 inflictedDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(weaponType, damageType, magnitude, armorAmount, victimAgentAbsorbedDamageRatio, out _, out _, weaponDamageFactor, player, isPlayerVictim, armorMaterial)), 0, 2000);
                 inflictedDamage = MathF.Floor(inflictedDamage * dmgMultiplier);
 
