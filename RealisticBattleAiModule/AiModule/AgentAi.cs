@@ -518,6 +518,26 @@ namespace RBMAI
 
             private static void Postfix(ref SpawnedItemEntity ____itemToPickUp, ref Agent ___Agent)
             {
+                float currentTime = MBCommon.GetTotalMissionTime();
+                if (___Agent.IsActive() && ___Agent.HasMount)
+                {
+                    MBList<Agent> enemiesClose = new MBList<Agent>();
+                    enemiesClose = Mission.Current.GetNearbyAgents(___Agent.GetWorldPosition().AsVec2, 1.25f, enemiesClose);
+                    enemiesClose.RemoveAll((Agent a) => a.HasMount);
+                    if (enemiesClose.Count() > 2)
+                    {
+                        ___Agent.EventControlFlags &= ~Agent.EventControlFlag.DoubleTapToDirectionMask;
+                        ___Agent.EventControlFlags |= Agent.EventControlFlag.DoubleTapToDirectionUp;
+                    }
+                }
+                if (___Agent.GetMorale() > 0f && currentTime - ___Agent.LastMeleeHitTime > 10f)
+                {
+                    ___Agent.CommonAIComponent?.StopRetreating();
+                }
+                //if (___Agent.HasMount)
+                //{
+
+                //}
                 if (____itemToPickUp != null && (___Agent.AIStateFlags & Agent.AIStateFlag.UseObjectMoving) != 0)
                 {
                     float num = MissionGameModels.Current.AgentStatCalculateModel.GetInteractionDistance(___Agent) * 3f;
@@ -626,6 +646,65 @@ namespace RBMAI
                 }
 
                 return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(Mission))]
+        [HarmonyPatch("ChargeDamageCallback")]
+        [UsedImplicitly]
+        [MBCallback]
+        internal class ChargeDamageCallbackPatch
+        {
+            private static void Postfix(ref AttackCollisionData collisionData, Blow blow, Agent attacker, Agent victim, Mission __instance)
+            {
+                if (attacker.RiderAgent != null)
+                {
+                    attacker.RiderAgent.EventControlFlags &= ~Agent.EventControlFlag.DoubleTapToDirectionMask;
+                    attacker.RiderAgent.EventControlFlags |= Agent.EventControlFlag.DoubleTapToDirectionUp;
+                }
+                if (attacker.RiderAgent != null && attacker.IsEnemyOf(victim))
+                {
+                    victim.CommonAIComponent?.Retreat();
+                    if (!blow.BlowFlag.HasFlag(BlowFlags.KnockBack) && !blow.BlowFlag.HasFlag(BlowFlags.KnockDown))
+                    {
+                        blow.BaseMagnitude = 0;
+                        blow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
+                        blow.InflictedDamage = 0;
+                        blow.SelfInflictedDamage = 0;
+                        blow.AbsorbedByArmor = 0;
+                        blow.DamageCalculated = true;
+                        blow.BlowFlag |= BlowFlags.KnockBack;
+                        WeakGameEntity invalid = WeakGameEntity.Invalid;
+                        Blow b = blow;
+                        MissionWeapon attackerWeapon = default(MissionWeapon);
+                        victim.RegisterBlow(blow, collisionData);
+                        foreach (MissionBehavior missionBehaviour in __instance.MissionBehaviors)
+                        {
+                            missionBehaviour.OnRegisterBlow(attacker, victim, WeakGameEntity.Invalid, blow, ref collisionData, in attackerWeapon);
+                        }
+                    }
+                }
+                if (attacker.RiderAgent != null && !attacker.IsEnemyOf(victim) && victim.CurrentMortalityState != Agent.MortalityState.Invulnerable)
+                {
+
+                    blow.BaseMagnitude = 0;
+                    blow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
+                    blow.InflictedDamage = 0;
+                    blow.SelfInflictedDamage = 0;
+                    blow.AbsorbedByArmor = 0;
+                    blow.DamageCalculated = true;
+                    blow.BlowFlag |= BlowFlags.KnockBack;
+                    WeakGameEntity invalid = WeakGameEntity.Invalid;
+                    Blow b = blow;
+                    MissionWeapon attackerWeapon = default(MissionWeapon);
+                    victim.RegisterBlow(blow, collisionData);
+                    foreach (MissionBehavior missionBehaviour in __instance.MissionBehaviors)
+                    {
+                        missionBehaviour.OnRegisterBlow(attacker, victim, WeakGameEntity.Invalid, blow, ref collisionData, in attackerWeapon);
+                    }
+
+                }
+                return;
             }
         }
     }

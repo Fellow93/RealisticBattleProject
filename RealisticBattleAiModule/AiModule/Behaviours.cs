@@ -926,7 +926,7 @@ namespace RBMAI
                 if (limitIsMultiplier)
                 {
                     float oldDesiredSpeed = desiredSpeed;
-                    desiredSpeed = (float)Math.Pow(desiredSpeed, 1.25f);
+                    //desiredSpeed = (float)Math.Pow(desiredSpeed, 1.25f);
                 }
             }
             if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorRegroup))

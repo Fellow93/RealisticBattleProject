@@ -712,7 +712,7 @@ namespace RBMCombat
                 //}
 
                 //special javelin case
-                if (attackerWeapon.WeaponClass == WeaponClass.Javelin && attackerWeapon.WeaponFlags.HasFlag(WeaponFlags.BonusAgainstShield))
+                if (attackerWeapon != null && attackerWeapon.WeaponClass == WeaponClass.Javelin && attackerWeapon.WeaponFlags.HasFlag(WeaponFlags.BonusAgainstShield))
                 {
                     weaponDamageFactor *= 3f;
                 }
