@@ -525,7 +525,7 @@ namespace RBMAI
                     MBList<Agent> enemiesClose = new MBList<Agent>();
                     enemiesClose = Mission.Current.GetNearbyAgents(___Agent.GetWorldPosition().AsVec2, 1.25f, enemiesClose);
                     enemiesClose.RemoveAll((Agent a) => a.HasMount);
-                    if (enemiesClose.Count() > 3)
+                    if (enemiesClose.Count() >= 3)
                     {
                         ___Agent.EventControlFlags &= ~Agent.EventControlFlag.DoubleTapToDirectionMask;
                         ___Agent.EventControlFlags |= Agent.EventControlFlag.DoubleTapToDirectionUp;

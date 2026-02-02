@@ -906,41 +906,47 @@ namespace RBMAI
             {
                 return true;
             }
+            bool isFormationUnderRangedAttack = agent.Formation.QuerySystem?.UnderRangedAttackRatio >= 0.33f;
+
             if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorForwardSkirmish) ||
                 agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorInfantryAttackFlank))
             {
-                if (limitIsMultiplier && desiredSpeed < 0.85f)
+                if (limitIsMultiplier && desiredSpeed < 0.9f)
                 {
-                    desiredSpeed = 0.85f;
+                    desiredSpeed = 0.9f;
                 }
             }
             if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorProtectFlank))
             {
-                if (desiredSpeed < 0.85f)
+                if (desiredSpeed < 0.9f)
                 {
-                    desiredSpeed = 0.85f;
+                    desiredSpeed = 0.9f;
                 }
             }
             if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorAdvance))
             {
                 if (limitIsMultiplier)
                 {
-                    float oldDesiredSpeed = desiredSpeed;
-                    //desiredSpeed = (float)Math.Pow(desiredSpeed, 1.25f);
+                    if (desiredSpeed < 0.6f && isFormationUnderRangedAttack)
+                    {
+                        desiredSpeed = 0.6f;
+                    }
                 }
             }
             if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorRegroup))
             {
                 if (limitIsMultiplier)
                 {
-                    float oldDesiredSpeed = desiredSpeed;
-                    desiredSpeed = (float)Math.Pow(desiredSpeed, 1.25f);
+                    if (desiredSpeed < 0.6f && isFormationUnderRangedAttack)
+                    {
+                        desiredSpeed = 0.6f;
+                    }
                 }
             }
             if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorCharge))
             {
                 float currentTime = MBCommon.GetTotalMissionTime();
-                if (agent.Formation.ArrangementOrder.OrderType == OrderType.ArrangementCloseOrder)
+                if (agent.Formation.ArrangementOrder.OrderType == OrderType.ArrangementCloseOrder && !isFormationUnderRangedAttack)
                 {
                     if (limitIsMultiplier && desiredSpeed > 0.6f)
                     {
@@ -949,9 +955,9 @@ namespace RBMAI
                 }
                 else
                 {
-                    if (limitIsMultiplier && desiredSpeed < 0.85f)
+                    if (limitIsMultiplier && desiredSpeed < 0.9f)
                     {
-                        desiredSpeed = 0.85f;
+                        desiredSpeed = 0.9f;
                     }
                 }
             }
