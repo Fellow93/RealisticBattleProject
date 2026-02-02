@@ -518,16 +518,19 @@ namespace RBMAI
 
             private static void Postfix(ref SpawnedItemEntity ____itemToPickUp, ref Agent ___Agent)
             {
+                //___Agent.MovementInputVector = new Vec2(30f, 30f);
                 float currentTime = MBCommon.GetTotalMissionTime();
                 if (___Agent.IsActive() && ___Agent.HasMount)
                 {
                     MBList<Agent> enemiesClose = new MBList<Agent>();
                     enemiesClose = Mission.Current.GetNearbyAgents(___Agent.GetWorldPosition().AsVec2, 1.25f, enemiesClose);
                     enemiesClose.RemoveAll((Agent a) => a.HasMount);
-                    if (enemiesClose.Count() > 2)
+                    if (enemiesClose.Count() > 3)
                     {
                         ___Agent.EventControlFlags &= ~Agent.EventControlFlag.DoubleTapToDirectionMask;
                         ___Agent.EventControlFlags |= Agent.EventControlFlag.DoubleTapToDirectionUp;
+
+                        ___Agent.MovementInputVector = ___Agent.LookDirection.AsVec2 * 2f;
                     }
                 }
                 if (___Agent.GetMorale() > 0f && currentTime - ___Agent.LastMeleeHitTime > 10f)
@@ -664,8 +667,51 @@ namespace RBMAI
                 }
                 if (attacker.RiderAgent != null && attacker.IsEnemyOf(victim))
                 {
-                    victim.CommonAIComponent?.Retreat();
-                    if (!blow.BlowFlag.HasFlag(BlowFlags.KnockBack) && !blow.BlowFlag.HasFlag(BlowFlags.KnockDown))
+                    bool isKnockDown = blow.BlowFlag.HasFlag(BlowFlags.KnockDown);
+                    bool isKnockBack = blow.BlowFlag.HasFlag(BlowFlags.KnockBack);
+                    int victimTier = victim.Character.GetBattleTier();
+
+                    Vec2 blowDirection = blow.Direction.AsVec2.Normalized();
+                    Vec2 victimDirection = victim.LookDirection.AsVec2.Normalized();
+                    float dot = Vec2.DotProduct(blowDirection, victimDirection);
+                    bool isChargedFromBack = dot > 0f;
+
+                    if (isKnockDown)
+                    {
+                        if (isChargedFromBack)
+                        {
+                            victim.CommonAIComponent?.Retreat();
+                        }
+                        else
+                        {
+                            bool shouldPanic = MBRandom.RandomInt(2) == 0;
+                            if (shouldPanic)
+                            {
+                                victim.CommonAIComponent?.Retreat();
+                            }
+                        }
+                    }
+                    else if (isKnockBack)
+                    {
+                        if (isChargedFromBack)
+                        {
+                            bool shouldPanic = MBRandom.RandomInt(2) == 0;
+                            if (shouldPanic)
+                            {
+                                victim.CommonAIComponent?.Retreat();
+                            }
+                        }
+                        else
+                        {
+                            int sumModifiers = Math.Max(2, 1 + victimTier);
+                            bool shouldPanic = MBRandom.RandomInt(sumModifiers) == 0;
+                            if (shouldPanic)
+                            {
+                                victim.CommonAIComponent?.Retreat();
+                            }
+                        }
+                    }
+                    if (!isKnockBack && !isKnockDown)
                     {
                         blow.BaseMagnitude = 0;
                         blow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
