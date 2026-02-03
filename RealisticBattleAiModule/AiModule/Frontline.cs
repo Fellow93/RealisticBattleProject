@@ -48,8 +48,8 @@ namespace RBMAI
             public float flankAllyRight = 0;
 
             public float fallBackBase = 0;
-            public float attackBase = 5;
-            public float findAllyBase = 3;
+            public float attackBase = 8;
+            public float findAllyBase = 0;
             public float flankAllyLeftBase = 0;
             public float flankAllyRightBase = 0;
 
@@ -98,12 +98,12 @@ namespace RBMAI
                 }
                 if (changedValueFromBase > 0)
                 {
-                    int valueToReduce = (int)Math.Floor((Math.Sqrt(Math.Abs(changedValueFromBase))));
+                    float valueToReduce = (float)Math.Floor(Math.Sqrt(Math.Abs(changedValueFromBase)));
                     changedValue -= valueToReduce;
                 }
                 else
                 {
-                    int valueToAdd = (int)Math.Floor((Math.Sqrt(Math.Abs(changedValueFromBase))));
+                    float valueToAdd = (float)Math.Floor(Math.Sqrt(Math.Abs(changedValueFromBase)));
                     changedValue += valueToAdd;
                 }
                 changedValue = Math.Min(100, changedValue);
@@ -452,19 +452,19 @@ namespace RBMAI
                         }
                         bool isHero = unit.Character.IsHero;
 
-                        int findAlly = (int)(enemiesFrontCount) + (int)(alliesFrontCount) - alliesRightCount - alliesLeftCount + hasShieldAdditive + (enemiesFrontCount > 0 && (alliesRightCount < 2 || alliesLeftCount < 2) ? 3 : 0);
-                        int fallback = (int)(alliesFrontCount) + enemiesFrontCount;
-                        int attack = hasTwoHandedEquippedAddtive - alliesFrontCount + alliesLeftCount + alliesRightCount - enemiesFrontCount + (isSoldier ? 0 : 2) + (isBannerBearer ? -3 : 0) + (isHero ? -3 : 0);//+ Math.Max(0, 3 - (unitTier)) 
-                        int flankAllyLeft = (int)(alliesFrontCount) + (int)(alliesRightCount) - (int)(alliesLeftCount) - enemiesFrontCount + hasTwoHandedEquippedAddtive;
-                        int flankAllyRight = (int)(alliesFrontCount) + (int)(alliesLeftCount) - (int)(alliesRightCount) - enemiesFrontCount + hasTwoHandedEquippedAddtive;
+                        float findAlly = (enemiesFrontCount) - alliesRightCount - alliesLeftCount + hasShieldAdditive + (enemiesFrontCount > 0 && (alliesRightCount < 2 || alliesLeftCount < 2) ? 3 : 0);
+                        float fallback = (alliesFrontCount) + enemiesFrontCount;
+                        float attack = hasTwoHandedEquippedAddtive - alliesFrontCount + alliesLeftCount + alliesRightCount - enemiesFrontCount + (isSoldier ? 0 : 2) + (isBannerBearer ? -3 : 0) + (isHero ? -3 : 0);//+ Math.Max(0, 3 - (unitTier)) 
+                        float flankAllyLeft = (alliesFrontCount) + (alliesRightCount) - (alliesLeftCount) - enemiesFrontCount + hasTwoHandedEquippedAddtive;
+                        float flankAllyRight = (alliesFrontCount) + (alliesLeftCount) - (alliesRightCount) - enemiesFrontCount + hasTwoHandedEquippedAddtive;
 
-                        attack = attack > 0 ? (int)(attack * staminaModifier) : attack;
+                        attack = attack > 0 ? (attack * staminaModifier) : attack;
 
                         aiDecision.AIMindset.SetValue(AIMindset.AIDecision.Attack, attack > 0 ? attack * (postureModifier * healthModifier) : attack);
-                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.BackStep, fallback > 0 ? (int)(fallback * (2 - postureModifier)) : fallback);
-                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.FindAlly, findAlly > 0 ? (int)(findAlly * (2 - postureModifier)) : findAlly);
-                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.FlankAllyLeft, flankAllyLeft > 0 ? (int)(flankAllyLeft) : flankAllyLeft);
-                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.FlankAllyRight, flankAllyRight > 0 ? (int)(flankAllyRight) : flankAllyRight);
+                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.BackStep, fallback > 0 ? (fallback * (2 - postureModifier)) : fallback);
+                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.FindAlly, findAlly > 0 ? (findAlly * (2 - postureModifier)) : findAlly);
+                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.FlankAllyLeft, flankAllyLeft > 0 ? (flankAllyLeft) : flankAllyLeft);
+                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.FlankAllyRight, flankAllyRight > 0 ? (flankAllyRight) : flankAllyRight);
 
                         //bool checkTimer = aiDecision.AIMindset.AIDecisionTimer != null ? aiDecision.AIMindset.AIDecisionTimer.Check(Mission.Current.CurrentTime) : true;
                         //aiDecision.AIMindset.AIDecisionTimer = null;
@@ -515,7 +515,7 @@ namespace RBMAI
                             case AIMindset.AIDecision.BackStep:
                                 {
                                     WorldPosition backPosition = unit.GetWorldPosition();
-                                    backPosition.SetVec2(unitPosition - direction * MBRandom.RandomFloatRanged(0.15f, 0.3f) * (enemiesFrontCount > 0 ? enemiesFrontCount : 1f));
+                                    backPosition.SetVec2(unitPosition - ((direction + __instance.Direction) / 2f) * MBRandom.RandomFloatRanged(0.15f, 0.3f));
                                     unit.SetTargetPosition(backPosition.AsVec2);
                                     __result = backPosition;
                                     return false;
@@ -523,7 +523,9 @@ namespace RBMAI
                             case AIMindset.AIDecision.FindAlly:
                                 {
                                     WorldPosition allyPosition = getNearbyAllyWorldPosition(mission, unitPosition, unit);
+                                    //allyPosition.SetVec2(allyPosition.AsVec2 - __instance.Direction * MBRandom.RandomFloatRanged(0.15f, 0.3f));
                                     __result = allyPosition;
+                                    unit.SetTargetPosition(allyPosition.AsVec2);
                                     return false;
                                 }
                             case AIMindset.AIDecision.FlankAllyLeft:
