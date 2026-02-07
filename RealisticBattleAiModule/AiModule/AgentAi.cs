@@ -132,24 +132,26 @@ namespace RBMAI
                     agentDrivenProperties.WeaponBestAccuracyWaitTime = 0.1f;
                 }
 
+                //agentDrivenProperties.AIHoldingReadyMaxDuration = 1f;
+                //agentDrivenProperties.AIHoldingReadyVariationPercentage = 1f;
+
                 //agentDrivenProperties.AiWeaponFavorMultiplierPolearm
 
-                //if (RBMConfig.RBMConfig.postureEnabled)
-                //{
-                //    Posture posture = null;
-                //    AgentPostures.values.TryGetValue(agent, out posture);
-                //    if (agent != null && posture != null)
-                //    {
-                //        float postureLevel = posture.posture / posture.maxPosture;
-                //        if (postureLevel < 0.33f)
-                //        {
-                //            //agentDrivenProperties.AiAttackCalculationMaxTimeFactor = meleeLevel *2f;
-                //            //agentDrivenProperties.AIAttackOnDecideChance = 0.02f;
-                //            agentDrivenProperties.HandlingMultiplier = 0.5f;
-                //            //agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier = 0.8f;
-                //        }
-                //    }
-                //}
+                if (RBMConfig.RBMConfig.postureEnabled)
+                {
+                    Posture posture = null;
+                    AgentPostures.values.TryGetValue(agent, out posture);
+                    if (agent != null && posture != null)
+                    {
+                        float staminaLevel = posture.stamina / posture.maxStamina;
+                        agentDrivenProperties.HandlingMultiplier = MBMath.Lerp(0.2f, 1f, staminaLevel);
+                        agentDrivenProperties.OffhandWeaponDefendSpeedMultiplier = MBMath.Lerp(0.2f, 1f, staminaLevel);
+                        agentDrivenProperties.MaxSpeedMultiplier = MBMath.Lerp(0.8f, 1f, staminaLevel);
+
+                        agentDrivenProperties.SwingSpeedMultiplier = MBMath.Lerp(0.8f, 1f, staminaLevel);
+                        agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier = MBMath.Lerp(0.8f, 1f, staminaLevel);
+                    }
+                }
 
                 agentDrivenProperties.AiRangerLeadErrorMin = (float)((0.0 - (double)num4) * 0.349999994039536) + 0.3f;
                 agentDrivenProperties.AiRangerLeadErrorMax = num4 * 0.2f + 0.3f;
