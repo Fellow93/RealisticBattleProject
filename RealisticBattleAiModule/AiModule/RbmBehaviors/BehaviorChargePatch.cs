@@ -185,7 +185,7 @@ namespace RBMAI.AiModule.RbmBehaviors
                     positionsStorage.Remove(__instance.Formation);
                 }
 
-                if (significantEnemy != null)
+                if (significantEnemy != null && __instance.Formation.QuerySystem.IsInfantryFormation && __instance.Formation.CountOfUnitsWithoutDetachedOnes >= 30)
                 {
                     __instance.Formation.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
                     ____currentOrder = MovementOrder.MovementOrderChargeToTarget(significantEnemy);
@@ -203,19 +203,20 @@ namespace RBMAI.AiModule.RbmBehaviors
                         __instance.Formation.SetMovementOrder(__instance.CurrentOrder);
                         return false;
                     }
-                    if (__instance.Formation.TargetFormation != null && __instance.Formation.TargetFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall
-                        && RBMAI.Utilities.ShouldFormationCopyShieldWall(__instance.Formation))
-                    {
-                        __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
-                    }
-                    else if (__instance.Formation.TargetFormation != null && __instance.Formation.TargetFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderLine)
-                    {
-                        __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
-                    }
-                    else if (__instance.Formation.TargetFormation != null && __instance.Formation.TargetFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose)
-                    {
-                        __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
-                    }
+                    //if (__instance.Formation.TargetFormation != null && __instance.Formation.TargetFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall
+                    //    && RBMAI.Utilities.ShouldFormationCopyShieldWall(__instance.Formation))
+                    //{
+                    //    __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
+                    //}
+                    //else if (__instance.Formation.TargetFormation != null && __instance.Formation.TargetFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderLine)
+                    //{
+                    //    __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
+                    //}
+                    //else if (__instance.Formation.TargetFormation != null && __instance.Formation.TargetFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose)
+                    //{
+                    //    __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
+                    //}
+                    __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
                     return false;
                 }
             }

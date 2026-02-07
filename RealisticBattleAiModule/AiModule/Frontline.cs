@@ -19,6 +19,11 @@ namespace RBMAI
         {
             affectedAgent.ClearTargetFrame();
         }
+
+        public override void OnAgentControllerSetToPlayer(Agent agent)
+        {
+            agent.ClearTargetFrame();
+        }
     }
 
     public static class Frontline
@@ -358,6 +363,11 @@ namespace RBMAI
                     aiDecision.AIMindset.shouldClearTargetFrame = false;
                 }
 
+                if (__instance.CountOfUnitsWithoutDetachedOnes <= 25)
+                {
+                    return true;
+                }
+
                 //if (__instance.Team.ActiveAgents.Count * __instance.Team.QuerySystem.InfantryRatio <= 30) { return true; } // frontline system disabled for small infantry battles
                 if (mission != null && mission.IsFieldBattle && (__instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation) && !____detachedUnits.Contains(unit))
                 {
@@ -453,10 +463,10 @@ namespace RBMAI
                         bool isHero = unit.Character.IsHero;
 
                         float findAlly = (enemiesFrontCount) - alliesRightCount - alliesLeftCount + hasShieldAdditive + (enemiesFrontCount > 0 && (alliesRightCount < 2 || alliesLeftCount < 2) ? 3 : 0);
-                        float fallback = (alliesFrontCount) + enemiesFrontCount;
+                        float fallback = (alliesFrontCount) + enemiesFrontCount - (hasShieldAdditive / 2f);
                         float attack = hasTwoHandedEquippedAddtive - alliesFrontCount + alliesLeftCount + alliesRightCount - enemiesFrontCount + (isSoldier ? 0 : 2) + (isBannerBearer ? -3 : 0) + (isHero ? -3 : 0);//+ Math.Max(0, 3 - (unitTier)) 
-                        float flankAllyLeft = (alliesFrontCount) + (alliesRightCount) - (alliesLeftCount) - enemiesFrontCount + hasTwoHandedEquippedAddtive;
-                        float flankAllyRight = (alliesFrontCount) + (alliesLeftCount) - (alliesRightCount) - enemiesFrontCount + hasTwoHandedEquippedAddtive;
+                        float flankAllyLeft = (alliesFrontCount) + (alliesRightCount) - (alliesLeftCount) - enemiesFrontCount + hasTwoHandedEquippedAddtive - (hasShieldAdditive / 2f);
+                        float flankAllyRight = (alliesFrontCount) + (alliesLeftCount) - (alliesRightCount) - enemiesFrontCount + hasTwoHandedEquippedAddtive - (hasShieldAdditive / 2f);
 
                         attack = attack > 0 ? (attack * staminaModifier) : attack;
 
