@@ -2268,7 +2268,6 @@
 		default_group="Cavalry"
 		level="21"
 		name="{=VpTQ5SyS}Nord Warfang"
-                upgrade_requires="ItemCategory.horse"
 		occupation="Soldier"
 		culture="Culture.nord">
 		<face>
@@ -2314,9 +2313,6 @@
 					slot="Item2"
 					id="Item.northern_javelin_2_t3" />
 				<equipment
-					slot="Item3"
-					id="Item.northern_javelin_2_t3" />
-				<equipment
 					slot="Body"
 					id="Item.tacky_bandit" />
 				<equipment
@@ -2331,10 +2327,6 @@
 				<equipment
 					slot="Gloves"
 					id="Item.mail_mitten" />
-      <equipment slot="Horse"
-                 id="Item.sturgia_horse" />
-      <equipment slot="HorseHarness"
-                 id="Item.northern_ring_barding" />
 			</EquipmentRoster>
 			<EquipmentSet
 				id="nord_troop_civilian_template_t3"
@@ -2516,9 +2508,6 @@
 					slot="Item2"
 					id="Item.northern_javelin_2_t3" />
 				<equipment
-					slot="Item3"
-					id="Item.northern_javelin_2_t3" />
-				<equipment
 					slot="Body"
 					id="Item.sturgian_lamellar_fortified" />
 				<equipment
@@ -2533,10 +2522,6 @@
 				<equipment
 					slot="Gloves"
 					id="Item.reinforced_mail_mitten" />
-      <equipment slot="Horse"
-                 id="Item.sturgia_horse" />
-      <equipment slot="HorseHarness"
-                 id="Item.chain_horse_harness" />
 			</EquipmentRoster>
 			<EquipmentSet
 				id="nord_troop_civilian_template_t2"
