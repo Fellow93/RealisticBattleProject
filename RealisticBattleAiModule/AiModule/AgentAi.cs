@@ -144,12 +144,12 @@ namespace RBMAI
                     if (agent != null && posture != null)
                     {
                         float staminaLevel = posture.stamina / posture.maxStamina;
-                        agentDrivenProperties.HandlingMultiplier = MBMath.Lerp(0.2f, 1f, staminaLevel);
-                        agentDrivenProperties.OffhandWeaponDefendSpeedMultiplier = MBMath.Lerp(0.2f, 1f, staminaLevel);
-                        agentDrivenProperties.MaxSpeedMultiplier = MBMath.Lerp(0.8f, 1f, staminaLevel);
+                        agentDrivenProperties.HandlingMultiplier *= MBMath.Lerp(0.2f, 1f, staminaLevel);
+                        agentDrivenProperties.OffhandWeaponDefendSpeedMultiplier *= MBMath.Lerp(0.2f, 1f, staminaLevel);
+                        agentDrivenProperties.MaxSpeedMultiplier *= MBMath.Lerp(0.8f, 1f, staminaLevel);
 
-                        agentDrivenProperties.SwingSpeedMultiplier = MBMath.Lerp(0.8f, 1f, staminaLevel);
-                        agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier = MBMath.Lerp(0.8f, 1f, staminaLevel);
+                        agentDrivenProperties.SwingSpeedMultiplier *= MBMath.Lerp(0.8f, 1f, staminaLevel);
+                        agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier *= MBMath.Lerp(0.8f, 1f, staminaLevel);
                     }
                 }
 

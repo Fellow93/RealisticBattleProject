@@ -532,8 +532,10 @@ namespace RBMAI
                                 }
                             case AIMindset.AIDecision.FindAlly:
                                 {
-                                    WorldPosition allyPosition = getNearbyAllyWorldPosition(mission, unitPosition, unit);
-                                    //allyPosition.SetVec2(allyPosition.AsVec2 - __instance.Direction * MBRandom.RandomFloatRanged(0.15f, 0.3f));
+                                    //WorldPosition allyPosition = getNearbyAllyWorldPosition(mission, unitPosition, unit);
+                                    WorldPosition allyPosition = unit.GetWorldPosition();
+                                    Vec2 directionToAlly = getNearbyAllyWorldPosition(mission, unitPosition, unit).AsVec2 - unitPosition;
+                                    allyPosition.SetVec2(unitPosition + directionToAlly * MBRandom.RandomFloatRanged(0.15f, 0.3f));
                                     __result = allyPosition;
                                     unit.SetTargetPosition(allyPosition.AsVec2);
                                     return false;
