@@ -61,9 +61,16 @@ namespace RBMCombat
                     {
                         dmgMultiplier *= 1.5f;
                     }
-                    if (weapon.WeaponClass == WeaponClass.Boulder)
+                    if (weapon.WeaponClass == WeaponClass.Boulder && Mission.Current != null)
                     {
-                        dmgMultiplier *= 10f;
+                        if (Mission.Current.IsNavalBattle)
+                        {
+                            dmgMultiplier *= 10f;
+                        }
+                        else
+                        {
+                            dmgMultiplier *= 3f;
+                        }
                     }
                 }
                 __result = dmgMultiplier;
