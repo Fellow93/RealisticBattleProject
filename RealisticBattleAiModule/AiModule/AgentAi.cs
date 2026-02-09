@@ -667,7 +667,7 @@ namespace RBMAI
                     attacker.RiderAgent.EventControlFlags &= ~Agent.EventControlFlag.DoubleTapToDirectionMask;
                     attacker.RiderAgent.EventControlFlags |= Agent.EventControlFlag.DoubleTapToDirectionUp;
                 }
-                if (attacker.RiderAgent != null && attacker.IsEnemyOf(victim))
+                if (attacker.RiderAgent != null && Mission.Current != null && (Mission.Current.IsFieldBattle || Mission.Current.IsSallyOutBattle) && attacker.IsEnemyOf(victim))
                 {
                     bool isKnockDown = blow.BlowFlag.HasFlag(BlowFlags.KnockDown);
                     bool isKnockBack = blow.BlowFlag.HasFlag(BlowFlags.KnockBack);
