@@ -59,7 +59,7 @@ namespace RBMCombat
                     }
                     if (isFlammable && weapon.WeaponFlags.HasAnyFlag(WeaponFlags.Burning))
                     {
-                        dmgMultiplier *= 1.5f;
+                        dmgMultiplier *= 5f;
                     }
                     if (weapon.WeaponClass == WeaponClass.Boulder && Mission.Current != null)
                     {

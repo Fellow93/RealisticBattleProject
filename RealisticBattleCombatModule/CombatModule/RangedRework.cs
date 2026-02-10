@@ -761,8 +761,8 @@ namespace RBMCombat
         [HarmonyPatch("OnTick")]
         private static bool PrefixOnTick(ref Mangonel __instance, ref float ___CurrentReleaseAngle)
         {
-            float baseSpeed = 20f;
-            float speedIncrease = 1.125f;
+            float baseSpeed = 25f;
+            float speedIncrease = 1.5f;
             __instance.ProjectileSpeed = baseSpeed + (((___CurrentReleaseAngle * MathF.RadToDeg)) * speedIncrease);
 
             return true;
