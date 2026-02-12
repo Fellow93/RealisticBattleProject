@@ -132,7 +132,7 @@ namespace RBMAI
                     agentDrivenProperties.WeaponBestAccuracyWaitTime = 0.1f;
                 }
 
-                agentDrivenProperties.AIHoldingReadyMaxDuration = 2f;
+                agentDrivenProperties.AIHoldingReadyMaxDuration = 1f;
                 agentDrivenProperties.AIHoldingReadyVariationPercentage = 1f;
 
                 //agentDrivenProperties.AiWeaponFavorMultiplierPolearm
