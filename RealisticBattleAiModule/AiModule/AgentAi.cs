@@ -239,6 +239,7 @@ namespace RBMAI
                     if (enemiesVeryClose.Count() > 0)
                     {
                         agent.AgentDrivenProperties.AiWeaponFavorMultiplierMelee = 35f;
+
                     }
                     else
                     {
@@ -250,6 +251,13 @@ namespace RBMAI
                 //agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, 0f);
 
                 agentDrivenProperties.MissileSpeedMultiplier = 1f;
+
+                if (agent.IsRangedCached)
+                {
+                    agentDrivenProperties.AiUseShieldAgainstEnemyMissileProbability = 0f;
+                    agentDrivenProperties.AiFacingMissileWatch = 0f;
+                    agentDrivenProperties.AiFlyingMissileCheckRadius = 0f;
+                }
             }
         }
 
