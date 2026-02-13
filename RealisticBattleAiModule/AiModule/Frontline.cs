@@ -299,11 +299,10 @@ namespace RBMAI
                     }
                     if (targetAgent != null)
                     {
-                        float distance = targetAgent != null ? (targetAgent.Position - unit.Position).Length : 0f;
+                        float distance = (targetAgent.Position - unit.Position).Length;
                         if (distance > 60f)
                         {
-                            //InformationManager.DisplayMessage(new InformationMessage(unit.Name.ToString() + " " + distance+" "+targetAgent.Name.ToString()));
-                            __result = targetAgent != null ? targetAgent.GetWorldPosition() : WorldPosition.Invalid;
+                            __result = targetAgent.GetWorldPosition();
                             return false;
                         }
                     }
@@ -422,13 +421,13 @@ namespace RBMAI
                             AgentPostures.values.TryGetValue(unit, out posture);
                             if (unit != null && posture != null)
                             {
-                                postureModifier = ((posture.posture / posture.maxPosture));
-                                staminaModifier = ((posture.stamina / posture.maxStamina));
+                                postureModifier = MathF.Lerp(0.1f, 1f, posture.posture / posture.maxPosture);
+                                staminaModifier = MathF.Lerp(0.33f, 1f, posture.stamina / posture.maxStamina);
                             }
                         }
 
                         int unitTier = unit.Character.GetBattleTier();
-                        float healthModifier = unit.Health / unit.HealthLimit;
+                        float healthModifier = MathF.Lerp(0.33f, 1f, unit.Health / unit.HealthLimit);
                         bool isSoldier = unit.Character.IsSoldier;
 
                         int alliesFrontCount = LimitCount(alliesFront.Count, 10);
@@ -462,6 +461,8 @@ namespace RBMAI
                         }
                         bool isHero = unit.Character.IsHero;
 
+                        bool shouldAttackMore = alliesFrontCount <= 1 && enemiesFrontCount <= 1;
+
                         float findAlly = (enemiesFrontCount) - alliesRightCount - alliesLeftCount + hasShieldAdditive + (enemiesFrontCount > 0 && (alliesRightCount < 2 || alliesLeftCount < 2) ? 3 : 0);
                         float fallback = (alliesFrontCount) + enemiesFrontCount - (hasShieldAdditive / 2f);
                         float attack = hasTwoHandedEquippedAddtive - alliesFrontCount + alliesLeftCount + alliesRightCount - enemiesFrontCount + (isSoldier ? 0 : 2) + (isBannerBearer ? -3 : 0) + (isHero ? -3 : 0);//+ Math.Max(0, 3 - (unitTier)) 
@@ -470,7 +471,7 @@ namespace RBMAI
 
                         attack = attack > 0 ? (attack * staminaModifier) : attack;
 
-                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.Attack, attack > 0 ? attack * (postureModifier * healthModifier) : attack);
+                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.Attack, attack > 0 ? attack * (postureModifier * healthModifier) + (shouldAttackMore ? +3 : 0) : attack);
                         aiDecision.AIMindset.SetValue(AIMindset.AIDecision.BackStep, fallback > 0 ? (fallback * (2 - postureModifier)) : fallback);
                         aiDecision.AIMindset.SetValue(AIMindset.AIDecision.FindAlly, findAlly > 0 ? (findAlly * (2 - postureModifier)) : findAlly);
                         aiDecision.AIMindset.SetValue(AIMindset.AIDecision.FlankAllyLeft, flankAllyLeft > 0 ? (flankAllyLeft) : flankAllyLeft);
@@ -511,12 +512,14 @@ namespace RBMAI
                                 }
                             case AIMindset.AIDecision.Attack:
                                 {
-                                    if (__instance.IsAIControlled && targetAgent != null && targetAgent.IsActive() && vanillaTargetAgent.IsActive() && unit != null && targetAgent != vanillaTargetAgent && vanillaTargetAgent.HasMount || vanillaTargetAgent.IsRunningAway)
+                                    if (__instance.IsAIControlled && targetAgent != null && targetAgent.IsActive() && vanillaTargetAgent.IsActive() && unit != null && targetAgent != vanillaTargetAgent && (vanillaTargetAgent.HasMount || vanillaTargetAgent.IsRunningAway))
                                     {
                                         if (targetAgent != null)
                                         {
+                                            WorldPosition targetPosition = unit.GetWorldPosition();
+                                            targetPosition.SetVec2(unitPosition + direction * MBRandom.RandomFloatRanged(0.15f, 0.5f));
                                             __result = targetAgent.GetWorldPosition();
-                                            unit.SetTargetPosition(targetAgent.GetWorldPosition().AsVec2);
+                                            unit.SetTargetPosition(targetPosition.AsVec2);
                                             return false;
                                         }
                                     }
@@ -546,7 +549,7 @@ namespace RBMAI
                                     leftPosition.SetVec2(unitPosition + leftVec * MBRandom.RandomFloatRanged(0.15f, 0.3f));
                                     __result = leftPosition;
                                     unit.SetTargetPosition(leftPosition.AsVec2);
-                                    return true;
+                                    return false;
                                 }
                             case AIMindset.AIDecision.FlankAllyRight:
                                 {
@@ -579,11 +582,15 @@ namespace RBMAI
                 if (nearbyAllyAgents.Count > 0)
                 {
                     List<Agent> allyAgentList = nearbyAllyAgents.ToList();
+                    allyAgentList.Remove(unit);
+                    if (allyAgentList.Count == 0)
+                    {
+                        return unit.GetWorldPosition();
+                    }
                     if (allyAgentList.Count == 1)
                     {
-                        return allyAgentList.ElementAt(0).GetWorldPosition();
+                        return allyAgentList[0].GetWorldPosition();
                     }
-                    allyAgentList.Remove(unit);
                     float dist = 10000f;
                     WorldPosition result = unit.GetWorldPosition();
 
