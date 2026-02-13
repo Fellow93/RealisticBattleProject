@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "WebFetch(domain:moddocs.bannerlord.com)",
+      "WebFetch(domain:docs.bannerlordmodding.com)"
+    ]
+  }
+}
