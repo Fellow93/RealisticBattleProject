@@ -4,7 +4,8 @@
       "Bash(find:*)",
       "Bash(ls:*)",
       "WebFetch(domain:moddocs.bannerlord.com)",
-      "WebFetch(domain:docs.bannerlordmodding.com)"
+      "WebFetch(domain:docs.bannerlordmodding.com)",
+      "Bash(wc:*)"
     ]
   }
 }

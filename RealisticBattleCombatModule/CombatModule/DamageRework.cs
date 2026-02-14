@@ -16,6 +16,76 @@ namespace RBMCombat
 {
     internal class DamageRework
     {
+        private static readonly MethodInfo UpdateLastAttackAndHitTimesMethod =
+            typeof(Agent).GetMethod("UpdateLastAttackAndHitTimes", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        private static readonly MethodInfo HandleBlowAuxMethod =
+            typeof(Agent).GetMethod("HandleBlowAux", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        private static float CalculateCouchedLanceMagnitude(float blowMagnitude, float braceModifier, float braceBonus)
+        {
+            const float couchedSkill = 2f;
+            const float skillCap = 230f;
+            const float ashBreakThreshold = 430f;
+            const float weaponWeight = 1.5f;
+
+            braceBonus += 0.5f;
+            braceModifier *= 3f;
+
+            float lanceBallistics = (blowMagnitude * braceModifier) / weaponWeight;
+            float couchedMagnitude = lanceBallistics * (weaponWeight + couchedSkill + braceBonus);
+            float result = couchedMagnitude;
+
+            float thrustMod = RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+            float ballisticDamage = lanceBallistics * (weaponWeight + braceBonus);
+
+            if (couchedMagnitude > skillCap * thrustMod && ballisticDamage < skillCap * thrustMod)
+            {
+                result = skillCap * thrustMod;
+            }
+
+            if (ballisticDamage >= skillCap * thrustMod)
+            {
+                result = ballisticDamage;
+            }
+
+            if (result > ashBreakThreshold * thrustMod)
+            {
+                result = ashBreakThreshold * thrustMod;
+            }
+
+            return result;
+        }
+
+        private static float GetBodyPartDamageMultiplier(BoneBodyPartType bodyPart, DamageTypes damageType)
+        {
+            switch (bodyPart)
+            {
+                case BoneBodyPartType.Abdomen:
+                    return (damageType == DamageTypes.Pierce || damageType == DamageTypes.Cut || damageType == DamageTypes.Blunt) ? 1f : 0.7f;
+                case BoneBodyPartType.Chest:
+                    return (damageType == DamageTypes.Pierce || damageType == DamageTypes.Cut || damageType == DamageTypes.Blunt) ? 0.9f : 1f;
+                case BoneBodyPartType.ShoulderLeft:
+                case BoneBodyPartType.ShoulderRight:
+                    return damageType == DamageTypes.Blunt ? 0.7f :
+                           (damageType == DamageTypes.Pierce || damageType == DamageTypes.Cut) ? 0.6f : 1f;
+                case BoneBodyPartType.ArmLeft:
+                case BoneBodyPartType.ArmRight:
+                    return damageType == DamageTypes.Pierce ? 0.5f :
+                           damageType == DamageTypes.Cut ? 0.6f :
+                           damageType == DamageTypes.Blunt ? 0.7f : 1f;
+                case BoneBodyPartType.Legs:
+                    return damageType == DamageTypes.Pierce ? 0.5f :
+                           damageType == DamageTypes.Cut ? 0.6f :
+                           damageType == DamageTypes.Blunt ? 0.7f : 1f;
+                case BoneBodyPartType.Head:
+                case BoneBodyPartType.Neck:
+                    return (damageType == DamageTypes.Pierce || damageType == DamageTypes.Cut || damageType == DamageTypes.Blunt) ? 1.5f : 1f;
+                default:
+                    return 1f;
+            }
+        }
+
         [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
         [HarmonyPatch("GetEntityDamageMultiplier")]
         private class GetEntityDamageMultiplierPatch
@@ -144,25 +214,9 @@ namespace RBMCombat
                     float adjustedArmor = MissionGameModels.Current.StrikeMagnitudeModel.CalculateAdjustedArmorForBlow(attackInformation, attackCollisionData, armorAmountFloat, attackerAgentCharacter, attackerCaptainCharacter, victimAgentCharacter, victimCaptainCharacter, attackerWeapon);
                     armorAmount = adjustedArmor;
                 }
-                //float num2 = (float)armorAmount;
-                //if (collidedWithShieldOnBack && shieldOnBack != null)
-                //{
-                //    armorAmount += 20f;
-                //}
 
-                Agent attacker = null;
-                Agent victim = null;
-                foreach (Agent agent in Mission.Current.Agents)
-                {
-                    if (attackInformation.VictimAgentOrigin == agent.Origin)
-                    {
-                        victim = agent;
-                    }
-                    if (attackInformation.AttackerAgentOrigin == agent.Origin)
-                    {
-                        attacker = agent;
-                    }
-                }
+                Agent attacker = attackInformation.AttackerAgent;
+                Agent victim = attackInformation.VictimAgent;
 
                 bool isUnarmedAttack = false;
                 //detect unarmed attack
@@ -227,57 +281,24 @@ namespace RBMCombat
                             if (!Utilities.ThurstWithTip(in attackCollisionData, attacker.WieldedWeapon))
                             {
                                 damageType = DamageTypes.Cut;
-                                magnitude = magnitude * 1f;
                                 isThrustCut = true;
-                                //InformationManager.DisplayMessage(new InformationMessage("Thrust Cut", Color.FromUint(4289612505u)));
                             }
                         }
                     }
                 }
 
-                //Agent victim = null;
-                //foreach (Agent agent in Mission.Current.Agents)
-                //{
-                //    if (attackInformation.VictimAgentOrigin == agent.Origin)
-                //    {
-                //        victim = agent;
-                //    }
-                //}
                 bool faceshot = false;
-                //bool backLegHit = false;
                 bool lowerShoulderHit = false;
-
-                //if (victim != null && victim.IsHuman && attackCollisionData.VictimHitBodyPart == BoneBodyPartType.Legs)
-                //{
-                //    //lower leg 2,3,5,6
-                //    float dotProduct = Vec3.DotProduct(attackCollisionData.WeaponBlowDir, victim.LookFrame.rotation.f);
-                //    float dotProductTrehsold = 0.8f;
-                //    InformationManager.DisplayMessage(new InformationMessage(""+ dotProduct+ " " + attackCollisionData.CollisionBoneIndex, Color.FromUint(4289612505u)));
-                //    if (dotProduct > dotProductTrehsold)
-                //    //if (dotProduct < -0.85f && dotProduct2 < -0.75f)
-                //    {
-                //        if (attacker != null && attacker.IsPlayerControlled)
-                //        {
-                //            InformationManager.DisplayMessage(new InformationMessage("Back leg hit!", Color.FromUint(4289612505u)));
-                //        }
-                //        if (victim != null && victim.IsPlayerControlled)
-                //        {
-                //            InformationManager.DisplayMessage(new InformationMessage("Back leg hit!", Color.FromUint(4289612505u)));
-                //        }
-                //        backLegHit = true;
-                //    }
-                //}
 
                 if (victim != null && victim.IsHuman && attackCollisionData.VictimHitBodyPart == BoneBodyPartType.Head && !isThrustCut)
                 {
                     float dotProduct = Vec3.DotProduct(attackCollisionData.WeaponBlowDir, victim.LookFrame.rotation.f);
-                    float dotProductTrehsold = -0.75f;
+                    float dotProductThreshold = -0.75f;
                     if (attackCollisionData.StrikeType == (int)StrikeType.Swing)
                     {
-                        dotProductTrehsold = -0.8f;
+                        dotProductThreshold = -0.8f;
                     }
-                    if (dotProduct < dotProductTrehsold && attackCollisionData.CollisionGlobalNormal.z < 0f)
-                    //if (dotProduct < -0.85f && dotProduct2 < -0.75f)
+                    if (dotProduct < dotProductThreshold && attackCollisionData.CollisionGlobalNormal.z < 0f)
                     {
                         if (attacker != null && attacker.IsPlayerControlled)
                         {
@@ -290,53 +311,6 @@ namespace RBMCombat
                         faceshot = true;
                     }
                 }
-
-                //if (victim != null && victim.IsHuman && (attackCollisionData.VictimHitBodyPart == BoneBodyPartType.Chest))
-                //{
-                //    float dotProduct = Vec3.DotProduct(attackCollisionData.WeaponBlowDir, victim.LookFrame.rotation.f);
-                //    if (attacker != null && attacker.IsPlayerControlled)
-                //    {
-                //        InformationManager.DisplayMessage(new InformationMessage(attackCollisionData.CollisionBoneIndex + " " + dotProduct + " " + attackCollisionData.CollisionGlobalNormal, Color.FromUint(4289612505u)));
-                //    }
-                //    if ((attackCollisionData.CollisionGlobalNormal.z > 0f) &&
-                //        (dotProduct > -0.2f && dotProduct < 0.2f))
-                //    {
-                //        if (attacker != null && attacker.IsPlayerControlled)
-                //        {
-                //            InformationManager.DisplayMessage(new InformationMessage("Chest weak point hit! " + attackCollisionData.CollisionBoneIndex, Color.FromUint(4289612505u)));
-                //        }
-                //        if (victim != null && victim.IsPlayerControlled)
-                //        {
-                //            InformationManager.DisplayMessage(new InformationMessage("Chest weak point hit! " + attackCollisionData.CollisionBoneIndex, Color.FromUint(4289612505u)));
-                //        }
-                //        underArmHit = true;
-                //    }
-                //}
-
-                //if (victim != null && victim.IsHuman && (attackCollisionData.VictimHitBodyPart == BoneBodyPartType.ShoulderLeft || attackCollisionData.VictimHitBodyPart == BoneBodyPartType.ShoulderRight))
-                //{
-                //    //shoulder bones 14,15,21,22
-                //    float dotProduct = Vec3.DotProduct(attackCollisionData.WeaponBlowDir, victim.LookFrame.rotation.f);
-
-                //    if (attacker != null && attacker.IsPlayerControlled)
-                //    {
-                //        InformationManager.DisplayMessage(new InformationMessage(attackCollisionData.CollisionBoneIndex + " " + dotProduct + " " + attackCollisionData.CollisionGlobalNormal, Color.FromUint(4289612505u)));
-                //    }
-                //    if ((attackCollisionData.CollisionGlobalNormal.y < -0.7f || attackCollisionData.CollisionGlobalNormal.y > 0.7f ) &&
-                //        (dotProduct < -0.7f || dotProduct > 0.7f) &&
-                //        (attackCollisionData.CollisionBoneIndex == 15 || attackCollisionData.CollisionBoneIndex == 22))
-                //    {
-                //        if (attacker != null && attacker.IsPlayerControlled)
-                //        {
-                //            InformationManager.DisplayMessage(new InformationMessage("Shoulder weak point hit! " + attackCollisionData.CollisionBoneIndex, Color.FromUint(4289612505u)));
-                //        }
-                //        if (victim != null && victim.IsPlayerControlled)
-                //        {
-                //            InformationManager.DisplayMessage(new InformationMessage("Shoulder weak point hit! " + attackCollisionData.CollisionBoneIndex, Color.FromUint(4289612505u)));
-                //        }
-                //        underArmHit = true;
-                //    }
-                //}
 
                 if (victim != null && victim.IsHuman && (attackCollisionData.VictimHitBodyPart == BoneBodyPartType.ShoulderLeft || attackCollisionData.VictimHitBodyPart == BoneBodyPartType.ShoulderRight))
                 {
@@ -429,8 +403,6 @@ namespace RBMCombat
                     }
                 }
 
-                //InformationManager.DisplayMessage(new InformationMessage(new TextObject("Armor material: " + armorMaterial.ToString()).ToString(), Color.FromUint(4289612505u)));
-
                 if (attacker != null && victim != null)
                 {
                     if (victim.GetCurrentActionType(0) == ActionCodeType.Fall || victim.GetCurrentActionType(0) == ActionCodeType.StrikeKnockBack)
@@ -470,7 +442,6 @@ namespace RBMCombat
                         }
                         else
                         {
-                            //float lel = 0;
                         }
                         if (isUnarmedAttack)
                         {
@@ -483,206 +454,7 @@ namespace RBMCombat
 
                 if (!attackBlockedWithShield && !isFallDamage)
                 {
-                    switch (attackCollisionData.VictimHitBodyPart)
-                    {
-                        case BoneBodyPartType.Abdomen:
-                            {
-                                switch (damageType)
-                                {
-                                    case DamageTypes.Pierce:
-                                        {
-                                            dmgMultiplier *= 1f;
-                                            break;
-                                        }
-                                    case DamageTypes.Cut:
-                                        {
-                                            dmgMultiplier *= 1f;
-                                            break;
-                                        }
-                                    case DamageTypes.Blunt:
-                                        {
-                                            dmgMultiplier *= 1f;
-                                            break;
-                                        }
-                                    default:
-                                        {
-                                            dmgMultiplier *= 0.7f;
-                                            break;
-                                        }
-                                }
-                                break;
-                            }
-                        case BoneBodyPartType.Chest:
-                            {
-                                switch (damageType)
-                                {
-                                    case DamageTypes.Pierce:
-                                        {
-                                            dmgMultiplier *= 0.9f;
-                                            break;
-                                        }
-                                    case DamageTypes.Cut:
-                                        {
-                                            dmgMultiplier *= 0.9f;
-                                            break;
-                                        }
-                                    case DamageTypes.Blunt:
-                                        {
-                                            dmgMultiplier *= 0.9f;
-                                            break;
-                                        }
-                                    default:
-                                        {
-                                            dmgMultiplier *= 1f;
-                                            break;
-                                        }
-                                }
-                                break;
-                            }
-                        case BoneBodyPartType.ShoulderLeft:
-                        case BoneBodyPartType.ShoulderRight:
-                            {
-                                switch (damageType)
-                                {
-                                    case DamageTypes.Pierce:
-                                        {
-                                            dmgMultiplier *= 0.6f;
-                                            break;
-                                        }
-                                    case DamageTypes.Cut:
-                                        {
-                                            dmgMultiplier *= 0.6f;
-                                            break;
-                                        }
-                                    case DamageTypes.Blunt:
-                                        {
-                                            dmgMultiplier *= 0.7f;
-                                            break;
-                                        }
-                                    default:
-                                        {
-                                            dmgMultiplier *= 1f;
-                                            break;
-                                        }
-                                }
-                                break;
-                            }
-                        case BoneBodyPartType.ArmLeft:
-                        case BoneBodyPartType.ArmRight:
-                            {
-                                switch (damageType)
-                                {
-                                    case DamageTypes.Pierce:
-                                        {
-                                            dmgMultiplier *= 0.5f;
-                                            break;
-                                        }
-                                    case DamageTypes.Cut:
-                                        {
-                                            dmgMultiplier *= 0.6f;
-                                            break;
-                                        }
-                                    case DamageTypes.Blunt:
-                                        {
-                                            dmgMultiplier *= 0.7f;
-                                            break;
-                                        }
-                                    default:
-                                        {
-                                            dmgMultiplier *= 1f;
-                                            break;
-                                        }
-                                }
-                                break;
-                            }
-                        case BoneBodyPartType.Legs:
-                            {
-                                switch (damageType)
-                                {
-                                    case DamageTypes.Pierce:
-                                        {
-                                            dmgMultiplier *= 0.5f;
-                                            break;
-                                        }
-                                    case DamageTypes.Cut:
-                                        {
-                                            dmgMultiplier *= 0.6f;
-                                            break;
-                                        }
-                                    case DamageTypes.Blunt:
-                                        {
-                                            dmgMultiplier *= 0.7f;
-                                            break;
-                                        }
-                                    default:
-                                        {
-                                            dmgMultiplier *= 1f;
-                                            break;
-                                        }
-                                }
-                                break;
-                            }
-                        case BoneBodyPartType.Head:
-                            {
-                                switch (damageType)
-                                {
-                                    case DamageTypes.Pierce:
-                                        {
-                                            dmgMultiplier *= 1.5f;
-                                            break;
-                                        }
-                                    case DamageTypes.Cut:
-                                        {
-                                            dmgMultiplier *= 1.5f;
-                                            break;
-                                        }
-                                    case DamageTypes.Blunt:
-                                        {
-                                            dmgMultiplier *= 1.5f;
-                                            break;
-                                        }
-                                    default:
-                                        {
-                                            dmgMultiplier *= 1f;
-                                            break;
-                                        }
-                                }
-                                break;
-                            }
-                        case BoneBodyPartType.Neck:
-                            {
-                                switch (damageType)
-                                {
-                                    case DamageTypes.Pierce:
-                                        {
-                                            dmgMultiplier *= 1.5f;
-                                            break;
-                                        }
-                                    case DamageTypes.Cut:
-                                        {
-                                            dmgMultiplier *= 1.5f;
-                                            break;
-                                        }
-                                    case DamageTypes.Blunt:
-                                        {
-                                            dmgMultiplier *= 1.5f;
-                                            break;
-                                        }
-                                    default:
-                                        {
-                                            dmgMultiplier *= 1f;
-                                            break;
-                                        }
-                                }
-                                break;
-                            }
-                        default:
-                            {
-                                dmgMultiplier *= 1f;
-                                break;
-                            }
-                    }
-
+                    dmgMultiplier *= GetBodyPartDamageMultiplier(attackCollisionData.VictimHitBodyPart, damageType);
                     dmgMultiplier *= combatDifficultyMultiplier;
                 }
 
@@ -711,13 +483,6 @@ namespace RBMCombat
                     }
                 }
 
-                ////cloth/leather/mail/plate
-                //if (victim != null)
-                //{
-                //    attackCollisionData.VictimHitBodyPart
-                //    victim.Equipment[EquipmentIndex.]
-                //}
-
                 //special javelin case
                 if (attackerWeapon != null && attackerWeapon.WeaponClass == WeaponClass.Javelin && attackerWeapon.WeaponFlags.HasFlag(WeaponFlags.BonusAgainstShield))
                 {
@@ -745,17 +510,6 @@ namespace RBMCombat
                     inflictedDamage = 200;
                 }
 
-                //float dmgWithPerksSkills = MissionGameModels.Current.AgentApplyDamageModel.CalculateDamage(ref attackInformation, ref attackCollisionData, in attackerWeapon, inflictedDamage, out float bonusFromSkills);
-
-                //InformationManager.DisplayMessage(new InformationMessage("dmgWithPerksSkills: " + dmgWithPerksSkills + " inflictedDamage: " + inflictedDamage +
-                //    " HP: " + attackInformation.VictimAgentHealth));
-
-                //if (victim != null)
-                //{
-                //    Utilities.initiateCheckForArmor(ref victim, ref attackInformation, ref attackCollisionData);
-                //    Utilities.numOfHits++;
-                //}
-
                 int absoluteDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(weaponType, damageType, magnitude, 0f, victimAgentAbsorbedDamageRatio, out _, out _, weaponDamageFactor) * dmgMultiplier), 0, 2000);
                 absorbedByArmor = absoluteDamage - inflictedDamage;
 
@@ -767,19 +521,8 @@ namespace RBMCombat
                 float localInflictedDamage = 0;
                 attackCollisionData.InflictedDamage = 0;
 
-                Agent victim = null;
-                Agent attacker = null;
-                foreach (Agent agent in Mission.Current.Agents)
-                {
-                    if (attackInformation.VictimAgentOrigin == agent.Origin)
-                    {
-                        victim = agent;
-                    }
-                    if (attackInformation.AttackerAgentOrigin == agent.Origin)
-                    {
-                        attacker = agent;
-                    }
-                }
+                Agent victim = attackInformation.VictimAgent;
+                Agent attacker = attackInformation.AttackerAgent;
 
                 MissionWeapon victimShield = attackInformation.VictimShield;
                 if (victimShield.IsEmpty)
@@ -798,13 +541,11 @@ namespace RBMCombat
 
                 if (victim != null && attacker != null)
                 {
-                    MethodInfo method = typeof(Agent).GetMethod("UpdateLastAttackAndHitTimes", BindingFlags.NonPublic | BindingFlags.Instance);
-                    method.DeclaringType.GetMethod("UpdateLastAttackAndHitTimes");
-                    method.Invoke(victim, new object[] { attacker, attackCollisionData.IsMissile });
+                    UpdateLastAttackAndHitTimesMethod.Invoke(victim, new object[] { attacker, attackCollisionData.IsMissile });
                 }
 
                 victimShield = attackInformation.VictimShield;
-                if (!victimShield.IsEmpty && victimShield.CurrentUsageItem.WeaponFlags.HasAnyFlag(WeaponFlags.CanBlockRanged) & attackInformation.CanGiveDamageToAgentShield)
+                if (!victimShield.IsEmpty && victimShield.CurrentUsageItem.WeaponFlags.HasAnyFlag(WeaponFlags.CanBlockRanged) && attackInformation.CanGiveDamageToAgentShield)
                 {
                     DamageTypes damageType = (DamageTypes)attackCollisionData.DamageType;
                     int shieldArmorForCurrentUsage = victimShield.GetGetModifiedArmorForCurrentUsage();
@@ -818,8 +559,6 @@ namespace RBMCombat
 
                     bool isPassiveUsage = attackInformation.IsAttackerAgentDoingPassiveAttack;
 
-                    float skillBasedDamage = 0f;
-                    const float ashBreakTreshold = 430f;
                     float BraceBonus = 0f;
                     float BraceModifier = 0.34f;
 
@@ -928,42 +667,10 @@ namespace RBMCombat
                                     {
                                         if (isPassiveUsage)
                                         {
-                                            float couchedSkill = 2f;
-                                            float skillCap = 230f;
-
-                                            float weaponWeight = 1.5f;
-
-                                            if (weaponWeight < 2.1f)
-                                            {
-                                                BraceBonus += 0.5f;
-                                                BraceModifier *= 3f;
-                                            }
-                                            float lanceBalistics = (blowMagnitude * BraceModifier) / weaponWeight;
-                                            float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
-                                            blowMagnitude = CouchedMagnitude;
-                                            if (CouchedMagnitude > (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) //skill based damage
-                                            {
-                                                blowMagnitude = skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
-                                            }
-
-                                            if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) //ballistics
-                                            {
-                                                blowMagnitude = (lanceBalistics * (weaponWeight + BraceBonus));
-                                            }
-
-                                            if (blowMagnitude > (ashBreakTreshold * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) // damage cap - lance break threshold
-                                            {
-                                                blowMagnitude = ashBreakTreshold * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
-                                            }
+                                            blowMagnitude = CalculateCouchedLanceMagnitude(blowMagnitude, BraceModifier, BraceBonus);
                                         }
                                         else
                                         {
-                                            //float weaponWeight = attackerWeapon.Item.Weight;
-
-                                            //if (weaponWeight > 2.1f)
-                                            //{
-                                            //    blowMagnitude *= 0.34f;
-                                            //}
                                             blowMagnitude = blowMagnitude * 0.4f + 60f * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
                                             if (blowMagnitude > 260f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
                                             {
@@ -990,46 +697,14 @@ namespace RBMCombat
                                     {
                                         if (isPassiveUsage)
                                         {
-                                            float couchedSkill = 2f;
-                                            float skillCap = 230f;
-
-                                            float weaponWeight = 1.5f;
-
-                                            if (weaponWeight < 2.1f)
-                                            {
-                                                BraceBonus += 0.5f;
-                                                BraceModifier *= 3f;
-                                            }
-                                            float lanceBalistics = (blowMagnitude * BraceModifier) / weaponWeight;
-                                            float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
-                                            blowMagnitude = CouchedMagnitude;
-                                            if (CouchedMagnitude > (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier))
-                                            {
-                                                blowMagnitude = skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
-                                            }
-
-                                            if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * RBMConfig.RBMConfig.ThrustMagnitudeModifier))
-                                            {
-                                                blowMagnitude = (lanceBalistics * (weaponWeight + BraceBonus));
-                                            }
-
-                                            if (blowMagnitude > (ashBreakTreshold * RBMConfig.RBMConfig.ThrustMagnitudeModifier))
-                                            {
-                                                blowMagnitude = ashBreakTreshold * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
-                                            }
+                                            blowMagnitude = CalculateCouchedLanceMagnitude(blowMagnitude, BraceModifier, BraceBonus);
                                         }
                                         else
                                         {
-                                            float weaponWeight = 1.5f;
-
-                                            if (weaponWeight > 2.1f)
+                                            blowMagnitude = (blowMagnitude * 0.4f + 60f * RBMConfig.RBMConfig.ThrustMagnitudeModifier) * 1.3f;
+                                            if (blowMagnitude > 360f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
                                             {
-                                                blowMagnitude *= 0.34f;
-                                            }
-                                            skillBasedDamage = (blowMagnitude * 0.4f + 60f * RBMConfig.RBMConfig.ThrustMagnitudeModifier) * 1.3f;
-                                            if (skillBasedDamage > 360f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)
-                                            {
-                                                skillBasedDamage = 360f * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                                                blowMagnitude = 360f * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
                                             }
                                         }
                                     }
@@ -1090,7 +765,7 @@ namespace RBMCombat
                             case "OneHandedBastardAxe":
                             case "TwoHandedPolearm":
                                 {
-                                    if (attackCollisionData.DamageType == 1)//pierce
+                                    if (attackCollisionData.DamageType == (int)DamageTypes.Pierce)
                                     {
                                         localInflictedDamage *= 0.09f;
                                         break;
@@ -1101,15 +776,11 @@ namespace RBMCombat
                                 }
                             default:
                                 {
-                                    if (attackCollisionData.DamageType == 0) //cut
-                                    {
-                                        localInflictedDamage *= 1f;
-                                    }
-                                    else if (attackCollisionData.DamageType == 1)//pierce
+                                    if (attackCollisionData.DamageType == (int)DamageTypes.Pierce)
                                     {
                                         localInflictedDamage *= 0.09f;
                                     }
-                                    else if (attackCollisionData.DamageType == 2)//blunt
+                                    else if (attackCollisionData.DamageType == (int)DamageTypes.Blunt)
                                     {
                                         localInflictedDamage *= 0.75f;
                                     }
@@ -1162,52 +833,6 @@ namespace RBMCombat
             }
         }
 
-        //[HarmonyPatch(typeof(SandboxAgentApplyDamageModel))]
-        //[HarmonyPatch("DecideCrushedThrough")]
-        //class OverrideDecideCrushedThrough
-        //{
-        //    static bool Prefix(Agent attackerAgent, Agent defenderAgent, float totalAttackEnergy, Agent.UsageDirection attackDirection, StrikeType strikeType, WeaponComponentData defendItem, bool isPassiveUsage, ref bool __result)
-        //    {
-        //        EquipmentIndex wieldedItemIndex = attackerAgent.GetWieldedItemIndex(Agent.HandIndex.OffHand);
-        //        if (wieldedItemIndex == EquipmentIndex.None)
-        //        {
-        //            wieldedItemIndex = attackerAgent.GetWieldedItemIndex(Agent.HandIndex.MainHand);
-        //        }
-        //        WeaponComponentData weaponComponentData = (wieldedItemIndex != EquipmentIndex.None) ? attackerAgent.Equipment[wieldedItemIndex].CurrentUsageItem : null;
-        //        float num = 47f;
-
-        //        EquipmentIndex wieldedItemIndex4 = defenderAgent.GetWieldedItemIndex(Agent.HandIndex.OffHand);
-        //        WeaponComponentData secondaryItem = (wieldedItemIndex4 != EquipmentIndex.None) ? defenderAgent.Equipment[wieldedItemIndex4].CurrentUsageItem : null;
-        //        int meleeSkill = Utilities.GetMeleeSkill(defenderAgent, weaponComponentData, secondaryItem);
-        //        float meleeLevel = Utilities.CalculateAILevel(defenderAgent, meleeSkill);
-
-        //        if (defendItem != null && defendItem.IsShield)
-        //        {
-        //            num *= (defendItem.WeaponLength / 100f) * meleeLevel * 3f;
-        //        }
-        //        else
-        //        {
-        //            num *= (weaponComponentData.WeaponLength / 100f) * meleeLevel * 2f;
-        //        }
-        //        if (weaponComponentData != null && weaponComponentData.WeaponClass == WeaponClass.TwoHandedMace)
-        //        {
-        //            num *= 0.8f;
-        //        }
-        //        if (defendItem != null && defendItem.IsShield)
-        //        {
-        //            num *= 1.2f;
-        //        }
-        //        if (totalAttackEnergy > num && (isPassiveUsage || attackDirection == Agent.UsageDirection.AttackUp || attackDirection == Agent.UsageDirection.AttackLeft || attackDirection == Agent.UsageDirection.AttackRight))
-        //        {
-        //            __result = true;
-        //            return false;
-        //        }
-        //        __result =  false;
-        //        return false;
-        //    }
-
-        //}
-
         [HarmonyPatch(typeof(Mission))]
         [HarmonyPatch("CreateMeleeBlow")]
         private class CreateMeleeBlowPatch
@@ -1230,42 +855,10 @@ namespace RBMCombat
                     }
                 }
 
-                if ((collisionData.CollisionResult == CombatCollisionResult.StrikeAgent) && (collisionData.DamageType == (int)DamageTypes.Pierce))
-                {
-                    if (attackerAgent.Team != victimAgent.Team)
-                    {
-                        switch (weaponType)
-                        {
-                            case "TwoHandedPolearm":
-                                if (attackerAgent.Team != victimAgent.Team)
-                                {
-                                    //AttackCollisionData newdata = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(false, false, false, true, false, false, false, false, false, true, false, collisionData.CollisionResult, collisionData.AffectorWeaponSlotOrMissileIndex,
-                                    //    collisionData.StrikeType, collisionData.StrikeType, collisionData.CollisionBoneIndex, BoneBodyPartType.Chest, collisionData.AttackBoneIndex, collisionData.AttackDirection, collisionData.PhysicsMaterialIndex,
-                                    //    collisionData.CollisionHitResultFlags, collisionData.AttackProgress, collisionData.CollisionDistanceOnWeapon, collisionData.AttackerStunPeriod, collisionData.DefenderStunPeriod, collisionData.MissileTotalDamage,
-                                    //    0, collisionData.ChargeVelocity, collisionData.FallSpeed, collisionData.WeaponRotUp, collisionData.WeaponBlowDir, collisionData.CollisionGlobalPosition, collisionData.MissileVelocity,
-                                    //    collisionData.MissileStartingPosition, collisionData.VictimAgentCurVelocity, collisionData.CollisionGlobalNormal);
-
-                                    //collisionData = newdata;
-
-                                    //__result.BlowFlag |= BlowFlags.NonTipThrust;
-                                }
-                                break;
-                        }
-                    }
-                }
-
                 if ((attackerAgent.IsDoingPassiveAttack && collisionData.CollisionResult == CombatCollisionResult.Blocked))
                 {
                     if (attackerAgent.Team != victimAgent.Team)
                     {
-                        //AttackCollisionData newdata = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(false, false, false, true, false, false, false, false, false, true, false, collisionData.CollisionResult, collisionData.AffectorWeaponSlotOrMissileIndex,
-                        //    collisionData.StrikeType, collisionData.StrikeType, collisionData.CollisionBoneIndex, BoneBodyPartType.Chest, collisionData.AttackBoneIndex, collisionData.AttackDirection, collisionData.PhysicsMaterialIndex,
-                        //    collisionData.CollisionHitResultFlags, collisionData.AttackProgress, collisionData.CollisionDistanceOnWeapon, collisionData.AttackerStunPeriod, collisionData.DefenderStunPeriod, collisionData.MissileTotalDamage,
-                        //    0, collisionData.ChargeVelocity, collisionData.FallSpeed, collisionData.WeaponRotUp, collisionData.WeaponBlowDir, collisionData.CollisionGlobalPosition, collisionData.MissileVelocity,
-                        //    collisionData.MissileStartingPosition, collisionData.VictimAgentCurVelocity, collisionData.CollisionGlobalNormal);
-
-                        //collisionData = newdata;
-
                         sbyte weaponAttachBoneIndex = (sbyte)(attackerWeapon.IsEmpty ? (-1) : attackerAgent.Monster.GetBoneToAttachForItemFlags(attackerWeapon.Item.ItemFlags));
                         __result.WeaponRecord.FillAsMeleeBlow(attackerWeapon.Item, attackerWeapon.CurrentUsageItem, collisionData.AffectorWeaponSlotOrMissileIndex, weaponAttachBoneIndex);
                         __result.StrikeType = (StrikeType)collisionData.StrikeType;
@@ -1278,7 +871,6 @@ namespace RBMCombat
                         __result.BoneIndex = collisionData.CollisionBoneIndex;
                         __result.Direction = blowDirection;
                         __result.SwingDirection = swingDirection;
-                        //__result.InflictedDamage = 1;
                         __result.VictimBodyPart = collisionData.VictimHitBodyPart;
                         __result.BlowFlag |= BlowFlags.KnockBack;
                         victimAgent.RegisterBlow(__result, collisionData);
@@ -1354,7 +946,6 @@ namespace RBMCombat
                 if (attacker != null && attacker.IsMount && collisionData.IsHorseCharge)
                 {
                     float horseBodyPartArmor = attacker.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Chest);
-                    //b.SelfInflictedDamage = MathF.Ceiling(b.BaseMagnitude / 6f);
                     b.SelfInflictedDamage = MBMath.ClampInt(MathF.Ceiling(MissionGameModels.Current.StrikeMagnitudeModel.ComputeRawDamage(DamageTypes.Blunt, b.BaseMagnitude / 6f, horseBodyPartArmor, 1f)), 0, 2000);
                     attacker.CreateBlowFromBlowAsReflection(in b, in collisionData, out var outBlow, out var outCollisionData);
                     attacker.RegisterBlow(outBlow, in outCollisionData);
@@ -1363,32 +954,12 @@ namespace RBMCombat
                 //detect unarmed attack
                 if (attackerWeapon.IsEmpty && attacker != null && victim != null && collisionData.DamageType == (int)DamageTypes.Blunt && !collisionData.IsFallDamage && !collisionData.IsHorseCharge)
                 {
-                    float attackerArmArmror = attacker.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ArmLeft);
-                    //b.SelfInflictedDamage = MathF.Ceiling(b.BaseMagnitude / 6f);
-                    b.SelfInflictedDamage = MBMath.ClampInt(MathF.Ceiling(MissionGameModels.Current.StrikeMagnitudeModel.ComputeRawDamage(DamageTypes.Blunt, b.BaseMagnitude / 2f, attackerArmArmror, 1f)), 0, 2000);
+                    float attackerArmArmor = attacker.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ArmLeft);
+                    b.SelfInflictedDamage = MBMath.ClampInt(MathF.Ceiling(MissionGameModels.Current.StrikeMagnitudeModel.ComputeRawDamage(DamageTypes.Blunt, b.BaseMagnitude / 2f, attackerArmArmor, 1f)), 0, 2000);
                     attacker.CreateBlowFromBlowAsReflection(in b, in collisionData, out var outBlow, out var outCollisionData);
                     attacker.RegisterBlow(outBlow, in outCollisionData);
                 }
 
-                //if(victim != null && collisionData.CollidedWithShieldOnBack && collisionData.IsMissile)
-                //{
-                //    for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-                //    {
-                //        if (victim.Equipment != null && !victim.Equipment[equipmentIndex].IsEmpty)
-                //        {
-                //            if (victim.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield)
-                //            {
-                //                int num = MathF.Max(0, victim.Equipment[equipmentIndex].HitPoints - b.InflictedDamage);
-                //                victim.ChangeWeaponHitPoints(equipmentIndex, (short)num);
-                //                if (num == 0)
-                //                {
-                //                    victim.RemoveEquippedWeapon(equipmentIndex);
-                //                }
-                //                break;
-                //            }
-                //        }
-                //    }
-                //}
                 if (!collisionData.AttackBlockedWithShield && !collisionData.CollidedWithShieldOnBack)
                 {
                     return true;
@@ -1416,7 +987,7 @@ namespace RBMCombat
                 {
                     bool isFatal = affectedAgent.Health - (float)blow.InflictedDamage < 1f;
                     bool isTeamKill;
-                    if (affectedAgent.Team != null)
+                    if (affectedAgent.Team != null && affectorAgent.Team != null)
                     {
                         isTeamKill = affectedAgent.Team.Side == affectorAgent.Team.Side;
                     }
@@ -1425,10 +996,6 @@ namespace RBMCombat
                         isTeamKill = true;
                     }
                     affectorAgent.Origin.OnScoreHit(affectedAgent.Character, affectorAgent.Formation?.Captain?.Character, blow.InflictedDamage, isFatal, isTeamKill, attackerWeapon.CurrentUsageItem);
-                    if (Mission.Current.Mode == MissionMode.Battle)
-                    {
-                        _ = affectedAgent.Team;
-                    }
                 }
                 return false;
             }
@@ -1460,9 +1027,7 @@ namespace RBMCombat
                 if ((isKnockBack || isBash) && b.InflictedDamage <= 0)
                 {
                     b.InflictedDamage = 1;
-                    MethodInfo method2 = typeof(Agent).GetMethod("HandleBlowAux", BindingFlags.NonPublic | BindingFlags.Instance);
-                    method2.DeclaringType.GetMethod("HandleBlowAux");
-                    method2.Invoke(__instance, new object[] { b });
+                    HandleBlowAuxMethod.Invoke(__instance, new object[] { b });
                 }
 
             }
