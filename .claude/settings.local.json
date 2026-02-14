@@ -5,7 +5,8 @@
       "Bash(ls:*)",
       "WebFetch(domain:moddocs.bannerlord.com)",
       "WebFetch(domain:docs.bannerlordmodding.com)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(\"/c/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/MSBuild.exe\" RealisticBattle.sln /p:Configuration=Release \"/p:Platform=Any CPU\" /t:Build /v:minimal)"
     ]
   }
 }

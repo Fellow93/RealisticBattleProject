@@ -1,10 +1,8 @@
 ﻿using HarmonyLib;
-using SandBox.GameComponents;
 using System;
 using System.Linq;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.CampaignSystem.ViewModelCollection;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Encyclopedia.Pages;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Inventory;
 using TaleWorlds.Core;
@@ -12,7 +10,6 @@ using TaleWorlds.Core.ViewModelCollection.Information;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
-using static TaleWorlds.MountAndBlade.CompressionInfo;
 
 namespace RBMCombat
 {
@@ -51,7 +48,6 @@ namespace RBMCombat
                 float accelerationProgress = MathF.Sqrt(progressEffect);
                 if (strikeType == StrikeType.Thrust)
                 {
-                    exraLinearSpeed *= 1f;
                     float thrustWeaponSpeed = (float)weapon.GetModifiedThrustSpeedForCurrentUsage() / 11.7647057f * accelerationProgress;
 
                     if (weapon.Item != null && weapon.CurrentUsageItem != null)
@@ -177,7 +173,6 @@ namespace RBMCombat
                     //__result = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(attackerAgentCharacter, attackerCaptainCharacter, thrustWeaponSpeed, weapon.Item.Weight, weapon.Item, currentUsageItem, exraLinearSpeed, doesAttackerHaveMount);
                     //return false;
                 }
-                exraLinearSpeed *= 1f;
                 float swingSpeed = (float)weapon.GetModifiedSwingSpeedForCurrentUsage() / 4.5454545f * accelerationProgress;
 
                 if (weapon.Item != null && weapon.CurrentUsageItem != null)
@@ -288,32 +283,8 @@ namespace RBMCombat
                 case WeaponClass.ThrowingAxe:
                 case WeaponClass.ThrowingKnife:
                 case WeaponClass.Dagger:
-                    {
-                        missileSpeed -= Utilities.throwableCorrectionSpeed;
-                        if (missileSpeed < 5.0f)
-                        {
-                            missileSpeed = 5f;
-                        }
-                        break;
-                    }
                 case WeaponClass.Javelin:
-                    {
-                        missileSpeed -= Utilities.throwableCorrectionSpeed;
-                        if (missileSpeed < 5.0f)
-                        {
-                            missileSpeed = 5f;
-                        }
-                        break;
-                    }
                 case WeaponClass.OneHandedPolearm:
-                    {
-                        missileSpeed -= Utilities.throwableCorrectionSpeed;
-                        if (missileSpeed < 5.0f)
-                        {
-                            missileSpeed = 5f;
-                        }
-                        break;
-                    }
                 case WeaponClass.LowGripPolearm:
                     {
                         missileSpeed -= Utilities.throwableCorrectionSpeed;
@@ -427,21 +398,14 @@ namespace RBMCombat
                 weaponClass == WeaponClass.Bolt ||
                 weaponClass == WeaponClass.SlingStone)
             {
-                if (damageType == DamageTypes.Cut || damageType == DamageTypes.Pierce)
-                {
-                    baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining;
-                }
-                else
-                {
-                    baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining; // momentum makes more sense for blunt attacks, maybe 500 damage is needed for sling projectiles
-                }
+                baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining;
             }
             return baseMagnitude;
         }
 
         [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
         [HarmonyPatch("ComputeBlowMagnitudeMissile")]
-        private class ComputeBlowMagnitudeMissilePacth
+        private class ComputeBlowMagnitudeMissilePatch
         {
             private static bool Prefix(in AttackInformation attackInformation, in AttackCollisionData collisionData, float momentumRemaining, in Vec2 victimVelocity, out float baseMagnitude, out float specialMagnitude)
             {
@@ -648,10 +612,10 @@ namespace RBMCombat
                         }
                     case WeaponClass.TwoHandedPolearm:
                         {
-                            float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
+                            float thrustskillModifier = 1f + (effectiveSkillDR / 800f);
 
                             thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weaponWeight, weaponInertia, weaponCOM);
-                            thrustWeaponSpeed = thrustWeaponSpeed * 0.7f * thrustskillModifier * progressEffect;
+                            thrustWeaponSpeed = thrustWeaponSpeed * 0.65f * thrustskillModifier * progressEffect;
                             break;
                         }
                     case WeaponClass.TwoHandedAxe:
@@ -680,6 +644,7 @@ namespace RBMCombat
                     case WeaponClass.OneHandedSword:
                     case WeaponClass.Dagger:
                     case WeaponClass.Mace:
+                    case WeaponClass.LowGripPolearm:
                         {
                             thrustMagnitude = Utilities.CalculateThrustMagnitudeForOneHandedWeapon(weaponWeight, effectiveSkillDR, thrustWeaponSpeed, 0f, Agent.UsageDirection.AttackDown);
                             break;
@@ -690,11 +655,11 @@ namespace RBMCombat
                             thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weaponWeight, effectiveSkillDR, thrustWeaponSpeed, 0f, Agent.UsageDirection.AttackDown);
                             break;
                         }
-                    //default:
-                    //    {
-                    //        thrustMagnitude = SandboxStrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(currentSelectedChar, null, thrustWeaponSpeed, weaponWeight, weapon.Item, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex), 0f, false);
-                    //        break;
-                    //    }
+                        //default:
+                        //    {
+                        //        thrustMagnitude = SandboxStrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust(currentSelectedChar, null, thrustWeaponSpeed, weaponWeight, weapon.Item, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex), 0f, false);
+                        //        break;
+                        //    }
                 }
             }
             return thrustMagnitude;
@@ -775,11 +740,9 @@ namespace RBMCombat
                             {
                                 int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
                                     targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, skillBasedDamage, i, 1f, out float penetratedDamage, out float bluntForce, swingDamageFactor, null, false)), 0, 2000);
-                                realDamage = MathF.Floor(realDamage * 1f);
 
                                 int realDamageCompared = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).WeaponClass.ToString(),
                                     comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).SwingDamageType, skillBasedDamageCompared, i, 1f, out float penetratedDamageCompared, out float bluntForceCompared, swingDamageFactorCompared, null, false)), 0, 2000);
-                                realDamageCompared = MathF.Floor(realDamageCompared * 1f);
 
                                 if (penetratedDamage == 0f && penetratedDamageCompared == 0f)
                                 {
@@ -791,7 +754,6 @@ namespace RBMCombat
                             else
                             {
                                 int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(), targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, skillBasedDamage, i, 1f, out float penetratedDamage, out float bluntForce, swingDamageFactor, null, false)), 0, 2000);
-                                realDamage = MathF.Floor(realDamage * 1f);
 
                                 if (penetratedDamage == 0f)
                                 {
@@ -835,11 +797,9 @@ namespace RBMCombat
                             {
                                 int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
                                 targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, skillBasedDamage, i, 1f, out float penetratedDamage, out float bluntForce, thrustDamageFactor, null, false)), 0, 2000);
-                                realDamage = MathF.Floor(realDamage * 1f);
 
                                 int realDamageCompared = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).WeaponClass.ToString(),
                                 comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex).ThrustDamageType, skillBasedDamageCompared, i, 1f, out float penetratedDamageCompared, out float bluntForceCompared, thrustDamageFactorCompared, null, false)), 0, 2000);
-                                realDamageCompared = MathF.Floor(realDamageCompared * 1f);
 
                                 if (penetratedDamage == 0f && penetratedDamageCompared == 0f)
                                 {
@@ -854,7 +814,6 @@ namespace RBMCombat
                             {
                                 int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
                                 targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, skillBasedDamage, i, 1f, out float penetratedDamage, out float bluntForce, thrustDamageFactor, null, false)), 0, 2000);
-                                realDamage = MathF.Floor(realDamage * 1f);
 
                                 if (penetratedDamage == 0f)
                                 {
@@ -878,16 +837,12 @@ namespace RBMCombat
         [HarmonyPatch("SetWeaponComponentTooltip")]
         private class SetWeaponComponentTooltipPatch
         {
+            private static readonly MethodInfo methodAddFloatProperty = typeof(ItemMenuVM).GetMethod("AddFloatProperty", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(TextObject), typeof(float), typeof(float?), typeof(bool) }, null);
+            private static readonly MethodInfo methodAddIntProperty = typeof(ItemMenuVM).GetMethod("AddIntProperty", BindingFlags.NonPublic | BindingFlags.Instance);
+            private static readonly MethodInfo methodCreateProperty = typeof(ItemMenuVM).GetMethod("CreateProperty", BindingFlags.NonPublic | BindingFlags.Instance);
+
             private static void Postfix(ref ItemMenuVM __instance, in EquipmentElement targetWeapon, int targetWeaponUsageIndex, EquipmentElement comparedWeapon, int comparedWeaponUsageIndex)
             {
-                MethodInfo methodAddFloatProperty = typeof(ItemMenuVM).GetMethod("AddFloatProperty", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(TextObject), typeof(float), typeof(float?), typeof(bool) }, null);
-                methodAddFloatProperty.DeclaringType.GetMethod("AddFloatProperty", new[] { typeof(TextObject), typeof(float), typeof(float?), typeof(bool) });
-
-                MethodInfo methodAddIntProperty = typeof(ItemMenuVM).GetMethod("AddIntProperty", BindingFlags.NonPublic | BindingFlags.Instance);
-                methodAddIntProperty.DeclaringType.GetMethod("AddIntProperty");
-
-                MethodInfo methodCreateProperty = typeof(ItemMenuVM).GetMethod("CreateProperty", BindingFlags.NonPublic | BindingFlags.Instance);
-                methodCreateProperty.DeclaringType.GetMethod("CreateProperty");
 
                 if (!targetWeapon.IsEmpty && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex) != null && targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).IsShield)
                 {
@@ -949,7 +904,6 @@ namespace RBMCombat
                                 }
                                 int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(WeaponClass.Arrow.ToString(),
                                 DamageTypes.Pierce, missileMagnitude, i, 1f, out float penetratedDamage, out float bluntForce, 1f, null, false)), 0, 2000);
-                                realDamage = MathF.Floor(realDamage * 1f);
 
                                 if (penetratedDamage == 0f)
                                 {
@@ -973,7 +927,6 @@ namespace RBMCombat
                                 }
                                 int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(WeaponClass.Arrow.ToString(),
                                 DamageTypes.Cut, missileMagnitude, i, 1f, out float penetratedDamage, out float bluntForce, 1f, null, false)), 0, 2000);
-                                realDamage = MathF.Floor(realDamage * 1f);
 
                                 if (penetratedDamage == 0f)
                                 {
@@ -1017,7 +970,6 @@ namespace RBMCombat
                                 }
                                 int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(WeaponClass.Bolt.ToString(),
                                 DamageTypes.Pierce, missileMagnitude, i, 1f, out float penetratedDamage, out float bluntForce, 1f, null, false)), 0, 2000);
-                                realDamage = MathF.Floor(realDamage * 1f);
 
                                 if (penetratedDamage == 0f)
                                 {
@@ -1041,7 +993,6 @@ namespace RBMCombat
                                 }
                                 int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(WeaponClass.Bolt.ToString(),
                                 DamageTypes.Cut, missileMagnitude, i, 1f, out float penetratedDamage, out float bluntForce, 1f, null, false)), 0, 2000);
-                                realDamage = MathF.Floor(realDamage * 1f);
 
                                 if (penetratedDamage == 0f)
                                 {
@@ -1074,7 +1025,6 @@ namespace RBMCombat
                                 }
                                 int realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(WeaponClass.Javelin.ToString(),
                                 DamageTypes.Pierce, missileMagnitude, i, 1f, out float penetratedDamage, out float bluntForce, weaponDamageFactor, null, false)), 0, 2000);
-                                realDamage = MathF.Floor(realDamage * 1f);
 
                                 if (penetratedDamage == 0f)
                                 {
@@ -1129,7 +1079,6 @@ namespace RBMCombat
                                     realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
                                targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, missileMagnitude, i, 1f, out penetratedDamage, out bluntForce, weaponDamageFactor, null, false)), 0, 2000);
                                 }
-                                realDamage = MathF.Floor(realDamage * 1f);
 
                                 if (penetratedDamage == 0f)
                                 {
@@ -1218,42 +1167,39 @@ namespace RBMCombat
             combinedLegString = "";
             if (equipment != null)
             {
-                if (equipment != null)
+                float headArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Head);
+                float neckArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Neck);
+                float shoulderArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.ShoulderLeft);
+                float armArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.ArmLeft);
+                float chestArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Chest);
+                float abdomenArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Abdomen);
+                float legsArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Legs);
+
+                combinedHeadString += String.Format("{0,-0}", new TextObject("{=EUzxzL9s}Head Armor: ").ToString()) + headArmor + "\n";
+                if (!equipment[EquipmentIndex.Head].IsEmpty)
                 {
-                    float headArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Head);
-                    float neckArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Neck);
-                    float shoulderArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.ShoulderLeft);
-                    float armArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.ArmLeft);
-                    float chestArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Chest);
-                    float abdomenArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Abdomen);
-                    float legsArmor = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBMHuman(equipment, BoneBodyPartType.Legs);
+                    float faceArmor = equipment[EquipmentIndex.Head].GetModifiedBodyArmor();
 
-                    combinedHeadString += String.Format("{0,-0}", new TextObject("{=EUzxzL9s}Head Armor: ").ToString()) + headArmor + "\n";
-                    if (!equipment[EquipmentIndex.Head].IsEmpty)
-                    {
-                        float faceArmor = equipment[EquipmentIndex.Head].GetModifiedBodyArmor();
-
-                        combinedHeadString += String.Format("{0,-0}", new TextObject("{=RBM_COM_023}Face Armor").ToString()) + ": " + faceArmor + "\n";
-                    }
-                    combinedHeadString += String.Format("{0,-0}", new TextObject("{=RBM_COM_024}Neck Armor").ToString()) + ": " + neckArmor;
-
-                    combinedBodyString += String.Format("{0,-0}", new TextObject("{=RBM_COM_025}Shoulder Armor").ToString()) + ": " + shoulderArmor + "\n";
-                    combinedBodyString += String.Format("{0,-0}", new TextObject("{=oiSW6MyB}Chest Armor").ToString()) + ": " + chestArmor + "\n";
-                    combinedBodyString += String.Format("{0,-0}", new TextObject("{=RBM_COM_026}Abdomen Armor").ToString()) + ": " + abdomenArmor;
-
-                    combinedArmString += String.Format("{0,-0}", new TextObject("{=kx7q8ybD}Arm Armor").ToString() + ": ") + armArmor + "\n";
-                    if (!equipment[EquipmentIndex.Body].IsEmpty)
-                    {
-                        float underShoulderArmor = (equipment[EquipmentIndex.Body].GetModifiedArmArmor());
-                        if (!equipment[EquipmentIndex.Cape].IsEmpty)
-                        {
-                            underShoulderArmor += equipment[EquipmentIndex.Cape].GetModifiedArmArmor();
-                        }
-                        combinedArmString += String.Format("{0,-0}", new TextObject("{=RBM_COM_027}Lower Shoulder Armor").ToString() + ": ") + underShoulderArmor;
-                    }
-
-                    combinedLegString += String.Format("{0,-0}", new TextObject("{=U8VHRdwF}Leg Armor: ").ToString()) + legsArmor;
+                    combinedHeadString += String.Format("{0,-0}", new TextObject("{=RBM_COM_023}Face Armor").ToString()) + ": " + faceArmor + "\n";
                 }
+                combinedHeadString += String.Format("{0,-0}", new TextObject("{=RBM_COM_024}Neck Armor").ToString()) + ": " + neckArmor;
+
+                combinedBodyString += String.Format("{0,-0}", new TextObject("{=RBM_COM_025}Shoulder Armor").ToString()) + ": " + shoulderArmor + "\n";
+                combinedBodyString += String.Format("{0,-0}", new TextObject("{=oiSW6MyB}Chest Armor").ToString()) + ": " + chestArmor + "\n";
+                combinedBodyString += String.Format("{0,-0}", new TextObject("{=RBM_COM_026}Abdomen Armor").ToString()) + ": " + abdomenArmor;
+
+                combinedArmString += String.Format("{0,-0}", new TextObject("{=kx7q8ybD}Arm Armor").ToString() + ": ") + armArmor + "\n";
+                if (!equipment[EquipmentIndex.Body].IsEmpty)
+                {
+                    float underShoulderArmor = (equipment[EquipmentIndex.Body].GetModifiedArmArmor());
+                    if (!equipment[EquipmentIndex.Cape].IsEmpty)
+                    {
+                        underShoulderArmor += equipment[EquipmentIndex.Cape].GetModifiedArmArmor();
+                    }
+                    combinedArmString += String.Format("{0,-0}", new TextObject("{=RBM_COM_027}Lower Shoulder Armor").ToString() + ": ") + underShoulderArmor;
+                }
+
+                combinedLegString += String.Format("{0,-0}", new TextObject("{=U8VHRdwF}Leg Armor: ").ToString()) + legsArmor;
             }
         }
 
