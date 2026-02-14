@@ -24,6 +24,15 @@ namespace RBMCombat
         public static Dictionary<string, RangedWeaponStats> rangedWeaponStats = new Dictionary<string, RangedWeaponStats>(new RangedWeaponStatsComparer());
         public static Dictionary<string, MissionWeapon> rangedWeaponMW = new Dictionary<string, MissionWeapon> { };
 
+        private static readonly PropertyInfo MissileSpeedProperty = typeof(WeaponComponentData).GetProperty("MissileSpeed");
+        private static readonly PropertyInfo SwingSpeedProperty = typeof(WeaponComponentData).GetProperty("SwingSpeed");
+        private static readonly PropertyInfo ThrustSpeedProperty = typeof(WeaponComponentData).GetProperty("ThrustSpeed");
+        private static readonly PropertyInfo HandlingProperty = typeof(WeaponComponentData).GetProperty("Handling");
+        private static readonly PropertyInfo SiegeShootingDirectionProperty = typeof(RangedSiegeWeapon).GetProperty("ShootingDirection", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly PropertyInfo SiegeShootingSpeedProperty = typeof(RangedSiegeWeapon).GetProperty("ShootingSpeed", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly PropertyInfo SiegeProjectileProperty = typeof(RangedSiegeWeapon).GetProperty("Projectile", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly PropertyInfo SiegeMissileStartPositionProperty = typeof(RangedSiegeWeapon).GetProperty("MissileStartingGlobalPositionForSimulation", BindingFlags.NonPublic | BindingFlags.Instance);
+
         [HarmonyPatch(typeof(MissionState))]
         [HarmonyPatch("FinishMissionLoading")]
         public class MissionLoadChangeParameters
@@ -176,15 +185,6 @@ namespace RBMCombat
                 MissionWeapon arrow = MissionWeapon.Invalid;
                 bool firstProjectile = true;
 
-                PropertyInfo swingSpeedProperty = typeof(WeaponComponentData).GetProperty("SwingSpeed");
-                swingSpeedProperty.DeclaringType.GetProperty("SwingSpeed");
-
-                PropertyInfo thrustSpeedProperty = typeof(WeaponComponentData).GetProperty("ThrustSpeed");
-                thrustSpeedProperty.DeclaringType.GetProperty("ThrustSpeed");
-
-                PropertyInfo handlingProperty = typeof(WeaponComponentData).GetProperty("Handling");
-                handlingProperty.DeclaringType.GetProperty("Handling");
-
                 for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                 {
                     if (__instance.Equipment != null && !__instance.Equipment[equipmentIndex].IsEmpty)
@@ -213,9 +213,6 @@ namespace RBMCombat
                     }
                 }
 
-                PropertyInfo propertyMissileSpeed = typeof(WeaponComponentData).GetProperty("MissileSpeed");
-                propertyMissileSpeed.DeclaringType.GetProperty("MissileSpeed");
-
                 foreach (MissionWeapon missionWeapon in stringRangedWeapons)
                 {
                     int calculatedMissileSpeed = 50;
@@ -226,19 +223,18 @@ namespace RBMCombat
                         int msModifier = 0;
                         if (missionWeapon.ItemModifier != null)
                         {
-                            //msModifier = missionWeapon.ItemModifier.ModifyHitPoints(50) - 50;
-                            msModifier = missionWeapon.ItemModifier.HitPoints;
+                            msModifier = missionWeapon.ItemModifier.ModifyHitPoints(50) - 50;
                         }
 
                         calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon.CurrentUsageItem.ItemUsage, missionWeapon.CurrentUsageItem.MissileSpeed + msModifier); //rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight());
                         rangedWeaponMW[missionWeapon.GetModifiedItemName().ToString()] = missionWeapon;
 
-                        propertyMissileSpeed.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                        MissileSpeedProperty.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                     }
                     else if (!missionWeapon.Equals(MissionWeapon.Invalid))
                     {
                         rangedWeaponMW[missionWeapon.GetModifiedItemName().ToString()] = missionWeapon;
-                        propertyMissileSpeed.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                        MissileSpeedProperty.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                     }
                 }
 
@@ -247,29 +243,16 @@ namespace RBMCombat
 
             private static void Postfix(Agent __instance)
             {
-                PropertyInfo propertyMissileSpeed = typeof(WeaponComponentData).GetProperty("MissileSpeed");
-                propertyMissileSpeed.DeclaringType.GetProperty("MissileSpeed");
-
-                PropertyInfo swingSpeedProperty = typeof(WeaponComponentData).GetProperty("SwingSpeed");
-                swingSpeedProperty.DeclaringType.GetProperty("SwingSpeed");
-
-                PropertyInfo thrustSpeedProperty = typeof(WeaponComponentData).GetProperty("ThrustSpeed");
-                thrustSpeedProperty.DeclaringType.GetProperty("ThrustSpeed");
-
-                PropertyInfo handlingProperty = typeof(WeaponComponentData).GetProperty("Handling");
-                handlingProperty.DeclaringType.GetProperty("Handling");
-
                 for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                 {
                     if (__instance.Equipment != null && !__instance.Equipment[equipmentIndex].IsEmpty)
                     {
                         MissionWeapon mw = __instance.Equipment[equipmentIndex];
                         WeaponStatsData[] wsd = __instance.Equipment[equipmentIndex].GetWeaponStatsData();
-                        WeaponComponentData weapon = __instance.Equipment[equipmentIndex].CurrentUsageItem;
 
                         if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
                         {
-                            propertyMissileSpeed.SetValue(__instance.Equipment[equipmentIndex].CurrentUsageItem, rangedWeaponStats[mw.GetModifiedItemName().ToString()].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                            MissileSpeedProperty.SetValue(__instance.Equipment[equipmentIndex].CurrentUsageItem, rangedWeaponStats[mw.GetModifiedItemName().ToString()].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                         }
                     }
                 }
@@ -294,26 +277,19 @@ namespace RBMCombat
                     {
                         if (wsd[0].WeaponClass == (int)WeaponClass.Javelin)
                         {
-                            float relativeSpeed = (targetAgent.Velocity - shooterAgent.Velocity).Length;
                             float relativeModifier = Vec3.DotProduct(shooterAgent.Velocity.NormalizedCopy(), targetAgent.Velocity.NormalizedCopy());
                             float shooterSpeed = shooterAgent.Velocity.Length;
                             if (shooterSpeed > 0)
                             {
                                 float shooterRelativeSpeed = shooterSpeed * relativeModifier;
-                                double rotRad;
-                                rotRad = +(0.0174533 * shooterRelativeSpeed) * 3f;
-                                if (wsd[0].WeaponClass == (int)WeaponClass.Javelin)
+                                if (shooterRelativeSpeed <= 0)
                                 {
-                                    rotRad = +(0.0174533 * shooterRelativeSpeed) / 1.1f;
+                                    double rotRad = (0.0174533 * shooterRelativeSpeed) / 1.1f;
+                                    float vecLength = velocity.Length;
+                                    double currentRad = (double)Math.Acos(velocity.z / vecLength);
+                                    float newZ = velocity.Length * ((float)Math.Cos(currentRad - rotRad));
+                                    velocity.z = newZ;
                                 }
-                                if (shooterRelativeSpeed > 0)
-                                {
-                                    rotRad = 0;
-                                }
-                                float vecLength = velocity.Length;
-                                double currentRad = (double)Math.Acos(velocity.z / vecLength);
-                                float newZ = velocity.Length * ((float)Math.Cos(currentRad - rotRad));
-                                velocity.z = newZ;
                             }
                         }
                         if (wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe)
@@ -382,9 +358,7 @@ namespace RBMCombat
                     velocity.y = myVelocity.y * (calculatedMissileSpeed + shooterAgentSpeed);
                     velocity.z = myVelocity.z * (calculatedMissileSpeed + shooterAgentSpeed);
 
-                    PropertyInfo property2 = typeof(WeaponComponentData).GetProperty("MissileSpeed");
-                    property2.DeclaringType.GetProperty("MissileSpeed");
-                    property2.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                    MissileSpeedProperty.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                 }
 
                 //if (shooterAgent != null && !shooterAgent.IsAIControlled && !BannerlordConfig.DisplayTargetingReticule && (wsd[0].WeaponClass == (int)WeaponClass.Bow || wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
@@ -418,9 +392,7 @@ namespace RBMCombat
                 }
                 if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
                 {
-                    PropertyInfo property2 = typeof(WeaponComponentData).GetProperty("MissileSpeed");
-                    property2.DeclaringType.GetProperty("MissileSpeed");
-                    property2.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                    MissileSpeedProperty.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                 }
             }
         }
@@ -439,11 +411,9 @@ namespace RBMCombat
                     WeaponStatsData[] wsd = mw.Value.GetWeaponStatsData();
                     if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
                     {
-                        PropertyInfo property2 = typeof(WeaponComponentData).GetProperty("MissileSpeed");
-                        property2.DeclaringType.GetProperty("MissileSpeed");
                         if (rangedWeaponStats.ContainsKey(mw.Value.GetModifiedItemName().ToString()))
                         {
-                            property2.SetValue(mw.Value.CurrentUsageItem, rangedWeaponStats[mw.Value.GetModifiedItemName().ToString()].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                            MissileSpeedProperty.SetValue(mw.Value.CurrentUsageItem, rangedWeaponStats[mw.Value.GetModifiedItemName().ToString()].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                         }
                     }
                 }
@@ -478,7 +448,7 @@ namespace RBMCombat
                                 MissionWeapon mw = __instance.Equipment[equipmentIndex];
                                 if (isBowWielded)
                                 {
-                                    SkillObject skill = (wd.GetItemObject() == null) ? DefaultSkills.Athletics : weaponData.GetItemObject().RelevantSkill;
+                                    SkillObject skill = (wd.GetItemObject() == null) ? DefaultSkills.Athletics : wd.GetItemObject().RelevantSkill;
                                     if (skill != null)
                                     {
                                         int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, skill);
@@ -545,122 +515,174 @@ namespace RBMCombat
                 }
             }
         }
-    }
 
 
-    [HarmonyPatch(typeof(RangedSiegeWeapon))]
-    internal class OverrideRangedSiegeWeapon
-    {
-        [HarmonyPrefix]
-        [HarmonyPatch("GetTargetReleaseAngle")]
-        private static bool PrefixGetTargetReleaseAngle(RangedSiegeWeapon __instance, ref float __result, Vec3 target, ref string[] ___SkeletonNames, ItemObject ___OriginalMissileItem)
+
+        [HarmonyPatch(typeof(RangedSiegeWeapon))]
+        internal class OverrideRangedSiegeWeapon
         {
-            if (___SkeletonNames != null && ___SkeletonNames.Length > 0 && ___SkeletonNames[0].Contains("ballista"))
+            [HarmonyPrefix]
+            [HarmonyPatch("GetTargetReleaseAngle")]
+            private static bool PrefixGetTargetReleaseAngle(RangedSiegeWeapon __instance, ref float __result, Vec3 target, ref string[] ___SkeletonNames, ItemObject ___OriginalMissileItem)
             {
-                PropertyInfo property = typeof(RangedSiegeWeapon).GetProperty("MissileStartingGlobalPositionForSimulation", BindingFlags.NonPublic | BindingFlags.Instance);
-                property.DeclaringType.GetProperty("MissileStartingGlobalPositionForSimulation");
-                Vec3 MissileStartingGlobalPositionForSimulation = (Vec3)property.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+                if (___SkeletonNames != null && ___SkeletonNames.Length > 0 && ___SkeletonNames[0].Contains("ballista"))
+                {
+                    Vec3 MissileStartingGlobalPositionForSimulation = (Vec3)SiegeMissileStartPositionProperty.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
 
-                WeaponStatsData weaponStatsData = new MissionWeapon(___OriginalMissileItem, null, null).GetWeaponStatsDataForUsage(0);
-                __result = Mission.GetMissileVerticalAimCorrection(target - MissileStartingGlobalPositionForSimulation, 60f, ref weaponStatsData, ItemObject.GetAirFrictionConstant(___OriginalMissileItem.PrimaryWeapon.WeaponClass, ___OriginalMissileItem.PrimaryWeapon.WeaponFlags));
-                return false;
+                    WeaponStatsData weaponStatsData = new MissionWeapon(___OriginalMissileItem, null, null).GetWeaponStatsDataForUsage(0);
+                    __result = Mission.GetMissileVerticalAimCorrection(target - MissileStartingGlobalPositionForSimulation, 60f, ref weaponStatsData, ItemObject.GetAirFrictionConstant(___OriginalMissileItem.PrimaryWeapon.WeaponClass, ___OriginalMissileItem.PrimaryWeapon.WeaponFlags));
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
             }
-            else
-            {
-                return true;
-            }
-        }
 
-        [HarmonyPrefix]
-        [HarmonyPatch("ShootProjectileAux")]
-        private static bool PrefixShootProjectileAux(ref RangedSiegeWeapon __instance, ref string[] ___SkeletonNames, ref ItemObject missileItem, ref Agent ___LastShooterAgent)
-        {
-            if (___SkeletonNames != null && ___SkeletonNames.Length > 0 && ___SkeletonNames[0].Contains("trebuchet"))
+            [HarmonyPrefix]
+            [HarmonyPatch("ShootProjectileAux")]
+            private static bool PrefixShootProjectileAux(ref RangedSiegeWeapon __instance, ref string[] ___SkeletonNames, ref ItemObject missileItem, ref Agent ___LastShooterAgent)
             {
-                for (int i = 0; i < 7; i++)
+                if (___SkeletonNames != null && ___SkeletonNames.Length > 0 && ___SkeletonNames[0].Contains("trebuchet"))
+                {
+                    for (int i = 0; i < 7; i++)
+                    {
+                        Mat3 mat = default(Mat3);
+
+                        mat.f = (Vec3)SiegeShootingDirectionProperty.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+
+                        mat.u = Vec3.Up;
+                        Mat3 mat2 = mat;
+                        mat2.Orthonormalize();
+                        float a = MBRandom.RandomFloat * ((float)Math.PI * 2f);
+                        mat2.RotateAboutForward(a);
+                        float f = 1.5f * MBRandom.RandomFloat;
+                        mat2.RotateAboutSide(f.ToRadians());
+
+                        Mat3 identity = Mat3.Identity;
+
+                        ItemObject @object = Game.Current.ObjectManager.GetObject<ItemObject>("grapeshot_projectile");
+
+                        float num = (float)SiegeShootingSpeedProperty.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+
+                        num *= MBRandom.RandomFloatRanged(0.95f, 1.05f);
+                        identity.f = mat2.f;
+                        identity.Orthonormalize();
+
+                        Vec3 ProjectileEntityCurrentGlobalPosition = ((SynchedMissionObject)SiegeProjectileProperty.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null)).GameEntity.GetGlobalFrame().origin;
+
+                        Mission.Current.AddCustomMissile(___LastShooterAgent, new MissionWeapon(@object, null, ___LastShooterAgent.Origin?.Banner, 1), ProjectileEntityCurrentGlobalPosition, identity.f, identity, num, num, addRigidBody: false, __instance);
+                    }
+                    return false;
+                }
+                if (___SkeletonNames != null && ___SkeletonNames.Length > 0 && ___SkeletonNames[0].Contains("ballista"))
                 {
                     Mat3 mat = default(Mat3);
 
-                    PropertyInfo property = typeof(RangedSiegeWeapon).GetProperty("ShootingDirection", BindingFlags.NonPublic | BindingFlags.Instance);
-                    property.DeclaringType.GetProperty("ShootingDirection");
-                    mat.f = (Vec3)property.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+                    mat.f = (Vec3)SiegeShootingDirectionProperty.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
 
                     mat.u = Vec3.Up;
                     Mat3 mat2 = mat;
                     mat2.Orthonormalize();
-                    float a = MBRandom.RandomFloat * ((float)Math.PI * 2f);
+                    float a = MBRandom.RandomFloat * ((float)MathF.PI * 2f);
                     mat2.RotateAboutForward(a);
-                    float f = 1.5f * MBRandom.RandomFloat;
+                    float f = 1f * MBRandom.RandomFloat;
                     mat2.RotateAboutSide(f.ToRadians());
 
                     Mat3 identity = Mat3.Identity;
-
-                    ItemObject @object = Game.Current.ObjectManager.GetObject<ItemObject>("grapeshot_projectile");
-
-                    PropertyInfo property3 = typeof(RangedSiegeWeapon).GetProperty("ShootingSpeed", BindingFlags.NonPublic | BindingFlags.Instance);
-                    property3.DeclaringType.GetProperty("ShootingSpeed");
-                    float num = (float)property3.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
-
-                    num *= MBRandom.RandomFloatRanged(0.95f, 1.05f);
                     identity.f = mat2.f;
                     identity.Orthonormalize();
 
-                    PropertyInfo property2 = typeof(RangedSiegeWeapon).GetProperty("Projectile", BindingFlags.NonPublic | BindingFlags.Instance);
-                    property2.DeclaringType.GetProperty("Projectile");
-                    Vec3 ProjectileEntityCurrentGlobalPosition = ((SynchedMissionObject)property2.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null)).GameEntity.GetGlobalFrame().origin;
+                    Vec3 ProjectileEntityCurrentGlobalPosition = ((SynchedMissionObject)SiegeProjectileProperty.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null)).GameEntity.GetGlobalFrame().origin;
 
-                    Mission.Current.AddCustomMissile(___LastShooterAgent, new MissionWeapon(@object, null, ___LastShooterAgent.Origin?.Banner, 1), ProjectileEntityCurrentGlobalPosition, identity.f, identity, num, num, addRigidBody: false, __instance);
+                    Mission.Current.AddCustomMissile(___LastShooterAgent, new MissionWeapon(missileItem, null, null, 1), ProjectileEntityCurrentGlobalPosition, identity.f, identity, 60f, 60f, addRigidBody: false, __instance);
+                    return false;
                 }
-                return false;
-            }
-            if (___SkeletonNames != null && ___SkeletonNames.Length > 0 && ___SkeletonNames[0].Contains("ballista"))
-            {
-                Mat3 mat = default(Mat3);
-
-                PropertyInfo property = typeof(RangedSiegeWeapon).GetProperty("ShootingDirection", BindingFlags.NonPublic | BindingFlags.Instance);
-                property.DeclaringType.GetProperty("ShootingDirection");
-                mat.f = (Vec3)property.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
-
-                mat.u = Vec3.Up;
-                Mat3 mat2 = mat;
-                mat2.Orthonormalize();
-                float a = MBRandom.RandomFloat * ((float)MathF.PI * 2f);
-                mat2.RotateAboutForward(a);
-                float f = 1f * MBRandom.RandomFloat;
-                mat2.RotateAboutSide(f.ToRadians());
-
-                Mat3 identity = Mat3.Identity;
-                identity.f = mat2.f;
-                identity.Orthonormalize();
-
-                PropertyInfo property2 = typeof(RangedSiegeWeapon).GetProperty("Projectile", BindingFlags.NonPublic | BindingFlags.Instance);
-                property2.DeclaringType.GetProperty("Projectile");
-                Vec3 ProjectileEntityCurrentGlobalPosition = ((SynchedMissionObject)property2.GetValue(__instance, BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null)).GameEntity.GetGlobalFrame().origin;
-
-                Mission.Current.AddCustomMissile(___LastShooterAgent, new MissionWeapon(missileItem, null, null, 1), ProjectileEntityCurrentGlobalPosition, identity.f, identity, 60f, 60f, addRigidBody: false, __instance);
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        [HarmonyPatch(typeof(AgentStatCalculateModel))]
-        [HarmonyPatch("SetAiRelatedProperties")]
-        private class OverrideSetAiRelatedProperties
-        {
-            private static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem, AgentStatCalculateModel __instance)
-            {
-                if (agent.IsPlayerControlled)
+                else
                 {
-                    if (RBMConfig.RBMConfig.realisticRangedReload.Equals("1"))
+                    return true;
+                }
+            }
+
+            [HarmonyPatch(typeof(AgentStatCalculateModel))]
+            [HarmonyPatch("SetAiRelatedProperties")]
+            private class OverrideSetAiRelatedProperties
+            {
+                private static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem, AgentStatCalculateModel __instance)
+                {
+                    if (agent.IsPlayerControlled)
+                    {
+                        if (RBMConfig.RBMConfig.realisticRangedReload.Equals("1"))
+                        {
+                            SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
+                            if (skill != null)
+                            {
+                                int ef = __instance.GetEffectiveSkill(agent, skill);
+                                float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
+                                if (equippedItem != null)
+                                {
+                                    switch (equippedItem.ItemUsage)
+                                    {
+                                        case "bow":
+                                        case "long_bow":
+                                            {
+                                                agentDrivenProperties.ReloadSpeed = 0.25f * (0.85f + (0.0184f * effectiveSkill));
+                                                break;
+                                            }
+                                        case "crossbow_fast":
+                                            {
+                                                agentDrivenProperties.ReloadSpeed = 0.3f * (1f + (0.0045f * effectiveSkill));
+                                                break;
+                                            }
+                                        case "crossbow":
+                                            {
+                                                agentDrivenProperties.ReloadSpeed = 0.2f * (1f + (0.0045f * effectiveSkill));
+                                                break;
+                                            }
+                                    }
+                                }
+                            }
+                        }
+                        else if (RBMConfig.RBMConfig.realisticRangedReload.Equals("2"))
+                        {
+                            SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
+                            if (skill != null)
+                            {
+                                int ef = __instance.GetEffectiveSkill(agent, skill);
+                                float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
+                                if (equippedItem != null)
+                                {
+                                    switch (equippedItem.ItemUsage)
+                                    {
+                                        case "bow":
+                                        case "long_bow":
+                                            {
+                                                agentDrivenProperties.ReloadSpeed = 0.38f * (1.5f + (0.0075f * effectiveSkill));
+                                                break;
+                                            }
+                                        case "crossbow_fast":
+                                            {
+                                                agentDrivenProperties.ReloadSpeed = 0.72f * (1 + (0.0035f * effectiveSkill));
+                                                break;
+                                            }
+                                        case "crossbow":
+                                            {
+                                                agentDrivenProperties.ReloadSpeed = 0.36f * (1 + (0.0035f * effectiveSkill));
+                                                break;
+                                            }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
                     {
                         SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
                         if (skill != null)
                         {
                             int ef = __instance.GetEffectiveSkill(agent, skill);
                             float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
+
                             if (equippedItem != null)
                             {
                                 switch (equippedItem.ItemUsage)
@@ -668,7 +690,7 @@ namespace RBMCombat
                                     case "bow":
                                     case "long_bow":
                                         {
-                                            agentDrivenProperties.ReloadSpeed = 0.25f * (0.85f + (0.0184f * effectiveSkill));
+                                            agentDrivenProperties.ReloadSpeed = 0.25f * (1f + (0.016f * effectiveSkill));
                                             break;
                                         }
                                     case "crossbow_fast":
@@ -685,233 +707,117 @@ namespace RBMCombat
                             }
                         }
                     }
-                    else if (RBMConfig.RBMConfig.realisticRangedReload.Equals("2"))
-                    {
-                        SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
-                        if (skill != null)
-                        {
-                            int ef = __instance.GetEffectiveSkill(agent, skill);
-                            float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
-                            if (equippedItem != null)
-                            {
-                                switch (equippedItem.ItemUsage)
-                                {
-                                    case "bow":
-                                    case "long_bow":
-                                        {
-                                            agentDrivenProperties.ReloadSpeed = 0.38f * (1.5f + (0.0075f * effectiveSkill));
-                                            break;
-                                        }
-                                    case "crossbow_fast":
-                                        {
-                                            agentDrivenProperties.ReloadSpeed = 0.72f * (1 + (0.0035f * effectiveSkill));
-                                            break;
-                                        }
-                                    case "crossbow":
-                                        {
-                                            agentDrivenProperties.ReloadSpeed = 0.36f * (1 + (0.0035f * effectiveSkill));
-                                            break;
-                                        }
-                                }
-                            }
-                        }
-                    }
+                    //0.12 for heavy crossbows, 0.19f for light crossbows, composite bows and longbows.
                 }
-                else
-                {
-                    SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
-                    if (skill != null)
-                    {
-                        int ef = __instance.GetEffectiveSkill(agent, skill);
-                        float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
-
-                        if (equippedItem != null)
-                        {
-                            switch (equippedItem.ItemUsage)
-                            {
-                                case "bow":
-                                case "long_bow":
-                                    {
-                                        agentDrivenProperties.ReloadSpeed = 0.25f * (1f + (0.016f * effectiveSkill));
-                                        break;
-                                    }
-                                case "crossbow_fast":
-                                    {
-                                        agentDrivenProperties.ReloadSpeed = 0.3f * (1f + (0.0045f * effectiveSkill));
-                                        break;
-                                    }
-                                case "crossbow":
-                                    {
-                                        agentDrivenProperties.ReloadSpeed = 0.2f * (1f + (0.0045f * effectiveSkill));
-                                        break;
-                                    }
-                            }
-                        }
-                    }
-                }
-                //0.12 for heavy crossbows, 0.19f for light crossbows, composite bows and longbows.
             }
         }
-    }
 
-    [HarmonyPatch(typeof(Mangonel))]
-    internal class OverrideMangonel
-    {
-        [HarmonyPrefix]
-        [HarmonyPatch("OnTick")]
-        private static bool PrefixOnTick(ref Mangonel __instance, ref float ___CurrentReleaseAngle)
+        [HarmonyPatch(typeof(Mangonel))]
+        internal class OverrideMangonel
         {
-            float baseSpeed = 25f;
-            float speedIncrease = 1.5f;
-            __instance.ProjectileSpeed = baseSpeed + (((___CurrentReleaseAngle * MathF.RadToDeg)) * speedIncrease);
-
-            return true;
-        }
-    }
-
-    [HarmonyPatch(typeof(Mission))]
-    internal class HandleMissileCollisionReactionPatch
-    {
-        [HarmonyPrefix]
-        [HarmonyPatch("HandleMissileCollisionReaction")]
-        private static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missilesDictionary, int missileIndex, ref MissileCollisionReaction collisionReaction, MatrixFrame attachLocalFrame, Agent attackerAgent, Agent attachedAgent, bool attachedToShield, sbyte attachedBoneIndex, MissionObject attachedMissionObject, Vec3 bounceBackVelocity, Vec3 bounceBackAngularVelocity, int forcedSpawnIndex, bool isAttachedFrameLocal)
-        {
-            Missile missile = ____missilesDictionary[missileIndex];
-            MissionObjectId missionObjectId = new MissionObjectId(-1, createdAtRuntime: true);
-            switch (collisionReaction)
+            [HarmonyPrefix]
+            [HarmonyPatch("OnTick")]
+            private static bool PrefixOnTick(ref Mangonel __instance, ref float ___CurrentReleaseAngle)
             {
-                case MissileCollisionReaction.BecomeInvisible:
-                    missile.Entity.Remove(81);
-                    break;
+                float baseSpeed = 25f;
+                float speedIncrease = 1.5f;
+                __instance.ProjectileSpeed = baseSpeed + (((___CurrentReleaseAngle * MathF.RadToDeg)) * speedIncrease);
 
-                case MissileCollisionReaction.Stick:
-                    missile.Entity.SetVisibilityExcludeParents(visible: true);
-                    if (attachedAgent != null)
-                    {
-                        __instance.PrepareMissileWeaponForDrop(missileIndex);
-                        if (attachedToShield)
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(Mission))]
+        internal class HandleMissileCollisionReactionPatch
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch("HandleMissileCollisionReaction")]
+            private static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missilesDictionary, int missileIndex, ref MissileCollisionReaction collisionReaction, MatrixFrame attachLocalFrame, Agent attackerAgent, Agent attachedAgent, bool attachedToShield, sbyte attachedBoneIndex, MissionObject attachedMissionObject, Vec3 bounceBackVelocity, Vec3 bounceBackAngularVelocity, int forcedSpawnIndex, bool isAttachedFrameLocal)
+            {
+                Missile missile = ____missilesDictionary[missileIndex];
+                MissionObjectId missionObjectId = new MissionObjectId(-1, createdAtRuntime: true);
+                switch (collisionReaction)
+                {
+                    case MissileCollisionReaction.BecomeInvisible:
+                        missile.Entity.Remove(81);
+                        break;
+
+                    case MissileCollisionReaction.Stick:
+                        missile.Entity.SetVisibilityExcludeParents(visible: true);
+                        if (attachedAgent != null)
                         {
-                            EquipmentIndex wieldedItemIndex;
-
-                            if (attachedAgent.WieldedOffhandWeapon.IsEmpty)
+                            __instance.PrepareMissileWeaponForDrop(missileIndex);
+                            if (attachedToShield)
                             {
-                                for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                                EquipmentIndex wieldedItemIndex;
+
+                                if (attachedAgent.WieldedOffhandWeapon.IsEmpty)
                                 {
-                                    if (attachedAgent.Equipment != null && !attachedAgent.Equipment[equipmentIndex].IsEmpty)
+                                    for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                                     {
-                                        if (attachedAgent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield)
+                                        if (attachedAgent.Equipment != null && !attachedAgent.Equipment[equipmentIndex].IsEmpty)
                                         {
-                                            attachedAgent.AttachWeaponToWeapon(equipmentIndex, missile.Weapon, missile.Entity, ref attachLocalFrame);
-                                            break;
+                                            if (attachedAgent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield)
+                                            {
+                                                attachedAgent.AttachWeaponToWeapon(equipmentIndex, missile.Weapon, missile.Entity, ref attachLocalFrame);
+                                                break;
+                                            }
                                         }
                                     }
+                                }
+                                else
+                                {
+                                    wieldedItemIndex = attachedAgent.GetOffhandWieldedItemIndex();
+                                    attachedAgent.AttachWeaponToWeapon(wieldedItemIndex, missile.Weapon, missile.Entity, ref attachLocalFrame);
                                 }
                             }
                             else
                             {
-                                wieldedItemIndex = attachedAgent.GetOffhandWieldedItemIndex();
-                                attachedAgent.AttachWeaponToWeapon(wieldedItemIndex, missile.Weapon, missile.Entity, ref attachLocalFrame);
+                                attachedAgent.AttachWeaponToBone(missile.Weapon, missile.Entity, attachedBoneIndex, ref attachLocalFrame);
                             }
                         }
                         else
                         {
-                            attachedAgent.AttachWeaponToBone(missile.Weapon, missile.Entity, attachedBoneIndex, ref attachLocalFrame);
+                            Vec3 velocity = Vec3.Zero;
+                            missionObjectId = __instance.SpawnWeaponAsDropFromMissile(missileIndex, attachedMissionObject, in attachLocalFrame, WeaponSpawnFlags.AsMissile | WeaponSpawnFlags.WithStaticPhysics, in velocity, in velocity, forcedSpawnIndex);
                         }
-                    }
-                    else
-                    {
-                        Vec3 velocity = Vec3.Zero;
-                        missionObjectId = __instance.SpawnWeaponAsDropFromMissile(missileIndex, attachedMissionObject, in attachLocalFrame, WeaponSpawnFlags.AsMissile | WeaponSpawnFlags.WithStaticPhysics, in velocity, in velocity, forcedSpawnIndex);
-                    }
-                    break;
+                        break;
 
-                case MissileCollisionReaction.BounceBack:
-                    missile.Entity.SetVisibilityExcludeParents(visible: true);
-                    missionObjectId = __instance.SpawnWeaponAsDropFromMissile(missileIndex, null, in attachLocalFrame, WeaponSpawnFlags.AsMissile | WeaponSpawnFlags.WithPhysics, in bounceBackVelocity, in bounceBackAngularVelocity, forcedSpawnIndex);
-                    break;
+                    case MissileCollisionReaction.BounceBack:
+                        missile.Entity.SetVisibilityExcludeParents(visible: true);
+                        missionObjectId = __instance.SpawnWeaponAsDropFromMissile(missileIndex, null, in attachLocalFrame, WeaponSpawnFlags.AsMissile | WeaponSpawnFlags.WithPhysics, in bounceBackVelocity, in bounceBackAngularVelocity, forcedSpawnIndex);
+                        break;
+                }
+                bool flag = collisionReaction != MissileCollisionReaction.PassThrough;
+                if (GameNetwork.IsServerOrRecorder)
+                {
+                    GameNetwork.BeginBroadcastModuleEvent(); ;
+                    GameNetwork.WriteMessage(new HandleMissileCollisionReaction(missileIndex, collisionReaction, attachLocalFrame, isAttachedFrameLocal, attackerAgent.Index, attachedAgent?.Index ?? (-1), attachedToShield, attachedBoneIndex, attachedMissionObject?.Id ?? MissionObjectId.Invalid, bounceBackVelocity, bounceBackAngularVelocity, missionObjectId.Id));
+                    GameNetwork.EndBroadcastModuleEvent(GameNetwork.EventBroadcastFlags.AddToMissionRecord);
+                }
+                else if (GameNetwork.IsClientOrReplay && flag)
+                {
+                    __instance.RemoveMissileAsClient(missileIndex);
+                }
+                foreach (MissionBehavior missionBehavior in __instance.MissionBehaviors)
+                {
+                    missionBehavior.OnMissileCollisionReaction(collisionReaction, attackerAgent, attachedAgent, attachedBoneIndex);
+                }
+                return false;
             }
-            bool flag = collisionReaction != MissileCollisionReaction.PassThrough;
-            if (GameNetwork.IsServerOrRecorder)
-            {
-                GameNetwork.BeginBroadcastModuleEvent(); ;
-                GameNetwork.WriteMessage(new HandleMissileCollisionReaction(missileIndex, collisionReaction, attachLocalFrame, isAttachedFrameLocal, attackerAgent.Index, attachedAgent?.Index ?? (-1), attachedToShield, attachedBoneIndex, attachedMissionObject?.Id ?? MissionObjectId.Invalid, bounceBackVelocity, bounceBackAngularVelocity, missionObjectId.Id));
-                GameNetwork.EndBroadcastModuleEvent(GameNetwork.EventBroadcastFlags.AddToMissionRecord);
-            }
-            else if (GameNetwork.IsClientOrReplay && flag)
-            {
-                __instance.RemoveMissileAsClient(missileIndex);
-            }
-            foreach (MissionBehavior missionBehavior in __instance.MissionBehaviors)
-            {
-                missionBehavior.OnMissileCollisionReaction(collisionReaction, attackerAgent, attachedAgent, attachedBoneIndex);
-            }
-            return false;
         }
-    }
 
-    [UsedImplicitly]
-    [MBCallback]
-    [HarmonyPatch(typeof(Mission))]
-    internal class MeleeHitCallbackPatch
-    {
-        [HarmonyPrefix]
-        [HarmonyPatch("MeleeHitCallback")]
-        private static bool Prefix(ref Mission __instance, ref AttackCollisionData collisionData, Agent attacker, Agent victim, GameEntity realHitEntity, ref float inOutMomentumRemaining, ref MeleeCollisionReaction colReaction, CrushThroughState crushThroughState, Vec3 blowDir, Vec3 swingDir, ref HitParticleResultData hitParticleResultData, bool crushedThroughWithoutAgentCollision)
+        [UsedImplicitly]
+        [MBCallback]
+        [HarmonyPatch(typeof(Mission))]
+        internal class MeleeHitCallbackPatch
         {
-            if (collisionData.CollidedWithShieldOnBack)
-            {
-                AttackCollisionData acd = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(true, collisionData.CorrectSideShieldBlock, collisionData.IsAlternativeAttack, collisionData.IsColliderAgent, collisionData.CollidedWithShieldOnBack,
-                    collisionData.IsMissile, collisionData.MissileBlockedWithWeapon, collisionData.MissileHasPhysics, collisionData.EntityExists, collisionData.ThrustTipHit, collisionData.MissileGoneUnderWater, collisionData.MissileGoneOutOfBorder,
-                    CombatCollisionResult.Blocked, collisionData.AffectorWeaponSlotOrMissileIndex, collisionData.StrikeType, collisionData.DamageType, collisionData.CollisionBoneIndex,
-                    collisionData.VictimHitBodyPart, collisionData.AttackBoneIndex, collisionData.AttackDirection, collisionData.PhysicsMaterialIndex, collisionData.CollisionHitResultFlags, collisionData.AttackProgress, collisionData.CollisionDistanceOnWeapon,
-                    collisionData.AttackerStunPeriod, collisionData.DefenderStunPeriod, collisionData.MissileTotalDamage, collisionData.MissileStartingBaseSpeed, collisionData.ChargeVelocity, collisionData.FallSpeed, collisionData.WeaponRotUp,
-                    collisionData.WeaponBlowDir, collisionData.CollisionGlobalPosition, collisionData.MissileVelocity, collisionData.MissileStartingPosition, collisionData.VictimAgentCurVelocity, collisionData.CollisionGlobalNormal);
-                acd.BaseMagnitude = collisionData.BaseMagnitude;
-                acd.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
-                acd.SelfInflictedDamage = collisionData.SelfInflictedDamage;
-                acd.InflictedDamage = collisionData.InflictedDamage;
-                acd.AbsorbedByArmor = collisionData.AbsorbedByArmor;
-                collisionData = acd;
-            }
-            return true;
-        }
-    }
-
-    [UsedImplicitly]
-    [MBCallback]
-    [HarmonyPatch(typeof(Mission))]
-    internal class MissileHitCallbackPatch
-    {
-        [HarmonyPrefix]
-        [HarmonyPatch("MissileHitCallback")]
-        private static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missilesDictionary, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
-        {
-            Missile missile;
-            if (____missilesDictionary.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out missile))
+            [HarmonyPrefix]
+            [HarmonyPatch("MeleeHitCallback")]
+            private static bool Prefix(ref Mission __instance, ref AttackCollisionData collisionData, Agent attacker, Agent victim, GameEntity realHitEntity, ref float inOutMomentumRemaining, ref MeleeCollisionReaction colReaction, CrushThroughState crushThroughState, Vec3 blowDir, Vec3 swingDir, ref HitParticleResultData hitParticleResultData, bool crushedThroughWithoutAgentCollision)
             {
                 if (collisionData.CollidedWithShieldOnBack)
                 {
-                    if (missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.MultiplePenetration) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.CanPenetrateShield) ||
-                        missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsArea) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsAreaBig))
-                    {
-                        return true;
-                    }
-
-                    if (attacker.Character != null)
-                    {
-                        TaleWorlds.CampaignSystem.CharacterObject characterObject = attacker.Character as TaleWorlds.CampaignSystem.CharacterObject;
-                        if (characterObject != null)
-                        {
-                            if (characterObject.HeroObject != null)
-                            {
-                                if (characterObject.HeroObject.GetPerkValue(DefaultPerks.Throwing.Impale))
-                                {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-
                     AttackCollisionData acd = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(true, collisionData.CorrectSideShieldBlock, collisionData.IsAlternativeAttack, collisionData.IsColliderAgent, collisionData.CollidedWithShieldOnBack,
                         collisionData.IsMissile, collisionData.MissileBlockedWithWeapon, collisionData.MissileHasPhysics, collisionData.EntityExists, collisionData.ThrustTipHit, collisionData.MissileGoneUnderWater, collisionData.MissileGoneOutOfBorder,
                         CombatCollisionResult.Blocked, collisionData.AffectorWeaponSlotOrMissileIndex, collisionData.StrikeType, collisionData.DamageType, collisionData.CollisionBoneIndex,
@@ -923,65 +829,118 @@ namespace RBMCombat
                     acd.SelfInflictedDamage = collisionData.SelfInflictedDamage;
                     acd.InflictedDamage = collisionData.InflictedDamage;
                     acd.AbsorbedByArmor = collisionData.AbsorbedByArmor;
-
                     collisionData = acd;
                 }
+                return true;
             }
-            return true;
         }
 
-        [HarmonyPostfix]
-        [HarmonyPatch("MissileHitCallback")]
-        private static void Postfix(ref Mission __instance, ref Dictionary<int, Missile> ____missilesDictionary, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
+        [UsedImplicitly]
+        [MBCallback]
+        [HarmonyPatch(typeof(Mission))]
+        internal class MissileHitCallbackPatch
         {
-            Missile missile;
-            if (____missilesDictionary.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out missile))
+            [HarmonyPrefix]
+            [HarmonyPatch("MissileHitCallback")]
+            private static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missilesDictionary, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
             {
-                if (missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.MultiplePenetration) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.CanPenetrateShield) ||
-                        missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsArea) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsAreaBig))
+                Missile missile;
+                if (____missilesDictionary.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out missile))
                 {
                     if (collisionData.CollidedWithShieldOnBack)
                     {
-                        if (victim != null && collisionData.IsMissile)
+                        if (missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.MultiplePenetration) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.CanPenetrateShield) ||
+                            missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsArea) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsAreaBig))
                         {
-                            for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.ExtraWeaponSlot; equipmentIndex++)
+                            return true;
+                        }
+
+                        if (attacker.Character != null)
+                        {
+                            TaleWorlds.CampaignSystem.CharacterObject characterObject = attacker.Character as TaleWorlds.CampaignSystem.CharacterObject;
+                            if (characterObject != null)
                             {
-                                if (victim.Equipment != null && !victim.Equipment[equipmentIndex].IsEmpty)
+                                if (characterObject.HeroObject != null)
                                 {
-                                    if (victim.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield)
+                                    if (characterObject.HeroObject.GetPerkValue(DefaultPerks.Throwing.Impale))
                                     {
-                                        int num = MathF.Max(0, victim.Equipment[equipmentIndex].HitPoints - collisionData.InflictedDamage);
-                                        victim.ChangeWeaponHitPoints(equipmentIndex, (short)num);
-                                        if (num == 0)
-                                        {
-                                            victim.RemoveEquippedWeapon(equipmentIndex);
-                                        }
-                                        break;
+                                        return true;
                                     }
                                 }
                             }
                         }
+
+                        AttackCollisionData acd = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(true, collisionData.CorrectSideShieldBlock, collisionData.IsAlternativeAttack, collisionData.IsColliderAgent, collisionData.CollidedWithShieldOnBack,
+                            collisionData.IsMissile, collisionData.MissileBlockedWithWeapon, collisionData.MissileHasPhysics, collisionData.EntityExists, collisionData.ThrustTipHit, collisionData.MissileGoneUnderWater, collisionData.MissileGoneOutOfBorder,
+                            CombatCollisionResult.Blocked, collisionData.AffectorWeaponSlotOrMissileIndex, collisionData.StrikeType, collisionData.DamageType, collisionData.CollisionBoneIndex,
+                            collisionData.VictimHitBodyPart, collisionData.AttackBoneIndex, collisionData.AttackDirection, collisionData.PhysicsMaterialIndex, collisionData.CollisionHitResultFlags, collisionData.AttackProgress, collisionData.CollisionDistanceOnWeapon,
+                            collisionData.AttackerStunPeriod, collisionData.DefenderStunPeriod, collisionData.MissileTotalDamage, collisionData.MissileStartingBaseSpeed, collisionData.ChargeVelocity, collisionData.FallSpeed, collisionData.WeaponRotUp,
+                            collisionData.WeaponBlowDir, collisionData.CollisionGlobalPosition, collisionData.MissileVelocity, collisionData.MissileStartingPosition, collisionData.VictimAgentCurVelocity, collisionData.CollisionGlobalNormal);
+                        acd.BaseMagnitude = collisionData.BaseMagnitude;
+                        acd.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
+                        acd.SelfInflictedDamage = collisionData.SelfInflictedDamage;
+                        acd.InflictedDamage = collisionData.InflictedDamage;
+                        acd.AbsorbedByArmor = collisionData.AbsorbedByArmor;
+
+                        collisionData = acd;
                     }
-                    return;
                 }
+                return true;
             }
-            if (collisionData.AttackBlockedWithShield && collisionData.CollidedWithShieldOnBack)
+
+            [HarmonyPostfix]
+            [HarmonyPatch("MissileHitCallback")]
+            private static void Postfix(ref Mission __instance, ref Dictionary<int, Missile> ____missilesDictionary, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
             {
-                if (victim != null && collisionData.CollidedWithShieldOnBack && collisionData.IsMissile)
+                Missile missile;
+                if (____missilesDictionary.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out missile))
                 {
-                    for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                    if (missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.MultiplePenetration) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.CanPenetrateShield) ||
+                            missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsArea) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsAreaBig))
                     {
-                        if (victim.Equipment != null && !victim.Equipment[equipmentIndex].IsEmpty)
+                        if (collisionData.CollidedWithShieldOnBack)
                         {
-                            if (victim.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield)
+                            if (victim != null && collisionData.IsMissile)
                             {
-                                int num = MathF.Max(0, victim.Equipment[equipmentIndex].HitPoints - collisionData.InflictedDamage);
-                                victim.ChangeWeaponHitPoints(equipmentIndex, (short)num);
-                                if (num == 0)
+                                for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.ExtraWeaponSlot; equipmentIndex++)
                                 {
-                                    victim.RemoveEquippedWeapon(equipmentIndex);
+                                    if (victim.Equipment != null && !victim.Equipment[equipmentIndex].IsEmpty)
+                                    {
+                                        if (victim.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield)
+                                        {
+                                            int num = MathF.Max(0, victim.Equipment[equipmentIndex].HitPoints - collisionData.InflictedDamage);
+                                            victim.ChangeWeaponHitPoints(equipmentIndex, (short)num);
+                                            if (num == 0)
+                                            {
+                                                victim.RemoveEquippedWeapon(equipmentIndex);
+                                            }
+                                            break;
+                                        }
+                                    }
                                 }
-                                break;
+                            }
+                        }
+                        return;
+                    }
+                }
+                if (collisionData.AttackBlockedWithShield && collisionData.CollidedWithShieldOnBack)
+                {
+                    if (victim != null && collisionData.CollidedWithShieldOnBack && collisionData.IsMissile)
+                    {
+                        for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                        {
+                            if (victim.Equipment != null && !victim.Equipment[equipmentIndex].IsEmpty)
+                            {
+                                if (victim.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield)
+                                {
+                                    int num = MathF.Max(0, victim.Equipment[equipmentIndex].HitPoints - collisionData.InflictedDamage);
+                                    victim.ChangeWeaponHitPoints(equipmentIndex, (short)num);
+                                    if (num == 0)
+                                    {
+                                        victim.RemoveEquippedWeapon(equipmentIndex);
+                                    }
+                                    break;
+                                }
                             }
                         }
                     }
