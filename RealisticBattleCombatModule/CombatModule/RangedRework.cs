@@ -431,7 +431,12 @@ namespace RBMCombat
                 if (wieldedItemIndex != EquipmentIndex.None)
                 {
                     bool isBowWielded = false;
-                    WeaponStatsData weaponStatsData = __instance.Equipment[wieldedItemIndex].GetWeaponStatsData()[0];
+                    WeaponStatsData[] wieldedStatsData = __instance.Equipment[wieldedItemIndex].GetWeaponStatsData();
+                    if (wieldedStatsData == null || wieldedStatsData.Length == 0)
+                    {
+                        return;
+                    }
+                    WeaponStatsData weaponStatsData = wieldedStatsData[0];
                     WeaponData weaponData = __instance.Equipment[wieldedItemIndex].GetWeaponData(true);
                     if (weaponStatsData.WeaponClass == (int)WeaponClass.Bow)
                     {
