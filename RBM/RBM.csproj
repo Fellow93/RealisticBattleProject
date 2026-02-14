@@ -309,7 +309,8 @@ xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\" "$(SolutionDir)..\RBM\Modul
 xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\FR\" "$(SolutionDir)..\RBM\ModuleData\Languages\FR\"
 xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\TR\" "$(SolutionDir)..\RBM\ModuleData\Languages\TR\"
 xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\CNs\" "$(SolutionDir)..\RBM\ModuleData\Languages\CNs\"
-xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\JP\" "$(SolutionDir)..\RBM\ModuleData\Languages\JP\"</PostBuildEvent>
+xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\JP\" "$(SolutionDir)..\RBM\ModuleData\Languages\JP\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBM_custom_battle_skill_sets.xml" "$(SolutionDir)..\RBM\ModuleData\"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>

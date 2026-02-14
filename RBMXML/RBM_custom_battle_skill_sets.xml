@@ -1,0 +1,354 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SkillSets>
+	<SkillSet
+		id="custombattle_commander_1_template_skills">
+		<skill
+			id="Athletics"
+			value="300" />
+		<skill
+			id="Bow"
+			value="300" />
+		<skill
+			id="OneHanded"
+			value="300" />
+		<skill
+			id="Polearm"
+			value="300" />
+		<skill
+			id="Riding"
+			value="300" />
+		<skill
+			id="Throwing"
+			value="300" />
+		<skill
+			id="TwoHanded"
+			value="300" />
+		<skill
+			id="Tactics"
+			value="300" />
+	</SkillSet>
+	<SkillSet
+		id="custombattle_commander_2_template_skills">
+		<skill
+			id="Athletics"
+			value="300" />
+		<skill
+			id="Bow"
+			value="300" />
+		<skill
+			id="OneHanded"
+			value="300" />
+		<skill
+			id="Polearm"
+			value="300" />
+		<skill
+			id="Riding"
+			value="300" />
+		<skill
+			id="Throwing"
+			value="300" />
+		<skill
+			id="TwoHanded"
+			value="300" />
+		<skill
+			id="Tactics"
+			value="300" />
+	</SkillSet>
+	<SkillSet
+		id="custombattle_commander_3_template_skills">
+		<skill
+			id="Athletics"
+			value="300" />
+		<skill
+			id="Bow"
+			value="300" />
+		<skill
+			id="OneHanded"
+			value="300" />
+		<skill
+			id="Polearm"
+			value="300" />
+		<skill
+			id="Riding"
+			value="300" />
+		<skill
+			id="Throwing"
+			value="300" />
+		<skill
+			id="TwoHanded"
+			value="300" />
+		<skill
+			id="Tactics"
+			value="300" />
+	</SkillSet>
+	<SkillSet
+		id="custombattle_commander_4_template_skills">
+		<skill
+			id="Athletics"
+			value="300" />
+		<skill
+			id="Bow"
+			value="300" />
+		<skill
+			id="OneHanded"
+			value="300" />
+		<skill
+			id="Polearm"
+			value="300" />
+		<skill
+			id="Riding"
+			value="300" />
+		<skill
+			id="Throwing"
+			value="300" />
+		<skill
+			id="TwoHanded"
+			value="300" />
+		<skill
+			id="Tactics"
+			value="300" />
+	</SkillSet>
+	<SkillSet
+		id="custombattle_commander_5_template_skills">
+		<skill
+			id="Athletics"
+			value="300" />
+		<skill
+			id="Bow"
+			value="300" />
+		<skill
+			id="OneHanded"
+			value="300" />
+		<skill
+			id="Polearm"
+			value="300" />
+		<skill
+			id="Riding"
+			value="300" />
+		<skill
+			id="Throwing"
+			value="300" />
+		<skill
+			id="TwoHanded"
+			value="300" />
+		<skill
+			id="Tactics"
+			value="300" />
+	</SkillSet>
+	<SkillSet
+		id="custombattle_commander_6_template_skills">
+		<skill
+			id="Athletics"
+			value="300" />
+		<skill
+			id="Bow"
+			value="300" />
+		<skill
+			id="OneHanded"
+			value="300" />
+		<skill
+			id="Polearm"
+			value="300" />
+		<skill
+			id="Riding"
+			value="300" />
+		<skill
+			id="Throwing"
+			value="300" />
+		<skill
+			id="TwoHanded"
+			value="300" />
+		<skill
+			id="Tactics"
+			value="300" />
+	</SkillSet>
+	<SkillSet
+		id="custombattle_commander_7_template_skills">
+		<skill
+			id="Athletics"
+			value="300" />
+		<skill
+			id="Bow"
+			value="300" />
+		<skill
+			id="OneHanded"
+			value="300" />
+		<skill
+			id="Polearm"
+			value="300" />
+		<skill
+			id="Riding"
+			value="300" />
+		<skill
+			id="Throwing"
+			value="300" />
+		<skill
+			id="TwoHanded"
+			value="300" />
+		<skill
+			id="Tactics"
+			value="300" />
+	</SkillSet>
+	<SkillSet
+		id="custombattle_commander_8_template_skills">
+		<skill
+			id="Athletics"
+			value="300" />
+		<skill
+			id="Bow"
+			value="300" />
+		<skill
+			id="OneHanded"
+			value="300" />
+		<skill
+			id="Polearm"
+			value="300" />
+		<skill
+			id="Riding"
+			value="300" />
+		<skill
+			id="Throwing"
+			value="300" />
+		<skill
+			id="TwoHanded"
+			value="300" />
+		<skill
+			id="Tactics"
+			value="300" />
+	</SkillSet>
+	<SkillSet
+		id="custombattle_commander_9_template_skills">
+		<skill
+			id="Athletics"
+			value="300" />
+		<skill
+			id="Bow"
+			value="300" />
+		<skill
+			id="OneHanded"
+			value="300" />
+		<skill
+			id="Polearm"
+			value="300" />
+		<skill
+			id="Riding"
+			value="300" />
+		<skill
+			id="Throwing"
+			value="300" />
+		<skill
+			id="TwoHanded"
+			value="300" />
+		<skill
+			id="Tactics"
+			value="300" />
+	</SkillSet>
+	<SkillSet
+		id="custombattle_commander_10_template_skills">
+		<skill
+			id="Athletics"
+			value="300" />
+		<skill
+			id="Bow"
+			value="300" />
+		<skill
+			id="OneHanded"
+			value="300" />
+		<skill
+			id="Polearm"
+			value="300" />
+		<skill
+			id="Riding"
+			value="300" />
+		<skill
+			id="Throwing"
+			value="300" />
+		<skill
+			id="TwoHanded"
+			value="300" />
+		<skill
+			id="Tactics"
+			value="300" />
+	</SkillSet>
+	<SkillSet
+		id="custombattle_commander_11_template_skills">
+		<skill
+			id="Athletics"
+			value="300" />
+		<skill
+			id="Bow"
+			value="300" />
+		<skill
+			id="OneHanded"
+			value="300" />
+		<skill
+			id="Polearm"
+			value="300" />
+		<skill
+			id="Riding"
+			value="300" />
+		<skill
+			id="Throwing"
+			value="300" />
+		<skill
+			id="TwoHanded"
+			value="300" />
+		<skill
+			id="Tactics"
+			value="300" />
+	</SkillSet>
+	<SkillSet
+		id="custombattle_commander_12_template_skills">
+		<skill
+			id="Athletics"
+			value="300" />
+		<skill
+			id="Bow"
+			value="300" />
+		<skill
+			id="OneHanded"
+			value="300" />
+		<skill
+			id="Polearm"
+			value="300" />
+		<skill
+			id="Riding"
+			value="300" />
+		<skill
+			id="Throwing"
+			value="300" />
+		<skill
+			id="TwoHanded"
+			value="300" />
+		<skill
+			id="Tactics"
+			value="300" />
+	</SkillSet>
+	<SkillSet
+		id="custombattle_commander_13_template_skills">
+		<skill
+			id="Athletics"
+			value="300" />
+		<skill
+			id="Bow"
+			value="300" />
+		<skill
+			id="OneHanded"
+			value="300" />
+		<skill
+			id="Polearm"
+			value="300" />
+		<skill
+			id="Riding"
+			value="300" />
+		<skill
+			id="Throwing"
+			value="300" />
+		<skill
+			id="TwoHanded"
+			value="300" />
+		<skill
+			id="Tactics"
+			value="300" />
+	</SkillSet>
+</SkillSets>

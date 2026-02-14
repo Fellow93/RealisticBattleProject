@@ -276,7 +276,7 @@
 	
 	<Item id="noble_long_bow" name="{=RBM_RAN_008}200 Pound War Longbow" body_name="bo_longbow_j" mesh="longbow_j" holster_mesh_with_weapon="longbow_j_holster" weight="0.8" difficulty="140" appearance="1" Type="Bow" value="8000" item_holsters="bow_back_longbow:bow_back_longbow_2" culture="Culture.battania">
 		<ItemComponent>
-			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="189" speed_rating="70" missile_speed="200" weapon_length="118" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="130" speed_rating="70" missile_speed="200" weapon_length="118" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -284,7 +284,7 @@
 	</Item>
 	<Item id="training_longbow" name="{=RBM_RAN_009}200 Pound Tournament Longbow" body_name="bo_longbow_a" mesh="longbow_a" weight="0.5" difficulty="0" appearance="1" Type="Bow" value="600" item_holsters="bow_back_longbow:bow_back_longbow_2" culture="Culture.vlandia" subtype="bow" is_merchandise="false">
 		<ItemComponent>
-			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="240" speed_rating="70" missile_speed="200" weapon_length="120" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="130" speed_rating="70" missile_speed="200" weapon_length="120" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -292,7 +292,7 @@
 	</Item>
 	<Item id="woodland_longbow" name="{=RBM_RAN_010}180 Pound War Longbow" body_name="bo_longbow_c" mesh="longbow_c" holster_mesh_with_weapon="longbow_c_holster" weight="0.5" difficulty="120" appearance="1" Type="Bow" value="4800" item_holsters="bow_back_longbow:bow_back_longbow_2" culture="Culture.battania">
 		<ItemComponent>
-			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="189" speed_rating="70" missile_speed="180" weapon_length="118" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="140" speed_rating="70" missile_speed="180" weapon_length="118" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -300,7 +300,7 @@
 	</Item>
 	<Item id="nomad_bow" name="{=RBM_RAN_011}170 Pound War Longbow" body_name="bo_longbow_g" mesh="longbow_g" holster_mesh_with_weapon="longbow_g_holster" weight="0.5" difficulty="110" appearance="1" Type="Bow" value="4950" item_holsters="bow_back_longbow:bow_back_longbow_2" culture="Culture.aserai">
 		<ItemComponent>
-			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="189" speed_rating="70" missile_speed="170" weapon_length="114" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="155" speed_rating="70" missile_speed="170" weapon_length="114" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -308,7 +308,7 @@
 	</Item>
 	<Item id="noble_bow" name="{=RBM_RAN_012}166 Pound Composite War Bow" body_name="bo_shortbow_f" mesh="shortbow_f" holster_mesh="shortbow_f_holster" holster_mesh_with_weapon="shortbow_f_holster_weapon" weight="0.8" difficulty="106" appearance="1" Type="Bow" value="25000" item_holsters="bow_hip:bow_hip_2" culture="Culture.khuzait">
 		<ItemComponent>
-			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="189" speed_rating="70" missile_speed="166" weapon_length="116" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="158" speed_rating="70" missile_speed="166" weapon_length="116" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" CanBeUsedWhileCrouched="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -316,7 +316,7 @@
 	</Item>
 	<Item id="training_bow" name="{=RBM_RAN_013}166 Pound Tournament Composite Bow" body_name="bo_shortbow_b" holster_mesh="shortbow_b_holster"	holster_mesh_with_weapon="shortbow_b_holster_weapon" mesh="shortbow_b" weight="0.3" difficulty="0" appearance="1" Type="Bow" value="600" item_holsters="bow_hip:bow_hip_2" is_merchandise="false">
 		<ItemComponent>
-			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="240" speed_rating="70" missile_speed="166" weapon_length="106" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.0,0,-0.1" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="158" speed_rating="70" missile_speed="166" weapon_length="106" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.0,0,-0.1" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" CanBeUsedWhileCrouched="true" />
 			</Weapon>
 		</ItemComponent>
@@ -324,7 +324,7 @@
 	</Item>
 	<Item id="lowland_yew_bow" name="{=RBM_RAN_014}160 Pound War Longbow" body_name="bo_longbow_b" mesh="longbow_b" holster_mesh_with_weapon="longbow_b_holster" weight="0.5" difficulty="100" appearance="1" Type="Bow" value="4350" item_holsters="bow_back_longbow:bow_back_longbow_2" culture="Culture.vlandia">
 		<ItemComponent>
-			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="189" speed_rating="70" missile_speed="160" weapon_length="117" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="160" speed_rating="70" missile_speed="160" weapon_length="117" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -332,7 +332,7 @@
 	</Item>
 	<Item id="longbow_recurve_desert_bow" name="{=RBM_RAN_015}150 Pound War Longbow" body_name="bo_longbow_i" mesh="longbow_i" holster_mesh_with_weapon="longbow_i_holster" weight="0.5" difficulty="90" appearance="1" Type="Bow" value="4500" item_holsters="bow_back_longbow:bow_back_longbow_2" culture="Culture.aserai">
 		<ItemComponent>
-			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="189" speed_rating="70" missile_speed="150" weapon_length="116" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="165" speed_rating="70" missile_speed="150" weapon_length="116" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -340,7 +340,7 @@
 	</Item>
 	<Item id="woodland_yew_bow" name="{=RBM_RAN_016}140 Pound War Longbow" body_name="bo_longbow_d" mesh="longbow_d" holster_mesh_with_weapon="longbow_d_holster" weight="0.5" difficulty="80" appearance="1" Type="Bow" value="3900" item_holsters="bow_back_longbow:bow_back_longbow_2" culture="Culture.battania">
 		<ItemComponent>
-			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="189" speed_rating="70" missile_speed="140" weapon_length="115" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="170" speed_rating="70" missile_speed="140" weapon_length="115" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -348,7 +348,7 @@
 	</Item>
 	<Item id="steppe_war_bow" name="{=RBM_RAN_017}135 Pound Composite War Bow" body_name="bo_shortbow_a" mesh="shortbow_a" holster_mesh="shortbow_a_holster" holster_mesh_with_weapon="shortbow_a_holster_weapon" weight="0.3" difficulty="75" appearance="1" Type="Bow" value="6075" item_holsters="bow_hip:bow_hip_2" culture="Culture.khuzait">
 		<ItemComponent>
-			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="189" speed_rating="70" missile_speed="135" weapon_length="107" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.0,0,-0.15" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="173" speed_rating="70" missile_speed="135" weapon_length="107" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.0,0,-0.15" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" CanBeUsedWhileCrouched="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -356,7 +356,7 @@
 	</Item>
 	<Item id="tribal_bow" name="{=RBM_RAN_018}130 Pound War Longbow" body_name="bo_longbow_h" mesh="longbow_h" holster_mesh_with_weapon="longbow_h_holster" weight="0.5" difficulty="70" appearance="1" Type="Bow" value="3000" item_holsters="bow_back_longbow:bow_back_longbow_2" culture="Culture.aserai">
 		<ItemComponent>
-			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="189" speed_rating="70" missile_speed="130" weapon_length="115" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="175" speed_rating="70" missile_speed="130" weapon_length="115" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -364,7 +364,7 @@
 	</Item>
 	<Item id="steppe_heavy_bow" name="{=RBM_RAN_019}125 Pound Composite War Bow" body_name="bo_shortbow_b" mesh="shortbow_b" holster_mesh="shortbow_b_holster" holster_mesh_with_weapon="shortbow_b_holster_weapon" weight="0.3" difficulty="65" appearance="1" Type="Bow" value="3750" item_holsters="bow_hip:bow_hip_2" culture="Culture.khuzait">
 		<ItemComponent>
-			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="189" speed_rating="73" missile_speed="125" weapon_length="106" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.0,0,-0.1" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="178" speed_rating="73" missile_speed="125" weapon_length="106" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.0,0,-0.1" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" CanBeUsedWhileCrouched="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -372,7 +372,7 @@
 	</Item>
 	<Item id="lowland_longbow" name="{=RBM_RAN_020}120 Pound War Longbow" body_name="bo_longbow_a" mesh="longbow_a" holster_mesh_with_weapon="longbow_a_holster" weight="0.5" difficulty="60" appearance="1" Type="Bow" value="2400" item_holsters="bow_back_longbow:bow_back_longbow_2" culture="Culture.vlandia" subtype="bow">
 		<ItemComponent>
-			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="189" speed_rating="75" missile_speed="120" weapon_length="120" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="180" speed_rating="75" missile_speed="120" weapon_length="120" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -380,7 +380,7 @@
 	</Item>
 	<Item id="nordic_shortbow" name="{=RBM_RAN_021}120 Pound Composite War Bow" body_name="bo_shortbow_e" mesh="shortbow_e" holster_mesh="shortbow_e_holster" holster_mesh_with_weapon="shortbow_e_holster_weapon" weight="0.3" difficulty="60" appearance="1" Type="Bow" value="3450" item_holsters="bow_hip:bow_hip_2" culture="Culture.sturgia">
 		<ItemComponent>
-			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="189" speed_rating="75" missile_speed="120" weapon_length="108" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="180" speed_rating="75" missile_speed="120" weapon_length="108" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" CanBeUsedWhileCrouched="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -388,7 +388,7 @@
 	</Item>
 	<Item id="composite_steppe_bow" name="{=RBM_RAN_022}110 Pound Composite War Bow" body_name="bo_shortbow_d" mesh="shortbow_d" holster_mesh="shortbow_d_holster" holster_mesh_with_weapon="shortbow_d_holster_weapon" weight="0.3" difficulty="50" appearance="1" Type="Bow" value="3300" item_holsters="bow_hip:bow_hip_2" culture="Culture.khuzait">
 		<ItemComponent>
-			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="189" speed_rating="80" missile_speed="110" weapon_length="108" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="185" speed_rating="80" missile_speed="110" weapon_length="108" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" CanBeUsedWhileCrouched="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -396,7 +396,7 @@
 	</Item>
 	<Item id="composite_bow" name="{=RBM_RAN_023}100 Pound Composite War Bow" body_name="bo_shortbow_c" mesh="shortbow_c" holster_mesh="shortbow_c_holster"	holster_mesh_with_weapon="shortbow_c_holster_weapon" weight="0.3" difficulty="40" appearance="1" Type="Bow" value="3000" item_holsters="bow_hip:bow_hip_2">
 		<ItemComponent>
-			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="189" speed_rating="85" missile_speed="100" weapon_length="110" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="190" speed_rating="85" missile_speed="100" weapon_length="110" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" CanBeUsedWhileCrouched="true" />
 			</Weapon>
 		</ItemComponent>
@@ -404,7 +404,7 @@
 	</Item>
 	<Item id="glen_ranger_bow" name="{=RBM_RAN_024}100 Pound War Longbow" body_name="bo_longbow_f" mesh="longbow_f" holster_mesh_with_weapon="longbow_f_holster" weight="0.4" difficulty="40" appearance="1" Type="Bow" value="2200" item_holsters="bow_back_longbow:bow_back_longbow_2" culture="Culture.battania">
 		<ItemComponent>
-			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="189" speed_rating="85" missile_speed="100" weapon_length="111" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
+			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="190" speed_rating="85" missile_speed="100" weapon_length="111" thrust_damage="100" item_usage="long_bow" physics_material="wood_weapon" center_of_mass="0.15,0,0" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true"/>
 			</Weapon>
 		</ItemComponent>
