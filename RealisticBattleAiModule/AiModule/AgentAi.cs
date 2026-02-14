@@ -10,6 +10,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.MountAndBlade.ArrangementOrder;
 
@@ -22,6 +23,9 @@ namespace RBMAI
         [HarmonyPatch("SetAiRelatedProperties")]
         private class OverrideSetAiRelatedProperties
         {
+            private static readonly MethodInfo _getMeleeSkillMethod = typeof(AgentStatCalculateModel).GetMethod("GetMeleeSkill", BindingFlags.NonPublic | BindingFlags.Instance);
+            private static readonly MBList<Agent> _nearbyEnemiesBuffer = new MBList<Agent>();
+
             private static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem, AgentStatCalculateModel __instance)
             {
                 bool agentHasShield = false;
@@ -34,18 +38,11 @@ namespace RBMAI
                     }
                 }
 
-                MethodInfo method = typeof(AgentStatCalculateModel).GetMethod("GetMeleeSkill", BindingFlags.NonPublic | BindingFlags.Instance);
-                method.DeclaringType.GetMethod("GetMeleeSkill");
-
-                //int meleeSkill = RBMAI.Utilities.GetMeleeSkill(agent, equippedItem, secondaryItem);
-                //int effectiveSkill = RBMAI.Utilities.GetEffectiveSkill(agent.Character, agent.Origin, agent.Formation, skill);
-
                 SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
-                int meleeSkill = (int)method.Invoke(__instance, new object[] { agent, equippedItem, secondaryItem });
+                int meleeSkill = (int)_getMeleeSkillMethod.Invoke(__instance, new object[] { agent, equippedItem, secondaryItem });
                 int effectiveSkill = __instance.GetEffectiveSkill(agent, skill);
                 float meleeLevel = RBMAI.Utilities.CalculateAILevel(agent, meleeSkill);                 //num
                 float effectiveSkillLevel = RBMAI.Utilities.CalculateAILevel(agent, effectiveSkill);    //num2
-                float meleeDefensivness = meleeLevel + agent.Defensiveness;             //num3
 
                 if (RBMConfig.RBMConfig.rbmCombatEnabled)
                 {
@@ -94,7 +91,7 @@ namespace RBMAI
                         agentDrivenProperties.AIBlockOnDecideAbility = MBMath.ClampFloat(0.1f + meleeLevel * 0.6f, 0.2f, 0.45f); // chance for directed blocking
                         agentDrivenProperties.AIParryOnDecideAbility = MBMath.ClampFloat((meleeLevel * 0.30f) + 0.15f, 0.1f, 0.45f);
                         agentDrivenProperties.AIRealizeBlockingFromIncorrectSideAbility = MBMath.ClampFloat((meleeLevel * 0.3f) - 0.05f, 0.01f, 0.25f);
-                        agentDrivenProperties.AIDecideOnAttackChance = MBMath.ClampFloat(meleeLevel + 0.1f, 0f, 0.95f);
+                        //agentDrivenProperties.AIDecideOnAttackChance = MBMath.ClampFloat(meleeLevel + 0.1f, 0f, 0.95f);
                         agentDrivenProperties.AIDecideOnRealizeEnemyBlockingAttackAbility = MBMath.ClampFloat(meleeLevel + 0.1f, 0f, 0.95f);
                         agentDrivenProperties.AIAttackOnParryChance = MBMath.ClampFloat(meleeLevel * 0.4f, 0.1f, 0.30f); //0.3f - 0.1f * agent.Defensiveness; //0.2-0.3f // chance to break own parry guard - 0 constant parry in reaction to enemy, 1 constant breaking of parry
                         agentDrivenProperties.AIDecideOnAttackChance = MBMath.ClampFloat(meleeLevel * 0.3f, 0.15f, 0.5f); //0.15f * agent.Defensiveness; //0-0.15f - how often is direction changed (or swtich to parry) when preparing for attack
@@ -237,9 +234,9 @@ namespace RBMAI
                 }
                 if (agent != null && agent.IsActive() && Mission.Current != null && Mission.Current.IsDeploymentFinished)
                 {
-                    MBList<Agent> enemiesVeryClose = new MBList<Agent>();
-                    enemiesVeryClose = Mission.Current.GetNearbyEnemyAgents(agent.GetWorldPosition().AsVec2, 1.75f, agent.Team, enemiesVeryClose);
-                    if (enemiesVeryClose.Count() > 0)
+                    _nearbyEnemiesBuffer.Clear();
+                    Mission.Current.GetNearbyEnemyAgents(agent.GetWorldPosition().AsVec2, 1.75f, agent.Team, _nearbyEnemiesBuffer);
+                    if (_nearbyEnemiesBuffer.Count > 0)
                     {
                         agent.AgentDrivenProperties.AiWeaponFavorMultiplierMelee = 35f;
 
@@ -268,6 +265,20 @@ namespace RBMAI
         [HarmonyPatch("SetWeaponSkillEffectsOnAgent")]
         internal class SetWeaponSkillEffectsOnAgentPatch
         {
+
+            private static void AddToStat(ref ExplainedNumber stat, EffectIncrementType effectIncrementType, float number, TextObject text)
+            {
+                switch (effectIncrementType)
+                {
+                    case EffectIncrementType.Add:
+                        stat.Add(number, text);
+                        break;
+                    case EffectIncrementType.AddFactor:
+                        stat.AddFactor(number, text);
+                        break;
+                }
+            }
+
             private static bool Prefix(ref SandboxAgentStatCalculateModel __instance, ref Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedWeaponComponent)
             {
                 CharacterObject characterObject = agent.Character as CharacterObject;
@@ -286,8 +297,9 @@ namespace RBMAI
                         {
                             effectiveSkill = 150;
                         }
-                        SkillHelper.AddSkillBonusForCharacter(DefaultSkillEffects.OneHandedSpeed, characterObject, ref stat);
-                        SkillHelper.AddSkillBonusForCharacter(DefaultSkillEffects.OneHandedSpeed, characterObject, ref stat2);
+                        float skillEffectValue = DefaultSkillEffects.OneHandedSpeed.GetSkillEffectValue(effectiveSkill);
+                        AddToStat(ref stat, DefaultSkillEffects.OneHandedSpeed.IncrementType, skillEffectValue, stat.IncludeDescriptions ? GameTexts.FindText("role", DefaultSkillEffects.OneHandedSpeed.Role.ToString()) : null);
+                        AddToStat(ref stat2, DefaultSkillEffects.OneHandedSpeed.IncrementType, skillEffectValue, stat2.IncludeDescriptions ? GameTexts.FindText("role", DefaultSkillEffects.OneHandedSpeed.Role.ToString()) : null);
                     }
                     else if (equippedWeaponComponent.RelevantSkill == DefaultSkills.TwoHanded)
                     {
@@ -295,8 +307,9 @@ namespace RBMAI
                         {
                             effectiveSkill = 150;
                         }
-                        SkillHelper.AddSkillBonusForCharacter(DefaultSkillEffects.TwoHandedSpeed, characterObject, ref stat);
-                        SkillHelper.AddSkillBonusForCharacter(DefaultSkillEffects.TwoHandedSpeed, characterObject, ref stat2);
+                        float skillEffectValue = DefaultSkillEffects.TwoHandedSpeed.GetSkillEffectValue(effectiveSkill);
+                        AddToStat(ref stat, DefaultSkillEffects.TwoHandedSpeed.IncrementType, skillEffectValue, stat.IncludeDescriptions ? GameTexts.FindText("role", DefaultSkillEffects.OneHandedSpeed.Role.ToString()) : null);
+                        AddToStat(ref stat2, DefaultSkillEffects.TwoHandedSpeed.IncrementType, skillEffectValue, stat2.IncludeDescriptions ? GameTexts.FindText("role", DefaultSkillEffects.OneHandedSpeed.Role.ToString()) : null);
                     }
                     else if (equippedWeaponComponent.RelevantSkill == DefaultSkills.Polearm)
                     {
@@ -304,8 +317,9 @@ namespace RBMAI
                         {
                             effectiveSkill = 150;
                         }
-                        SkillHelper.AddSkillBonusForCharacter(DefaultSkillEffects.PolearmSpeed, characterObject, ref stat);
-                        SkillHelper.AddSkillBonusForCharacter(DefaultSkillEffects.PolearmSpeed, characterObject, ref stat2);
+                        float skillEffectValue = DefaultSkillEffects.PolearmSpeed.GetSkillEffectValue(effectiveSkill);
+                        AddToStat(ref stat, DefaultSkillEffects.PolearmSpeed.IncrementType, skillEffectValue, stat.IncludeDescriptions ? GameTexts.FindText("role", DefaultSkillEffects.OneHandedSpeed.Role.ToString()) : null);
+                        AddToStat(ref stat2, DefaultSkillEffects.PolearmSpeed.IncrementType, skillEffectValue, stat2.IncludeDescriptions ? GameTexts.FindText("role", DefaultSkillEffects.OneHandedSpeed.Role.ToString()) : null);
                     }
                     else if (equippedWeaponComponent.RelevantSkill == DefaultSkills.Crossbow)
                     {
@@ -449,42 +463,35 @@ namespace RBMAI
         [HarmonyPatch("UpdateLastAttackAndHitTimes")]
         internal class UpdateLastAttackAndHitTimesFix
         {
+            private static readonly PropertyInfo _lastRangedHitTime = typeof(Agent).GetProperty("LastRangedHitTime");
+            private static readonly PropertyInfo _lastRangedAttackTime = typeof(Agent).GetProperty("LastRangedAttackTime");
+            private static readonly PropertyInfo _lastMeleeHitTime = typeof(Agent).GetProperty("LastMeleeHitTime");
+            private static readonly PropertyInfo _lastMeleeAttackTime = typeof(Agent).GetProperty("LastMeleeAttackTime");
+
             private static bool Prefix(ref Agent __instance, Agent attackerAgent, bool isMissile)
             {
-                PropertyInfo LastRangedHitTime = typeof(Agent).GetProperty("LastRangedHitTime");
-                LastRangedHitTime.DeclaringType.GetProperty("LastRangedHitTime");
-
-                PropertyInfo LastRangedAttackTime = typeof(Agent).GetProperty("LastRangedAttackTime");
-                LastRangedAttackTime.DeclaringType.GetProperty("LastRangedAttackTime");
-
-                PropertyInfo LastMeleeHitTime = typeof(Agent).GetProperty("LastMeleeHitTime");
-                LastMeleeHitTime.DeclaringType.GetProperty("LastMeleeHitTime");
-
-                PropertyInfo LastMeleeAttackTime = typeof(Agent).GetProperty("LastMeleeAttackTime");
-                LastMeleeAttackTime.DeclaringType.GetProperty("LastMeleeAttackTime");
-
                 float currentTime = MBCommon.GetTotalMissionTime();
                 if (isMissile)
                 {
                     //__instance.LastRangedHitTime = currentTime;
-                    LastRangedHitTime.SetValue(__instance, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                    _lastRangedHitTime.SetValue(__instance, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                 }
                 else
                 {
                     //LastMeleeHitTime = currentTime;
-                    LastMeleeHitTime.SetValue(__instance, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                    _lastMeleeHitTime.SetValue(__instance, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                 }
                 if (attackerAgent != __instance && attackerAgent != null)
                 {
                     if (isMissile)
                     {
                         //attackerAgent.LastRangedAttackTime = currentTime;
-                        LastRangedAttackTime.SetValue(attackerAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                        _lastRangedAttackTime.SetValue(attackerAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                     }
                     else
                     {
                         //attackerAgent.LastMeleeAttackTime = currentTime;
-                        LastMeleeAttackTime.SetValue(attackerAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                        _lastMeleeAttackTime.SetValue(attackerAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                     }
                 }
 
@@ -495,12 +502,12 @@ namespace RBMAI
                         if (isMissile)
                         {
                             //__instance.LastRangedHitTime = currentTime;
-                            LastRangedHitTime.SetValue(__instance.RiderAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                            _lastRangedHitTime.SetValue(__instance.RiderAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                         }
                         else
                         {
                             //LastMeleeHitTime = currentTime;
-                            LastMeleeHitTime.SetValue(__instance.RiderAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                            _lastMeleeHitTime.SetValue(__instance.RiderAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                         }
                     }
                 }
@@ -561,15 +568,13 @@ namespace RBMAI
                     ref WorldPosition origin = ref userFrameForAgent.Origin;
                     Vec3 targetPoint = ___Agent.Position;
                     float distanceSq = origin.DistanceSquaredWithLimit(in targetPoint, num * num + 1E-05f);
-                    float newDist = -1f;
-                    itemPickupDistanceStorage.TryGetValue(___Agent, out newDist);
-                    if (newDist == 0f)
+                    if (!itemPickupDistanceStorage.TryGetValue(___Agent, out float newDist))
                     {
                         itemPickupDistanceStorage[___Agent] = distanceSq;
                     }
                     else
                     {
-                        if (distanceSq == newDist)
+                        if (Math.Abs(distanceSq - newDist) < 1E-05f)
                         {
                             ___Agent.StopUsingGameObject(isSuccessful: false);
                             itemPickupDistanceStorage.Remove(___Agent);
@@ -629,40 +634,31 @@ namespace RBMAI
             }
         }
 
+        private static bool NeutralizeWeatherEffects()
+        {
+            Scene scene = Mission.Current.Scene;
+            if (scene != null)
+            {
+                Mission.Current.SetBowMissileSpeedModifier(1f);
+                Mission.Current.SetCrossbowMissileSpeedModifier(1f);
+                Mission.Current.SetMissileRangeModifier(1f);
+            }
+
+            return false;
+        }
+
         [HarmonyPatch(typeof(CustomBattleApplyWeatherEffectsModel))]
         [HarmonyPatch("ApplyWeatherEffects")]
         public class OverrideApplyWeatherEffectsCustomBattle
         {
-            private static bool Prefix()
-            {
-                Scene scene = Mission.Current.Scene;
-                if (scene != null)
-                {
-                    Mission.Current.SetBowMissileSpeedModifier(1f);
-                    Mission.Current.SetCrossbowMissileSpeedModifier(1f);
-                    Mission.Current.SetMissileRangeModifier(1f);
-                }
-
-                return false;
-            }
+            private static bool Prefix() => NeutralizeWeatherEffects();
         }
 
         [HarmonyPatch(typeof(SandboxApplyWeatherEffectsModel))]
         [HarmonyPatch("ApplyWeatherEffects")]
         public class OverrideApplyWeatherEffectsSandbox
         {
-            private static bool Prefix()
-            {
-                Scene scene = Mission.Current.Scene;
-                if (scene != null)
-                {
-                    Mission.Current.SetBowMissileSpeedModifier(1f);
-                    Mission.Current.SetCrossbowMissileSpeedModifier(1f);
-                    Mission.Current.SetMissileRangeModifier(1f);
-                }
-
-                return false;
-            }
+            private static bool Prefix() => NeutralizeWeatherEffects();
         }
 
         [HarmonyPatch(typeof(Mission))]
