@@ -115,7 +115,7 @@ namespace RBMAI
                 float num4 = 1f - effectiveSkillLevel;
                 if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Crossbow)
                 {
-                    agentDrivenProperties.AiShooterError = 0.015f - (0.007f * effectiveSkillLevel);
+                    agentDrivenProperties.AiShooterError = 0.01f - (0.005f * effectiveSkillLevel);
                     agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
                     agentDrivenProperties.WeaponBestAccuracyWaitTime = 1f;
                 }
@@ -132,8 +132,11 @@ namespace RBMAI
                     agentDrivenProperties.WeaponBestAccuracyWaitTime = 0.1f;
                 }
 
-                agentDrivenProperties.AIHoldingReadyMaxDuration = 1f;
-                agentDrivenProperties.AIHoldingReadyVariationPercentage = 1f;
+                if (!agent.IsRangedCached)
+                {
+                    agentDrivenProperties.AIHoldingReadyMaxDuration = 1f;
+                    agentDrivenProperties.AIHoldingReadyVariationPercentage = 1f;
+                }
 
                 //agentDrivenProperties.AiWeaponFavorMultiplierPolearm
 
