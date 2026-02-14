@@ -2,8 +2,6 @@
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using TaleWorlds.CampaignSystem.TournamentGames;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
@@ -19,8 +17,6 @@ namespace RBMAI
 {
     public class PostureLogic : MissionLogic
     {
-        //private static int tickCooldownReset = 30;
-        //private static int tickCooldown = 0;
         private static float timeToCalc = 0.5f;
         private static float timeToCalcStaminaHealth = 10f;
         private static float timeToUpdateAgents = 3f;
@@ -28,22 +24,25 @@ namespace RBMAI
         private static float currentDt = 0f;
         private static float currentDtToUpdateAgents = 0f;
         private static float currentDtToUpdateStaminaHealth = 0f;
-        private static int postureEffectCheck = 0;
-        private static int postureEffectCheckCooldown = 15;
-
-        private static float weaponLengthPostureFactor = 0.2f;
-        private static float weaponWeightPostureFactor = 0.5f;
-        private static float relativeSpeedPostureFactor = 0.6f;
-        private static float lwrResultModifier = 3f;
-
-        //private static float maxAcc = 1.5f;
-        //private static float minAcc = 0.1f;
-        //private static float curAcc = 1f;
-        //private static bool isCountingUp = false;
 
         public static MBArrayList<Agent> agentsToDropShield = new MBArrayList<Agent> { };
         public static MBArrayList<Agent> agentsToDropWeapon = new MBArrayList<Agent> { };
         public static Dictionary<Agent, FormationClass> agentsToChangeFormation = new Dictionary<Agent, FormationClass> { };
+
+        private readonly MBArrayList<Agent> _inactiveAgentsBuffer = new MBArrayList<Agent>();
+        private readonly MBArrayList<Agent> _dropShieldBuffer = new MBArrayList<Agent>();
+        private readonly MBArrayList<Agent> _dropWeaponBuffer = new MBArrayList<Agent>();
+
+        [ThreadStatic]
+        private static bool _inMeleeHitContext;
+
+        [HarmonyPatch(typeof(Mission))]
+        [HarmonyPatch("MeleeHitCallback")]
+        private class MeleeHitContextPatch
+        {
+            private static void Prefix() => _inMeleeHitContext = true;
+            private static void Finalizer() => _inMeleeHitContext = false;
+        }
 
         [HarmonyPatch(typeof(Agent))]
         [HarmonyPatch("EquipItemsFromSpawnEquipment")]
@@ -85,7 +84,7 @@ namespace RBMAI
                         posture = AgentPostures.values[__instance];
                         posture.maxStamina = athleticBase * (1f + (effectiveAthleticSkill / athleticSkillModifier));
                         posture.stamina = athleticBase * (1f + (effectiveAthleticSkill / athleticSkillModifier));
-                        posture.staminaRegenPerTick = 0.075f * (1f + (effectiveAthleticSkill / athleticSkillModifier));
+                        posture.staminaRegenPerTick = 0.02f * (1f + (effectiveAthleticSkill / athleticSkillModifier));
                     }
                     AgentPostures.values.TryGetValue(__instance, out posture);
                     if (posture != null)
@@ -209,7 +208,6 @@ namespace RBMAI
                     EquipmentIndex ei = victimAgent.GetPrimaryWieldedItemIndex();
                     if (ei != EquipmentIndex.None && numOfMeleeWeapons > 1)
                     {
-                        agentsToDropWeapon.Add(victimAgent);
                         if (!agentsToDropWeapon.Contains(victimAgent))
                         {
                             agentsToDropWeapon.Add(victimAgent);
@@ -331,7 +329,6 @@ namespace RBMAI
                         }
 
                     }
-                    addPosturedamageVisual(attackerAgent, victimAgent);
                 }
             }
 
@@ -375,7 +372,6 @@ namespace RBMAI
                             }
                         }
                     }
-                    addPosturedamageVisual(attackerAgent, victimAgent);
                 }
             }
 
@@ -423,16 +419,14 @@ namespace RBMAI
                         InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_020}Chamber block {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
                     }
                     makePostureCrashThroughBlow(ref mission, blow, attackerAgent, victimAgent, 0, ref collisionData, attackerWeapon);
-                    ResetPostureForAgent(ref attackerPosture, postureResetModifier);
-                    addPosturedamageVisual(attackerAgent, victimAgent);
                 }
             }
 
             private static void Postfix(ref Mission __instance, ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
             {
                 //sanity gate
-                if (!(new StackTrace()).GetFrame(3).GetMethod().Name.Contains("MeleeHit") || victimAgent == null || !victimAgent.IsHuman ||
-                    !RBMConfig.RBMConfig.postureEnabled || attackerAgent == null || victimAgent == null || attackerAgent.IsFriendOf(victimAgent))
+                if (!_inMeleeHitContext || victimAgent == null || !victimAgent.IsHuman ||
+                    !RBMConfig.RBMConfig.postureEnabled || attackerAgent == null || attackerAgent.IsFriendOf(victimAgent))
                 {
                     return;
                 }
@@ -452,11 +446,23 @@ namespace RBMAI
                 Blow blow = __result;
                 Mission mission = __instance;
 
-                //modifier of psoture damage, loser the hit is to COM ( center of mass ), higher the Modifier
+                //modifier of posture damage, closer the hit is to COM ( center of mass ), higher the Modifier
                 float comHitModifier = isUnarmedAttack ? 1f : Utilities.GetComHitModifier(in collisionData, in attackerWeapon);
 
+                //chamber block
+                if (collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked)
+                {
+                    if (defenderPosture != null)
+                    {
+                        handleDefenderChamberBlock(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, MeleeHitType.ChamberBlock);
+                    }
+                    if (attackerPosture != null)
+                    {
+                        handleAttackerChamberBlock(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, MeleeHitType.ChamberBlock);
+                    }
+                }
                 //weapon block
-                if (!collisionData.AttackBlockedWithShield)
+                else if (!collisionData.AttackBlockedWithShield)
                 {
                     //normal weapon block
                     if (collisionData.CollisionResult == CombatCollisionResult.Blocked)
@@ -562,7 +568,7 @@ namespace RBMAI
                     }
                 }
                 //shield block
-                else if (collisionData.AttackBlockedWithShield)
+                else
                 {
                     //bad shield block
                     if (collisionData.CollisionResult == CombatCollisionResult.Blocked && !collisionData.CorrectSideShieldBlock)
@@ -667,23 +673,9 @@ namespace RBMAI
                         }
                     }
                 }
-                //chamber block
-                else if (collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked)
-                {
-                    if (defenderPosture != null)
-                    {
-                        handleDefenderChamberBlock(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, MeleeHitType.ChamberBlock);
-                    }
-                    if (attackerPosture != null)
-                    {
-                        handleAttackerChamberBlock(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, MeleeHitType.ChamberBlock);
-
-
-                    }
-                }
             }
 
-            private static void applyShieldDamage(Agent victim, int ammount)
+            private static void applyShieldDamage(Agent victim, int amount)
             {
                 for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                 {
@@ -691,7 +683,7 @@ namespace RBMAI
                     {
                         if (victim.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield && !victim.WieldedOffhandWeapon.IsEmpty && victim.WieldedOffhandWeapon.Item.Id == victim.Equipment[equipmentIndex].Item.Id)
                         {
-                            int num = MathF.Max(0, victim.Equipment[equipmentIndex].HitPoints - ammount);
+                            int num = MathF.Max(0, victim.Equipment[equipmentIndex].HitPoints - amount);
                             victim.ChangeWeaponHitPoints(equipmentIndex, (short)num);
                             break;
                         }
@@ -840,23 +832,9 @@ namespace RBMAI
                 attackerEffectiveWeaponSkill = attackerEffectiveWeaponSkill / weaponSkillModifier;
                 attackerEffectiveStrengthSkill = attackerEffectiveStrengthSkill / strengthSkillModifier;
 
-                bool attackBlockedByOneHanedWithoutShield = false;
-                if (!collisionData.AttackBlockedWithShield)
-                {
-                    EquipmentIndex ei = defenderAgent.GetPrimaryWieldedItemIndex();
-                    if (ei != EquipmentIndex.None)
-                    {
-                        WeaponClass ws = defenderAgent.Equipment[defenderAgent.GetPrimaryWieldedItemIndex()].CurrentUsageItem.WeaponClass;
-                        if (ws == WeaponClass.OneHandedAxe || ws == WeaponClass.OneHandedPolearm || ws == WeaponClass.OneHandedSword || ws == WeaponClass.Mace)
-                        {
-                            attackBlockedByOneHanedWithoutShield = true;
-                        }
-                    }
-                }
-                //float lwrpostureModifier = calculateDefenderLWRPostureModifier(attackerAgent, defenderAgent, attackerWeaponLength, defenderWeaponLength, attackerWeaponWeight, attackBlockedByOneHanedWithoutShield, collisionData.AttackBlockedWithShield);
                 float skillModifier = (1f + attackerEffectiveStrengthSkill + attackerEffectiveWeaponSkill) / (1f + defenderEffectiveStrengthSkill + defenderEffectiveWeaponSkill);
-                float aditiveSpeedModifier = getRelativeSpeedPostureModifier(attackerAgent, defenderAgent);
-                basePostureDamage = (basePostureDamage + aditiveSpeedModifier) * skillModifier;
+                float additiveSpeedModifier = getRelativeSpeedPostureModifier(attackerAgent, defenderAgent);
+                basePostureDamage = (basePostureDamage + additiveSpeedModifier) * skillModifier;
 
                 //actionTypeDamageModifier += actionTypeDamageModifier * 0.5f * comHitModifier;
                 result = basePostureDamage * actionTypeDamageModifier * defenderPostureDamageModifier * comHitModifier;
@@ -931,24 +909,9 @@ namespace RBMAI
                 attackerEffectiveWeaponSkill = attackerEffectiveWeaponSkill / weaponSkillModifier;
                 attackerEffectiveStrengthSkill = attackerEffectiveStrengthSkill / strengthSkillModifier;
 
-                bool attackBlockedByOneHanedWithoutShield = false;
-                if (!collisionData.AttackBlockedWithShield)
-                {
-                    EquipmentIndex ei = defenderAgent.GetPrimaryWieldedItemIndex();
-                    if (ei != EquipmentIndex.None)
-                    {
-                        WeaponClass ws = defenderAgent.Equipment[defenderAgent.GetPrimaryWieldedItemIndex()].CurrentUsageItem.WeaponClass;
-                        if (ws == WeaponClass.OneHandedAxe || ws == WeaponClass.OneHandedPolearm || ws == WeaponClass.OneHandedSword || ws == WeaponClass.Mace)
-                        {
-                            attackBlockedByOneHanedWithoutShield = true;
-                        }
-                    }
-                }
-
-                //float lwrpostureModifier = calculateAttackerLWRPostureModifier(attackerAgent, defenderAgent, attackerWeaponLength, defenderWeaponLength, attackerWeaponWeight, defenderWeaponWeight, attackBlockedByOneHanedWithoutShield, collisionData.AttackBlockedWithShield);
                 float skillModifier = (1f + defenderEffectiveStrengthSkill + defenderEffectiveWeaponSkill) / (1f + attackerEffectiveStrengthSkill + attackerEffectiveWeaponSkill);
-                float aditiveSpeedModifier = getRelativeSpeedPostureModifier(attackerAgent, defenderAgent);
-                basePostureDamage = (basePostureDamage + aditiveSpeedModifier) * skillModifier;
+                float additiveSpeedModifier = getRelativeSpeedPostureModifier(attackerAgent, defenderAgent);
+                basePostureDamage = (basePostureDamage + additiveSpeedModifier) * skillModifier;
 
                 //actionTypeDamageModifier += actionTypeDamageModifier * 0.5f * comHitModifier;
                 result = basePostureDamage * actionTypeDamageModifier * comHitModifier;
@@ -966,51 +929,6 @@ namespace RBMAI
                 }
                 return retVal;
             }
-
-            //public static float calculateDefenderLWRPostureModifier(
-            //    Agent attackerAgent, Agent defenderAgent,
-            //    float attackerWeaponLength, float defenderWeaponLength, float attackerWeaponWeight, bool attackBlockedByOneHanded, bool attackBlockedByShield)
-            //{
-            //    float relativeSpeed = (defenderAgent.Velocity - attackerAgent.Velocity).Length * relativeSpeedPostureFactor;
-            //    if (attackBlockedByShield)
-            //    {
-            //        return 1f + ((attackerWeaponWeight / 2f) + relativeSpeed) / 4f;
-            //    }
-            //    else
-            //    {
-            //        if (attackBlockedByOneHanded)
-            //        {
-            //            return 1f + ((attackerWeaponWeight / 2f) + relativeSpeed) / 2f;
-            //        }
-            //        else
-            //        {
-            //            return 1f + ((attackerWeaponWeight / 2f) + relativeSpeed) / 3f;
-            //        }
-            //    }
-            //}
-
-            //public static float calculateAttackerLWRPostureModifier(
-            //    Agent attackerAgent, Agent defenderAgent,
-            //    float attackerWeaponLength, float defenderWeaponLength,
-            //    float attackerWeaponWeight, float defenderWeaponWeight, bool attackBlockedByOneHanded, bool attackBlockedByShield)
-            //{
-            //    float relativeSpeed = (defenderAgent.Velocity - attackerAgent.Velocity).Length * relativeSpeedPostureFactor;
-            //    if (attackBlockedByShield)
-            //    {
-            //        return 1f + (relativeSpeed) / 2f;
-            //    }
-            //    else
-            //    {
-            //        if (attackBlockedByOneHanded)
-            //        {
-            //            return 1f + (relativeSpeed) / 4f;
-            //        }
-            //        else
-            //        {
-            //            return 1f + (relativeSpeed) / 3f;
-            //        }
-            //    }
-            //}
 
             private static void makePostureRiposteBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, BlowFlags addedBlowFlag)
             {
@@ -1437,8 +1355,8 @@ namespace RBMAI
                     attackerEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(shooterAgent, DefaultSkills.Athletics);
                 }
 
-                dynamicPostureLoss -= MBMath.Lerp(0f, 1f, 1f - (attackerEffectiveWeaponSkill / 200f)) * (dynamicPS * 0.5f);
-                dynamicPostureLoss -= MBMath.Lerp(0f, 1f, 1f - (attackerEffectiveStrengthSkill / 200f)) * (dynamicPS * 0.5f);
+                dynamicPostureLoss -= Math.Max(0f, 1f - (attackerEffectiveWeaponSkill / 200f)) * (dynamicPS * 0.5f);
+                dynamicPostureLoss -= Math.Max(0f, 1f - (attackerEffectiveStrengthSkill / 200f)) * (dynamicPS * 0.5f);
 
                 return fixedPostureLoss + dynamicPostureLoss;
             }
@@ -1488,12 +1406,16 @@ namespace RBMAI
                                     }
                             }
 
-                            shooterPosture.posture = Math.Max(0f, shooterPosture.posture - postureLoss);
                             shooterPosture.stamina = Math.Max(0f, shooterPosture.stamina - postureLoss);
-                            if (shooterPosture.posture < 0f)
+                            if (shooterPosture.posture - postureLoss <= 0f)
                             {
+                                shooterPosture.posture = 0f;
                                 float postureResetModifier = 0.5f;
                                 ResetPostureForAgent(ref shooterPosture, postureResetModifier);
+                            }
+                            else
+                            {
+                                shooterPosture.posture -= postureLoss;
                             }
                             //shooterPosture.lastPostureLossTime = currentTime;
                         }
@@ -1560,11 +1482,6 @@ namespace RBMAI
             }
         }
 
-        //public void handlePostureLevelEffects(Agent agent, Posture posture)
-        //{
-        //    agent.UpdateAgentStats();
-        //}
-
         public override void OnMissionTick(float dt)
         {
             base.OnMissionTick(dt);
@@ -1576,9 +1493,12 @@ namespace RBMAI
                 }
                 else
                 {
-                    foreach (var agent in Mission.Current.Agents.Where((Agent a) => a.IsActive() && a.IsHuman))
+                    foreach (Agent agent in Mission.Current.Agents)
                     {
-                        agent.UpdateAgentStats();
+                        if (agent.IsActive() && agent.IsHuman)
+                        {
+                            agent.UpdateAgentStats();
+                        }
                     }
                     currentDtToUpdateAgents = 0f;
                 }
@@ -1591,12 +1511,12 @@ namespace RBMAI
                 }
                 else
                 {
-                    MBArrayList<Agent> inactiveAgents = new MBArrayList<Agent>();
+                    _inactiveAgentsBuffer.Clear();
                     foreach (KeyValuePair<Agent, Posture> entry in AgentPostures.values)
                     {
                         if (entry.Key != null && entry.Key.Mission != null && !entry.Key.IsActive())
                         {
-                            inactiveAgents.Add(entry.Key);
+                            _inactiveAgentsBuffer.Add(entry.Key);
                             continue;
                         }
                         if (entry.Key.IsPlayerControlled || entry.Key.IsPlayerUnit)
@@ -1643,11 +1563,10 @@ namespace RBMAI
                     {
                         currentDtToUpdateStaminaHealth = 0f;
                     }
-                    foreach (Agent agent in inactiveAgents)
+                    foreach (Agent agent in _inactiveAgentsBuffer)
                     {
                         AgentPostures.values.Remove(agent);
                     }
-                    inactiveAgents.Clear();
 
                     foreach (KeyValuePair<Agent, FormationClass> entry in agentsToChangeFormation)
                     {
@@ -1660,7 +1579,7 @@ namespace RBMAI
                     agentsToChangeFormation.Clear();
 
                     //shield drop
-                    MBArrayList<Agent> agentsAbleToDropShield = new MBArrayList<Agent> { };
+                    _dropShieldBuffer.Clear();
                     for (int i = agentsToDropShield.Count - 1; i >= 0; i--)
                     {
                         if (agentsToDropShield[i] != null && agentsToDropShield[i].Mission != null && agentsToDropShield[i].IsActive())
@@ -1676,15 +1595,15 @@ namespace RBMAI
                             }
                             else
                             {
-                                agentsAbleToDropShield.Add(agentsToDropShield[i]);
+                                _dropShieldBuffer.Add(agentsToDropShield[i]);
                             }
                         }
                         else
                         {
-                            agentsAbleToDropShield.Add(agentsToDropShield[i]);
+                            _dropShieldBuffer.Add(agentsToDropShield[i]);
                         }
                     }
-                    foreach (Agent agent in agentsAbleToDropShield)
+                    foreach (Agent agent in _dropShieldBuffer)
                     {
                         if (agent != null && agent.Mission != null && agent.IsActive())
                         {
@@ -1697,10 +1616,9 @@ namespace RBMAI
                         }
                         agentsToDropShield.Remove(agent);
                     }
-                    agentsAbleToDropShield.Clear();
 
                     //weapon drop
-                    MBArrayList<Agent> agentsAbleToDropWeapon = new MBArrayList<Agent> { };
+                    _dropWeaponBuffer.Clear();
                     for (int i = agentsToDropWeapon.Count - 1; i >= 0; i--)
                     {
                         if (agentsToDropWeapon[i] != null && agentsToDropWeapon[i].Mission != null && agentsToDropWeapon[i].IsActive())
@@ -1716,15 +1634,15 @@ namespace RBMAI
                             }
                             else
                             {
-                                agentsAbleToDropWeapon.Add(agentsToDropWeapon[i]);
+                                _dropWeaponBuffer.Add(agentsToDropWeapon[i]);
                             }
                         }
                         else
                         {
-                            agentsAbleToDropWeapon.Add(agentsToDropWeapon[i]);
+                            _dropWeaponBuffer.Add(agentsToDropWeapon[i]);
                         }
                     }
-                    foreach (Agent agent in agentsAbleToDropWeapon)
+                    foreach (Agent agent in _dropWeaponBuffer)
                     {
                         if (agent != null && agent.Mission != null && agent.IsActive())
                         {
@@ -1737,7 +1655,6 @@ namespace RBMAI
                         }
                         agentsToDropWeapon.Remove(agent);
                     }
-                    agentsAbleToDropWeapon.Clear();
 
                     currentDt = 0f;
                 }
@@ -1745,162 +1662,5 @@ namespace RBMAI
 
         }
 
-        //[HarmonyPatch(typeof(Mission))]
-        //[HarmonyPatch("OnAgentDismount")]
-        //public class OnAgentDismountPatch
-        //{
-        //    private static void Postfix(Agent agent, Mission __instance)
-        //    {
-        //        if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
-        //        {
-        //            bool isInfFormationActive = agent.Team.GetFormation(FormationClass.Infantry) != null && agent.Team.GetFormation(FormationClass.Infantry).CountOfUnits > 0;
-        //            bool isArcFormationActive = agent.Team.GetFormation(FormationClass.Ranged) != null && agent.Team.GetFormation(FormationClass.Ranged).CountOfUnits > 0;
-        //            if (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) || agent.Equipment.HasRangedWeapon(WeaponClass.Bolt))
-        //            {
-        //                float distanceToInf = -1f;
-        //                float distanceToArc = -1f;
-        //                if (agent.Formation != null && isInfFormationActive)
-        //                {
-        //                    distanceToInf = agent.Team.GetFormation(FormationClass.Infantry).CachedMedianPosition.AsVec2.Distance(agent.Formation.CachedMedianPosition.AsVec2);
-        //                }
-        //                if (agent.Formation != null && isArcFormationActive)
-        //                {
-        //                    distanceToArc = agent.Team.GetFormation(FormationClass.Ranged).CachedMedianPosition.AsVec2.Distance(agent.Formation.CachedMedianPosition.AsVec2);
-        //                }
-        //                if (distanceToArc > 0f && distanceToArc < distanceToInf)
-        //                {
-        //                    if (agent != null && agent.IsActive())
-        //                    {
-        //                        try
-        //                        {
-        //                            agentsToChangeFormation[agent] = FormationClass.Ranged;
-        //                            return;
-        //                        }
-        //                        catch (Exception ex)
-        //                        {
-        //                            return;
-        //                        }
-        //                    }
-        //                }
-        //                else if (distanceToInf > 0f && distanceToInf < distanceToArc)
-        //                {
-        //                    if (agent != null && agent.IsActive())
-        //                    {
-        //                        try
-        //                        {
-        //                            agentsToChangeFormation[agent] = FormationClass.Infantry;
-        //                            return;
-        //                        }
-        //                        catch (Exception ex) 
-        //                        {
-        //                            return;
-        //                        }
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    if (distanceToInf > 0f)
-        //                    {
-        //                        if (agent != null && agent.IsActive())
-        //                        {
-        //                            try
-        //                            {
-        //                                agentsToChangeFormation[agent] = FormationClass.Infantry;
-        //                                return;
-        //                            }
-        //                            catch (Exception ex)
-        //                            {
-        //                                return;
-        //                            }
-        //                        }
-        //                    }
-        //                    else if (distanceToArc > 0f)
-        //                    {
-        //                        if (agent != null && agent.IsActive())
-        //                        {
-        //                            try
-        //                            {
-        //                                agentsToChangeFormation[agent] = FormationClass.Ranged;
-        //                                return;
-        //                            }
-        //                            catch (Exception ex)
-        //                            {
-        //                                return;
-        //                            }
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //            else
-        //            {
-        //                if (agent.Formation != null && isInfFormationActive)
-        //                {
-        //                    if (agent != null && agent.IsActive())
-        //                    {
-        //                        try
-        //                        {
-        //                            agentsToChangeFormation[agent] = FormationClass.Infantry;
-        //                            return;
-        //                        }
-        //                        catch (Exception ex)
-        //                        {
-        //                            return;
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
-        //[HarmonyPatch(typeof(Mission))]
-        //[HarmonyPatch("OnAgentMount")]
-        //internal class OnAgentMountPatch
-        //{
-        //    private static void Postfix(Agent agent, Mission __instance)
-        //    {
-        //        if (!agent.IsPlayerControlled && agent.Formation != null && Mission.Current != null && Mission.Current.IsFieldBattle && agent.IsActive())
-        //        {
-        //            bool isCavFormationActive = agent.Team.GetFormation(FormationClass.Cavalry) != null && agent.Team.GetFormation(FormationClass.Cavalry).CountOfUnits > 0;
-        //            bool isHaFormationActive = agent.Team.GetFormation(FormationClass.HorseArcher) != null && agent.Team.GetFormation(FormationClass.HorseArcher).CountOfUnits > 0;
-        //            if (agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) || agent.Equipment.HasRangedWeapon(WeaponClass.Bolt))
-        //            {
-        //                if (agent.Formation != null && isHaFormationActive)
-        //                {
-        //                    if (agent.IsActive())
-        //                    {
-        //                        try
-        //                        {
-        //                            agentsToChangeFormation[agent] = FormationClass.HorseArcher;
-        //                            return;
-        //                        }
-        //                        catch (Exception ex)
-        //                        {
-        //                            return;
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //            else
-        //            {
-        //                if (agent.Formation != null && isCavFormationActive)
-        //                {
-        //                    if (agent.IsActive())
-        //                    {
-        //                        try
-        //                        {
-        //                            agentsToChangeFormation[agent] = FormationClass.Cavalry;
-        //                            return;
-        //                        }
-        //                        catch (Exception ex)
-        //                        {
-        //                            return;
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
     }
 }

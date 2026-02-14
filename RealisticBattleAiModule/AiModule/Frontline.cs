@@ -367,7 +367,6 @@ namespace RBMAI
                     return true;
                 }
 
-                //if (__instance.Team.ActiveAgents.Count * __instance.Team.QuerySystem.InfantryRatio <= 30) { return true; } // frontline system disabled for small infantry battles
                 if (mission != null && mission.IsFieldBattle && (__instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation) && !____detachedUnits.Contains(unit))
                 {
                     Agent targetAgent;
