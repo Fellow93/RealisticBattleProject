@@ -12,109 +12,65 @@ using static TaleWorlds.MountAndBlade.HumanAIComponent;
 
 namespace RBMAI
 {
-    internal class Behaviours
+    [HarmonyPatch(typeof(BehaviorSkirmishLine))]
+    internal class OverrideBehaviorSkirmishLine
     {
-        [HarmonyPatch(typeof(BehaviorSkirmishLine))]
-        private class OverrideBehaviorSkirmishLine
+        [HarmonyPostfix]
+        [HarmonyPatch("CalculateCurrentOrder")]
+        private static void PostfixCalculateCurrentOrder(Formation ____mainFormation, ref FacingOrder ___CurrentFacingOrder)
         {
-            [HarmonyPostfix]
-            [HarmonyPatch("CalculateCurrentOrder")]
-            private static void PostfixCalculateCurrentOrder(Formation ____mainFormation, ref FacingOrder ___CurrentFacingOrder)
+            if (____mainFormation != null)
             {
-                if (____mainFormation != null)
-                {
-                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(____mainFormation.Direction);
-                }
-            }
-
-            [HarmonyPostfix]
-            [HarmonyPatch("OnBehaviorActivatedAux")]
-            private static void PostfixOnBehaviorActivatedAux(ref BehaviorSkirmishLine __instance)
-            {
-                __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
-                __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(110f));
+                ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(____mainFormation.Direction);
             }
         }
 
-        [HarmonyPatch(typeof(BehaviorDefend))]
-        private class OverrideBehaviorDefend
+        [HarmonyPostfix]
+        [HarmonyPatch("OnBehaviorActivatedAux")]
+        private static void PostfixOnBehaviorActivatedAux(ref BehaviorSkirmishLine __instance)
         {
-            public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
+            __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
+            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(110f));
+        }
+    }
 
-            [HarmonyPostfix]
-            [HarmonyPatch("CalculateCurrentOrder")]
-            private static void PostfixCalculateCurrentOrder(ref BehaviorDefend __instance, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged, ref FacingOrder ___CurrentFacingOrder)
+    [HarmonyPatch(typeof(BehaviorDefend))]
+    internal class OverrideBehaviorDefend
+    {
+        public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
+
+        [HarmonyPostfix]
+        [HarmonyPatch("CalculateCurrentOrder")]
+        private static void PostfixCalculateCurrentOrder(ref BehaviorDefend __instance, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged, ref FacingOrder ___CurrentFacingOrder)
+        {
+            if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
-                if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
+                WorldPosition medianPositionNew = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
+                medianPositionNew.SetVec2(__instance.Formation.QuerySystem.Formation.CachedAveragePosition);
+
+                Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
+
+                if (significantEnemy != null)
                 {
-                    WorldPosition medianPositionNew = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
-                    medianPositionNew.SetVec2(__instance.Formation.QuerySystem.Formation.CachedAveragePosition);
-
-                    Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
-
-                    if (significantEnemy != null)
+                    Vec2 enemyDirection = significantEnemy.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
+                    float distance = enemyDirection.Normalize();
+                    if (distance < (200f))
                     {
-                        Vec2 enemyDirection = significantEnemy.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
-                        float distance = enemyDirection.Normalize();
-                        if (distance < (200f))
-                        {
-                            WorldPosition newPosition = WorldPosition.Invalid;
-                            positionsStorage.TryGetValue(__instance.Formation, out newPosition);
-                            ____currentOrder = MovementOrder.MovementOrderMove(newPosition);
-                            ___IsCurrentOrderChanged = true;
-                            ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
-                        }
-                        else
-                        {
-                            if (__instance.DefensePosition.IsValid)
-                            {
-                                WorldPosition newPosition = __instance.DefensePosition;
-                                newPosition.SetVec2(newPosition.AsVec2 + __instance.Formation.Direction * 10f);
-                                ____currentOrder = MovementOrder.MovementOrderMove(newPosition);
-                                positionsStorage[__instance.Formation] = newPosition;
-
-                                ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
-                            }
-                            else
-                            {
-                                WorldPosition newPosition = medianPositionNew;
-                                newPosition.SetVec2(newPosition.AsVec2 + __instance.Formation.Direction * 10f);
-                                positionsStorage[__instance.Formation] = newPosition;
-                                ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
-                            }
-                        }
+                        WorldPosition newPosition = WorldPosition.Invalid;
+                        positionsStorage.TryGetValue(__instance.Formation, out newPosition);
+                        ____currentOrder = MovementOrder.MovementOrderMove(newPosition);
+                        ___IsCurrentOrderChanged = true;
+                        ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
                     }
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(BehaviorHoldHighGround))]
-        private class OverrideBehaviorHoldHighGround
-        {
-            public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
-
-            [HarmonyPostfix]
-            [HarmonyPatch("CalculateCurrentOrder")]
-            private static void PostfixCalculateCurrentOrder(ref BehaviorHoldHighGround __instance, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged, ref FacingOrder ___CurrentFacingOrder)
-            {
-                if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
-                {
-                    WorldPosition medianPositionNew = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
-                    medianPositionNew.SetVec2(__instance.Formation.QuerySystem.Formation.CachedAveragePosition);
-
-                    Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
-
-                    if (significantEnemy != null)
+                    else
                     {
-                        Vec2 enemyDirection = significantEnemy.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
-                        float distance = enemyDirection.Normalize();
-
-                        if (distance < (200f))
+                        if (__instance.DefensePosition.IsValid)
                         {
-                            WorldPosition newPosition = WorldPosition.Invalid;
-                            positionsStorage.TryGetValue(__instance.Formation, out newPosition);
+                            WorldPosition newPosition = __instance.DefensePosition;
+                            newPosition.SetVec2(newPosition.AsVec2 + __instance.Formation.Direction * 10f);
                             ____currentOrder = MovementOrder.MovementOrderMove(newPosition);
-                            ___IsCurrentOrderChanged = true;
+                            positionsStorage[__instance.Formation] = newPosition;
+
                             ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
                         }
                         else
@@ -128,58 +84,99 @@ namespace RBMAI
                 }
             }
         }
+    }
 
-        [HarmonyPatch(typeof(BehaviorScreenedSkirmish))]
-        private class OverrideBehaviorScreenedSkirmish
+    [HarmonyPatch(typeof(BehaviorHoldHighGround))]
+    internal class OverrideBehaviorHoldHighGround
+    {
+        public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
+
+        [HarmonyPostfix]
+        [HarmonyPatch("CalculateCurrentOrder")]
+        private static void PostfixCalculateCurrentOrder(ref BehaviorHoldHighGround __instance, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged, ref FacingOrder ___CurrentFacingOrder)
         {
-            [HarmonyPostfix]
-            [HarmonyPatch("CalculateCurrentOrder")]
-            private static void PostfixCalculateCurrentOrder(ref Formation ____mainFormation, ref BehaviorScreenedSkirmish __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
+            if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
-                if (____mainFormation != null && (____mainFormation.CountOfUnits == 0 || !____mainFormation.QuerySystem.IsInfantryFormation))
+                WorldPosition medianPositionNew = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
+                medianPositionNew.SetVec2(__instance.Formation.QuerySystem.Formation.CachedAveragePosition);
+
+                Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
+
+                if (significantEnemy != null)
                 {
-                    ____mainFormation = __instance.Formation.Team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).FirstOrDefault((Formation f) => f.AI.IsMainFormation);
-                }
-                if (____mainFormation != null && __instance.Formation != null && ____mainFormation.CountOfUnits > 0 && ____mainFormation.QuerySystem.IsInfantryFormation)
-                {
-                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(____mainFormation.Direction);
-                    WorldPosition medianPosition = ____mainFormation.QuerySystem.Formation.CachedMedianPosition;
-                    Vec2 calcPosition;
-                    if (__instance.Formation.QuerySystem.IsRangedCavalryFormation)
+                    Vec2 enemyDirection = significantEnemy.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
+                    float distance = enemyDirection.Normalize();
+
+                    if (distance < (200f))
                     {
-                        calcPosition = medianPosition.AsVec2 - ____mainFormation.Direction.Normalized() * (____mainFormation.Depth / 2f + __instance.Formation.Depth / 2f + 15f);
+                        WorldPosition newPosition = WorldPosition.Invalid;
+                        positionsStorage.TryGetValue(__instance.Formation, out newPosition);
+                        ____currentOrder = MovementOrder.MovementOrderMove(newPosition);
+                        ___IsCurrentOrderChanged = true;
+                        ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
                     }
                     else
                     {
-                        calcPosition = medianPosition.AsVec2 - ____mainFormation.Direction.Normalized() * (____mainFormation.Depth / 2f + __instance.Formation.Depth / 2f + 5f);
+                        WorldPosition newPosition = medianPositionNew;
+                        newPosition.SetVec2(newPosition.AsVec2 + __instance.Formation.Direction * 10f);
+                        positionsStorage[__instance.Formation] = newPosition;
+                        ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
                     }
-                    medianPosition.SetVec2(calcPosition);
-                    if (!Mission.Current.IsPositionInsideBoundaries(calcPosition) || medianPosition.GetNavMesh() == UIntPtr.Zero)
-                    {
-                        medianPosition = ____mainFormation.QuerySystem.Formation.CachedMedianPosition;
-                    }
-                    ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
                 }
             }
+        }
+    }
 
-            [HarmonyPrefix]
-            [HarmonyPatch("TickOccasionally")]
-            private static bool PrefixTickOccasionally(Formation ____mainFormation, BehaviorScreenedSkirmish __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
-            {
-                MethodInfo method = typeof(BehaviorScreenedSkirmish).GetMethod("CalculateCurrentOrder", BindingFlags.NonPublic | BindingFlags.Instance);
-                method.DeclaringType.GetMethod("CalculateCurrentOrder");
-                method.Invoke(__instance, new object[] { });
-                __instance.Formation.SetMovementOrder(____currentOrder);
-                __instance.Formation.SetFacingOrder(___CurrentFacingOrder);
-                return false;
-            }
+    [HarmonyPatch(typeof(BehaviorScreenedSkirmish))]
+    internal class OverrideBehaviorScreenedSkirmish
+    {
+        private static readonly MethodInfo CalculateCurrentOrderMethod = typeof(BehaviorScreenedSkirmish).GetMethod("CalculateCurrentOrder", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            [HarmonyPostfix]
-            [HarmonyPatch("OnBehaviorActivatedAux")]
-            private static void PostfixOnBehaviorActivatedAux(ref BehaviorScreenedSkirmish __instance)
+        [HarmonyPostfix]
+        [HarmonyPatch("CalculateCurrentOrder")]
+        private static void PostfixCalculateCurrentOrder(ref Formation ____mainFormation, ref BehaviorScreenedSkirmish __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
+        {
+            if (____mainFormation != null && (____mainFormation.CountOfUnits == 0 || !____mainFormation.QuerySystem.IsInfantryFormation))
             {
-                __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
+                ____mainFormation = __instance.Formation.Team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).FirstOrDefault((Formation f) => f.AI.IsMainFormation);
             }
+            if (____mainFormation != null && __instance.Formation != null && ____mainFormation.CountOfUnits > 0 && ____mainFormation.QuerySystem.IsInfantryFormation)
+            {
+                ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(____mainFormation.Direction);
+                WorldPosition medianPosition = ____mainFormation.QuerySystem.Formation.CachedMedianPosition;
+                Vec2 calcPosition;
+                if (__instance.Formation.QuerySystem.IsRangedCavalryFormation)
+                {
+                    calcPosition = medianPosition.AsVec2 - ____mainFormation.Direction.Normalized() * (____mainFormation.Depth / 2f + __instance.Formation.Depth / 2f + 15f);
+                }
+                else
+                {
+                    calcPosition = medianPosition.AsVec2 - ____mainFormation.Direction.Normalized() * (____mainFormation.Depth / 2f + __instance.Formation.Depth / 2f + 5f);
+                }
+                medianPosition.SetVec2(calcPosition);
+                if (!Mission.Current.IsPositionInsideBoundaries(calcPosition) || medianPosition.GetNavMesh() == UIntPtr.Zero)
+                {
+                    medianPosition = ____mainFormation.QuerySystem.Formation.CachedMedianPosition;
+                }
+                ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
+            }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch("TickOccasionally")]
+        private static bool PrefixTickOccasionally(Formation ____mainFormation, BehaviorScreenedSkirmish __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
+        {
+            CalculateCurrentOrderMethod.Invoke(__instance, new object[] { });
+            __instance.Formation.SetMovementOrder(____currentOrder);
+            __instance.Formation.SetFacingOrder(___CurrentFacingOrder);
+            return false;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch("OnBehaviorActivatedAux")]
+        private static void PostfixOnBehaviorActivatedAux(ref BehaviorScreenedSkirmish __instance)
+        {
+            __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
         }
     }
 
@@ -467,20 +464,14 @@ namespace RBMAI
             }
             else
             {
-                bool num = (__instance.Formation.QuerySystem.AverageAllyPosition - __instance.Formation.Team.QuerySystem.AverageEnemyPosition).LengthSquared <= 160000f;
-                bool engaging = ____engaging;
-                engaging = (____engaging = (num || ((!____engaging) ? ((__instance.Formation.QuerySystem.Formation.CachedAveragePosition - __instance.Formation.QuerySystem.AverageAllyPosition).LengthSquared <= 160000f) : (!(__instance.Formation.QuerySystem.UnderRangedAttackRatio * 0.2f > __instance.Formation.QuerySystem.MakingRangedAttackRatio)))));
+                bool isEnemyClose = (__instance.Formation.QuerySystem.AverageAllyPosition - __instance.Formation.Team.QuerySystem.AverageEnemyPosition).LengthSquared <= 160000f;
+                ____engaging = (isEnemyClose || ((!____engaging) ? ((__instance.Formation.QuerySystem.Formation.CachedAveragePosition - __instance.Formation.QuerySystem.AverageAllyPosition).LengthSquared <= 160000f) : (!(__instance.Formation.QuerySystem.UnderRangedAttackRatio * 0.2f > __instance.Formation.QuerySystem.MakingRangedAttackRatio))));
                 if (!____engaging)
                 {
                     position = new WorldPosition(Mission.Current.Scene, new Vec3(__instance.Formation.QuerySystem.AverageAllyPosition.x, __instance.Formation.QuerySystem.AverageAllyPosition.y, __instance.Formation.Team.GetMedianPosition(__instance.Formation.Team.GetAveragePosition()).GetNavMeshZ() + 100f));
                 }
                 else
                 {
-                    Vec2 vec = (__instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2 - targetFormationQS.Formation.CachedMedianPosition.AsVec2).Normalized().LeftVec();
-                    FormationQuerySystem closestSignificantlyLargeEnemyFormation = __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
-                    float num2 = 50f + (targetFormationQS.Formation.Width + __instance.Formation.Depth) * 0.5f;
-                    float num3 = 0f;
-
                     Formation enemyFormation = targetFormationQS.Formation;
 
                     if (__instance.Formation != null && __instance.Formation.QuerySystem.IsInfantryFormation)
@@ -539,8 +530,8 @@ namespace RBMAI
                                 position.SetVec2(enemyFormation.CurrentPosition + enemyFormation.Direction.Normalized() * -(__instance.Formation.Depth / 2f + enemyFormation.Depth / 2f + 50f));
                             }
                         }
-                        float distanceFromBoudnary = Mission.Current.GetClosestBoundaryPosition(__instance.Formation.CurrentPosition).Distance(__instance.Formation.CurrentPosition);
-                        if (distanceFromBoudnary <= __instance.Formation.Width / 2f)
+                        float distanceFromBoundary = Mission.Current.GetClosestBoundaryPosition(__instance.Formation.CurrentPosition).Distance(__instance.Formation.CurrentPosition);
+                        if (distanceFromBoundary <= __instance.Formation.Width / 2f)
                         {
                             if (rotationDirection.waitbeforeChangeCooldownCurrent > rotationDirection.waitbeforeChangeCooldownMax)
                             {
@@ -657,7 +648,6 @@ namespace RBMAI
         private static bool PrefixCalculateCurrentOrder(ref BehaviorProtectFlank __instance, ref FormationAI.BehaviorSide ___FlankSide, ref FacingOrder ___CurrentFacingOrder, ref MovementOrder ____currentOrder, ref MovementOrder ____chargeToTargetOrder, ref MovementOrder ____movementOrder, ref BehaviorState ____protectFlankState, ref Formation ____mainFormation, ref FormationAI.BehaviorSide ____behaviorSide)
         {
             WorldPosition position = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
-            Vec2 averagePosition = __instance.Formation.QuerySystem.Formation.CachedAveragePosition;
 
             float distanceFromMainFormation = 90f;
             float closerDistanceFromMainFormation = 30f;
@@ -761,20 +751,17 @@ namespace RBMAI
                         case BehaviorState.Charging:
                             {
                                 FormationQuerySystem closestFormation = __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
-                                if (closestFormation != null && closestFormation.Formation != null)
+                                if (closestFormation == null || closestFormation.Formation == null)
                                 {
-                                    if (closestFormation == null)
-                                    {
-                                        ____currentOrder = ____movementOrder;
-                                        ____protectFlankState = BehaviorState.Returning;
-                                        break;
-                                    }
-                                    float returnDistance = 40f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
-                                    if (__instance.Formation.QuerySystem.Formation.CachedAveragePosition.DistanceSquared(position) > returnDistance * returnDistance)
-                                    {
-                                        ____currentOrder = ____movementOrder;
-                                        ____protectFlankState = BehaviorState.Returning;
-                                    }
+                                    ____currentOrder = ____movementOrder;
+                                    ____protectFlankState = BehaviorState.Returning;
+                                    break;
+                                }
+                                float returnDistance = 40f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
+                                if (__instance.Formation.QuerySystem.Formation.CachedAveragePosition.DistanceSquared(position) > returnDistance * returnDistance)
+                                {
+                                    ____currentOrder = ____movementOrder;
+                                    ____protectFlankState = BehaviorState.Returning;
                                 }
                                 break;
                             }
@@ -801,7 +788,7 @@ namespace RBMAI
                                 if (closestFormation != null && closestFormation.Formation != null && (closestFormation.Formation.QuerySystem.IsCavalryFormation || closestFormation.Formation.QuerySystem.IsRangedCavalryFormation))
                                 {
                                     float changeToChargeDistance = 110f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
-                                    if (closestFormation.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2.Distance(position) < changeToChargeDistance || __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.1f)
+                                    if (closestFormation.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2.DistanceSquared(position) < changeToChargeDistance * changeToChargeDistance || __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.1f)
                                     {
                                         ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(closestFormation.Formation);
                                         ____currentOrder = ____chargeToTargetOrder;
@@ -813,20 +800,17 @@ namespace RBMAI
                         case BehaviorState.Charging:
                             {
                                 FormationQuerySystem closestFormation = __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
-                                if (closestFormation != null && closestFormation.Formation != null)
+                                if (closestFormation == null || closestFormation.Formation == null)
                                 {
-                                    if (closestFormation == null)
-                                    {
-                                        ____currentOrder = ____movementOrder;
-                                        ____protectFlankState = BehaviorState.Returning;
-                                        break;
-                                    }
-                                    float returnDistance = 80f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
-                                    if (__instance.Formation.QuerySystem.Formation.CachedAveragePosition.DistanceSquared(position) > returnDistance * returnDistance)
-                                    {
-                                        ____currentOrder = ____movementOrder;
-                                        ____protectFlankState = BehaviorState.Returning;
-                                    }
+                                    ____currentOrder = ____movementOrder;
+                                    ____protectFlankState = BehaviorState.Returning;
+                                    break;
+                                }
+                                float returnDistance = 80f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
+                                if (__instance.Formation.QuerySystem.Formation.CachedAveragePosition.DistanceSquared(position) > returnDistance * returnDistance)
+                                {
+                                    ____currentOrder = ____movementOrder;
+                                    ____protectFlankState = BehaviorState.Returning;
                                 }
                                 break;
                             }
@@ -855,7 +839,7 @@ namespace RBMAI
 
         [HarmonyPrefix]
         [HarmonyPatch("GetAiWeight")]
-        private static bool PostfixGetAiWeight(ref BehaviorProtectFlank __instance, ref float __result, ref Formation ____mainFormation)
+        private static bool PrefixGetAiWeight(ref BehaviorProtectFlank __instance, ref float __result, ref Formation ____mainFormation)
         {
             if (____mainFormation == null || !____mainFormation.AI.IsMainFormation)
             {
@@ -896,10 +880,10 @@ namespace RBMAI
                     ___Agent.SetMaximumSpeedLimit(speed, false);
                     agent.MountAgent.SetMaximumSpeedLimit(speed, false);
                     return false;
-                    if (limitIsMultiplier && desiredSpeed < 0.95f)
-                    {
-                        desiredSpeed = 0.95f;
-                    }
+                    //if (limitIsMultiplier && desiredSpeed < 0.95f)
+                    //{
+                    //    desiredSpeed = 0.95f;
+                    //}
                 }
             }
             if (agent.Formation?.AI?.ActiveBehavior == null)
@@ -1006,13 +990,13 @@ namespace RBMAI
     [HarmonyPatch(typeof(BehaviorVanguard))]
     internal class OverrideBehaviorVanguard
     {
+        private static readonly MethodInfo CalculateCurrentOrderMethod = typeof(BehaviorVanguard).GetMethod("CalculateCurrentOrder", BindingFlags.NonPublic | BindingFlags.Instance);
+
         [HarmonyPrefix]
         [HarmonyPatch("TickOccasionally")]
         private static bool PrefixTickOccasionally(ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder, BehaviorVanguard __instance)
         {
-            MethodInfo method = typeof(BehaviorVanguard).GetMethod("CalculateCurrentOrder", BindingFlags.NonPublic | BindingFlags.Instance);
-            method.DeclaringType.GetMethod("CalculateCurrentOrder");
-            method.Invoke(__instance, new object[] { });
+            CalculateCurrentOrderMethod.Invoke(__instance, new object[] { });
 
             __instance.Formation.SetMovementOrder(____currentOrder);
             __instance.Formation.SetFacingOrder(___CurrentFacingOrder);
@@ -1211,23 +1195,16 @@ namespace RBMAI
         {
             if (__instance.OrderEnum == MovementOrder.MovementOrderEnum.FallBack)
             {
+                FormationQuerySystem querySystem = f.QuerySystem;
+                FormationQuerySystem closestSignificantlyLargeEnemyFormation = querySystem.ClosestSignificantlyLargeEnemyFormation;
                 Vec2 directionAux;
-                if ((uint)(__instance.OrderEnum - 10) <= 1u)
+                if (closestSignificantlyLargeEnemyFormation == null)
                 {
-                    FormationQuerySystem querySystem = f.QuerySystem;
-                    FormationQuerySystem ClosestSignificantlyLargeEnemyFormation = querySystem.ClosestSignificantlyLargeEnemyFormation;
-                    if (ClosestSignificantlyLargeEnemyFormation == null)
-                    {
-                        directionAux = Vec2.One;
-                    }
-                    else
-                    {
-                        directionAux = (ClosestSignificantlyLargeEnemyFormation.Formation.CachedMedianPosition.AsVec2 - querySystem.Formation.CachedAveragePosition).Normalized();
-                    }
+                    directionAux = Vec2.One;
                 }
                 else
                 {
-                    directionAux = Vec2.One;
+                    directionAux = (closestSignificantlyLargeEnemyFormation.Formation.CachedMedianPosition.AsVec2 - querySystem.Formation.CachedAveragePosition).Normalized();
                 }
 
                 WorldPosition medianPosition = f.QuerySystem.Formation.CachedMedianPosition;
@@ -1301,7 +1278,6 @@ namespace RBMAI
                     }
                     else
                     {
-                        __instance = MovementOrder.MovementOrderChargeToTarget(enemyFormation);
                         WorldPosition tempPos = WorldPosition.Invalid;
                         if (positionsStorage.TryGetValue(f, out tempPos))
                         {
@@ -1423,15 +1399,10 @@ namespace RBMAI
         {
             if (__instance.ArrangementOrder == ArrangementOrderScatter)
             {
-                if (unitSpacing == null)
-                {
-                    unitSpacing = 2;
-                }
                 unitSpacing = 2;
                 if (__instance.QuerySystem != null && __instance.QuerySystem.IsRangedFormation)
                 {
                     unitSpacing = 4;
-
                 }
             }
             return true;
@@ -1529,6 +1500,8 @@ namespace RBMAI
     {
         public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
         public static Dictionary<Formation, int> waitCountStorage = new Dictionary<Formation, int> { };
+        private static readonly MethodInfo CalculateCurrentOrderMethod = typeof(BehaviorAdvance).GetMethod("CalculateCurrentOrder", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly FieldInfo CurrentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
 
         [HarmonyPrefix]
         [HarmonyPatch("CalculateCurrentOrder")]
@@ -1540,11 +1513,9 @@ namespace RBMAI
 
                 if (__instance.Formation.QuerySystem.IsInfantryFormation && !RBMAI.Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
                 {
-                    FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
-                    _currentTacticField.DeclaringType.GetField("_currentTactic");
                     if (__instance.Formation?.Team?.TeamAI != null)
                     {
-                        if (_currentTacticField.GetValue(__instance.Formation?.Team?.TeamAI) != null && _currentTacticField.GetValue(__instance.Formation?.Team?.TeamAI).ToString().Contains("SplitArchers"))
+                        if (CurrentTacticField.GetValue(__instance.Formation?.Team?.TeamAI) != null && CurrentTacticField.GetValue(__instance.Formation?.Team?.TeamAI).ToString().Contains("SplitArchers"))
                         {
                             Formation allyArchers = Utilities.FindSignificantAlly(__instance.Formation, false, true, false, false, false);
                             if (allyArchers != null)
@@ -1672,9 +1643,7 @@ namespace RBMAI
         private static bool PrefixTickOccasionally(ref BehaviorAdvance __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder,
             ref bool ____isInShieldWallDistance, ref bool ____switchedToShieldWallRecently, ref Timer ____switchedToShieldWallTimer)
         {
-            MethodInfo method = typeof(BehaviorAdvance).GetMethod("CalculateCurrentOrder", BindingFlags.NonPublic | BindingFlags.Instance);
-            method.DeclaringType.GetMethod("CalculateCurrentOrder");
-            method.Invoke(__instance, new object[] { });
+            CalculateCurrentOrderMethod.Invoke(__instance, new object[] { });
 
             __instance.Formation.SetMovementOrder(__instance.CurrentOrder);
             if (__instance.Formation.QuerySystem.IsInfantryFormation)
