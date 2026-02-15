@@ -9,7 +9,13 @@
       "Bash(\"/c/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/MSBuild.exe\" RealisticBattle.sln /p:Configuration=Release \"/p:Platform=Any CPU\" /t:Build /v:minimal)",
       "Bash(msbuild:*)",
       "Bash(\"/c/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/MSBuild.exe\" --version)",
-      "Bash(\"/c/Program Files \\(x86\\)/Microsoft Visual Studio/2022/BuildTools/MSBuild/Current/Bin/MSBuild.exe\" --version)"
+      "Bash(\"/c/Program Files \\(x86\\)/Microsoft Visual Studio/2022/BuildTools/MSBuild/Current/Bin/MSBuild.exe\" --version)",
+      "WebFetch(domain:apidoc.bannerlord.com)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:butr.github.io)",
+      "WebFetch(domain:forums.taleworlds.com)",
+      "Bash(\"/c/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/MSBuild.exe\" \"RealisticBattle.sln\" \"/p:Configuration=Release\" \"/p:Platform=Any CPU\" \"/t:Build\" \"/v:minimal\")"
     ]
   }
 }
