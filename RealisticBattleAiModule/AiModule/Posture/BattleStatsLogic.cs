@@ -84,14 +84,45 @@ namespace RBMAI
                     }
                 }
             }
-            //InformationManager.DisplayMessage(new InformationMessage("ATK ARC:" + archersDamageDone));
-            //InformationManager.DisplayMessage(new InformationMessage("ATK HA :" + haDamageDone));
-            //InformationManager.DisplayMessage(new InformationMessage("ATK CAV:" + cavDamageDone));
-            //InformationManager.DisplayMessage(new InformationMessage("ATK INF:" + infDamageDone));
-            //InformationManager.DisplayMessage(new InformationMessage("DEF ARC:" + archersDamageDone));
-            //InformationManager.DisplayMessage(new InformationMessage("DEF HA :" + haDamageDone));
-            //InformationManager.DisplayMessage(new InformationMessage("DEF CAV:" + cavDamageDone));
-            //InformationManager.DisplayMessage(new InformationMessage("DEF INF:" + infDamageDone));
+            // Account for current hit (agentDamage is updated by Harmony postfix which runs after this callback)
+            if (affectedAgent != null && affectorAgent != null && affectedAgent.IsActive() && affectedAgent.IsHuman && !attackCollisionData.AttackBlockedWithShield)
+            {
+                Agent effectiveAffector = affectorAgent;
+                if (!effectiveAffector.IsHuman && effectiveAffector.RiderAgent != null)
+                {
+                    effectiveAffector = effectiveAffector.RiderAgent;
+                }
+                if (effectiveAffector != null && effectiveAffector.IsHuman && effectiveAffector.Team != null)
+                {
+                    float currentDamage = blow.InflictedDamage;
+                    bool isAttacker = effectiveAffector.Team.IsAttacker;
+                    FormationClass cls;
+                    if (effectiveAffector.IsRangedCached && !effectiveAffector.HasMount)
+                        cls = FormationClass.Ranged;
+                    else if (effectiveAffector.IsRangedCached && effectiveAffector.HasMount)
+                        cls = FormationClass.HorseArcher;
+                    else if (effectiveAffector.HasMount)
+                        cls = FormationClass.Cavalry;
+                    else
+                        cls = FormationClass.Infantry;
+
+                    if (isAttacker)
+                    {
+                        if (cls == FormationClass.Ranged) atkarc += currentDamage;
+                        else if (cls == FormationClass.HorseArcher) atkha += currentDamage;
+                        else if (cls == FormationClass.Cavalry) atkcav += currentDamage;
+                        else if (cls == FormationClass.Infantry) atkinf += currentDamage;
+                    }
+                    else
+                    {
+                        if (cls == FormationClass.Ranged) defarc += currentDamage;
+                        else if (cls == FormationClass.HorseArcher) defha += currentDamage;
+                        else if (cls == FormationClass.Cavalry) defcav += currentDamage;
+                        else if (cls == FormationClass.Infantry) definf += currentDamage;
+                    }
+                }
+            }
+
             _dataSource.Atkarc = new TextObject("{=RBM_AI_001}ATK ARC:").ToString() + atkarc;
             _dataSource.Atkha = new TextObject("{=RBM_AI_002}ATK HA :").ToString() + atkha;
             _dataSource.Atkcav = new TextObject("{=RBM_AI_003}ATK CAV:").ToString() + atkcav;
