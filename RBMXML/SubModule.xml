@@ -237,7 +237,7 @@
 	</XmlNode>
 	
 	<XmlNode>                
-		<XmlName id="RBM_custom_battle_skill_sets" path="sandbox_skill_sets" />
+		<XmlName id="SkillSets" path="RBM_custom_battle_skill_sets" />
 		<IncludedGameTypes>
 			<GameType value="Campaign" />
 			<GameType value="CampaignStoryMode" />

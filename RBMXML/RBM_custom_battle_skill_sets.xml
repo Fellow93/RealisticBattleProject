@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <SkillSets>
+<!--RBM_XML_TAG-->
+<!--RBM_COMBAT_XML_TAG-->
 	<SkillSet
 		id="custombattle_commander_1_template_skills">
 		<skill
@@ -88,7 +90,7 @@
 			value="300" />
 		<skill
 			id="Bow"
-			value="300" />
+			value="100" />
 		<skill
 			id="OneHanded"
 			value="300" />
