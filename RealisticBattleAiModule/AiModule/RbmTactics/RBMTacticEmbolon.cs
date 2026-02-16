@@ -96,13 +96,13 @@ public class RBMTacticEmbolon : TacticComponent
     protected override bool CheckAndSetAvailableFormationsChanged()
     {
         int num = base.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).Count((Formation f) => f.IsAIControlled);
-        bool num2 = num != _AIControlledFormationCount;
-        if (num2)
+        bool hasChanged = num != _AIControlledFormationCount;
+        if (hasChanged)
         {
             _AIControlledFormationCount = num;
             IsTacticReapplyNeeded = true;
         }
-        if (!num2)
+        if (!hasChanged)
         {
             if ((_mainInfantry == null || (_mainInfantry.CountOfUnits != 0 && _mainInfantry.QuerySystem.IsInfantryFormation)) && (_archers == null || (_archers.CountOfUnits != 0 && _archers.QuerySystem.IsRangedFormation)) && (_cavalry == null || (_cavalry.CountOfUnits != 0 && _cavalry.QuerySystem.IsCavalryFormation)))
             {
@@ -185,7 +185,7 @@ public class RBMTacticEmbolon : TacticComponent
                 }
             }
         }
-        if (Team.QuerySystem.CavalryRatio > 0.2f && (float)((float)heavyCavCount / (float)cavCount) >= 0.6f)
+        if (cavCount > 0 && Team.QuerySystem.CavalryRatio > 0.2f && (float)((float)heavyCavCount / (float)cavCount) >= 0.6f)
         {
             return 5f;
         }

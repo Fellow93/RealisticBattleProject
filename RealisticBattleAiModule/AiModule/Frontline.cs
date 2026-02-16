@@ -462,11 +462,11 @@ namespace RBMAI
 
                         bool shouldAttackMore = alliesFrontCount <= 1 && enemiesFrontCount <= 1;
 
-                        float findAlly = (enemiesFrontCount) - alliesRightCount - alliesLeftCount + (enemiesFrontCount > 0 && (alliesRightCount < 2 || alliesLeftCount < 2) ? 3 : 0);
+                        float findAlly = (alliesFrontCount * 0.5f) + (enemiesFrontCount) - alliesRightCount - alliesLeftCount + (enemiesFrontCount > 0 && (alliesRightCount < 2 || alliesLeftCount < 2) ? 3 : 0);
                         float fallback = (alliesFrontCount) + enemiesFrontCount;
-                        float attack = alliesFrontCount + alliesLeftCount + alliesRightCount - enemiesFrontCount + (isSoldier ? 0 : 2) + (isHero ? -3 : 0);//+ Math.Max(0, 3 - (unitTier)) 
-                        float flankAllyLeft = (alliesFrontCount) + (alliesRightCount) - (alliesLeftCount) - enemiesFrontCount;
-                        float flankAllyRight = (alliesFrontCount) + (alliesLeftCount) - (alliesRightCount) - enemiesFrontCount;
+                        float attack = -(alliesFrontCount * 0.5f) + alliesLeftCount + alliesRightCount - enemiesFrontCount + (isSoldier ? 0 : 2) + (isHero ? -3 : 0);//+ Math.Max(0, 3 - (unitTier)) 
+                        float flankAllyLeft = (alliesFrontCount * 1.25f) + (alliesRightCount) - (alliesLeftCount) - enemiesFrontCount;
+                        float flankAllyRight = (alliesFrontCount * 1.25f) + (alliesLeftCount) - (alliesRightCount) - enemiesFrontCount;
 
                         if (isBannerBearer)
                         {
@@ -542,7 +542,14 @@ namespace RBMAI
                                         if (targetAgent != null)
                                         {
                                             WorldPosition targetPosition = unit.GetWorldPosition();
-                                            targetPosition.SetVec2(unitPosition + direction * MBRandom.RandomFloatRanged(0.15f, 0.5f));
+                                            Vec2 targetVec2 = unitPosition + direction * MBRandom.RandomFloatRanged(0.15f, 0.5f);
+                                            if (IsPositionOccupied(mission, targetVec2, unit))
+                                            {
+                                                __result = unit.GetWorldPosition();
+                                                unit.SetTargetPosition(unitPosition);
+                                                return false;
+                                            }
+                                            targetPosition.SetVec2(targetVec2);
                                             __result = targetAgent.GetWorldPosition();
                                             unit.SetTargetPosition(targetPosition.AsVec2);
                                             return false;
@@ -553,17 +560,30 @@ namespace RBMAI
                             case AIMindset.AIDecision.BackStep:
                                 {
                                     WorldPosition backPosition = unit.GetWorldPosition();
-                                    backPosition.SetVec2(unitPosition - ((direction + __instance.Direction) / 2f) * MBRandom.RandomFloatRanged(0.15f, 0.3f));
+                                    Vec2 backVec2 = unitPosition - ((direction + __instance.Direction) / 2f) * MBRandom.RandomFloatRanged(0, 0.3f);
+                                    if (IsPositionOccupied(mission, backVec2, unit))
+                                    {
+                                        __result = unit.GetWorldPosition();
+                                        unit.SetTargetPosition(unitPosition);
+                                        return false;
+                                    }
+                                    backPosition.SetVec2(backVec2);
                                     unit.SetTargetPosition(backPosition.AsVec2);
                                     __result = backPosition;
                                     return false;
                                 }
                             case AIMindset.AIDecision.FindAlly:
                                 {
-                                    //WorldPosition allyPosition = getNearbyAllyWorldPosition(mission, unitPosition, unit);
                                     WorldPosition allyPosition = unit.GetWorldPosition();
                                     Vec2 directionToAlly = getNearbyAllyWorldPosition(mission, unitPosition, unit).AsVec2 - unitPosition;
-                                    allyPosition.SetVec2(unitPosition + directionToAlly * MBRandom.RandomFloatRanged(0.15f, 0.3f));
+                                    Vec2 allyVec2 = unitPosition + directionToAlly * MBRandom.RandomFloatRanged(0.15f, 0.3f);
+                                    if (IsPositionOccupied(mission, allyVec2, unit))
+                                    {
+                                        __result = unit.GetWorldPosition();
+                                        unit.SetTargetPosition(unitPosition);
+                                        return false;
+                                    }
+                                    allyPosition.SetVec2(allyVec2);
                                     __result = allyPosition;
                                     unit.SetTargetPosition(allyPosition.AsVec2);
                                     return false;
@@ -571,7 +591,14 @@ namespace RBMAI
                             case AIMindset.AIDecision.FlankAllyLeft:
                                 {
                                     WorldPosition leftPosition = unit.GetWorldPosition();
-                                    leftPosition.SetVec2(unitPosition + leftVec * MBRandom.RandomFloatRanged(0.15f, 0.3f));
+                                    Vec2 leftTargetVec2 = unitPosition + leftVec * MBRandom.RandomFloatRanged(0.15f, 0.3f);
+                                    if (IsPositionOccupied(mission, leftTargetVec2, unit))
+                                    {
+                                        __result = unit.GetWorldPosition();
+                                        unit.SetTargetPosition(unitPosition);
+                                        return false;
+                                    }
+                                    leftPosition.SetVec2(leftTargetVec2);
                                     __result = leftPosition;
                                     unit.SetTargetPosition(leftPosition.AsVec2);
                                     return false;
@@ -579,7 +606,14 @@ namespace RBMAI
                             case AIMindset.AIDecision.FlankAllyRight:
                                 {
                                     WorldPosition rightPosition = unit.GetWorldPosition();
-                                    rightPosition.SetVec2(unitPosition + rightVec * MBRandom.RandomFloatRanged(0.15f, 0.3f));
+                                    Vec2 rightTargetVec2 = unitPosition + rightVec * MBRandom.RandomFloatRanged(0.15f, 0.3f);
+                                    if (IsPositionOccupied(mission, rightTargetVec2, unit))
+                                    {
+                                        __result = unit.GetWorldPosition();
+                                        unit.SetTargetPosition(unitPosition);
+                                        return false;
+                                    }
+                                    rightPosition.SetVec2(rightTargetVec2);
                                     __result = rightPosition;
                                     unit.SetTargetPosition(rightPosition.AsVec2);
                                     return false;
@@ -651,6 +685,20 @@ namespace RBMAI
                 {
                     return unit.GetWorldPosition();
                 }
+            }
+
+            public static bool IsPositionOccupied(Mission mission, Vec2 position, Agent self)
+            {
+                MBList<Agent> nearbyAgents = new MBList<Agent>();
+                nearbyAgents = mission.GetNearbyAgents(position, 0.7f, nearbyAgents);
+                for (int i = 0; i < nearbyAgents.Count; i++)
+                {
+                    if (nearbyAgents[i] != self && nearbyAgents[i].IsActive())
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
         }
     }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
-using static TaleWorlds.Core.ItemObject;
 
 namespace RBMAI.AiModule.RbmTactics
 {
@@ -53,7 +52,6 @@ namespace RBMAI.AiModule.RbmTactics
             if (____archers != null)
             {
                 ____archers.AI.ResetBehaviorWeights();
-                ____archers.AI.AddAiBehavior(new RBMBehaviorArcherSkirmish(____archers));
                 ____archers.AI.SetBehaviorWeight<RBMBehaviorArcherSkirmish>(1f);
                 ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
                 ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(0f);
@@ -116,50 +114,11 @@ namespace RBMAI.AiModule.RbmTactics
                 List<Agent> mountedMeleeList = new List<Agent>();
                 ____leftCavalry.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
-                    bool ismountedSkrimisher = false;
-                    for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-                    {
-                        if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
-                        {
-                            if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.MountAgent != null)
-                            {
-                                ismountedSkrimisher = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (ismountedSkrimisher)
-                    {
-                        mountedSkirmishersList.Add(agent);
-                    }
-                    else
-                    {
-                        mountedMeleeList.Add(agent);
-                    }
+                    RBMAI.Tactics.ClassifyMountedAgent(agent, mountedSkirmishersList, mountedMeleeList);
                 });
-
                 ____rightCavalry.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
-                    bool ismountedSkrimisher = false;
-                    for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-                    {
-                        if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
-                        {
-                            if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.MountAgent != null)
-                            {
-                                ismountedSkrimisher = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (ismountedSkrimisher)
-                    {
-                        mountedSkirmishersList.Add(agent);
-                    }
-                    else
-                    {
-                        mountedMeleeList.Add(agent);
-                    }
+                    RBMAI.Tactics.ClassifyMountedAgent(agent, mountedSkirmishersList, mountedMeleeList);
                 });
                 int j = 0;
                 int cavalryCount = ____leftCavalry.CountOfUnits + ____rightCavalry.CountOfUnits;

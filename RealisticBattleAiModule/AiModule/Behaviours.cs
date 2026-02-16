@@ -111,6 +111,15 @@ namespace RBMAI
                     {
                         WorldPosition newPosition = WorldPosition.Invalid;
                         positionsStorage.TryGetValue(__instance.Formation, out newPosition);
+                        Vec2 posVec2 = newPosition.AsVec2;
+                        Vec2 closestBoundary = Mission.Current.GetClosestBoundaryPosition(posVec2);
+                        float distFromBoundary = closestBoundary.Distance(posVec2);
+                        if (distFromBoundary <= 100f)
+                        {
+                            Vec2 awayFromBoundary = (posVec2 - closestBoundary).Normalized();
+                            newPosition.SetVec2(posVec2 + awayFromBoundary * (100f - distFromBoundary));
+                            positionsStorage[__instance.Formation] = newPosition;
+                        }
                         ____currentOrder = MovementOrder.MovementOrderMove(newPosition);
                         ___IsCurrentOrderChanged = true;
                         ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
@@ -119,6 +128,16 @@ namespace RBMAI
                     {
                         WorldPosition newPosition = medianPositionNew;
                         newPosition.SetVec2(newPosition.AsVec2 + __instance.Formation.Direction * 10f);
+                        Vec2 posVec2 = newPosition.AsVec2;
+                        Vec2 closestBoundary = Mission.Current.GetClosestBoundaryPosition(posVec2);
+                        float distFromBoundary = closestBoundary.Distance(posVec2);
+                        if (distFromBoundary <= 100f)
+                        {
+                            Vec2 awayFromBoundary = (posVec2 - closestBoundary).Normalized();
+                            newPosition.SetVec2(posVec2 + awayFromBoundary * (100f - distFromBoundary));
+                            ____currentOrder = MovementOrder.MovementOrderMove(newPosition);
+                            ___IsCurrentOrderChanged = true;
+                        }
                         positionsStorage[__instance.Formation] = newPosition;
                         ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
                     }

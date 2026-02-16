@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using SandBox.Missions.MissionLogics;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.Core;
@@ -19,7 +20,31 @@ namespace RBMAI
             public bool isAttacker = false;
         }
 
-        public static Dictionary<Agent, AgentDamageDone> agentDamage = new Dictionary<Agent, AgentDamageDone>();
+        public static ConcurrentDictionary<Agent, AgentDamageDone> agentDamage = new ConcurrentDictionary<Agent, AgentDamageDone>();
+
+        internal static void ClassifyMountedAgent(Agent agent, List<Agent> skirmishers, List<Agent> melee)
+        {
+            bool isMountedSkirmisher = false;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+            {
+                if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
+                {
+                    if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.MountAgent != null)
+                    {
+                        isMountedSkirmisher = true;
+                        break;
+                    }
+                }
+            }
+            if (isMountedSkirmisher)
+            {
+                skirmishers.Add(agent);
+            }
+            else
+            {
+                melee.Add(agent);
+            }
+        }
 
         [HarmonyPatch(typeof(Mission))]
         [HarmonyPatch("OnAgentHit")]
@@ -38,7 +63,7 @@ namespace RBMAI
                         AgentDamageDone damageDone;
                         if (agentDamage.TryGetValue(affectorAgent, out damageDone))
                         {
-                            agentDamage[affectorAgent].damageDone += damagedHp;
+                            damageDone.damageDone += damagedHp;
                         }
                         else
                         {
@@ -168,7 +193,7 @@ namespace RBMAI
                             if (team.Side == BattleSideEnum.Attacker)
                             {
                                 team.ClearTacticOptions();
-                                if (___AttackerLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "empire")
+                                if (___AttackerLeaderBattleCombatant?.BasicCulture?.StringId == "empire")
                                 {
                                     team.AddTacticOption(new RBMTacticEmbolon(team));
                                 }
@@ -176,19 +201,19 @@ namespace RBMAI
                                 {
                                     //team.AddTacticOption(new TacticFrontalCavalryCharge(team));
                                 }
-                                if (___AttackerLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "aserai" || ___AttackerLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "darshi")
+                                if (___AttackerLeaderBattleCombatant?.BasicCulture?.StringId == "aserai" || ___AttackerLeaderBattleCombatant?.BasicCulture?.StringId == "darshi")
                                 {
                                     team.AddTacticOption(new RBMTacticAttackSplitSkirmishers(team));
                                 }
-                                if (___AttackerLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "sturgia" || ___AttackerLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "nord")
+                                if (___AttackerLeaderBattleCombatant?.BasicCulture?.StringId == "sturgia" || ___AttackerLeaderBattleCombatant?.BasicCulture?.StringId == "nord")
                                 {
                                     team.AddTacticOption(new RBMTacticAttackSplitInfantry(team));
                                 }
-                                if (___AttackerLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "batania")
+                                if (___AttackerLeaderBattleCombatant?.BasicCulture?.StringId == "battania")
                                 {
                                     team.AddTacticOption(new RBMTacticAttackSplitArchers(team));
                                 }
-                                if (___AttackerLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "khuzait")
+                                if (___AttackerLeaderBattleCombatant?.BasicCulture?.StringId == "khuzait")
                                 {
                                     team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
                                 }
@@ -202,13 +227,13 @@ namespace RBMAI
                             if (team.Side == BattleSideEnum.Defender)
                             {
                                 team.ClearTacticOptions();
-                                if (___DefenderLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "batania")
+                                if (___DefenderLeaderBattleCombatant?.BasicCulture?.StringId == "battania")
                                 {
                                     team.AddTacticOption(new RBMTacticDefendSplitArchers(team));
                                 }
                                 team.AddTacticOption(new TacticDefensiveEngagement(team));
                                 team.AddTacticOption(new TacticDefensiveLine(team));
-                                if (___DefenderLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "sturgia" || ___DefenderLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "nord")
+                                if (___DefenderLeaderBattleCombatant?.BasicCulture?.StringId == "sturgia" || ___DefenderLeaderBattleCombatant?.BasicCulture?.StringId == "nord")
                                 {
                                     team.AddTacticOption(new RBMTacticDefendSplitInfantry(team));
                                 }
@@ -398,30 +423,6 @@ namespace RBMAI
                 __result = RBMAI.Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined);
             }
 
-            private static void ClassifyMountedAgent(Agent agent, List<Agent> skirmishers, List<Agent> melee)
-            {
-                bool isMountedSkirmisher = false;
-                for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-                {
-                    if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
-                    {
-                        if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown && agent.MountAgent != null)
-                        {
-                            isMountedSkirmisher = true;
-                            break;
-                        }
-                    }
-                }
-                if (isMountedSkirmisher)
-                {
-                    skirmishers.Add(agent);
-                }
-                else
-                {
-                    melee.Add(agent);
-                }
-            }
-
             [HarmonyPostfix]
             [HarmonyPatch("ManageFormationCounts")]
             private static void PostfixManageFormationCounts(ref Formation ____leftCavalry, ref Formation ____rightCavalry)
@@ -471,7 +472,7 @@ namespace RBMAI
             [HarmonyPatch("GetTacticWeight")]
             private static void PostfixGetTacticWeight(ref TacticRangedHarrassmentOffensive __instance, ref float __result)
             {
-                if (__instance.Team?.Leader?.Character?.Culture?.Id.ToString() == "khuzait")
+                if (__instance.Team?.Leader?.Character?.Culture?.StringId == "khuzait")
                 {
                     __result *= 1.1f;
                 }

@@ -180,13 +180,13 @@ public class RBMTacticDefendSplitArchers : TacticComponent
     protected override bool CheckAndSetAvailableFormationsChanged()
     {
         int num = base.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).Count((Formation f) => f.IsAIControlled);
-        bool num2 = num != _AIControlledFormationCount;
-        if (num2)
+        bool hasChanged = num != _AIControlledFormationCount;
+        if (hasChanged)
         {
             _AIControlledFormationCount = num;
             IsTacticReapplyNeeded = true;
         }
-        if (!num2)
+        if (!hasChanged)
         {
             if ((_mainInfantry == null || (_mainInfantry.CountOfUnits != 0 && _mainInfantry.QuerySystem.IsInfantryFormation)) && (leftArchers == null || (leftArchers.CountOfUnits != 0 && leftArchers.QuerySystem.IsRangedFormation)) && (rightArchers == null || (rightArchers.CountOfUnits != 0 && rightArchers.QuerySystem.IsRangedFormation)) && (_leftCavalry == null || (_leftCavalry.CountOfUnits != 0 && _leftCavalry.QuerySystem.IsCavalryFormation)) && (_rightCavalry == null || (_rightCavalry.CountOfUnits != 0 && _rightCavalry.QuerySystem.IsCavalryFormation)))
             {

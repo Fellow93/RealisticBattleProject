@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.Core;
-using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
 public class RBMTacticAttackSplitInfantry : TacticComponent
@@ -19,7 +18,8 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
         int rightflankersIndex = -1;
         bool isDoubleFlank = false;
         int infCount = 0;
-        foreach (Formation formation in FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
+        IEnumerable<Formation> nonEmptyQuery = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0);
+        foreach (Formation formation in nonEmptyQuery.ToList())
         {
             if (formation.QuerySystem.IsInfantryFormation)
             {
@@ -28,13 +28,14 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
         }
         isDoubleFlank = true;
         ManageFormationCounts(3, 1, 2, 1);
-        if (FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).Count() > 0 && FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList().FirstOrDefault().QuerySystem.IsInfantryFormation)
+        List<Formation> nonEmptyList = nonEmptyQuery.ToList();
+        if (nonEmptyList.Count > 0 && nonEmptyList[0].QuerySystem.IsInfantryFormation)
         {
-            _mainInfantry = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList().FirstOrDefault();
+            _mainInfantry = nonEmptyList[0];
         }
         else
         {
-            _mainInfantry = ChooseAndSortByPriority(FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsInfantryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
+            _mainInfantry = ChooseAndSortByPriority(nonEmptyQuery, (Formation f) => f.QuerySystem.IsInfantryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
         }
         if (_mainInfantry != null && _mainInfantry.IsAIControlled)
         {
@@ -45,7 +46,7 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
             List<Agent> mainList = new List<Agent>();
 
             int i = 0;
-            foreach (Formation formation in FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
+            foreach (Formation formation in nonEmptyList)
             {
                 formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
@@ -65,24 +66,29 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
                         {
                             mainList.Add(agent);
                         }
-
-                        if (isDoubleFlank && i != 0)
-                        {
-                            if (leftflankersIndex != -1)
-                            {
-                                rightflankersIndex = i;
-                            }
-                            else
-                            {
-                                leftflankersIndex = i;
-                            }
-                        }
-                        else if (i != 0)
-                        {
-                            flankersIndex = i;
-                        }
                     }
                 });
+                if (isDoubleFlank && i != 0)
+                {
+                    if (leftflankersIndex != -1)
+                    {
+                        if (formation.QuerySystem.IsInfantryFormation)
+                        {
+                            rightflankersIndex = i;
+                        }
+                    }
+                    else
+                    {
+                        if (formation.QuerySystem.IsInfantryFormation)
+                        {
+                            leftflankersIndex = i;
+                        }
+                    }
+                }
+                else if (i != 0)
+                {
+                    flankersIndex = i;
+                }
                 i++;
             }
 
@@ -101,12 +107,12 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
             {
                 rightflankersIndex = 0;
             }
-            List<Formation> nonEmptyFormations = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList();
+            List<Formation> nonEmptyCached = nonEmptyQuery.ToList();
             List<Formation> allFormations = FormationsIncludingSpecialAndEmpty.ToList();
             List<Formation> formationPool;
-            if (nonEmptyFormations.Count > 0)
+            if (nonEmptyCached.Count > 0)
             {
-                formationPool = nonEmptyFormations;
+                formationPool = nonEmptyList;
             }
             else
             {
@@ -178,8 +184,8 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
             }
         }
 
-        _archers = ChooseAndSortByPriority(FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsRangedFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
-        List<Formation> list = ChooseAndSortByPriority(FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower);
+        _archers = ChooseAndSortByPriority(nonEmptyQuery, (Formation f) => f.QuerySystem.IsRangedFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
+        List<Formation> list = ChooseAndSortByPriority(nonEmptyQuery, (Formation f) => f.QuerySystem.IsCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower);
         if (list.Count > 0)
         {
             _leftCavalry = list[0];
@@ -199,26 +205,27 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
             _leftCavalry = null;
             _rightCavalry = null;
         }
-        _rangedCavalry = ChooseAndSortByPriority(FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsRangedCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
+        _rangedCavalry = ChooseAndSortByPriority(nonEmptyQuery, (Formation f) => f.QuerySystem.IsRangedCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
 
+        List<Formation> nonEmptyPostLoop = nonEmptyQuery.ToList();
         if (isDoubleFlank)
         {
-            if (leftflankersIndex != -1 && FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).Count() > leftflankersIndex && FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[leftflankersIndex].QuerySystem.IsInfantryFormation)
+            if (leftflankersIndex != -1 && nonEmptyPostLoop.Count > leftflankersIndex && nonEmptyPostLoop[leftflankersIndex].QuerySystem.IsInfantryFormation)
             {
-                _leftFlankingInfantry = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[leftflankersIndex];
+                _leftFlankingInfantry = nonEmptyPostLoop[leftflankersIndex];
                 _leftFlankingInfantry.AI.IsMainFormation = false;
             }
-            if (rightflankersIndex != -1 && FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).Count() > rightflankersIndex && FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[rightflankersIndex].QuerySystem.IsInfantryFormation)
+            if (rightflankersIndex != -1 && nonEmptyPostLoop.Count > rightflankersIndex && nonEmptyPostLoop[rightflankersIndex].QuerySystem.IsInfantryFormation)
             {
-                _rightFlankingInfantry = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[rightflankersIndex];
+                _rightFlankingInfantry = nonEmptyPostLoop[rightflankersIndex];
                 _rightFlankingInfantry.AI.IsMainFormation = false;
             }
         }
         else
         {
-            if (flankersIndex != -1 && FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).Count() > flankersIndex && FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[flankersIndex].QuerySystem.IsInfantryFormation)
+            if (flankersIndex != -1 && nonEmptyPostLoop.Count > flankersIndex && nonEmptyPostLoop[flankersIndex].QuerySystem.IsInfantryFormation)
             {
-                _flankingInfantry = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[flankersIndex];
+                _flankingInfantry = nonEmptyPostLoop[flankersIndex];
                 _flankingInfantry.AI.IsMainFormation = false;
             }
         }
@@ -372,13 +379,13 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
     protected override bool CheckAndSetAvailableFormationsChanged()
     {
         int num = base.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).Count((Formation f) => f.IsAIControlled);
-        bool num2 = num != _AIControlledFormationCount;
-        if (num2)
+        bool hasChanged = num != _AIControlledFormationCount;
+        if (hasChanged)
         {
             _AIControlledFormationCount = num;
             IsTacticReapplyNeeded = true;
         }
-        if (!num2)
+        if (!hasChanged)
         {
             if ((_mainInfantry == null || (_mainInfantry.CountOfUnits != 0 && _mainInfantry.QuerySystem.IsInfantryFormation)) &&
                 (_leftFlankingInfantry == null || (_leftFlankingInfantry.CountOfUnits != 0 && _leftFlankingInfantry.QuerySystem.IsInfantryFormation)) &&
@@ -440,57 +447,17 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
 
     protected override float GetTacticWeight()
     {
-        float allyInfatryPower = 0f;
-        float allyCavalryPower = 0f;
-        float enemyInfatryPower = 0f;
-        float enemyArcherPower = 0f;
-
-        int allyInfCount = 0;
-
-        foreach (Team team in Mission.Current.Teams.ToList())
+        if (Mission.Current != null && !Mission.Current.IsTeleportingAgents && Team.TeamAI.IsCurrentTactic(this) && Team.QuerySystem.InfantryRatio > 0.3f)
         {
-            if (Team.IsEnemyOf(base.Team))
-            {
-                foreach (Formation formation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
-                {
-                    if (formation.QuerySystem.IsInfantryFormation)
-                    {
-                        enemyInfatryPower += formation.QuerySystem.FormationPower;
-                    }
-                    if (formation.QuerySystem.IsRangedFormation)
-                    {
-                        enemyArcherPower += formation.QuerySystem.FormationPower;
-                    }
-                }
-            }
+            return 10f;
         }
-
-        foreach (Team team in Mission.Current.Teams.ToList())
-        {
-            if (!Team.IsEnemyOf(base.Team))
-            {
-                foreach (Formation formation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
-                {
-                    if (formation.QuerySystem.IsInfantryFormation)
-                    {
-                        allyInfatryPower += formation.QuerySystem.FormationPower;
-                        allyInfCount += formation.CountOfUnits;
-                    }
-                    if (formation.QuerySystem.IsCavalryFormation)
-                    {
-                        allyCavalryPower += formation.QuerySystem.FormationPower;
-                    }
-                }
-            }
-        }
-
-        if (allyInfatryPower > enemyInfatryPower * 1.25f && allyInfCount > 60)
+        if (Team.QuerySystem.InfantryRatio > 0.5f)
         {
             return 10f;
         }
         else
         {
-            return 0.01f;
+            return 0.2f;
         }
     }
 }
