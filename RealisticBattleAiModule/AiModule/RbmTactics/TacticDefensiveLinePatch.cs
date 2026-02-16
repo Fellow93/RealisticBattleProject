@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
 namespace RBMAI.AiModule.RbmTactics
@@ -6,6 +7,21 @@ namespace RBMAI.AiModule.RbmTactics
     [HarmonyPatch(typeof(TacticDefensiveLine))]
     internal class TacticDefensiveLinePatch
     {
+        [HarmonyPostfix]
+        [HarmonyPatch("IsTacticalPositionEligible")]
+        private static void PostfixIsTacticalPositionEligible(TacticalPosition tacticalPosition, ref bool __result)
+        {
+            if (__result && Mission.Current != null)
+            {
+                Vec2 posVec2 = tacticalPosition.Position.AsVec2;
+                float distFromBoundary = Mission.Current.GetClosestBoundaryPosition(posVec2).Distance(posVec2);
+                if (distFromBoundary <= 100f)
+                {
+                    __result = false;
+                }
+            }
+        }
+
         [HarmonyPrefix]
         [HarmonyPatch("HasBattleBeenJoined")]
         private static bool PrefixHasBattleBeenJoined(ref Formation ____mainInfantry, ref bool ____hasBattleBeenJoined, ref bool __result)

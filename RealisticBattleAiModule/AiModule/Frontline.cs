@@ -442,7 +442,7 @@ namespace RBMAI
                         }
                         if (__instance.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall)
                         {
-                            hasShieldAdditive += 3;
+                            hasShieldAdditive += 2;
                         }
                         if (__instance.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose)
                         {
@@ -462,15 +462,41 @@ namespace RBMAI
 
                         bool shouldAttackMore = alliesFrontCount <= 1 && enemiesFrontCount <= 1;
 
-                        float findAlly = (enemiesFrontCount) - alliesRightCount - alliesLeftCount + hasShieldAdditive + (enemiesFrontCount > 0 && (alliesRightCount < 2 || alliesLeftCount < 2) ? 3 : 0);
-                        float fallback = (alliesFrontCount) + enemiesFrontCount - (hasShieldAdditive / 2f);
-                        float attack = hasTwoHandedEquippedAddtive - alliesFrontCount + alliesLeftCount + alliesRightCount - enemiesFrontCount + (isSoldier ? 0 : 2) + (isBannerBearer ? -3 : 0) + (isHero ? -3 : 0);//+ Math.Max(0, 3 - (unitTier)) 
-                        float flankAllyLeft = (alliesFrontCount) + (alliesRightCount) - (alliesLeftCount) - enemiesFrontCount + hasTwoHandedEquippedAddtive - (hasShieldAdditive / 2f);
-                        float flankAllyRight = (alliesFrontCount) + (alliesLeftCount) - (alliesRightCount) - enemiesFrontCount + hasTwoHandedEquippedAddtive - (hasShieldAdditive / 2f);
+                        float findAlly = (enemiesFrontCount) - alliesRightCount - alliesLeftCount + (enemiesFrontCount > 0 && (alliesRightCount < 2 || alliesLeftCount < 2) ? 3 : 0);
+                        float fallback = (alliesFrontCount) + enemiesFrontCount;
+                        float attack = alliesFrontCount + alliesLeftCount + alliesRightCount - enemiesFrontCount + (isSoldier ? 0 : 2) + (isHero ? -3 : 0);//+ Math.Max(0, 3 - (unitTier)) 
+                        float flankAllyLeft = (alliesFrontCount) + (alliesRightCount) - (alliesLeftCount) - enemiesFrontCount;
+                        float flankAllyRight = (alliesFrontCount) + (alliesLeftCount) - (alliesRightCount) - enemiesFrontCount;
+
+                        if (isBannerBearer)
+                        {
+                            attack -= 3;
+                            flankAllyLeft *= flankAllyLeft > 0 ? -1f : 1f;
+                            flankAllyRight *= flankAllyRight > 0 ? -1f : 1f;
+                        }
+
+                        if (shouldAttackMore && !isBannerBearer)
+                        {
+                            attack += 3;
+                        }
+
+                        if (hasShieldAdditive > 0)
+                        {
+                            findAlly += hasShieldAdditive;
+                            flankAllyLeft -= (hasShieldAdditive / 2f);
+                            flankAllyRight -= (hasShieldAdditive / 2f);
+                        }
+
+                        if (hasTwoHandedEquippedAddtive > 0)
+                        {
+                            attack += hasTwoHandedEquippedAddtive;
+                            flankAllyLeft += hasTwoHandedEquippedAddtive;
+                            flankAllyRight += hasTwoHandedEquippedAddtive;
+                        }
 
                         attack = attack > 0 ? (attack * staminaModifier) : attack;
 
-                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.Attack, attack > 0 ? attack * (postureModifier * healthModifier) + (shouldAttackMore ? +3 : 0) : attack);
+                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.Attack, attack > 0 ? attack * (postureModifier * healthModifier) : attack);
                         aiDecision.AIMindset.SetValue(AIMindset.AIDecision.BackStep, fallback > 0 ? (fallback * (2 - postureModifier)) : fallback);
                         aiDecision.AIMindset.SetValue(AIMindset.AIDecision.FindAlly, findAlly > 0 ? (findAlly * (2 - postureModifier)) : findAlly);
                         aiDecision.AIMindset.SetValue(AIMindset.AIDecision.FlankAllyLeft, flankAllyLeft > 0 ? (flankAllyLeft) : flankAllyLeft);

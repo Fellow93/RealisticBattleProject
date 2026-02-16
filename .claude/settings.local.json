@@ -15,7 +15,8 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:butr.github.io)",
       "WebFetch(domain:forums.taleworlds.com)",
-      "Bash(\"/c/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/MSBuild.exe\" \"RealisticBattle.sln\" \"/p:Configuration=Release\" \"/p:Platform=Any CPU\" \"/t:Build\" \"/v:minimal\")"
+      "Bash(\"/c/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/MSBuild.exe\" \"RealisticBattle.sln\" \"/p:Configuration=Release\" \"/p:Platform=Any CPU\" \"/t:Build\" \"/v:minimal\")",
+      "Bash(grep:*)"
     ]
   }
 }
