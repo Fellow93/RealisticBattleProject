@@ -288,6 +288,21 @@ namespace RBMAI
                                 posture.regenPerTick *= playerPostureModifier;
                             }
 
+                            //armor weight effect
+                            float armorWeight = Math.Max(0f, __instance.SpawnEquipment.GetTotalWeightOfArmor(true) - 5f);
+                            posture.maxPosture += armorWeight;
+
+                            //face armor effect
+                            float faceArmor = 0f;
+                            if (!__instance.SpawnEquipment[EquipmentIndex.Head].IsEmpty)
+                            {
+                                faceArmor = __instance.SpawnEquipment[EquipmentIndex.Head].GetModifiedBodyArmor();
+                            }
+                            if (faceArmor >= 30f)
+                            {
+                                posture.staminaRegenPerTick *= 0.5f;
+                            }
+
                             posture.posture = posture.maxPosture * oldPosturePercentage;
                         }
                     }
@@ -363,13 +378,29 @@ namespace RBMAI
                 {
                     float postureDmg = calculateDefenderPostureDamage(victimAgent, attackerAgent, actionModifier, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, isUnarmedAttack);
 
+                    if (meleeHitType == MeleeHitType.AgentHit)
+                    {
+                        postureDmg = blow.InflictedDamage;
+                    }
+
                     //stamina effect
                     float staminaLevel = posture.stamina / posture.maxStamina;
                     postureDmg *= MBMath.Lerp(1.25f, 1f, staminaLevel);
 
                     float postureOverkill = Math.Abs(posture.posture - postureDmg);
                     posture.posture = Math.Max(0f, posture.posture - postureDmg);
-                    posture.stamina = Math.Max(0f, posture.stamina - postureDmg);
+
+                    int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(victimAgent, DefaultSkills.Athletics);
+                    float athlethicModifier = effectiveAthleticSkill / 20;
+                    float victimAgentArmorWeight = Math.Max(0f, victimAgent.SpawnEquipment.GetTotalWeightOfArmor(true) - athlethicModifier);
+                    float staminaDamage = postureDmg * (1f + victimAgentArmorWeight / 50f);
+                    if (meleeHitType == MeleeHitType.AgentHit)
+                    {
+                        staminaDamage = postureDmg;
+                    }
+
+                    posture.stamina = Math.Max(0f, posture.stamina - staminaDamage);
+
                     addPosturedamageVisual(attackerAgent, victimAgent);
                     if (posture.posture <= 0f)
                     {
@@ -425,7 +456,13 @@ namespace RBMAI
 
                     float postureOverkill = Math.Abs(posture.posture - postureDmg);
                     posture.posture = Math.Max(0f, posture.posture - postureDmg);
-                    posture.stamina = Math.Max(0f, posture.stamina - postureDmg);
+
+                    int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, DefaultSkills.Athletics);
+                    float athlethicModifier = effectiveAthleticSkill / 20;
+                    float attackerAgentArmorWeight = Math.Max(0f, attackerAgent.SpawnEquipment.GetTotalWeightOfArmor(true) - athlethicModifier);
+                    float staminaDamage = postureDmg * (1f + attackerAgentArmorWeight / 50f);
+                    posture.stamina = Math.Max(0f, posture.stamina - staminaDamage);
+
                     addPosturedamageVisual(attackerAgent, victimAgent);
                     if (posture.posture <= 0f)
                     {
