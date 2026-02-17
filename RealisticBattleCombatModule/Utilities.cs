@@ -214,7 +214,12 @@ namespace RBMCombat
                         //calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
                         //break;
                     }
-                // case "Sling": calculatedThrowingSpeed * missile_speed (zo slingu, z tej equipnutej zbrane) * 0.01
+                // case "Sling":
+                // float weightModifier  = 730f * (1f + throwing skill / 100); takze pri 100 skille to bude * 2
+                // float slingLengthModifier  = missile_speed (zo slingu, z tej equipnutej zbrane) * 0.01;
+                // int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt((MBMath.ClampFloat(ammoWeight * weightModifier * slingLengthModifier, 60f, 350f)) * 2f / ammoWeight));
+                // return calculatedThrowingSpeed;
+                // tie modifiery zo stitu a armoru ktore vplivaju na normalny throw sa mozu aplikovat aj tu
                 case "osa_sling":
                     {
                         // 40 grams is added to the weight of projectiles, this results in 60 m/s at 80 grams with good sling, 70 m/s at 50 grams and some 80 ms at 30 grams
