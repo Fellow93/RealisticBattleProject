@@ -137,22 +137,6 @@ namespace RBMAI
 
                 //agentDrivenProperties.AiWeaponFavorMultiplierPolearm
 
-                if (RBMConfig.RBMConfig.postureEnabled)
-                {
-                    Posture posture = null;
-                    AgentPostures.values.TryGetValue(agent, out posture);
-                    if (agent != null && posture != null)
-                    {
-                        float staminaLevel = posture.stamina / posture.maxStamina;
-                        agentDrivenProperties.HandlingMultiplier *= MBMath.Lerp(0.2f, 1f, staminaLevel);
-                        agentDrivenProperties.OffhandWeaponDefendSpeedMultiplier = MBMath.Lerp(0.2f, 1f, staminaLevel);
-                        agentDrivenProperties.MaxSpeedMultiplier *= MBMath.Lerp(0.85f, 1f, staminaLevel);
-
-                        agentDrivenProperties.SwingSpeedMultiplier *= MBMath.Lerp(0.85f, 1f, staminaLevel);
-                        agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier *= MBMath.Lerp(0.85f, 1f, staminaLevel);
-                    }
-                }
-
                 agentDrivenProperties.AiRangerLeadErrorMin = (float)((0.0 - (double)num4) * 0.349999994039536) + 0.3f;
                 agentDrivenProperties.AiRangerLeadErrorMax = num4 * 0.2f + 0.3f;
 
@@ -257,6 +241,48 @@ namespace RBMAI
                     agentDrivenProperties.AiUseShieldAgainstEnemyMissileProbability = 0f;
                     agentDrivenProperties.AiFacingMissileWatch = 0f;
                     agentDrivenProperties.AiFlyingMissileCheckRadius = 0f;
+                }
+
+                //stamina effects
+                if (RBMConfig.RBMConfig.postureEnabled)
+                {
+                    Posture posture = null;
+                    AgentPostures.values.TryGetValue(agent, out posture);
+                    if (agent != null && posture != null)
+                    {
+                        float staminaLevel = posture.stamina / posture.maxStamina;
+
+                        //readying and blocking
+                        agentDrivenProperties.HandlingMultiplier *= MBMath.Lerp(0.2f, 1f, staminaLevel);
+                        agentDrivenProperties.OffhandWeaponDefendSpeedMultiplier = MBMath.Lerp(0.2f, 1f, staminaLevel);
+
+                        //movement speed
+                        agentDrivenProperties.MaxSpeedMultiplier *= MBMath.Lerp(0.85f, 1f, staminaLevel);
+
+                        //attack speed
+                        agentDrivenProperties.SwingSpeedMultiplier *= MBMath.Lerp(0.85f, 1f, staminaLevel);
+                        agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier *= MBMath.Lerp(0.85f, 1f, staminaLevel);
+
+                        //reload speed
+                        agentDrivenProperties.ReloadSpeed *= MBMath.Lerp(0.9f, 1f, staminaLevel);
+
+                        //ranged penalties
+                        agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= MBMath.Lerp(1.1f, 1f, staminaLevel);
+                        agentDrivenProperties.WeaponMaxUnsteadyAccuracyPenalty *= MBMath.Lerp(1.1f, 1f, staminaLevel);
+
+                        //ranged AI
+                        agentDrivenProperties.WeaponBestAccuracyWaitTime *= MBMath.Lerp(1.1f, 1f, staminaLevel);
+
+                        //AI combat ability
+                        agentDrivenProperties.AIBlockOnDecideAbility *= MBMath.Lerp(0.85f, 1f, staminaLevel);
+                        agentDrivenProperties.AIParryOnDecideAbility *= MBMath.Lerp(0.85f, 1f, staminaLevel);
+                        agentDrivenProperties.AIRealizeBlockingFromIncorrectSideAbility *= MBMath.Lerp(0.85f, 1f, staminaLevel);
+                        agentDrivenProperties.AIDecideOnRealizeEnemyBlockingAttackAbility *= MBMath.Lerp(0.85f, 1f, staminaLevel);
+                        agentDrivenProperties.AIAttackOnParryChance *= MBMath.Lerp(0.85f, 1f, staminaLevel);
+
+                        //AI aggressiveness
+                        agentDrivenProperties.AIDecideOnAttackChance *= MBMath.Lerp(0.85f, 1f, staminaLevel);
+                    }
                 }
             }
         }

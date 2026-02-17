@@ -33,6 +33,158 @@ namespace RBMAI
         private readonly MBArrayList<Agent> _dropShieldBuffer = new MBArrayList<Agent>();
         private readonly MBArrayList<Agent> _dropWeaponBuffer = new MBArrayList<Agent>();
 
+        public static void TryToDropShield(Agent victimAgent)
+        {
+            if (!agentsToDropShield.Contains(victimAgent))
+            {
+                agentsToDropShield.Add(victimAgent);
+            }
+        }
+
+        //how much posture is regained after posture break
+        static float postureResetModifier = 0.75f;
+        //how much posture is regained after posture break while holding shield
+        static float shieldPostureResetModifier = 0.4f;
+
+        public static void ResetPostureForAgent(ref Posture posture, float resetModifier)
+        {
+            if (posture != null)
+            {
+                posture.posture += posture.maxPosture * resetModifier;
+                posture.posture = Math.Max(0f, posture.posture);
+            }
+        }
+
+        private static void addPosturedamageVisual(Agent attackerAgent, Agent victimAgent)
+        {
+            if (RBMConfig.RBMConfig.postureEnabled)
+            {
+                if (victimAgent != null && attackerAgent != null && (victimAgent.IsPlayerControlled || attackerAgent.IsPlayerControlled))
+                {
+                    Agent enemyAgent = null;
+                    if (victimAgent.IsPlayerControlled)
+                    {
+                        enemyAgent = attackerAgent;
+                        Posture posture = null;
+                        if (AgentPostures.values.TryGetValue(victimAgent, out posture))
+                        {
+                            if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
+                            {
+                                AgentPostures.postureVisual._dataSource.PlayerPosture = (int)posture.posture;
+                                AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)posture.maxPosture;
+                                AgentPostures.postureVisual._dataSource.PlayerPostureText = ((int)posture.posture).ToString();
+                                AgentPostures.postureVisual._dataSource.PlayerPostureMaxText = ((int)posture.maxPosture).ToString();
+
+                                AgentPostures.postureVisual._dataSource.PlayerStamina = (int)posture.stamina;
+                                AgentPostures.postureVisual._dataSource.PlayerStaminaMax = (int)posture.maxStamina;
+                                AgentPostures.postureVisual._dataSource.PlayerStaminaText = ((int)posture.stamina).ToString();
+                                AgentPostures.postureVisual._dataSource.PlayerStaminaMaxText = ((int)posture.maxStamina).ToString();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        enemyAgent = victimAgent;
+                        Posture posture = null;
+                        if (AgentPostures.values.TryGetValue(attackerAgent, out posture))
+                        {
+                            if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
+                            {
+                                AgentPostures.postureVisual._dataSource.PlayerPosture = (int)posture.posture;
+                                AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)posture.maxPosture;
+                                AgentPostures.postureVisual._dataSource.PlayerPostureText = ((int)posture.posture).ToString();
+                                AgentPostures.postureVisual._dataSource.PlayerPostureMaxText = ((int)posture.maxPosture).ToString();
+
+                                AgentPostures.postureVisual._dataSource.PlayerStamina = (int)posture.stamina;
+                                AgentPostures.postureVisual._dataSource.PlayerStaminaMax = (int)posture.maxStamina;
+                                AgentPostures.postureVisual._dataSource.PlayerStaminaText = ((int)posture.stamina).ToString();
+                                AgentPostures.postureVisual._dataSource.PlayerStaminaMaxText = ((int)posture.maxStamina).ToString();
+                            }
+                        }
+                    }
+                    if (AgentPostures.postureVisual != null)
+                    {
+                        Posture posture = null;
+                        if (AgentPostures.values.TryGetValue(enemyAgent, out posture))
+                        {
+                            AgentPostures.postureVisual._dataSource.ShowEnemyStatus = true;
+                            AgentPostures.postureVisual.affectedAgent = enemyAgent;
+                            if (AgentPostures.postureVisual._dataSource.ShowEnemyStatus && AgentPostures.postureVisual.affectedAgent == enemyAgent)
+                            {
+                                AgentPostures.postureVisual.timer = AgentPostures.postureVisual.DisplayTime;
+                                AgentPostures.postureVisual._dataSource.EnemyPosture = (int)posture.posture;
+                                AgentPostures.postureVisual._dataSource.EnemyPostureMax = (int)posture.maxPosture;
+                                AgentPostures.postureVisual._dataSource.EnemyHealth = (int)enemyAgent.Health;
+                                AgentPostures.postureVisual._dataSource.EnemyHealthMax = (int)enemyAgent.HealthLimit;
+                                if (enemyAgent.IsMount)
+                                {
+                                    AgentPostures.postureVisual._dataSource.EnemyName = enemyAgent.RiderAgent?.Name + " (" + new TextObject("{=mountnoun}Mount").ToString() + ")";
+                                }
+                                else
+                                {
+                                    AgentPostures.postureVisual._dataSource.EnemyName = enemyAgent.Name;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        public static ActionIndexCache DecideAnimation(AttackCollisionData collisionData, bool isAttacker)
+        {
+            switch (collisionData.AttackDirection)
+            {
+                case UsageDirection.AttackLeft:
+                    {
+                        if (isAttacker)
+                        {
+                            return ActionIndexCache.act_stagger_left;
+                        }
+                        else
+                        {
+                            return ActionIndexCache.act_stagger_right;
+                        }
+                    }
+                case UsageDirection.AttackRight:
+                    {
+                        if (isAttacker)
+                        {
+                            return ActionIndexCache.act_stagger_right;
+                        }
+                        else
+                        {
+                            return ActionIndexCache.act_stagger_left;
+                        }
+                    }
+                case UsageDirection.AttackUp:
+                case UsageDirection.AttackDown:
+                    {
+                        if (isAttacker)
+                        {
+                            return ActionIndexCache.act_stagger_forward;
+                        }
+                        else
+                        {
+                            return ActionIndexCache.act_stagger_backward;
+                        }
+                    }
+                default:
+                    {
+                        return ActionIndexCache.act_stagger_left;
+                    }
+            }
+        }
+
+        public static void forceStaggerAnimation(Agent agent, AttackCollisionData collisionData, float actionSpeed, bool isAttacker)
+        {
+            agent.SetActionChannel(agent.HasMount ? 1 : 0, DecideAnimation(collisionData, isAttacker), actionSpeed: actionSpeed);
+        }
+
+        public static void forceTiredAnimation(Agent agent, AttackCollisionData collisionData, float actionSpeed, bool isAttacker)
+        {
+            agent.SetActionChannel(agent.HasMount ? 1 : 0, ActionIndexCache.act_pickup_down_begin_left_stance, actionSpeed: actionSpeed);
+        }
+
         [ThreadStatic]
         private static bool _inMeleeHitContext;
 
@@ -173,21 +325,6 @@ namespace RBMAI
         [HarmonyPatch("CreateMeleeBlow")]
         private class CreateMeleeBlowPatch
         {
-
-            //how much posture is regained after posture break
-            static float postureResetModifier = 0.75f;
-            //how much posture is regained after posture break while holding shield
-            static float shieldPostureResetModifier = 0.4f;
-
-            public static void ResetPostureForAgent(ref Posture posture, float resetModifier)
-            {
-                if (posture != null)
-                {
-                    posture.posture += posture.maxPosture * resetModifier;
-                    posture.posture = Math.Max(0f, posture.posture);
-                }
-            }
-
             public static void TryToDropWeapon(Agent victimAgent)
             {
                 EquipmentIndex wieldedItemIndex = victimAgent.GetPrimaryWieldedItemIndex();
@@ -217,69 +354,6 @@ namespace RBMAI
                 }
             }
 
-            public static void TryToDropShield(Agent victimAgent)
-            {
-                if (!agentsToDropShield.Contains(victimAgent))
-                {
-                    agentsToDropShield.Add(victimAgent);
-                }
-            }
-
-            public static ActionIndexCache DecideAnimation(AttackCollisionData collisionData, bool isAttacker)
-            {
-                switch (collisionData.AttackDirection)
-                {
-                    case UsageDirection.AttackLeft:
-                        {
-                            if (isAttacker)
-                            {
-                                return ActionIndexCache.act_stagger_left;
-                            }
-                            else
-                            {
-                                return ActionIndexCache.act_stagger_right;
-                            }
-                        }
-                    case UsageDirection.AttackRight:
-                        {
-                            if (isAttacker)
-                            {
-                                return ActionIndexCache.act_stagger_right;
-                            }
-                            else
-                            {
-                                return ActionIndexCache.act_stagger_left;
-                            }
-                        }
-                    case UsageDirection.AttackUp:
-                    case UsageDirection.AttackDown:
-                        {
-                            if (isAttacker)
-                            {
-                                return ActionIndexCache.act_stagger_forward;
-                            }
-                            else
-                            {
-                                return ActionIndexCache.act_stagger_backward;
-                            }
-                        }
-                    default:
-                        {
-                            return ActionIndexCache.act_stagger_left;
-                        }
-                }
-            }
-
-            public static void forceStaggerAnimation(Agent agent, AttackCollisionData collisionData, float actionSpeed, bool isAttacker)
-            {
-                agent.SetActionChannel(agent.HasMount ? 1 : 0, DecideAnimation(collisionData, isAttacker), actionSpeed: actionSpeed);
-            }
-
-            public static void forceTiredAnimation(Agent agent, AttackCollisionData collisionData, float actionSpeed, bool isAttacker)
-            {
-                agent.SetActionChannel(agent.HasMount ? 1 : 0, ActionIndexCache.act_pickup_down_begin_left_stance, actionSpeed: actionSpeed);
-            }
-
             public static void handleDefender(Posture posture, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData,
                 MissionWeapon attackerWeapon, float comHitModifier, ref Blow blow, ref Mission mission,
                 float actionModifier, float staggerActionSpeed, bool dropWeapon, bool dropShield,
@@ -288,6 +362,11 @@ namespace RBMAI
                 if (posture != null)
                 {
                     float postureDmg = calculateDefenderPostureDamage(victimAgent, attackerAgent, actionModifier, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, isUnarmedAttack);
+
+                    //stamina effect
+                    float staminaLevel = posture.stamina / posture.maxStamina;
+                    postureDmg *= MBMath.Lerp(1.25f, 1f, staminaLevel);
+
                     float postureOverkill = Math.Abs(posture.posture - postureDmg);
                     posture.posture = Math.Max(0f, posture.posture - postureDmg);
                     posture.stamina = Math.Max(0f, posture.stamina - postureDmg);
@@ -339,6 +418,11 @@ namespace RBMAI
                 if (posture != null)
                 {
                     float postureDmg = calculateAttackerPostureDamage(victimAgent, attackerAgent, actionModifier, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, isUnarmedAttack);
+
+                    //stamina effect
+                    float staminaLevel = posture.stamina / posture.maxStamina;
+                    postureDmg *= MBMath.Lerp(1.25f, 1f, staminaLevel);
+
                     float postureOverkill = Math.Abs(posture.posture - postureDmg);
                     posture.posture = Math.Max(0f, posture.posture - postureDmg);
                     posture.stamina = Math.Max(0f, posture.stamina - postureDmg);
@@ -686,82 +770,6 @@ namespace RBMAI
                             int num = MathF.Max(0, victim.Equipment[equipmentIndex].HitPoints - amount);
                             victim.ChangeWeaponHitPoints(equipmentIndex, (short)num);
                             break;
-                        }
-                    }
-                }
-            }
-
-            private static void addPosturedamageVisual(Agent attackerAgent, Agent victimAgent)
-            {
-                if (RBMConfig.RBMConfig.postureEnabled)
-                {
-                    if (victimAgent != null && attackerAgent != null && (victimAgent.IsPlayerControlled || attackerAgent.IsPlayerControlled))
-                    {
-                        Agent enemyAgent = null;
-                        if (victimAgent.IsPlayerControlled)
-                        {
-                            enemyAgent = attackerAgent;
-                            Posture posture = null;
-                            if (AgentPostures.values.TryGetValue(victimAgent, out posture))
-                            {
-                                if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
-                                {
-                                    AgentPostures.postureVisual._dataSource.PlayerPosture = (int)posture.posture;
-                                    AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)posture.maxPosture;
-                                    AgentPostures.postureVisual._dataSource.PlayerPostureText = ((int)posture.posture).ToString();
-                                    AgentPostures.postureVisual._dataSource.PlayerPostureMaxText = ((int)posture.maxPosture).ToString();
-
-                                    AgentPostures.postureVisual._dataSource.PlayerStamina = (int)posture.stamina;
-                                    AgentPostures.postureVisual._dataSource.PlayerStaminaMax = (int)posture.maxStamina;
-                                    AgentPostures.postureVisual._dataSource.PlayerStaminaText = ((int)posture.stamina).ToString();
-                                    AgentPostures.postureVisual._dataSource.PlayerStaminaMaxText = ((int)posture.maxStamina).ToString();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            enemyAgent = victimAgent;
-                            Posture posture = null;
-                            if (AgentPostures.values.TryGetValue(attackerAgent, out posture))
-                            {
-                                if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
-                                {
-                                    AgentPostures.postureVisual._dataSource.PlayerPosture = (int)posture.posture;
-                                    AgentPostures.postureVisual._dataSource.PlayerPostureMax = (int)posture.maxPosture;
-                                    AgentPostures.postureVisual._dataSource.PlayerPostureText = ((int)posture.posture).ToString();
-                                    AgentPostures.postureVisual._dataSource.PlayerPostureMaxText = ((int)posture.maxPosture).ToString();
-
-                                    AgentPostures.postureVisual._dataSource.PlayerStamina = (int)posture.stamina;
-                                    AgentPostures.postureVisual._dataSource.PlayerStaminaMax = (int)posture.maxStamina;
-                                    AgentPostures.postureVisual._dataSource.PlayerStaminaText = ((int)posture.stamina).ToString();
-                                    AgentPostures.postureVisual._dataSource.PlayerStaminaMaxText = ((int)posture.maxStamina).ToString();
-                                }
-                            }
-                        }
-                        if (AgentPostures.postureVisual != null)
-                        {
-                            Posture posture = null;
-                            if (AgentPostures.values.TryGetValue(enemyAgent, out posture))
-                            {
-                                AgentPostures.postureVisual._dataSource.ShowEnemyStatus = true;
-                                AgentPostures.postureVisual.affectedAgent = enemyAgent;
-                                if (AgentPostures.postureVisual._dataSource.ShowEnemyStatus && AgentPostures.postureVisual.affectedAgent == enemyAgent)
-                                {
-                                    AgentPostures.postureVisual.timer = AgentPostures.postureVisual.DisplayTime;
-                                    AgentPostures.postureVisual._dataSource.EnemyPosture = (int)posture.posture;
-                                    AgentPostures.postureVisual._dataSource.EnemyPostureMax = (int)posture.maxPosture;
-                                    AgentPostures.postureVisual._dataSource.EnemyHealth = (int)enemyAgent.Health;
-                                    AgentPostures.postureVisual._dataSource.EnemyHealthMax = (int)enemyAgent.HealthLimit;
-                                    if (enemyAgent.IsMount)
-                                    {
-                                        AgentPostures.postureVisual._dataSource.EnemyName = enemyAgent.RiderAgent?.Name + " (" + new TextObject("{=mountnoun}Mount").ToString() + ")";
-                                    }
-                                    else
-                                    {
-                                        AgentPostures.postureVisual._dataSource.EnemyName = enemyAgent.Name;
-                                    }
-                                }
-                            }
                         }
                     }
                 }
@@ -1481,7 +1489,6 @@ namespace RBMAI
                 AgentPostures.values.Clear();
             }
         }
-
         public override void OnMissionTick(float dt)
         {
             base.OnMissionTick(dt);
@@ -1662,5 +1669,159 @@ namespace RBMAI
 
         }
 
+        public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon affectorWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
+        {
+            base.OnAgentHit(affectedAgent, affectorAgent, in affectorWeapon, in blow, in attackCollisionData);
+            if (affectedAgent == null || !affectedAgent.IsActive() || !affectedAgent.IsHuman)
+            {
+                return;
+            }
+            if (RBMConfig.RBMConfig.postureEnabled)
+            {
+                Posture affectedAgentPosture = null;
+                AgentPostures.values.TryGetValue(affectedAgent, out affectedAgentPosture);
+                if (affectedAgentPosture != null)
+                {
+                    //missile hit posture/stamina loss
+                    if (blow.IsMissile && affectorWeapon.CurrentUsageItem != null)
+                    {
+                        bool isDirectHit = !attackCollisionData.AttackBlockedWithShield;
+                        WeaponClass missileWeaponClass = affectorWeapon.CurrentUsageItem.WeaponClass;
+
+                        float arrowAgentPostureDamage = 15f;
+                        float throwingAgentPostureDamage = 60f;
+
+                        float arrowShieldPostureDamage = 5f;
+                        float throwingShieldPostureDamage = 30f;
+
+                        //agent hit
+                        if (isDirectHit)
+                        {
+                            //headshot multiplier
+                            if (blow.VictimBodyPart == BoneBodyPartType.Head || blow.VictimBodyPart == BoneBodyPartType.Head)
+                            {
+                                arrowAgentPostureDamage = 30f;
+                                throwingAgentPostureDamage = 100f;
+                            }
+                            switch (missileWeaponClass)
+                            {
+                                case WeaponClass.Bow:
+                                case WeaponClass.Crossbow:
+                                case WeaponClass.Arrow:
+                                case WeaponClass.Bolt:
+                                case WeaponClass.ThrowingKnife:
+                                    {
+                                        affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - arrowAgentPostureDamage);
+                                        affectedAgentPosture.stamina = Math.Max(0f, affectedAgentPosture.stamina - arrowAgentPostureDamage);
+                                        break;
+                                    }
+                                case WeaponClass.Javelin:
+                                case WeaponClass.ThrowingAxe:
+
+                                    {
+                                        affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - throwingAgentPostureDamage);
+                                        affectedAgentPosture.stamina = Math.Max(0f, affectedAgentPosture.stamina - throwingAgentPostureDamage);
+                                        break;
+                                    }
+                            }
+                        }
+                        //shield hit
+                        else
+                        {
+                            switch (missileWeaponClass)
+                            {
+                                case WeaponClass.Bow:
+                                case WeaponClass.Crossbow:
+                                case WeaponClass.Arrow:
+                                case WeaponClass.Bolt:
+                                case WeaponClass.ThrowingKnife:
+
+                                    {
+                                        affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - arrowShieldPostureDamage);
+                                        affectedAgentPosture.stamina = Math.Max(0f, affectedAgentPosture.stamina - arrowShieldPostureDamage);
+                                        break;
+                                    }
+                                case WeaponClass.Javelin:
+                                case WeaponClass.ThrowingAxe:
+                                    {
+                                        affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - throwingShieldPostureDamage);
+                                        affectedAgentPosture.stamina = Math.Max(0f, affectedAgentPosture.stamina - throwingShieldPostureDamage);
+                                        break;
+                                    }
+                            }
+                        }
+
+                        //ranged posture break
+                        if (affectedAgentPosture.posture <= 0f)
+                        {
+                            affectedAgentPosture.posture = 0f;
+                            forceStaggerAnimation(affectedAgent, attackCollisionData, 0.85f, false);
+                            ResetPostureForAgent(ref affectedAgentPosture, postureResetModifier);
+                        }
+
+                        addPosturedamageVisual(affectorAgent, affectedAgent);
+
+                    }
+                }
+            }
+
+            int ammoStuckInAgent = affectedAgent.GetAttachedWeaponsCount();
+            int arrowsBoltsStuckInAgent = 0;
+            int maxAmmoStuckInAgent = 5;
+            for (int i = 0; i < ammoStuckInAgent; i++)
+            {
+                //remove stuck javelins
+                WeaponClass ammoWeaponClass = affectedAgent.GetAttachedWeapon(i).CurrentUsageItem.WeaponClass;
+                if (ammoWeaponClass == WeaponClass.Javelin || ammoWeaponClass == WeaponClass.ThrowingAxe || ammoWeaponClass == WeaponClass.ThrowingKnife)
+                {
+                    affectedAgent.DeleteAttachedWeapon(i);
+                }
+
+                if (ammoWeaponClass == WeaponClass.Arrow || ammoWeaponClass == WeaponClass.Bolt)
+                {
+                    arrowsBoltsStuckInAgent++;
+                }
+
+                //remove stuck arrows/bolts if there are too many of them
+                if (arrowsBoltsStuckInAgent >= maxAmmoStuckInAgent)
+                {
+                    affectedAgent.DeleteAttachedWeapon(i);
+                }
+            }
+
+            //drop shield if too many arrows/bolts or javelins/throwing axes/throwing knives are stuck in the shield
+
+            int maxAmmoStuckInShield = 15;
+            int maxJavelinsAxesKnivesStuckInShield = 3;
+            if (affectedAgent.WieldedOffhandWeapon.IsShield())
+            {
+                int ammoStuckInShieldCount = affectedAgent.WieldedOffhandWeapon.GetAttachedWeaponsCount();
+                int arrowsBoltsStuckInShieldCount = 0;
+                int javelinsAxesKnivesStuckInShieldCount = 0;
+                if (ammoStuckInShieldCount >= maxAmmoStuckInShield)
+                {
+                    TryToDropShield(affectedAgent);
+                }
+                else
+                {
+                    for (int i = 0; i < ammoStuckInShieldCount; i++)
+                    {
+                        WeaponClass ammoWeaponClass = affectedAgent.WieldedOffhandWeapon.GetAttachedWeapon(i).CurrentUsageItem.WeaponClass;
+                        if (ammoWeaponClass == WeaponClass.Arrow || ammoWeaponClass == WeaponClass.Bolt)
+                        {
+                            arrowsBoltsStuckInShieldCount++;
+                        }
+                        else if (ammoWeaponClass == WeaponClass.Javelin || ammoWeaponClass == WeaponClass.ThrowingAxe || ammoWeaponClass == WeaponClass.ThrowingKnife)
+                        {
+                            javelinsAxesKnivesStuckInShieldCount++;
+                        }
+                    }
+                    if (javelinsAxesKnivesStuckInShieldCount >= maxJavelinsAxesKnivesStuckInShield)
+                    {
+                        TryToDropShield(affectedAgent);
+                    }
+                }
+            }
+        }
     }
 }
