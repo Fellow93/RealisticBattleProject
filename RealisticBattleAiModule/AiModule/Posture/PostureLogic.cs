@@ -1526,7 +1526,7 @@ namespace RBMAI
                             _inactiveAgentsBuffer.Add(entry.Key);
                             continue;
                         }
-                        if (entry.Key.IsPlayerControlled || entry.Key.IsPlayerUnit)
+                        if (entry.Key.IsPlayerControlled)
                         {
                             if (AgentPostures.postureVisual != null && AgentPostures.postureVisual._dataSource.ShowPlayerPostureStatus)
                             {
@@ -1691,7 +1691,7 @@ namespace RBMAI
                         float arrowAgentPostureDamage = 15f;
                         float throwingAgentPostureDamage = 60f;
 
-                        float arrowShieldPostureDamage = 5f;
+                        float arrowShieldPostureDamage = 10f;
                         float throwingShieldPostureDamage = 30f;
 
                         //agent hit
@@ -1789,39 +1789,38 @@ namespace RBMAI
                 }
             }
 
-            //drop shield if too many arrows/bolts or javelins/throwing axes/throwing knives are stuck in the shield
-
-            int maxAmmoStuckInShield = 15;
-            int maxJavelinsAxesKnivesStuckInShield = 3;
-            if (affectedAgent.WieldedOffhandWeapon.IsShield())
-            {
-                int ammoStuckInShieldCount = affectedAgent.WieldedOffhandWeapon.GetAttachedWeaponsCount();
-                int arrowsBoltsStuckInShieldCount = 0;
-                int javelinsAxesKnivesStuckInShieldCount = 0;
-                if (ammoStuckInShieldCount >= maxAmmoStuckInShield)
-                {
-                    TryToDropShield(affectedAgent);
-                }
-                else
-                {
-                    for (int i = 0; i < ammoStuckInShieldCount; i++)
-                    {
-                        WeaponClass ammoWeaponClass = affectedAgent.WieldedOffhandWeapon.GetAttachedWeapon(i).CurrentUsageItem.WeaponClass;
-                        if (ammoWeaponClass == WeaponClass.Arrow || ammoWeaponClass == WeaponClass.Bolt)
-                        {
-                            arrowsBoltsStuckInShieldCount++;
-                        }
-                        else if (ammoWeaponClass == WeaponClass.Javelin || ammoWeaponClass == WeaponClass.ThrowingAxe || ammoWeaponClass == WeaponClass.ThrowingKnife)
-                        {
-                            javelinsAxesKnivesStuckInShieldCount++;
-                        }
-                    }
-                    if (javelinsAxesKnivesStuckInShieldCount >= maxJavelinsAxesKnivesStuckInShield)
-                    {
-                        TryToDropShield(affectedAgent);
-                    }
-                }
-            }
+            //drop shield if too many arrows/bolts or javelins/throwing axes/throwing knives are stuck in the shield, disabled for now
+            //int maxAmmoStuckInShield = 15;
+            //int maxJavelinsAxesKnivesStuckInShield = 3;
+            //if (affectedAgent.WieldedOffhandWeapon.IsShield())
+            //{
+            //    int ammoStuckInShieldCount = affectedAgent.WieldedOffhandWeapon.GetAttachedWeaponsCount();
+            //    int arrowsBoltsStuckInShieldCount = 0;
+            //    int javelinsAxesKnivesStuckInShieldCount = 0;
+            //    if (ammoStuckInShieldCount >= maxAmmoStuckInShield)
+            //    {
+            //        TryToDropShield(affectedAgent);
+            //    }
+            //    else
+            //    {
+            //        for (int i = 0; i < ammoStuckInShieldCount; i++)
+            //        {
+            //            WeaponClass ammoWeaponClass = affectedAgent.WieldedOffhandWeapon.GetAttachedWeapon(i).CurrentUsageItem.WeaponClass;
+            //            if (ammoWeaponClass == WeaponClass.Arrow || ammoWeaponClass == WeaponClass.Bolt)
+            //            {
+            //                arrowsBoltsStuckInShieldCount++;
+            //            }
+            //            else if (ammoWeaponClass == WeaponClass.Javelin || ammoWeaponClass == WeaponClass.ThrowingAxe || ammoWeaponClass == WeaponClass.ThrowingKnife)
+            //            {
+            //                javelinsAxesKnivesStuckInShieldCount++;
+            //            }
+            //        }
+            //        if (javelinsAxesKnivesStuckInShieldCount >= maxJavelinsAxesKnivesStuckInShield)
+            //        {
+            //            TryToDropShield(affectedAgent);
+            //        }
+            //    }
+            //}
         }
     }
 }
