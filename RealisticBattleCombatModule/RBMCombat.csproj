@@ -209,6 +209,10 @@
       <Project>{D7F2B557-3D03-4DCF-850C-DA8E5E2D8505}</Project>
       <Name>RBMConfig</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RealisticBattleAiModule\RBMAI.csproj">
+      <Project>{7254E74D-4968-47C3-BB91-84D3FC207ACB}</Project>
+      <Name>RBMAI</Name>
+    </ProjectReference>
   </ItemGroup>
   <!-- Post-Build -->
   <PropertyGroup>

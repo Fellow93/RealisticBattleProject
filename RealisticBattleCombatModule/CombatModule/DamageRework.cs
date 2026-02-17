@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using RBMAI;
 using SandBox.GameComponents;
 using SandBox.Missions.MissionLogics;
 using System;
@@ -447,6 +448,33 @@ namespace RBMCombat
                         {
                             magnitude = Utilities.GetSkillBasedDamage(magnitude, attackInformation.IsAttackerAgentDoingPassiveAttack, weaponType, damageType, effectiveSkill, skillModifier, (StrikeType)attackCollisionData.StrikeType, 5f);
                         }
+                    }
+                }
+
+                if (RBMConfig.RBMConfig.postureEnabled)
+                {
+                    Posture victimPosture = null;
+                    Posture attackerPosture = null;
+                    AgentPostures.values.TryGetValue(attacker, out attackerPosture);
+                    AgentPostures.values.TryGetValue(victim, out victimPosture);
+
+                    //stamina effct on attacker
+                    if (attackerPosture != null)
+                    {
+                        float staminaLevel = attackerPosture.stamina / attackerPosture.maxStamina;
+
+                        //magnitude modifier based on stamina level
+                        magnitude *= MBMath.Lerp(0.85f, 1f, staminaLevel);
+                    }
+
+                    //stamina effct on victim
+                    if (victimPosture != null)
+                    {
+                        float staminaLevel = victimPosture.stamina / victimPosture.maxStamina;
+
+                        //armor amount modifier based on stamina level
+                        float armorStaminaLevel = 0.3f + Math.Max(0.7f, staminaLevel);
+                        armorAmount *= armorStaminaLevel;
                     }
                 }
 

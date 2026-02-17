@@ -271,17 +271,16 @@ namespace RBMAI
                         agentDrivenProperties.WeaponMaxUnsteadyAccuracyPenalty *= MBMath.Lerp(1.1f, 1f, staminaLevel);
 
                         //ranged AI
-                        agentDrivenProperties.WeaponBestAccuracyWaitTime *= MBMath.Lerp(1.1f, 1f, staminaLevel);
+                        agentDrivenProperties.WeaponBestAccuracyWaitTime *= MBMath.Lerp(0.9f, 1f, staminaLevel);
 
                         //AI combat ability
-                        agentDrivenProperties.AIBlockOnDecideAbility *= MBMath.Lerp(0.85f, 1f, staminaLevel);
-                        agentDrivenProperties.AIParryOnDecideAbility *= MBMath.Lerp(0.85f, 1f, staminaLevel);
                         agentDrivenProperties.AIRealizeBlockingFromIncorrectSideAbility *= MBMath.Lerp(0.85f, 1f, staminaLevel);
                         agentDrivenProperties.AIDecideOnRealizeEnemyBlockingAttackAbility *= MBMath.Lerp(0.85f, 1f, staminaLevel);
                         agentDrivenProperties.AIAttackOnParryChance *= MBMath.Lerp(0.85f, 1f, staminaLevel);
 
                         //AI aggressiveness
                         agentDrivenProperties.AIDecideOnAttackChance *= MBMath.Lerp(0.85f, 1f, staminaLevel);
+                        agentDrivenProperties.AiAttackCalculationMaxTimeFactor *= MBMath.Lerp(0.85f, 1f, staminaLevel);
                     }
                 }
             }
