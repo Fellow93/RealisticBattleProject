@@ -196,6 +196,27 @@ namespace RBMAI
             private static void Finalizer() => _inMeleeHitContext = false;
         }
 
+        public static void InitializeStamina(Agent agent, ref Posture posture)
+        {
+            float athleticBase = 1000f;
+            int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(agent, DefaultSkills.Athletics);
+            float athleticSkillModifier = 500f;
+            posture.maxStamina = athleticBase * (1f + (effectiveAthleticSkill / athleticSkillModifier));
+            posture.stamina = athleticBase * (1f + (effectiveAthleticSkill / athleticSkillModifier));
+            posture.staminaRegenPerTick = 0.04f * (1f + (effectiveAthleticSkill / athleticSkillModifier));
+
+            //face armor effect
+            float faceArmor = 0f;
+            if (!agent.SpawnEquipment[EquipmentIndex.Head].IsEmpty)
+            {
+                faceArmor = agent.SpawnEquipment[EquipmentIndex.Head].GetModifiedBodyArmor();
+            }
+            if (faceArmor >= 30f)
+            {
+                posture.staminaRegenPerTick *= 0.5f;
+            }
+        }
+
         [HarmonyPatch(typeof(Agent))]
         [HarmonyPatch("EquipItemsFromSpawnEquipment")]
         private class EquipItemsFromSpawnEquipmentPatch
@@ -206,12 +227,7 @@ namespace RBMAI
                 {
                     AgentPostures.values[__instance] = new Posture();
                     Posture posture = AgentPostures.values[__instance];
-                    float athleticBase = 1000f;
-                    int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, DefaultSkills.Athletics);
-                    float athleticSkillModifier = 500f;
-                    posture.maxStamina = athleticBase * (1f + (effectiveAthleticSkill / athleticSkillModifier));
-                    posture.stamina = athleticBase * (1f + (effectiveAthleticSkill / athleticSkillModifier));
-                    posture.staminaRegenPerTick = 0.02f * (1f + (effectiveAthleticSkill / athleticSkillModifier));
+                    InitializeStamina(__instance, ref posture);
                 }
             }
         }
@@ -230,13 +246,8 @@ namespace RBMAI
                     if (posture == null)
                     {
                         AgentPostures.values[__instance] = new Posture();
-                        float athleticBase = 1000f;
-                        int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, DefaultSkills.Athletics);
-                        float athleticSkillModifier = 500f;
                         posture = AgentPostures.values[__instance];
-                        posture.maxStamina = athleticBase * (1f + (effectiveAthleticSkill / athleticSkillModifier));
-                        posture.stamina = athleticBase * (1f + (effectiveAthleticSkill / athleticSkillModifier));
-                        posture.staminaRegenPerTick = 0.02f * (1f + (effectiveAthleticSkill / athleticSkillModifier));
+                        InitializeStamina(__instance, ref posture);
                     }
                     AgentPostures.values.TryGetValue(__instance, out posture);
                     if (posture != null)
@@ -291,17 +302,6 @@ namespace RBMAI
                             //armor weight effect
                             float armorWeight = Math.Max(0f, __instance.SpawnEquipment.GetTotalWeightOfArmor(true) - 5f);
                             posture.maxPosture += armorWeight;
-
-                            //face armor effect
-                            float faceArmor = 0f;
-                            if (!__instance.SpawnEquipment[EquipmentIndex.Head].IsEmpty)
-                            {
-                                faceArmor = __instance.SpawnEquipment[EquipmentIndex.Head].GetModifiedBodyArmor();
-                            }
-                            if (faceArmor >= 30f)
-                            {
-                                posture.staminaRegenPerTick *= 0.5f;
-                            }
 
                             posture.posture = posture.maxPosture * oldPosturePercentage;
                         }

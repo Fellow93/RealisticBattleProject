@@ -253,8 +253,8 @@ namespace RBMAI
                         float staminaLevel = posture.stamina / posture.maxStamina;
 
                         //readying and blocking
-                        agentDrivenProperties.HandlingMultiplier *= MBMath.Lerp(0.2f, 1f, staminaLevel);
-                        agentDrivenProperties.OffhandWeaponDefendSpeedMultiplier = MBMath.Lerp(0.2f, 1f, staminaLevel);
+                        agentDrivenProperties.HandlingMultiplier *= MBMath.Lerp(0.5f, 1f, staminaLevel);
+                        agentDrivenProperties.OffhandWeaponDefendSpeedMultiplier = MBMath.Lerp(0.5f, 1f, staminaLevel);
 
                         //movement speed
                         agentDrivenProperties.MaxSpeedMultiplier *= MBMath.Lerp(0.85f, 1f, staminaLevel);

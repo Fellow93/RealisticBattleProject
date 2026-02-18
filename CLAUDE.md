@@ -88,3 +88,6 @@ Settings are static fields on `RBMConfig.RBMConfig`, persisted to user XML at `U
 ## Bannerlord documentation online
 - https://moddocs.bannerlord.com/
 - https://docs.bannerlordmodding.com/
+
+##
+- never add Claude as co-author in commits
