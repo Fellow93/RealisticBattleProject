@@ -200,7 +200,7 @@ namespace RBMAI
 
         public static void InitializeStamina(Agent agent, ref Posture posture)
         {
-            float athleticBase = 1500f;
+            float athleticBase = 1000f;
             int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(agent, DefaultSkills.Athletics);
             float athleticSkillModifier = 500f;
             posture.maxStamina = athleticBase * (1f + (effectiveAthleticSkill / athleticSkillModifier));
@@ -395,13 +395,9 @@ namespace RBMAI
                     int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(victimAgent, DefaultSkills.Athletics);
                     float athlethicModifier = effectiveAthleticSkill / 20;
                     float victimAgentArmorWeight = Math.Max(0f, victimAgent.SpawnEquipment.GetTotalWeightOfArmor(true) - athlethicModifier);
-                    float staminaDamage = postureDmg * (1f + victimAgentArmorWeight / 50f);
-                    if (meleeHitType == MeleeHitType.AgentHit)
-                    {
-                        staminaDamage = postureDmg;
-                    }
-
-                    posture.stamina = Math.Max(0f, posture.stamina - staminaDamage);
+                    float staminaLoss = calculateDefenderStaminaLoss(victimAgent, attackerAgent, ref collisionData, meleeHitType, isUnarmedAttack);
+                    staminaLoss *= (1f + victimAgentArmorWeight / 50f);
+                    posture.stamina = Math.Max(0f, posture.stamina - staminaLoss);
 
                     addPosturedamageVisual(attackerAgent, victimAgent);
                     if (posture.posture <= 0f)
@@ -462,8 +458,9 @@ namespace RBMAI
                     int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, DefaultSkills.Athletics);
                     float athlethicModifier = effectiveAthleticSkill / 20;
                     float attackerAgentArmorWeight = Math.Max(0f, attackerAgent.SpawnEquipment.GetTotalWeightOfArmor(true) - athlethicModifier);
-                    float staminaDamage = postureDmg * (1f + attackerAgentArmorWeight / 50f);
-                    posture.stamina = Math.Max(0f, posture.stamina - staminaDamage);
+                    float staminaLoss = calculateDefenderStaminaLoss(victimAgent, attackerAgent, ref collisionData, meleeHitType, isUnarmedAttack);
+                    staminaLoss *= (1f + attackerAgentArmorWeight / 50f);
+                    posture.stamina = Math.Max(0f, posture.stamina - staminaLoss);
 
                     addPosturedamageVisual(attackerAgent, victimAgent);
                     if (posture.posture <= 0f)
@@ -812,6 +809,198 @@ namespace RBMAI
                         }
                     }
                 }
+            }
+
+            private static bool isOneHandedWeapon(MissionWeapon weapon)
+            {
+                if (weapon.IsEmpty)
+                {
+                    return false;
+                }
+                WeaponClass wc = weapon.CurrentUsageItem.WeaponClass;
+                return
+                    wc == WeaponClass.OneHandedAxe ||
+                    wc == WeaponClass.Dagger ||
+                    wc == WeaponClass.OneHandedPolearm ||
+                    wc == WeaponClass.OneHandedSword ||
+                    wc == WeaponClass.Mace ||
+                    wc == WeaponClass.LowGripPolearm ||
+                    wc == WeaponClass.Pick;
+            }
+
+            private static bool isSmallShield(MissionWeapon weapon)
+            {
+                if (weapon.IsEmpty)
+                {
+                    return false;
+                }
+                WeaponClass wc = weapon.CurrentUsageItem.WeaponClass;
+                return wc == WeaponClass.SmallShield;
+            }
+
+            private static float calculateDefenderStaminaLoss(Agent defenderAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MeleeHitType meleeHitType, bool isUnarmedAttack)
+            {
+                float result = 0f;
+                MissionWeapon defenderWeapon = defenderAgent.WieldedWeapon;
+
+                SkillObject defenderWeaponSkill = isUnarmedAttack ? null : WeaponComponentData.GetRelevantSkillFromWeaponClass(defenderWeapon.CurrentUsageItem.WeaponClass); ;
+                int effectiveSkill = isUnarmedAttack ? MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, DefaultSkills.Athletics) : MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, defenderWeaponSkill);
+
+                float directHit = (collisionData.InflictedDamage * 5f) + 20f;
+                float unarmedDefence = 30f;
+                float oneHandedDefence = 30f;
+                float twoHandedDefence = 42f;
+                float smallShieldDefence = 33f;
+                float largeShieldDefence = 39f;
+
+                float defaultDefence = 30f;
+
+                //100 skill = 10% reduction
+                float skillModifier = 1f - (effectiveSkill * 0.001f);
+
+                if (isUnarmedAttack)
+                {
+                    switch (meleeHitType)
+                    {
+                        case MeleeHitType.AgentHit:
+                            {
+
+                                result = directHit;
+                                break;
+                            }
+                        default:
+                            {
+                                result = unarmedDefence * skillModifier;
+                                break;
+                            }
+                    }
+                }
+                else
+                {
+                    MissionWeapon defenderShield = defenderAgent.Equipment[defenderAgent.GetOffhandWieldedItemIndex()];
+
+                    bool isDefenderWeaponOneHanded = isOneHandedWeapon(defenderWeapon);
+                    bool isDefenderSmallShield = isSmallShield(defenderShield);
+
+                    switch (meleeHitType)
+                    {
+                        case MeleeHitType.AgentHit:
+                            {
+                                result = directHit;
+                                break;
+                            }
+                        case MeleeHitType.WeaponBlock:
+                        case MeleeHitType.WeaponParry:
+                        case MeleeHitType.ChamberBlock:
+                            {
+                                if (isDefenderWeaponOneHanded)
+                                {
+                                    result = oneHandedDefence * skillModifier;
+                                }
+                                else
+                                {
+                                    result = twoHandedDefence * skillModifier;
+                                }
+                                result = default;
+                                break;
+                            }
+                        case MeleeHitType.ShieldBlock:
+                        case MeleeHitType.ShieldIncorrectBlock:
+                        case MeleeHitType.ShieldParry:
+                            {
+                                if (isDefenderSmallShield)
+                                {
+                                    result = smallShieldDefence * skillModifier;
+                                }
+                                else
+                                {
+                                    result = largeShieldDefence * skillModifier;
+                                }
+                                result = default;
+                                break;
+                            }
+                        default:
+                            {
+                                result = defaultDefence * skillModifier;
+                                break;
+                            }
+                    }
+                }
+                return result;
+            }
+
+            private static float calculateAttackerStaminaLoss(Agent defenderAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MeleeHitType meleeHitType, bool isUnarmedAttack)
+            {
+                float result = 0f;
+                MissionWeapon attackerWeapon = attackerAgent.WieldedWeapon;
+
+                SkillObject attackerWeaponSkill = isUnarmedAttack ? null : WeaponComponentData.GetRelevantSkillFromWeaponClass(attackerWeapon.CurrentUsageItem.WeaponClass); ;
+                int effectiveSkill = isUnarmedAttack ? MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, DefaultSkills.Athletics) : MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, attackerWeaponSkill);
+
+                float directHit = 30f;
+                float unarmedAttack = 30f;
+                float oneHandedAttack = 30f;
+                float twoHandedAttack = 42f;
+
+                float defaultAttack = 30f;
+
+                //100 skill = 10% reduction
+                float skillModifier = 1f - (effectiveSkill * 0.001f);
+
+                if (isUnarmedAttack)
+                {
+                    switch (meleeHitType)
+                    {
+                        case MeleeHitType.AgentHit:
+                            {
+
+                                result = directHit;
+                                break;
+                            }
+                        default:
+                            {
+                                result = unarmedAttack * skillModifier;
+                                break;
+                            }
+                    }
+                }
+                else
+                {
+                    bool isAttackerWeaponOneHanded = isOneHandedWeapon(attackerWeapon);
+
+                    switch (meleeHitType)
+                    {
+                        case MeleeHitType.AgentHit:
+                            {
+                                result = isAttackerWeaponOneHanded ? directHit : directHit * 1.4f;
+                                break;
+                            }
+                        case MeleeHitType.WeaponBlock:
+                        case MeleeHitType.WeaponParry:
+                        case MeleeHitType.ChamberBlock:
+                        case MeleeHitType.ShieldBlock:
+                        case MeleeHitType.ShieldIncorrectBlock:
+                        case MeleeHitType.ShieldParry:
+                            {
+                                if (isAttackerWeaponOneHanded)
+                                {
+                                    result = oneHandedAttack * skillModifier;
+                                }
+                                else
+                                {
+                                    result = twoHandedAttack * skillModifier;
+                                }
+                                result = default;
+                                break;
+                            }
+                        default:
+                            {
+                                result = defaultAttack * skillModifier;
+                                break;
+                            }
+                    }
+                }
+                return result;
             }
 
             private static float calculateDefenderPostureDamage(Agent defenderAgent, Agent attackerAgent, float actionTypeDamageModifier, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier, MeleeHitType meleeHitType, bool isUnarmedAttack)
@@ -1408,13 +1597,52 @@ namespace RBMAI
                 return fixedPostureLoss + dynamicPostureLoss;
             }
 
+            private static float calculateShootMissileStaminaLoss(Agent agent, WeaponClass wc)
+            {
+                SkillObject attackerWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(wc);
+                int attackerEffectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(agent, attackerWeaponSkill);
+
+                //base stamina loss
+                float result = 50f;
+
+                switch (wc)
+                {
+                    case WeaponClass.Bow:
+                        {
+                            int weaponDifficulty = agent.WieldedWeapon.Item.Difficulty;
+                            int skillDifference = Math.Max(0, attackerEffectiveWeaponSkill - weaponDifficulty);
+                            float skillModifier = skillDifference * 0.5f;
+                            result = Math.Max(20f, 50f - skillModifier);
+                            break;
+                        }
+                    case WeaponClass.Crossbow:
+                        {
+                            int weaponDifficulty = agent.WieldedWeapon.Item.Difficulty;
+                            int skillDifference = Math.Max(0, attackerEffectiveWeaponSkill - weaponDifficulty);
+                            float skillModifier = skillDifference * 0.5f;
+                            result = Math.Max(20f, 50f - skillModifier);
+                            break;
+                        }
+                    case WeaponClass.Javelin:
+                    case WeaponClass.ThrowingAxe:
+                    case WeaponClass.ThrowingKnife:
+                        {
+                            float skillModifier = attackerEffectiveWeaponSkill * 0.5f;
+                            result = Math.Max(50f, 100f - skillModifier);
+                            break;
+                        }
+                }
+
+                return result;
+
+            }
+
             [HarmonyPatch(typeof(Mission))]
             [HarmonyPatch("OnAgentShootMissile")]
             [UsedImplicitly]
             [MBCallback]
             private class OverrideOnAgentShootMissile
             {
-
                 private static void Postfix(ref Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
                 {
                     if (RBMConfig.RBMConfig.postureEnabled)
@@ -1453,7 +1681,6 @@ namespace RBMAI
                                     }
                             }
 
-                            shooterPosture.stamina = Math.Max(0f, shooterPosture.stamina - (postureLoss * 1.5f));
                             if (shooterPosture.posture - postureLoss <= 0f)
                             {
                                 shooterPosture.posture = 0f;
@@ -1464,7 +1691,9 @@ namespace RBMAI
                             {
                                 shooterPosture.posture -= postureLoss;
                             }
-                            //shooterPosture.lastPostureLossTime = currentTime;
+
+                            float staminaLoss = calculateShootMissileStaminaLoss(shooterAgent, wc);
+                            shooterPosture.stamina = Math.Max(0f, shooterPosture.stamina - staminaLoss);
                         }
                     }
                 }
