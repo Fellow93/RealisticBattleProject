@@ -883,7 +883,7 @@ namespace RBMAI
                 else
                 {
                     MissionWeapon defenderWeapon = defenderAgent.WieldedWeapon;
-                    SkillObject defenderWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(defenderWeapon.CurrentUsageItem.WeaponClass);
+                    SkillObject defenderWeaponSkill = defenderAgent.WieldedWeapon.IsEmpty ? DefaultSkills.Athletics : WeaponComponentData.GetRelevantSkillFromWeaponClass(defenderWeapon.CurrentUsageItem.WeaponClass);
                     int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, defenderWeaponSkill);
                     float skillModifier = calculateDefenderStaminaSkillModifier(effectiveSkill);
 
@@ -893,7 +893,6 @@ namespace RBMAI
                         case MeleeHitType.WeaponParry:
                         case MeleeHitType.ChamberBlock:
                             {
-
                                 bool isDefenderWeaponOneHanded = isOneHandedWeapon(defenderWeapon);
 
                                 if (isDefenderWeaponOneHanded)
