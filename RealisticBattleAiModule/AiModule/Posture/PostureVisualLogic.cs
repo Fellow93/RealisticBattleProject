@@ -87,6 +87,9 @@ namespace RBMAI
                 {
                     _dataSource.EnemyPosture = (int)posture.posture;
                     _dataSource.EnemyPostureMax = (int)posture.maxPosture;
+
+                    _dataSource.EnemyStamina = (int)posture.stamina;
+                    _dataSource.EnemyStaminaMax = (int)posture.maxStamina;
                 }
 
                 if (affectedAgent.IsMount)

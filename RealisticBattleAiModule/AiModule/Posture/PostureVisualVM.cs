@@ -16,12 +16,13 @@
         private bool showPlayerPostureStatus = true;
 
         private int enemyHealth = 100;
-
         private int enemyHealthMax = 50;
 
         private int enemyPosture = 100;
-
         private int enemyPostureMax = 50;
+
+        private int enemyStamina = 100;
+        private int enemyStaminaMax = 50;
 
         private int playerPosture = 100;
         private string playerPostureText = "100";
@@ -166,6 +167,35 @@
             {
                 enemyPostureMax = value;
                 OnPropertyChangedWithValue(value, "EnemyPostureMax");
+                //OnPropertyChanged("DisplayText");
+            }
+        }
+
+        public int EnemyStamina
+        {
+            get
+            {
+                return enemyStamina;
+            }
+            set
+            {
+                enemyStamina = value;
+                OnPropertyChangedWithValue(value, "EnemyStamina");
+                //OnPropertyChanged("DisplayText");
+            }
+        }
+
+        [DataSourceProperty]
+        public int EnemyStaminaMax
+        {
+            get
+            {
+                return enemyStaminaMax;
+            }
+            set
+            {
+                enemyStaminaMax = value;
+                OnPropertyChangedWithValue(value, "EnemyStaminaMax");
                 //OnPropertyChanged("DisplayText");
             }
         }

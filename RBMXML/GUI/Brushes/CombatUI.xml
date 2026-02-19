@@ -37,9 +37,9 @@
   </Brush>
   <Brush Name="PlayerPostureBarBrush">
     <Layers>
-      <BrushLayer Name="EmptyFill" Sprite="BlankWhiteSquare" Color="#009900FF" />
-      <BrushLayer Name="DefaultFill"  Sprite="BlankWhiteSquare" Color="#009900FF" />
-      <BrushLayer Name="ChangeFill" Sprite="BlankWhiteSquare" Color="#009900FF" />
+      <BrushLayer Name="EmptyFill" Sprite="BlankWhiteSquare" ColorFactor="1.0" Color="#404040FF" />
+      <BrushLayer Name="DefaultFill"  Sprite="mission_health_bar_fill_9" ColorFactor="5.0" Color="#009900FF" />
+      <BrushLayer Name="ChangeFill" Sprite="BlankWhiteSquare" ColorFactor="5.0" Color="#ffffffff" />
     </Layers>
     <Styles>
       <Style Name="Default">
@@ -48,9 +48,9 @@
   </Brush>
   <Brush Name="PlayerStaminaBarBrush">
     <Layers>
-      <BrushLayer Name="EmptyFill" Sprite="BlankWhiteSquare" Color="#FFFF00FF" />
-      <BrushLayer Name="DefaultFill"  Sprite="BlankWhiteSquare" Color="#FFFF00FF" />
-      <BrushLayer Name="ChangeFill" Sprite="BlankWhiteSquare" Color="#FFFF00FF" />
+      <BrushLayer Name="EmptyFill" Sprite="BlankWhiteSquare" ColorFactor="1.0" Color="#404040FF" />
+      <BrushLayer Name="DefaultFill"  Sprite="mission_health_bar_fill_9" ColorFactor="5.0" Color="#FFFF00FF" />
+      <BrushLayer Name="ChangeFill" Sprite="BlankWhiteSquare" ColorFactor="5.0" Color="#ffffffff" />
     </Layers>
     <Styles>
       <Style Name="Default">

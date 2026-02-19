@@ -114,6 +114,8 @@ namespace RBMAI
                                 AgentPostures.postureVisual.timer = AgentPostures.postureVisual.DisplayTime;
                                 AgentPostures.postureVisual._dataSource.EnemyPosture = (int)posture.posture;
                                 AgentPostures.postureVisual._dataSource.EnemyPostureMax = (int)posture.maxPosture;
+                                AgentPostures.postureVisual._dataSource.EnemyStamina = (int)posture.stamina;
+                                AgentPostures.postureVisual._dataSource.EnemyStaminaMax = (int)posture.maxStamina;
                                 AgentPostures.postureVisual._dataSource.EnemyHealth = (int)enemyAgent.Health;
                                 AgentPostures.postureVisual._dataSource.EnemyHealthMax = (int)enemyAgent.HealthLimit;
                                 if (enemyAgent.IsMount)
@@ -1517,6 +1519,9 @@ namespace RBMAI
                         {
                             AgentPostures.postureVisual._dataSource.EnemyPosture = (int)entry.Value.posture;
                             AgentPostures.postureVisual._dataSource.EnemyPostureMax = (int)entry.Value.maxPosture;
+
+                            AgentPostures.postureVisual._dataSource.EnemyStamina = (int)entry.Value.stamina;
+                            AgentPostures.postureVisual._dataSource.EnemyStaminaMax = (int)entry.Value.maxStamina;
                         }
                     }
                 }
@@ -1586,6 +1591,10 @@ namespace RBMAI
                                 {
                                     AgentPostures.postureVisual._dataSource.EnemyPosture = (int)entry.Value.posture;
                                     AgentPostures.postureVisual._dataSource.EnemyPostureMax = (int)entry.Value.maxPosture;
+
+                                    AgentPostures.postureVisual._dataSource.EnemyStamina = (int)entry.Value.stamina;
+                                    AgentPostures.postureVisual._dataSource.EnemyStaminaMax = (int)entry.Value.maxStamina;
+
                                 }
                             }
                             entry.Value.posture += entry.Value.regenPerTick * 30f;

@@ -1,12 +1,19 @@
 ﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade.CustomBattle.CustomBattle;
+using TaleWorlds.MountAndBlade.CustomBattle.CustomBattle.SelectionItem;
 using TaleWorlds.MountAndBlade.View.CustomBattle;
 
 namespace RBM
 {
     internal class CustomBattlePatches
     {
+        private static readonly PropertyInfo SelectedMap = typeof(MapSelectionGroupVM).GetProperty("SelectedMap");
+
+        //land custom battle is loadd first
         [HarmonyPatch(typeof(CustomBattleFactory))]
         [HarmonyPatch("StartCustomBattle")]
         private class StartCustomBattlePatch
@@ -24,6 +31,29 @@ namespace RBM
                     return false;
                 }
                 return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(MapSelectionGroupVM))]
+        [HarmonyPatch("RefreshValues")]
+        private class RefreshValuesPatch
+        {
+            private static void Postfix(MapSelectionGroupVM __instance)
+            {
+                //move jabal ashab to top of list
+                int jabalAshabIndex = __instance.MapSelection.ItemList.FindIndex((MapItemVM x) => x.MapName.Contains("Jabal Ashab"));
+                MapItemVM jabalAshabMap = __instance.MapSelection.ItemList[jabalAshabIndex];
+                __instance.MapSelection.ItemList[jabalAshabIndex] = __instance.MapSelection.ItemList[0];
+                __instance.MapSelection.ItemList[0] = jabalAshabMap;
+
+                //pendraic prairie should be second in list
+                int pendraicPrairieIndex = __instance.MapSelection.ItemList.FindIndex((MapItemVM x) => x.MapName.Contains("Pendraic Prairie"));
+                MapItemVM pendraicPrairieMap = __instance.MapSelection.ItemList[pendraicPrairieIndex];
+                __instance.MapSelection.ItemList[pendraicPrairieIndex] = __instance.MapSelection.ItemList[1];
+                __instance.MapSelection.ItemList[1] = pendraicPrairieMap;
+
+                __instance.MapSelection.SelectedIndex = 0;
+                SelectedMap.SetValue(__instance, __instance.MapSelection.ItemList[0], BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
             }
         }
     }
