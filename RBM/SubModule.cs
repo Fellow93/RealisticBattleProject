@@ -73,7 +73,7 @@ namespace RBM
         {
             RBMConfig.RBMConfig.LoadConfig();
 
-            TaleWorlds.MountAndBlade.Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("{=RBM_CON_020}RBM Configuration"), 9999, delegate
+            Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("{=RBM_CON_020}RBM Configuration"), 9999, delegate
             {
                 ScreenManager.PushScreen(new RBMConfig.RBMConfigScreen());
             }, () => (false, new TextObject("{=RBM_CON_020}RBM Configuration"))));
@@ -150,6 +150,7 @@ namespace RBM
             {
                 InformationManager.ShowInquiry(new InquiryData("RBM War Sails submodule is missing!", "RBM War Sails submod is required when using both RBM and the War Sails DLC. Please install and enable the RBM War Sails submod to avoid potential issues, like Nords having no weapons etc.", true, false, "OK", "OK", null, null), false, true);
             }
+            ApplyHarmonyPatches();
         }
 
         public override void OnMissionBehaviorInitialize(Mission mission)
