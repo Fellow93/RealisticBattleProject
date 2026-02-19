@@ -910,8 +910,12 @@ namespace RBMAI
                         case MeleeHitType.ShieldIncorrectBlock:
                         case MeleeHitType.ShieldParry:
                             {
-                                MissionWeapon defenderShield = defenderAgent.Equipment[defenderAgent.GetOffhandWieldedItemIndex()];
-                                bool isDefenderSmallShield = isSmallShield(defenderShield);
+                                bool isDefenderSmallShield = false;
+                                if (defenderAgent.GetOffhandWieldedItemIndex() != EquipmentIndex.None)
+                                {
+                                    MissionWeapon defenderShield = defenderAgent.Equipment[defenderAgent.GetOffhandWieldedItemIndex()];
+                                    isDefenderSmallShield = isSmallShield(defenderShield);
+                                }
                                 if (isDefenderSmallShield)
                                 {
                                     result = smallShieldDefence * skillModifier;
