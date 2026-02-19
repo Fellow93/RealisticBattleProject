@@ -838,14 +838,14 @@ namespace RBMAI
                 return wc == WeaponClass.SmallShield;
             }
 
+            private static float calculateDefenderStaminaSkillModifier(int skill)
+            {
+                //100 skill = 10% reduction
+                return 1f - (skill * 0.001f);
+            }
+
             private static float calculateDefenderStaminaLoss(Agent defenderAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MeleeHitType meleeHitType, bool isUnarmedAttack)
             {
-                float result = 0f;
-                MissionWeapon defenderWeapon = defenderAgent.WieldedWeapon;
-
-                SkillObject defenderWeaponSkill = isUnarmedAttack ? null : WeaponComponentData.GetRelevantSkillFromWeaponClass(defenderWeapon.CurrentUsageItem.WeaponClass); ;
-                int effectiveSkill = isUnarmedAttack ? MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, DefaultSkills.Athletics) : MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, defenderWeaponSkill);
-
                 float directHit = (collisionData.InflictedDamage * 5f) + 20f;
                 float unarmedDefence = 30f;
                 float oneHandedDefence = 30f;
@@ -855,8 +855,12 @@ namespace RBMAI
 
                 float defaultDefence = 30f;
 
-                //100 skill = 10% reduction
-                float skillModifier = 1f - (effectiveSkill * 0.001f);
+                float result = 0f;
+
+                if (meleeHitType == MeleeHitType.AgentHit)
+                {
+                    return directHit;
+                }
 
                 if (isUnarmedAttack)
                 {
@@ -870,54 +874,55 @@ namespace RBMAI
                             }
                         default:
                             {
-                                result = unarmedDefence * skillModifier;
+                                int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, DefaultSkills.Athletics);
+                                result = unarmedDefence * calculateDefenderStaminaSkillModifier(effectiveSkill);
                                 break;
                             }
                     }
                 }
                 else
                 {
-                    MissionWeapon defenderShield = defenderAgent.Equipment[defenderAgent.GetOffhandWieldedItemIndex()];
-
-                    bool isDefenderWeaponOneHanded = isOneHandedWeapon(defenderWeapon);
-                    bool isDefenderSmallShield = isSmallShield(defenderShield);
+                    MissionWeapon defenderWeapon = defenderAgent.WieldedWeapon;
+                    SkillObject defenderWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(defenderWeapon.CurrentUsageItem.WeaponClass);
+                    int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, defenderWeaponSkill);
+                    float skillModifier = calculateDefenderStaminaSkillModifier(effectiveSkill);
 
                     switch (meleeHitType)
                     {
-                        case MeleeHitType.AgentHit:
-                            {
-                                result = directHit;
-                                break;
-                            }
                         case MeleeHitType.WeaponBlock:
                         case MeleeHitType.WeaponParry:
                         case MeleeHitType.ChamberBlock:
                             {
+
+                                bool isDefenderWeaponOneHanded = isOneHandedWeapon(defenderWeapon);
+
                                 if (isDefenderWeaponOneHanded)
                                 {
                                     result = oneHandedDefence * skillModifier;
+                                    break;
                                 }
                                 else
                                 {
                                     result = twoHandedDefence * skillModifier;
+                                    break;
                                 }
-                                result = default;
-                                break;
                             }
                         case MeleeHitType.ShieldBlock:
                         case MeleeHitType.ShieldIncorrectBlock:
                         case MeleeHitType.ShieldParry:
                             {
+                                MissionWeapon defenderShield = defenderAgent.Equipment[defenderAgent.GetOffhandWieldedItemIndex()];
+                                bool isDefenderSmallShield = isSmallShield(defenderShield);
                                 if (isDefenderSmallShield)
                                 {
                                     result = smallShieldDefence * skillModifier;
+                                    break;
                                 }
                                 else
                                 {
                                     result = largeShieldDefence * skillModifier;
+                                    break;
                                 }
-                                result = default;
-                                break;
                             }
                         default:
                             {
@@ -985,13 +990,13 @@ namespace RBMAI
                                 if (isAttackerWeaponOneHanded)
                                 {
                                     result = oneHandedAttack * skillModifier;
+                                    break;
                                 }
                                 else
                                 {
                                     result = twoHandedAttack * skillModifier;
+                                    break;
                                 }
-                                result = default;
-                                break;
                             }
                         default:
                             {
@@ -1760,6 +1765,21 @@ namespace RBMAI
                 AgentPostures.values.Clear();
             }
         }
+
+        private static bool IsAgentInQuickStaminaRegen(Agent agent)
+        {
+            float currentTime = MBCommon.GetTotalMissionTime();
+            if (currentTime - agent.LastMeleeAttackTime > 10f &&
+                currentTime - agent.LastMeleeHitTime > 10f &&
+                currentTime - agent.LastRangedAttackTime > 10f &&
+                currentTime - agent.LastRangedHitTime > 10f
+                )
+            {
+                return true;
+            }
+            return false;
+        }
+
         public override void OnMissionTick(float dt)
         {
             base.OnMissionTick(dt);
@@ -1826,11 +1846,27 @@ namespace RBMAI
 
                                 }
                             }
-                            entry.Value.posture += entry.Value.regenPerTick * 30f;
+                            bool isInQuickStaminaRegen = IsAgentInQuickStaminaRegen(entry.Key);
+                            if (isInQuickStaminaRegen)
+                            {
+                                entry.Value.posture += entry.Value.regenPerTick * 90f;
+                            }
+                            else
+                            {
+                                entry.Value.posture += entry.Value.regenPerTick * 30f;
+                            }
                         }
                         if (entry.Value.stamina < entry.Value.maxStamina)
                         {
-                            entry.Value.stamina += entry.Value.staminaRegenPerTick * 30f;
+                            bool isInQuickStaminaRegen = IsAgentInQuickStaminaRegen(entry.Key);
+                            if (isInQuickStaminaRegen)
+                            {
+                                entry.Value.stamina += entry.Value.staminaRegenPerTick * 90f;
+                            }
+                            else
+                            {
+                                entry.Value.stamina += entry.Value.staminaRegenPerTick * 30f;
+                            }
                         }
                         float staminaLevel = entry.Value.stamina / entry.Value.maxStamina;
                         if (currentDtToUpdateStaminaHealth > timeToCalcStaminaHealth)
