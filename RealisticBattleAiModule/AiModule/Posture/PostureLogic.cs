@@ -198,7 +198,7 @@ namespace RBMAI
 
         public static void InitializeStamina(Agent agent, ref Posture posture)
         {
-            float athleticBase = 1000f;
+            float athleticBase = 1500f;
             int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(agent, DefaultSkills.Athletics);
             float athleticSkillModifier = 500f;
             posture.maxStamina = athleticBase * (1f + (effectiveAthleticSkill / athleticSkillModifier));
@@ -1451,7 +1451,7 @@ namespace RBMAI
                                     }
                             }
 
-                            shooterPosture.stamina = Math.Max(0f, shooterPosture.stamina - postureLoss);
+                            shooterPosture.stamina = Math.Max(0f, shooterPosture.stamina - (postureLoss * 1.5f));
                             if (shooterPosture.posture - postureLoss <= 0f)
                             {
                                 shooterPosture.posture = 0f;

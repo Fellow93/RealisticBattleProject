@@ -112,15 +112,15 @@ namespace RBMAI
                 float num4 = 1f - effectiveSkillLevel;
                 if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Crossbow)
                 {
-                    agentDrivenProperties.AiShooterError = 0.01f - (0.005f * effectiveSkillLevel);
+                    agentDrivenProperties.AiShooterError = 0.015f - (0.007f * effectiveSkillLevel);
                     agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
-                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 1f;
+                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 1f - (0.5f * effectiveSkillLevel);
                 }
                 else if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Bow)
                 {
                     agentDrivenProperties.AiShooterError = 0.015f - (0.015f * effectiveSkillLevel);
                     agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
-                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 1.5f;
+                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 2f - (1f * effectiveSkillLevel);
                 }
                 else
                 {
@@ -264,14 +264,14 @@ namespace RBMAI
                         agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier *= MBMath.Lerp(0.85f, 1f, staminaLevel);
 
                         //reload speed
-                        agentDrivenProperties.ReloadSpeed *= MBMath.Lerp(0.9f, 1f, staminaLevel);
+                        agentDrivenProperties.ReloadSpeed *= MBMath.Lerp(0.8f, 1f, staminaLevel);
 
                         //ranged penalties
-                        agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= MBMath.Lerp(1.1f, 1f, staminaLevel);
-                        agentDrivenProperties.WeaponMaxUnsteadyAccuracyPenalty *= MBMath.Lerp(1.1f, 1f, staminaLevel);
+                        agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= MBMath.Lerp(1.15f, 1f, staminaLevel);
+                        agentDrivenProperties.WeaponMaxUnsteadyAccuracyPenalty *= MBMath.Lerp(1.15f, 1f, staminaLevel);
 
                         //ranged AI
-                        agentDrivenProperties.WeaponBestAccuracyWaitTime *= MBMath.Lerp(0.9f, 1f, staminaLevel);
+                        agentDrivenProperties.WeaponBestAccuracyWaitTime *= MBMath.Lerp(1.3f, 1f, staminaLevel);
 
                         //AI combat ability
                         agentDrivenProperties.AIRealizeBlockingFromIncorrectSideAbility *= MBMath.Lerp(0.85f, 1f, staminaLevel);

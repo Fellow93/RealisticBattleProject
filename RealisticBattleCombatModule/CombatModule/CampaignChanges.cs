@@ -236,17 +236,17 @@ namespace RBMCombat
                     SkillObject skillForWeapon = Campaign.Current.Models.CombatXpModel.GetSkillForWeapon(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, false);
                     if (wc == WeaponClass.Bow)
                     {
-                        shooterCharacter.HeroObject.AddSkillXp(skillForWeapon, 10f);
+                        shooterCharacter.HeroObject.AddSkillXp(skillForWeapon, 30f);
                         return;
                     }
                     if (wc == WeaponClass.Crossbow)
                     {
-                        shooterCharacter.HeroObject.AddSkillXp(skillForWeapon, 20f);
+                        shooterCharacter.HeroObject.AddSkillXp(skillForWeapon, 50f);
                         return;
                     }
                     if (wc == WeaponClass.Javelin || wc == WeaponClass.ThrowingAxe || wc == WeaponClass.ThrowingKnife)
                     {
-                        shooterCharacter.HeroObject.AddSkillXp(skillForWeapon, 10f);
+                        shooterCharacter.HeroObject.AddSkillXp(skillForWeapon, 30f);
                         return;
                     }
                 }
