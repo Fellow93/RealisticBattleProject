@@ -19,7 +19,20 @@
       "Bash(grep:*)",
       "Bash(git -C \"D:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/RealisticBattleProject\" diff HEAD)",
       "Bash(git -C \"D:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/RealisticBattleProject\" log --oneline -5)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Bash(dotnet tool list:*)",
+      "Bash(ildasm:*)",
+      "Bash(powershell.exe -Command \"[System.Reflection.Assembly]::LoadFrom\\(''/d/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/CustomBattle/bin/Win64_Shipping_Client/TaleWorlds.MountAndBlade.CustomBattle.dll''\\) | % { $_.GetTypes\\(\\) | Select-Object -ExpandProperty FullName }\")",
+      "Bash(powershell.exe -Command '$asm = [System.Reflection.Assembly]::LoadFrom\\(\"\"D:\\\\\\\\SteamLibrary\\\\\\\\steamapps\\\\\\\\common\\\\\\\\Mount & Blade II Bannerlord\\\\\\\\Modules\\\\\\\\CustomBattle\\\\\\\\bin\\\\\\\\Win64_Shipping_Client\\\\\\\\TaleWorlds.MountAndBlade.CustomBattle.dll\"\"\\); $asm.GetTypes\\(\\) | ForEach-Object {$_.FullName}')",
+      "Bash(DLL=\"D:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/CustomBattle/bin/Win64_Shipping_Client/TaleWorlds.MountAndBlade.CustomBattle.dll\")",
+      "Bash(ilspycmd:*)",
+      "Bash(/tmp/list_types2.ps1:*)",
+      "Bash(powershell -File:*)",
+      "Bash(/tmp/list_types3.ps1:*)",
+      "Bash(/tmp/list_types4.ps1:*)",
+      "Bash(/tmp/inspect_dll.ps1:*)",
+      "Bash(/tmp/inspect_dll2.ps1:*)",
+      "Bash(/tmp/inspect_dll4.ps1:*)"
     ]
   }
 }

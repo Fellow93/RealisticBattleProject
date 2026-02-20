@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade.CustomBattle;
 using TaleWorlds.MountAndBlade.CustomBattle.CustomBattle;
 using TaleWorlds.MountAndBlade.CustomBattle.CustomBattle.SelectionItem;
 using TaleWorlds.MountAndBlade.View.CustomBattle;
@@ -54,6 +55,38 @@ namespace RBM
 
                 __instance.MapSelection.SelectedIndex = 0;
                 SelectedMap.SetValue(__instance, __instance.MapSelection.ItemList[0], BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+            }
+        }
+
+        // Restore saved settings after the VM finishes constructing
+        [HarmonyPatch(typeof(CustomBattleVM), MethodType.Constructor, new Type[] { typeof(CustomBattleState) })]
+        private class CustomBattleVMConstructorPatch
+        {
+            private static void Postfix(CustomBattleVM __instance)
+            {
+                CustomBattlePreset.ApplyToVM(__instance);
+            }
+        }
+
+        // Save settings when the player starts a battle
+        [HarmonyPatch(typeof(CustomBattleVM), "ExecuteStart")]
+        private class ExecuteStartPatch
+        {
+            private static void Prefix(CustomBattleVM __instance)
+            {
+                CustomBattlePreset.SaveFromVM(__instance);
+                CustomBattlePreset.SavePreset();
+            }
+        }
+
+        // Save settings when the player goes back
+        [HarmonyPatch(typeof(CustomBattleVM), "ExecuteBack")]
+        private class ExecuteBackPatch
+        {
+            private static void Prefix(CustomBattleVM __instance)
+            {
+                CustomBattlePreset.SaveFromVM(__instance);
+                CustomBattlePreset.SavePreset();
             }
         }
     }

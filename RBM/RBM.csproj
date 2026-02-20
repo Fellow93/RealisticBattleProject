@@ -281,6 +281,7 @@
     <Compile Include="SubModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CustomBattlePatches.cs" />
+    <Compile Include="CustomBattlePreset.cs" />
     <Compile Include="XmlLoadingPatches.cs" />
   </ItemGroup>
   <ItemGroup>

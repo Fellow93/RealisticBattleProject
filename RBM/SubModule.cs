@@ -72,6 +72,7 @@ namespace RBM
         protected override void OnSubModuleLoad()
         {
             RBMConfig.RBMConfig.LoadConfig();
+            CustomBattlePreset.LoadPreset();
 
             Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("{=RBM_CON_020}RBM Configuration"), 9999, delegate
             {
