@@ -841,7 +841,7 @@ namespace RBMAI
             private static float calculateDefenderStaminaSkillModifier(int skill)
             {
                 //100 skill = 10% reduction
-                return 1f - (skill * 0.001f);
+                return Math.Max(0f, 1f - (skill * 0.001f));
             }
 
             private static float calculateDefenderStaminaLoss(Agent defenderAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MeleeHitType meleeHitType, bool isUnarmedAttack)
