@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Helpers;
 using JetBrains.Annotations;
+using RBMAI;
 using StoryMode.GameComponents;
 using StoryMode.Missions;
 using System.Collections.Generic;
@@ -383,12 +384,61 @@ namespace RBMCombat
             }
         }
 
+        public static void ResetAgentPostureStamina(Agent agent)
+        {
+            Posture posture = null;
+            AgentPostures.values.TryGetValue(agent, out posture);
+            if (posture != null)
+            {
+                posture.posture = posture.maxPosture;
+                posture.stamina = posture.maxStamina;
+            }
+        }
+
+        public static void ResetPostureStaminaTraining(Agent trainerEasy, Agent trainerNormal)
+        {
+            ResetAgentPostureStamina(Agent.Main);
+            ResetAgentPostureStamina(trainerEasy);
+            ResetAgentPostureStamina(trainerNormal);
+        }
+
+        [HarmonyPatch(typeof(TrainingFieldMissionController))]
+        [HarmonyPatch("OnTrainingAreaEnter")]
+        private static class OnTrainingAreaEnterPatch
+        {
+            private static void Postfix(Agent ____advancedMeleeTrainerEasy, Agent ____advancedMeleeTrainerNormal)
+            {
+                ResetPostureStaminaTraining(____advancedMeleeTrainerEasy, ____advancedMeleeTrainerNormal);
+            }
+        }
+
+        [HarmonyPatch(typeof(TrainingFieldMissionController))]
+        [HarmonyPatch("OnEasyTrainerBeaten")]
+        private static class OnEasyTrainerBeatenPatch
+        {
+            private static void Postfix(Agent ____advancedMeleeTrainerEasy, Agent ____advancedMeleeTrainerNormal)
+            {
+                ResetPostureStaminaTraining(____advancedMeleeTrainerEasy, ____advancedMeleeTrainerNormal);
+            }
+        }
+
+        [HarmonyPatch(typeof(TrainingFieldMissionController))]
+        [HarmonyPatch("MakeTrainersPatrolling")]
+        private static class MakeTrainersPatrollingPatch
+        {
+            private static void Postfix(Agent ____advancedMeleeTrainerEasy, Agent ____advancedMeleeTrainerNormal)
+            {
+                ResetPostureStaminaTraining(____advancedMeleeTrainerEasy, ____advancedMeleeTrainerNormal);
+            }
+        }
+
         [HarmonyPatch(typeof(TrainingFieldMissionController))]
         [HarmonyPatch("BowTrainingEndedSuccessfully")]
         private static class BowTrainingEndedSuccessfullyPatch
         {
-            private static void Postfix(int ____trainingProgress, TutorialArea ____activeTutorialArea, int ____trainingSubTypeIndex)
+            private static void Postfix(int ____trainingProgress, TutorialArea ____activeTutorialArea, int ____trainingSubTypeIndex, Agent ____advancedMeleeTrainerEasy, Agent ____advancedMeleeTrainerNormal)
             {
+                ResetPostureStaminaTraining(____advancedMeleeTrainerEasy, ____advancedMeleeTrainerNormal);
                 EquipmentIndex ei = Mission.Current.MainAgent.GetPrimaryWieldedItemIndex();
                 if (ei != EquipmentIndex.None)
                 {
@@ -481,8 +531,9 @@ namespace RBMCombat
         [HarmonyPatch("MountedTrainingEndedSuccessfully")]
         private static class MountedTrainingEndedSuccessfullyPatch
         {
-            private static void Postfix(int ____trainingProgress, TutorialArea ____activeTutorialArea, int ____trainingSubTypeIndex, float ____timeScore)
+            private static void Postfix(int ____trainingProgress, TutorialArea ____activeTutorialArea, int ____trainingSubTypeIndex, float ____timeScore, Agent ____advancedMeleeTrainerEasy, Agent ____advancedMeleeTrainerNormal)
             {
+                ResetPostureStaminaTraining(____advancedMeleeTrainerEasy, ____advancedMeleeTrainerNormal);
                 int brokenBreakableCount = ____activeTutorialArea.GetBrokenBreakableCount(____trainingSubTypeIndex);
                 int breakablesCount = ____activeTutorialArea.GetBreakablesCount(____trainingSubTypeIndex);
                 float missFactor = (float)brokenBreakableCount / (float)breakablesCount;

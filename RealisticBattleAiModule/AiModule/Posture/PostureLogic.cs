@@ -397,7 +397,7 @@ namespace RBMAI
                     float victimAgentArmorWeight = Math.Max(0f, victimAgent.SpawnEquipment.GetTotalWeightOfArmor(true) - athlethicModifier);
                     float staminaLoss = calculateDefenderStaminaLoss(victimAgent, attackerAgent, ref collisionData, meleeHitType, isUnarmedAttack);
                     staminaLoss *= (1f + victimAgentArmorWeight / 50f);
-                    posture.stamina = Math.Max(0f, posture.stamina - staminaLoss);
+                    posture.reduceStamina(staminaLoss);
 
                     addPosturedamageVisual(attackerAgent, victimAgent);
                     if (posture.posture <= 0f)
@@ -460,7 +460,7 @@ namespace RBMAI
                     float attackerAgentArmorWeight = Math.Max(0f, attackerAgent.SpawnEquipment.GetTotalWeightOfArmor(true) - athlethicModifier);
                     float staminaLoss = calculateAttackerStaminaLoss(victimAgent, attackerAgent, ref collisionData, meleeHitType, isUnarmedAttack);
                     staminaLoss *= (1f + attackerAgentArmorWeight / 50f);
-                    posture.stamina = Math.Max(0f, posture.stamina - staminaLoss);
+                    posture.reduceStamina(staminaLoss);
 
                     addPosturedamageVisual(attackerAgent, victimAgent);
                     if (posture.posture <= 0f)
@@ -1701,7 +1701,7 @@ namespace RBMAI
                             }
 
                             float staminaLoss = calculateShootMissileStaminaLoss(shooterAgent, wc);
-                            shooterPosture.stamina = Math.Max(0f, shooterPosture.stamina - staminaLoss);
+                            shooterPosture.reduceStamina(staminaLoss);
                         }
                     }
                 }
@@ -2026,7 +2026,7 @@ namespace RBMAI
                                 case WeaponClass.ThrowingKnife:
                                     {
                                         affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - arrowAgentPostureDamage);
-                                        affectedAgentPosture.stamina = Math.Max(0f, affectedAgentPosture.stamina - arrowAgentPostureDamage);
+                                        affectedAgentPosture.reduceStamina(arrowAgentPostureDamage);
                                         break;
                                     }
                                 case WeaponClass.Javelin:
@@ -2034,7 +2034,7 @@ namespace RBMAI
 
                                     {
                                         affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - throwingAgentPostureDamage);
-                                        affectedAgentPosture.stamina = Math.Max(0f, affectedAgentPosture.stamina - throwingAgentPostureDamage);
+                                        affectedAgentPosture.reduceStamina(throwingAgentPostureDamage);
                                         break;
                                     }
                             }
@@ -2052,14 +2052,14 @@ namespace RBMAI
 
                                     {
                                         affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - arrowShieldPostureDamage);
-                                        affectedAgentPosture.stamina = Math.Max(0f, affectedAgentPosture.stamina - arrowShieldPostureDamage);
+                                        affectedAgentPosture.reduceStamina(arrowShieldPostureDamage);
                                         break;
                                     }
                                 case WeaponClass.Javelin:
                                 case WeaponClass.ThrowingAxe:
                                     {
                                         affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - throwingShieldPostureDamage);
-                                        affectedAgentPosture.stamina = Math.Max(0f, affectedAgentPosture.stamina - throwingShieldPostureDamage);
+                                        affectedAgentPosture.reduceStamina(throwingShieldPostureDamage);
                                         break;
                                     }
                             }

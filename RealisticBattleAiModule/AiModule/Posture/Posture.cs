@@ -1,4 +1,5 @@
-﻿using TaleWorlds.Core;
+﻿using System;
+using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 
 namespace RBMAI
@@ -18,6 +19,11 @@ namespace RBMAI
             this.posture = this.maxPosture;
 
             this.stamina = this.maxStamina;
+        }
+
+        public void reduceStamina(float value)
+        {
+            this.stamina = Math.Max(0f, this.stamina - value);
         }
 
         public Posture(float maxPosture, float regenPerTick, float maxStamina, float staminaRegenPerTick)
