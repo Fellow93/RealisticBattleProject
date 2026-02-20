@@ -859,7 +859,8 @@ namespace RBMAI
 
                 if (meleeHitType == MeleeHitType.AgentHit)
                 {
-                    return directHit;
+                    result = directHit;
+                    return result;
                 }
 
                 if (isUnarmedAttack)
@@ -870,13 +871,13 @@ namespace RBMAI
                             {
 
                                 result = directHit;
-                                break;
+                                return result;
                             }
                         default:
                             {
                                 int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, DefaultSkills.Athletics);
                                 result = unarmedDefence * calculateDefenderStaminaSkillModifier(effectiveSkill);
-                                break;
+                                return result;
                             }
                     }
                 }
@@ -898,12 +899,12 @@ namespace RBMAI
                                 if (isDefenderWeaponOneHanded)
                                 {
                                     result = oneHandedDefence * skillModifier;
-                                    break;
+                                    return result;
                                 }
                                 else
                                 {
                                     result = twoHandedDefence * skillModifier;
-                                    break;
+                                    return result;
                                 }
                             }
                         case MeleeHitType.ShieldBlock:
@@ -919,22 +920,21 @@ namespace RBMAI
                                 if (isDefenderSmallShield)
                                 {
                                     result = smallShieldDefence * skillModifier;
-                                    break;
+                                    return result;
                                 }
                                 else
                                 {
                                     result = largeShieldDefence * skillModifier;
-                                    break;
+                                    return result;
                                 }
                             }
                         default:
                             {
                                 result = defaultDefence * skillModifier;
-                                break;
+                                return result;
                             }
                     }
                 }
-                return result;
             }
 
             private static float calculateAttackerStaminaLoss(Agent defenderAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MeleeHitType meleeHitType, bool isUnarmedAttack)
@@ -963,12 +963,12 @@ namespace RBMAI
                             {
 
                                 result = directHit;
-                                break;
+                                return result;
                             }
                         default:
                             {
                                 result = unarmedAttack * skillModifier;
-                                break;
+                                return result;
                             }
                     }
                 }
@@ -981,7 +981,7 @@ namespace RBMAI
                         case MeleeHitType.AgentHit:
                             {
                                 result = isAttackerWeaponOneHanded ? directHit : directHit * 1.4f;
-                                break;
+                                return result;
                             }
                         case MeleeHitType.WeaponBlock:
                         case MeleeHitType.WeaponParry:
@@ -993,22 +993,21 @@ namespace RBMAI
                                 if (isAttackerWeaponOneHanded)
                                 {
                                     result = oneHandedAttack * skillModifier;
-                                    break;
+                                    return result;
                                 }
                                 else
                                 {
                                     result = twoHandedAttack * skillModifier;
-                                    break;
+                                    return result;
                                 }
                             }
                         default:
                             {
                                 result = defaultAttack * skillModifier;
-                                break;
+                                return result;
                             }
                     }
                 }
-                return result;
             }
 
             private static float calculateDefenderPostureDamage(Agent defenderAgent, Agent attackerAgent, float actionTypeDamageModifier, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier, MeleeHitType meleeHitType, bool isUnarmedAttack)
