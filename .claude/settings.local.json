@@ -18,7 +18,8 @@
       "Bash(\"/c/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/MSBuild.exe\" \"RealisticBattle.sln\" \"/p:Configuration=Release\" \"/p:Platform=Any CPU\" \"/t:Build\" \"/v:minimal\")",
       "Bash(grep:*)",
       "Bash(git -C \"D:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/RealisticBattleProject\" diff HEAD)",
-      "Bash(git -C \"D:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/RealisticBattleProject\" log --oneline -5)"
+      "Bash(git -C \"D:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/RealisticBattleProject\" log --oneline -5)",
+      "Bash(git log:*)"
     ]
   }
 }

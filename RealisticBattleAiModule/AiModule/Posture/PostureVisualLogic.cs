@@ -82,14 +82,14 @@ namespace RBMAI
                 _dataSource.EnemyHealth = (int)affectedAgent.Health;
                 _dataSource.EnemyHealthMax = (int)affectedAgent.HealthLimit;
 
-                Posture posture = null;
-                if (AgentPostures.values.TryGetValue(affectedAgent, out posture))
+                Stance stance = null;
+                if (AgentPostures.values.TryGetValue(affectedAgent, out stance))
                 {
-                    _dataSource.EnemyPosture = (int)posture.posture;
-                    _dataSource.EnemyPostureMax = (int)posture.maxPosture;
+                    _dataSource.EnemyPosture = (int)stance.posture;
+                    _dataSource.EnemyPostureMax = (int)stance.maxPosture;
 
-                    _dataSource.EnemyStamina = (int)posture.stamina;
-                    _dataSource.EnemyStaminaMax = (int)posture.maxStamina;
+                    _dataSource.EnemyStamina = (int)stance.stamina;
+                    _dataSource.EnemyStaminaMax = (int)stance.maxStamina;
                 }
 
                 if (affectedAgent.IsMount)

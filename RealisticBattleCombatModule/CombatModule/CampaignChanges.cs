@@ -386,12 +386,12 @@ namespace RBMCombat
 
         public static void ResetAgentPostureStamina(Agent agent)
         {
-            Posture posture = null;
-            AgentPostures.values.TryGetValue(agent, out posture);
-            if (posture != null)
+            Stance stance = null;
+            AgentPostures.values.TryGetValue(agent, out stance);
+            if (stance != null)
             {
-                posture.posture = posture.maxPosture;
-                posture.stamina = posture.maxStamina;
+                stance.posture = stance.maxPosture;
+                stance.stamina = stance.maxStamina;
             }
         }
 

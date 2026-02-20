@@ -416,12 +416,12 @@ namespace RBMAI
                         if (RBMConfig.RBMConfig.postureEnabled)
                         {
                             __result = targetAgent != null ? targetAgent.GetWorldPosition() : WorldPosition.Invalid;
-                            Posture posture = null;
-                            AgentPostures.values.TryGetValue(unit, out posture);
-                            if (unit != null && posture != null)
+                            Stance stance = null;
+                            AgentPostures.values.TryGetValue(unit, out stance);
+                            if (unit != null && stance != null)
                             {
-                                postureModifier = MathF.Lerp(0.1f, 1f, posture.posture / posture.maxPosture);
-                                staminaModifier = MathF.Lerp(0.33f, 1f, posture.stamina / posture.maxStamina);
+                                postureModifier = MathF.Lerp(0.1f, 1f, stance.posture / stance.maxPosture);
+                                staminaModifier = MathF.Lerp(0.33f, 1f, stance.stamina / stance.maxStamina);
                             }
                         }
 

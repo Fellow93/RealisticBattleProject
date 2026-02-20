@@ -176,7 +176,7 @@ namespace RBM
                     mission.AddMissionBehavior((MissionBehavior)(object)new PostureVisualLogic());
                 }
                 mission.AddMissionBehavior((MissionBehavior)(object)new SiegeArcherPoints());
-                mission.AddMissionBehavior((MissionBehavior)(object)new PostureLogic());
+                mission.AddMissionBehavior((MissionBehavior)(object)new StanceLogic());
             }
             else
             {
@@ -188,9 +188,9 @@ namespace RBM
                 {
                     mission.RemoveMissionBehavior(mission.GetMissionBehavior<PostureVisualLogic>());
                 }
-                if (mission.GetMissionBehavior<PostureLogic>() != null)
+                if (mission.GetMissionBehavior<StanceLogic>() != null)
                 {
-                    mission.RemoveMissionBehavior(mission.GetMissionBehavior<PostureLogic>());
+                    mission.RemoveMissionBehavior(mission.GetMissionBehavior<StanceLogic>());
                 }
             }
             base.OnMissionBehaviorInitialize(mission);

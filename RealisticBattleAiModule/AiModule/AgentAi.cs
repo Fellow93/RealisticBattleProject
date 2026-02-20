@@ -246,11 +246,11 @@ namespace RBMAI
                 //stamina effects
                 if (RBMConfig.RBMConfig.postureEnabled)
                 {
-                    Posture posture = null;
-                    AgentPostures.values.TryGetValue(agent, out posture);
-                    if (agent != null && posture != null)
+                    Stance stance = null;
+                    AgentPostures.values.TryGetValue(agent, out stance);
+                    if (agent != null && stance != null)
                     {
-                        float staminaLevel = posture.stamina / posture.maxStamina;
+                        float staminaLevel = stance.stamina / stance.maxStamina;
 
                         //readying and blocking
                         agentDrivenProperties.HandlingMultiplier *= MBMath.Lerp(0.5f, 1f, staminaLevel);

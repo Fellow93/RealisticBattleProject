@@ -114,7 +114,7 @@ namespace RBMAI
                         Vec2 posVec2 = newPosition.AsVec2;
                         Vec2 closestBoundary = Mission.Current.GetClosestBoundaryPosition(posVec2);
                         float distFromBoundary = closestBoundary.Distance(posVec2);
-                        if (distFromBoundary <= 100f)
+                        if (distFromBoundary <= 70f)
                         {
                             Vec2 awayFromBoundary = (posVec2 - closestBoundary).Normalized();
                             newPosition.SetVec2(posVec2 + awayFromBoundary * (100f - distFromBoundary));
@@ -131,14 +131,18 @@ namespace RBMAI
                         Vec2 posVec2 = newPosition.AsVec2;
                         Vec2 closestBoundary = Mission.Current.GetClosestBoundaryPosition(posVec2);
                         float distFromBoundary = closestBoundary.Distance(posVec2);
-                        if (distFromBoundary <= 100f)
+                        if (distFromBoundary <= 70f)
                         {
                             Vec2 awayFromBoundary = (posVec2 - closestBoundary).Normalized();
                             newPosition.SetVec2(posVec2 + awayFromBoundary * (100f - distFromBoundary));
                             ____currentOrder = MovementOrder.MovementOrderMove(newPosition);
                             ___IsCurrentOrderChanged = true;
+                            positionsStorage[__instance.Formation] = newPosition;
                         }
-                        positionsStorage[__instance.Formation] = newPosition;
+                        else if (distFromBoundary > 100f)
+                        {
+                            positionsStorage[__instance.Formation] = newPosition;
+                        }
                         ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
                     }
                 }

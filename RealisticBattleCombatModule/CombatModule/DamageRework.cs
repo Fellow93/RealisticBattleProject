@@ -453,8 +453,8 @@ namespace RBMCombat
 
                 if (RBMConfig.RBMConfig.postureEnabled)
                 {
-                    Posture victimPosture = null;
-                    Posture attackerPosture = null;
+                    Stance victimPosture = null;
+                    Stance attackerPosture = null;
                     AgentPostures.values.TryGetValue(attacker, out attackerPosture);
                     AgentPostures.values.TryGetValue(victim, out victimPosture);
 

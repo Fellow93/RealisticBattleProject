@@ -156,9 +156,9 @@ namespace RBMAI
             public static void Postfix()
             {
                 AgentPostures.values.Clear();
-                PostureLogic.agentsToDropShield.Clear();
-                PostureLogic.agentsToDropWeapon.Clear();
-                PostureLogic.agentsToChangeFormation.Clear();
+                StanceLogic.agentsToDropShield.Clear();
+                StanceLogic.agentsToDropWeapon.Clear();
+                StanceLogic.agentsToChangeFormation.Clear();
                 //RBMAiPatcher.DoPatching();
                 agentDamage.Clear();
             }
@@ -177,9 +177,9 @@ namespace RBMAI
                 agentDamage.Clear();
                 //RBMAiPatcher.DoPatching();
                 AgentAi.OnTickPatch.itemPickupDistanceStorage.Clear();
-                PostureLogic.agentsToChangeFormation.Clear();
-                PostureLogic.agentsToDropWeapon.Clear();
-                PostureLogic.agentsToDropShield.Clear();
+                StanceLogic.agentsToChangeFormation.Clear();
+                StanceLogic.agentsToDropWeapon.Clear();
+                StanceLogic.agentsToDropShield.Clear();
                 AgentPostures.values.Clear();
                 //originalDefenderPower = 0f;
                 //originalAttackerPower = 0f;

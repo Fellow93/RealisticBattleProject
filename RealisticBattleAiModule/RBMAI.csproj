@@ -173,9 +173,9 @@
     <Compile Include="AiModule\AgentAi.cs" />
     <Compile Include="AiModule\Behaviours.cs" />
     <Compile Include="AiModule\Frontline.cs" />
-    <Compile Include="AiModule\Posture\Posture.cs" />
+    <Compile Include="AiModule\Posture\Stance.cs" />
     <Compile Include="AiModule\Posture\AgentPostures.cs" />
-    <Compile Include="AiModule\Posture\PostureLogic.cs" />
+    <Compile Include="AiModule\Posture\StanceLogic.cs" />
     <Compile Include="AiModule\Posture\BattleStatsLogic.cs" />
     <Compile Include="AiModule\Posture\PostureVisualLogic.cs" />
     <Compile Include="AiModule\Posture\BattleStatsVM.cs" />
