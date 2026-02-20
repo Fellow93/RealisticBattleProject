@@ -458,7 +458,7 @@ namespace RBMAI
                     int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, DefaultSkills.Athletics);
                     float athlethicModifier = effectiveAthleticSkill / 20;
                     float attackerAgentArmorWeight = Math.Max(0f, attackerAgent.SpawnEquipment.GetTotalWeightOfArmor(true) - athlethicModifier);
-                    float staminaLoss = calculateDefenderStaminaLoss(victimAgent, attackerAgent, ref collisionData, meleeHitType, isUnarmedAttack);
+                    float staminaLoss = calculateAttackerStaminaLoss(victimAgent, attackerAgent, ref collisionData, meleeHitType, isUnarmedAttack);
                     staminaLoss *= (1f + attackerAgentArmorWeight / 50f);
                     posture.stamina = Math.Max(0f, posture.stamina - staminaLoss);
 
