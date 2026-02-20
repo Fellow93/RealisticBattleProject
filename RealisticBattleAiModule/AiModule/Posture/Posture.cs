@@ -23,6 +23,7 @@ namespace RBMAI
 
         public void reduceStamina(float value)
         {
+            //InformationManager.DisplayMessage(new InformationMessage(new TextObject(value).ToString(), Color.FromUint(4282569842u)));
             this.stamina = Math.Max(0f, this.stamina - value);
         }
 
