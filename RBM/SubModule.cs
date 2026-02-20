@@ -82,6 +82,7 @@ namespace RBM
 
         protected override void OnApplicationTick(float dt)
         {
+            CustomBattlePatches.TickInput();
             if (Mission.Current == null)
             {
                 return;

@@ -1,7 +1,12 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
+using System.Threading;
+using System.Windows.Forms;
+using TaleWorlds.Core;
+using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade.CustomBattle;
 using TaleWorlds.MountAndBlade.CustomBattle.CustomBattle;
@@ -13,8 +18,91 @@ namespace RBM
     internal class CustomBattlePatches
     {
         private static readonly PropertyInfo SelectedMap = typeof(MapSelectionGroupVM).GetProperty("SelectedMap");
+        private static CustomBattleVM _battleVM;
 
-        //land custom battle is loadd first
+        internal static void TickInput()
+        {
+            if (_battleVM == null) return;
+            bool ctrl = Input.IsKeyDown(InputKey.LeftControl) || Input.IsKeyDown(InputKey.RightControl);
+            if (!ctrl) return;
+            if (Input.IsKeyPressed(InputKey.S))
+                SavePresetToFile();
+            else if (Input.IsKeyPressed(InputKey.L))
+                LoadPresetFromFile();
+        }
+
+        private static string ShowSaveDialog()
+        {
+            string result = null;
+            var thread = new Thread(() =>
+            {
+                using (var dlg = new SaveFileDialog())
+                {
+                    dlg.Title = "Save Battle Preset";
+                    dlg.Filter = "XML Preset|*.xml";
+                    dlg.DefaultExt = "xml";
+                    try { dlg.InitialDirectory = RBMConfig.Utilities.GetConfigFolderPath(); } catch { }
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                        result = dlg.FileName;
+                }
+            });
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            thread.Join();
+            return result;
+        }
+
+        private static string ShowOpenDialog()
+        {
+            string result = null;
+            var thread = new Thread(() =>
+            {
+                using (var dlg = new OpenFileDialog())
+                {
+                    dlg.Title = "Load Battle Preset";
+                    dlg.Filter = "XML Preset|*.xml";
+                    try { dlg.InitialDirectory = RBMConfig.Utilities.GetConfigFolderPath(); } catch { }
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                        result = dlg.FileName;
+                }
+            });
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            thread.Join();
+            return result;
+        }
+
+        private static void SavePresetToFile()
+        {
+            try
+            {
+                string path = ShowSaveDialog();
+                if (string.IsNullOrEmpty(path)) return;
+                string name = Path.GetFileNameWithoutExtension(path);
+                var preset = CustomBattlePreset.CaptureFromVM(_battleVM, name);
+                CustomBattlePreset.SavePresetToFile(preset, path);
+                InformationManager.DisplayMessage(new InformationMessage($"Preset saved: '{Path.GetFileName(path)}'."));
+            }
+            catch (Exception) { }
+        }
+
+        private static void LoadPresetFromFile()
+        {
+            try
+            {
+                string path = ShowOpenDialog();
+                if (string.IsNullOrEmpty(path)) return;
+                var preset = CustomBattlePreset.LoadPresetFromFile(path);
+                if (preset != null)
+                {
+                    CustomBattlePreset.ApplyNamedToVM(preset, _battleVM);
+                    InformationManager.DisplayMessage(new InformationMessage($"Preset loaded: '{Path.GetFileName(path)}'."));
+                }
+            }
+            catch (Exception) { }
+        }
+
+        // Custom battle provider ordering
         [HarmonyPatch(typeof(CustomBattleFactory))]
         [HarmonyPatch("StartCustomBattle")]
         private class StartCustomBattlePatch
@@ -41,13 +129,11 @@ namespace RBM
         {
             private static void Postfix(MapSelectionGroupVM __instance)
             {
-                //move jabal ashab to top of list
                 int jabalAshabIndex = __instance.MapSelection.ItemList.FindIndex((MapItemVM x) => x.MapName.Contains("Jabal Ashab"));
                 MapItemVM jabalAshabMap = __instance.MapSelection.ItemList[jabalAshabIndex];
                 __instance.MapSelection.ItemList[jabalAshabIndex] = __instance.MapSelection.ItemList[0];
                 __instance.MapSelection.ItemList[0] = jabalAshabMap;
 
-                //pendraic prairie should be second in list
                 int pendraicPrairieIndex = __instance.MapSelection.ItemList.FindIndex((MapItemVM x) => x.MapName.Contains("Pendraic Prairie"));
                 MapItemVM pendraicPrairieMap = __instance.MapSelection.ItemList[pendraicPrairieIndex];
                 __instance.MapSelection.ItemList[pendraicPrairieIndex] = __instance.MapSelection.ItemList[1];
@@ -58,17 +144,18 @@ namespace RBM
             }
         }
 
-        // Restore saved settings after the VM finishes constructing
+        // Track VM reference and restore last session settings on construction
         [HarmonyPatch(typeof(CustomBattleVM), MethodType.Constructor, new Type[] { typeof(CustomBattleState) })]
         private class CustomBattleVMConstructorPatch
         {
             private static void Postfix(CustomBattleVM __instance)
             {
+                _battleVM = __instance;
                 CustomBattlePreset.ApplyToVM(__instance);
             }
         }
 
-        // Save settings when the player starts a battle
+        // Save settings when starting a battle (keep _battleVM so shortcuts work on return)
         [HarmonyPatch(typeof(CustomBattleVM), "ExecuteStart")]
         private class ExecuteStartPatch
         {
@@ -79,7 +166,7 @@ namespace RBM
             }
         }
 
-        // Save settings when the player goes back
+        // Save settings and release VM reference when going back
         [HarmonyPatch(typeof(CustomBattleVM), "ExecuteBack")]
         private class ExecuteBackPatch
         {
@@ -87,6 +174,7 @@ namespace RBM
             {
                 CustomBattlePreset.SaveFromVM(__instance);
                 CustomBattlePreset.SavePreset();
+                _battleVM = null;
             }
         }
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Xml;
@@ -12,6 +13,24 @@ using TaleWorlds.MountAndBlade.CustomBattle.CustomBattle.SelectionItem;
 
 namespace RBM
 {
+    internal class NamedPreset
+    {
+        public string Name;
+        public int GameTypeIndex, PlayerTypeIndex, PlayerSideIndex;
+        public string MapId = "";
+        public int SeasonIndex, TimeOfDayIndex, SceneLevelIndex, WallHitpointIndex;
+        public bool IsSallyOut;
+        public string PlayerFactionId = "", PlayerCharacterId = "";
+        public int PlayerArmySize = 100;
+        public int[] PlayerComposition = { 25, 25, 25, 25 };
+        public string EnemyFactionId = "", EnemyCharacterId = "";
+        public int EnemyArmySize = 100;
+        public int[] EnemyComposition = { 25, 25, 25, 25 };
+        public string[] AttackerMeleeMachineIds = { "", "", "" };
+        public string[] AttackerRangedMachineIds = { "", "", "", "" };
+        public string[] DefenderMachineIds = { "", "", "", "" };
+    }
+
     internal static class CustomBattlePreset
     {
         // Game type
@@ -44,11 +63,16 @@ namespace RBM
         public static string[] AttackerRangedMachineIds = { "", "", "", "" };
         public static string[] DefenderMachineIds = { "", "", "", "" };
 
+        public static List<NamedPreset> Presets = new List<NamedPreset>();
+
         private static readonly PropertyInfo _selectedMapProp =
             typeof(MapSelectionGroupVM).GetProperty("SelectedMap");
 
         private static string SaveFilePath =>
             Path.Combine(RBMConfig.Utilities.GetConfigFolderPath(), "custom_battle_preset.xml");
+
+        private static string PresetsFilePath =>
+            Path.Combine(RBMConfig.Utilities.GetConfigFolderPath(), "custom_battle_presets.xml");
 
         // ------------------------------------------------------------------ //
         //  Load / Save                                                         //
@@ -117,6 +141,229 @@ namespace RBM
                 WriteMachineIds(doc, root, "DefenderMachines", DefenderMachineIds);
 
                 doc.Save(SaveFilePath);
+            }
+            catch (Exception) { }
+        }
+
+        public static void LoadNamedPresets()
+        {
+            try
+            {
+                Presets.Clear();
+                if (!File.Exists(PresetsFilePath)) return;
+
+                var doc = new XmlDocument();
+                doc.Load(PresetsFilePath);
+                var root = doc.SelectSingleNode("CustomBattlePresets");
+                if (root == null) return;
+
+                foreach (XmlNode node in root.SelectNodes("Preset"))
+                {
+                    var p = new NamedPreset();
+                    p.Name = node.Attributes["Name"]?.Value ?? "";
+                    p.GameTypeIndex = ReadInt(node, "GameTypeIndex");
+                    p.PlayerTypeIndex = ReadInt(node, "PlayerTypeIndex");
+                    p.PlayerSideIndex = ReadInt(node, "PlayerSideIndex");
+                    p.MapId = ReadStr(node, "MapId");
+                    p.SeasonIndex = ReadInt(node, "SeasonIndex");
+                    p.TimeOfDayIndex = ReadInt(node, "TimeOfDayIndex");
+                    p.SceneLevelIndex = ReadInt(node, "SceneLevelIndex");
+                    p.WallHitpointIndex = ReadInt(node, "WallHitpointIndex");
+                    p.IsSallyOut = ReadBool(node, "IsSallyOut");
+                    ReadSide(node.SelectSingleNode("PlayerSide"),
+                        ref p.PlayerFactionId, ref p.PlayerCharacterId, ref p.PlayerArmySize, p.PlayerComposition);
+                    ReadSide(node.SelectSingleNode("EnemySide"),
+                        ref p.EnemyFactionId, ref p.EnemyCharacterId, ref p.EnemyArmySize, p.EnemyComposition);
+                    ReadMachineIds(node, "AttackerMeleeMachines", p.AttackerMeleeMachineIds);
+                    ReadMachineIds(node, "AttackerRangedMachines", p.AttackerRangedMachineIds);
+                    ReadMachineIds(node, "DefenderMachines", p.DefenderMachineIds);
+                    Presets.Add(p);
+                }
+            }
+            catch (Exception) { }
+        }
+
+        public static void SaveNamedPresets()
+        {
+            try
+            {
+                Directory.CreateDirectory(RBMConfig.Utilities.GetConfigFolderPath());
+
+                var doc = new XmlDocument();
+                var root = doc.CreateElement("CustomBattlePresets");
+                doc.AppendChild(root);
+
+                foreach (var p in Presets)
+                {
+                    var presetNode = doc.CreateElement("Preset");
+                    presetNode.SetAttribute("Name", p.Name);
+                    root.AppendChild(presetNode);
+
+                    Elem(doc, presetNode, "GameTypeIndex", p.GameTypeIndex.ToString());
+                    Elem(doc, presetNode, "PlayerTypeIndex", p.PlayerTypeIndex.ToString());
+                    Elem(doc, presetNode, "PlayerSideIndex", p.PlayerSideIndex.ToString());
+                    Elem(doc, presetNode, "MapId", p.MapId);
+                    Elem(doc, presetNode, "SeasonIndex", p.SeasonIndex.ToString());
+                    Elem(doc, presetNode, "TimeOfDayIndex", p.TimeOfDayIndex.ToString());
+                    Elem(doc, presetNode, "SceneLevelIndex", p.SceneLevelIndex.ToString());
+                    Elem(doc, presetNode, "WallHitpointIndex", p.WallHitpointIndex.ToString());
+                    Elem(doc, presetNode, "IsSallyOut", p.IsSallyOut ? "1" : "0");
+
+                    WriteSide(doc, presetNode, "PlayerSide",
+                        p.PlayerFactionId, p.PlayerCharacterId, p.PlayerArmySize, p.PlayerComposition);
+                    WriteSide(doc, presetNode, "EnemySide",
+                        p.EnemyFactionId, p.EnemyCharacterId, p.EnemyArmySize, p.EnemyComposition);
+
+                    WriteMachineIds(doc, presetNode, "AttackerMeleeMachines", p.AttackerMeleeMachineIds);
+                    WriteMachineIds(doc, presetNode, "AttackerRangedMachines", p.AttackerRangedMachineIds);
+                    WriteMachineIds(doc, presetNode, "DefenderMachines", p.DefenderMachineIds);
+                }
+
+                doc.Save(PresetsFilePath);
+            }
+            catch (Exception) { }
+        }
+
+        public static void SavePresetToFile(NamedPreset preset, string path)
+        {
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+                var doc = new XmlDocument();
+                var root = doc.CreateElement("CustomBattlePreset");
+                root.SetAttribute("Name", preset.Name);
+                doc.AppendChild(root);
+
+                Elem(doc, root, "GameTypeIndex", preset.GameTypeIndex.ToString());
+                Elem(doc, root, "PlayerTypeIndex", preset.PlayerTypeIndex.ToString());
+                Elem(doc, root, "PlayerSideIndex", preset.PlayerSideIndex.ToString());
+                Elem(doc, root, "MapId", preset.MapId);
+                Elem(doc, root, "SeasonIndex", preset.SeasonIndex.ToString());
+                Elem(doc, root, "TimeOfDayIndex", preset.TimeOfDayIndex.ToString());
+                Elem(doc, root, "SceneLevelIndex", preset.SceneLevelIndex.ToString());
+                Elem(doc, root, "WallHitpointIndex", preset.WallHitpointIndex.ToString());
+                Elem(doc, root, "IsSallyOut", preset.IsSallyOut ? "1" : "0");
+
+                WriteSide(doc, root, "PlayerSide",
+                    preset.PlayerFactionId, preset.PlayerCharacterId, preset.PlayerArmySize, preset.PlayerComposition);
+                WriteSide(doc, root, "EnemySide",
+                    preset.EnemyFactionId, preset.EnemyCharacterId, preset.EnemyArmySize, preset.EnemyComposition);
+
+                WriteMachineIds(doc, root, "AttackerMeleeMachines", preset.AttackerMeleeMachineIds);
+                WriteMachineIds(doc, root, "AttackerRangedMachines", preset.AttackerRangedMachineIds);
+                WriteMachineIds(doc, root, "DefenderMachines", preset.DefenderMachineIds);
+
+                doc.Save(path);
+            }
+            catch (Exception) { }
+        }
+
+        public static NamedPreset LoadPresetFromFile(string path)
+        {
+            try
+            {
+                if (!File.Exists(path)) return null;
+                var doc = new XmlDocument();
+                doc.Load(path);
+                var root = doc.SelectSingleNode("CustomBattlePreset");
+                if (root == null) return null;
+
+                var p = new NamedPreset();
+                p.Name = root.Attributes?["Name"]?.Value ?? Path.GetFileNameWithoutExtension(path);
+                p.GameTypeIndex = ReadInt(root, "GameTypeIndex");
+                p.PlayerTypeIndex = ReadInt(root, "PlayerTypeIndex");
+                p.PlayerSideIndex = ReadInt(root, "PlayerSideIndex");
+                p.MapId = ReadStr(root, "MapId");
+                p.SeasonIndex = ReadInt(root, "SeasonIndex");
+                p.TimeOfDayIndex = ReadInt(root, "TimeOfDayIndex");
+                p.SceneLevelIndex = ReadInt(root, "SceneLevelIndex");
+                p.WallHitpointIndex = ReadInt(root, "WallHitpointIndex");
+                p.IsSallyOut = ReadBool(root, "IsSallyOut");
+
+                ReadSide(root.SelectSingleNode("PlayerSide"),
+                    ref p.PlayerFactionId, ref p.PlayerCharacterId, ref p.PlayerArmySize, p.PlayerComposition);
+                ReadSide(root.SelectSingleNode("EnemySide"),
+                    ref p.EnemyFactionId, ref p.EnemyCharacterId, ref p.EnemyArmySize, p.EnemyComposition);
+
+                ReadMachineIds(root, "AttackerMeleeMachines", p.AttackerMeleeMachineIds);
+                ReadMachineIds(root, "AttackerRangedMachines", p.AttackerRangedMachineIds);
+                ReadMachineIds(root, "DefenderMachines", p.DefenderMachineIds);
+
+                return p;
+            }
+            catch (Exception) { return null; }
+        }
+
+        public static NamedPreset CaptureFromVM(CustomBattleVM vm, string name)
+        {
+            var p = new NamedPreset { Name = name };
+            try
+            {
+                p.GameTypeIndex = vm.GameTypeSelectionGroup.GameTypeSelection.SelectedIndex;
+                p.PlayerTypeIndex = vm.GameTypeSelectionGroup.PlayerTypeSelection.SelectedIndex;
+                p.PlayerSideIndex = vm.GameTypeSelectionGroup.PlayerSideSelection.SelectedIndex;
+
+                if (vm.MapSelectionGroup.SelectedMap is MapItemVM mapItem)
+                    p.MapId = mapItem.MapId;
+                p.SeasonIndex = vm.MapSelectionGroup.SeasonSelection.SelectedIndex;
+                p.TimeOfDayIndex = vm.MapSelectionGroup.TimeOfDaySelection.SelectedIndex;
+                p.SceneLevelIndex = vm.MapSelectionGroup.SceneLevelSelection.SelectedIndex;
+                p.WallHitpointIndex = vm.MapSelectionGroup.WallHitpointSelection.SelectedIndex;
+                p.IsSallyOut = vm.MapSelectionGroup.IsSallyOutSelected;
+
+                ReadSideFromVM(vm.PlayerSide,
+                    ref p.PlayerFactionId, ref p.PlayerCharacterId, ref p.PlayerArmySize, p.PlayerComposition);
+                ReadSideFromVM(vm.EnemySide,
+                    ref p.EnemyFactionId, ref p.EnemyCharacterId, ref p.EnemyArmySize, p.EnemyComposition);
+
+                ReadMachinesFromVM(vm.AttackerMeleeMachines, p.AttackerMeleeMachineIds);
+                ReadMachinesFromVM(vm.AttackerRangedMachines, p.AttackerRangedMachineIds);
+                ReadMachinesFromVM(vm.DefenderMachines, p.DefenderMachineIds);
+            }
+            catch (Exception) { }
+            return p;
+        }
+
+        public static void ApplyNamedToVM(NamedPreset preset, CustomBattleVM vm)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(preset.MapId)) return;
+
+                if (vm.GameTypeSelectionGroup.GameTypeSelection.SelectedIndex != preset.GameTypeIndex)
+                    vm.GameTypeSelectionGroup.GameTypeSelection.SelectedIndex = preset.GameTypeIndex;
+                vm.GameTypeSelectionGroup.PlayerTypeSelection.SelectedIndex = preset.PlayerTypeIndex;
+                vm.GameTypeSelectionGroup.PlayerSideSelection.SelectedIndex = preset.PlayerSideIndex;
+
+                var mapSel = vm.MapSelectionGroup.MapSelection;
+                int mapIdx = -1;
+                for (int i = 0; i < mapSel.ItemList.Count; i++)
+                {
+                    if (mapSel.ItemList[i].MapId == preset.MapId) { mapIdx = i; break; }
+                }
+                if (mapIdx >= 0)
+                {
+                    mapSel.SelectedIndex = mapIdx;
+                    _selectedMapProp?.SetValue(vm.MapSelectionGroup, mapSel.ItemList[mapIdx],
+                        BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                }
+
+                vm.MapSelectionGroup.SeasonSelection.SelectedIndex = preset.SeasonIndex;
+                vm.MapSelectionGroup.TimeOfDaySelection.SelectedIndex = preset.TimeOfDayIndex;
+                vm.MapSelectionGroup.SceneLevelSelection.SelectedIndex = preset.SceneLevelIndex;
+                vm.MapSelectionGroup.WallHitpointSelection.SelectedIndex = preset.WallHitpointIndex;
+
+                if (preset.IsSallyOut != vm.MapSelectionGroup.IsSallyOutSelected)
+                    vm.MapSelectionGroup.ExecuteSallyOutChange();
+
+                ApplySide(vm.PlayerSide,
+                    preset.PlayerFactionId, preset.PlayerCharacterId, preset.PlayerArmySize, preset.PlayerComposition);
+                ApplySide(vm.EnemySide,
+                    preset.EnemyFactionId, preset.EnemyCharacterId, preset.EnemyArmySize, preset.EnemyComposition);
+
+                ApplyMachines(vm.AttackerMeleeMachines, preset.AttackerMeleeMachineIds);
+                ApplyMachines(vm.AttackerRangedMachines, preset.AttackerRangedMachineIds);
+                ApplyMachines(vm.DefenderMachines, preset.DefenderMachineIds);
             }
             catch (Exception) { }
         }

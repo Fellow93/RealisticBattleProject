@@ -32,7 +32,13 @@
       "Bash(/tmp/list_types4.ps1:*)",
       "Bash(/tmp/inspect_dll.ps1:*)",
       "Bash(/tmp/inspect_dll2.ps1:*)",
-      "Bash(/tmp/inspect_dll4.ps1:*)"
+      "Bash(/tmp/inspect_dll4.ps1:*)",
+      "Bash(xargs -I{} sh -c 'strings \"\"{}\"\" 2>/dev/null | grep -q \"\"CustomBattleScreen\"\" && echo \"\"{}\"\"')",
+      "Bash(cmd.exe /c \"\"\"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\MSBuild\\\\Current\\\\Bin\\\\MSBuild.exe\"\" \"\"D:\\\\SteamLibrary\\\\steamapps\\\\common\\\\Mount & Blade II Bannerlord\\\\Modules\\\\RealisticBattleProject\\\\RBM\\\\RBM.csproj\"\" /p:Configuration=Debug /p:Platform=AnyCPU /t:Build /verbosity:minimal 2>&1\")",
+      "Bash(cmd.exe /c \"\"\"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\MSBuild\\\\Current\\\\Bin\\\\MSBuild.exe\"\" \"\"D:\\\\SteamLibrary\\\\steamapps\\\\common\\\\Mount & Blade II Bannerlord\\\\Modules\\\\RealisticBattleProject\\\\RBM\\\\RBM.csproj\"\" /p:Configuration=Debug /p:Platform=AnyCPU /t:Build /verbosity:normal > C:\\\\tmp\\\\build_output.txt 2>&1\")",
+      "Bash(\"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\MSBuild\\\\Current\\\\Bin\\\\MSBuild.exe\" \"D:\\\\SteamLibrary\\\\steamapps\\\\common\\\\Mount & Blade II Bannerlord\\\\Modules\\\\RealisticBattleProject\\\\RealisticBattle.sln\" /p:Configuration=Debug \"/p:Platform=Any CPU\" /t:RBM /verbosity:minimal)",
+      "Bash(\"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\MSBuild\\\\Current\\\\Bin\\\\MSBuild.exe\" \"D:\\\\SteamLibrary\\\\steamapps\\\\common\\\\Mount & Blade II Bannerlord\\\\Modules\\\\RealisticBattleProject\\\\RealisticBattle.sln\" /p:Configuration=Debug /p:Platform=\"Any CPU\" /t:RBM /verbosity:minimal)",
+      "Bash(cmd /c:*)"
     ]
   }
 }
