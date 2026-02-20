@@ -5,11 +5,10 @@ using System.Reflection;
 using System.Xml;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
-using TaleWorlds.MountAndBlade;
-using TaleWorlds.ObjectSystem;
 using TaleWorlds.MountAndBlade.CustomBattle;
 using TaleWorlds.MountAndBlade.CustomBattle.CustomBattle;
 using TaleWorlds.MountAndBlade.CustomBattle.CustomBattle.SelectionItem;
+using TaleWorlds.ObjectSystem;
 
 namespace RBM
 {
@@ -69,10 +68,7 @@ namespace RBM
             typeof(MapSelectionGroupVM).GetProperty("SelectedMap");
 
         private static string SaveFilePath =>
-            Path.Combine(RBMConfig.Utilities.GetConfigFolderPath(), "custom_battle_preset.xml");
-
-        private static string PresetsFilePath =>
-            Path.Combine(RBMConfig.Utilities.GetConfigFolderPath(), "custom_battle_presets.xml");
+            Path.Combine(RBMConfig.Utilities.GetConfigFolderPath(), "last_used_custom_battle_preset.xml");
 
         // ------------------------------------------------------------------ //
         //  Load / Save                                                         //
@@ -141,85 +137,6 @@ namespace RBM
                 WriteMachineIds(doc, root, "DefenderMachines", DefenderMachineIds);
 
                 doc.Save(SaveFilePath);
-            }
-            catch (Exception) { }
-        }
-
-        public static void LoadNamedPresets()
-        {
-            try
-            {
-                Presets.Clear();
-                if (!File.Exists(PresetsFilePath)) return;
-
-                var doc = new XmlDocument();
-                doc.Load(PresetsFilePath);
-                var root = doc.SelectSingleNode("CustomBattlePresets");
-                if (root == null) return;
-
-                foreach (XmlNode node in root.SelectNodes("Preset"))
-                {
-                    var p = new NamedPreset();
-                    p.Name = node.Attributes["Name"]?.Value ?? "";
-                    p.GameTypeIndex = ReadInt(node, "GameTypeIndex");
-                    p.PlayerTypeIndex = ReadInt(node, "PlayerTypeIndex");
-                    p.PlayerSideIndex = ReadInt(node, "PlayerSideIndex");
-                    p.MapId = ReadStr(node, "MapId");
-                    p.SeasonIndex = ReadInt(node, "SeasonIndex");
-                    p.TimeOfDayIndex = ReadInt(node, "TimeOfDayIndex");
-                    p.SceneLevelIndex = ReadInt(node, "SceneLevelIndex");
-                    p.WallHitpointIndex = ReadInt(node, "WallHitpointIndex");
-                    p.IsSallyOut = ReadBool(node, "IsSallyOut");
-                    ReadSide(node.SelectSingleNode("PlayerSide"),
-                        ref p.PlayerFactionId, ref p.PlayerCharacterId, ref p.PlayerArmySize, p.PlayerComposition);
-                    ReadSide(node.SelectSingleNode("EnemySide"),
-                        ref p.EnemyFactionId, ref p.EnemyCharacterId, ref p.EnemyArmySize, p.EnemyComposition);
-                    ReadMachineIds(node, "AttackerMeleeMachines", p.AttackerMeleeMachineIds);
-                    ReadMachineIds(node, "AttackerRangedMachines", p.AttackerRangedMachineIds);
-                    ReadMachineIds(node, "DefenderMachines", p.DefenderMachineIds);
-                    Presets.Add(p);
-                }
-            }
-            catch (Exception) { }
-        }
-
-        public static void SaveNamedPresets()
-        {
-            try
-            {
-                Directory.CreateDirectory(RBMConfig.Utilities.GetConfigFolderPath());
-
-                var doc = new XmlDocument();
-                var root = doc.CreateElement("CustomBattlePresets");
-                doc.AppendChild(root);
-
-                foreach (var p in Presets)
-                {
-                    var presetNode = doc.CreateElement("Preset");
-                    presetNode.SetAttribute("Name", p.Name);
-                    root.AppendChild(presetNode);
-
-                    Elem(doc, presetNode, "GameTypeIndex", p.GameTypeIndex.ToString());
-                    Elem(doc, presetNode, "PlayerTypeIndex", p.PlayerTypeIndex.ToString());
-                    Elem(doc, presetNode, "PlayerSideIndex", p.PlayerSideIndex.ToString());
-                    Elem(doc, presetNode, "MapId", p.MapId);
-                    Elem(doc, presetNode, "SeasonIndex", p.SeasonIndex.ToString());
-                    Elem(doc, presetNode, "TimeOfDayIndex", p.TimeOfDayIndex.ToString());
-                    Elem(doc, presetNode, "SceneLevelIndex", p.SceneLevelIndex.ToString());
-                    Elem(doc, presetNode, "WallHitpointIndex", p.WallHitpointIndex.ToString());
-                    Elem(doc, presetNode, "IsSallyOut", p.IsSallyOut ? "1" : "0");
-
-                    WriteSide(doc, presetNode, "PlayerSide",
-                        p.PlayerFactionId, p.PlayerCharacterId, p.PlayerArmySize, p.PlayerComposition);
-                    WriteSide(doc, presetNode, "EnemySide",
-                        p.EnemyFactionId, p.EnemyCharacterId, p.EnemyArmySize, p.EnemyComposition);
-
-                    WriteMachineIds(doc, presetNode, "AttackerMeleeMachines", p.AttackerMeleeMachineIds);
-                    WriteMachineIds(doc, presetNode, "AttackerRangedMachines", p.AttackerRangedMachineIds);
-                    WriteMachineIds(doc, presetNode, "DefenderMachines", p.DefenderMachineIds);
-                }
-
-                doc.Save(PresetsFilePath);
             }
             catch (Exception) { }
         }
