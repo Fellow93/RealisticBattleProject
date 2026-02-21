@@ -1817,6 +1817,8 @@ namespace RBMAI
                                 entry.Value.tickStaminaRegen();
                             }
                         }
+
+                        //stamina health regen
                         float staminaLevel = entry.Value.stamina / entry.Value.maxStamina;
                         if (currentDtToUpdateStaminaHealth > timeToCalcStaminaHealth)
                         {
