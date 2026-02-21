@@ -775,13 +775,13 @@ namespace RBMAI
             private static float calculateDefenderStaminaLoss(Agent defenderAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MeleeHitType meleeHitType, bool isUnarmedAttack)
             {
                 float directHit = (collisionData.InflictedDamage * 5f) + 20f;
-                float unarmedDefence = 30f;
-                float oneHandedDefence = 30f;
-                float twoHandedDefence = 42f;
-                float smallShieldDefence = 33f;
-                float largeShieldDefence = 39f;
+                float unarmedDefence = 40f;
+                float oneHandedDefence = 40f;
+                float twoHandedDefence = 50f;
+                float smallShieldDefence = 43f;
+                float largeShieldDefence = 46f;
 
-                float defaultDefence = 30f;
+                float defaultDefence = 40f;
 
                 float result = 0f;
 
@@ -873,12 +873,12 @@ namespace RBMAI
                 SkillObject attackerWeaponSkill = isUnarmedAttack ? null : WeaponComponentData.GetRelevantSkillFromWeaponClass(attackerWeapon.CurrentUsageItem.WeaponClass); ;
                 int effectiveSkill = isUnarmedAttack ? MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, DefaultSkills.Athletics) : MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, attackerWeaponSkill);
 
-                float directHit = 30f;
-                float unarmedAttack = 30f;
-                float oneHandedAttack = 30f;
-                float twoHandedAttack = 42f;
+                float directHit = 40f;
+                float unarmedAttack = 40f;
+                float oneHandedAttack = 40f;
+                float twoHandedAttack = 50f;
 
-                float defaultAttack = 30f;
+                float defaultAttack = 40f;
 
                 //100 skill = 10% reduction
                 float skillModifier = 1f - (effectiveSkill * 0.001f);
@@ -1786,7 +1786,7 @@ namespace RBMAI
                                 entry.Value.tickPostureRegen();
                             }
                         }
-                        if (entry.Value.stamina < entry.Value.maxStamina)
+                        if (entry.Value.stamina < (entry.Value.maxStamina * 0.7f))
                         {
                             bool isInQuickStaminaRegen = IsAgentInQuickStaminaRegen(entry.Key);
                             if (isInQuickStaminaRegen)
@@ -1797,6 +1797,12 @@ namespace RBMAI
                             {
                                 entry.Value.tickStaminaRegen();
                             }
+                        }
+                        if (entry.Value.stamina >= (entry.Value.maxStamina * 0.7f))
+                        {
+
+                                entry.Value.tickStaminaRegen();
+
                         }
                         float staminaLevel = entry.Value.stamina / entry.Value.maxStamina;
                         if (currentDtToUpdateStaminaHealth > timeToCalcStaminaHealth)

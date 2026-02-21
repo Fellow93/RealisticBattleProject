@@ -7,7 +7,7 @@ namespace RBMAI
     public class Stance
     {
         public const float PostureRegenRubberBandStrength = 0f;
-        public const float StaminaRegenRubberBandStrength = 2f;
+        public const float StaminaRegenRubberBandStrength = 2.5f;
 
         public float posture;
         public float maxPosture = 100f;
@@ -31,7 +31,7 @@ namespace RBMAI
             float athleticSkillModifier = 500f;
             stance.maxStamina = athleticBase * (1f + (effectiveAthleticSkill / athleticSkillModifier));
             stance.stamina = athleticBase * (1f + (effectiveAthleticSkill / athleticSkillModifier));
-            stance.staminaRegenPerTick = 0.04f * (1f + (effectiveAthleticSkill / athleticSkillModifier));
+            stance.staminaRegenPerTick = 0.03f * (1f + (effectiveAthleticSkill / athleticSkillModifier));
 
             //face armor effect
             float faceArmor = 0f;

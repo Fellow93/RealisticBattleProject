@@ -114,13 +114,13 @@ namespace RBMAI
                 {
                     agentDrivenProperties.AiShooterError = 0.015f - (0.007f * effectiveSkillLevel);
                     agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
-                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 1f - (0.5f * effectiveSkillLevel);
+                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 1f - (0.75f * effectiveSkillLevel);
                 }
                 else if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Bow)
                 {
                     agentDrivenProperties.AiShooterError = 0.015f - (0.015f * effectiveSkillLevel);
                     agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
-                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 2f - (1f * effectiveSkillLevel);
+                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 2f - (1.5f * effectiveSkillLevel);
                 }
                 else
                 {
@@ -219,10 +219,10 @@ namespace RBMAI
                 if (agent != null && agent.IsActive() && Mission.Current != null && Mission.Current.IsDeploymentFinished)
                 {
                     _nearbyEnemiesBuffer.Clear();
-                    Mission.Current.GetNearbyEnemyAgents(agent.GetWorldPosition().AsVec2, 1.75f, agent.Team, _nearbyEnemiesBuffer);
+                    Mission.Current.GetNearbyEnemyAgents(agent.GetWorldPosition().AsVec2, 2.5f, agent.Team, _nearbyEnemiesBuffer);
                     if (_nearbyEnemiesBuffer.Count > 0)
                     {
-                        agent.AgentDrivenProperties.AiWeaponFavorMultiplierMelee = 35f;
+                        agent.AgentDrivenProperties.AiWeaponFavorMultiplierMelee = 55f;
 
                     }
                     else
