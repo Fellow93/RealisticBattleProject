@@ -1547,7 +1547,7 @@ namespace RBMAI
                             int weaponDifficulty = agent.WieldedWeapon.Item.Difficulty;
                             int skillDifference = Math.Max(0, attackerEffectiveWeaponSkill - weaponDifficulty);
                             float skillModifier = skillDifference * 0.5f;
-                            result = Math.Max(20f, 50f - skillModifier);
+                            result = Math.Max(20f, 70f - skillModifier);
                             break;
                         }
                     case WeaponClass.Crossbow:
@@ -1555,7 +1555,7 @@ namespace RBMAI
                             int weaponDifficulty = agent.WieldedWeapon.Item.Difficulty;
                             int skillDifference = Math.Max(0, attackerEffectiveWeaponSkill - weaponDifficulty);
                             float skillModifier = skillDifference * 0.5f;
-                            result = Math.Max(20f, 50f - skillModifier);
+                            result = Math.Max(20f, 70f - skillModifier);
                             break;
                         }
                     case WeaponClass.Javelin:
