@@ -945,7 +945,7 @@ namespace RBMCombat
                                 msModifier = targetWeapon.ItemModifier.HitPoints;
                             }
                             int drawWeight = targetWeapon.GetModifiedMissileSpeedForUsage(targetWeaponUsageIndex) + msModifier;
-                            float ammoWeightIdealModifier = 2000f;
+                            float ammoWeightIdealModifier = 1750f;
 
                             float ammoWeightIdeal = MathF.Clamp(drawWeight / ammoWeightIdealModifier, 0f, 0.150f);
 

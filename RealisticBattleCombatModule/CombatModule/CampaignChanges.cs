@@ -242,12 +242,12 @@ namespace RBMCombat
                     }
                     if (wc == WeaponClass.Crossbow)
                     {
-                        shooterCharacter.HeroObject.AddSkillXp(skillForWeapon, 50f);
+                        shooterCharacter.HeroObject.AddSkillXp(skillForWeapon, 60f);
                         return;
                     }
                     if (wc == WeaponClass.Javelin || wc == WeaponClass.ThrowingAxe || wc == WeaponClass.ThrowingKnife)
                     {
-                        shooterCharacter.HeroObject.AddSkillXp(skillForWeapon, 30f);
+                        shooterCharacter.HeroObject.AddSkillXp(skillForWeapon, 50f);
                         return;
                     }
                 }
