@@ -1696,7 +1696,26 @@ namespace RBMAI
             }
         }
 
-        private static bool IsAgentInQuickStaminaRegen(Agent agent)
+        private static bool IsAgentInQuickStaminaRegen(Agent agent, Stance stance)
+        {
+            float quickStaminaThreshold = 0.7f;
+            if (stance.stamina >= quickStaminaThreshold * stance.maxStamina)
+            {
+                return false;
+            }
+            float currentTime = MBCommon.GetTotalMissionTime();
+            if (currentTime - agent.LastMeleeAttackTime > 10f &&
+                currentTime - agent.LastMeleeHitTime > 10f &&
+                currentTime - agent.LastRangedAttackTime > 10f &&
+                currentTime - agent.LastRangedHitTime > 10f
+                )
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private static bool IsAgentInQuickPostureRegen(Agent agent)
         {
             float currentTime = MBCommon.GetTotalMissionTime();
             if (currentTime - agent.LastMeleeAttackTime > 10f &&
@@ -1776,7 +1795,7 @@ namespace RBMAI
 
                                 }
                             }
-                            bool isInQuickStaminaRegen = IsAgentInQuickStaminaRegen(entry.Key);
+                            bool isInQuickStaminaRegen = IsAgentInQuickPostureRegen(agent: entry.Key);
                             if (isInQuickStaminaRegen)
                             {
                                 entry.Value.tickPostureRegen(multiplier: 3f);
@@ -1786,9 +1805,9 @@ namespace RBMAI
                                 entry.Value.tickPostureRegen();
                             }
                         }
-                        if (entry.Value.stamina < (entry.Value.maxStamina * 0.7f))
+                        if (entry.Value.stamina < entry.Value.maxStamina)
                         {
-                            bool isInQuickStaminaRegen = IsAgentInQuickStaminaRegen(entry.Key);
+                            bool isInQuickStaminaRegen = IsAgentInQuickStaminaRegen(agent: entry.Key, stance: entry.Value);
                             if (isInQuickStaminaRegen)
                             {
                                 entry.Value.tickStaminaRegen(multiplier: 3f);
@@ -1797,12 +1816,6 @@ namespace RBMAI
                             {
                                 entry.Value.tickStaminaRegen();
                             }
-                        }
-                        if (entry.Value.stamina >= (entry.Value.maxStamina * 0.7f))
-                        {
-
-                                entry.Value.tickStaminaRegen();
-
                         }
                         float staminaLevel = entry.Value.stamina / entry.Value.maxStamina;
                         if (currentDtToUpdateStaminaHealth > timeToCalcStaminaHealth)
