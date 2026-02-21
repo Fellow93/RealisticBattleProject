@@ -243,7 +243,7 @@ namespace RBMAI
 
                 Mission mission = Mission.Current;
 
-                if (unit == null || !unit.IsActive() || mission == null || !mission.IsDeploymentFinished)
+                if (unit == null || !unit.IsActive() || mission == null || !mission.IsDeploymentFinished || unit.IsPlayerControlled)
                 {
                     return true;
                 }
