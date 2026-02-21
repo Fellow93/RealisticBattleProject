@@ -6,12 +6,14 @@ using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using TaleWorlds.Core;
+using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade.CustomBattle;
 using TaleWorlds.MountAndBlade.CustomBattle.CustomBattle;
 using TaleWorlds.MountAndBlade.CustomBattle.CustomBattle.SelectionItem;
 using TaleWorlds.MountAndBlade.View.CustomBattle;
+using TaleWorlds.ScreenSystem;
 
 namespace RBM
 {
@@ -20,9 +22,39 @@ namespace RBM
         private static readonly PropertyInfo SelectedMap = typeof(MapSelectionGroupVM).GetProperty("SelectedMap");
         private static CustomBattleVM _battleVM;
 
+        private static GauntletLayer _hintLayer;
+        private static CustomBattleHintVM _hintVM;
+        private static bool _hintPending;
+
+        private static void AddHintOverlay()
+        {
+            if (_hintLayer != null) return;
+            _hintVM = new CustomBattleHintVM();
+            _hintLayer = new GauntletLayer("CustomBattleHintLayer", 100);
+            _hintLayer.LoadMovie("CustomBattleHint", _hintVM);
+            ScreenManager.TopScreen?.AddLayer(_hintLayer);
+        }
+
+        private static void RemoveHintOverlay()
+        {
+            if (_hintLayer == null) return;
+            ScreenManager.TopScreen?.RemoveLayer(_hintLayer);
+            _hintVM?.OnFinalize();
+            _hintLayer = null;
+            _hintVM = null;
+        }
+
         internal static void TickInput()
         {
             if (_battleVM == null) return;
+
+            // Defer overlay creation to first tick so ScreenManager.TopScreen is ready
+            if (_hintPending)
+            {
+                _hintPending = false;
+                AddHintOverlay();
+            }
+
             bool ctrl = Input.IsKeyDown(InputKey.LeftControl) || Input.IsKeyDown(InputKey.RightControl);
             if (!ctrl) return;
             if (Input.IsKeyPressed(InputKey.S))
@@ -151,6 +183,7 @@ namespace RBM
             private static void Postfix(CustomBattleVM __instance)
             {
                 _battleVM = __instance;
+                _hintPending = true;
                 CustomBattlePreset.ApplyToVM(__instance);
             }
         }
@@ -161,6 +194,7 @@ namespace RBM
         {
             private static void Prefix(CustomBattleVM __instance)
             {
+                RemoveHintOverlay();
                 CustomBattlePreset.SaveFromVM(__instance);
                 CustomBattlePreset.SavePreset();
             }
@@ -172,6 +206,7 @@ namespace RBM
         {
             private static void Prefix(CustomBattleVM __instance)
             {
+                RemoveHintOverlay();
                 CustomBattlePreset.SaveFromVM(__instance);
                 CustomBattlePreset.SavePreset();
                 _battleVM = null;

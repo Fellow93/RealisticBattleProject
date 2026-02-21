@@ -1,0 +1,16 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true">
+      <Children>
+        <TextWidget Text="Ctrl+S: Save Preset   |   Ctrl+L: Load Preset"
+                    Brush="Tooltip.Text"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    SuggestedWidth="360"
+                    SuggestedHeight="28"
+                    MarginRight="12"
+                    MarginTop="8" />
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>
