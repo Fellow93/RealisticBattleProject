@@ -1,7 +1,7 @@
 ﻿<Module>
   <Name value="(RBM WS) Realistic Battle Mod War Sails Submod"/>
   <Id value="RBM_WS"/>
-  <Version value="v4.2.14"/>
+  <Version value="v4.2.15"/>
   <DefaultModule value="true"/>
   <ModuleCategory value="Singleplayer"/>
   <DependedModules>
@@ -13,7 +13,7 @@
 	<DependedModule Id="CustomBattle" DependentVersion="v1.3.14" Optional="false"/>
 	<DependedModule Id="BirthAndDeath" DependentVersion="v1.3.14" Optional="true"/>
     <DependedModule Id="NavalDLC" DependentVersion="v1.1.2" Optional="false"/>
-	<DependedModule Id="RBM" DependentVersion="v4.2.14" Optional="false"/>
+	<DependedModule Id="RBM" DependentVersion="v4.2.15" Optional="false"/>
 	<DependedModule Id="RTSCamera" Optional="true"/>
 	<DependedModule Id="RTSCamera.CommandSystem" Optional="true"/>
 	
