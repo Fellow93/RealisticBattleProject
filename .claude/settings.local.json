@@ -42,7 +42,8 @@
       "Bash(DLL=\"/d/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/CustomBattle/bin/Win64_Shipping_Client/TaleWorlds.MountAndBlade.CustomBattle.dll\")",
       "Bash(Select-String -Path \"D:\\\\SteamLibrary\\\\steamapps\\\\common\\\\Mount & Blade II Bannerlord\\\\Modules\\\\RealisticBattleProject\\\\RBM\\\\RBM.csproj\" -Pattern \"GauntletUI|ScreenSystem\")",
       "Bash(Select-Object -ExpandProperty Line)",
-      "Bash(head -20 grep \"Name=\"\"\" \"D:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/Native/GUI/Brushes/Tooltip.xml\")"
+      "Bash(head -20 grep \"Name=\"\"\" \"D:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/Native/GUI/Brushes/Tooltip.xml\")",
+      "Bash(head:*)"
     ]
   }
 }

@@ -2,14 +2,27 @@
   <Window>
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true">
       <Children>
-        <TextWidget Text="Ctrl+S: Save Preset   |   Ctrl+L: Load Preset"
-                    Brush="Tooltip.Text"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Top"
-                    SuggestedWidth="360"
-                    SuggestedHeight="28"
-                    MarginRight="12"
-                    MarginTop="8" />
+        <Widget HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                WidthSizePolicy="Fixed"
+                HeightSizePolicy="Fixed"
+                SuggestedWidth="360"
+                SuggestedHeight="36"
+                MarginLeft="410"
+                MarginTop="6"
+                Sprite="BlankWhiteSquare_9"
+                Color="#1A1612E0">
+          <Children>
+            <TextWidget Text="Ctrl+S: Save Preset   |   Ctrl+L: Load Preset"
+                        Brush="Tooltip.Value.Text"
+                        WidthSizePolicy="StretchToParent"
+                        HeightSizePolicy="StretchToParent"
+                        MarginLeft="12"
+                        MarginRight="12"
+                        MarginTop="4"
+                        MarginBottom="4" />
+          </Children>
+        </Widget>
       </Children>
     </Widget>
   </Window>

@@ -202,11 +202,22 @@ namespace RBMCombat
         {
             private static bool Prefix(ref Mission __instance, Agent attackerAgent, Agent victimAgent, in AttackCollisionData collisionData, WeaponComponentData attackerWeapon, in Blow blow, ref bool __result)
             {
+                //__result = false;
+                //return false;
                 //if(collisionData.InflictedDamage < 0)
                 //{
                 //    return true;
                 //}
                 //float damageMultiplierOfCombatDifficulty = Mission.Current.GetDamageMultiplierOfCombatDifficulty(victimAgent, attackerAgent);
+                if (victimAgent.IsMount)
+                {
+                    float speed = victimAgent.MovementVelocity.Length;
+                    if (speed > 5f)
+                    {
+                        __result = false;
+                        return false;
+                    }
+                }
                 if (collisionData.IsMissile)
                 {
                     if (victimAgent.IsMount && attackerAgent != null && victimAgent.GetAgentFlags().HasAnyFlag(AgentFlag.CanRear) && Vec3.DotProduct(blow.Direction, victimAgent.Frame.rotation.f) < -0.35f)

@@ -24,15 +24,17 @@ namespace RBM
 
         private static GauntletLayer _hintLayer;
         private static CustomBattleHintVM _hintVM;
-        private static bool _hintPending;
 
         private static void AddHintOverlay()
         {
             if (_hintLayer != null) return;
+            var screen = ScreenManager.TopScreen;
+            // Only attach to the custom battle setup screen, not to the mission screen during battle
+            if (screen == null || !screen.GetType().Name.Contains("CustomBattle")) return;
             _hintVM = new CustomBattleHintVM();
             _hintLayer = new GauntletLayer("CustomBattleHintLayer", 100);
             _hintLayer.LoadMovie("CustomBattleHint", _hintVM);
-            ScreenManager.TopScreen?.AddLayer(_hintLayer);
+            screen.AddLayer(_hintLayer);
         }
 
         private static void RemoveHintOverlay()
@@ -48,12 +50,9 @@ namespace RBM
         {
             if (_battleVM == null) return;
 
-            // Defer overlay creation to first tick so ScreenManager.TopScreen is ready
-            if (_hintPending)
-            {
-                _hintPending = false;
+            // Add (or re-add after returning from battle) overlay whenever VM is live but layer is gone
+            if (_hintLayer == null)
                 AddHintOverlay();
-            }
 
             bool ctrl = Input.IsKeyDown(InputKey.LeftControl) || Input.IsKeyDown(InputKey.RightControl);
             if (!ctrl) return;
@@ -183,7 +182,6 @@ namespace RBM
             private static void Postfix(CustomBattleVM __instance)
             {
                 _battleVM = __instance;
-                _hintPending = true;
                 CustomBattlePreset.ApplyToVM(__instance);
             }
         }

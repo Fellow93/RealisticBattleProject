@@ -1729,6 +1729,42 @@ namespace RBMAI
             return false;
         }
 
+        public override void OnAgentRemoved(Agent affectedAgent, Agent affectorAgent, AgentState agentState, KillingBlow blow)
+        {
+            if (!Mission.Current.IsFieldBattle)
+            {
+                return;
+            }
+            //if horse is killed and has certain speed it affect units around
+            if (affectedAgent != null && !affectedAgent.IsHuman)
+            {
+                Agent horse = affectedAgent;
+                float speed = horse.MovementVelocity.Length;
+                if (speed >= 5f)
+                {
+                    List<Agent> list = new List<Agent>();
+                    Vec2 searchPosition = horse.Position.AsVec2 + horse.GetMovementDirection().Normalized();
+                    AgentProximityMap.ProximityMapSearchStruct searchStruct = AgentProximityMap.BeginSearch(Mission.Current, searchPosition, 0f, extendRangeByBiggestAgentCollisionPadding: true);
+                    while (searchStruct.LastFoundAgent != null)
+                    {
+                        Agent lastFoundAgent = searchStruct.LastFoundAgent;
+                        if (lastFoundAgent.CurrentMortalityState != Agent.MortalityState.Invulnerable && !lastFoundAgent.HasMount)
+                        {
+                            list.Add(lastFoundAgent);
+                        }
+                        AgentProximityMap.FindNext(Mission.Current, ref searchStruct);
+                    }
+                    foreach (Agent agent in list)
+                    {
+                        agent.SetActionChannel(0, ActionIndexCache.act_stagger_backward_3, actionSpeed: 1f);
+                    }
+                }
+                base.OnAgentRemoved(affectedAgent, affectorAgent, agentState, blow);
+                return;
+            }
+        }
+
+
         public override void OnMissionTick(float dt)
         {
             base.OnMissionTick(dt);
