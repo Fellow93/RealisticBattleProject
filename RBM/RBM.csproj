@@ -73,18 +73,6 @@
       <HintPath>..\..\NavalDLC\bin\Win64_Shipping_Client\NavalDLC.ViewModelCollection.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="RBMCombat, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\RBM\bin\Win64_Shipping_Client\RBMCombat.dll</HintPath>
-    </Reference>
-    <Reference Include="RBMConfig, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\RBM\bin\Win64_Shipping_Client\RBMConfig.dll</HintPath>
-    </Reference>
-    <Reference Include="RBMTournament, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\RBM\bin\Win64_Shipping_Client\RBMTournament.dll</HintPath>
-    </Reference>
     <Reference Include="SandBox">
       <HintPath>..\..\SandBox\bin\Win64_Shipping_Client\SandBox.dll</HintPath>
       <Private>False</Private>
@@ -290,13 +278,25 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <!-- Post-Build -->
   <ItemGroup>
+    <ProjectReference Include="..\RBMConfig\RBMConfig.csproj">
+      <Project>{d7f2b557-3d03-4dcf-850c-da8e5e2d8505}</Project>
+      <Name>RBMConfig</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RBMTournament\RBMTournament.csproj">
+      <Project>{407303f4-bda8-4629-96f6-a642611fb1dd}</Project>
+      <Name>RBMTournament</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RealisticBattleAiModule\RBMAI.csproj">
       <Project>{7254e74d-4968-47c3-bb91-84d3fc207acb}</Project>
       <Name>RBMAI</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RealisticBattleCombatModule\RBMCombat.csproj">
+      <Project>{39335729-4fae-451e-991b-123d7898b3eb}</Project>
+      <Name>RBMCombat</Name>
+    </ProjectReference>
   </ItemGroup>
-  <!-- Post-Build -->
   <PropertyGroup>
     <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBM_native_parameters_tweaks.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\RBM_spear_managed_core_parameters.xml" "$(SolutionDir)..\RBM\ModuleData\"

@@ -20,6 +20,85 @@ namespace RBMAI
 
         public static float swingSpeedTransfer = 4.5454545f;
         public static float thrustSpeedTransfer = 11.7647057f;
+
+        public static float FormationRatioWieldingShockWeapons(Formation formation)
+        {
+            float result = 0f;
+            float countOfAgents = 0f;
+            float countOfAgentsWieldingShockWeapons = 0f;
+            formation.ApplyActionOnEachUnit(delegate (Agent agent)
+            {
+                if (agent.IsActive())
+                {
+                    countOfAgents++;
+                    if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem != null)
+                    {
+                        if (agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.TwoHandedAxe ||
+                        agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.TwoHandedMace ||
+                        agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.TwoHandedSword)
+                        {
+                            countOfAgentsWieldingShockWeapons++;
+                        }
+                        else if (agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.TwoHandedPolearm && agent.WieldedWeapon.CurrentUsageItem.SwingSpeed != 0)
+                        {
+                            countOfAgentsWieldingShockWeapons++;
+                        }
+                    }
+                }
+            });
+            result = countOfAgentsWieldingShockWeapons / countOfAgents;
+            return result;
+        }
+
+        public static float FormationRatioShieldWallEligible(Formation formation)
+        {
+            float result = 0f;
+            float countOfAgents = 0f;
+            float countOfAgentsWieldingLargeShield = 0f;
+            formation.ApplyActionOnEachUnit(delegate (Agent agent)
+            {
+                if (agent.IsActive())
+                {
+                    countOfAgents++;
+                    if (!agent.WieldedOffhandWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem != null && agent.WieldedOffhandWeapon.CurrentUsageItem.WeaponClass == WeaponClass.LargeShield)
+                    {
+                        int ammoAmount = 0;
+                        for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                        {
+                            if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty && !agent.Equipment[equipmentIndex].IsShield())
+                            {
+                                ammoAmount += agent.Equipment[equipmentIndex].Amount;
+                            }
+                        }
+                        if (ammoAmount <= 1)
+                        {
+                            countOfAgentsWieldingLargeShield++;
+                        }
+                    }
+                }
+            });
+            result = countOfAgentsWieldingLargeShield / countOfAgents;
+            return result;
+        }
+
+        public static void DecideArrangementOrderForFormation(Formation formation)
+        {
+            bool isShock = FormationRatioWieldingShockWeapons(formation) > 0.5f;
+            bool isShieldWallEligible = FormationRatioShieldWallEligible(formation) > 0.7f;
+            if (isShieldWallEligible)
+            {
+                formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
+                return;
+            }
+            if (isShock)
+            {
+                formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
+                return;
+            }
+            formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
+            return;
+        }
+
         public static bool HasBattleBeenJoined(Formation mainInfantry, bool hasBattleBeenJoined, float battleJoinRange = 75f)
         {
             bool isOnlyCavReamining = CheckIfOnlyCavRemaining(mainInfantry);

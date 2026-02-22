@@ -1189,7 +1189,6 @@ namespace RBMAI
             FallBack
         }
 
-
         [HarmonyPrefix]
         [HarmonyPatch("GetSubstituteOrder")]
         private static bool PrefixGetSubstituteOrder(MovementOrder __instance, ref MovementOrder __result, Formation formation)
@@ -1463,7 +1462,6 @@ namespace RBMAI
             {
                 return true;
             }
-
         }
     }
 
@@ -1601,10 +1599,11 @@ namespace RBMAI
                             {
                                 ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
                             }
-                            if (cavDist > 70f)
+                            if (cavDist > 10f)
                             {
                                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
                             }
+                            __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
                             return false;
                         }
                         positionsStorage.Remove(__instance.Formation);
@@ -1632,7 +1631,6 @@ namespace RBMAI
 
                 if (significantEnemy != null)
                 {
-
                     FormationQuerySystem enemyQuerySystem = significantEnemy.QuerySystem;
 
                     WorldPosition enemyPosition = enemyQuerySystem.Formation.CachedMedianPosition;
@@ -1683,23 +1681,10 @@ namespace RBMAI
                     if (num < 150f && __instance.Formation.CountOfUnitsWithoutDetachedOnes >= 30)
                     {
                         __instance.Formation.SetFacingOrder(___CurrentFacingOrder);
-                        bool isWithoutThrowing = __instance.Formation.QuerySystem.HasThrowingUnitRatio < 0.4f;
-                        bool isShock = __instance.Formation.QuerySystem.HasShieldUnitRatio < 0.4f;
-                        if (isShock)
-                        {
-                            __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
-                            __instance.Formation.SetMovementOrder(__instance.CurrentOrder);
-                            return false;
-                        }
-                        if (isWithoutThrowing)
-                        {
-                            __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
-                            __instance.Formation.SetMovementOrder(__instance.CurrentOrder);
-                            return false;
-                        }
+                        Utilities.DecideArrangementOrderForFormation(__instance.Formation);
+                        __instance.Formation.SetMovementOrder(____currentOrder);
                     }
                 }
-                __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
             }
             __instance.Formation.SetMovementOrder(__instance.CurrentOrder);
             return false;
@@ -1722,7 +1707,6 @@ namespace RBMAI
             {
                 return false;
             }
-
         }
 
         [HarmonyPrefix]
@@ -1740,7 +1724,5 @@ namespace RBMAI
                 return false;
             }
         }
-
     }
-
 }

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Text.Json;
 using System.Xml;
 
 namespace RBMConfig
@@ -22,9 +20,9 @@ namespace RBMConfig
         public static void createWeaponTypesFactors(ref List<RBMCombatConfigWeaponType> weaponTypesFactors)
         {
             weaponTypesFactors.Add(new RBMCombatConfigWeaponType(
-                weaponType:"Dagger", 
-                ExtraBluntFactorCut: 0.25f, 
-                ExtraBluntFactorPierce: 0.35f, 
+                weaponType: "Dagger",
+                ExtraBluntFactorCut: 0.25f,
+                ExtraBluntFactorPierce: 0.35f,
                 ExtraBluntFactorBlunt: 1f,
                 ExtraArmorThresholdFactorPierce: 3f,
                 ExtraArmorThresholdFactorCut: 5f,

@@ -206,15 +206,15 @@
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RBMConfig\RBMConfig.csproj">
-      <Project>{D7F2B557-3D03-4DCF-850C-DA8E5E2D8505}</Project>
-      <Name>RBMConfig</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <!-- Post-Build -->
+  <ItemGroup>
+    <ProjectReference Include="..\RBMConfig\RBMConfig.csproj">
+      <Project>{d7f2b557-3d03-4dcf-850c-da8e5e2d8505}</Project>
+      <Name>RBMConfig</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBMAI_module_strings.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\CombatUI.xml" "$(SolutionDir)..\RBM\GUI\Prefabs\"
