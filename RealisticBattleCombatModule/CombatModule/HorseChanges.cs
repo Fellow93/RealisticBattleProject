@@ -294,7 +294,8 @@ namespace RBMCombat
                 ref readonly Vec3 victimAgentPosition = ref attackInformation.VictimAgentPosition;
                 float num = ChargeDamageDotProduct(victimAgentPosition, chargerMovementDirection, acd.CollisionGlobalPosition);
                 float num2 = vec2.Length * num;
-                baseMagnitude = (num2 * num2 * attackInformation.AttackerAgentMountChargeDamageProperty * 0.5f) / 520f;
+                //baseMagnitude = (num2 * num2 * attackInformation.AttackerAgentMountChargeDamageProperty * 0.5f) / 520f; // default kinetic energy setting
+                baseMagnitude = (num2 * attackInformation.AttackerAgentMountChargeDamageProperty) / 70f; // momentum experiment
                 specialMagnitude = baseMagnitude;
 
                 return false;

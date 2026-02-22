@@ -29,13 +29,21 @@
 	
 	<native_parameter id="back_angle_to_disable_collision_shield_blocking" value="30.0" />
 
-		<native_parameter
+	<native_parameter
 			id="thrust_tip_collision_distance"
 			value="0.3" />
 			
-		<native_parameter
+	<native_parameter
 			id="thrust_tip_collision_distance_mounted"
 			value="1.2" />
+			
+	<native_parameter
+			id="non_humanoid_collision_resistance_minimum_limit_sp"
+			value="6" />
+			
+	<native_parameter
+			id="non_humanoid_collision_resistance_multiplier_sp"
+			value="10.0" />
 
   </native_parameters>
 </base>
