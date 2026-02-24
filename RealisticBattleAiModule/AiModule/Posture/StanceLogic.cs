@@ -42,9 +42,10 @@ namespace RBMAI
         }
 
         //how much posture is regained after posture break
-        static float postureResetModifier = 0.75f;
+        private static float postureResetModifier = 0.75f;
+
         //how much posture is regained after posture break while holding shield
-        static float shieldPostureResetModifier = 0.4f;
+        private static float shieldPostureResetModifier = 0.4f;
 
         public static void ResetPostureForAgent(ref Stance stance, float resetModifier)
         {
@@ -132,6 +133,7 @@ namespace RBMAI
                 }
             }
         }
+
         public static ActionIndexCache DecideAnimation(AttackCollisionData collisionData, bool isAttacker)
         {
             switch (collisionData.AttackDirection)
@@ -195,10 +197,9 @@ namespace RBMAI
         private class MeleeHitContextPatch
         {
             private static void Prefix() => _inMeleeHitContext = true;
+
             private static void Finalizer() => _inMeleeHitContext = false;
         }
-
-
 
         [HarmonyPatch(typeof(Agent))]
         [HarmonyPatch("EquipItemsFromSpawnEquipment")]
@@ -295,7 +296,6 @@ namespace RBMAI
                             agentsToDropWeapon.Add(victimAgent);
                         }
                     }
-
                 }
             }
 
@@ -363,7 +363,6 @@ namespace RBMAI
                         {
                             ResetPostureForAgent(ref stance, postureResetModifier);
                         }
-
                     }
                 }
             }
@@ -797,7 +796,6 @@ namespace RBMAI
                     {
                         case MeleeHitType.AgentHit:
                             {
-
                                 result = directHit;
                                 return result;
                             }
@@ -889,7 +887,6 @@ namespace RBMAI
                     {
                         case MeleeHitType.AgentHit:
                             {
-
                                 result = directHit;
                                 return result;
                             }
@@ -1449,9 +1446,7 @@ namespace RBMAI
                                 float skillBasedDamage = Utilities.GetSkillBasedDamage(sweetSpotMagnitude, false, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
                                     targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, effectiveSkillDR, skillModifier, StrikeType.Swing, targetWeapon.Item.Weight);
 
-
                                 swingDamageFactor = (float)Math.Sqrt(Utilities.getSwingDamageFactor(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex), targetWeapon.ItemModifier));
-
 
                                 realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(), targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, skillBasedDamage, armorSumPosture, 1f, out float penetratedDamage, out float bluntForce, swingDamageFactor, null, false)), 0, 2000);
                                 realDamage = MathF.Floor(realDamage * 1f);
@@ -1462,7 +1457,6 @@ namespace RBMAI
 
                                 float skillBasedDamage = Utilities.GetSkillBasedDamage(thrustMagnitude, false, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
                                     targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, effectiveSkillDR, skillModifier, StrikeType.Thrust, targetWeapon.Item.Weight);
-
 
                                 thrustDamageFactor = (float)Math.Sqrt(Utilities.getThrustDamageFactor(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex), targetWeapon.ItemModifier));
 
@@ -1569,7 +1563,6 @@ namespace RBMAI
                 }
 
                 return result;
-
             }
 
             [HarmonyPatch(typeof(Mission))]
@@ -1610,7 +1603,6 @@ namespace RBMAI
                                 case WeaponClass.ThrowingAxe:
                                 case WeaponClass.ThrowingKnife:
                                     {
-
                                         postureLoss = calculateRangedPostureLoss(25f, 25f, shooterAgent, wc);
                                         break;
                                     }
@@ -1764,7 +1756,6 @@ namespace RBMAI
             }
         }
 
-
         public override void OnMissionTick(float dt)
         {
             base.OnMissionTick(dt);
@@ -1828,7 +1819,6 @@ namespace RBMAI
 
                                     AgentPostures.postureVisual._dataSource.EnemyStamina = (int)entry.Value.stamina;
                                     AgentPostures.postureVisual._dataSource.EnemyStaminaMax = (int)entry.Value.maxStamina;
-
                                 }
                             }
                             bool isInQuickStaminaRegen = IsAgentInQuickPostureRegen(agent: entry.Key);
@@ -1964,7 +1954,6 @@ namespace RBMAI
                     currentDt = 0f;
                 }
             }
-
         }
 
         public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon affectorWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
@@ -2058,34 +2047,33 @@ namespace RBMAI
                         }
 
                         addPosturedamageVisual(affectorAgent, affectedAgent);
-
                     }
                 }
             }
 
-            int ammoStuckInAgent = affectedAgent.GetAttachedWeaponsCount();
-            int arrowsBoltsStuckInAgent = 0;
-            int maxAmmoStuckInAgent = 5;
-            for (int i = 0; i < ammoStuckInAgent; i++)
-            {
-                //remove stuck javelins
-                WeaponClass ammoWeaponClass = affectedAgent.GetAttachedWeapon(i).CurrentUsageItem.WeaponClass;
-                if (ammoWeaponClass == WeaponClass.Javelin || ammoWeaponClass == WeaponClass.ThrowingAxe || ammoWeaponClass == WeaponClass.ThrowingKnife)
-                {
-                    affectedAgent.DeleteAttachedWeapon(i);
-                }
+            //int ammoStuckInAgent = affectedAgent.GetAttachedWeaponsCount();
+            //int arrowsBoltsStuckInAgent = 0;
+            //int maxAmmoStuckInAgent = 5;
+            //for (int i = 0; i < ammoStuckInAgent; i++)
+            //{
+            //    //remove stuck javelins
+            //    WeaponClass ammoWeaponClass = affectedAgent.GetAttachedWeapon(i).CurrentUsageItem.WeaponClass;
+            //    if (ammoWeaponClass == WeaponClass.Javelin || ammoWeaponClass == WeaponClass.ThrowingAxe || ammoWeaponClass == WeaponClass.ThrowingKnife)
+            //    {
+            //        affectedAgent.DeleteAttachedWeapon(i);
+            //    }
 
-                if (ammoWeaponClass == WeaponClass.Arrow || ammoWeaponClass == WeaponClass.Bolt)
-                {
-                    arrowsBoltsStuckInAgent++;
-                }
+            //    if (ammoWeaponClass == WeaponClass.Arrow || ammoWeaponClass == WeaponClass.Bolt)
+            //    {
+            //        arrowsBoltsStuckInAgent++;
+            //    }
 
-                //remove stuck arrows/bolts if there are too many of them
-                if (arrowsBoltsStuckInAgent >= maxAmmoStuckInAgent)
-                {
-                    affectedAgent.DeleteAttachedWeapon(i);
-                }
-            }
+            //    //remove stuck arrows/bolts if there are too many of them
+            //    if (arrowsBoltsStuckInAgent >= maxAmmoStuckInAgent)
+            //    {
+            //        affectedAgent.DeleteAttachedWeapon(i);
+            //    }
+            //}
 
             //drop shield if too many arrows/bolts or javelins/throwing axes/throwing knives are stuck in the shield, disabled for now
             //int maxAmmoStuckInShield = 15;
