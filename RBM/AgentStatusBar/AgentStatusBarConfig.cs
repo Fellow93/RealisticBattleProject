@@ -2,10 +2,18 @@
 {
     public static class AgentStatusBarConfig
     {
-        public const uint AllyHealthBarFillColour = 4294901760u;  // 0xFFFF0000 red
-        public const uint AllyHealthBarEmptyColour = 4278190080u; // 0xFF000000 black
-        public const uint EnemyHealthBarFillColour = 4294901760u;  // 0xFFFF0000 red
-        public const uint EnemyHealthBarEmptyColour = 4278190080u; // 0xFF000000 black
+        public const uint AllyHealthBarFillColour = 0xFF4488CCu;  // muted steel blue
+        public const uint AllyHealthBarEmptyColour = 0xFF112233u; // dark blue-gray
+        public const uint EnemyHealthBarFillColour = 0xFFCC4444u;  // muted brick red
+        public const uint EnemyHealthBarEmptyColour = 0xFF331111u; // dark red-gray
+        public const uint AllyPostureBarFillColour = 0xFF448844u;  // muted forest green
+        public const uint AllyPostureBarEmptyColour = 0xFF2A2A2Au; // dark gray
+        public const uint EnemyPostureBarFillColour = 0xFF448844u; // muted forest green (same as ally)
+        public const uint EnemyPostureBarEmptyColour = 0xFF2A2A2Au; // dark gray
+        public const uint AllyStaminaBarFillColour = 0xFFAA9933u;  // muted amber
+        public const uint AllyStaminaBarEmptyColour = 0xFF2A2A2Au; // dark gray
+        public const uint EnemyStaminaBarFillColour = 0xFFAA9933u; // muted amber (same as ally)
+        public const uint EnemyStaminaBarEmptyColour = 0xFF2A2A2Au; // dark gray
         public const bool AllyHealthBars = true;
         public const bool EnemyHealthBars = true;
         public const bool HeroHealthBars = true;

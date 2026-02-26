@@ -41,6 +41,14 @@ namespace RBM.AgentStatusBar
 
         private uint _emptyColor;
 
+        private uint _postureFillColor;
+
+        private uint _postureEmptyColor;
+
+        private uint _staminaFillColor;
+
+        private uint _staminaEmptyColor;
+
         private int _screenZ;
 
         private float _screenXPosition;
@@ -99,6 +107,7 @@ namespace RBM.AgentStatusBar
                         _healthBar = (BrushWidget)((Widget)this).GetChild(0);
                     }
                     _healthBar.Brush.GetLayer("ChangeFill").Color = Color.FromUint(value);
+                    _healthBar.Brush.GetLayer("DefaultFill").Color = Color.FromUint(value);
                 }
             }
         }
@@ -122,6 +131,76 @@ namespace RBM.AgentStatusBar
                         _healthBar = (BrushWidget)((Widget)this).GetChild(0);
                     }
                     _healthBar.Brush.GetLayer("EmptyFill").Color = Color.FromUint(value);
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public uint PostureFillColor
+        {
+            get { return _postureFillColor; }
+            set
+            {
+                if (_postureFillColor != value)
+                {
+                    _postureFillColor = value;
+                    if (_postureBar == null) _postureBar = GetChild(1) as FillBar;
+                    if (_postureBar != null)
+                    {
+                        _postureBar.Brush.GetLayer("ChangeFill").Color = Color.FromUint(value);
+                        _postureBar.Brush.GetLayer("DefaultFill").Color = Color.FromUint(value);
+                    }
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public uint PostureEmptyColor
+        {
+            get { return _postureEmptyColor; }
+            set
+            {
+                if (_postureEmptyColor != value)
+                {
+                    _postureEmptyColor = value;
+                    if (_postureBar == null) _postureBar = GetChild(1) as FillBar;
+                    if (_postureBar != null)
+                        _postureBar.Brush.GetLayer("EmptyFill").Color = Color.FromUint(value);
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public uint StaminaFillColor
+        {
+            get { return _staminaFillColor; }
+            set
+            {
+                if (_staminaFillColor != value)
+                {
+                    _staminaFillColor = value;
+                    if (_staminaBar == null) _staminaBar = GetChild(2) as FillBar;
+                    if (_staminaBar != null)
+                    {
+                        _staminaBar.Brush.GetLayer("ChangeFill").Color = Color.FromUint(value);
+                        _staminaBar.Brush.GetLayer("DefaultFill").Color = Color.FromUint(value);
+                    }
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public uint StaminaEmptyColor
+        {
+            get { return _staminaEmptyColor; }
+            set
+            {
+                if (_staminaEmptyColor != value)
+                {
+                    _staminaEmptyColor = value;
+                    if (_staminaBar == null) _staminaBar = GetChild(2) as FillBar;
+                    if (_staminaBar != null)
+                        _staminaBar.Brush.GetLayer("EmptyFill").Color = Color.FromUint(value);
                 }
             }
         }

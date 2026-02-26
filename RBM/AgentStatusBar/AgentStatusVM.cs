@@ -50,6 +50,14 @@ namespace RBM.AgentStatusBar
 
         private uint _emptyColor;
 
+        private uint _postureFillColor;
+
+        private uint _postureEmptyColor;
+
+        private uint _staminaFillColor;
+
+        private uint _staminaEmptyColor;
+
         private float _screenXPosition;
 
         private float _screenYPosition;
@@ -173,6 +181,11 @@ namespace RBM.AgentStatusBar
                     _teamColor = fill;
                     OnPropertyChanged("TeamColor");
                     EmptyColor = empty;
+                    bool isAlly = _agent.Team.IsPlayerAlly;
+                    PostureFillColor = isAlly ? AgentStatusBarConfig.AllyPostureBarFillColour : AgentStatusBarConfig.EnemyPostureBarFillColour;
+                    PostureEmptyColor = isAlly ? AgentStatusBarConfig.AllyPostureBarEmptyColour : AgentStatusBarConfig.EnemyPostureBarEmptyColour;
+                    StaminaFillColor = isAlly ? AgentStatusBarConfig.AllyStaminaBarFillColour : AgentStatusBarConfig.EnemyStaminaBarFillColour;
+                    StaminaEmptyColor = isAlly ? AgentStatusBarConfig.AllyStaminaBarEmptyColour : AgentStatusBarConfig.EnemyStaminaBarEmptyColour;
                 }
             }
         }
@@ -192,6 +205,34 @@ namespace RBM.AgentStatusBar
                     OnPropertyChanged("EmptyColor");
                 }
             }
+        }
+
+        [DataSourceProperty]
+        public uint PostureFillColor
+        {
+            get { return _postureFillColor; }
+            set { if (_postureFillColor != value) { _postureFillColor = value; OnPropertyChanged("PostureFillColor"); } }
+        }
+
+        [DataSourceProperty]
+        public uint PostureEmptyColor
+        {
+            get { return _postureEmptyColor; }
+            set { if (_postureEmptyColor != value) { _postureEmptyColor = value; OnPropertyChanged("PostureEmptyColor"); } }
+        }
+
+        [DataSourceProperty]
+        public uint StaminaFillColor
+        {
+            get { return _staminaFillColor; }
+            set { if (_staminaFillColor != value) { _staminaFillColor = value; OnPropertyChanged("StaminaFillColor"); } }
+        }
+
+        [DataSourceProperty]
+        public uint StaminaEmptyColor
+        {
+            get { return _staminaEmptyColor; }
+            set { if (_staminaEmptyColor != value) { _staminaEmptyColor = value; OnPropertyChanged("StaminaEmptyColor"); } }
         }
 
         [DataSourceProperty]
