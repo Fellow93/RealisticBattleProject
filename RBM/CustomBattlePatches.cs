@@ -9,6 +9,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.CustomBattle;
 using TaleWorlds.MountAndBlade.CustomBattle.CustomBattle;
 using TaleWorlds.MountAndBlade.CustomBattle.CustomBattle.SelectionItem;
@@ -49,6 +50,9 @@ namespace RBM
         internal static void TickInput()
         {
             if (_battleVM == null) return;
+
+            // Shortcuts and hint overlay are only active on the custom battle setup screen, not during a mission
+            if (Mission.Current != null) return;
 
             // Add (or re-add after returning from battle) overlay whenever VM is live but layer is gone
             if (_hintLayer == null)
