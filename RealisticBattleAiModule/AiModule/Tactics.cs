@@ -155,7 +155,7 @@ namespace RBMAI
         {
             public static void Postfix()
             {
-                AgentPostures.values.Clear();
+                AgentStances.values.Clear();
                 StanceLogic.agentsToDropShield.Clear();
                 StanceLogic.agentsToDropWeapon.Clear();
                 StanceLogic.agentsToChangeFormation.Clear();
@@ -180,7 +180,7 @@ namespace RBMAI
                 StanceLogic.agentsToChangeFormation.Clear();
                 StanceLogic.agentsToDropWeapon.Clear();
                 StanceLogic.agentsToDropShield.Clear();
-                AgentPostures.values.Clear();
+                AgentStances.values.Clear();
                 //originalDefenderPower = 0f;
                 //originalAttackerPower = 0f;
                 if (Mission.Current.Teams.Any())
@@ -189,7 +189,6 @@ namespace RBMAI
                     {
                         foreach (Team team in Mission.Current.Teams.Where((Team t) => t.HasTeamAi).ToList())
                         {
-
                             if (team.Side == BattleSideEnum.Attacker)
                             {
                                 team.ClearTacticOptions();
@@ -584,7 +583,6 @@ namespace RBMAI
             //        }
             //    }
             //}
-
         }
     }
 }

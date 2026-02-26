@@ -18,7 +18,6 @@ namespace RBMAI
 {
     public static class AgentAi
     {
-
         [HarmonyPatch(typeof(AgentStatCalculateModel))]
         [HarmonyPatch("SetAiRelatedProperties")]
         private class OverrideSetAiRelatedProperties
@@ -223,7 +222,6 @@ namespace RBMAI
                     if (_nearbyEnemiesBuffer.Count > 0)
                     {
                         agent.AgentDrivenProperties.AiWeaponFavorMultiplierMelee = 55f;
-
                     }
                     else
                     {
@@ -247,7 +245,7 @@ namespace RBMAI
                 if (RBMConfig.RBMConfig.postureEnabled)
                 {
                     Stance stance = null;
-                    AgentPostures.values.TryGetValue(agent, out stance);
+                    AgentStances.values.TryGetValue(agent, out stance);
                     if (agent != null && stance != null)
                     {
                         float staminaLevel = stance.stamina / stance.maxStamina;
@@ -290,7 +288,6 @@ namespace RBMAI
         [HarmonyPatch("SetWeaponSkillEffectsOnAgent")]
         internal class SetWeaponSkillEffectsOnAgentPatch
         {
-
             private static void AddToStat(ref ExplainedNumber stat, EffectIncrementType effectIncrementType, float number, TextObject text)
             {
                 switch (effectIncrementType)
@@ -298,6 +295,7 @@ namespace RBMAI
                     case EffectIncrementType.Add:
                         stat.Add(number, text);
                         break;
+
                     case EffectIncrementType.AddFactor:
                         stat.AddFactor(number, text);
                         break;
@@ -584,7 +582,6 @@ namespace RBMAI
                 }
                 //if (___Agent.HasMount)
                 //{
-
                 //}
                 if (____itemToPickUp != null && (___Agent.AIStateFlags & Agent.AIStateFlag.UseObjectMoving) != 0)
                 {
@@ -766,7 +763,6 @@ namespace RBMAI
                 }
                 if (attacker.RiderAgent != null && !attacker.IsEnemyOf(victim) && victim.CurrentMortalityState != Agent.MortalityState.Invulnerable)
                 {
-
                     blow.BaseMagnitude = 0;
                     blow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
                     blow.InflictedDamage = 0;
@@ -782,7 +778,6 @@ namespace RBMAI
                     {
                         missionBehaviour.OnRegisterBlow(attacker, victim, WeakGameEntity.Invalid, blow, ref collisionData, in attackerWeapon);
                     }
-
                 }
                 return;
             }

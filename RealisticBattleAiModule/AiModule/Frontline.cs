@@ -417,7 +417,7 @@ namespace RBMAI
                         {
                             __result = targetAgent != null ? targetAgent.GetWorldPosition() : WorldPosition.Invalid;
                             Stance stance = null;
-                            AgentPostures.values.TryGetValue(unit, out stance);
+                            AgentStances.values.TryGetValue(unit, out stance);
                             if (unit != null && stance != null)
                             {
                                 postureModifier = MathF.Lerp(0.1f, 1f, stance.posture / stance.maxPosture);

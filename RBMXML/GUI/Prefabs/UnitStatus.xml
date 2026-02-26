@@ -1,0 +1,40 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true">
+      <Children>
+        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DataSource="{AgentStatus}">
+          <ItemTemplate>
+            <AgentStatusWidget
+              Fade="@Fade"
+              IsHidden="@IsHidden"
+              ScreenDistance="@ScreenDistance"
+              EmptyColor="@EmptyColor"
+              TeamColor="@TeamColor"
+              IsAgentFocused="@IsAgentFocused"
+              ScreenXPosition="@ScreenXPosition"
+              ScreenYPosition="@ScreenYPosition"
+              Distance="@Distance"
+              ScreenZ="@ScreenZ"
+              WidthSizePolicy="Fixed"
+              HeightSizePolicy="Fixed"
+              SuggestedWidth="0"
+              SuggestedHeight="0">
+              <Children>
+                <FillBar
+                  Id="AgentHealthBar"
+                  WidthSizePolicy="Fixed"
+                  HeightSizePolicy="Fixed"
+                  SuggestedWidth="900"
+                  SuggestedHeight="84"
+                  Brush="AgentHealthBarBrush"
+                  IsVertical="false"
+                  MaxAmount="@MaxHealth"
+                  InitialAmount="@Health" />
+              </Children>
+            </AgentStatusWidget>
+          </ItemTemplate>
+        </ListPanel>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

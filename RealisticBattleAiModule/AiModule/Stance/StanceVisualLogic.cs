@@ -6,11 +6,11 @@ using TaleWorlds.MountAndBlade.View.Screens;
 
 namespace RBMAI
 {
-    public class PostureVisualLogic : MissionLogic
+    public class StanceVisualLogic : MissionLogic
     {
         public int timer = 0;
 
-        public PostureVisualVM _dataSource;
+        public StanceVisualVM _dataSource;
 
         private GauntletLayer _gauntletLayer;
         public Agent affectedAgent = null;
@@ -50,12 +50,12 @@ namespace RBMAI
         public override void AfterStart()
         {
             MissionScreen missionScreen = TaleWorlds.ScreenSystem.ScreenManager.TopScreen as MissionScreen;
-            _dataSource = new PostureVisualVM();
+            _dataSource = new StanceVisualVM();
             _gauntletLayer = new GauntletLayer("GauntletLayer", -1);
             missionScreen.AddLayer(_gauntletLayer);
             _gauntletLayer.LoadMovie("CombatUI", (ViewModel)_dataSource);
             _dataSource.ShowPlayerPostureStatus = true;
-            AgentPostures.postureVisual = this;
+            AgentStances.postureVisual = this;
         }
 
         public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
@@ -83,7 +83,7 @@ namespace RBMAI
                 _dataSource.EnemyHealthMax = (int)affectedAgent.HealthLimit;
 
                 Stance stance = null;
-                if (AgentPostures.values.TryGetValue(affectedAgent, out stance))
+                if (AgentStances.values.TryGetValue(affectedAgent, out stance))
                 {
                     _dataSource.EnemyPosture = (int)stance.posture;
                     _dataSource.EnemyPostureMax = (int)stance.maxPosture;

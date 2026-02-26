@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using RBM.AgentStatusBar;
 using RBMAI;
 using RBMCombat;
 using RBMTournament;
@@ -12,6 +13,7 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.ModuleManager;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.MountAndBlade.View;
 using TaleWorlds.MountAndBlade.View.Screens;
 using TaleWorlds.ScreenSystem;
 
@@ -157,6 +159,7 @@ namespace RBM
 
         public override void OnMissionBehaviorInitialize(Mission mission)
         {
+            mission.AddMissionBehavior(new UnitStatusMissionView());
             Game.Current.GameTextManager.LoadGameTexts();
             if (RBMConfig.RBMConfig.developerMode)
             {
@@ -175,7 +178,7 @@ namespace RBM
                 mission.AddMissionBehavior((MissionBehavior)(object)new RBMAIPatchLogic());
                 if (RBMConfig.RBMConfig.postureEnabled && RBMConfig.RBMConfig.postureGUIEnabled)
                 {
-                    mission.AddMissionBehavior((MissionBehavior)(object)new PostureVisualLogic());
+                    mission.AddMissionBehavior((MissionBehavior)(object)new StanceVisualLogic());
                 }
                 mission.AddMissionBehavior((MissionBehavior)(object)new SiegeArcherPoints());
                 mission.AddMissionBehavior((MissionBehavior)(object)new StanceLogic());
@@ -186,9 +189,9 @@ namespace RBM
                 {
                     mission.RemoveMissionBehavior(mission.GetMissionBehavior<SiegeArcherPoints>());
                 }
-                if (mission.GetMissionBehavior<PostureVisualLogic>() != null)
+                if (mission.GetMissionBehavior<StanceVisualLogic>() != null)
                 {
-                    mission.RemoveMissionBehavior(mission.GetMissionBehavior<PostureVisualLogic>());
+                    mission.RemoveMissionBehavior(mission.GetMissionBehavior<StanceVisualLogic>());
                 }
                 if (mission.GetMissionBehavior<StanceLogic>() != null)
                 {
@@ -208,7 +211,6 @@ namespace RBM
                     if (clan.Culture == null)
                     {
                         clansToRemove.Add(clan);
-
                     }
                 }
                 foreach (var clan in clansToRemove)
@@ -218,7 +220,6 @@ namespace RBM
                 }
             }
         }
-
     }
 
     public class RBMAIPatchLogic : MissionLogic
@@ -228,5 +229,4 @@ namespace RBM
             RBMAiPatcher.DoPatching();
         }
     }
-
 }

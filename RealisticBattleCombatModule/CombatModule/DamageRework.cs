@@ -455,8 +455,8 @@ namespace RBMCombat
                 {
                     Stance victimPosture = null;
                     Stance attackerPosture = null;
-                    AgentPostures.values.TryGetValue(attacker, out attackerPosture);
-                    AgentPostures.values.TryGetValue(victim, out victimPosture);
+                    AgentStances.values.TryGetValue(attacker, out attackerPosture);
+                    AgentStances.values.TryGetValue(victim, out victimPosture);
 
                     //stamina effct on attacker
                     if (attackerPosture != null)
