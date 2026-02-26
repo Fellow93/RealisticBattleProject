@@ -183,6 +183,7 @@ public class RBMTacticEmbolon : TacticComponent
                                     heavyCavCount++;
                                 }
                             }
+                            cavCount++;
                         }
                     });
                 }
