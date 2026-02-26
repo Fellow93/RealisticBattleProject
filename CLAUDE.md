@@ -91,3 +91,4 @@ Settings are static fields on `RBMConfig.RBMConfig`, persisted to user XML at `U
 
 ##
 - never add Claude as co-author in commits
+- nevery directly copy files to output RBM folder, always place them in project files and if needed make post or pre build commands
