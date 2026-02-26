@@ -23,6 +23,10 @@ namespace RBM.AgentStatusBar
 
         private FillBar _bar;
 
+        private FillBar _postureBar;
+
+        private FillBar _staminaBar;
+
         private BrushWidget _healthBar;
 
         private const float BACKGROUND_WIDTH = 975f;
@@ -261,10 +265,25 @@ namespace RBM.AgentStatusBar
                 if (IsVisible)
                 {
                     float inverse = 1f / ScreenDistance;
+                    float scaledWidth, scaledHeight;
                     try
                     {
-                        _bar.ScaledSuggestedWidth = BAR_WIDTH * inverse;
-                        _bar.ScaledSuggestedHeight = BAR_HEIGHT * inverse;
+                        scaledWidth = BAR_WIDTH * inverse;
+                        scaledHeight = BAR_HEIGHT * inverse;
+                        _bar.ScaledSuggestedWidth = scaledWidth;
+                        _bar.ScaledSuggestedHeight = scaledHeight;
+                        if (_postureBar != null)
+                        {
+                            _postureBar.ScaledSuggestedWidth = scaledWidth;
+                            _postureBar.ScaledSuggestedHeight = scaledHeight;
+                            _postureBar.ScaledPositionYOffset = scaledHeight;
+                        }
+                        if (_staminaBar != null)
+                        {
+                            _staminaBar.ScaledSuggestedWidth = scaledWidth;
+                            _staminaBar.ScaledSuggestedHeight = scaledHeight;
+                            _staminaBar.ScaledPositionYOffset = scaledHeight * 2f;
+                        }
                     }
                     catch (OverflowException)
                     {
@@ -277,6 +296,8 @@ namespace RBM.AgentStatusBar
             else
             {
                 _bar = (FillBar)GetChild(0);
+                _postureBar = GetChild(1) as FillBar;
+                _staminaBar = GetChild(2) as FillBar;
             }
         }
     }

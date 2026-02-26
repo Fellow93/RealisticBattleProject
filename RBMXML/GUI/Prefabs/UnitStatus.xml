@@ -30,6 +30,28 @@
                   IsVertical="false"
                   MaxAmount="@MaxHealth"
                   InitialAmount="@Health" />
+                <FillBar
+                  Id="AgentPostureBar"
+                  IsVisible="@ShowStance"
+                  WidthSizePolicy="Fixed"
+                  HeightSizePolicy="Fixed"
+                  SuggestedWidth="900"
+                  SuggestedHeight="84"
+                  Brush="AgentPostureBarBrush"
+                  IsVertical="false"
+                  MaxAmount="@MaxPosture"
+                  InitialAmount="@Posture" />
+                <FillBar
+                  Id="AgentStaminaBar"
+                  IsVisible="@ShowStance"
+                  WidthSizePolicy="Fixed"
+                  HeightSizePolicy="Fixed"
+                  SuggestedWidth="900"
+                  SuggestedHeight="84"
+                  Brush="AgentStaminaBarBrush"
+                  IsVertical="false"
+                  MaxAmount="@MaxStamina"
+                  InitialAmount="@Stamina" />
               </Children>
             </AgentStatusWidget>
           </ItemTemplate>

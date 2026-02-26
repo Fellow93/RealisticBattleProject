@@ -43,7 +43,9 @@
       "Bash(Select-String -Path \"D:\\\\SteamLibrary\\\\steamapps\\\\common\\\\Mount & Blade II Bannerlord\\\\Modules\\\\RealisticBattleProject\\\\RBM\\\\RBM.csproj\" -Pattern \"GauntletUI|ScreenSystem\")",
       "Bash(Select-Object -ExpandProperty Line)",
       "Bash(head -20 grep \"Name=\"\"\" \"D:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/Native/GUI/Brushes/Tooltip.xml\")",
-      "Bash(head:*)"
+      "Bash(head:*)",
+      "Bash(diff \"D:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/RealisticBattleProject/RBMXML/GUI/Prefabs/UnitStatus.xml\" \"D:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/RBM/GUI/Prefabs/UnitStatus.xml\")",
+      "Bash(diff \"D:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/RealisticBattleProject/RBMXML/GUI/Brushes/CombatUI.xml\" \"D:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/RBM/GUI/Brushes/CombatUI.xml\")"
     ]
   }
 }

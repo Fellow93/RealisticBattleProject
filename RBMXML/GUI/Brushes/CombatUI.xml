@@ -57,6 +57,28 @@
       </Style>
     </Styles>
   </Brush>
+  <Brush Name="AgentPostureBarBrush">
+    <Layers>
+      <BrushLayer Name="EmptyFill" Sprite="BlankWhiteSquare" ColorFactor="1" Color="#404040FF" />
+      <BrushLayer Name="ChangeFill" Sprite="BlankWhiteSquare" ColorFactor="1" Color="#AAFFAAFF" />
+      <BrushLayer Name="DefaultFill" Sprite="BlankWhiteSquare" ColorFactor="1" Color="#22AA22FF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="AgentStaminaBarBrush">
+    <Layers>
+      <BrushLayer Name="EmptyFill" Sprite="BlankWhiteSquare" ColorFactor="1" Color="#404040FF" />
+      <BrushLayer Name="ChangeFill" Sprite="BlankWhiteSquare" ColorFactor="1" Color="#FFEEAAFF" />
+      <BrushLayer Name="DefaultFill" Sprite="BlankWhiteSquare" ColorFactor="1" Color="#CCAA00FF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+      </Style>
+    </Styles>
+  </Brush>
   <Brush Name="PlayerPostureBarBrushGlow">
     <Layers>
       <BrushLayer Name="EmptyFill" Sprite="BlankWhiteSquare" Color="#00ad00FF" />
@@ -65,6 +87,647 @@
     </Layers>
     <Styles>
       <Style Name="Default">
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="AgentHealthBarBrush">
+    <Layers>
+      <BrushLayer Name="EmptyFill" Sprite="BlankWhiteSquare" ColorFactor="1" Color="#404040FF" />
+      <BrushLayer Name="ChangeFill" Sprite="BlankWhiteSquare" ColorFactor="1" Color="#FFAAAAFF" />
+      <BrushLayer Name="DefaultFill" Sprite="BlankWhiteSquare" ColorFactor="1" Color="#FF2222FF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="HealthBarBrush">
+    <Layers>
+      <BrushLayer Name="EmptyFill" Sprite="BlankWhiteSquare" ColorFactor="1" Color="#404040FF" />
+      <BrushLayer Name="DefaultFill" Sprite="BlankWhiteSquare" ColorFactor="1" Color="#FF2222FF" />
+      <BrushLayer Name="ChangeFill" Sprite="BlankWhiteSquare" ColorFactor="1" Color="#FFAAAAFF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="ButtonBrush" FontColor="#FAF4DEFF" TransitionDuration="0">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="button_canvas_9" OverlayMethod="CoverWithTexture" OverlaySprite="button_marble" />
+      <BrushLayer Name="Overlay" Sprite="button_frame_9" />
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#FAF4DEFF">
+        <BrushLayer Name="Default" ColorFactor="1.0" />
+        <BrushLayer Name="Overlay" />
+      </Style>
+      <Style Name="Hovered" AnimationToPlayOnBegin="HoverAnimation">
+        <BrushLayer Name="Default" ColorFactor="1.25" />
+        <BrushLayer Name="Overlay" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="0.75" />
+        <BrushLayer Name="Overlay" />
+      </Style>
+      <Style Name="Disabled" FontColor="#FAF4DEAA">
+        <BrushLayer Name="Default" ColorFactor="0.30" />
+        <BrushLayer Name="Overlay" />
+      </Style>
+    </Styles>
+    <Animations>
+      <Animation Name="HoverAnimation" Duration="20.0" Loop="true">
+        <AnimationProperty LayerName="Default" PropertyName="ColorFactor">
+          <KeyFrame Time="0" Value="1.25" />
+        </AnimationProperty>
+        <AnimationProperty LayerName="Default" PropertyName="OverlayXOffset">
+          <KeyFrame Time="0" Value="0" />
+          <KeyFrame Time="10" Value="512" />
+          <KeyFrame Time="20" Value="1024" />
+        </AnimationProperty>
+        <AnimationProperty LayerName="Default" PropertyName="OverlayYOffset">
+          <KeyFrame Time="0" Value="0" />
+          <KeyFrame Time="20" Value="512" />
+        </AnimationProperty>
+      </Animation>
+    </Animations>
+  </Brush>
+  <Brush Name="ButtonSimpleBrush" FontColor="#FAF4DEFF">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="BlankWhiteSquare_9" Color="#FFFFFFFF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#FAF4DEFF" TextOutlineColor="#FAF4DEFF">
+        <BrushLayer Name="Default" ColorFactor="0.5" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="1.5" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="0.3" />
+      </Style>
+      <Style Name="Disabled" FontColor="#FAF4DE77" TextOutlineColor="#FAF4DE55">
+        <BrushLayer Name="Default" ColorFactor="0.2" />
+      </Style>
+      <Style Name="Selected" FontColor="#0099FFFF" TextOutlineColor="#FAF4DE55">
+        <BrushLayer Name="Default" ColorFactor="2.0" Color="#0099FFFF" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="ClassSelectionButton">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="MapMenuButtonHighlight@2x" Color="#FFFFFFFF" FontColor="#FFFFFFFF" IsHidden="true" />
+      <BrushLayer Name="Disabled" Sprite="MapMenuButtonHighlight@2x" Color="#555555FF" FontColor="#555555FF" IsHidden="true" />
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#FFFFFFFF">
+        <BrushLayer Name="Default" ColorFactor="0.0" Color="#FFFFFF00" IsHidden="false" />
+      </Style>
+      <Style Name="Disabled" FontColor="#999999FF">
+        <BrushLayer Name="Disabled" ColorFactor="0.0" Color="#FFFFFF00" IsHidden="false" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="0.8" Color="#FFFFFFFF" IsHidden="false" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="1.0" Color="#FFFFFFFF" IsHidden="false" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="ClassSelectionGoldBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="Icons\Coin@2x" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" ColorFactor="1.0" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" ColorFactor="0.4" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="MapBarButton">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="MapMenuButtonHighlight@2x" Color="#FFFFFFFF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" ColorFactor="0.0" Color="#FFFFFF00" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="1.0" Color="#FFFFFFFF" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="ButtonGroupExpandOpened">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="SPParty\GroupExpandCollapseButton@2x" Color="#FFFFFFFF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#000000FF" />
+    </Styles>
+  </Brush>
+  <Brush Name="CompassIconBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="" ColorFactor="1" Color="#FFFFFFFF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="ButtonGreenBrush" FontColor="#FAF4DEFF">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="button_canvas_9" OverlayMethod="CoverWithTexture" OverlaySprite="button_marble" Color="#40EF40FF" />
+      <BrushLayer Name="Overlay" Sprite="button_frame_9" />
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#FAF4DEFF">
+        <BrushLayer Name="Default" ColorFactor="1.0" Color="#40EF40FF" />
+        <BrushLayer Name="Overlay" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="1.25" Color="#40EF40FF" />
+        <BrushLayer Name="Overlay" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="0.75" Color="#40EF40FF" />
+        <BrushLayer Name="Overlay" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="ButtonGoldBrush" FontColor="#FAF4DEFF">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="button_canvas_9" OverlayMethod="CoverWithTexture" OverlaySprite="button_marble" Color="#FFDF00FF" />
+      <BrushLayer Name="Overlay" Sprite="button_frame_9" />
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#FAF4DEFF">
+        <BrushLayer Name="Default" ColorFactor="1.0" Color="#FFDF00FF" />
+        <BrushLayer Name="Overlay" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="1.25" Color="#FFDF00FF" />
+        <BrushLayer Name="Overlay" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="0.75" Color="#FFDF00FF" />
+        <BrushLayer Name="Overlay" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="ButtonTalkBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="Icons\Talk@2x" Color="#FFFFFFFF" />
+      <BrushLayer Name="Hovered" Sprite="Icons\Talk@2x" Color="#FFFFFFFF" />
+      <BrushLayer Name="Pressed" Sprite="Icons\Talk@2x" Color="#FFFFFFFF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#FAF4DEFF">
+        <BrushLayer Name="Hovered" IsHidden="true" />
+        <BrushLayer Name="Pressed" IsHidden="true" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" IsHidden="true" />
+        <BrushLayer Name="Pressed" IsHidden="true" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" IsHidden="true" />
+        <BrushLayer Name="Hovered" IsHidden="true" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="WhiteSquareBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="BlankWhiteSquare" Color="#FFFFFFFF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#FFFFFFFF">
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="ScoreboardFontBrush">
+    <Layers>
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#FFFFFFFF" FontSize="24" />
+    </Styles>
+  </Brush>
+  <Brush Name="ScoreboardEntryFontBrush" TextHorizontalAlignment="Left">
+    <Layers>
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#FFFFFFFF" TextGlowColor="#e4e4e4FF" TextOutlineColor="#FFFFFFFF" TextOutlineAmount="0" TextGlowRadius="0" FontSize="24" />
+    </Styles>
+  </Brush>
+  <Brush Name="ScoreboardPanels_2" TextHorizontalAlignment="Center">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="HintBG@2x_9" Color="#FFFFFFFF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#FAF4DEFF" FontSize="30">
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="FillBarBrush">
+    <Layers>
+      <BrushLayer Name="EmptyFill" Sprite="HintBG@2x_9" ColorFactor="0.8" Color="#808080FF" />
+      <BrushLayer Name="DefaultFill" Sprite="HintBG@2x_9" ColorFactor="1" Color="#FFFFFFFF" />
+      <BrushLayer Name="ChangeFill" Sprite="HintBG@2x_9" ColorFactor="1.5" Color="#00FF00FF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="ButtonCancelBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\CancelButton@2x" IsHidden="false" />
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#FAF4DEFF">
+        <BrushLayer Name="Default" ColorFactor="1" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="1.5" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="2" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="RelationBackgroundBrush">
+    <Layers>
+      <BrushLayer Name="Disabled" Sprite="MapOverlay\notables_slots_neutral_state" Color="#FFFFFFFF" IsHidden="true" />
+      <BrushLayer Name="MainHero" Sprite="MapOverlay\notables_slots_player_state" Color="#FFFFFFFF" IsHidden="true" />
+      <BrushLayer Name="Neutral" Sprite="MapOverlay\notables_slots_neutral_state" Color="#FFFFFFFF" IsHidden="true" />
+      <BrushLayer Name="Enemy_1" Sprite="MapOverlay\notables_slots_enemy_state1_right" Color="#FFFFFFFF" IsHidden="true" />
+      <BrushLayer Name="Enemy_2" Sprite="MapOverlay\notables_slots_enemy_state2_right" Color="#FFFFFFFF" IsHidden="true" />
+      <BrushLayer Name="Enemy_3" Sprite="MapOverlay\notables_slots_enemy_state3_right" Color="#FFFFFFFF" IsHidden="true" />
+      <BrushLayer Name="Ally_1" Sprite="MapOverlay\notables_slots_ally_state1_right" Color="#FFFFFFFF" IsHidden="true" />
+      <BrushLayer Name="Ally_2" Sprite="MapOverlay\notables_slots_ally_state2_right" Color="#FFFFFFFF" IsHidden="true" />
+      <BrushLayer Name="Ally_3" Sprite="MapOverlay\notables_slots_ally_state3_right" Color="#FFFFFFFF" IsHidden="true" />
+    </Layers>
+    <Styles>
+      <Style Name="Disabled">
+        <BrushLayer Name="Disabled" IsHidden="false" />
+      </Style>
+      <Style Name="MainHero">
+        <BrushLayer Name="MainHero" IsHidden="false" />
+      </Style>
+      <Style Name="Neutral">
+        <BrushLayer Name="Neutral" IsHidden="false" />
+      </Style>
+      <Style Name="Enemy_3">
+        <BrushLayer Name="Enemy_3" IsHidden="false" />
+      </Style>
+      <Style Name="Enemy_2">
+        <BrushLayer Name="Enemy_2" IsHidden="false" />
+      </Style>
+      <Style Name="Enemy_1">
+        <BrushLayer Name="Enemy_1" IsHidden="false" />
+      </Style>
+      <Style Name="Ally_1">
+        <BrushLayer Name="Ally_1" IsHidden="false" />
+      </Style>
+      <Style Name="Ally_2">
+        <BrushLayer Name="Ally_2" IsHidden="false" />
+      </Style>
+      <Style Name="Ally_3">
+        <BrushLayer Name="Ally_3" IsHidden="false" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="ButtonLeftArrowBrush" FontColor="#000000FF">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\LeftArrow@2x" Color="#FFFFFFFF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#FAF4DEFF">
+        <BrushLayer Name="Default" ColorFactor="1.0" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="1.5" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="0.85" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="ButtonGreenLeftArrowBrush" FontColor="#000000FF">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\LeftArrowFilledGreen@2x" Color="#FFFFFFFF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#FAF4DEFF">
+        <BrushLayer Name="Default" ColorFactor="1.0" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="1.5" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="0.85" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="ButtonFavouriteStarBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\FavouriteStarEmpty" IsHidden="true" />
+      <BrushLayer Name="Selected" Sprite="StdAssets\FavouriteStarFull" IsHidden="true" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" IsHidden="false" />
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Selected" IsHidden="false" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="Shield">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="Disabled" OverlayMethod="CoverWithTexture" OverlayYOffset="35" OverlayXOffset="26" />
+    </Layers>
+    <Styles>
+    </Styles>
+  </Brush>
+  <Brush Name="CustomBattleSearchResult.Text" Font="FiraSansExtraCondensed-Regular" TextHorizontalAlignment="Left" BaseBrush="Info.Text">
+    <Layers>
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#E1E1E1FF" TextGlowColor="#000000FF" TextOutlineColor="#FFFFFF00" TextOutlineAmount="0" TextGlowRadius="0" TextBlur="0" FontSize="30" />
+    </Styles>
+  </Brush>
+  <Brush Name="CustomBattle.Title.Text" Font="FiraSansExtraCondensed-Regular" TextHorizontalAlignment="Left" BaseBrush="Info.Text">
+    <Layers>
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#E1E1E1FF" TextGlowColor="#000000FF" TextOutlineColor="#FFFFFF00" TextOutlineAmount="0" TextGlowRadius="0" TextBlur="0" FontSize="50" />
+    </Styles>
+  </Brush>
+  <Brush Name="CustomBattle.Search.TextBox" Font="FiraSansExtraCondensed-Regular" TextHorizontalAlignment="Left" BaseBrush="DefaultHighlightableTextBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="BlankWhiteSquare_9" />
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#E1E1E1FF" TextGlowColor="#000000FF" TextOutlineColor="#FFFFFF00" TextOutlineAmount="0" TextGlowRadius="0" TextBlur="0" FontSize="22">
+        <BrushLayer Name="Default" Color="#CCCCCC00" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" Color="#CCCCCC11" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" Color="#CCCCCC11" />
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Default" Color="#CCCCCC22" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" Color="#00000022" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="Standard.Background.Brush">
+    <Layers>
+      <BrushLayer Name="Default" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" Sprite="background_1" />
+      </Style>
+      <Style Name="1">
+        <BrushLayer Name="Default" Sprite="background_1" />
+      </Style>
+      <Style Name="2">
+        <BrushLayer Name="Default" Sprite="background_2" />
+      </Style>
+      <Style Name="3">
+        <BrushLayer Name="Default" Sprite="background_3" />
+      </Style>
+      <Style Name="4">
+        <BrushLayer Name="Default" Sprite="background_4" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="PreAlpha.Text">
+    <Layers>
+      <BrushLayer Name="Default" />
+    </Layers>
+    <Styles>
+      <Style Name="Default" Font="FiraSansExtraCondensed-Regular" FontColor="#FFFFFFFF" TextGlowColor="#000000FF" TextOutlineColor="#FFFFFF00" TextOutlineAmount="0" TextGlowRadius="0" TextBlur="0" FontSize="22" />
+    </Styles>
+  </Brush>
+  <Brush Name="Item.Type.Icon.BaseBrush">
+    <Layers>
+      <BrushLayer Name="Default" IsHidden="true" />
+      <BrushLayer Name="Selected" IsHidden="true" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" IsHidden="false" />
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Selected" IsHidden="false" Color="#FEC157FF" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="1.3" IsHidden="false"/>
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" ColorFactor="0.2" IsHidden="false"/>
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="0.8" IsHidden="false" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="Item.Type.Icon.None">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="RadialMenu\cancel" IsHidden="true" />
+      <BrushLayer Name="Selected"  Sprite="RadialMenu\cancel" IsHidden="true" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" IsHidden="false" Color="#B84139FF" ColorFactor="2"/>
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Selected" IsHidden="false" Color="#B84139FF" ColorFactor="2.6"/>
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="1.3" IsHidden="false"/>
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" ColorFactor="0.2" IsHidden="false"/>
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="0.8" IsHidden="false" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="Item.Type.Icon.Ammo" BaseBrush="Item.Type.Icon.BaseBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\ItemIcons\Ammo" IsHidden="true" />
+      <BrushLayer Name="Selected"  Sprite="StdAssets\ItemIcons\Ammo_selected" IsHidden="true" />
+    </Layers>
+  </Brush>
+  <Brush Name="Item.Type.Icon.Axe" BaseBrush="Item.Type.Icon.BaseBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\ItemIcons\Axe" IsHidden="true" />
+      <BrushLayer Name="Selected"  Sprite="StdAssets\ItemIcons\Axe_selected" IsHidden="true" />
+    </Layers>
+  </Brush>
+  <Brush Name="Item.Type.Icon.Bow" BaseBrush="Item.Type.Icon.BaseBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\ItemIcons\Bow" IsHidden="true" />
+      <BrushLayer Name="Selected"  Sprite="StdAssets\ItemIcons\Bow_selected" IsHidden="true" />
+    </Layers>
+  </Brush>
+  <Brush Name="Item.Type.Icon.Crossbow" BaseBrush="Item.Type.Icon.BaseBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\ItemIcons\Crossbow" IsHidden="true" />
+      <BrushLayer Name="Selected"  Sprite="StdAssets\ItemIcons\Crossbow_selected" IsHidden="true" />
+    </Layers>
+  </Brush>
+  <Brush Name="Item.Type.Icon.Javelin" BaseBrush="Item.Type.Icon.BaseBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\ItemIcons\Javelin" IsHidden="true" />
+      <BrushLayer Name="Selected"  Sprite="StdAssets\ItemIcons\Javelin_selected" IsHidden="true" />
+    </Layers>
+  </Brush>
+  <Brush Name="Item.Type.Icon.Mace" BaseBrush="Item.Type.Icon.BaseBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\ItemIcons\Mace" IsHidden="true" />
+      <BrushLayer Name="Selected"  Sprite="StdAssets\ItemIcons\Mace_selected" IsHidden="true" />
+    </Layers>
+  </Brush>
+  <Brush Name="Item.Type.Icon.Mount" BaseBrush="Item.Type.Icon.BaseBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\ItemIcons\Mount" IsHidden="true" />
+      <BrushLayer Name="Selected"  Sprite="StdAssets\ItemIcons\Mount_selected" IsHidden="true" />
+    </Layers>
+  </Brush>
+  <Brush Name="Item.Type.Icon.Shield" BaseBrush="Item.Type.Icon.BaseBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\ItemIcons\Shield" IsHidden="true" />
+      <BrushLayer Name="Selected"  Sprite="StdAssets\ItemIcons\Shield_Icon" IsHidden="true" />
+    </Layers>
+  </Brush>
+  <Brush Name="Item.Type.Icon.Spear" BaseBrush="Item.Type.Icon.BaseBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\ItemIcons\Spear" IsHidden="true" />
+      <BrushLayer Name="Selected"  Sprite="StdAssets\ItemIcons\Spear_selected" IsHidden="true" />
+    </Layers>
+  </Brush>
+  <Brush Name="Item.Type.Icon.Sword" BaseBrush="Item.Type.Icon.BaseBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\ItemIcons\Sword" IsHidden="true" />
+      <BrushLayer Name="Selected"  Sprite="StdAssets\ItemIcons\Sword_selected" IsHidden="true" />
+    </Layers>
+  </Brush>
+  <Brush Name="Item.Type.Icon.ThrowingAxe" BaseBrush="Item.Type.Icon.BaseBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\ItemIcons\ThrowingAxe" IsHidden="true" />
+      <BrushLayer Name="Selected"  Sprite="StdAssets\ItemIcons\ThrowingAxe_selected" IsHidden="true" />
+    </Layers>
+  </Brush>
+  <Brush Name="Item.Type.Icon.ThrowingKnife" BaseBrush="Item.Type.Icon.BaseBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\ItemIcons\ThrowingKnife" IsHidden="true" />
+      <BrushLayer Name="Selected"  Sprite="StdAssets\ItemIcons\ThrowingKnife_selected" IsHidden="true" />
+    </Layers>
+  </Brush>
+  <Brush Name="Item.Type.Icon.Banner" BaseBrush="Item.Type.Icon.BaseBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\ItemIcons\Banner" IsHidden="true" />
+      <BrushLayer Name="Selected"  Sprite="StdAssets\ItemIcons\Banner_selected" IsHidden="true" />
+    </Layers>
+  </Brush>
+  <Brush Name="Item.Type.Icon.PickUp" BaseBrush="Item.Type.Icon.BaseBrush">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\ItemIcons\pickup_hand" IsHidden="true" />
+      <BrushLayer Name="Selected"  Sprite="StdAssets\ItemIcons\pickup_hand" IsHidden="true" />
+    </Layers>
+  </Brush>
+  <Brush Name="FactionBanner.Small.Flag">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\banner_flat_small" AlphaFactor="0.8" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="FactionBanner.Small.Icon">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\banner_flat_small" AlphaFactor="0.9" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="RefreshButton.Flat" TransitionDuration="0.3">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\button_refresh_flat" />
+      <BrushLayer Name="HoverLayer" Sprite="StdAssets\button_refresh_hover_flat" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" AlphaFactor="0.8" />
+        <BrushLayer Name="HoverLayer" AlphaFactor="0" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" AlphaFactor="0" />
+        <BrushLayer Name="HoverLayer" AlphaFactor="1" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" AlphaFactor="0" />
+        <BrushLayer Name="HoverLayer" AlphaFactor="0.8" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" AlphaFactor="0.8" ColorFactor="0.6" />
+        <BrushLayer Name="HoverLayer" AlphaFactor="0" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="CloseButton.Flat">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\close_button_flat" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" Sprite="StdAssets\close_button_flat" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" Sprite="StdAssets\close_button_hover_flat" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" Sprite="StdAssets\close_button_hover_flat" ColorFactor="0.6" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" Sprite="StdAssets\close_button_flat" SaturationFactor="-50" ValueFactor="-50" />
+      </Style>
+    </Styles>
+  </Brush>
+  <Brush Name="WideButton.Flat">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="StdAssets\button_wide_flat" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" Sprite="StdAssets\button_wide_flat" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" Sprite="StdAssets\button_wide_hover_flat" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" Sprite="StdAssets\button_wide_hover_flat" ColorFactor="0.6" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" Sprite="StdAssets\button_wide_flat" SaturationFactor="-50" ValueFactor="-50" />
       </Style>
     </Styles>
   </Brush>

@@ -10,6 +10,16 @@ namespace RBM.AgentStatusBar
 
         private int _maxHealth;
 
+        private int _posture;
+
+        private int _maxPosture = 100;
+
+        private int _stamina;
+
+        private int _maxStamina = 1500;
+
+        private bool _showStance;
+
         private Vec2 _position;
 
         private float _distance;
@@ -231,6 +241,91 @@ namespace RBM.AgentStatusBar
                 {
                     _maxHealth = value;
                     OnPropertyChanged("MaxHealth");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public int Posture
+        {
+            get
+            {
+                return _posture;
+            }
+            set
+            {
+                if (_posture != value)
+                {
+                    _posture = value;
+                    OnPropertyChanged("Posture");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public int MaxPosture
+        {
+            get
+            {
+                return _maxPosture;
+            }
+            set
+            {
+                if (_maxPosture != value)
+                {
+                    _maxPosture = value;
+                    OnPropertyChanged("MaxPosture");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public int Stamina
+        {
+            get
+            {
+                return _stamina;
+            }
+            set
+            {
+                if (_stamina != value)
+                {
+                    _stamina = value;
+                    OnPropertyChanged("Stamina");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public int MaxStamina
+        {
+            get
+            {
+                return _maxStamina;
+            }
+            set
+            {
+                if (_maxStamina != value)
+                {
+                    _maxStamina = value;
+                    OnPropertyChanged("MaxStamina");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public bool ShowStance
+        {
+            get
+            {
+                return _showStance;
+            }
+            set
+            {
+                if (_showStance != value)
+                {
+                    _showStance = value;
+                    OnPropertyChanged("ShowStance");
                 }
             }
         }
