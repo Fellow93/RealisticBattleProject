@@ -161,39 +161,37 @@ public class RBMTacticEmbolon : TacticComponent
     {
         float heavyCavCount = 0;
         float cavCount = 0;
-        foreach (Agent agent in Team?.ActiveAgents?.ToList())
+
+        // Iterate cavalry formations only — avoids allocating Team.ActiveAgents.ToList()
+        // (full copy of all agents) and checking formation type per agent.
+        if (Team != null)
         {
-            if (agent.Formation != null && agent.Formation.QuerySystem.IsCavalryFormation)
+            foreach (Formation formation in Team.FormationsIncludingEmpty)
             {
-                if (agent.HasMount)
+                if (formation.CountOfUnits > 0 && formation.QuerySystem.IsCavalryFormation)
                 {
-                    if (agent.Character?.Level >= 21)
+                    formation.ApplyActionOnEachUnitViaBackupList((Agent agent) =>
                     {
-                        if (agent.MountAgent != null)
+                        if (agent.HasMount)
                         {
-                            EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
-                            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+                            if (agent.Character?.Level >= 21 && agent.MountAgent != null)
                             {
-                                if ((float)equipmentElement.GetModifiedArmArmor() > 40f)
+                                EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
+                                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness
+                                    && (float)equipmentElement.GetModifiedArmArmor() > 40f)
                                 {
                                     heavyCavCount++;
                                 }
                             }
                         }
-                    }
-                    cavCount++;
+                    });
                 }
             }
         }
-        if (cavCount > 0 && Team.QuerySystem.CavalryRatio > 0.2f && (float)((float)heavyCavCount / (float)cavCount) >= 0.6f)
-        {
+
+        if (cavCount > 0 && Team.QuerySystem.CavalryRatio > 0.2f && heavyCavCount / cavCount >= 0.6f)
             return 5f;
-        }
         else
-        {
             return 0.01f;
-        }
-        //float num = team.QuerySystem.RangedCavalryRatio * (float)team.QuerySystem.MemberCount;
-        //return team.QuerySystem.CavalryRatio * (float)team.QuerySystem.MemberCount / ((float)team.QuerySystem.MemberCount - num) * MathF.Sqrt(team.QuerySystem.RemainingPowerRatio);
     }
 }

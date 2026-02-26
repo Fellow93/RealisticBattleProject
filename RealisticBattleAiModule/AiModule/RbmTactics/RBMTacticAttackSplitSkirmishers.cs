@@ -14,155 +14,87 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 
     protected void AssignTacticFormations()
     {
-        int skirmIndex = -1;
         ManageFormationCounts(2, 1, 2, 1);
-        IEnumerable<Formation> nonEmptyFormations = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0);
+
+        // Materialize immediately — lazy re-evaluation after agent moves gives inconsistent results
+        List<Formation> nonEmptyFormations = FormationsIncludingEmpty
+            .Where((Formation f) => f.CountOfUnits > 0).ToList();
+
         _mainInfantry = ChooseAndSortByPriority(nonEmptyFormations, (Formation f) => f.QuerySystem.IsInfantryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
+        _skirmishers = null;
+
         if (_mainInfantry != null)
         {
             _mainInfantry.AI.IsMainFormation = true;
             _mainInfantry.AI.Side = FormationAI.BehaviorSide.Middle;
 
-            List<Agent> skirmishersList = new List<Agent>();
-            List<Agent> meleeList = new List<Agent>();
+            // ManageFormationCounts(2,...) reserves two infantry slots (indices 0 and 1).
+            // The second slot is often empty (all units share FormationClass.Infantry and land in slot 0).
+            // We must search FormationsIncludingEmpty — not just non-empty formations — to find it.
+            Formation skirmisherSlot = FormationsIncludingEmpty
+                .Take(2)   // indices 0 and 1 are the two infantry slots
+                .FirstOrDefault((Formation f) => f != _mainInfantry && f.IsAIControlled);
 
-            _mainInfantry.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+            if (skirmisherSlot != null)
             {
-                bool isSkirmisher = false;
-                //for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-                //{
-                //	if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
-                //	{
-                //		if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown)
-                //		{
-                //			isSkirmisher = true;
-                //			break;
-                //		}
-                //	}
-                //}
+                // Collect agents from the two known infantry slots directly.
+                // Avoid IsInfantryFormation check — QuerySystem can be stale right after
+                // ManageFormationCounts, causing the main slot to be skipped and giving a
+                // near-empty allInfantry list (which shrinks skirmTarget to 1–2).
+                List<Agent> allInfantry = new List<Agent>();
+                _mainInfantry.ApplyActionOnEachUnitViaBackupList((Agent a) => allInfantry.Add(a));
+                if (skirmisherSlot.CountOfUnits > 0)
+                    skirmisherSlot.ApplyActionOnEachUnitViaBackupList((Agent a) => allInfantry.Add(a));
 
-                if (RBMAI.Utilities.CheckIfSkirmisherAgent(agent))
+                // Separate actual skirmishers (javelin users) from melee
+                List<Agent> skirmishersList = new List<Agent>();
+                List<Agent> meleeList = new List<Agent>();
+                foreach (Agent agent in allInfantry)
                 {
-                    isSkirmisher = true;
+                    if (RBMAI.Utilities.CheckIfSkirmisherAgent(agent))
+                        skirmishersList.Add(agent);
+                    else
+                        meleeList.Add(agent);
                 }
 
-                if (isSkirmisher)
-                {
-                    skirmishersList.Add(agent);
-                }
-                else
-                {
-                    meleeList.Add(agent);
-                }
-            });
+                // Sort weakest first — skirmisher slot gets actual skirmishers,
+                // padded with the weakest melee up to 25 % of total infantry.
+                skirmishersList = skirmishersList.OrderBy((Agent o) => o.CharacterPowerCached).ToList();
+                meleeList = meleeList.OrderBy((Agent o) => o.CharacterPowerCached).ToList();
 
-            int i = 0;
-            foreach (Formation formation in nonEmptyFormations.ToList())
-            {
-                formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+                int totalCount = allInfantry.Count;
+                int skirmTarget = Math.Max(1, totalCount / 4);
+
+                int assigned = 0;
+                foreach (Agent agent in skirmishersList)
                 {
-                    if (i != 0 && formation.QuerySystem.IsInfantryFormation)
+                    if (assigned < skirmTarget)
                     {
-                        bool isSkirmisher = false;
-                        //for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-                        //{
-                        //	if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
-                        //	{
-                        //		if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown)
-                        //		{
-                        //			isSkirmisher = true;
-                        //			break;
-                        //		}
-                        //	}
-                        //}
-
-                        if (RBMAI.Utilities.CheckIfSkirmisherAgent(agent, 2))
-                        {
-                            isSkirmisher = true;
-                        }
-
-                        if (isSkirmisher)
-                        {
-                            skirmishersList.Add(agent);
-                        }
-                        else
-                        {
-                            meleeList.Add(agent);
-                        }
-                        skirmIndex = i;
-                    }
-                });
-                i++;
-            }
-
-            //Formations.ToList()[1].ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
-            //{
-            //	bool isSkirmisher = false;
-            //	//for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-            //	//{
-            //	//	if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty)
-            //	//	{
-            //	//		if (agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Thrown)
-            //	//		{
-            //	//			isSkirmisher = true;
-            //	//			break;
-            //	//		}
-            //	//	}
-            //	//}
-
-            //	if (agent.HasThrownCached)
-            //	{
-            //		isSkirmisher = true;
-            //	}
-
-            //	if (isSkirmisher)
-            //	{
-            //		skirmishersList.Add(agent);
-            //	}
-            //	else
-            //	{
-            //		meleeList.Add(agent);
-            //	}
-            //});
-
-            skirmishersList = skirmishersList.OrderBy(o => o.CharacterPowerCached).ToList();
-            if (skirmIndex != -1)
-            {
-                List<Formation> nonEmptyList = nonEmptyFormations.ToList();
-                int j = 0;
-                int infCount = nonEmptyList[0].CountOfUnits + nonEmptyList[skirmIndex].CountOfUnits;
-                foreach (Agent agent in skirmishersList.ToList())
-                {
-                    if (j < infCount / 4f)
-                    {
-                        agent.Formation = nonEmptyList[skirmIndex];
+                        agent.Formation = skirmisherSlot;
+                        assigned++;
                     }
                     else
                     {
-                        agent.Formation = nonEmptyList[0];
+                        agent.Formation = _mainInfantry;
                     }
-                    j++;
+                }
+                int fillCount = Math.Max(0, skirmTarget - assigned);
+                for (int j = 0; j < meleeList.Count; j++)
+                {
+                    meleeList[j].Formation = (j < fillCount) ? skirmisherSlot : _mainInfantry;
                 }
 
-                foreach (Agent agent in meleeList.ToList())
-                {
-                    if (j < infCount / 4f)
-                    {
-                        agent.Formation = nonEmptyList[skirmIndex];
-                    }
-                    else
-                    {
-                        agent.Formation = nonEmptyList[0];
-                    }
-                    j++;
-                }
-                if (skirmIndex < nonEmptyList.Count)
-                {
-                    this.Team.TriggerOnFormationsChanged(nonEmptyList[skirmIndex]);
-                    this.Team.TriggerOnFormationsChanged(nonEmptyList[0]);
-                }
+                _skirmishers = skirmisherSlot;
+                _skirmishers.AI.IsMainFormation = false;
+
+                this.Team.TriggerOnFormationsChanged(skirmisherSlot);
+                this.Team.TriggerOnFormationsChanged(_mainInfantry);
             }
         }
+
+        // Re-query after agent moves so cavalry/archer picks reflect current state
+        nonEmptyFormations = FormationsIncludingEmpty
+            .Where((Formation f) => f.CountOfUnits > 0).ToList();
 
         _archers = ChooseAndSortByPriority(nonEmptyFormations, (Formation f) => f.QuerySystem.IsRangedFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
         List<Formation> list = ChooseAndSortByPriority(nonEmptyFormations, (Formation f) => f.QuerySystem.IsCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower);
@@ -186,23 +118,6 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
             _rightCavalry = null;
         }
         _rangedCavalry = ChooseAndSortByPriority(nonEmptyFormations, (Formation f) => f.QuerySystem.IsRangedCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
-
-        List<Formation> nonEmptyListPost = nonEmptyFormations.ToList();
-        if (skirmIndex != -1 && nonEmptyListPost.Count > skirmIndex && nonEmptyListPost[skirmIndex].QuerySystem.IsInfantryFormation)
-        {
-            _skirmishers = nonEmptyListPost[skirmIndex];
-            _skirmishers.AI.IsMainFormation = false;
-        }
-        //if (_skirmishers != null)
-        //{
-        //_skirmishers.AI.Side = FormationAI.BehaviorSide.BehaviorSideNotSet;
-        //_skirmishers.AI.IsMainFormation = false;
-        //_skirmishers.AI.ResetBehaviorWeights();
-        //SetDefaultBehaviorWeights(_skirmishers);
-        //team.ClearRecentlySplitFormations(_skirmishers);
-
-        //_skirmishers = Formations.ToList()[1];
-        //}
 
         IsTacticReapplyNeeded = true;
     }
@@ -416,63 +331,47 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
     protected override float GetTacticWeight()
     {
         float skirmisherCount = 0;
-
-        float allyInfatryPower = 0f;
-        float allyCavalryPower = 0f;
-        float enemyInfatryPower = 0f;
-        float enemyArcherPower = 0f;
+        float allyInfantryPower = 0f;
+        float enemyInfantryPower = 0f;
         int allyInfCount = 0;
 
-        foreach (Team team in Mission.Current.Teams.ToList())
+        // Single pass over all teams — avoids two separate ToList() allocations
+        foreach (Team team in Mission.Current.Teams)
         {
-            if (team.IsEnemyOf(base.Team))
+            bool isEnemy = team.IsEnemyOf(base.Team);
+            foreach (Formation formation in team.FormationsIncludingEmpty)
             {
-                foreach (Formation formation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
+                if (formation.CountOfUnits <= 0 || !formation.QuerySystem.IsInfantryFormation)
+                    continue;
+
+                if (isEnemy)
                 {
-                    if (formation.QuerySystem.IsInfantryFormation)
-                    {
-                        enemyInfatryPower += formation.QuerySystem.FormationPower;
-                    }
-                    //if (formation.QuerySystem.IsRangedFormation)
-                    //{
-                    //    enemyArcherPower += formation.QuerySystem.FormationPower;
-                    //}
+                    enemyInfantryPower += formation.QuerySystem.FormationPower;
+                }
+                else
+                {
+                    allyInfantryPower += formation.QuerySystem.FormationPower;
+                    allyInfCount += formation.CountOfUnits;
                 }
             }
         }
 
-        foreach (Team team in Mission.Current.Teams.ToList())
-        {
-            if (!team.IsEnemyOf(base.Team))
-            {
-                foreach (Formation formation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
-                {
-                    if (formation.QuerySystem.IsInfantryFormation)
-                    {
-                        allyInfatryPower += formation.QuerySystem.FormationPower;
-                        allyInfCount += formation.CountOfUnits;
-                    }
-                    //if (formation.QuerySystem.IsCavalryFormation)
-                    //{
-                    //    allyCavalryPower += formation.QuerySystem.FormationPower;
-                    //}
-                }
-            }
-        }
-
-        if (allyInfatryPower < enemyInfatryPower * 1.25f || allyInfCount < 60)
+        if (allyInfantryPower < enemyInfantryPower * 1.25f || allyInfCount < 60)
         {
             return 0.01f;
         }
 
-        foreach (Agent agent in Team.ActiveAgents.ToList())
+        // Count skirmishers by iterating infantry formations only — avoids allocating
+        // Team.ActiveAgents.ToList() (large copy) and checking IsInfantryFormation per agent.
+        foreach (Formation formation in base.Team.FormationsIncludingEmpty)
         {
-            if (agent.Formation != null && agent.Formation.QuerySystem.IsInfantryFormation)
+            if (formation.CountOfUnits > 0 && formation.QuerySystem.IsInfantryFormation)
             {
-                if (RBMAI.Utilities.CheckIfSkirmisherAgent(agent, 2))
+                formation.ApplyActionOnEachUnitViaBackupList((Agent agent) =>
                 {
-                    skirmisherCount++;
-                }
+                    if (RBMAI.Utilities.CheckIfSkirmisherAgent(agent, 2))
+                        skirmisherCount++;
+                });
             }
         }
 
