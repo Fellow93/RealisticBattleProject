@@ -36,6 +36,7 @@ namespace RBMAI
             public AIDecision currentDecision = AIDecision.Attack;
 
             public Boolean shouldClearTargetFrame = false;
+
             public enum AIDecision
             {
                 Attack,
@@ -143,6 +144,7 @@ namespace RBMAI
                         }
                 }
             }
+
             public void getDecision(out AIDecision decisionType)
             {
                 Dictionary<AIDecision, float> decisionValues = new Dictionary<AIDecision, float>
@@ -200,8 +202,6 @@ namespace RBMAI
             return MathF.Min(max, count);
         }
 
-
-
         [HarmonyPatch(typeof(Formation))]
         private class OverrideFormation
         {
@@ -240,7 +240,6 @@ namespace RBMAI
             [HarmonyPatch("GetOrderPositionOfUnit")]
             private static bool PrefixGetOrderPositionOfUnit(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ____detachedUnits, ref WorldPosition __result)
             {
-
                 Mission mission = Mission.Current;
 
                 if (unit == null || !unit.IsActive() || mission == null || !mission.IsDeploymentFinished || unit.IsPlayerControlled)
@@ -464,7 +463,7 @@ namespace RBMAI
 
                         float findAlly = (alliesFrontCount * 0.5f) + (enemiesFrontCount) - alliesRightCount - alliesLeftCount + (enemiesFrontCount > 0 && (alliesRightCount < 2 || alliesLeftCount < 2) ? 3 : 0);
                         float fallback = (alliesFrontCount) + enemiesFrontCount;
-                        float attack = -(alliesFrontCount * 0.5f) + alliesLeftCount + alliesRightCount - enemiesFrontCount + (isSoldier ? 0 : 2) + (isHero ? -3 : 0);//+ Math.Max(0, 3 - (unitTier)) 
+                        float attack = -(alliesFrontCount * 0.5f) + alliesLeftCount + alliesRightCount - enemiesFrontCount + (isSoldier ? 0 : 2) + (isHero ? -3 : 0);//+ Math.Max(0, 3 - (unitTier))
                         float flankAllyLeft = (alliesFrontCount * 1.25f) + (alliesRightCount) - (alliesLeftCount) - enemiesFrontCount;
                         float flankAllyRight = (alliesFrontCount * 1.25f) + (alliesLeftCount) - (alliesRightCount) - enemiesFrontCount;
 
@@ -619,7 +618,6 @@ namespace RBMAI
                                     return false;
                                 }
                         }
-
                     }
                 }
 
@@ -715,7 +713,7 @@ namespace RBMAI
                 return;
             }
             MovementOrderEnum orderType = ___Agent.Formation.GetReadonlyMovementOrderReference().OrderEnum;
-            if (___Agent.Controller == AgentControllerType.AI && orderType == MovementOrderEnum.Move)
+            if (___Agent.Controller == AgentControllerType.AI && orderType == MovementOrderEnum.Move && ___Agent.Formation.ArrangementOrder != ArrangementOrder.ArrangementOrderColumn)
             {
                 PropertyInfo propertyShouldCatchUpWithFormation = typeof(HumanAIComponent).GetProperty("ShouldCatchUpWithFormation");
                 propertyShouldCatchUpWithFormation.DeclaringType.GetProperty("ShouldCatchUpWithFormation");
