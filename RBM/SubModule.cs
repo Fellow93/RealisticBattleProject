@@ -160,6 +160,10 @@ namespace RBM
         public override void OnMissionBehaviorInitialize(Mission mission)
         {
             mission.AddMissionBehavior(new UnitStatusMissionView());
+            if (RBMConfig.RBMConfig.hitStopEnabled)
+            {
+                mission.AddMissionBehavior((MissionBehavior)(object)new RBMAI.HitStopLogic());
+            }
             Game.Current.GameTextManager.LoadGameTexts();
             if (RBMConfig.RBMConfig.developerMode)
             {

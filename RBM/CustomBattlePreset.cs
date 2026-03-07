@@ -42,11 +42,13 @@ namespace RBM
     {
         // Game type
         public static int GameTypeIndex;
+
         public static int PlayerTypeIndex;
         public static int PlayerSideIndex;
 
         // Map
         public static string MapId = "";
+
         public static int SeasonIndex;
         public static int TimeOfDayIndex;
         public static int SceneLevelIndex;
@@ -55,6 +57,7 @@ namespace RBM
 
         // Player side
         public static string PlayerFactionId = "";
+
         public static string PlayerCharacterId = "";
         public static int PlayerArmySize = 100;
         public static int[] PlayerComposition = { 25, 25, 25, 25 };
@@ -65,6 +68,7 @@ namespace RBM
 
         // Enemy side
         public static string EnemyFactionId = "";
+
         public static string EnemyCharacterId = "";
         public static int EnemyArmySize = 100;
         public static int[] EnemyComposition = { 25, 25, 25, 25 };
@@ -75,6 +79,7 @@ namespace RBM
 
         // Siege machines (empty string = empty slot)
         public static string[] AttackerMeleeMachineIds = { "", "", "" };
+
         public static string[] AttackerRangedMachineIds = { "", "", "", "" };
         public static string[] DefenderMachineIds = { "", "", "", "" };
 
@@ -84,7 +89,7 @@ namespace RBM
             typeof(MapSelectionGroupVM).GetProperty("SelectedMap");
 
         private static string SaveFilePath =>
-            Path.Combine(RBMConfig.Utilities.GetConfigFolderPath(), "last_used_custom_battle_preset.xml");
+            Path.Combine(RBMConfig.Utilities.GetCustomGamePresetFolderPath(), "last_used_custom_battle_preset.xml");
 
         // ------------------------------------------------------------------ //
         //  Load / Save                                                         //
@@ -115,19 +120,19 @@ namespace RBM
                 ReadSide(root.SelectSingleNode("PlayerSide"),
                     ref PlayerFactionId, ref PlayerCharacterId, ref PlayerArmySize, PlayerComposition,
                     playerTroops);
-                PlayerTroopsMeleeInfantry  = playerTroops[0] ?? new string[0];
+                PlayerTroopsMeleeInfantry = playerTroops[0] ?? new string[0];
                 PlayerTroopsRangedInfantry = playerTroops[1] ?? new string[0];
-                PlayerTroopsMeleeCavalry   = playerTroops[2] ?? new string[0];
-                PlayerTroopsRangedCavalry  = playerTroops[3] ?? new string[0];
+                PlayerTroopsMeleeCavalry = playerTroops[2] ?? new string[0];
+                PlayerTroopsRangedCavalry = playerTroops[3] ?? new string[0];
 
                 string[][] enemyTroops = new string[4][];
                 ReadSide(root.SelectSingleNode("EnemySide"),
                     ref EnemyFactionId, ref EnemyCharacterId, ref EnemyArmySize, EnemyComposition,
                     enemyTroops);
-                EnemyTroopsMeleeInfantry  = enemyTroops[0] ?? new string[0];
+                EnemyTroopsMeleeInfantry = enemyTroops[0] ?? new string[0];
                 EnemyTroopsRangedInfantry = enemyTroops[1] ?? new string[0];
-                EnemyTroopsMeleeCavalry   = enemyTroops[2] ?? new string[0];
-                EnemyTroopsRangedCavalry  = enemyTroops[3] ?? new string[0];
+                EnemyTroopsMeleeCavalry = enemyTroops[2] ?? new string[0];
+                EnemyTroopsRangedCavalry = enemyTroops[3] ?? new string[0];
 
                 ReadMachineIds(root, "AttackerMeleeMachines", AttackerMeleeMachineIds);
                 ReadMachineIds(root, "AttackerRangedMachines", AttackerRangedMachineIds);
@@ -141,6 +146,7 @@ namespace RBM
             try
             {
                 Directory.CreateDirectory(RBMConfig.Utilities.GetConfigFolderPath());
+                Directory.CreateDirectory(RBMConfig.Utilities.GetCustomGamePresetFolderPath());
 
                 var doc = new XmlDocument();
                 var root = doc.CreateElement("CustomBattlePreset");
@@ -238,19 +244,19 @@ namespace RBM
                 ReadSide(root.SelectSingleNode("PlayerSide"),
                     ref p.PlayerFactionId, ref p.PlayerCharacterId, ref p.PlayerArmySize, p.PlayerComposition,
                     playerTroops);
-                p.PlayerTroopsMeleeInfantry  = playerTroops[0] ?? new string[0];
+                p.PlayerTroopsMeleeInfantry = playerTroops[0] ?? new string[0];
                 p.PlayerTroopsRangedInfantry = playerTroops[1] ?? new string[0];
-                p.PlayerTroopsMeleeCavalry   = playerTroops[2] ?? new string[0];
-                p.PlayerTroopsRangedCavalry  = playerTroops[3] ?? new string[0];
+                p.PlayerTroopsMeleeCavalry = playerTroops[2] ?? new string[0];
+                p.PlayerTroopsRangedCavalry = playerTroops[3] ?? new string[0];
 
                 string[][] enemyTroops = new string[4][];
                 ReadSide(root.SelectSingleNode("EnemySide"),
                     ref p.EnemyFactionId, ref p.EnemyCharacterId, ref p.EnemyArmySize, p.EnemyComposition,
                     enemyTroops);
-                p.EnemyTroopsMeleeInfantry  = enemyTroops[0] ?? new string[0];
+                p.EnemyTroopsMeleeInfantry = enemyTroops[0] ?? new string[0];
                 p.EnemyTroopsRangedInfantry = enemyTroops[1] ?? new string[0];
-                p.EnemyTroopsMeleeCavalry   = enemyTroops[2] ?? new string[0];
-                p.EnemyTroopsRangedCavalry  = enemyTroops[3] ?? new string[0];
+                p.EnemyTroopsMeleeCavalry = enemyTroops[2] ?? new string[0];
+                p.EnemyTroopsRangedCavalry = enemyTroops[3] ?? new string[0];
 
                 ReadMachineIds(root, "AttackerMeleeMachines", p.AttackerMeleeMachineIds);
                 ReadMachineIds(root, "AttackerRangedMachines", p.AttackerRangedMachineIds);
@@ -282,19 +288,19 @@ namespace RBM
                 ReadSideFromVM(vm.PlayerSide,
                     ref p.PlayerFactionId, ref p.PlayerCharacterId, ref p.PlayerArmySize, p.PlayerComposition,
                     playerTroops);
-                p.PlayerTroopsMeleeInfantry  = playerTroops[0] ?? new string[0];
+                p.PlayerTroopsMeleeInfantry = playerTroops[0] ?? new string[0];
                 p.PlayerTroopsRangedInfantry = playerTroops[1] ?? new string[0];
-                p.PlayerTroopsMeleeCavalry   = playerTroops[2] ?? new string[0];
-                p.PlayerTroopsRangedCavalry  = playerTroops[3] ?? new string[0];
+                p.PlayerTroopsMeleeCavalry = playerTroops[2] ?? new string[0];
+                p.PlayerTroopsRangedCavalry = playerTroops[3] ?? new string[0];
 
                 string[][] enemyTroops = new string[4][];
                 ReadSideFromVM(vm.EnemySide,
                     ref p.EnemyFactionId, ref p.EnemyCharacterId, ref p.EnemyArmySize, p.EnemyComposition,
                     enemyTroops);
-                p.EnemyTroopsMeleeInfantry  = enemyTroops[0] ?? new string[0];
+                p.EnemyTroopsMeleeInfantry = enemyTroops[0] ?? new string[0];
                 p.EnemyTroopsRangedInfantry = enemyTroops[1] ?? new string[0];
-                p.EnemyTroopsMeleeCavalry   = enemyTroops[2] ?? new string[0];
-                p.EnemyTroopsRangedCavalry  = enemyTroops[3] ?? new string[0];
+                p.EnemyTroopsMeleeCavalry = enemyTroops[2] ?? new string[0];
+                p.EnemyTroopsRangedCavalry = enemyTroops[3] ?? new string[0];
 
                 ReadMachinesFromVM(vm.AttackerMeleeMachines, p.AttackerMeleeMachineIds);
                 ReadMachinesFromVM(vm.AttackerRangedMachines, p.AttackerRangedMachineIds);
@@ -376,19 +382,19 @@ namespace RBM
                 ReadSideFromVM(vm.PlayerSide,
                     ref PlayerFactionId, ref PlayerCharacterId, ref PlayerArmySize, PlayerComposition,
                     playerTroops);
-                PlayerTroopsMeleeInfantry  = playerTroops[0] ?? new string[0];
+                PlayerTroopsMeleeInfantry = playerTroops[0] ?? new string[0];
                 PlayerTroopsRangedInfantry = playerTroops[1] ?? new string[0];
-                PlayerTroopsMeleeCavalry   = playerTroops[2] ?? new string[0];
-                PlayerTroopsRangedCavalry  = playerTroops[3] ?? new string[0];
+                PlayerTroopsMeleeCavalry = playerTroops[2] ?? new string[0];
+                PlayerTroopsRangedCavalry = playerTroops[3] ?? new string[0];
 
                 string[][] enemyTroops = new string[4][];
                 ReadSideFromVM(vm.EnemySide,
                     ref EnemyFactionId, ref EnemyCharacterId, ref EnemyArmySize, EnemyComposition,
                     enemyTroops);
-                EnemyTroopsMeleeInfantry  = enemyTroops[0] ?? new string[0];
+                EnemyTroopsMeleeInfantry = enemyTroops[0] ?? new string[0];
                 EnemyTroopsRangedInfantry = enemyTroops[1] ?? new string[0];
-                EnemyTroopsMeleeCavalry   = enemyTroops[2] ?? new string[0];
-                EnemyTroopsRangedCavalry  = enemyTroops[3] ?? new string[0];
+                EnemyTroopsMeleeCavalry = enemyTroops[2] ?? new string[0];
+                EnemyTroopsRangedCavalry = enemyTroops[3] ?? new string[0];
 
                 ReadMachinesFromVM(vm.AttackerMeleeMachines, AttackerMeleeMachineIds);
                 ReadMachinesFromVM(vm.AttackerRangedMachines, AttackerRangedMachineIds);

@@ -171,6 +171,7 @@
   <ItemGroup>
     <Compile Include="AiModule\GeneralsAndCaptainsAssignmentLogicPatch.cs" />
     <Compile Include="AiModule\AgentAi.cs" />
+    <Compile Include="AiModule\HitStopLogic.cs" />
     <Compile Include="AiModule\Behaviours.cs" />
     <Compile Include="AiModule\Frontline.cs" />
     <Compile Include="AiModule\Stance\Stance.cs" />

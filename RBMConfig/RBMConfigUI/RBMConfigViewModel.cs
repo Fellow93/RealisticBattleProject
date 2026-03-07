@@ -12,11 +12,17 @@ namespace RBMConfig
         public TextViewModel ThrustModifierText { get; }
         public SelectorVM<SelectorItemVM> ThrustModifier { get; }
 
+        public TextViewModel SneakAttackInstaKillText { get; }
+        public SelectorVM<SelectorItemVM> SneakAttackInstaKill { get; }
+
         public TextViewModel ArmorStatusUIEnabledText { get; }
         public SelectorVM<SelectorItemVM> ArmorStatusUIEnabled { get; }
 
         public TextViewModel RealisticArrowArcText { get; }
         public SelectorVM<SelectorItemVM> RealisticArrowArc { get; }
+
+        public TextViewModel HitStopEnabledText { get; }
+        public SelectorVM<SelectorItemVM> HitStopEnabled { get; }
 
         public TextViewModel PostureSystemEnabledText { get; }
         public SelectorVM<SelectorItemVM> PostureSystemEnabled { get; }
@@ -148,6 +154,15 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
+        public string SneakAttackt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_023}Sneak Attack Insta-Kill").ToString();
+            }
+        }
+
+        [DataSourceProperty]
         public string RealArrowt
         {
             get
@@ -162,6 +177,15 @@ namespace RBMConfig
             get
             {
                 return new TextObject("{=RBM_CON_018}RBM AI").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string HitStopt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_022}Slow Motion in Combat").ToString();
             }
         }
 
@@ -237,6 +261,10 @@ namespace RBMConfig
             BetterArrowVisualsText = new TextViewModel(new TextObject("Better Arrow Visuals"));
             BetterArrowVisuals = new SelectorVM<SelectorItemVM>(betterArrowVisuals, 0, null);
 
+            List<string> sneakAttackInstaKill = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
+            SneakAttackInstaKillText = new TextViewModel(new TextObject("Sneak Attack Insta-Kill"));
+            SneakAttackInstaKill = new SelectorVM<SelectorItemVM>(sneakAttackInstaKill, 0, null);
+
             List<string> armorStatusUIEnabled = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", };
             ArmorStatusUIEnabledText = new TextViewModel(new TextObject("Armor Status GUI"));
             ArmorStatusUIEnabled = new SelectorVM<SelectorItemVM>(armorStatusUIEnabled, 0, null);
@@ -299,6 +327,8 @@ namespace RBMConfig
                 BetterArrowVisuals.SelectedIndex = 0;
             }
 
+            SneakAttackInstaKill.SelectedIndex = RBMConfig.sneakAttackInstaKill ? 1 : 0;
+
             if (RBMConfig.armorStatusUIEnabled)
             {
                 ArmorStatusUIEnabled.SelectedIndex = 1;
@@ -316,6 +346,10 @@ namespace RBMConfig
             {
                 RealisticArrowArc.SelectedIndex = 0;
             }
+
+            List<string> hitStopOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            HitStopEnabledText = new TextViewModel(new TextObject("Slow Motion in Combat"));
+            HitStopEnabled = new SelectorVM<SelectorItemVM>(hitStopOptions, 0, null);
 
             List<string> postureOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             PostureSystemEnabledText = new TextViewModel(new TextObject("Posture System"));
@@ -345,6 +379,8 @@ namespace RBMConfig
             {
                 PlayerPostureMultiplier.SelectedIndex = 2;
             }
+
+            HitStopEnabled.SelectedIndex = RBMConfig.hitStopEnabled ? 1 : 0;
 
             if (RBMConfig.postureEnabled)
             {
@@ -457,6 +493,8 @@ namespace RBMConfig
                 RBMConfig.betterArrowVisuals = true;
             }
 
+            RBMConfig.sneakAttackInstaKill = SneakAttackInstaKill.SelectedIndex == 1;
+
             if (ArmorStatusUIEnabled.SelectedIndex == 0)
             {
                 RBMConfig.armorStatusUIEnabled = false;
@@ -479,6 +517,8 @@ namespace RBMConfig
             RBMConfig.ThrustMagnitudeModifier = newThrustModifier;
             RBMConfig.OneHandedThrustDamageBonus = 1f / newThrustModifier;
             RBMConfig.TwoHandedThrustDamageBonus = 1f / newThrustModifier;
+
+            RBMConfig.hitStopEnabled = HitStopEnabled.SelectedIndex == 1;
 
             if (PostureSystemEnabled.SelectedIndex == 0)
             {

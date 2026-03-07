@@ -363,6 +363,11 @@ namespace RBMAI
                         {
                             ResetPostureForAgent(ref stance, postureResetModifier);
                         }
+                        // Hit stop: player broke an enemy's posture
+                        if (attackerAgent.IsPlayerControlled)
+                        {
+                            HitStopLogic.TriggerPostureBreakHitStop();
+                        }
                     }
                 }
             }
@@ -417,6 +422,11 @@ namespace RBMAI
                             {
                                 ResetPostureForAgent(ref stance, postureResetModifier);
                             }
+                        }
+                        // Hit stop: player's parry/block broke the attacker's posture
+                        if (victimAgent.IsPlayerControlled)
+                        {
+                            HitStopLogic.TriggerPostureBreakHitStop();
                         }
                     }
                 }
@@ -578,6 +588,11 @@ namespace RBMAI
                                 isUnarmedAttack: isUnarmedAttack
                                 );
                         }
+                        // Hit stop: player performed a perfect parry
+                        if (victimAgent.IsPlayerControlled)
+                        {
+                            HitStopLogic.TriggerParryHitStop();
+                        }
                     }
                     //direct hit
                     else if (victimAgent.IsHuman && attackerAgent.IsHuman && collisionData.CollisionResult == CombatCollisionResult.StrikeAgent)
@@ -717,6 +732,11 @@ namespace RBMAI
                                 meleeHitType: MeleeHitType.ShieldParry,
                                 isUnarmedAttack: isUnarmedAttack
                                 );
+                        }
+                        // Hit stop: player performed a perfect shield parry
+                        if (victimAgent.IsPlayerControlled)
+                        {
+                            HitStopLogic.TriggerParryHitStop();
                         }
                     }
                 }

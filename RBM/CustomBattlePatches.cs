@@ -69,6 +69,8 @@ namespace RBM
         private static string ShowSaveDialog()
         {
             string result = null;
+            Directory.CreateDirectory(RBMConfig.Utilities.GetConfigFolderPath());
+            Directory.CreateDirectory(RBMConfig.Utilities.GetCustomGamePresetFolderPath());
             var thread = new Thread(() =>
             {
                 using (var dlg = new SaveFileDialog())
@@ -76,7 +78,7 @@ namespace RBM
                     dlg.Title = "Save Battle Preset";
                     dlg.Filter = "XML Preset|*.xml";
                     dlg.DefaultExt = "xml";
-                    try { dlg.InitialDirectory = RBMConfig.Utilities.GetConfigFolderPath(); } catch { }
+                    try { dlg.InitialDirectory = RBMConfig.Utilities.GetCustomGamePresetFolderPath(); } catch { }
                     if (dlg.ShowDialog() == DialogResult.OK)
                         result = dlg.FileName;
                 }
@@ -90,13 +92,15 @@ namespace RBM
         private static string ShowOpenDialog()
         {
             string result = null;
+            Directory.CreateDirectory(RBMConfig.Utilities.GetConfigFolderPath());
+            Directory.CreateDirectory(RBMConfig.Utilities.GetCustomGamePresetFolderPath());
             var thread = new Thread(() =>
             {
                 using (var dlg = new OpenFileDialog())
                 {
                     dlg.Title = "Load Battle Preset";
                     dlg.Filter = "XML Preset|*.xml";
-                    try { dlg.InitialDirectory = RBMConfig.Utilities.GetConfigFolderPath(); } catch { }
+                    try { dlg.InitialDirectory = RBMConfig.Utilities.GetCustomGamePresetFolderPath(); } catch { }
                     if (dlg.ShowDialog() == DialogResult.OK)
                         result = dlg.FileName;
                 }
