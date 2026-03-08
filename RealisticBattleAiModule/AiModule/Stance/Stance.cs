@@ -230,8 +230,8 @@ namespace RBMAI
         public const float TWOHANDEDSWORD_SWING_COST = -5f;
         public const float TWOHANDEDSWORD_THRUST_COST = -7f;
         public const float TWOHANDEDSWORD_OVERHEAD_COST = -3f;
-        public const float TWOHANDEDSWORD_SWING_DRAIN = +22f;
-        public const float TWOHANDEDSWORD_THRUST_DRAIN = +15f;
+        public const float TWOHANDEDSWORD_SWING_DRAIN = +27f;
+        public const float TWOHANDEDSWORD_THRUST_DRAIN = +25f;
         public const float TWOHANDEDSWORD_OVERHEAD_DRAIN = +29f;
         public const float TWOHANDEDSWORD_BLOCK_COST = -25f;
         public const float TWOHANDEDSWORD_PARRY_COST = -35f;
@@ -256,7 +256,7 @@ namespace RBMAI
         public const float TWOHANDEDAXE_SWING_COST = -2f;
         public const float TWOHANDEDAXE_THRUST_COST = -4f;
         public const float TWOHANDEDAXE_OVERHEAD_COST = +0f;
-        public const float TWOHANDEDAXE_SWING_DRAIN = +18f;
+        public const float TWOHANDEDAXE_SWING_DRAIN = +32f;
         public const float TWOHANDEDAXE_THRUST_DRAIN = +18f;
         public const float TWOHANDEDAXE_OVERHEAD_DRAIN = +32f;
         public const float TWOHANDEDAXE_BLOCK_COST = -20f;
@@ -282,7 +282,7 @@ namespace RBMAI
         public const float TWOHANDEDMACE_SWING_COST = +0f;
         public const float TWOHANDEDMACE_THRUST_COST = -2f;
         public const float TWOHANDEDMACE_OVERHEAD_COST = +2f;
-        public const float TWOHANDEDMACE_SWING_DRAIN = +29f;
+        public const float TWOHANDEDMACE_SWING_DRAIN = +36f;
         public const float TWOHANDEDMACE_THRUST_DRAIN = +22f;
         public const float TWOHANDEDMACE_OVERHEAD_DRAIN = +36f;
         public const float TWOHANDEDMACE_BLOCK_COST = -17f;
@@ -308,7 +308,7 @@ namespace RBMAI
         public const float TWOHANDEDPOLEARM_SWING_COST = -3f;
         public const float TWOHANDEDPOLEARM_THRUST_COST = -5f;
         public const float TWOHANDEDPOLEARM_OVERHEAD_COST = -1f;
-        public const float TWOHANDEDPOLEARM_SWING_DRAIN = +36f;
+        public const float TWOHANDEDPOLEARM_SWING_DRAIN = +29f;
         public const float TWOHANDEDPOLEARM_THRUST_DRAIN = +22f;
         public const float TWOHANDEDPOLEARM_OVERHEAD_DRAIN = +29f;
         public const float TWOHANDEDPOLEARM_BLOCK_COST = -20f;

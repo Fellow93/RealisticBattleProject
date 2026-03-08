@@ -307,6 +307,11 @@
 	<string id="RBM_SHI_051" text="Highland Skirmisher Shield" />
 	<string id="RBM_SHI_052" text="Iron Reinforced Highland Skirmisher Shield" />
 	<string id="RBM_SHI_053" text="Bronze Reinforced Highland Skirmisher Shield" />
+	<string id="RBM_SHI_054" text="Shoulder Strapped Decorated Round Shield" />
+	<string id="RBM_SHI_055" text="Shoulder Strapped Highland Round Shield" />
+	<string id="RBM_SHI_056" text="Shoulder Strapped Large Round Shield" />
+	<string id="RBM_SHI_057" text="Shoulder Strapped Heavy Round Shield" />
+	<string id="RBM_SHI_058" text="Shoulder Strapped Reinforced Large Round Shield" />
 	<!-- RBMCombat_unit_overhaul.xml Strings -->
 	<string id="RBM_OVH_001" text="Aserai Experienced Archer" />
 	<string id="RBM_OVH_002" text="Vlandian Medium Cavalry" />

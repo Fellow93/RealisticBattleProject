@@ -132,7 +132,7 @@
       <AvailablePiece id="battania_blade_3_fine_steel"/>
       <AvailablePiece id="battania_blade_4"/>
       <AvailablePiece id="battania_blade_5"/>
-      <AvailablePiece id="battania_blade_6"/>
+
 	  <AvailablePiece id="battania_blade_8"/>
       <AvailablePiece id="battania_blade_9"/>
       <AvailablePiece id="battania_blade_10"/>
@@ -629,7 +629,7 @@
       <AvailablePiece id="battania_blade_3_iron_blunt"/>
       <AvailablePiece id="battania_blade_4"/>
       <AvailablePiece id="battania_blade_5"/>
-      <AvailablePiece id="battania_blade_6"/>
+
       <AvailablePiece id="wood_blade_1"/>
       <AvailablePiece id="empire_guard_1"/>
       <AvailablePiece id="empire_guard_2"/>
@@ -895,7 +895,7 @@
       <AvailablePiece id="battania_blade_3_iron_blunt"/>
       <AvailablePiece id="battania_blade_4"/>
       <AvailablePiece id="battania_blade_5"/>
-      <AvailablePiece id="battania_blade_6"/>
+
       <AvailablePiece id="wood_blade_1"/>
       <AvailablePiece id="empire_guard_1"/>
       <AvailablePiece id="empire_guard_2"/>

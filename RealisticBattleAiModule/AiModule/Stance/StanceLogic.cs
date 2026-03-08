@@ -1995,11 +1995,11 @@ namespace RBMAI
                         bool isDirectHit = !attackCollisionData.AttackBlockedWithShield;
                         WeaponClass missileWeaponClass = affectorWeapon.CurrentUsageItem.WeaponClass;
 
-                        float arrowAgentPostureDamage = 15f;
-                        float throwingAgentPostureDamage = 60f;
+                        float arrowAgentPostureDamage = 25f;
+                        float throwingAgentPostureDamage = 100f;
 
-                        float arrowShieldPostureDamage = 10f;
-                        float throwingShieldPostureDamage = 30f;
+                        float arrowShieldPostureDamage = 20f;
+                        float throwingShieldPostureDamage = 70f;
 
                         //agent hit
                         if (isDirectHit)
@@ -2007,8 +2007,8 @@ namespace RBMAI
                             //headshot multiplier
                             if (blow.VictimBodyPart == BoneBodyPartType.Head || blow.VictimBodyPart == BoneBodyPartType.Head)
                             {
-                                arrowAgentPostureDamage = 30f;
-                                throwingAgentPostureDamage = 100f;
+                                arrowAgentPostureDamage = 50f;
+                                throwingAgentPostureDamage = 200f;
                             }
                             switch (missileWeaponClass)
                             {
@@ -2019,7 +2019,7 @@ namespace RBMAI
                                 case WeaponClass.ThrowingKnife:
                                     {
                                         affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - arrowAgentPostureDamage);
-                                        affectedAgentPosture.reduceStamina(arrowAgentPostureDamage);
+                                        affectedAgentPosture.reduceStamina(arrowAgentPostureDamage * 2f);
                                         break;
                                     }
                                 case WeaponClass.Javelin:
@@ -2027,7 +2027,7 @@ namespace RBMAI
 
                                     {
                                         affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - throwingAgentPostureDamage);
-                                        affectedAgentPosture.reduceStamina(throwingAgentPostureDamage);
+                                        affectedAgentPosture.reduceStamina(throwingAgentPostureDamage * 3f);
                                         break;
                                     }
                             }
@@ -2045,14 +2045,14 @@ namespace RBMAI
 
                                     {
                                         affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - arrowShieldPostureDamage);
-                                        affectedAgentPosture.reduceStamina(arrowShieldPostureDamage);
+                                        affectedAgentPosture.reduceStamina(arrowShieldPostureDamage * 2f);
                                         break;
                                     }
                                 case WeaponClass.Javelin:
                                 case WeaponClass.ThrowingAxe:
                                     {
                                         affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - throwingShieldPostureDamage);
-                                        affectedAgentPosture.reduceStamina(throwingShieldPostureDamage);
+                                        affectedAgentPosture.reduceStamina(throwingShieldPostureDamage * 3f);
                                         break;
                                     }
                             }
