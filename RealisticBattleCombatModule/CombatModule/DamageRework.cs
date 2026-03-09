@@ -979,13 +979,17 @@ namespace RBMCombat
                     attacker.RegisterBlow(outBlow, in outCollisionData);
                 }
 
-                //detect unarmed attack
+                //detect unarmed attack (exclude kicks - they use legs, not fists, so no arm recoil)
                 if (attackerWeapon.IsEmpty && attacker != null && victim != null && collisionData.DamageType == (int)DamageTypes.Blunt && !collisionData.IsFallDamage && !collisionData.IsHorseCharge)
                 {
-                    float attackerArmArmor = attacker.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ArmLeft);
-                    b.SelfInflictedDamage = MBMath.ClampInt(MathF.Ceiling(MissionGameModels.Current.StrikeMagnitudeModel.ComputeRawDamage(DamageTypes.Blunt, b.BaseMagnitude / 2f, attackerArmArmor, 1f)), 0, 2000);
-                    attacker.CreateBlowFromBlowAsReflection(in b, in collisionData, out var outBlow, out var outCollisionData);
-                    attacker.RegisterBlow(outBlow, in outCollisionData);
+                    if (!collisionData.IsAlternativeAttack)
+                    {
+                        float attackerArmArmor = attacker.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ArmLeft);
+                        b.SelfInflictedDamage = MBMath.ClampInt(MathF.Ceiling(MissionGameModels.Current.StrikeMagnitudeModel.ComputeRawDamage(DamageTypes.Blunt, b.BaseMagnitude / 2f, attackerArmArmor, 1f)), 0, 2000);
+                        attacker.CreateBlowFromBlowAsReflection(in b, in collisionData, out var outBlow, out var outCollisionData);
+                        attacker.RegisterBlow(outBlow, in outCollisionData);
+                    }
+
                 }
 
                 if (!collisionData.AttackBlockedWithShield && !collisionData.CollidedWithShieldOnBack)
