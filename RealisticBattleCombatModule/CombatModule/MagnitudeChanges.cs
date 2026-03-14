@@ -149,6 +149,7 @@ namespace RBMCombat
                                     }
                                 case WeaponClass.TwoHandedPolearm:
                                 case WeaponClass.TwoHandedSword:
+                                case WeaponClass.TwoHandedMace:
                                     {
                                         thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weapon.Item.Weight, effectiveSkillDR, thrustWeaponSpeed, exraLinearSpeed, attacker.AttackDirection);
                                         break;
@@ -651,6 +652,7 @@ namespace RBMCombat
                         }
                     case WeaponClass.TwoHandedPolearm:
                     case WeaponClass.TwoHandedSword:
+                    case WeaponClass.TwoHandedMace:
                         {
                             thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weaponWeight, effectiveSkillDR, thrustWeaponSpeed, 0f, Agent.UsageDirection.AttackDown);
                             break;
