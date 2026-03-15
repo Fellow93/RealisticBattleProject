@@ -830,7 +830,7 @@
 	</NPCCharacter>
 	<NPCCharacter
 		id="nord_ungmann"
-		default_group="Cavalry"
+		default_group="Infantry"
 		level="11"
 		name="{=5PIe3Zia}Nord Scion"
 		occupation="Soldier"
@@ -970,7 +970,7 @@
 	</NPCCharacter>
 	<NPCCharacter
 		id="nord_thegn"
-		default_group="Cavalry"
+		default_group="Infantry"
 		level="16"
 		name="{=aztogWWW}Nord War-Proven"
 		occupation="Soldier"
@@ -1138,7 +1138,7 @@
 	</NPCCharacter>
 	<NPCCharacter
 		id="nord_jarlsmann"
-		default_group="Cavalry"
+		default_group="Infantry"
 		level="21"
 		name="{=iOaO8NGB}Nord Hearthguard"
 		occupation="Soldier"
@@ -1306,7 +1306,7 @@
 	</NPCCharacter>
 	<NPCCharacter
 		id="nord_hirdmann"
-		default_group="Cavalry"
+		default_group="Infantry"
 		level="26"
 		name="{=RRbpc6fr}Nord Shield-Companion"
 		occupation="Soldier"
@@ -1474,7 +1474,7 @@
 	</NPCCharacter>
 	<NPCCharacter
 		id="nord_huscarl"
-		default_group="Cavalry"
+		default_group="Infantry"
 		level="31"
 		name="{=JnwNuZb7}Nord Huscarl"
 		occupation="Soldier"
@@ -2265,7 +2265,7 @@
 	</NPCCharacter>
 	<NPCCharacter
 		id="nord_vargr"
-		default_group="Cavalry"
+		default_group="Infantry"
 		level="21"
 		name="{=VpTQ5SyS}Nord Warfang"
 		occupation="Soldier"
@@ -2463,7 +2463,7 @@
 	</NPCCharacter>
 	<NPCCharacter
 		id="nord_ulfhednar"
-		default_group="Cavalry"
+		default_group="Infantry"
 		level="26"
 		name="{=7T3mspgx}Nord Ulfhedinn"
 		occupation="Soldier"
