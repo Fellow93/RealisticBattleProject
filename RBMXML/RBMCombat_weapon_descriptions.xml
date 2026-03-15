@@ -4087,7 +4087,7 @@
   </WeaponDescription>
   <WeaponDescription id="TwoHandedMace"
                      weapon_class="TwoHandedMace"
-                     item_usage_features="twohanded:axe">
+                     item_usage_features="twohanded:widegrip:axe">
     <WeaponFlags>
       <WeaponFlag value="MeleeWeapon"/>
       <WeaponFlag value="NotUsableWithOneHand"/>
