@@ -29,13 +29,9 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
             _mainInfantry.AI.IsMainFormation = true;
             _mainInfantry.AI.Side = FormationAI.BehaviorSide.Middle;
 
-            // ManageFormationCounts(3,...) reserves 3 infantry slots (indices 0, 1, 2).
-            // The second and third slots are often empty when all units share FormationClass.Infantry.
-            // Search FormationsIncludingEmpty so we can still use the empty slots as targets.
             List<Formation> flankingSlots = FormationsIncludingEmpty
-                .Take(3)
-                .Where((Formation f) => f != _mainInfantry && f.IsAIControlled)
-                .ToList();
+            .Where((Formation f) => f != _mainInfantry && f.QuerySystem.IsInfantryFormation)
+            .ToList();
 
             if (flankingSlots.Count >= 2)
             {
