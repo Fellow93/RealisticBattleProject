@@ -1047,6 +1047,8 @@ namespace RBMAI
     [HarmonyPatch(typeof(HumanAIComponent))]
     internal class OverrideHumanAIComponent
     {
+        // AISimpleBehaviorKind., zero range / point blank (invisible), weight, range , weight , range, weight, infinity range (invisible)
+        //nulte (neviditelne cislo) = vzdialenost 0, prve cislo = vaha akcie, druhe cislo = vzdialenost, tretie cislo = vaha akcie, stvrte cislo = vzdialenostny treshold, piate cislo = vaha akcie, sieste neviditlene cislo = vzdialenost nekonecno
         [HarmonyPostfix]
         [HarmonyPatch("SetBehaviorValueSet")]
         private static void SetBehaviorValueSet(HumanAIComponent __instance, BehaviorValueSet behaviorValueSet, Agent ___Agent)
@@ -1076,9 +1078,9 @@ namespace RBMAI
                     if (___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
                     {
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 0.01f, 7f, 4f, 20f, 6f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 0.55f, 2f, 0.55f, 20f, 0.55f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 4f, 2f, 0.55f, 30f, 0.55f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 8f, 15f, 10f, 30f, 10f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 50f, 2f, 30f, 4f, 0.55f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 30f, 5f, 20f, 9f, 0.55f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 1f, 10f, 30f, 100f, 30f);
                         return;
                     }
                     if (___Agent.Formation.QuerySystem.IsCavalryFormation)
@@ -1144,9 +1146,10 @@ namespace RBMAI
                     if (___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
                     {
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 15f, 5f, 20f, 5f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 0f, 2f, 0f, 20f, 0f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 0.01f, 2f, 0.01f, 30f, 0.01f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 1f, 15f, 0.065f, 30f, 0.065f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 50f, 2f, 30f, 4f, 0.55f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 30f, 5f, 20f, 9f, 0.55f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 1f, 10f, 30f, 30f, 0.5f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0.5f, 10f, 1f, 30f, 30f);
                         return;
                     }
                     if (Mission.Current.IsSiegeBattle || Mission.Current.IsSallyOutBattle)
