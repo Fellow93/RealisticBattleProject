@@ -1081,6 +1081,15 @@ namespace RBMAI
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 50f, 2f, 30f, 4f, 0.55f);
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 30f, 5f, 20f, 9f, 0.55f);
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 1f, 10f, 30f, 100f, 30f);
+
+                        if (___Agent.HasMount)
+                        {
+                            if (RBMAI.Utilities.GetHarnessTier(___Agent) > 3)
+                            {
+                                __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 5f, 5f, 40f, 20f, 5f);
+                            }
+                        }
+
                         return;
                     }
                     if (___Agent.Formation.QuerySystem.IsCavalryFormation)
@@ -1118,7 +1127,7 @@ namespace RBMAI
                         if (___Agent.Formation.QuerySystem.IsRangedFormation)
                         {
                             __instance.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
-                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 5.5f, 3f, 4f, 10f, 0.01f);
+                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 5.5f, 5f, 4f, 10f, 0.01f);
                             __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 3f, 2f, 10f, 20f);
                         }
                         return;
@@ -1146,12 +1155,27 @@ namespace RBMAI
                     if (___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
                     {
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 15f, 5f, 20f, 5f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 50f, 2f, 30f, 4f, 0.55f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 30f, 5f, 20f, 9f, 0.55f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 1f, 10f, 30f, 30f, 0.5f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 30f, 4f, 20f, 6f, 0.55f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 30f, 5f, 20f, 30f, 0.55f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 1f, 10f, 30f, 100f, 0.5f);
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0.5f, 10f, 1f, 30f, 30f);
+
+                        if (___Agent.HasMount)
+                        {
+                            if (RBMAI.Utilities.GetHarnessTier(___Agent) > 3)
+                            {
+                                __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 5f, 20f, 30f, 20f, 0.5f);
+                            }
+                        }
                         return;
                     }
+                    if (___Agent.Formation.QuerySystem.IsRangedFormation)
+                    {
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 4f, 2f, 4f, 10f, 6f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 5.5f, 5f, 4f, 10f, 0.01f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 3f, 5f, 200f, 1f);
+                    }
+                    return;
                     if (Mission.Current.IsSiegeBattle || Mission.Current.IsSallyOutBattle)
                     {
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 4f, 3f, 20f, 0.01f);

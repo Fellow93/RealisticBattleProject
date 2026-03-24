@@ -46,7 +46,7 @@ namespace RBMAI
             WorldPosition position = base.Formation.CachedMedianPosition;
             Vec2 averagePosition = base.Formation.CachedAveragePosition;
 
-            float flankRange = 20f;
+            float flankRange = 10f;
 
             Formation allyFormation = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
 
