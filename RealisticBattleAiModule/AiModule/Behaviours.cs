@@ -1555,6 +1555,9 @@ namespace RBMAI
     {
         public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
         public static Dictionary<Formation, int> waitCountStorage = new Dictionary<Formation, int> { };
+        public static Dictionary<Formation, float> advanceTimerStorage = new Dictionary<Formation, float> { };
+        public static Dictionary<Formation, float> advanceScaleStartStorage = new Dictionary<Formation, float> { };
+        public static Dictionary<Formation, float> advanceLastTickStorage = new Dictionary<Formation, float> { };
         private static readonly MethodInfo CalculateCurrentOrderMethod = typeof(BehaviorAdvance).GetMethod("CalculateCurrentOrder", BindingFlags.NonPublic | BindingFlags.Instance);
         private static readonly FieldInfo CurrentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -1660,10 +1663,56 @@ namespace RBMAI
                 {
                     FormationQuerySystem enemyQuerySystem = significantEnemy.QuerySystem;
 
-                    WorldPosition enemyPosition = enemyQuerySystem.Formation.CachedMedianPosition;
-                    enemyPosition.SetVec2(enemyPosition.AsVec2 + enemyQuerySystem.Formation.Direction * enemyQuerySystem.Formation.Depth * 0.5f);
+                    Vec2 directionToEnemy = enemyQuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
+                    float enemyDistance = directionToEnemy.Normalize();
                     Vec2 enemyDirection = -enemyQuerySystem.Formation.Direction;
-                    ____currentOrder = MovementOrder.MovementOrderMove(enemyPosition);
+
+                    float currentTime = Mission.Current.CurrentTime;
+
+                    // Detect if behavior was just (re)applied after being inactive
+                    float lastTick;
+                    advanceLastTickStorage.TryGetValue(__instance.Formation, out lastTick);
+                    bool justApplied = currentTime - lastTick > 2f;
+                    advanceLastTickStorage[__instance.Formation] = currentTime;
+
+                    float scaleStartTime;
+                    if (!advanceScaleStartStorage.TryGetValue(__instance.Formation, out scaleStartTime) || justApplied)
+                    {
+                        scaleStartTime = currentTime;
+                        advanceScaleStartStorage[__instance.Formation] = scaleStartTime;
+                    }
+
+                    float invalidDetectedTime;
+                    if (advanceTimerStorage.TryGetValue(__instance.Formation, out invalidDetectedTime))
+                    {
+                        if (currentTime - invalidDetectedTime < 20f)
+                        {
+                            ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
+                            return false;
+                        }
+                        advanceTimerStorage.Remove(__instance.Formation);
+                        // Restart scale ramp after the fallback timer expires
+                        scaleStartTime = currentTime;
+                        advanceScaleStartStorage[__instance.Formation] = scaleStartTime;
+                    }
+
+                    float scaleT = MBMath.ClampFloat((currentTime - scaleStartTime) / 10f, 0f, 1f);
+                    float advanceOffset = (MBMath.ClampFloat(enemyDistance * 0.3f, 10f, 50f) + __instance.Formation.Depth * 0.5f) * scaleT;
+                    Vec2 advanceVec2 = __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2 + directionToEnemy * advanceOffset;
+                    WorldPosition advancePosition = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
+                    advancePosition.SetVec2(advanceVec2);
+
+                    if (Mission.Current.IsPositionInsideBoundaries(advanceVec2) && advancePosition.GetNavMesh() != UIntPtr.Zero)
+                    {
+                        ____currentOrder = MovementOrder.MovementOrderMove(advancePosition);
+                    }
+                    else
+                    {
+                        WorldPosition enemyPosition = enemyQuerySystem.Formation.CachedMedianPosition;
+                        enemyPosition.SetVec2(enemyPosition.AsVec2 + enemyQuerySystem.Formation.Direction * enemyQuerySystem.Formation.Depth * 0.5f);
+                        advanceTimerStorage[__instance.Formation] = currentTime;
+                        ____currentOrder = MovementOrder.MovementOrderMove(enemyPosition);
+                    }
                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
 
                     return false;
