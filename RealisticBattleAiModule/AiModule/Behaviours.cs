@@ -1137,9 +1137,9 @@ namespace RBMAI
                 {
                     if (___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
                     {
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 0.55f, 2f, 4f, 20f, 0.55f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0.55f, 7f, 0.55f, 20f, 0.55f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 8f, 2f, 0.55f, 30f, 0.55f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 35f, 4f, 20f, 6f, 0.55f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0.5f, 10f, 1f, 30f, 30f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 8f, 10f, 0.55f, 30f, 0.55f);
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 10f, 15f, 0.065f, 30f, 0.065f);
                         return;
                     }
@@ -1155,9 +1155,9 @@ namespace RBMAI
                     if (___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
                     {
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 15f, 5f, 20f, 5f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 30f, 4f, 20f, 6f, 0.55f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 30f, 5f, 20f, 30f, 0.55f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 1f, 10f, 30f, 100f, 0.5f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 50f, 4f, 20f, 6f, 0.55f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 40f, 5f, 20f, 30f, 0.55f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 1f, 10f, 30f, 120f, 0.5f);
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0.5f, 10f, 1f, 30f, 30f);
 
                         if (___Agent.HasMount)

@@ -5013,7 +5013,7 @@
                 default_group="Ranged"
                 level="16"
                 occupation="Soldier"
-				name="{=RBM_OVH_015}Yeoman Hunter"
+				name="{=RBM_OVH_015}Battanian Yeoman Hunter"
                 culture="Culture.battania">
     <face>
       <face_key_template value="BodyProperty.fighter_battania" />
@@ -5078,7 +5078,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.highland_ranger_bow" />
+                 id="Item.glen_ranger_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_c" />
       <equipment slot="Item2"
@@ -5103,7 +5103,7 @@
                 level="21"
                 occupation="Soldier"
                 culture="Culture.battania"
-                name="{=RBM_OVH_016}Yeoman Archer">
+                name="{=RBM_OVH_016}Battanian Yeoman Archer">
     <face>
       <face_key_template value="BodyProperty.fighter_battania" />
     </face>
@@ -5131,7 +5131,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.lowland_longbow" />
+                 id="Item.tribal_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_b" />
       <equipment slot="Item2"
@@ -5149,7 +5149,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.lowland_longbow" />
+                 id="Item.tribal_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_b" />
       <equipment slot="Item2"
@@ -5192,7 +5192,7 @@
                 level="26"
                 occupation="Soldier"
                 culture="Culture.battania"
-                name="{=RBM_OVH_017}Yeoman Veteran Archer">
+                name="{=RBM_OVH_017}Battanian Yeoman Veteran Archer">
     <face>
       <face_key_template value="BodyProperty.fighter_battania" />
     </face>
@@ -5218,7 +5218,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.woodland_yew_bow" />
+                 id="Item.lowland_yew_bow" />
       <equipment slot="Item1"
                  id="Item.arrow_emp_1_a" />
       <equipment slot="Item2"
@@ -5236,7 +5236,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.longbow_recurve_desert_bow" />
+                 id="Item.lowland_yew_bow" />
       <equipment slot="Item1"
                  id="Item.arrow_emp_1_a" />
       <equipment slot="Item2"
@@ -7403,7 +7403,7 @@
       <skill id="Polearm"
              value="120" />
       <skill id="Bow"
-             value="110" />
+             value="120" />
       <skill id="Crossbow"
              value="60" />
       <skill id="Throwing"
@@ -10717,7 +10717,7 @@
       <skill id="TwoHanded"
              value="20" />
       <skill id="Polearm"
-             value="40" />
+             value="50" />
       <skill id="Bow"
              value="25" />
       <skill id="Crossbow"
@@ -10811,7 +10811,7 @@
       <skill id="TwoHanded"
              value="90" />
       <skill id="Polearm"
-             value="70" />
+             value="80" />
       <skill id="Bow"
              value="10" />
       <skill id="Crossbow"
@@ -10905,7 +10905,7 @@
       <skill id="TwoHanded"
              value="120" />
       <skill id="Polearm"
-             value="100" />
+             value="110" />
       <skill id="Bow"
              value="45" />
       <skill id="Crossbow"
@@ -10980,7 +10980,7 @@
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="druzhinnik"
-                default_group="HorseArcher"
+                default_group="Cavalry"
                 level="26"
                 name="{=CRzrHomf}Sturgian Druzhinnik"
                 upgrade_requires="ItemCategory.war_horse"
@@ -10997,11 +10997,11 @@
       <skill id="OneHanded"
              value="100" />
       <skill id="TwoHanded"
-             value="150" />
+             value="170" />
       <skill id="Polearm"
-             value="130" />
+             value="150" />
       <skill id="Bow"
-             value="130" />
+             value="140" />
       <skill id="Crossbow"
              value="20" />
       <skill id="Throwing"
@@ -11017,9 +11017,7 @@
       <equipment slot="Item1"
                  id="Item.sturgia_mace_2_t4" />
       <equipment slot="Item2"
-                 id="Item.steppe_heavy_bow" />
-      <equipment slot="Item3"
-                 id="Item.GRE_vlandic_arrows" />
+                 id="Item.strapped_round_shield_shoulder" />
       <equipment slot="Body"
                  id="Item.northern_brass_lamellar_over_mail" />
       <equipment slot="Leg"
@@ -11041,9 +11039,7 @@
       <equipment slot="Item1"
                  id="Item.sturgia_mace_2_t4" />
       <equipment slot="Item2"
-                 id="Item.steppe_heavy_bow" />
-      <equipment slot="Item3"
-                 id="Item.GRE_vlandic_arrows" />
+                 id="Item.strapped_round_shield_shoulder" />
       <equipment slot="Body"
                  id="Item.northern_brass_lamellar_over_mail" />
       <equipment slot="Leg"
@@ -11065,9 +11061,7 @@
       <equipment slot="Item1"
                  id="Item.sturgia_mace_2_t4" />
       <equipment slot="Item2"
-                 id="Item.steppe_heavy_bow" />
-      <equipment slot="Item3"
-                 id="Item.GRE_vlandic_arrows" />
+                 id="Item.strapped_round_shield_shoulder" />
       <equipment slot="Body"
                  id="Item.northern_brass_lamellar_over_mail" />
       <equipment slot="Leg"
@@ -11088,7 +11082,7 @@
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="druzhinnik_champion"
-                default_group="HorseArcher"
+                default_group="Cavalry"
                 level="31"
                 name="{=FrTTT0G1}Sturgian Druzhinnik Champion"
                 upgrade_requires="ItemCategory.war_horse"
@@ -11105,11 +11099,11 @@
       <skill id="OneHanded"
              value="100" />
       <skill id="TwoHanded"
-             value="180" />
+             value="200" />
       <skill id="Polearm"
-             value="150" />
+             value="170" />
       <skill id="Bow"
-             value="150" />
+             value="160" />
       <skill id="Crossbow"
              value="25" />
       <skill id="Throwing"
@@ -11123,9 +11117,7 @@
       <equipment slot="Item1"
                  id="Item.sturgia_mace_2_t4" />
       <equipment slot="Item2"
-                 id="Item.steppe_war_bow" />
-      <equipment slot="Item3"
-                 id="Item.GRE_piercing_arrows" />
+                 id="Item.strapped_round_shield_shoulder" />
       <equipment slot="Gloves"
                  id="Item.northern_plated_gloves" />
       <equipment slot="Body"
@@ -11147,9 +11139,7 @@
       <equipment slot="Item1"
                  id="Item.sturgia_mace_2_t4" />
       <equipment slot="Item2"
-                 id="Item.steppe_war_bow" />
-      <equipment slot="Item3"
-                 id="Item.GRE_piercing_arrows" />			 
+                 id="Item.strapped_round_shield_shoulder" />			 
       <equipment slot="Gloves"
                  id="Item.northern_plated_gloves" />
       <equipment slot="Body"
@@ -11171,9 +11161,7 @@
       <equipment slot="Item1"
                  id="Item.sturgia_mace_2_t4" />
       <equipment slot="Item2"
-                 id="Item.steppe_war_bow" />
-      <equipment slot="Item3"
-                 id="Item.GRE_piercing_arrows" />
+                 id="Item.strapped_round_shield_shoulder" />
       <equipment slot="Gloves"
                  id="Item.northern_plated_gloves" />
       <equipment slot="Body"
@@ -11310,7 +11298,7 @@
       <skill id="Polearm"
              value="40" />
       <skill id="Bow"
-             value="60" />
+             value="70" />
       <skill id="Crossbow"
              value="10" />
       <skill id="Throwing"
@@ -11323,7 +11311,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.steppe_bow" />
+                 id="Item.hunting_bow" />
       <equipment slot="Item1"
                  id="Item.GRE_bodkin_arrows_c" />
       <equipment slot="Item2"
@@ -11343,7 +11331,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.composite_bow" />
+                 id="Item.hunting_bow" />
       <equipment slot="Item1"
                  id="Item.bodkin_arrows_c" />
       <equipment slot="Item2"
@@ -11363,7 +11351,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.highland_ranger_bow" />
+                 id="Item.hunting_bow" />
       <equipment slot="Item1"
                  id="Item.GRE_bodkin_arrows_c" />
       <equipment slot="Item2"
@@ -11406,7 +11394,7 @@
       <skill id="Polearm"
              value="45" />
       <skill id="Bow"
-             value="90" />
+             value="100" />
       <skill id="Crossbow"
              value="15" />
       <skill id="Throwing"
@@ -11418,7 +11406,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.nordic_shortbow" />
+                 id="Item.steppe_bow" />
       <equipment slot="Item1"
                  id="Item.heavy_steppe_arrows" />
       <equipment slot="Item2"
@@ -11438,7 +11426,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.lowland_longbow" />
+                 id="Item.steppe_bow" />
       <equipment slot="Item1"
                  id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item2"
@@ -11458,7 +11446,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.nordic_shortbow" />
+                 id="Item.steppe_bow" />
       <equipment slot="Item1"
                  id="Item.GRE_heavy_steppe_arrows" />
       <equipment slot="Item2"
@@ -11501,7 +11489,7 @@
       <skill id="Polearm"
              value="60" />
       <skill id="Bow"
-             value="120" />
+             value="130" />
       <skill id="Crossbow"
              value="40" />
       <skill id="Throwing"
@@ -11511,7 +11499,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.longbow_recurve_desert_bow" />
+                 id="Item.nordic_shortbow" />
       <equipment slot="Item1"
                  id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item2"
@@ -11531,7 +11519,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.longbow_recurve_desert_bow" />
+                 id="Item.nordic_shortbow" />
       <equipment slot="Item1"
                  id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item2"
@@ -11551,7 +11539,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.longbow_recurve_desert_bow" />
+                 id="Item.nordic_shortbow" />
       <equipment slot="Item1"
                  id="Item.GRE_vlandic_arrows" />
       <equipment slot="Item2"
