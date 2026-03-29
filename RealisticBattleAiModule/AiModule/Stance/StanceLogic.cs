@@ -965,7 +965,12 @@ namespace RBMAI
                 float basePostureDamage = getDefenderPostureDamage(defenderAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, meleeHitType);
                 actionTypeDamageModifier = 1f;
 
-                SkillObject attackerWeaponSkill = isUnarmedAttack ? null : WeaponComponentData.GetRelevantSkillFromWeaponClass(weapon.CurrentUsageItem.WeaponClass);
+                //SkillObject attackerWeaponSkill = isUnarmedAttack ? null : WeaponComponentData.GetRelevantSkillFromWeaponClass(weapon.CurrentUsageItem.WeaponClass);
+                SkillObject attackerWeaponSkill = null;
+                if (!isUnarmedAttack && !weapon.IsEmpty && weapon.CurrentUsageItem != null)
+                {
+                    attackerWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(weapon.CurrentUsageItem.WeaponClass);
+                }
                 float attackerEffectiveWeaponSkill = 0;
                 float attackerEffectiveStrengthSkill = 0;
                 if (attackerWeaponSkill != null)
@@ -1011,7 +1016,7 @@ namespace RBMAI
 
                 if (isUnarmedAttack)
                 {
-                    attackerEffectiveWeaponSkill = defenderEffectiveStrengthSkill;
+                    attackerEffectiveWeaponSkill = attackerEffectiveStrengthSkill;
                 }
 
                 defenderEffectiveWeaponSkill = defenderEffectiveWeaponSkill / weaponSkillModifier;
@@ -1040,7 +1045,11 @@ namespace RBMAI
                 float basePostureDamage = getAttackerPostureDamage(defenderAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, meleeHitType);
                 actionTypeDamageModifier = 1f;
 
-                SkillObject attackerWeaponSkill = isUnarmedAttack ? null : WeaponComponentData.GetRelevantSkillFromWeaponClass(weapon.CurrentUsageItem.WeaponClass);
+                SkillObject attackerWeaponSkill = null;
+                if (!isUnarmedAttack && !weapon.IsEmpty && weapon.CurrentUsageItem != null)
+                {
+                    attackerWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(weapon.CurrentUsageItem.WeaponClass);
+                }
 
                 float attackerEffectiveWeaponSkill = 0;
                 float attackerEffectiveStrengthSkill = 0;
@@ -1088,7 +1097,7 @@ namespace RBMAI
 
                 if (isUnarmedAttack)
                 {
-                    attackerEffectiveWeaponSkill = defenderEffectiveStrengthSkill;
+                    attackerEffectiveWeaponSkill = attackerEffectiveStrengthSkill;
                 }
 
                 defenderEffectiveWeaponSkill = defenderEffectiveWeaponSkill / weaponSkillModifier;
