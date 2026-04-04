@@ -793,10 +793,10 @@ namespace RBMAI
 
             private static float calculateDefenderStaminaLoss(Agent defenderAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MeleeHitType meleeHitType, bool isUnarmedAttack)
             {
-                float directHit = (collisionData.InflictedDamage * 5f) + 20f;
+                float directHit = (collisionData.InflictedDamage * 2f) + 20f;
                 float unarmedDefence = 40f;
                 float oneHandedDefence = 40f;
-                float twoHandedDefence = 50f;
+                float twoHandedDefence = 40f;
                 float smallShieldDefence = 43f;
                 float largeShieldDefence = 46f;
 
@@ -891,12 +891,12 @@ namespace RBMAI
                 SkillObject attackerWeaponSkill = isUnarmedAttack ? null : WeaponComponentData.GetRelevantSkillFromWeaponClass(attackerWeapon.CurrentUsageItem.WeaponClass); ;
                 int effectiveSkill = isUnarmedAttack ? MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, DefaultSkills.Athletics) : MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, attackerWeaponSkill);
 
-                float directHit = 40f;
-                float unarmedAttack = 40f;
-                float oneHandedAttack = 40f;
-                float twoHandedAttack = 50f;
+                float directHit = 35f;
+                float unarmedAttack = 35f;
+                float oneHandedAttack = 35f;
+                float twoHandedAttack = 40f;
 
-                float defaultAttack = 40f;
+                float defaultAttack = 35f;
 
                 //100 skill = 10% reduction
                 float skillModifier = 1f - (effectiveSkill * 0.001f);

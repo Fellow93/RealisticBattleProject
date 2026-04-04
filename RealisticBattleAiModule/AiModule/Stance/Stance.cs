@@ -29,9 +29,9 @@ namespace RBMAI
             float athleticBase = 1000f;
             int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(agent, DefaultSkills.Athletics);
             float athleticSkillModifier = 500f;
-            stance.maxStamina = athleticBase * (1f + (effectiveAthleticSkill / athleticSkillModifier));
-            stance.stamina = athleticBase * (1f + (effectiveAthleticSkill / athleticSkillModifier));
-            stance.staminaRegenPerTick = 0.03f * (1f + (effectiveAthleticSkill / athleticSkillModifier));
+            stance.maxStamina = athleticBase * (1f + 3f * (effectiveAthleticSkill / athleticSkillModifier));
+            stance.stamina = athleticBase * (1f + 3f * (effectiveAthleticSkill / athleticSkillModifier));
+            stance.staminaRegenPerTick = 0.03f * (1f + 2f * (effectiveAthleticSkill / athleticSkillModifier));
 
             //face armor effect
             float faceArmor = 0f;
