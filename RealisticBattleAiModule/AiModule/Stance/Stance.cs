@@ -1,6 +1,7 @@
 ﻿using System;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.Library;
 
 namespace RBMAI
 {
@@ -49,7 +50,6 @@ namespace RBMAI
                 stance.maxStamina *= RBMConfig.RBMConfig.playerPostureMultiplier;
                 stance.staminaRegenPerTick *= RBMConfig.RBMConfig.playerPostureMultiplier;
             }
-
         }
 
         public static void InitializePosture(Agent agent, ref Stance stance)
@@ -63,6 +63,11 @@ namespace RBMAI
             if (slotIndex != EquipmentIndex.None)
             {
                 usageIndex = agent.Equipment[slotIndex].CurrentUsageIndex;
+                int usageCount = agent.Equipment[slotIndex].Item?.Weapons?.Count ?? 0;
+                if (usageCount > 0)
+                {
+                    usageIndex = MBMath.ClampInt(usageIndex, 0, usageCount - 1);
+                }
 
                 WeaponComponentData wcd = agent.Equipment[slotIndex].GetWeaponComponentDataForUsage(usageIndex);
                 SkillObject weaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(wcd.WeaponClass);
@@ -118,10 +123,12 @@ namespace RBMAI
         {
             this.stamina = Math.Min(maxStamina, this.stamina + value);
         }
+
         public void reducePosture(float value)
         {
             this.posture = Math.Max(0f, this.posture - value);
         }
+
         public void addPosture(float value)
         {
             this.posture = Math.Min(maxPosture, this.posture + value);
@@ -185,12 +192,14 @@ namespace RBMAI
 
         // BASE VALUES
         public const float BASE_ATTACK_COST = 20f;
+
         public const float BASE_DRAIN = 20f;
         public const float BASE_DEFENSE_COST = 20f;
         public const float BASE_REFLECT = 20f;
 
         // UNARMED
         public const float UNARMED_SWING_COST = 10f;
+
         public const float UNARMED_THRUST_COST = 10f;
         public const float UNARME_DOVERHEAD_COST = 10f;
         public const float UNARMED_SWING_DRAIN = 0f;
@@ -203,6 +212,7 @@ namespace RBMAI
 
         // ONE-HANDED SWORD
         public const float ONEHANDEDSWORD_SWING_COST = -5f;
+
         public const float ONEHANDEDSWORD_THRUST_COST = -7f;
         public const float ONEHANDEDSWORD_OVERHEAD_COST = -3f;
         public const float ONEHANDEDSWORD_SWING_DRAIN = 10f;
@@ -215,6 +225,7 @@ namespace RBMAI
 
         // DAGGER
         public const float DAGGER_SWING_COST = -5f;
+
         public const float DAGGER_THRUST_COST = -7f;
         public const float DAGGER_OVERHEAD_COST = -3f;
         public const float DAGGER_SWING_DRAIN = +10f;
@@ -228,6 +239,7 @@ namespace RBMAI
 
         // TWO-HANDED SWORD
         public const float TWOHANDEDSWORD_SWING_COST = -5f;
+
         public const float TWOHANDEDSWORD_THRUST_COST = -7f;
         public const float TWOHANDEDSWORD_OVERHEAD_COST = -3f;
         public const float TWOHANDEDSWORD_SWING_DRAIN = +27f;
@@ -241,6 +253,7 @@ namespace RBMAI
 
         // ONE-HANDED AXE
         public const float ONEHANDEDAXE_SWING_COST = -2f;
+
         public const float ONEHANDEDAXE_THRUST_COST = -4f;
         public const float ONEHANDEDAXE_OVERHEAD_COST = +0f;
         public const float ONEHANDEDAXE_SWING_DRAIN = +13f;
@@ -254,6 +267,7 @@ namespace RBMAI
 
         // TWO-HANDED AXE
         public const float TWOHANDEDAXE_SWING_COST = -2f;
+
         public const float TWOHANDEDAXE_THRUST_COST = -4f;
         public const float TWOHANDEDAXE_OVERHEAD_COST = +0f;
         public const float TWOHANDEDAXE_SWING_DRAIN = +32f;
@@ -267,6 +281,7 @@ namespace RBMAI
 
         // MACE
         public const float MACE_SWING_COST = +0f;
+
         public const float MACE_THRUST_COST = -2f;
         public const float MACE_OVERHEAD_COST = +2f;
         public const float MACE_SWING_DRAIN = +15f;
@@ -280,6 +295,7 @@ namespace RBMAI
 
         // TWO-HANDED MACE
         public const float TWOHANDEDMACE_SWING_COST = +0f;
+
         public const float TWOHANDEDMACE_THRUST_COST = -2f;
         public const float TWOHANDEDMACE_OVERHEAD_COST = +2f;
         public const float TWOHANDEDMACE_SWING_DRAIN = +36f;
@@ -293,6 +309,7 @@ namespace RBMAI
 
         // ONE-HANDED POLEARM
         public const float ONEHANDEDPOLEARM_SWING_COST = -2f;
+
         public const float ONEHANDEDPOLEARM_THRUST_COST = -5f;
         public const float ONEHANDEDPOLEARM_OVERHEAD_COST = +1f;
         public const float ONEHANDEDPOLEARM_SWING_DRAIN = +0f;
@@ -306,6 +323,7 @@ namespace RBMAI
 
         // TWO-HANDED POLEARM
         public const float TWOHANDEDPOLEARM_SWING_COST = -3f;
+
         public const float TWOHANDEDPOLEARM_THRUST_COST = -5f;
         public const float TWOHANDEDPOLEARM_OVERHEAD_COST = -1f;
         public const float TWOHANDEDPOLEARM_SWING_DRAIN = +29f;
@@ -319,6 +337,7 @@ namespace RBMAI
 
         // SMALL SHIELD
         public const float SMALLSHIELD_INCORRECT_BLOCK_COST = -25f;
+
         public const float SMALLSHIELD_BLOCK_COST = -30f;
         public const float SMALLSHIELD_PARRY_COST = -40f;
         public const float SMALLSHIELD_HIT_COST = -5f;
@@ -328,6 +347,7 @@ namespace RBMAI
 
         // LARGE SHIELD
         public const float LARGESHIELD_INCORRECT_BLOCK_COST = -30f;
+
         public const float LARGESHIELD_BLOCK_COST = -35f;
         public const float LARGESHIELD_PARRY_COST = -45f;
         public const float LARGESHIELD_HIT_COST = -5f;
@@ -406,7 +426,6 @@ namespace RBMAI
                                 retVal += SHIELD_ON_BACK_HIT_COST;
                             }
                             break;
-
                         }
                     case MeleeHitType.ChamberBlock:
                         {
