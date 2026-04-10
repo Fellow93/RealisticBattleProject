@@ -888,8 +888,14 @@ namespace RBMAI
                 float result = 0f;
                 MissionWeapon attackerWeapon = attackerAgent.WieldedWeapon;
 
-                SkillObject attackerWeaponSkill = isUnarmedAttack ? null : WeaponComponentData.GetRelevantSkillFromWeaponClass(attackerWeapon.CurrentUsageItem.WeaponClass); ;
-                int effectiveSkill = isUnarmedAttack ? MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, DefaultSkills.Athletics) : MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, attackerWeaponSkill);
+                SkillObject attackerWeaponSkill = null;
+                if (!isUnarmedAttack && !attackerWeapon.IsEmpty && attackerWeapon.CurrentUsageItem != null)
+                {
+                    attackerWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(attackerWeapon.CurrentUsageItem.WeaponClass);
+                }
+                int effectiveSkill = (isUnarmedAttack || attackerWeaponSkill == null)
+                    ? MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, DefaultSkills.Athletics)
+                    : MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, attackerWeaponSkill);
 
                 float directHit = 35f;
                 float unarmedAttack = 35f;
