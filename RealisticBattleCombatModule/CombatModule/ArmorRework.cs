@@ -119,7 +119,7 @@ namespace RBMCombat
         {
             float num = 0f;
             EquipmentElement equipmentElement = agent.SpawnEquipment[EquipmentIndex.HorseHarness];
-            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness && equipmentElement.Item.ArmorComponent != null)
             {
                 num += equipmentElement.Item.ArmorComponent.BodyArmor;
                 if (num > 0 && equipmentElement.ItemModifier != null)
@@ -389,7 +389,7 @@ namespace RBMCombat
         {
             float num = 0f;
             EquipmentElement equipmentElement = equipment[EquipmentIndex.HorseHarness];
-            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness && equipmentElement.Item.ArmorComponent != null)
             {
                 num += equipmentElement.Item.ArmorComponent.BodyArmor;
                 if (num > 0 && equipmentElement.ItemModifier != null)

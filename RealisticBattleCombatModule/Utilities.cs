@@ -406,7 +406,7 @@ namespace RBMCombat
         public static void lowerArmorQualityCheck(ref Agent agent, EquipmentIndex equipmentIndex, ItemObject.ItemTypeEnum itemType, AttackCollisionData attackCollisionData, Blow blow, Agent attacker, in MissionWeapon attackerWeapon)
         {
             EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
-            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == itemType && !attackerWeapon.IsEmpty && blow.InflictedDamage > 1 && !blow.IsFallDamage)
+            if (equipmentElement.Item != null && equipmentElement.Item.ItemType == itemType && equipmentElement.Item.ArmorComponent != null && !attackerWeapon.IsEmpty && blow.InflictedDamage > 1 && !blow.IsFallDamage)
             {
                 WeaponClass weaponType = attackerWeapon.CurrentUsageItem.WeaponClass;
 
