@@ -152,22 +152,26 @@ namespace RBMConfig
             OneHandedThrustDamageBonus = 1f / ThrustMagnitudeModifier;
             TwoHandedThrustDamageBonus = 1f / ThrustMagnitudeModifier;
 
-            // Weapon types: load from XML if present, otherwise keep defaults from createWeaponTypesFactors
+            // Weapon types: merge XML entries into defaults (keeps any new defaults not present in old config files)
             XmlNode weaponTypesXmlNode = xmlConfig.SelectSingleNode("/Config/RBMCombat/WeaponTypes");
             if (weaponTypesXmlNode != null && weaponTypesXmlNode.HasChildNodes)
             {
-                weaponTypesFactors.Clear();
                 foreach (XmlNode weaponTypeNode in weaponTypesXmlNode.ChildNodes)
                 {
-                    RBMCombatConfigWeaponType wt = new RBMCombatConfigWeaponType();
-                    wt.weaponType = weaponTypeNode.Name;
+                    string name = weaponTypeNode.Name;
+                    RBMCombatConfigWeaponType wt = weaponTypesFactors.Find(x => x.weaponType == name);
+                    if (wt == null)
+                    {
+                        wt = new RBMCombatConfigWeaponType();
+                        wt.weaponType = name;
+                        weaponTypesFactors.Add(wt);
+                    }
                     wt.ExtraBluntFactorCut = float.Parse(weaponTypeNode["ExtraBluntFactorCut"]?.InnerText ?? "0.25");
                     wt.ExtraBluntFactorPierce = float.Parse(weaponTypeNode["ExtraBluntFactorPierce"]?.InnerText ?? "0.35");
                     wt.ExtraBluntFactorBlunt = float.Parse(weaponTypeNode["ExtraBluntFactorBlunt"]?.InnerText ?? "1");
                     wt.ExtraArmorThresholdFactorPierce = float.Parse(weaponTypeNode["ExtraArmorThresholdFactorPierce"]?.InnerText ?? "3");
                     wt.ExtraArmorThresholdFactorCut = float.Parse(weaponTypeNode["ExtraArmorThresholdFactorCut"]?.InnerText ?? "5");
                     wt.ExtraArmorSkillDamageAbsorb = float.Parse(weaponTypeNode["ExtraArmorSkillDamageAbsorb"]?.InnerText ?? "1");
-                    weaponTypesFactors.Add(wt);
                 }
             }
 
