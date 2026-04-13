@@ -106,6 +106,7 @@ namespace RBMCombat
                                     }
                                 }
                             }
+
                             //float equipmentWeight = __instance.SpawnEquipment.GetTotalWeightOfArmor(true); //+ __instance.Equipment.GetTotalWeightOfWeapons();
                             float armorModifier = 0;
                             WeaponClass typeOfShieldEquipped = WeaponClass.Undefined;
@@ -192,7 +193,7 @@ namespace RBMCombat
                         MissionWeapon missionWeapon = __instance.Equipment[equipmentIndex];
                         WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
 
-                        if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
+                        if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow) || (wsd[0].WeaponClass == (int)WeaponClass.Sling))
                         {
                             RangedWeaponStats rangedWeaponStatNew = new RangedWeaponStats(missionWeapon.CurrentUsageItem.MissileSpeed);
                             RangedWeaponStats rangedWeaponStatOld;
@@ -202,7 +203,7 @@ namespace RBMCombat
                             }
                             stringRangedWeapons.Add(missionWeapon);
                         }
-                        if ((wsd[0].WeaponClass == (int)WeaponClass.Arrow) || (wsd[0].WeaponClass == (int)WeaponClass.Bolt))
+                        if ((wsd[0].WeaponClass == (int)WeaponClass.Arrow) || (wsd[0].WeaponClass == (int)WeaponClass.Bolt) || (wsd[0].WeaponClass == (int)WeaponClass.SlingStone))
                         {
                             if (firstProjectile)
                             {
@@ -226,7 +227,32 @@ namespace RBMCombat
                             msModifier = missionWeapon.ItemModifier.ModifyHitPoints(50) - 50;
                         }
 
-                        calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon.CurrentUsageItem.ItemUsage, missionWeapon.CurrentUsageItem.MissileSpeed + msModifier); //rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight());
+                        WeaponStatsData[] mwWsd = missionWeapon.GetWeaponStatsData();
+                        if (mwWsd != null && mwWsd.Length > 0 && mwWsd[0].WeaponClass == (int)WeaponClass.Sling)
+                        {
+                            // Slings use assignSlingMissileSpeed so skill and equipment weight
+                            // (armor/shield) are factored in from the start.
+                            WeaponData slingWd = missionWeapon.GetWeaponData(true);
+                            SkillObject slingSkill = (slingWd.GetItemObject() == null) ? DefaultSkills.Athletics : slingWd.GetItemObject().RelevantSkill;
+                            int slingEf = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, slingSkill);
+                            float slingEffectiveSkillDR = Utilities.GetEffectiveSkillWithDR(slingEf);
+
+                            float slingArmorModifier = 0;
+                            WeaponClass slingShieldType = WeaponClass.Undefined;
+                            for (EquipmentIndex ei = EquipmentIndex.WeaponItemBeginSlot; ei < EquipmentIndex.NumAllWeaponSlots; ei++)
+                            {
+                                if (__instance.Equipment != null && !__instance.Equipment[ei].IsEmpty && __instance.Equipment[ei].IsShield())
+                                    slingShieldType = __instance.Equipment[ei].CurrentUsageItem.WeaponClass;
+                            }
+                            slingArmorModifier += MBMath.ClampFloat(ArmorRework.getShoulderArmor(__instance) - 20f, 0f, 100f);
+                            slingArmorModifier += MBMath.ClampFloat(ArmorRework.getArmArmor(__instance) - 20f, 0f, 100f);
+
+                            calculatedMissileSpeed = Utilities.assignSlingMissileSpeed(ammoWeight, missionWeapon.CurrentUsageItem.MissileSpeed + msModifier, slingEffectiveSkillDR, slingArmorModifier, slingShieldType);
+                        }
+                        else
+                        {
+                            calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon.CurrentUsageItem.ItemUsage, missionWeapon.CurrentUsageItem.MissileSpeed + msModifier);
+                        }
                         rangedWeaponMW[missionWeapon.GetModifiedItemName().ToString()] = missionWeapon;
 
                         MissileSpeedProperty.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
@@ -250,7 +276,7 @@ namespace RBMCombat
                         MissionWeapon mw = __instance.Equipment[equipmentIndex];
                         WeaponStatsData[] wsd = __instance.Equipment[equipmentIndex].GetWeaponStatsData();
 
-                        if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
+                        if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow) || (wsd[0].WeaponClass == (int)WeaponClass.Sling))
                         {
                             MissileSpeedProperty.SetValue(__instance.Equipment[equipmentIndex].CurrentUsageItem, rangedWeaponStats[mw.GetModifiedItemName().ToString()].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                         }
@@ -315,7 +341,7 @@ namespace RBMCombat
                     }
                 }
 
-                if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
+                if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow) || (wsd[0].WeaponClass == (int)WeaponClass.Sling))
                 {
                     float ammoWeight;
                     if (missionWeapon.AmmoWeapon.Item != null && missionWeapon.Item != null && !missionWeapon.AmmoWeapon.IsEmpty && missionWeapon.AmmoWeapon.Amount > 0)
@@ -343,7 +369,32 @@ namespace RBMCombat
                     {
                         msModifier = missionWeapon.ItemModifier.ModifyHitPoints(50) - 50;
                     }
-                    int calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon.CurrentUsageItem.ItemUsage, rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight() + msModifier);// rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight());
+
+                    int calculatedMissileSpeed;
+                    if (wsd[0].WeaponClass == (int)WeaponClass.Sling)
+                    {
+                        // Slings factor in the shooter's skill and equipment weight on every shot.
+                        WeaponData slingWd = missionWeapon.GetWeaponData(true);
+                        SkillObject slingSkill = (slingWd.GetItemObject() == null) ? DefaultSkills.Athletics : slingWd.GetItemObject().RelevantSkill;
+                        int slingEf = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(shooterAgent, slingSkill);
+                        float slingEffectiveSkillDR = Utilities.GetEffectiveSkillWithDR(slingEf);
+
+                        float slingArmorModifier = 0;
+                        WeaponClass slingShieldType = WeaponClass.Undefined;
+                        for (EquipmentIndex ei = EquipmentIndex.WeaponItemBeginSlot; ei < EquipmentIndex.NumAllWeaponSlots; ei++)
+                        {
+                            if (!shooterAgent.Equipment[ei].IsEmpty && shooterAgent.Equipment[ei].IsShield())
+                                slingShieldType = shooterAgent.Equipment[ei].CurrentUsageItem.WeaponClass;
+                        }
+                        slingArmorModifier += MBMath.ClampFloat(ArmorRework.getShoulderArmor(shooterAgent) - 20f, 0f, 100f);
+                        slingArmorModifier += MBMath.ClampFloat(ArmorRework.getArmArmor(shooterAgent) - 20f, 0f, 100f);
+
+                        calculatedMissileSpeed = Utilities.assignSlingMissileSpeed(ammoWeight, rangedWeaponStats[min].getDrawWeight() + msModifier, slingEffectiveSkillDR, slingArmorModifier, slingShieldType);
+                    }
+                    else
+                    {
+                        calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon.CurrentUsageItem.ItemUsage, rangedWeaponStats[min].getDrawWeight() + msModifier);
+                    }
 
                     Vec3 shooterAgentVelocity = new Vec3(shooterAgent.Velocity, -1);
                     Vec3 myVelocity = new Vec3(velocity, -1);
@@ -390,7 +441,7 @@ namespace RBMCombat
                         }
                     }
                 }
-                if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
+                if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow) || (wsd[0].WeaponClass == (int)WeaponClass.Sling))
                 {
                     MissileSpeedProperty.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                 }
@@ -409,7 +460,7 @@ namespace RBMCombat
                 foreach (KeyValuePair<string, MissionWeapon> mw in rangedWeaponMW)
                 {
                     WeaponStatsData[] wsd = mw.Value.GetWeaponStatsData();
-                    if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
+                    if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow) || (wsd[0].WeaponClass == (int)WeaponClass.Sling))
                     {
                         if (rangedWeaponStats.ContainsKey(mw.Value.GetModifiedItemName().ToString()))
                         {

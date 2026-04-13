@@ -334,6 +334,36 @@ namespace RBMCombat
             //throwable.CurrentUsageIndex = 0;
         }
 
+        public static int assignSlingMissileSpeed(float ammoWeight, int drawWeight, float effectiveSkill, float armorModifier, WeaponClass shieldType)
+        {
+            // Shield penalty: a shield on the arm restricts the slinging motion.
+            float shieldTypeModifier = 1f;
+            switch (shieldType)
+            {
+                case WeaponClass.LargeShield:
+                    shieldTypeModifier = 0.87f;
+                    break;
+                case WeaponClass.SmallShield:
+                    shieldTypeModifier = 0.96f;
+                    break;
+            }
+
+            // Armor on shoulders and arms reduces sling rotation speed, same as for throws.
+            float weightTraining = MBMath.ClampFloat(effectiveSkill * 0.001f, 0f, 0.2f);
+            float equipmentWeightModifier = (float)Math.Sqrt(MBMath.ClampFloat(1f - (armorModifier * 0.005f) + weightTraining, 0.7f, 1f));
+
+            // From the design formula in calculateMissileSpeed:
+            // weightModifier = 730 * (1 + skill/100)  → at 100 skill it doubles
+            // slingLengthModifier = missile_speed * 0.01  (item MissileSpeed stat encodes cord length/quality)
+            // KE = ammoWeight * weightModifier * slingLengthModifier, clamped to [60, 350] J
+            // v = sqrt(2 * KE / ammoWeight)
+            float weightModifier = 730f * (1f + (effectiveSkill / 100f));
+            float slingLengthModifier = drawWeight * 0.01f;
+            int calculatedSpeed = (int)Math.Ceiling(Math.Sqrt((MBMath.ClampFloat(ammoWeight * weightModifier * slingLengthModifier, 60f, 350f)) * 2f / ammoWeight));
+
+            return (int)Math.Round(calculatedSpeed * shieldTypeModifier * equipmentWeightModifier);
+        }
+
         public static int assignStoneMissileSpeed(MissionWeapon throwable)
         {
             //PropertyInfo property = typeof(WeaponComponentData).GetProperty("MissileSpeed");

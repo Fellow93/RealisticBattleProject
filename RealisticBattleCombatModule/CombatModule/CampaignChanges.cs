@@ -250,6 +250,12 @@ namespace RBMCombat
                         shooterCharacter.HeroObject.AddSkillXp(skillForWeapon, 50f);
                         return;
                     }
+                    if (wc == WeaponClass.Sling)
+                    {
+                        // Slings use the Throwing skill; XP per shot matches bow (skill-intensive, high rate of fire).
+                        shooterCharacter.HeroObject.AddSkillXp(skillForWeapon, 30f);
+                        return;
+                    }
                 }
             }
         }

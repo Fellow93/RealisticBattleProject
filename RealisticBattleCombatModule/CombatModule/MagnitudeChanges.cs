@@ -358,6 +358,16 @@ namespace RBMCombat
                         }
                         break;
                     }
+                case WeaponClass.SlingStone:
+                    {
+                        // Sling stones are heavier than arrows but slower; cap is slightly below arrow
+                        // to reflect the lower penetration potential of a blunt projectile.
+                        if (physicalDamage > (weaponWeight) * 2000f)
+                        {
+                            physicalDamage = (weaponWeight) * 2000f;
+                        }
+                        break;
+                    }
             }
 
             baseMagnitude = physicalDamage * missileTotalDamage * momentumRemaining;
