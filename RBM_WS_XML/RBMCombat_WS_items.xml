@@ -135,6 +135,74 @@
 			UseTeamColor="true"
 			Civilian="true" />
 	</Item>
+	
+	<Item
+		id="heavy_gambeson_armor_plain"
+		name="{=*}Mariner Gambeson"
+		mesh="heavy_gambeson_armor_plain"
+		culture="Culture.nord"
+		weight="5"
+		appearance="2"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="27"
+				leg_armor="27"
+				arm_armor="30"
+				has_gender_variations="true"
+				covers_body="true"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true"
+			Civilian="true" />
+	</Item>
+	<Item
+		id="nordic_chainmail_a"
+		name="{=*}Nordic Long Heavy Mail"
+		subtype="body_armor"
+		mesh="nordic_chainmail_a"
+		culture="Culture.nord"
+		weight="18"
+		appearance="4"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="60"
+				leg_armor="50"
+				arm_armor="50"
+				has_gender_variations="true"
+				covers_body="true"
+				modifier_group="chain"
+				material_type="Chainmail" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="nordic_chainmail_c"
+		name="{=*}Reinforced Mail Coat"
+		subtype="body_armor"
+		mesh="nordic_chainmail_c"
+		culture="Culture.nord"
+		weight="18"
+		appearance="5"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="75"
+				arm_armor="55"
+				leg_armor="60"
+				has_gender_variations="true"
+				covers_body="true"
+				modifier_group="chain"
+				material_type="Chainmail" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	
 	<!-- #LegArmor -->
 	<Item
 		id="strapped_jackboots"
@@ -191,6 +259,42 @@
 		<Flags
 			Civilian="false" />
 	</Item>
+	
+	<Item
+		id="mail_mitten_d"
+		name="{=NeCHVy6I}Reinforced Northern Mail Mittens"
+		mesh="mail_mitten_d"
+		culture="Culture.nord"
+		weight="1.7"
+		appearance="4"
+		Type="HandArmor">
+		<ItemComponent>
+			<Armor
+				arm_armor="58"
+				covers_hands="true"
+				modifier_group="chain"
+				material_type="Chainmail" />
+		</ItemComponent>
+		<Flags />
+	</Item>
+	<Item
+		id="mail_mitten_g"
+		name="{=qAWN552z}Mail Mittens with Leather Reinforcement"
+		mesh="mail_mitten_g"
+		culture="Culture.nord"
+		weight="1.7"
+		appearance="4"
+		Type="HandArmor">
+		<ItemComponent>
+			<Armor
+				arm_armor="55"
+				covers_hands="true"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags />
+	</Item>
+	
 	<Item
 		id="northman_wrist_armor"
 		name="{=96SmfRN8}Northmen Raider Wrist Guards"
@@ -381,6 +485,42 @@
 			Civilian="true"
 			UseTeamColor="false" />
 	</Item>
+	
+	<Item
+		id="chainmail_shoulder_armor_b"
+		name="{=zwiRWTW9}Chainmail Shoulder Guards"
+		mesh="chainmail_shoulder_armor_b"
+		culture="Culture.nord"
+		weight="3"
+		appearance="5"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="27"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			Civilian="false"
+			UseTeamColor="false" />
+	</Item>
+	<Item
+		id="wolf_shoulder_ulfhedinn"
+		name="{=beg6guIH}Wolf Pelt Cape"
+		mesh="wolf_shoulder_2"
+		subtype="body_armor"
+		weight="3"
+		difficulty="0"
+		appearance="4"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="23"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+	</Item>
+	
 	<!-- #HeadArmor -->
 	<Item
 		id="berserker_helmet"
@@ -393,6 +533,7 @@
 		Type="HeadArmor">
 		<ItemComponent>
 			<Armor
+				stealth_factor="10"
 				head_armor="35"
 				body_armor="0"
 				arm_armor="10"
@@ -403,8 +544,33 @@
 				material_type="Leather" />
 		</ItemComponent>
 		<Flags
-			UseTeamColor="false" />
+			UseTeamColor="false" 
+			Stealth="true"/>
 	</Item>
+	
+	<Item
+		id="wolfhead_ulfhedinn"
+		name="{=IK9aaUNt}Reinforced Wolf Head"
+		subtype="head_armor"
+		mesh="wolfhead_reinforced"
+		weight="3"
+		appearance="3"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				stealth_factor="10"
+				head_armor="62"
+				body_armor="7"
+				arm_armor="9"
+				has_gender_variations="false"
+				hair_cover_type="all"
+				modifier_group="leather"
+				material_type="Leather" />
+		</ItemComponent>
+		<Flags
+			Stealth="true" />
+	</Item>
+	
 	<Item
 		id="berserker_helmet_reinforced"
 		name="{=1RpDRgLe}Berserker Reinforced Cloak"
@@ -416,6 +582,7 @@
 		Type="HeadArmor">
 		<ItemComponent>
 			<Armor
+				stealth_factor="10"
 				head_armor="65"
 				body_armor="8"
 				arm_armor="10"
@@ -426,7 +593,8 @@
 				material_type="Plate" />
 		</ItemComponent>
 		<Flags
-			UseTeamColor="false" />
+			UseTeamColor="false" 
+			Stealth="true"/>
 	</Item>
 	<Item
 		id="celtic_helmet"
@@ -1279,7 +1447,7 @@
 		name="{=ar8zJlCr}Mastercrafted Northern Armor"
 		mesh="nord_king_armor"
 		culture="Culture.nord"
-		weight="28"
+		weight="25"
 		appearance="6"
 		Type="BodyArmor">
 		<ItemComponent>
@@ -1294,6 +1462,48 @@
 		<Flags
 			UseTeamColor="true" />
 	</Item>
+	
+	<Item
+		id="nord_king_armor_c"
+		name="{=iPI533Ht}Gilded Shield-Companion Armor"
+		mesh="nord_king_armor_c"
+		culture="Culture.nord"
+		weight="21"
+		appearance="5"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="62"
+				leg_armor="57"
+				arm_armor="62"
+				covers_body="true"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="nord_king_armor_d"
+		name="{=ar8zJlCr}Mastercrafted Northern Armor"
+		mesh="nord_king_armor"
+		culture="Culture.nord"
+		weight="25"
+		appearance="6"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="60"
+				leg_armor="55"
+				arm_armor="60"
+				covers_body="true"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	
 	<Item
 		id="nord_king_crown"
 		name="{=MX73rUwD}Northern Majestic Crown"
@@ -1375,7 +1585,7 @@
 		name="{=QELt180J}Gilded Noble Armor"
 		mesh="nord_king_armor_b"
 		culture="Culture.nord"
-		weight="28"
+		weight="21"
 		appearance="6"
 		Type="BodyArmor">
 		<ItemComponent>
