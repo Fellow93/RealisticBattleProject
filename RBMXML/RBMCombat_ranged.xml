@@ -475,7 +475,7 @@
 				speed_rating="0"
 				missile_speed="10"
 				weapon_length="10"
-				thrust_damage="100"
+				thrust_damage="70"
 				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
@@ -515,7 +515,7 @@
 				speed_rating="0"
 				missile_speed="10"
 				weapon_length="10"
-				thrust_damage="100"
+				thrust_damage="70"
 				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
@@ -536,7 +536,7 @@
 		name="{=a3WNz6Ci}Stone Sling Pebbles 80 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
-		flying_mesh="sling_ammo_flying"
+		flying_mesh="throwing_stone"
 		mesh="sling_ammo"
 		tier_override="1"
 		holster_mesh="stone_holster"
@@ -555,7 +555,7 @@
 				speed_rating="0"
 				missile_speed="10"
 				weapon_length="10"
-				thrust_damage="100"
+				thrust_damage="70"
 				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
@@ -576,7 +576,7 @@
 		name="{=a3WNz6Ci}Stone Sling Ammo 120 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
-		flying_mesh="sling_ammo_flying"
+		flying_mesh="throwing_stone"
 		mesh="sling_ammo"
 		tier_override="1"
 		holster_mesh="stone_holster"
@@ -595,7 +595,7 @@
 				speed_rating="0"
 				missile_speed="10"
 				weapon_length="10"
-				thrust_damage="100"
+				thrust_damage="70"
 				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
@@ -616,7 +616,7 @@
 		name="{=a3WNz6Ci}Stone Sling Half-Libra 164 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
-		flying_mesh="sling_ammo_flying"
+		flying_mesh="throwing_stone"
 		mesh="sling_ammo"
 		tier_override="1"
 		holster_mesh="stone_holster"
@@ -635,7 +635,7 @@
 				speed_rating="0"
 				missile_speed="10"
 				weapon_length="10"
-				thrust_damage="100"
+				thrust_damage="70"
 				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
@@ -656,7 +656,7 @@
 		name="{=a3WNz6Ci}Stone Sling Half-Mina 218 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
-		flying_mesh="sling_ammo_flying"
+		flying_mesh="projectile_grapeshot_piece_a"
 		mesh="sling_ammo"
 		tier_override="1"
 		holster_mesh="stone_holster"
@@ -675,7 +675,7 @@
 				speed_rating="0"
 				missile_speed="10"
 				weapon_length="10"
-				thrust_damage="100"
+				thrust_damage="70"
 				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
@@ -696,7 +696,7 @@
 		name="{=a3WNz6Ci}Stone Sling Libra 329 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
-		flying_mesh="sling_ammo_flying"
+		flying_mesh="projectile_grapeshot_piece_a"
 		mesh="sling_ammo"
 		tier_override="1"
 		holster_mesh="stone_holster"
@@ -715,7 +715,7 @@
 				speed_rating="0"
 				missile_speed="10"
 				weapon_length="10"
-				thrust_damage="100"
+				thrust_damage="70"
 				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
@@ -736,7 +736,7 @@
 		name="{=a3WNz6Ci}Stone Sling Mina 436 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
-		flying_mesh="sling_ammo_flying"
+		flying_mesh="projectile_grapeshot_piece_a"
 		mesh="sling_ammo"
 		tier_override="1"
 		holster_mesh="stone_holster"
@@ -755,7 +755,7 @@
 				speed_rating="0"
 				missile_speed="10"
 				weapon_length="10"
-				thrust_damage="100"
+				thrust_damage="70"
 				thrust_damage_type="Cut"
 				item_usage=""
 				passby_sound_code="">
@@ -1010,7 +1010,7 @@
 			Stealth="true"
 			ForceAttachOffHandPrimaryItemBone="true" />
 	</Item>
-<!-- Temporary soliution -->
+<!-- Temporary soliution
 	<Item
 		id="sling_wool"
 		name="{=L5i5RgO0}Wool Sling 18 Inches"
@@ -1131,7 +1131,8 @@
 		<Flags
 			Stealth="true" />
 	</Item>
-<!-- Will be implemented with new code
+-->
+
 	<Item
 		id="sling_wool"
 		name="{=L5i5RgO0}Wool Sling 18 Inches"
@@ -1252,7 +1253,7 @@
 		<Flags
 			Stealth="true" />
 	</Item>
--->
+
 
 	<Item id="Flamethrower_RBM" name="Imperial Cheirosiphon" body_name="bo_cross_bow_heavy" is_merchandise="false" mesh="crossbow_f" weight="5" difficulty="100" appearance="1" Type="Crossbow" value="50000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
