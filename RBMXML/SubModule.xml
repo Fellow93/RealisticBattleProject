@@ -235,6 +235,21 @@
 			<GameType value="EditorGame" />
 		</IncludedGameTypes>
 	</XmlNode>
+    <XmlNode>
+      <XmlName
+        path="RBM_bow_shields"
+        id="soln_item_holsters" />
+      <IncludedGameTypes>
+        <GameType
+          value="Campaign" />
+        <GameType
+          value="CampaignStoryMode" />
+        <GameType
+          value="CustomGame" />
+        <GameType
+          value="EditorGame" />
+      </IncludedGameTypes>
+    </XmlNode>
 	
 	<XmlNode>                
 		<XmlName id="SkillSets" path="RBM_custom_battle_skill_sets" />
