@@ -362,9 +362,9 @@ namespace RBMCombat
                     {
                         // Sling stones are heavier than arrows but slower; cap is slightly below arrow
                         // to reflect the lower penetration potential of a blunt projectile.
-                        if (physicalDamage > (weaponWeight) * 2000f)
+                        if (physicalDamage > (weaponWeight) * 3000f)
                         {
-                            physicalDamage = (weaponWeight) * 2000f;
+                            physicalDamage = (weaponWeight) * 3000f;
                         }
                         break;
                     }

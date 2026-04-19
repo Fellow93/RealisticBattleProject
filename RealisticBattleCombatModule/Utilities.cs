@@ -854,11 +854,15 @@ namespace RBMCombat
                     {
                         if (damageType == DamageTypes.Pierce)
                         {
-                            skillBasedDamage = (magnitude * 0.2f + 40f * RBMConfig.RBMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.4f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) * 1.3f;
+                            //skillBasedDamage = (magnitude * 0.2f + 40f * RBMConfig.RBMConfig.ThrustMagnitudeModifier + (effectiveSkill * 0.4f * RBMConfig.RBMConfig.ThrustMagnitudeModifier)) * 1.3f;
+                            skillBasedDamage = magnitude;
                         }
                         else
                         {
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.112f), 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4.6f);
+                            float value = magnitude + (effectiveSkill * 1.125f);
+                            float min = 15f * (1 + skillModifier);
+                            float max = 22f * (1 + (2 * skillModifier));
+                            skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4.6f);
                         }
                         if (magnitude > 1f)
                         {
