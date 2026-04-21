@@ -185,7 +185,10 @@ namespace RBM
                     mission.AddMissionBehavior((MissionBehavior)(object)new StanceVisualLogic());
                 }
                 mission.AddMissionBehavior((MissionBehavior)(object)new SiegeArcherPoints());
-                mission.AddMissionBehavior((MissionBehavior)(object)new StanceLogic());
+                if (RBMConfig.RBMConfig.postureEnabled)
+                {
+                    mission.AddMissionBehavior((MissionBehavior)(object)new StanceLogic());
+                }
             }
             else
             {

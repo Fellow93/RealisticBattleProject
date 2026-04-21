@@ -207,7 +207,7 @@ namespace RBMAI
         {
             private static void Prefix(ref Agent __instance)
             {
-                if (__instance.IsHuman)
+                if (RBMConfig.RBMConfig.postureEnabled && __instance.IsHuman)
                 {
                     AgentStances.values[__instance] = new Stance();
                     Stance stance = AgentStances.values[__instance];
@@ -313,19 +313,24 @@ namespace RBMAI
                         postureDmg = blow.InflictedDamage;
                     }
 
-                    //stamina effect
-                    float staminaLevel = stance.stamina / stance.maxStamina;
-                    postureDmg *= MBMath.Lerp(1.25f, 1f, staminaLevel);
+                    if (RBMConfig.RBMConfig.staminaEnabled)
+                    {
+                        float staminaLevel = stance.stamina / stance.maxStamina;
+                        postureDmg *= MBMath.Lerp(1.25f, 1f, staminaLevel);
+                    }
 
                     float postureOverkill = Math.Abs(stance.posture - postureDmg);
                     stance.posture = Math.Max(0f, stance.posture - postureDmg);
 
-                    int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(victimAgent, DefaultSkills.Athletics);
-                    float athlethicModifier = effectiveAthleticSkill / 20;
-                    float victimAgentArmorWeight = Math.Max(0f, victimAgent.SpawnEquipment.GetTotalWeightOfArmor(true) - athlethicModifier);
-                    float staminaLoss = calculateDefenderStaminaLoss(victimAgent, attackerAgent, ref collisionData, meleeHitType, isUnarmedAttack);
-                    staminaLoss *= (1f + victimAgentArmorWeight / 50f);
-                    stance.reduceStamina(staminaLoss);
+                    if (RBMConfig.RBMConfig.staminaEnabled)
+                    {
+                        int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(victimAgent, DefaultSkills.Athletics);
+                        float athlethicModifier = effectiveAthleticSkill / 20;
+                        float victimAgentArmorWeight = Math.Max(0f, victimAgent.SpawnEquipment.GetTotalWeightOfArmor(true) - athlethicModifier);
+                        float staminaLoss = calculateDefenderStaminaLoss(victimAgent, attackerAgent, ref collisionData, meleeHitType, isUnarmedAttack);
+                        staminaLoss *= (1f + victimAgentArmorWeight / 50f);
+                        stance.reduceStamina(staminaLoss);
+                    }
 
                     addPosturedamageVisual(attackerAgent, victimAgent);
                     if (stance.posture <= 0f)
@@ -380,19 +385,24 @@ namespace RBMAI
                 {
                     float postureDmg = calculateAttackerPostureDamage(victimAgent, attackerAgent, actionModifier, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, isUnarmedAttack);
 
-                    //stamina effect
-                    float staminaLevel = stance.stamina / stance.maxStamina;
-                    postureDmg *= MBMath.Lerp(1.25f, 1f, staminaLevel);
+                    if (RBMConfig.RBMConfig.staminaEnabled)
+                    {
+                        float staminaLevel = stance.stamina / stance.maxStamina;
+                        postureDmg *= MBMath.Lerp(1.25f, 1f, staminaLevel);
+                    }
 
                     float postureOverkill = Math.Abs(stance.posture - postureDmg);
                     stance.posture = Math.Max(0f, stance.posture - postureDmg);
 
-                    int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, DefaultSkills.Athletics);
-                    float athlethicModifier = effectiveAthleticSkill / 20;
-                    float attackerAgentArmorWeight = Math.Max(0f, attackerAgent.SpawnEquipment.GetTotalWeightOfArmor(true) - athlethicModifier);
-                    float staminaLoss = calculateAttackerStaminaLoss(victimAgent, attackerAgent, ref collisionData, meleeHitType, isUnarmedAttack);
-                    staminaLoss *= (1f + attackerAgentArmorWeight / 50f);
-                    stance.reduceStamina(staminaLoss);
+                    if (RBMConfig.RBMConfig.staminaEnabled)
+                    {
+                        int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, DefaultSkills.Athletics);
+                        float athlethicModifier = effectiveAthleticSkill / 20;
+                        float attackerAgentArmorWeight = Math.Max(0f, attackerAgent.SpawnEquipment.GetTotalWeightOfArmor(true) - athlethicModifier);
+                        float staminaLoss = calculateAttackerStaminaLoss(victimAgent, attackerAgent, ref collisionData, meleeHitType, isUnarmedAttack);
+                        staminaLoss *= (1f + attackerAgentArmorWeight / 50f);
+                        stance.reduceStamina(staminaLoss);
+                    }
 
                     addPosturedamageVisual(attackerAgent, victimAgent);
                     if (stance.posture <= 0f)
@@ -1654,8 +1664,11 @@ namespace RBMAI
                                 shooterPosture.posture -= postureLoss;
                             }
 
-                            float staminaLoss = calculateShootMissileStaminaLoss(shooterAgent, wc);
-                            shooterPosture.reduceStamina(staminaLoss);
+                            if (RBMConfig.RBMConfig.staminaEnabled)
+                            {
+                                float staminaLoss = calculateShootMissileStaminaLoss(shooterAgent, wc);
+                                shooterPosture.reduceStamina(staminaLoss);
+                            }
                         }
                     }
                 }
@@ -1866,26 +1879,29 @@ namespace RBMAI
                                 entry.Value.tickPostureRegen();
                             }
                         }
-                        if (entry.Value.stamina < entry.Value.maxStamina)
+                        if (RBMConfig.RBMConfig.staminaEnabled)
                         {
-                            bool isInQuickStaminaRegen = IsAgentInQuickStaminaRegen(agent: entry.Key, stance: entry.Value);
-                            if (isInQuickStaminaRegen)
+                            if (entry.Value.stamina < entry.Value.maxStamina)
                             {
-                                entry.Value.tickStaminaRegen(multiplier: 3f);
+                                bool isInQuickStaminaRegen = IsAgentInQuickStaminaRegen(agent: entry.Key, stance: entry.Value);
+                                if (isInQuickStaminaRegen)
+                                {
+                                    entry.Value.tickStaminaRegen(multiplier: 3f);
+                                }
+                                else
+                                {
+                                    entry.Value.tickStaminaRegen();
+                                }
                             }
-                            else
-                            {
-                                entry.Value.tickStaminaRegen();
-                            }
-                        }
 
-                        //stamina health regen
-                        float staminaLevel = entry.Value.stamina / entry.Value.maxStamina;
-                        if (currentDtToUpdateStaminaHealth > timeToCalcStaminaHealth)
-                        {
-                            if (staminaLevel > 0.85f)
+                            //stamina health regen
+                            float staminaLevel = entry.Value.stamina / entry.Value.maxStamina;
+                            if (currentDtToUpdateStaminaHealth > timeToCalcStaminaHealth)
                             {
-                                entry.Key.Health = Math.Min(entry.Key.HealthLimit, entry.Key.Health + 0.9f);
+                                if (staminaLevel > 0.85f)
+                                {
+                                    entry.Key.Health = Math.Min(entry.Key.HealthLimit, entry.Key.Health + 0.9f);
+                                }
                             }
                         }
                     }
@@ -2034,7 +2050,10 @@ namespace RBMAI
                                 case WeaponClass.ThrowingKnife:
                                     {
                                         affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - arrowAgentPostureDamage);
-                                        affectedAgentPosture.reduceStamina(arrowAgentPostureDamage * 2f);
+                                        if (RBMConfig.RBMConfig.staminaEnabled)
+                                        {
+                                            affectedAgentPosture.reduceStamina(arrowAgentPostureDamage * 2f);
+                                        }
                                         break;
                                     }
                                 case WeaponClass.Javelin:
@@ -2042,7 +2061,10 @@ namespace RBMAI
 
                                     {
                                         affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - throwingAgentPostureDamage);
-                                        affectedAgentPosture.reduceStamina(throwingAgentPostureDamage * 3f);
+                                        if (RBMConfig.RBMConfig.staminaEnabled)
+                                        {
+                                            affectedAgentPosture.reduceStamina(throwingAgentPostureDamage * 3f);
+                                        }
                                         break;
                                     }
                             }
@@ -2060,14 +2082,20 @@ namespace RBMAI
 
                                     {
                                         affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - arrowShieldPostureDamage);
-                                        affectedAgentPosture.reduceStamina(arrowShieldPostureDamage * 2f);
+                                        if (RBMConfig.RBMConfig.staminaEnabled)
+                                        {
+                                            affectedAgentPosture.reduceStamina(arrowShieldPostureDamage * 2f);
+                                        }
                                         break;
                                     }
                                 case WeaponClass.Javelin:
                                 case WeaponClass.ThrowingAxe:
                                     {
                                         affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - throwingShieldPostureDamage);
-                                        affectedAgentPosture.reduceStamina(throwingShieldPostureDamage * 3f);
+                                        if (RBMConfig.RBMConfig.staminaEnabled)
+                                        {
+                                            affectedAgentPosture.reduceStamina(throwingShieldPostureDamage * 3f);
+                                        }
                                         break;
                                     }
                             }

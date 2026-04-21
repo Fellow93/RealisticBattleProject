@@ -37,13 +37,24 @@
 					   MarginLeft="!AT.MainWindow.MarginLeft" MarginRight="!AT.MainWindow.MarginRight" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 
 					<Children>
-						<!-- Left -->
-						<ListPanel Id="MainSectionListPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Top">
+						<!-- Left: plain Widget so children use absolute alignment -->
+						<Widget Id="MainSectionListPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Left" VerticalAlignment="Top">
 							<Children>
+
+								<!-- Scrollable content area, margin-right leaves room for scrollbar -->
+								<ScrollablePanel Id="ConfigScrollablePanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+									MarginRight="30"
+									ClipRect="ConfigClipRect" InnerPanel="ConfigClipRect\ConfigInnerPanel"
+									VerticalScrollbar="..\ConfigScrollbar\Scrollbar" MouseScrollAxis="Vertical" AutoHideScrollBars="false">
+									<Children>
+										<Widget Id="ConfigClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+											<Children>
+												<Widget Id="ConfigInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top">
+													<Children>
 
 								<!-- List top to down -->
 								<!-- VerticalBottomToTop renders last child at top, so items are listed in reverse display order -->
-								<ListPanel Id="OuterList" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Top" LayoutImp.LayoutMethod="VerticalBottomToTop">
+								<ListPanel Id="OuterList" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Top" LayoutImp.LayoutMethod="VerticalBottomToTop" MarginBottom="20">
 									<Children>
 
 										<!-- Tournament section (listed first = displayed at bottom) -->
@@ -119,6 +130,21 @@
 											  <Children>
 												<RichTextWidget DataSource="{PostureSystemEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
 												<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{PostureSystemEnabled}" />
+											  </Children>
+											</ListPanel>
+
+										  </Children>
+										</ListPanel>
+
+										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+										  <Children>
+
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@StaminaSyst"/>
+
+											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
+											  <Children>
+												<RichTextWidget DataSource="{StaminaSystemEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
+												<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{StaminaSystemEnabled}" />
 											  </Children>
 											</ListPanel>
 
@@ -296,41 +322,24 @@
 									</Children>
 								</ListPanel>
 
+													</Children>
+												</Widget>
+											</Children>
+										</Widget>
+									</Children>
+								</ScrollablePanel>
+
+								<!-- Gradient fade at bottom to hint more content -->
+								<Widget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed"
+									SuggestedHeight="60" VerticalAlignment="Bottom" MarginRight="30"
+									Sprite="General\CharacterCreation\character_creation_scroll_gradient" />
+
+								<!-- Always-visible scrollbar pinned to right edge -->
+								<Standard.VerticalScrollbar Id="ConfigScrollbar" HorizontalAlignment="Right" HeightSizePolicy="StretchToParent" WidthSizePolicy="CoverChildren" VerticalAlignment="Top" />
+
 							</Children>
-						</ListPanel>
+						</Widget>
 
-						<!-- Right -->
-
-						<ListPanel Id="MainSectionListPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"  HorizontalAlignment="Right" VerticalAlignment="Top">
-						  <Children>
-							<!-- Press Button
-							<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="!AT.Check.Height" LayoutImp.LayoutMethod="HorizontalLeftToRight">
-							  <Children>
-								<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="Start Test Mission" />
-								<Widget Id="BooleanOption" WidthSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Slider.Width" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" IsVisible="true" UpdateChildrenStates="true">
-								  <Children>
-									<ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteMissionStart"  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="51" MarginTop="6" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="Header.Tab.Center">
-									  <Children>
-										<TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" PositionYOffset="1" Brush="Clan.TabControl.Text" Text="Start Mission"/>
-									  </Children>
-									</ButtonWidget>
-								  </Children>
-								</Widget>
-							  </Children>
-							</ListPanel>-->
-
-							<ListPanel Id="OuterList" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Top" LayoutImp.LayoutMethod="VerticalBottomToTop">
-							  <Children>
-								<RichTextWidget WidthSizePolicy = "StretchToParent" HeightSizePolicy = "CoverChildren" MarginLeft="5" MarginRight="5" MarginTop="20" Text=" " Brush="SPOptions.OptionName.Text"/>
-								<RichTextWidget WidthSizePolicy = "StretchToParent" HeightSizePolicy = "CoverChildren" MarginLeft="5" MarginRight="5" MarginTop="20" Text=" " Brush="SPOptions.OptionName.Text"/>
-								<RichTextWidget WidthSizePolicy = "StretchToParent" HeightSizePolicy = "CoverChildren" MarginLeft="5" MarginRight="5" MarginTop="20" Text=" " Brush="SPOptions.OptionName.Text"/>
-								<RichTextWidget WidthSizePolicy = "StretchToParent" HeightSizePolicy = "CoverChildren" MarginLeft="5" MarginRight="5" MarginTop="20" Text=" " Brush="SPOptions.OptionName.Text"/>
-							  </Children>
-							</ListPanel>
-
-
-						  </Children>
-						</ListPanel>
 					</Children>
 				</ListPanel>
 

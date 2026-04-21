@@ -228,6 +228,8 @@ namespace RBMConfig
             RBMAIEnabled.InnerText = RBMConfig.rbmAiEnabled ? "1" : "0";
             XmlElement PostureEnabled = xmlconfig.CreateElement("PostureEnabled");
             PostureEnabled.InnerText = RBMConfig.postureEnabled ? "1" : "0";
+            XmlElement StaminaEnabled = xmlconfig.CreateElement("StaminaEnabled");
+            StaminaEnabled.InnerText = RBMConfig.staminaEnabled ? "1" : "0";
             XmlElement PostureGUIEnabled = xmlconfig.CreateElement("PostureGUIEnabled");
             PostureGUIEnabled.InnerText = RBMConfig.postureGUIEnabled ? "1" : "0";
             XmlElement VanillaCombatAi = xmlconfig.CreateElement("VanillaCombatAi");
@@ -237,6 +239,7 @@ namespace RBMConfig
 
             RBMAI.AppendChild(RBMAIEnabled);
             RBMAI.AppendChild(PostureEnabled);
+            RBMAI.AppendChild(StaminaEnabled);
             RBMAI.AppendChild(PlayerPostureMultiplier);
             RBMAI.AppendChild(PostureGUIEnabled);
             RBMAI.AppendChild(VanillaCombatAi);

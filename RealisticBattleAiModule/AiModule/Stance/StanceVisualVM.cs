@@ -15,6 +15,9 @@
 
         private bool showPlayerPostureStatus = true;
 
+        private bool showPostureBar = RBMConfig.RBMConfig.postureEnabled;
+        private bool showStaminaBar = RBMConfig.RBMConfig.staminaEnabled;
+
         private int enemyHealth = 100;
         private int enemyHealthMax = 50;
 
@@ -92,7 +95,8 @@
             {
                 showPlayerPostureStatus = value;
                 OnPropertyChanged("ShowPlayerPostureStatus");
-                //OnPropertyChanged("DisplayText");
+                OnPropertyChanged("ShowPlayerPostureBar");
+                OnPropertyChanged("ShowPlayerStaminaBar");
             }
         }
 
@@ -107,9 +111,22 @@
             {
                 showEnemyStatus = value;
                 OnPropertyChanged("ShowEnemyStatus");
-                //OnPropertyChanged("DisplayText");
+                OnPropertyChanged("ShowEnemyPostureBar");
+                OnPropertyChanged("ShowEnemyStaminaBar");
             }
         }
+
+        [DataSourceProperty]
+        public bool ShowPlayerPostureBar => showPlayerPostureStatus && showPostureBar;
+
+        [DataSourceProperty]
+        public bool ShowPlayerStaminaBar => showPlayerPostureStatus && showStaminaBar;
+
+        [DataSourceProperty]
+        public bool ShowEnemyPostureBar => showEnemyStatus && showPostureBar;
+
+        [DataSourceProperty]
+        public bool ShowEnemyStaminaBar => showEnemyStatus && showStaminaBar;
 
         [DataSourceProperty]
         public int EnemyHealth
@@ -171,6 +188,7 @@
             }
         }
 
+        [DataSourceProperty]
         public int EnemyStamina
         {
             get

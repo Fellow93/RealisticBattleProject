@@ -27,6 +27,9 @@ namespace RBMConfig
         public TextViewModel PostureSystemEnabledText { get; }
         public SelectorVM<SelectorItemVM> PostureSystemEnabled { get; }
 
+        public TextViewModel StaminaSystemEnabledText { get; }
+        public SelectorVM<SelectorItemVM> StaminaSystemEnabled { get; }
+
         public TextViewModel PlayerPostureMultiplierText { get; }
         public SelectorVM<SelectorItemVM> PlayerPostureMultiplier { get; }
 
@@ -199,6 +202,15 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
+        public string StaminaSyst
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_030}Stamina System (requires Posture)").ToString();
+            }
+        }
+
+        [DataSourceProperty]
         public string Playpost
         {
             get
@@ -355,6 +367,10 @@ namespace RBMConfig
             PostureSystemEnabledText = new TextViewModel(new TextObject("Posture System"));
             PostureSystemEnabled = new SelectorVM<SelectorItemVM>(postureOptions, 0, null);
 
+            List<string> staminaOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            StaminaSystemEnabledText = new TextViewModel(new TextObject("Stamina System"));
+            StaminaSystemEnabled = new SelectorVM<SelectorItemVM>(staminaOptions, 0, null);
+
             List<string> playerPostureMultiplierOptions = new List<string> { "1x (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", "1.5x", "2x" };
             PlayerPostureMultiplierText = new TextViewModel(new TextObject("Player Posture Multiplier"));
             PlayerPostureMultiplier = new SelectorVM<SelectorItemVM>(playerPostureMultiplierOptions, 0, null);
@@ -390,6 +406,8 @@ namespace RBMConfig
             {
                 PostureSystemEnabled.SelectedIndex = 0;
             }
+
+            StaminaSystemEnabled.SelectedIndex = RBMConfig.staminaEnabled ? 1 : 0;
 
             if (RBMConfig.postureGUIEnabled)
             {
@@ -528,6 +546,8 @@ namespace RBMConfig
             {
                 RBMConfig.postureEnabled = true;
             }
+
+            RBMConfig.staminaEnabled = StaminaSystemEnabled.SelectedIndex == 1;
 
             if (PlayerPostureMultiplier.SelectedIndex == 0)
             {

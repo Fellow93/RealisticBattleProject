@@ -21,6 +21,7 @@ namespace RBMConfig
         //RBMAI
         public static bool hitStopEnabled = true;
         public static bool postureEnabled = true;
+        public static bool staminaEnabled = true;
 
         public static float playerPostureMultiplier = 1f;
         public static bool postureGUIEnabled = true;
@@ -126,6 +127,7 @@ namespace RBMConfig
             // RBMAI
             hitStopEnabled = ReadOrCreate("/Config/RBMAI", "HitStopEnabled", "1").Equals("1");
             postureEnabled = ReadOrCreate("/Config/RBMAI", "PostureEnabled", "1").Equals("1");
+            staminaEnabled = ReadOrCreate("/Config/RBMAI", "StaminaEnabled", "1").Equals("1");
             postureGUIEnabled = ReadOrCreate("/Config/RBMAI", "PostureGUIEnabled", "1").Equals("1");
             vanillaCombatAi = ReadOrCreate("/Config/RBMAI", "VanillaCombatAi", "0").Equals("1");
             switch (ReadOrCreate("/Config/RBMAI", "PlayerPostureMultiplier", "0"))
@@ -209,6 +211,7 @@ namespace RBMConfig
             //RBMAI
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/HitStopEnabled"), hitStopEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureEnabled"), postureEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/StaminaEnabled"), staminaEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureGUIEnabled"), postureGUIEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/VanillaCombatAi"), vanillaCombatAi);
             switch (playerPostureMultiplier)

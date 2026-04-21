@@ -458,23 +458,26 @@ namespace RBMCombat
                     AgentStances.values.TryGetValue(attacker, out attackerPosture);
                     AgentStances.values.TryGetValue(victim, out victimPosture);
 
-                    //stamina effct on attacker
-                    if (attackerPosture != null)
+                    if (RBMConfig.RBMConfig.staminaEnabled)
                     {
-                        float staminaLevel = attackerPosture.stamina / attackerPosture.maxStamina;
+                        //stamina effct on attacker
+                        if (attackerPosture != null)
+                        {
+                            float staminaLevel = attackerPosture.stamina / attackerPosture.maxStamina;
 
-                        //magnitude modifier based on stamina level
-                        magnitude *= MBMath.Lerp(0.85f, 1f, staminaLevel);
-                    }
+                            //magnitude modifier based on stamina level
+                            magnitude *= MBMath.Lerp(0.85f, 1f, staminaLevel);
+                        }
 
-                    //stamina effct on victim
-                    if (victimPosture != null)
-                    {
-                        float staminaLevel = victimPosture.stamina / victimPosture.maxStamina;
+                        //stamina effct on victim
+                        if (victimPosture != null)
+                        {
+                            float staminaLevel = victimPosture.stamina / victimPosture.maxStamina;
 
-                        //armor amount modifier based on stamina level
-                        float armorStaminaLevel = 0.3f + Math.Max(0.7f, staminaLevel);
-                        armorAmount *= armorStaminaLevel;
+                            //armor amount modifier based on stamina level
+                            float armorStaminaLevel = 0.3f + Math.Max(0.7f, staminaLevel);
+                            armorAmount *= armorStaminaLevel;
+                        }
                     }
                 }
 
