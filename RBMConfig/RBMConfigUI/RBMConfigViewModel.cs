@@ -8,7 +8,6 @@ namespace RBMConfig
 {
     internal class RBMConfigViewModel : ViewModel
     {
-
         public TextViewModel ThrustModifierText { get; }
         public SelectorVM<SelectorItemVM> ThrustModifier { get; }
 
@@ -211,6 +210,22 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
+        public bool IsStaminaSelectable => PostureSystemEnabled.SelectedIndex == 1;
+
+        private void OnPostureSystemChanged(SelectorVM<SelectorItemVM> selector)
+        {
+            if (StaminaSystemEnabled == null)
+            {
+                return;
+            }
+            if (selector.SelectedIndex == 0)
+            {
+                StaminaSystemEnabled.SelectedIndex = 0;
+            }
+            OnPropertyChanged("IsStaminaSelectable");
+        }
+
+        [DataSourceProperty]
         public string Playpost
         {
             get
@@ -365,7 +380,7 @@ namespace RBMConfig
 
             List<string> postureOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             PostureSystemEnabledText = new TextViewModel(new TextObject("Posture System"));
-            PostureSystemEnabled = new SelectorVM<SelectorItemVM>(postureOptions, 0, null);
+            PostureSystemEnabled = new SelectorVM<SelectorItemVM>(postureOptions, 0, OnPostureSystemChanged);
 
             List<string> staminaOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             StaminaSystemEnabledText = new TextViewModel(new TextObject("Stamina System"));
@@ -462,6 +477,7 @@ namespace RBMConfig
             {
                 RBMTournamentEnabled.SelectedIndex = 0;
             }
+
         }
 
         public override void RefreshValues()
