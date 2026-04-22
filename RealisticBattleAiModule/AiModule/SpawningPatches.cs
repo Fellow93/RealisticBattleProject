@@ -18,7 +18,6 @@ namespace RBMAI.AiModule
         [HarmonyPatch(typeof(Mission))]
         private class SpawnTroopPatch
         {
-
             public static Vec2 ComputePolygonCentroid(IReadOnlyList<Vec2> vertices)
             {
                 if (vertices == null || vertices.Count < 3)
@@ -53,7 +52,7 @@ namespace RBMAI.AiModule
 
             [HarmonyPrefix]
             [HarmonyPatch("SpawnTroop")]
-            private static bool PrefixSpawnTroop(ref Mission __instance, IAgentOriginBase troopOrigin, bool isPlayerSide, bool hasFormation, bool spawnWithHorse, bool isReinforcement, int formationTroopCount, int formationTroopIndex, bool isAlarmed, bool wieldInitialWeapons, bool forceDismounted, ref Vec3? initialPosition, ref Vec2? initialDirection, string specialActionSetSuffix = null)
+            private static bool PrefixSpawnTroop(ref Mission __instance, IAgentOriginBase troopOrigin, bool isPlayerSide, bool hasFormation, bool spawnWithHorse, bool isReinforcement, int formationTroopCount, int formationTroopIndex, bool isAlarmed, bool wieldInitialWeapons, ref Vec3? initialPosition, ref Vec2? initialDirection, string specialActionSetSuffix = null)
             {
                 if (Mission.Current != null && Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
                 {
@@ -155,7 +154,7 @@ namespace RBMAI.AiModule
         {
             [HarmonyPrefix]
             [HarmonyPatch("AfterStart")]
-            private static bool PrefixAfterStart(ref MapEvent ____mapEvent, ref MissionAgentSpawnLogic ____missionAgentSpawnLogic)
+            private static bool PrefixAfterStart(ref MapEvent ____mapEvent, ref DefaultBattleMissionAgentSpawnLogic ____missionAgentSpawnLogic)
             {
                 if (____mapEvent != null)
                 {
@@ -200,7 +199,7 @@ namespace RBMAI.AiModule
         {
             [HarmonyPrefix]
             [HarmonyPatch("AfterStart")]
-            private static bool PrefixAfterStart(ref MissionAgentSpawnLogic ____missionAgentSpawnLogic, ref CustomBattleCombatant[] ____battleCombatants)
+            private static bool PrefixAfterStart(ref DefaultBattleMissionAgentSpawnLogic ____missionAgentSpawnLogic, ref CustomBattleCombatant[] ____battleCombatants)
             {
                 int battleSize = ____missionAgentSpawnLogic.BattleSize;
 
@@ -239,7 +238,7 @@ namespace RBMAI.AiModule
         {
             [HarmonyPrefix]
             [HarmonyPatch("AfterStart")]
-            private static bool PrefixAfterStart(ref MissionAgentSpawnLogic ____missionAgentSpawnLogic, ref CustomBattleCombatant ____defenderParty, ref CustomBattleCombatant ____attackerParty)
+            private static bool PrefixAfterStart(ref DefaultBattleMissionAgentSpawnLogic ____missionAgentSpawnLogic, ref CustomBattleCombatant ____defenderParty, ref CustomBattleCombatant ____attackerParty)
             {
                 int battleSize = ____missionAgentSpawnLogic.BattleSize;
 
@@ -278,7 +277,7 @@ namespace RBMAI.AiModule
         {
             [HarmonyPrefix]
             [HarmonyPatch("AfterStart")]
-            private static bool PrefixAfterStart(ref MissionAgentSpawnLogic ____missionAgentSpawnLogic, ref MapEvent ____mapEvent)
+            private static bool PrefixAfterStart(ref DefaultBattleMissionAgentSpawnLogic ____missionAgentSpawnLogic, ref MapEvent ____mapEvent)
             {
                 if (____mapEvent != null)
                 {
