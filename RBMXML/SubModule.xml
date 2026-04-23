@@ -1,17 +1,17 @@
 ﻿<Module>
   <Name value="(RBM) Realistic Battle Mod Bannerlord"/>
   <Id value="RBM"/>
-  <Version value="v4.2.5"/>
+  <Version value="v4.2.6"/>
   <DefaultModule value="true"/>
   <ModuleCategory value="Singleplayer"/>
   <DependedModules>
 
-    <DependedModule Id="Native" DependentVersion="v1.4.0" Optional="false"/>
-    <DependedModule Id="SandBoxCore" DependentVersion="v1.4.0" Optional="false"/>
-    <DependedModule Id="Sandbox" DependentVersion="v1.4.0" Optional="false"/>
-    <DependedModule Id="StoryMode" DependentVersion="v1.4.0" Optional="false"/>
-	<DependedModule Id="CustomBattle" DependentVersion="v1.4.0" Optional="false"/>
-	<DependedModule Id="BirthAndDeath" DependentVersion="v1.4.0" Optional="true"/>
+    <DependedModule Id="Native" DependentVersion="v1.4.1" Optional="false"/>
+    <DependedModule Id="SandBoxCore" DependentVersion="v1.4.1" Optional="false"/>
+    <DependedModule Id="Sandbox" DependentVersion="v1.4.1" Optional="false"/>
+    <DependedModule Id="StoryMode" DependentVersion="v1.4.1" Optional="false"/>
+	<DependedModule Id="CustomBattle" DependentVersion="v1.4.1" Optional="false"/>
+	<DependedModule Id="BirthAndDeath" DependentVersion="v1.4.1" Optional="true"/>
 	<DependedModule Id="RTSCamera" Optional="true"/>
 	<DependedModule Id="RTSCamera.CommandSystem" Optional="true"/>
 
@@ -236,9 +236,7 @@
 		</IncludedGameTypes>
 	</XmlNode>
     <XmlNode>
-      <XmlName
-        path="RBM_bow_shields"
-        id="soln_item_holsters" />
+      <XmlName id="soln_item_holsters" path="RBM_bow_shields"/>
       <IncludedGameTypes>
         <GameType
           value="Campaign" />
