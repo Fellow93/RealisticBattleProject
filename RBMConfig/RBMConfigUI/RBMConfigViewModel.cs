@@ -124,7 +124,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_007}Ranged reload speed").ToString();
+                return new TextObject("{=RBM_CON_007}Ranged fire-rate changes").ToString();
             }
         }
 
@@ -178,7 +178,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_018}RBM AI").ToString();
+                return new TextObject("{=RBM_CON_018}Posture / Stamina").ToString();
             }
         }
 
@@ -248,7 +248,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_015}Vanilla AI Block/Parry/Attack").ToString();
+                return new TextObject("{=RBM_CON_015}Battlefield AI tactics removed").ToString();
             }
         }
 
@@ -276,8 +276,8 @@ namespace RBMConfig
             ActiveTroopOverhaulText = new TextViewModel(new TextObject("Troop Overhaul"));
             ActiveTroopOverhaul = new SelectorVM<SelectorItemVM>(troopOverhaulOnOff, 0, null);
 
-            List<string> rangedReloadSpeed = new List<string> { new TextObject("{=RBM_CON_004}Vanilla").ToString(), new TextObject("{=RBM_CON_005}Realistic").ToString(), new TextObject("{=RBM_CON_006}Semi-realistic").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
-            RangedReloadSpeedText = new TextViewModel(new TextObject("Ranged reload speed"));
+            List<string> rangedReloadSpeed = new List<string> { new TextObject("{=RBM_CON_004}Disabled: vanilla bow/crossbow fire rate").ToString() };
+            RangedReloadSpeedText = new TextViewModel(new TextObject("Ranged fire-rate changes"));
             RangedReloadSpeed = new SelectorVM<SelectorItemVM>(rangedReloadSpeed, 0, null);
 
             List<string> passiveShoulderShields = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
@@ -323,18 +323,7 @@ namespace RBMConfig
                 ActiveTroopOverhaul.SelectedIndex = 0;
             }
 
-            if (RBMConfig.realisticRangedReload.Equals("0"))
-            {
-                RangedReloadSpeed.SelectedIndex = 0;
-            }
-            else if (RBMConfig.realisticRangedReload.Equals("1"))
-            {
-                RangedReloadSpeed.SelectedIndex = 1;
-            }
-            else if (RBMConfig.realisticRangedReload.Equals("2"))
-            {
-                RangedReloadSpeed.SelectedIndex = 2;
-            }
+            RangedReloadSpeed.SelectedIndex = 0;
 
             if (RBMConfig.passiveShoulderShields)
             {
@@ -394,8 +383,8 @@ namespace RBMConfig
             PostureGUIEnabledText = new TextViewModel(new TextObject("Posture GUI"));
             PostureGUIEnabled = new SelectorVM<SelectorItemVM>(postureGUIOptions, 0, null);
 
-            List<string> vanillaCombatAiOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
-            VanillaCombatAiText = new TextViewModel(new TextObject("Vanilla AI Block/Parry/Attack"));
+            List<string> vanillaCombatAiOptions = new List<string> { new TextObject("{=RBM_CON_031}Removed; vanilla battlefield AI is always used").ToString() };
+            VanillaCombatAiText = new TextViewModel(new TextObject("Battlefield AI tactics removed"));
             VanillaCombatAi = new SelectorVM<SelectorItemVM>(vanillaCombatAiOptions, 0, null);
 
             if (RBMConfig.playerPostureMultiplier == 1f)
@@ -445,7 +434,7 @@ namespace RBMConfig
             List<string> rbmCombatEnabledOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             RBMCombatEnabled = new SelectorVM<SelectorItemVM>(rbmCombatEnabledOptions, 0, null);
 
-            List<string> rbmAiEnabledOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            List<string> rbmAiEnabledOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " " + new TextObject("{=RBM_CON_032}(Posture/Stamina only)").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             RBMAIEnabled = new SelectorVM<SelectorItemVM>(rbmAiEnabledOptions, 0, null);
 
             List<string> rbmTournamentEnabledOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
@@ -496,18 +485,7 @@ namespace RBMConfig
                 RBMConfig.troopOverhaulActive = true;
             }
 
-            if (RangedReloadSpeed.SelectedIndex == 0)
-            {
-                RBMConfig.realisticRangedReload = "0";
-            }
-            else if (RangedReloadSpeed.SelectedIndex == 1)
-            {
-                RBMConfig.realisticRangedReload = "1";
-            }
-            else if (RangedReloadSpeed.SelectedIndex == 2)
-            {
-                RBMConfig.realisticRangedReload = "2";
-            }
+            RBMConfig.realisticRangedReload = "0";
 
             if (PassiveShoulderShields.SelectedIndex == 0)
             {
@@ -587,14 +565,7 @@ namespace RBMConfig
                 RBMConfig.postureGUIEnabled = true;
             }
 
-            if (VanillaCombatAi.SelectedIndex == 0)
-            {
-                RBMConfig.vanillaCombatAi = false;
-            }
-            if (VanillaCombatAi.SelectedIndex == 1)
-            {
-                RBMConfig.vanillaCombatAi = true;
-            }
+            RBMConfig.vanillaCombatAi = true;
 
             if (RBMCombatEnabled.SelectedIndex == 0)
             {

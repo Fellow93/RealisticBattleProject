@@ -25,7 +25,7 @@
       <PassiveShoulderShields>0</PassiveShoulderShields>
       <TroopOverhaulActive>1</TroopOverhaulActive>
 	  <SneakAttackInstaKill>0</SneakAttackInstaKill>
-      <RealisticRangedReload>2</RealisticRangedReload>
+      <RealisticRangedReload>0</RealisticRangedReload>
       <MaceBluntModifier>1</MaceBluntModifier>
       <ArmorThresholdModifier>1</ArmorThresholdModifier>
       <BluntTraumaBonus>0</BluntTraumaBonus>

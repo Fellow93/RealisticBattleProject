@@ -1177,17 +1177,8 @@ namespace RBMAI
             int countAll = 0;
             int countHasShield = 0;
 
-            if (formation.Team.HasTeamAi)
-            {
-                FieldInfo field = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
-                field.DeclaringType.GetField("_currentTactic");
-                TacticComponent currentTactic = (TacticComponent)field.GetValue(formation.Team.TeamAI);
-
-                if (currentTactic != null && (currentTactic is RBMTacticAttackSplitInfantry || currentTactic is RBMTacticAttackSplitInfantry))
-                {
-                    return false;
-                }
-            }
+            // Compatibility build removes RBM battlefield tactics, so shield wall copying
+            // must not depend on RBM tactic types that are no longer compiled.
             formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
             {
                 if (agent != null)

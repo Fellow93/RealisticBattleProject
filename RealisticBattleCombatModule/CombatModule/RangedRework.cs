@@ -33,6 +33,11 @@ namespace RBMCombat
         private static readonly PropertyInfo SiegeProjectileProperty = typeof(RangedSiegeWeapon).GetProperty("Projectile", BindingFlags.NonPublic | BindingFlags.Instance);
         private static readonly PropertyInfo SiegeMissileStartPositionProperty = typeof(RangedSiegeWeapon).GetProperty("MissileStartingGlobalPositionForSimulation", BindingFlags.NonPublic | BindingFlags.Instance);
 
+        private static bool IsBowOrCrossbow(WeaponClass weaponClass)
+        {
+            return weaponClass == WeaponClass.Bow || weaponClass == WeaponClass.Crossbow;
+        }
+
         [HarmonyPatch(typeof(MissionState))]
         [HarmonyPatch("FinishMissionLoading")]
         public class MissionLoadChangeParameters
@@ -77,34 +82,10 @@ namespace RBMCombat
                                 weaponStatsData[i].DefendSpeed = handlingReal;
                             }
 
-                            if ((WeaponClass)weaponStatsData[i].WeaponClass == WeaponClass.Bow)
+                            if (IsBowOrCrossbow((WeaponClass)weaponStatsData[i].WeaponClass))
                             {
-                                int thrustSpeed = missionWeapon.GetModifiedThrustSpeedForCurrentUsage();
-                                if (RBMConfig.RBMConfig.realisticRangedReload.Equals("1") || RBMConfig.RBMConfig.realisticRangedReload.Equals("2"))
-                                {
-                                    float DrawSpeedskillModifier = 1 + (ef * 0.01f);
-                                    weaponStatsData[i].ThrustSpeed = MathF.Ceiling((thrustSpeed * 0.2f) * DrawSpeedskillModifier);
-                                }
-                                if (RBMConfig.RBMConfig.realisticRangedReload.Equals("0"))
-                                {
-                                    weaponStatsData[i].ThrustSpeed = MathF.Ceiling(thrustSpeed * 0.45f);
-                                }
-
-                                MissionWeapon mw = __instance.Equipment[equipmentSlot];
-                                RangedWeaponStats rws;
-                                if (rangedWeaponStats.TryGetValue(mw.GetModifiedItemName().ToString(), out rws))
-                                {
-                                    if ((ef) < rws.getDrawWeight() + 9f) // 70 more skill needed to unlock speed shooting
-                                    {
-                                        __instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags |= WeaponFlags.UnloadWhenSheathed;
-                                        weaponStatsData[i].WeaponFlags = (ulong)__instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags;
-                                    }
-                                    else
-                                    {
-                                        __instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags &= ~WeaponFlags.UnloadWhenSheathed;
-                                        weaponStatsData[i].WeaponFlags = (ulong)__instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags;
-                                    }
-                                }
+                                // Compatibility build: keep projectile physics, but do not alter bow/crossbow fire rate or ready-state flags.
+                                continue;
                             }
 
                             //float equipmentWeight = __instance.SpawnEquipment.GetTotalWeightOfArmor(true); //+ __instance.Equipment.GetTotalWeightOfWeapons();
@@ -481,7 +462,6 @@ namespace RBMCombat
                 EquipmentIndex wieldedItemIndex = __instance.GetPrimaryWieldedItemIndex();
                 if (wieldedItemIndex != EquipmentIndex.None)
                 {
-                    bool isBowWielded = false;
                     WeaponStatsData[] wieldedStatsData = __instance.Equipment[wieldedItemIndex].GetWeaponStatsData();
                     if (wieldedStatsData == null || wieldedStatsData.Length == 0)
                     {
@@ -491,7 +471,7 @@ namespace RBMCombat
                     WeaponData weaponData = __instance.Equipment[wieldedItemIndex].GetWeaponData(true);
                     if (weaponStatsData.WeaponClass == (int)WeaponClass.Bow)
                     {
-                        isBowWielded = true;
+                        // Bow/crossbow fire-rate and ready-state behavior are intentionally left vanilla.
                     }
                     for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                     {
@@ -499,72 +479,10 @@ namespace RBMCombat
                         {
                             WeaponData wd = __instance.Equipment[equipmentIndex].GetWeaponData(true);
                             WeaponStatsData wsd = __instance.Equipment[equipmentIndex].GetWeaponStatsData()[0];
-                            if (wsd.WeaponClass == (int)WeaponClass.Bow)
+                            if (IsBowOrCrossbow((WeaponClass)wsd.WeaponClass))
                             {
-                                MissionWeapon mw = __instance.Equipment[equipmentIndex];
-                                if (isBowWielded)
-                                {
-                                    SkillObject skill = (wd.GetItemObject() == null) ? DefaultSkills.Athletics : wd.GetItemObject().RelevantSkill;
-                                    if (skill != null)
-                                    {
-                                        int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, skill);
-
-                                        RangedWeaponStats rws;
-                                        if (rangedWeaponStats.TryGetValue(mw.GetModifiedItemName().ToString(), out rws))
-                                        {
-                                            if ((effectiveSkill) < rws.getDrawWeight() + 9f) // 70 more skill needed to unlock speed shooting
-                                            {
-                                                __instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags |= WeaponFlags.UnloadWhenSheathed;
-                                                wsd.WeaponFlags = (ulong)__instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags;
-                                            }
-                                            else
-                                            {
-                                                __instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags &= ~WeaponFlags.UnloadWhenSheathed;
-                                                wsd.WeaponFlags = (ulong)__instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags;
-                                            }
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    __instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags |= WeaponFlags.UnloadWhenSheathed;
-                                    __instance.Equipment[equipmentIndex].GetWeaponStatsData()[0].WeaponFlags = (ulong)__instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags;
-
-                                    MissionWeapon mwa = mw.AmmoWeapon;
-                                    int ammoInHandCount = mwa.Amount;
-                                    if (mwa.Amount > 0)
-                                    {
-                                        __instance.Equipment.GetAmmoCountAndIndexOfType(mw.Item.Type, out var ammouCount, out var eIndex);
-                                        if (eIndex != EquipmentIndex.None)
-                                        {
-                                            __instance.SetReloadAmmoInSlot(equipmentIndex, eIndex, Convert.ToInt16(-ammoInHandCount));
-                                            __instance.SetWeaponReloadPhaseAsClient(equipmentIndex, 0);
-                                            if (__instance.Equipment[eIndex].Amount == __instance.Equipment[eIndex].ModifiedMaxAmount)
-                                            {
-                                                for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.NumAllWeaponSlots; i++)
-                                                {
-                                                    if (!__instance.Equipment[i].IsEmpty && !__instance.Equipment[eIndex].IsEmpty &&
-                                                        __instance.Equipment[i].Item != null && __instance.Equipment[eIndex].Item != null &&
-                                                        __instance.Equipment[i].Item.PrimaryWeapon != null && __instance.Equipment[eIndex].Item.PrimaryWeapon != null)
-                                                    {
-                                                        if (i != eIndex)
-                                                        {
-                                                            if (__instance.Equipment[i].IsSameType(__instance.Equipment[eIndex]))
-                                                            {
-                                                                __instance.SetWeaponAmountInSlot(i, Convert.ToInt16(__instance.Equipment[i].Amount + ammoInHandCount), enforcePrimaryItem: true);
-                                                                break;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            else
-                                            {
-                                                __instance.SetWeaponAmountInSlot(eIndex, Convert.ToInt16(__instance.Equipment[eIndex].Amount + ammoInHandCount), enforcePrimaryItem: true);
-                                            }
-                                        }
-                                    }
-                                }
+                                // Compatibility build: no bow/crossbow speed-shooting or ammo ready-state manipulation.
+                                continue;
                             }
                         }
                     }
@@ -666,104 +584,7 @@ namespace RBMCombat
             {
                 private static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem, AgentStatCalculateModel __instance)
                 {
-                    if (agent.IsPlayerControlled)
-                    {
-                        if (RBMConfig.RBMConfig.realisticRangedReload.Equals("1"))
-                        {
-                            SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
-                            if (skill != null)
-                            {
-                                int ef = __instance.GetEffectiveSkill(agent, skill);
-                                float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
-                                if (equippedItem != null)
-                                {
-                                    switch (equippedItem.ItemUsage)
-                                    {
-                                        case "bow":
-                                        case "long_bow":
-                                            {
-                                                agentDrivenProperties.ReloadSpeed = 0.25f * (0.85f + (0.0184f * effectiveSkill));
-                                                break;
-                                            }
-                                        case "crossbow_fast":
-                                            {
-                                                agentDrivenProperties.ReloadSpeed = 0.3f * (1f + (0.0045f * effectiveSkill));
-                                                break;
-                                            }
-                                        case "crossbow":
-                                            {
-                                                agentDrivenProperties.ReloadSpeed = 0.2f * (1f + (0.0045f * effectiveSkill));
-                                                break;
-                                            }
-                                    }
-                                }
-                            }
-                        }
-                        else if (RBMConfig.RBMConfig.realisticRangedReload.Equals("2"))
-                        {
-                            SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
-                            if (skill != null)
-                            {
-                                int ef = __instance.GetEffectiveSkill(agent, skill);
-                                float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
-                                if (equippedItem != null)
-                                {
-                                    switch (equippedItem.ItemUsage)
-                                    {
-                                        case "bow":
-                                        case "long_bow":
-                                            {
-                                                agentDrivenProperties.ReloadSpeed = 0.38f * (1.5f + (0.0075f * effectiveSkill));
-                                                break;
-                                            }
-                                        case "crossbow_fast":
-                                            {
-                                                agentDrivenProperties.ReloadSpeed = 0.72f * (1 + (0.0035f * effectiveSkill));
-                                                break;
-                                            }
-                                        case "crossbow":
-                                            {
-                                                agentDrivenProperties.ReloadSpeed = 0.36f * (1 + (0.0035f * effectiveSkill));
-                                                break;
-                                            }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
-                        if (skill != null)
-                        {
-                            int ef = __instance.GetEffectiveSkill(agent, skill);
-                            float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
-
-                            if (equippedItem != null)
-                            {
-                                switch (equippedItem.ItemUsage)
-                                {
-                                    case "bow":
-                                    case "long_bow":
-                                        {
-                                            agentDrivenProperties.ReloadSpeed = 0.25f * (1f + (0.016f * effectiveSkill));
-                                            break;
-                                        }
-                                    case "crossbow_fast":
-                                        {
-                                            agentDrivenProperties.ReloadSpeed = 0.3f * (1f + (0.0045f * effectiveSkill));
-                                            break;
-                                        }
-                                    case "crossbow":
-                                        {
-                                            agentDrivenProperties.ReloadSpeed = 0.2f * (1f + (0.0045f * effectiveSkill));
-                                            break;
-                                        }
-                                }
-                            }
-                        }
-                    }
-                    //0.12 for heavy crossbows, 0.19f for light crossbows, composite bows and longbows.
+                    // Compatibility build: bow/crossbow reload and draw speed are left to vanilla/game settings.
                 }
             }
         }

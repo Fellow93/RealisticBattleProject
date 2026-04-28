@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
-using SandBox.Missions.MissionLogics;
-using TaleWorlds.MountAndBlade;
+using System;
+using System.Reflection;
 
 namespace RBMAI
 {
@@ -11,27 +11,33 @@ namespace RBMAI
 
         public static void DoPatching()
         {
+            DoStanceOnlyPatching();
+        }
+
+        public static void DoStanceOnlyPatching()
+        {
             var harmony = new Harmony("com.rbmai");
-            //if (!patched)
-            //{
             harmony.UnpatchAll(harmony.Id);
-            harmony.PatchAll();
-            //    patched = true;
-            //}
+
+            Type stanceLogicType = typeof(StanceLogic);
+            int patchedCount = 0;
+            foreach (Type nestedType in stanceLogicType.GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Public))
+            {
+                if (nestedType.GetCustomAttributes(typeof(HarmonyPatch), true).Length > 0)
+                {
+                    harmony.CreateClassProcessor(nestedType).Patch();
+                    patchedCount++;
+                }
+            }
+
+            RBMConfig.SelectiveDebug.Log("RBMAI", "Applied stance/posture-only patch set: " + patchedCount + " classes. Battlefield AI tactics remain vanilla.");
         }
 
         public static void FirstPatch(ref Harmony rbmaiHarmony)
         {
             harmony = rbmaiHarmony;
             harmony.UnpatchAll(harmony.Id);
-            var original = AccessTools.Method(typeof(MissionCombatantsLogic), "EarlyStart");
-            var postfix = AccessTools.Method(typeof(Tactics.EarlyStartPatch), nameof(Tactics.EarlyStartPatch.Postfix));
-            harmony.Patch(original, null, new HarmonyMethod(postfix));
-            var original2 = AccessTools.Method(typeof(CampaignMissionComponent), "EarlyStart");
-            var postfix2 = AccessTools.Method(typeof(Tactics.CampaignMissionComponentPatch), nameof(Tactics.CampaignMissionComponentPatch.Postfix));
-            harmony.Patch(original2, null, new HarmonyMethod(postfix2));
-
-            //harmony.Patch(original, postfix: new HarmonyMethod(postfix));
+            RBMConfig.SelectiveDebug.Log("RBMAI", "Skipped first-stage battlefield AI hooks for compatibility build.");
         }
     }
 }

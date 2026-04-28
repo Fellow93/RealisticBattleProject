@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\RBM\bin\Win64_Shipping_Client\</OutputPath>
+    <OutputPath>$(SolutionDir)..\RBM_CompatCN\bin\Win64_Shipping_Client\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -29,7 +29,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>$(SolutionDir)..\RealisticBattleAiModule\bin\Win64_Shipping_Client</OutputPath>
+    <OutputPath>$(SolutionDir)..\RBM_CompatCN\bin\Win64_Shipping_Client\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -169,39 +169,12 @@
   </ItemGroup>
   <!-- Files & Classes -->
   <ItemGroup>
-    <Compile Include="AiModule\GeneralsAndCaptainsAssignmentLogicPatch.cs" />
-    <Compile Include="AiModule\AgentAi.cs" />
     <Compile Include="AiModule\HitStopLogic.cs" />
-    <Compile Include="AiModule\Behaviours.cs" />
-    <Compile Include="AiModule\Frontline.cs" />
     <Compile Include="AiModule\Stance\Stance.cs" />
     <Compile Include="AiModule\Stance\AgentStances.cs" />
     <Compile Include="AiModule\Stance\StanceLogic.cs" />
-    <Compile Include="AiModule\Stance\BattleStatsLogic.cs" />
     <Compile Include="AiModule\Stance\StanceVisualLogic.cs" />
-    <Compile Include="AiModule\Stance\BattleStatsVM.cs" />
     <Compile Include="AiModule\Stance\StanceVisualVM.cs" />
-    <Compile Include="AiModule\RbmBehaviors\RBMBehaviorArcherSkirmish.cs" />
-    <Compile Include="AiModule\RbmBehaviors\RBMBehaviorCavalryCharge.cs" />
-    <Compile Include="AiModule\RbmBehaviors\RBMBehaviorEmbolon.cs" />
-    <Compile Include="AiModule\RbmBehaviors\RBMBehaviorArcherFlank.cs" />
-    <Compile Include="AiModule\RbmBehaviors\RBMBehaviorHorseArcherSkirmish.cs" />
-    <Compile Include="AiModule\RbmBehaviors\RBMBehaviorInfantryAttackFlank.cs" />
-    <Compile Include="AiModule\RbmBehaviors\RBMBehaviorForwardSkirmish.cs" />
-    <Compile Include="AiModule\RbmBehaviors\BehaviorChargePatch.cs" />
-    <Compile Include="AiModule\RbmTactics\RBMTacticAttackSplitArchers.cs" />
-    <Compile Include="AiModule\RbmTactics\RBMTacticDefendSplitInfantry.cs" />
-    <Compile Include="AiModule\RbmTactics\RBMTacticDefendSplitArchers.cs" />
-    <Compile Include="AiModule\RbmTactics\RBMTacticEmbolon.cs" />
-    <Compile Include="AiModule\RbmTactics\RBMTacticAttackSplitInfantry.cs" />
-    <Compile Include="AiModule\RbmTactics\RBMTacticAttackSplitSkirmishers.cs" />
-    <Compile Include="AiModule\RbmTactics\TacticDefensiveEngagementPatch.cs" />
-    <Compile Include="AiModule\RbmTactics\TacticDefensiveLinePatch.cs" />
-    <Compile Include="AiModule\RbmTactics\TacticFullScaleAttackPatch.cs" />
-    <Compile Include="AiModule\SiegeArcherPoints\SiegeArcherPoints.cs" />
-    <Compile Include="AiModule\SiegePatches.cs" />
-    <Compile Include="AiModule\SpawningPatches.cs" />
-    <Compile Include="AiModule\Tactics.cs" />
     <Compile Include="RBMAIPatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
@@ -217,11 +190,9 @@
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBMAI_module_strings.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\CombatUI.xml" "$(SolutionDir)..\RBM\GUI\Prefabs\"
-xcopy /d /y "$(SolutionDir)RBMXML\GUI\Brushes\CombatUI.xml" "$(SolutionDir)..\RBM\GUI\Brushes\"
-xcopy /d /y "$(SolutionDir)SceneXmls\scene_positions\" "$(SolutionDir)..\RBM\ModuleData\scene_positions\"
-xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\BattleStats.xml" "$(SolutionDir)..\RBM\GUI\Prefabs\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBMAI_module_strings.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\CombatUI.xml" "$(SolutionDir)..\RBM_CompatCN\GUI\Prefabs\"
+xcopy /d /y "$(SolutionDir)RBMXML\GUI\Brushes\CombatUI.xml" "$(SolutionDir)..\RBM_CompatCN\GUI\Brushes\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

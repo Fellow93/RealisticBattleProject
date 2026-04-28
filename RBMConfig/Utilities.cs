@@ -281,7 +281,7 @@ namespace RBMConfig
             XmlElement SneakAttackInstaKill = xmlconfig.CreateElement("SneakAttackInstaKill");
             SneakAttackInstaKill.InnerText = RBMConfig.sneakAttackInstaKill ? "1" : "0";
             XmlElement RealisticRangedReload = xmlconfig.CreateElement("RealisticRangedReload");
-            RealisticRangedReload.InnerText = RBMConfig.realisticRangedReload;
+            RealisticRangedReload.InnerText = "0";
             XmlElement MaceBluntModifier = xmlconfig.CreateElement("MaceBluntModifier");
             MaceBluntModifier.InnerText = RBMConfig.maceBluntModifier.ToString();
             XmlElement ArmorThresholdModifier = xmlconfig.CreateElement("ArmorThresholdModifier");

@@ -28,6 +28,7 @@
 	<string id="RBM_AI_021" text="你受到{DMG1}点钝击伤害，{DMG2}点护甲穿透伤害" />
 	<string id="RBM_AI_022" text="你造成{DMG1}点钝击伤害，{DMG2}点护甲穿透伤害" />
 	<string id="RBM_AI_023" text="架势" />
+	<string id="RBM_AI_024" text="耐力" />
 	<!-- Combat Module Strings -->
 	<string id="RBM_COM_001" text="{TYPE}击！" />
 	<string id="RBM_COM_002" text="{TYPE}击！" />
@@ -70,10 +71,10 @@
 	<string id="RBM_CON_001" text="未激活" />
 	<string id="RBM_CON_002" text="激活(推荐)" />
 	<string id="RBM_CON_003" text="兵种大修" />
-	<string id="RBM_CON_004" text="原版" />
+	<string id="RBM_CON_004" text="已禁用：弓/弩射速保持原版" />
 	<string id="RBM_CON_005" text="真实" />
 	<string id="RBM_CON_006" text="半真实" />
-	<string id="RBM_CON_007" text="远程装填速度" />
+	<string id="RBM_CON_007" text="远程射速改动" />
 	<string id="RBM_CON_008" text="启用肩部盾" />
 	<string id="RBM_CON_009" text="更好的箭矢视觉效果" />
 	<string id="RBM_CON_010" text="开启盔甲状态显示" />
@@ -81,13 +82,18 @@
 	<string id="RBM_CON_012" text="架势系统" />
 	<string id="RBM_CON_013" text="玩家架势系数" />
 	<string id="RBM_CON_014" text="启用架势显示" />
-	<string id="RBM_CON_015" text="启用原版攻防AI" />
+	<string id="RBM_CON_015" text="战场 AI 战术已移除" />
 	<string id="RBM_CON_016" text="RBM 战斗模块" />
 	<string id="RBM_CON_017" text="模块开关" />
-	<string id="RBM_CON_018" text="RBM AI模块" />
+	<string id="RBM_CON_018" text="架势 / 耐力模块" />
 	<string id="RBM_CON_019" text="RBM 竞技场模块" />
 	<string id="RBM_CON_020" text="RBM 选项" />
 	<string id="RBM_CON_021" text="AI对刺击武器的偏好(默认值0.05)" />
+	<string id="RBM_CON_022" text="战斗慢动作" />
+	<string id="RBM_CON_023" text="潜行攻击秒杀" />
+	<string id="RBM_CON_030" text="耐力系统（需要架势）" />
+	<string id="RBM_CON_031" text="已移除；战场 AI 始终使用原版" />
+	<string id="RBM_CON_032" text="（仅架势/耐力）" />
 	<!-- Tournament Module Strings -->
 	<string id="RBM_TOU_001" text="竞技大赛" />
 	<string id="RBM_TOU_002" text="次级竞技赛: 段位 {TIER}" />

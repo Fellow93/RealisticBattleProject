@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\RBM\bin\Win64_Shipping_Client\</OutputPath>
+    <OutputPath>$(SolutionDir)..\RBM_CompatCN\bin\Win64_Shipping_Client\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -29,7 +29,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>$(SolutionDir)..\RealisticBattleCombatModule\bin\Win64_Shipping_Client</OutputPath>
+    <OutputPath>$(SolutionDir)..\RBM_CompatCN\bin\Win64_Shipping_Client\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -212,41 +212,41 @@
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_arm_armors.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_axe_pieces.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_body_armors.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_item_modifiers.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_couched_lances.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_head_armors.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_horse_armors.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_lances.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_leg_armors.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_mace_pieces.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_ranged.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_shields.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_shoulder_armors.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_sword_blades.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_sword_pieces.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_unit_overhaul.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_horses.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_gladius.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_arrow_visuals.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_no_bastard_axes.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_siege_engines.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_siege_ranged.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\SubModule.xml" "$(SolutionDir)..\RBM\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_weapon_descriptions.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_lord_equipment_sets.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_axe_grip.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBM_WS_XML\RBMCombat_WS_arrow_visuals.xml" "$(SolutionDir)..\RBM_WS\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBM_WS_XML\RBMCombat_WS_items.xml" "$(SolutionDir)..\RBM_WS\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBM_WS_XML\RBMCombat_WS_crafting_pieces.xml" "$(SolutionDir)..\RBM_WS\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBM_WS_XML\RBMCombat_WS_unit_overhaul.xml" "$(SolutionDir)..\RBM_WS\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBM_WS_XML\RBMCombat_WS_CraftingTemplates.xslt" "$(SolutionDir)..\RBM_WS\ModuleData\XSLT\"
-xcopy /d /y "$(SolutionDir)RBM_WS_XML\RBMCombat_WS_WeaponDescriptions.xslt" "$(SolutionDir)..\RBM_WS\ModuleData\XSLT\"
-xcopy /d /y "$(SolutionDir)RBM_WS_XML\RBMCombat_WS_custom_battle.xml" "$(SolutionDir)..\RBM_WS\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBM_WS_XML\RBMCombat_WS_Weapons.xml" "$(SolutionDir)..\RBM_WS\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBM_WS_XML\SubModule.xml" "$(SolutionDir)..\RBM_WS\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_arm_armors.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_axe_pieces.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_body_armors.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_item_modifiers.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_couched_lances.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_head_armors.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_horse_armors.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_lances.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_leg_armors.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_mace_pieces.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_ranged.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_shields.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_shoulder_armors.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_sword_blades.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_sword_pieces.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_unit_overhaul.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_horses.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_gladius.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_arrow_visuals.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_no_bastard_axes.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_siege_engines.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_siege_ranged.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\SubModule.xml" "$(SolutionDir)..\RBM_CompatCN\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_weapon_descriptions.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_lord_equipment_sets.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_axe_grip.xml" "$(SolutionDir)..\RBM_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBM_WS_XML\RBMCombat_WS_arrow_visuals.xml" "$(SolutionDir)..\RBM_WS_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBM_WS_XML\RBMCombat_WS_items.xml" "$(SolutionDir)..\RBM_WS_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBM_WS_XML\RBMCombat_WS_crafting_pieces.xml" "$(SolutionDir)..\RBM_WS_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBM_WS_XML\RBMCombat_WS_unit_overhaul.xml" "$(SolutionDir)..\RBM_WS_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBM_WS_XML\RBMCombat_WS_CraftingTemplates.xslt" "$(SolutionDir)..\RBM_WS_CompatCN\ModuleData\XSLT\"
+xcopy /d /y "$(SolutionDir)RBM_WS_XML\RBMCombat_WS_WeaponDescriptions.xslt" "$(SolutionDir)..\RBM_WS_CompatCN\ModuleData\XSLT\"
+xcopy /d /y "$(SolutionDir)RBM_WS_XML\RBMCombat_WS_custom_battle.xml" "$(SolutionDir)..\RBM_WS_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBM_WS_XML\RBMCombat_WS_Weapons.xml" "$(SolutionDir)..\RBM_WS_CompatCN\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBM_WS_XML\SubModule.xml" "$(SolutionDir)..\RBM_WS_CompatCN\"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>

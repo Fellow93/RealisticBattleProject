@@ -4,6 +4,7 @@ using RBMAI;
 using RBMCombat;
 using RBMTournament;
 using System;
+using System.IO;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.MapEvents;
@@ -31,34 +32,64 @@ namespace RBM
     {
         public static string ModuleId = "RBM";
 
+        private static string ResolveInstalledModuleId()
+        {
+            try
+            {
+                string assemblyFile = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                string binClient = Path.GetDirectoryName(assemblyFile);
+                string bin = Directory.GetParent(binClient)?.FullName;
+                string moduleRoot = Directory.GetParent(bin)?.FullName;
+                if (!string.IsNullOrEmpty(moduleRoot))
+                {
+                    string folderName = Path.GetFileName(moduleRoot.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+                    if (!string.IsNullOrEmpty(folderName))
+                    {
+                        return folderName;
+                    }
+                }
+            }
+            catch
+            {
+            }
+            return "RBM";
+        }
+
         public static void ApplyHarmonyPatches()
         {
             RBMAiPatcher.patched = false;
             UnpatchAllRBM();
             HarmonyModules.rbmHarmony.PatchAll();
+            RBMConfig.SelectiveDebug.Log("PATCH", "Applying RBM Compat CN patches.");
             if (RBMConfig.RBMConfig.rbmTournamentEnabled)
             {
                 RBMTournamentPatcher.DoPatching(ref HarmonyModules.rbmtHarmony);
+                RBMConfig.SelectiveDebug.Log("PATCH", "Tournament reward patches enabled.");
             }
             else
             {
                 HarmonyModules.rbmtHarmony.UnpatchAll(HarmonyModules.rbmtHarmony.Id);
+                RBMConfig.SelectiveDebug.Log("PATCH", "Tournament reward patches disabled.");
             }
             if (RBMConfig.RBMConfig.rbmAiEnabled)
             {
-                RBMAiPatcher.FirstPatch(ref HarmonyModules.rbmaiHarmony);
+                RBMAiPatcher.DoStanceOnlyPatching();
+                RBMConfig.SelectiveDebug.Log("PATCH", "Posture/stamina patches enabled; battlefield AI tactics disabled.");
             }
             else
             {
                 HarmonyModules.rbmaiHarmony.UnpatchAll(HarmonyModules.rbmaiHarmony.Id);
+                RBMConfig.SelectiveDebug.Log("PATCH", "Posture/stamina patches disabled.");
             }
             if (RBMConfig.RBMConfig.rbmCombatEnabled)
             {
                 RBMCombatPatcher.DoPatching(ref HarmonyModules.rbmcombatHarmony);
+                RBMConfig.SelectiveDebug.Log("PATCH", "Combat patches enabled; bow/crossbow fire-rate changes disabled by compat guards.");
             }
             else
             {
                 HarmonyModules.rbmcombatHarmony.UnpatchAll(HarmonyModules.rbmcombatHarmony.Id);
+                RBMConfig.SelectiveDebug.Log("PATCH", "Combat patches disabled.");
             }
         }
 
@@ -73,7 +104,9 @@ namespace RBM
 
         protected override void OnSubModuleLoad()
         {
+            ModuleId = ResolveInstalledModuleId();
             RBMConfig.RBMConfig.LoadConfig();
+            RBMConfig.SelectiveDebug.Log("LIFECYCLE", "SubModule loaded from " + ModuleId + ".");
             CustomBattlePreset.LoadPreset();
 
             Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("{=RBM_CON_020}RBM Configuration"), 9999, delegate
@@ -134,6 +167,7 @@ namespace RBM
         protected override void RegisterSubModuleTypes()
         {
             RBMConfig.RBMConfig.LoadConfig();
+            RBMConfig.SelectiveDebug.Log("LIFECYCLE", "RegisterSubModuleTypes.");
             ApplyHarmonyPatches();
             base.RegisterSubModuleTypes();
         }
@@ -141,6 +175,7 @@ namespace RBM
         protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
         {
             RBMConfig.RBMConfig.LoadConfig();
+            RBMConfig.SelectiveDebug.Log("LIFECYCLE", "OnGameStart.");
             ApplyHarmonyPatches();
             base.OnGameStart(game, gameStarterObject);
         }
@@ -148,8 +183,8 @@ namespace RBM
         protected override void OnBeforeInitialModuleScreenSetAsRoot()
         {
             var isWSActive = ModuleHelper.IsModuleActive("NavalDLC");
-            var isRBMActive = ModuleHelper.IsModuleActive("RBM");
-            var isRBMWSActive = ModuleHelper.IsModuleActive("RBM_WS");
+            var isRBMActive = ModuleHelper.IsModuleActive("RBM") || ModuleHelper.IsModuleActive("RBM_CompatCN");
+            var isRBMWSActive = ModuleHelper.IsModuleActive("RBM_WS") || ModuleHelper.IsModuleActive("RBM_WS_CompatCN");
             if (isWSActive && isRBMActive && !isRBMWSActive)
             {
                 InformationManager.ShowInquiry(new InquiryData("RBM War Sails submodule is missing!", "RBM War Sails submod is required when using both RBM and the War Sails DLC. Please install and enable the RBM War Sails submod to avoid potential issues, like Nords having no weapons etc.", true, false, "OK", "OK", null, null), false, true);
@@ -159,43 +194,46 @@ namespace RBM
 
         public override void OnMissionBehaviorInitialize(Mission mission)
         {
-            mission.AddMissionBehavior(new UnitStatusMissionView());
+            if (mission.GetMissionBehavior<UnitStatusMissionView>() == null)
+            {
+                mission.AddMissionBehavior(new UnitStatusMissionView());
+            }
             if (RBMConfig.RBMConfig.hitStopEnabled)
             {
-                mission.AddMissionBehavior((MissionBehavior)(object)new RBMAI.HitStopLogic());
+                if (mission.GetMissionBehavior<RBMAI.HitStopLogic>() == null)
+                {
+                    mission.AddMissionBehavior((MissionBehavior)(object)new RBMAI.HitStopLogic());
+                }
             }
             Game.Current.GameTextManager.LoadGameTexts();
-            if (RBMConfig.RBMConfig.developerMode)
-            {
-                mission.AddMissionBehavior((MissionBehavior)(object)new BattleStatsLogic());
-            }
+            RBMConfig.SelectiveDebug.Log("MISSION", "Developer logging is " + (RBMConfig.RBMConfig.developerMode ? "enabled" : "disabled") + ".");
             if (RBMConfig.RBMConfig.rbmCombatEnabled)
             {
-                if (RBMConfig.RBMConfig.armorStatusUIEnabled)
+                if (RBMConfig.RBMConfig.armorStatusUIEnabled && mission.GetMissionBehavior<PlayerArmorStatus>() == null)
                 {
                     mission.AddMissionBehavior((MissionBehavior)(object)new PlayerArmorStatus());
                 }
             }
             if (RBMConfig.RBMConfig.rbmAiEnabled)
             {
-                mission.AddMissionBehavior((MissionBehavior)(object)new AgentPanicFix());
-                mission.AddMissionBehavior((MissionBehavior)(object)new RBMAIPatchLogic());
                 if (RBMConfig.RBMConfig.postureEnabled && RBMConfig.RBMConfig.postureGUIEnabled)
                 {
-                    mission.AddMissionBehavior((MissionBehavior)(object)new StanceVisualLogic());
+                    if (mission.GetMissionBehavior<StanceVisualLogic>() == null)
+                    {
+                        mission.AddMissionBehavior((MissionBehavior)(object)new StanceVisualLogic());
+                    }
                 }
-                mission.AddMissionBehavior((MissionBehavior)(object)new SiegeArcherPoints());
                 if (RBMConfig.RBMConfig.postureEnabled)
                 {
-                    mission.AddMissionBehavior((MissionBehavior)(object)new StanceLogic());
+                    if (mission.GetMissionBehavior<StanceLogic>() == null)
+                    {
+                        mission.AddMissionBehavior((MissionBehavior)(object)new StanceLogic());
+                    }
                 }
+                RBMConfig.SelectiveDebug.Log("MISSION", "Posture/stamina mission behaviors initialized for scene " + mission.SceneName + ".");
             }
             else
             {
-                if (mission.GetMissionBehavior<SiegeArcherPoints>() != null)
-                {
-                    mission.RemoveMissionBehavior(mission.GetMissionBehavior<SiegeArcherPoints>());
-                }
                 if (mission.GetMissionBehavior<StanceVisualLogic>() != null)
                 {
                     mission.RemoveMissionBehavior(mission.GetMissionBehavior<StanceVisualLogic>());

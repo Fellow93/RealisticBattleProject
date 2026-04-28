@@ -71,10 +71,10 @@
 	<string id="RBM_CON_001" text="Inactive" />
 	<string id="RBM_CON_002" text="Active (Recommended)" />
 	<string id="RBM_CON_003" text="Troop Overhaul" />
-	<string id="RBM_CON_004" text="Vanilla" />
+	<string id="RBM_CON_004" text="Disabled: vanilla bow/crossbow fire rate" />
 	<string id="RBM_CON_005" text="Realistic" />
 	<string id="RBM_CON_006" text="Semi-realistic" />
-	<string id="RBM_CON_007" text="Ranged reload speed" />
+	<string id="RBM_CON_007" text="Ranged fire-rate changes" />
 	<string id="RBM_CON_008" text="Passive Shoulder Shields" />
 	<string id="RBM_CON_009" text="Better Arrow Visuals" />
 	<string id="RBM_CON_010" text="Armor Status GUI" />
@@ -82,13 +82,15 @@
 	<string id="RBM_CON_012" text="Posture System" />
 	<string id="RBM_CON_013" text="Player Posture Multiplier" />
 	<string id="RBM_CON_014" text="Posture GUI" />
-	<string id="RBM_CON_015" text="Vanilla AI Block/Parry/Attack" />
+	<string id="RBM_CON_015" text="Battlefield AI tactics removed" />
 	<string id="RBM_CON_016" text="RBM Combat" />
 	<string id="RBM_CON_017" text="Module Status" />
-	<string id="RBM_CON_018" text="RBM AI" />
+	<string id="RBM_CON_018" text="Posture / Stamina" />
 	<string id="RBM_CON_019" text="RBM Tournament" />
 	<string id="RBM_CON_020" text="RBM Configuration" />
 	<string id="RBM_CON_021" text="Thrust weapon preference for AI (default at 0.05)" />
+	<string id="RBM_CON_031" text="Removed; vanilla battlefield AI is always used" />
+	<string id="RBM_CON_032" text="(Posture/Stamina only)" />
 	<!-- Tournament Module Strings -->
 	<string id="RBM_TOU_001" text="Main tournament" />
 	<string id="RBM_TOU_002" text="Lower tier tournament: Tier {TIER}" />

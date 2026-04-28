@@ -36,7 +36,7 @@ namespace RBMConfig
         public static bool betterArrowVisuals = true;
         public static bool passiveShoulderShields = false;
         public static bool troopOverhaulActive = true;
-        public static string realisticRangedReload = "2";
+        public static string realisticRangedReload = "0";
         public static float maceBluntModifier = 1f;
         public static float armorThresholdModifier = 1f;
         public static float bluntTraumaBonus = 0f;
@@ -146,7 +146,9 @@ namespace RBMConfig
             passiveShoulderShields = ReadOrCreate("/Config/RBMCombat/Global", "PassiveShoulderShields", "0").Equals("1");
             troopOverhaulActive = ReadOrCreate("/Config/RBMCombat/Global", "TroopOverhaulActive", "1").Equals("1");
             sneakAttackInstaKill = ReadOrCreate("/Config/RBMCombat/Global", "SneakAttackInstaKill", "0").Equals("1");
-            realisticRangedReload = ReadOrCreate("/Config/RBMCombat/Global", "RealisticRangedReload", "2");
+            // This compatibility build keeps RBM projectile physics but never changes bow/crossbow fire rate.
+            realisticRangedReload = "0";
+            ReadOrCreate("/Config/RBMCombat/Global", "RealisticRangedReload", "0");
             maceBluntModifier = float.Parse(ReadOrCreate("/Config/RBMCombat/Global", "MaceBluntModifier", "1"));
             armorThresholdModifier = float.Parse(ReadOrCreate("/Config/RBMCombat/Global", "ArmorThresholdModifier", "1"));
             bluntTraumaBonus = float.Parse(ReadOrCreate("/Config/RBMCombat/Global", "BluntTraumaBonus", "0"));
@@ -182,6 +184,15 @@ namespace RBMConfig
             priceMultipliers.WeaponPriceModifier = float.Parse(ReadOrCreate("/Config/RBMCombat/PriceModifiers", "WeaponPriceModifier", "1"));
             priceMultipliers.HorsePriceModifier = float.Parse(ReadOrCreate("/Config/RBMCombat/PriceModifiers", "HorsePriceModifier", "0.2"));
             priceMultipliers.TradePriceModifier = float.Parse(ReadOrCreate("/Config/RBMCombat/PriceModifiers", "TradePriceModifier", "1"));
+
+            SelectiveDebug.Log(
+                "CONFIG",
+                "Combat=" + rbmCombatEnabled +
+                ", PostureStamina=" + rbmAiEnabled +
+                ", Tournament=" + rbmTournamentEnabled +
+                ", Posture=" + postureEnabled +
+                ", Stamina=" + staminaEnabled +
+                ", RangedFireRateChanges=Disabled");
 
             saveXmlConfig();
         }

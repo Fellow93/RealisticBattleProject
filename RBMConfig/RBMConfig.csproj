@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\RBM\bin\Win64_Shipping_Client\</OutputPath>
+    <OutputPath>$(SolutionDir)..\RBM_CompatCN\bin\Win64_Shipping_Client\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -28,7 +28,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\Modules\RBMTournament\bin\Win64_Shipping_Client</OutputPath>
+    <OutputPath>$(SolutionDir)..\RBM_CompatCN\bin\Win64_Shipping_Client\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -271,6 +271,7 @@
   <!-- Files & Classes -->
   <ItemGroup>
     <Compile Include="Utilities.cs" />
+    <Compile Include="SelectiveDebug.cs" />
     <Compile Include="RBMConfigUI\RBMConfigScreen.cs" />
     <Compile Include="RBMConfigUI\RBMConfigViewModel.cs" />
     <Compile Include="RBMConfigUI\TextViewModel.cs" />
