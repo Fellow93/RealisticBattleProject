@@ -770,7 +770,7 @@ namespace RBMAI
 
             private static bool isOneHandedWeapon(MissionWeapon weapon)
             {
-                if (weapon.IsEmpty)
+                if (weapon.IsEmpty || weapon.CurrentUsageItem == null)
                 {
                     return false;
                 }
@@ -787,7 +787,7 @@ namespace RBMAI
 
             private static bool isSmallShield(MissionWeapon weapon)
             {
-                if (weapon.IsEmpty)
+                if (weapon.IsEmpty || weapon.CurrentUsageItem == null)
                 {
                     return false;
                 }
@@ -840,7 +840,7 @@ namespace RBMAI
                 else
                 {
                     MissionWeapon defenderWeapon = defenderAgent.WieldedWeapon;
-                    SkillObject defenderWeaponSkill = defenderAgent.WieldedWeapon.IsEmpty ? DefaultSkills.Athletics : WeaponComponentData.GetRelevantSkillFromWeaponClass(defenderWeapon.CurrentUsageItem.WeaponClass);
+                    SkillObject defenderWeaponSkill = (defenderAgent.WieldedWeapon.IsEmpty || defenderWeapon.CurrentUsageItem == null) ? DefaultSkills.Athletics : WeaponComponentData.GetRelevantSkillFromWeaponClass(defenderWeapon.CurrentUsageItem.WeaponClass);
                     int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, defenderWeaponSkill);
                     float skillModifier = calculateDefenderStaminaSkillModifier(effectiveSkill);
 
@@ -1008,10 +1008,13 @@ namespace RBMAI
                 if (defenderAgent.GetPrimaryWieldedItemIndex() != EquipmentIndex.None)
                 {
                     MissionWeapon defenderWeapon = defenderAgent.Equipment[defenderAgent.GetPrimaryWieldedItemIndex()];
-                    SkillObject defenderWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(defenderWeapon.CurrentUsageItem.WeaponClass);
-                    if (defenderWeaponSkill != null)
+                    if (defenderWeapon.CurrentUsageItem != null)
                     {
-                        defenderEffectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, defenderWeaponSkill);
+                        SkillObject defenderWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(defenderWeapon.CurrentUsageItem.WeaponClass);
+                        if (defenderWeaponSkill != null)
+                        {
+                            defenderEffectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, defenderWeaponSkill);
+                        }
                     }
                     if (defenderAgent.GetOffhandWieldedItemIndex() != EquipmentIndex.None)
                     {
@@ -1089,10 +1092,13 @@ namespace RBMAI
                 if (defenderAgent.GetPrimaryWieldedItemIndex() != EquipmentIndex.None)
                 {
                     MissionWeapon defenderWeapon = defenderAgent.Equipment[defenderAgent.GetPrimaryWieldedItemIndex()];
-                    SkillObject defenderWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(defenderWeapon.CurrentUsageItem.WeaponClass);
-                    if (defenderWeaponSkill != null)
+                    if (defenderWeapon.CurrentUsageItem != null)
                     {
-                        defenderEffectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, defenderWeaponSkill);
+                        SkillObject defenderWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(defenderWeapon.CurrentUsageItem.WeaponClass);
+                        if (defenderWeaponSkill != null)
+                        {
+                            defenderEffectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, defenderWeaponSkill);
+                        }
                     }
                     if (defenderAgent.GetOffhandWieldedItemIndex() != EquipmentIndex.None)
                     {

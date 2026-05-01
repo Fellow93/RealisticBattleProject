@@ -568,11 +568,12 @@ namespace RBMAI
             {
                 if (agent.WieldedOffhandWeapon.IsShield())
                 {
-                    wc = agent.WieldedOffhandWeapon.CurrentUsageItem.WeaponClass;
+                    if (agent.WieldedOffhandWeapon.CurrentUsageItem != null)
+                        wc = agent.WieldedOffhandWeapon.CurrentUsageItem.WeaponClass;
                 }
                 else
                 {
-                    if (!agent.WieldedWeapon.IsEmpty)
+                    if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem != null)
                     {
                         wc = agent.WieldedWeapon.CurrentUsageItem.WeaponClass;
                     }
@@ -580,7 +581,7 @@ namespace RBMAI
             }
             else
             {
-                if (!agent.WieldedWeapon.IsEmpty)
+                if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem != null)
                 {
                     wc = agent.WieldedWeapon.CurrentUsageItem.WeaponClass;
                 }
@@ -591,7 +592,7 @@ namespace RBMAI
         public static WeaponClass getAttackerWeaponClass(Agent agent)
         {
             WeaponClass wc = WeaponClass.Undefined;
-            if (!agent.WieldedWeapon.IsEmpty)
+            if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem != null)
             {
                 wc = agent.WieldedWeapon.CurrentUsageItem.WeaponClass;
             }
