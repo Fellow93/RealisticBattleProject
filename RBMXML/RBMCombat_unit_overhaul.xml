@@ -15566,7 +15566,7 @@
   <!-- the water and the stone - -->
   <!-- lakepike/sturgia - -->
   <NPCCharacter id="lakepike_tier_1"
-                default_group="Infantry"
+                default_group="Ranged"
                 level="14"
                 occupation="Soldier"
                 is_basic_troop="true"
@@ -15601,11 +15601,11 @@
       <equipment slot="Item0"
                  id="Item.simple_pike_t2" />
       <equipment slot="Item1"
-                 id="Item.worn_kite_shield_shoulder" />
+                 id="Item.decorated_steppe_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.northern_javelin_1_t2" />
-      <equipment slot="Item2"
-                 id="Item.northern_javelin_1_t2" />
+                 id="Item.sling_wool" />
+      <equipment slot="Item3"
+                 id="Item.sling_chiseledammo" />
       <equipment slot="Body"
                  id="Item.layered_leather_tunic" />
       <equipment slot="Leg"
@@ -15622,7 +15622,7 @@
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="lakepike_tier_2"
-                default_group="Infantry"
+                default_group="Ranged"
                 level="19"
                 occupation="Soldier"
                 culture="Culture.sturgia"
@@ -15656,11 +15656,11 @@
       <equipment slot="Item0"
                  id="Item.military_fork_pike_t3" />
       <equipment slot="Item1"
-                 id="Item.western_kite_shield_shoulder" />
+                 id="Item.decorated_steppe_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.sling_braided" />
       <equipment slot="Item3"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.sling_chiseledammo_50g" />
       <equipment slot="Body"
                  id="Item.leather_and_iron_plate_armor" />
       <equipment slot="Leg"
@@ -15676,11 +15676,11 @@
       <equipment slot="Item0"
                  id="Item.military_fork_pike_t3" />
       <equipment slot="Item1"
-                 id="Item.western_kite_shield_shoulder" />
+                 id="Item.decorated_steppe_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.sling_braided" />
       <equipment slot="Item3"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.sling_chiseledammo_50g" />
       <equipment slot="Body"
                  id="Item.nordic_lamellar_vest" />
       <equipment slot="Leg"
@@ -15696,11 +15696,11 @@
       <equipment slot="Item0"
                  id="Item.military_fork_pike_t3" />
       <equipment slot="Item1"
-                 id="Item.ironrim_kite_shield_shoulder" />
+                 id="Item.decorated_steppe_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.sling_braided" />
       <equipment slot="Item3"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.sling_chiseledammo_50g" />
       <equipment slot="Body"
                  id="Item.sturgian_lamellar_gambeson" />
       <equipment slot="Leg"
@@ -15716,11 +15716,11 @@
       <equipment slot="Item0"
                  id="Item.military_fork_pike_t3" />
       <equipment slot="Item1"
-                 id="Item.ironrim_kite_shield_shoulder" />
+                 id="Item.decorated_steppe_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.sling_braided" />
       <equipment slot="Item3"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.sling_chiseledammo_50g" />
       <equipment slot="Body"
                  id="Item.northern_lamellar_armor" />
       <equipment slot="Leg"
@@ -15737,7 +15737,7 @@
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="lakepike_tier_3"
-                default_group="Infantry"
+                default_group="Ranged"
                 level="26"
                 occupation="Soldier"
                 culture="Culture.sturgia"
@@ -15769,11 +15769,11 @@
       <equipment slot="Item0"
                  id="Item.thamaskene_pike_t4" />
       <equipment slot="Item1"
-                 id="Item.heavy_heater_shield" />
+                 id="Item.decorated_steppe_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.sling_reinforced" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.sling_chiseledammo_140g" />
       <equipment slot="Body"
                  id="Item.sturgian_chainmale_longsleeve" />
       <equipment slot="Leg"
@@ -15789,11 +15789,11 @@
       <equipment slot="Item0"
                  id="Item.thamaskene_pike_t4" />
       <equipment slot="Item1"
-                 id="Item.heavy_heater_shield" />
+                 id="Item.decorated_steppe_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.sling_reinforced" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.sling_chiseledammo_140g" />
       <equipment slot="Body"
                  id="Item.decorated_nordic_hauberk" />
       <equipment slot="Leg"
@@ -15809,11 +15809,11 @@
       <equipment slot="Item0"
                  id="Item.fine_pike_t4" />
       <equipment slot="Item1"
-                 id="Item.northern_horsemans_shield" />
+                 id="Item.decorated_steppe_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.sling_reinforced" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.sling_chiseledammo_80g" />
       <equipment slot="Body"
                  id="Item.nordic_hauberk" />
       <equipment slot="Leg"
@@ -15829,11 +15829,11 @@
       <equipment slot="Item0"
                  id="Item.fine_pike_t4" />
       <equipment slot="Item1"
-                 id="Item.northern_horsemans_shield" />
+                 id="Item.decorated_steppe_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.sling_reinforced" />
       <equipment slot="Item3"
-                 id="Item.western_javelin_3_t4" />
+                 id="Item.sling_chiseledammo_80g" />
       <equipment slot="Body"
                  id="Item.nordic_lamellar_armor" />
       <equipment slot="Leg"
@@ -16383,8 +16383,8 @@
   <!-- troop trees for mercenary nomad minor factions (4) -->
   <!-- jawwal - tuareg-style horsemen and half-naked infantry with wicker shields -->
   <NPCCharacter id="jawwal_tier_1"
-                default_group="Infantry"
-                level="14"
+                default_group="Ranged"
+                level="17"
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.aserai"
@@ -16420,9 +16420,9 @@
       <equipment slot="Item1"
                  id="Item.stronger_footmans_wicker_shield" />
       <equipment slot="Item2"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.sling_wool" />
       <equipment slot="Item3"
-                 id="Item.generic_javelin_1_t3" />
+                 id="Item.sling_stoneammo_50g" />
       <equipment slot="Cape"
                  id="Item.leopard_pelt" />
       <equipment slot="Head"
@@ -16437,12 +16437,11 @@
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="jawwal_tier_2"
-                default_group="Cavalry"
-                level="19"
+                default_group="Ranged"
+                level="22"
                 occupation="Soldier"
-                upgrade_requires="ItemCategory.horse"
                 culture="Culture.aserai"
-                name="{=Mcbjdntz}Jawwal Camel Rider">
+                name="{=Mcbjdntz}Jawwal Slinger">
     <face>
       <face_key_template value="BodyProperty.fighter_jawwal" />
     </face>
@@ -16474,9 +16473,9 @@
       <equipment slot="Item1"
                  id="Item.stronger_eastern_wicker_shield" />
       <equipment slot="Item2"
-                 id="Item.eastern_javelin_3_t4" />
+                 id="Item.sling_braided" />
       <equipment slot="Item3"
-                 id="Item.eastern_javelin_3_t4" />
+                 id="Item.sling_stoneammo_120g" />
       <equipment slot="Cape"
                  id="Item.leopard_pelt" />
       <equipment slot="Head"
@@ -16487,20 +16486,15 @@
                  id="Item.belted_leather_cuirass" />
       <equipment slot="Gloves"
                  id="Item.plated_strip_gauntlets" />
-      <equipment slot="Horse"
-                 id="Item.war_camel" />
-      <equipment slot="HorseHarness"
-                 id="Item.camel_saddle" />
       </EquipmentRoster>
     </Equipments>
   </NPCCharacter>
   <NPCCharacter id="jawwal_tier_3"
-                default_group="Cavalry"
+                default_group="Ranged"
                 level="31"
                 occupation="Soldier"
-                upgrade_requires="ItemCategory.war_horse"
                 culture="Culture.aserai"
-                name="{=qAvxmnav}Jawwal Bedouin">
+                name="{=qAvxmnav}Jawwal Master Slinger">
     <face>
       <face_key_template value="BodyProperty.fighter_jawwal" />
     </face>
@@ -16530,9 +16524,9 @@
       <equipment slot="Item1"
                  id="Item.stronger_eastern_wicker_shield" />
       <equipment slot="Item2"
-                 id="Item.eastern_javelin_3_t4" />
+                 id="Item.sling_reinforced" />
       <equipment slot="Item3"
-                 id="Item.eastern_javelin_3_t4" />
+                 id="Item.sling_stoneammo_218g" />
       <equipment slot="Cape"
                  id="Item.leopard_pelt" />
       <equipment slot="Head"
@@ -16543,10 +16537,6 @@
                  id="Item.southern_lamellar_armor" />
       <equipment slot="Gloves"
                  id="Item.plated_strip_gauntlets" />
-      <equipment slot="Horse"
-                 id="Item.t2_aserai_horse" />
-      <equipment slot="HorseHarness"
-                 id="Item.half_mail_and_plate_barding" />
       </EquipmentRoster>
       <EquipmentSet id="aserai_troop_civilian_template_t3"
                     civilian="true" />

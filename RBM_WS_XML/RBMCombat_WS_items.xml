@@ -3027,7 +3027,73 @@
 			DropOnAnyAction="true" />
 	</Item>
 
-	<!-- Storyline Quest 5 Stealth Items-->
+	<!-- RBM Puppet Masters and Quest-->
+	<Item
+		id="RBM_master_assassin_boot"
+		name="Master Assassin Boots"
+		mesh="assassin_boot"
+		culture="Culture.nord"
+		weight="1"
+		appearance="4"
+		is_merchandise="false"
+		Type="LegArmor">
+		<ItemComponent>
+			<Armor
+				leg_armor="48"
+				stealth_factor="25"
+				covers_legs="true"
+				modifier_group="chain"
+				material_type="Chainmail" />
+		</ItemComponent>
+		<Flags
+			Stealth="true" />
+	</Item>
+	<Item
+		id="RBM_master_assassin_armor"
+		name="Master Assassin Armor"
+		subtype="body_armor"
+		mesh="assassin_armor"
+		culture="Culture.nord"
+		weight="5"
+		appearance="4"
+		is_merchandise="false"
+		Type="BodyArmor">
+		<ItemComponent>
+			<Armor
+				body_armor="53"
+				leg_armor="42"
+				arm_armor="45"
+				stealth_factor="35"
+				has_gender_variations="true"
+				covers_body="true"
+				modifier_group="chain"
+				material_type="Chainmail" />
+		</ItemComponent>
+		<Flags
+			Stealth="true" />
+	</Item>
+	<Item
+		id="RBM_master_assassin_shoulder"
+		name="Master Assassin Cape"
+		mesh="assassin_shoulder"
+		culture="Culture.nord"
+		subtype="body_armor"
+		weight="0.85"
+		appearance="5"
+		is_merchandise="false"
+		Type="Cape">
+		<ItemComponent>
+			<Armor
+				body_armor="43"
+				stealth_factor="20"
+				modifier_group="chain"
+				material_type="Chainmail" />
+		</ItemComponent>
+		<Flags
+			Civilian="true"
+			Stealth="true" />
+	</Item>
+	
 	<Item
 		id="improved_assassin_boot_q5"
 		name="{=iqaRjMhe}Blackened Boots"
@@ -3118,7 +3184,7 @@
 		<Flags
 			Civilian="true"
 			Stealth="true" />
-	</Item>
+	</Item>	
 	<!-- Storyline Quest 3 Ballista Ammos-->
 	<Item
 		multiplayer_item="false"

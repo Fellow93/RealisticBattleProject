@@ -113,7 +113,7 @@
 					id="Item.northern_javelin_1_t2" />
 				<equipment
 					slot="Body"
-					id="Item.nord_casual_tunic" />
+					id="Item.heavy_gambeson_armor_plain" />
 				<equipment
 					slot="Leg"
 					id="Item.nord_casual_boots" />
@@ -134,7 +134,7 @@
 					id="Item.nord_hatchett_3_t1" />
 				<equipment
 					slot="Body"
-					id="Item.nord_casual_tunic" />
+					id="Item.heavy_gambeson_armor_plain" />
 				<equipment
 					slot="Leg"
 					id="Item.nord_casual_boots" />
@@ -710,7 +710,7 @@
 					id="Item.nord_spear_2_t3" />
 				<equipment
 					slot="Body"
-					id="Item.sturgian_lamellar_base" />
+					id="Item.nordic_chainmail_a" />
 				<equipment
 					slot="Leg"
 					id="Item.bandit_hybrid_armor_boots_a" />
@@ -719,7 +719,7 @@
 					id="Item.closed_goggled_helmet" />
 				<equipment
 					slot="Cape"
-					id="Item.nord_shoulder_a" />
+					id="Item.chainmail_shoulder_armor_b" />
 				<equipment
 					slot="Gloves"
 					id="Item.mail_mitten" />
@@ -783,7 +783,7 @@
 					id="Item.decorated_goggled_helmet" />
 				<equipment
 					slot="Body"
-					id="Item.sturgian_lamellar_fortified" />
+					id="Item.nordic_chainmail_c" />
 				<equipment
 					slot="Cape"
 					id="Item.nord_king_shoulder_armor" />
@@ -792,7 +792,7 @@
 					id="Item.tacky_bandit_boot" />
 				<equipment
 					slot="Gloves"
-					id="Item.bandit_hybrid_armor_gloves_a" />
+					id="Item.mail_mitten_g" />
 			</EquipmentRoster>
 			<EquipmentRoster>
 				<equipment
@@ -821,7 +821,7 @@
 					id="Item.tacky_bandit_boot" />
 				<equipment
 					slot="Gloves"
-					id="Item.bandit_hybrid_armor_gloves_a" />
+					id="Item.mail_mitten_g" />
 			</EquipmentRoster>
 			<EquipmentSet
 				id="nord_troop_civilian_template_t2"
@@ -1268,7 +1268,7 @@
 					id="Item.closed_goggled_helmet" />
 				<equipment
 					slot="Gloves"
-					id="Item.tacky_bandit_bracer" />
+					id="Item.bandit_hybrid_armor_gloves_a" />
 			</EquipmentRoster>
 			<EquipmentRoster>
 				<equipment
@@ -1285,7 +1285,7 @@
 					id="Item.nord_shield_tier_4_a" />
 				<equipment
 					slot="Body"
-					id="Item.nord_king_armor_b" />
+					id="Item.nordic_chainmail_a" />
 				<equipment
 					slot="Leg"
 					id="Item.bandit_hybrid_armor_boots_a" />
@@ -1297,7 +1297,7 @@
 					id="Item.closed_goggled_helmet" />
 				<equipment
 					slot="Gloves"
-					id="Item.tacky_bandit_bracer" />
+					id="Item.bandit_hybrid_armor_gloves_a" />
 			</EquipmentRoster>
 			<EquipmentSet
 				id="nord_troop_civilian_template_t3"
@@ -1378,7 +1378,7 @@
 					id="Item.tacky_bandit_boot" />
 				<equipment
 					slot="Gloves"
-					id="Item.bandit_hybrid_armor_gloves_a" />
+					id="Item.mail_mitten_g" />
 			</EquipmentRoster>
 			<EquipmentRoster>
 				<equipment
@@ -1398,7 +1398,7 @@
 					id="Item.decorated_goggled_helmet" />
 				<equipment
 					slot="Body"
-					id="Item.brass_lamellar_over_mail" />
+					id="Item.nordic_chainmail_c" />
 				<equipment
 					slot="Cape"
 					id="Item.nord_king_shoulder_armor" />
@@ -1407,7 +1407,7 @@
 					id="Item.tacky_bandit_boot" />
 				<equipment
 					slot="Gloves"
-					id="Item.bandit_hybrid_armor_gloves_a" />
+					id="Item.mail_mitten_g" />
 			</EquipmentRoster>
 			<EquipmentRoster>
 				<equipment
@@ -1427,7 +1427,7 @@
 					id="Item.decorated_goggled_helmet" />
 				<equipment
 					slot="Body"
-					id="Item.brass_lamellar_over_mail" />
+					id="Item.nordic_chainmail_c" />
 				<equipment
 					slot="Cape"
 					id="Item.nord_king_shoulder_armor" />
@@ -1436,7 +1436,7 @@
 					id="Item.tacky_bandit_boot" />
 				<equipment
 					slot="Gloves"
-					id="Item.bandit_hybrid_armor_gloves_a" />
+					id="Item.mail_mitten_g" />
 			</EquipmentRoster>
 			<EquipmentRoster>
 				<equipment
@@ -1465,7 +1465,7 @@
 					id="Item.tacky_bandit_boot" />
 				<equipment
 					slot="Gloves"
-					id="Item.bandit_hybrid_armor_gloves_a" />
+					id="Item.mail_mitten_g" />
 			</EquipmentRoster>
 			<EquipmentSet
 				id="nord_troop_civilian_template_t2"
@@ -1561,7 +1561,7 @@
 					id="Item.hybrid_armor_boots_b" />
 				<equipment
 					slot="Gloves"
-					id="Item.hybrid_armor_gloves_b" />
+					id="Item.mail_mitten_d" />
 			</EquipmentRoster>
 			<EquipmentRoster>
 				<equipment
@@ -1590,7 +1590,7 @@
 					id="Item.hybrid_armor_boots_b" />
 				<equipment
 					slot="Gloves"
-					id="Item.hybrid_armor_gloves_b" />
+					id="Item.mail_mitten_d" />
 			</EquipmentRoster>
 			<EquipmentRoster>
 				<equipment
@@ -1857,7 +1857,7 @@
 					id="Item.battania_leather_boots" />
 				<equipment
 					slot="Head"
-					id="Item.berserker_helmet_reinforced" />
+					id="Item.wolfhead_ulfhedinn" />
 				<equipment
 					slot="Gloves"
 					id="Item.splinted_bracers" />
@@ -2071,7 +2071,7 @@
 					id="Item.goggled_helmet_over_mail" />
 				<equipment
 					slot="Body"
-					id="Item.nord_king_armor" />
+					id="Item.nordic_chainmail_a" />
 				<equipment
 					slot="Leg"
 					id="Item.mail_chausses" />
@@ -2198,7 +2198,7 @@
 					id="Item.bandit_hybrid_armor_shoulder_b" />
 				<equipment
 					slot="Gloves"
-					id="Item.mail_mitten" />
+					id="Item.bandit_hybrid_armor_gloves_a" />
 			</EquipmentRoster>
 			<EquipmentRoster>
 				<equipment
@@ -2244,7 +2244,7 @@
 					id="Item.nord_spear_2_t3" />
 				<equipment
 					slot="Body"
-					id="Item.nord_king_armor" />
+					id="Item.nord_king_armor_c" />
 				<equipment
 					slot="Leg"
 					id="Item.leather_cavalier_boots" />
@@ -2326,7 +2326,7 @@
 					id="Item.tacky_bandit_shoulder" />
 				<equipment
 					slot="Gloves"
-					id="Item.mail_mitten" />
+					id="Item.bandit_hybrid_armor_gloves_a" />
 			</EquipmentRoster>
 			<EquipmentSet
 				id="nord_troop_civilian_template_t3"
@@ -2387,7 +2387,7 @@
 					id="Item.goggled_helmet_over_full_mail" />
 				<equipment
 					slot="Body"
-					id="Item.northern_brass_lamellar_over_mail" />
+					id="Item.nordic_chainmail_c" />
 				<equipment
 					slot="Cape"
 					id="Item.bandit_hybrid_armor_shoulder_b" />
@@ -2518,10 +2518,10 @@
 					id="Item.tacky_bandit_boot" />
 				<equipment
 					slot="Cape"
-					id="Item.wolf_shoulder" />
+					id="Item.wolf_shoulder_ulfhedinn" />
 				<equipment
 					slot="Gloves"
-					id="Item.reinforced_mail_mitten" />
+					id="Item.mail_mitten_d" />
 			</EquipmentRoster>
 			<EquipmentSet
 				id="nord_troop_civilian_template_t2"
@@ -6077,5 +6077,231 @@
       </EquipmentRoster>
 		</Equipments>
 	</NPCCharacter>
+	
+  <!-- hidden ones - -->
+  <NPCCharacter id="hidden_hand_tier_1"
+                default_group="Ranged"
+                level="14"
+                occupation="Soldier"
+                is_basic_troop="true"
+                culture="Culture.empire"
+                name="{=ehACDRBk}Hidden Pawn">
+    <face>
+      <face_key_template value="BodyProperty.fighter_empire" />
+    </face>
+    <skills>
+      <skill id="Athletics"
+             value="60" />
+      <skill id="Riding"
+             value="15" />
+      <skill id="OneHanded"
+             value="15" />
+      <skill id="TwoHanded"
+             value="15" />
+      <skill id="Polearm"
+             value="60" />
+      <skill id="Bow"
+             value="20" />
+      <skill id="Crossbow"
+             value="5" />
+      <skill id="Throwing"
+             value="60" />
+    </skills>
+    <upgrade_targets>
+      <upgrade_target id="NPCCharacter.hidden_hand_tier_2" />
+    </upgrade_targets>
+    <Equipments>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.sling_wool" />
+      <equipment slot="Item2"
+                 id="Item.sling_leadammo" />
+      <equipment slot="Item4"
+                 id="Item.sling_leadammo" />
+      <equipment slot="Item1"
+                 id="Item.easter_polesword_t4" />
+      <equipment slot="Body"
+                 id="Item.assassin_armor" />
+      <equipment slot="Head"
+                 id="Item.assassin_hood" />
+      <equipment slot="Leg"
+                 id="Item.assassin_boot" />
+      <equipment slot="Gloves"
+                 id="Item.studded_arm_guards" />
+      <equipment slot="Cape"
+                 id="Item.assassin_cape" />
+      </EquipmentRoster>
+      <EquipmentSet id="empire_troop_civilian_template_t1"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+  <NPCCharacter id="hidden_hand_tier_2"
+                default_group="Ranged"
+                level="19"
+                occupation="Soldier"
+                culture="Culture.empire"
+                name="{=MVHawAEp}Hidden Hand">
+    <face>
+      <face_key_template value="BodyProperty.fighter_empire" />
+    </face>
+    <skills>
+      <skill id="Athletics"
+             value="100" />
+      <skill id="Riding"
+             value="40" />
+      <skill id="OneHanded"
+             value="70" />
+      <skill id="TwoHanded"
+             value="40" />
+      <skill id="Polearm"
+             value="120" />
+      <skill id="Bow"
+             value="30" />
+      <skill id="Crossbow"
+             value="10" />
+      <skill id="Throwing"
+             value="120" />
+    </skills>
+    <upgrade_targets>
+      <upgrade_target id="NPCCharacter.hidden_hand_tier_3" />
+    </upgrade_targets>
+    <Equipments>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.sling_braided" />
+      <equipment slot="Item3"
+                 id="Item.sling_leadammo_50g" />
+      <equipment slot="Item4"
+                 id="Item.sling_leadammo_50g" />
+      <equipment slot="Item2"
+                 id="Item.easter_polesword_t4" />
+      <equipment slot="Head"
+                 id="Item.improved_assassin_hood_q5" />
+      <equipment slot="Body"
+                 id="Item.improved_assassin_armor_q5" />
+      <equipment slot="Leg"
+                 id="Item.improved_assassin_boot_q5" />
+      <equipment slot="Gloves"
+                 id="Item.plated_strip_gauntlets" />
+      <equipment slot="Cape"
+                 id="Item.improved_assassin_shoulder_q5" />
+      </EquipmentRoster>
+      <EquipmentSet id="empire_troop_civilian_template_t2"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
+  <NPCCharacter id="hidden_hand_tier_3"
+                default_group="Ranged"
+                level="26"
+                occupation="Soldier"
+                culture="Culture.empire"
+                name="{=PU2zIMu0}Puppeteer">
+    <face>
+      <face_key_template value="BodyProperty.fighter_empire" />
+    </face>
+    <skills>
+      <skill id="Athletics"
+             value="130" />
+      <skill id="Riding"
+             value="50" />
+      <skill id="OneHanded"
+             value="100" />
+      <skill id="TwoHanded"
+             value="100" />
+      <skill id="Polearm"
+             value="150" />
+      <skill id="Bow"
+             value="45" />
+      <skill id="Crossbow"
+             value="25" />
+      <skill id="Throwing"
+             value="180" />
+    </skills>
+    <upgrade_targets></upgrade_targets>
+    <Equipments>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.sling_reinforced" />
+      <equipment slot="Item2"
+                 id="Item.sling_leadammo_80g" />
+      <equipment slot="Item4"
+                 id="Item.sling_leadammo_80g" />
+      <equipment slot="Item3"
+                 id="Item.khuzait_polearm_2_t5" />
+      <equipment slot="Head"
+                 id="Item.spiked_helmet_with_facemask" />
+      <equipment slot="Body"
+                 id="Item.RBM_master_assassin_armor" />
+      <equipment slot="Leg"
+                 id="Item.RBM_master_assassin_boot" />
+      <equipment slot="Gloves"
+                 id="Item.decorated_imperial_gauntlets" />
+      <equipment slot="Cape"
+                 id="Item.RBM_master_assassin_shoulder" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.sling_reinforced" />
+      <equipment slot="Item2"
+                 id="Item.sling_leadammo_80g" />
+      <equipment slot="Item4"
+                 id="Item.sling_leadammo_80g" />
+      <equipment slot="Item3"
+                 id="Item.empire_polearm_2_t5" />
+      <equipment slot="Head"
+                 id="Item.spiked_helmet_with_facemask" />
+      <equipment slot="Body"
+                 id="Item.RBM_master_assassin_armor" />
+      <equipment slot="Leg"
+                 id="Item.RBM_master_assassin_boot" />
+      <equipment slot="Gloves"
+                 id="Item.decorated_imperial_gauntlets" />
+      <equipment slot="Cape"
+                 id="Item.RBM_master_assassin_shoulder" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.sling_reinforced" />
+      <equipment slot="Item2"
+                 id="Item.sling_leadammo_80g" />
+      <equipment slot="Item4"
+                 id="Item.sling_leadammo_80g" />
+      <equipment slot="Item3"
+                 id="Item.vlandia_polearm_1_t5" />
+      <equipment slot="Head"
+                 id="Item.spiked_helmet_with_facemask" />
+      <equipment slot="Body"
+                 id="Item.RBM_master_assassin_armor" />
+      <equipment slot="Leg"
+                 id="Item.RBM_master_assassin_boot" />
+      <equipment slot="Gloves"
+                 id="Item.decorated_imperial_gauntlets" />
+      <equipment slot="Cape"
+                 id="Item.RBM_master_assassin_shoulder" />
+      </EquipmentRoster>
+      <EquipmentRoster>
+      <equipment slot="Item0"
+                 id="Item.sling_reinforced" />
+      <equipment slot="Item2"
+                 id="Item.sling_leadammo_80g" />
+      <equipment slot="Item4"
+                 id="Item.sling_leadammo_80g" />
+      <equipment slot="Item3"
+                 id="Item.battania_polearm_1_t5" />
+      <equipment slot="Head"
+                 id="Item.spiked_helmet_with_facemask" />
+      <equipment slot="Body"
+                 id="Item.RBM_master_assassin_armor" />
+      <equipment slot="Leg"
+                 id="Item.RBM_master_assassin_boot" />
+      <equipment slot="Gloves"
+                 id="Item.decorated_imperial_gauntlets" />
+      <equipment slot="Cape"
+                 id="Item.RBM_master_assassin_shoulder" />
+      </EquipmentRoster>
+      <EquipmentSet id="empire_troop_civilian_template_t3"
+                    civilian="true" />
+    </Equipments>
+  </NPCCharacter>
   
 </NPCCharacters>
