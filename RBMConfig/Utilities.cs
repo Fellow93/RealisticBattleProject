@@ -212,6 +212,7 @@ namespace RBMConfig
         public static void createXmlConfig(ref XmlDocument xmlconfig)
         {
             XmlElement Config = xmlconfig.CreateElement("Config");
+            Config.SetAttribute("version", RBMConfig.CONFIG_VERSION.ToString());
 
             //RBM tournament
             XmlElement RBMTournament = xmlconfig.CreateElement("RBMTournament");

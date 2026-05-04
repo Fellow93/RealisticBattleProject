@@ -6,6 +6,9 @@ namespace RBMConfig
 {
     public static class RBMConfig
     {
+        // Bump this to force all users to reset to defaults on next launch.
+        public const int CONFIG_VERSION = 0;
+
         public static XmlDocument xmlConfig = new XmlDocument();
         public static float ThrustMagnitudeModifier = 0.05f;
         public static float OneHandedThrustDamageBonus = 20f;
@@ -20,6 +23,7 @@ namespace RBMConfig
 
         //RBMAI
         public static bool hitStopEnabled = true;
+
         public static bool postureEnabled = true;
         public static bool staminaEnabled = true;
 
@@ -69,7 +73,17 @@ namespace RBMConfig
             if (File.Exists(configFilePath))
             {
                 xmlConfig.Load(configFilePath);
-                parseXmlConfig();
+                XmlElement root = xmlConfig.SelectSingleNode("/Config") as XmlElement;
+                string storedStr = root?.GetAttribute("version") ?? "0";
+                if (!int.TryParse(storedStr, out int storedVersion) || storedVersion != CONFIG_VERSION)
+                {
+                    xmlConfig = new XmlDocument();
+                    Utilities.createXmlConfig(ref xmlConfig);
+                }
+                else
+                {
+                    parseXmlConfig();
+                }
             }
             else
             {
@@ -200,6 +214,7 @@ namespace RBMConfig
 
         public static void saveXmlConfig()
         {
+            (xmlConfig.SelectSingleNode("/Config") as XmlElement)?.SetAttribute("version", CONFIG_VERSION.ToString());
             //modules
             if (xmlConfig.SelectSingleNode("/Config/DeveloperMode") != null && developerMode)
             {

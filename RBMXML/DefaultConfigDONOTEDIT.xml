@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Config>
+<Config version="0">
   <RBMAI>
     <Enabled>1</Enabled>
     <PostureEnabled>1</PostureEnabled>
