@@ -90,7 +90,7 @@ public class RBMTacticEmbolon : TacticComponent
 
     private bool HasBattleBeenJoined()
     {
-        return RBMAI.Utilities.HasBattleBeenJoined(_mainInfantry, _hasBattleBeenJoined, 70f);
+        return RBMAI.Utilities.HasBattleBeenJoined(_mainInfantry, _hasBattleBeenJoined, 95f);
     }
 
     protected override bool CheckAndSetAvailableFormationsChanged()
