@@ -155,11 +155,11 @@
         <ExtraArmorSkillDamageAbsorb>1</ExtraArmorSkillDamageAbsorb>
       </ThrowingAxe>
 	  <SlingStone>
-        <ExtraBluntFactorCut>0.25</ExtraBluntFactorCut>
-        <ExtraBluntFactorPierce>0.3</ExtraBluntFactorPierce>
+        <ExtraBluntFactorCut>0.2</ExtraBluntFactorCut>
+        <ExtraBluntFactorPierce>0.25</ExtraBluntFactorPierce>
         <ExtraBluntFactorBlunt>1</ExtraBluntFactorBlunt>
-        <ExtraArmorThresholdFactorPierce>6</ExtraArmorThresholdFactorPierce>
-        <ExtraArmorThresholdFactorCut>8</ExtraArmorThresholdFactorCut>
+        <ExtraArmorThresholdFactorPierce>8</ExtraArmorThresholdFactorPierce>
+        <ExtraArmorThresholdFactorCut>10</ExtraArmorThresholdFactorCut>
         <ExtraArmorSkillDamageAbsorb>1</ExtraArmorSkillDamageAbsorb>
       </SlingStone>
     </WeaponTypes>

@@ -176,11 +176,11 @@ namespace RBMConfig
             );
             weaponTypesFactors.Add(new RBMCombatConfigWeaponType(
                weaponType: "SlingStone",
-               ExtraBluntFactorCut: 0.25f,
-               ExtraBluntFactorPierce: 0.3f,
+               ExtraBluntFactorCut: 0.2f,
+               ExtraBluntFactorPierce: 0.25f,
                ExtraBluntFactorBlunt: 1f,
-               ExtraArmorThresholdFactorPierce: 6f,
-               ExtraArmorThresholdFactorCut: 8f,
+               ExtraArmorThresholdFactorPierce: 8f,
+               ExtraArmorThresholdFactorCut: 10f,
                ExtraArmorSkillDamageAbsorb: 1f
                )
             );
