@@ -16384,7 +16384,7 @@
   <!-- jawwal - tuareg-style horsemen and half-naked infantry with wicker shields -->
   <NPCCharacter id="jawwal_tier_1"
                 default_group="Ranged"
-                level="17"
+                level="14"
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.aserai"
@@ -16438,7 +16438,7 @@
   </NPCCharacter>
   <NPCCharacter id="jawwal_tier_2"
                 default_group="Ranged"
-                level="22"
+                level="19"
                 occupation="Soldier"
                 culture="Culture.aserai"
                 name="{=Mcbjdntz}Jawwal Slinger">
@@ -16475,7 +16475,7 @@
       <equipment slot="Item2"
                  id="Item.sling_braided" />
       <equipment slot="Item3"
-                 id="Item.sling_stoneammo_120g" />
+                 id="Item.sling_stoneammo_80g" />
       <equipment slot="Cape"
                  id="Item.leopard_pelt" />
       <equipment slot="Head"
@@ -16491,7 +16491,7 @@
   </NPCCharacter>
   <NPCCharacter id="jawwal_tier_3"
                 default_group="Ranged"
-                level="31"
+                level="26"
                 occupation="Soldier"
                 culture="Culture.aserai"
                 name="{=qAvxmnav}Jawwal Master Slinger">
@@ -16526,7 +16526,7 @@
       <equipment slot="Item2"
                  id="Item.sling_reinforced" />
       <equipment slot="Item3"
-                 id="Item.sling_stoneammo_218g" />
+                 id="Item.sling_stoneammo_120g" />
       <equipment slot="Cape"
                  id="Item.leopard_pelt" />
       <equipment slot="Head"
