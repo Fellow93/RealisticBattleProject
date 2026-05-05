@@ -7,7 +7,7 @@ namespace RBMConfig
     public static class RBMConfig
     {
         // Bump this to force all users to reset to defaults on next launch.
-        public const int CONFIG_VERSION = 0;
+        public const int CONFIG_VERSION = 1;
 
         public static XmlDocument xmlConfig = new XmlDocument();
         public static float ThrustMagnitudeModifier = 0.05f;
