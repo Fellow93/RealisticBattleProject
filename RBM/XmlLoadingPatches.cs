@@ -1,24 +1,80 @@
 ﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CraftingSystem;
 using TaleWorlds.ModuleManager;
+using TaleWorlds.MountAndBlade;
 using TaleWorlds.ObjectSystem;
 
 namespace RBM
 {
     internal class XmlLoadingPatches
     {
+        [HarmonyPatch(typeof(Module))]
+        [HarmonyPatch("CreateProcessedItemHolstersXMLForNative")]
+        private class CreateProcessedItemHolstersXMLForNativePatch
+        {
+            private static void Postfix(ref string __result)
+            {
+                try
+                {
+                    // Find all active modules that have a RBMCombat_WS_item_holsters.xml
+                    var activeModules = ModuleHelper.GetModules()
+                        .Where(m => ModuleHelper.IsModuleActive(m.Id));
+
+                    XmlDocument doc = new XmlDocument();
+                    doc.LoadXml(__result);
+                    XmlNode holstersRoot = doc.SelectSingleNode("//item_holsters");
+                    if (holstersRoot == null) return;
+
+                    bool modified = false;
+                    foreach (var module in activeModules)
+                    {
+                        string filePath = Path.Combine(
+                            ModuleHelper.GetModuleFullPath(module.Id),
+                            "ModuleData",
+                            "RBMCombat_item_holsters.xml");
+
+                        if (!File.Exists(filePath)) continue;
+
+                        XmlDocument holsterDoc = new XmlDocument();
+                        holsterDoc.Load(filePath);
+                        XmlNodeList newHolsters = holsterDoc.SelectNodes("//item_holster");
+                        if (newHolsters == null) continue;
+
+                        foreach (XmlNode holster in newHolsters)
+                        {
+                            string id = holster.Attributes?["id"]?.Value;
+                            if (string.IsNullOrEmpty(id)) continue;
+                            // Skip if already present
+                            if (doc.SelectSingleNode($"//item_holster[@id='{id}']") != null) continue;
+
+                            XmlNode imported = doc.ImportNode(holster, true);
+                            holstersRoot.AppendChild(imported);
+                            modified = true;
+                        }
+                    }
+
+                    if (modified)
+                        __result = doc.OuterXml;
+                }
+                catch (Exception ex)
+                {
+                    TaleWorlds.Library.Debug.Print($"[RBM] Error injecting item holsters: {ex.Message}");
+                }
+            }
+        }
 
         [HarmonyPatch(typeof(CraftingOrder))]
         [HarmonyPatch("InitializeCraftingOrderOnLoad")]
         public class CraftingPatch
         {
-            static Exception Finalizer(CraftingOrder __instance)
+            private static Exception Finalizer(CraftingOrder __instance)
             {
                 if (__instance.PreCraftedWeaponDesignItem == null)
                 {

@@ -1,10 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
 <base>
-<!--RBM_XML_TAG-->
-	<item_holsters>
+  <item_holsters>
     <item_holster
       id="left_forearm_shield"
       equip_action="act_equip_shield"
-      equip_action_left_stance="true"
+      equip_action_left_stance="act_equip_shield_left_stance"
       unequip_action="act_unequip_shield"
       unequip_action_left_stance="act_unequip_shield_left_stance"
       show_holster_when_drawn="false"
@@ -16,7 +16,7 @@
     <item_holster
       id="passive_block_kite"
       equip_action="act_equip_shield"
-      equip_action_left_stance="true"
+      equip_action_left_stance="act_equip_shield_left_stance"
       unequip_action="act_unequip_shield"
       unequip_action_left_stance="act_unequip_shield_left_stance"
       show_holster_when_drawn="false"
@@ -28,7 +28,7 @@
     <item_holster
       id="passive_block_round"
       equip_action="act_equip_shield"
-      equip_action_left_stance="true"
+      equip_action_left_stance="act_equip_shield_left_stance"
       unequip_action="act_unequip_shield"
       unequip_action_left_stance="act_unequip_shield_left_stance"
       show_holster_when_drawn="false"
@@ -40,7 +40,7 @@
     <item_holster
       id="left_shoulder_shield_experiment1"
       equip_action="act_equip_shield"
-      equip_action_left_stance="true"
+      equip_action_left_stance="act_equip_shield_left_stance"
       unequip_action="act_unequip_shield"
       unequip_action_left_stance="act_unequip_shield_left_stance"
       show_holster_when_drawn="false"
@@ -52,7 +52,7 @@
     <item_holster
       id="left_shoulder_shield"
       equip_action="act_equip_shield"
-      equip_action_left_stance="true"
+      equip_action_left_stance="act_equip_shield_left_stance"
       unequip_action="act_unequip_shield"
       unequip_action_left_stance="act_unequip_shield_left_stance"
       show_holster_when_drawn="false"
@@ -64,7 +64,7 @@
     <item_holster
       id="left_shoulder_targe"
       equip_action="act_equip_shield"
-      equip_action_left_stance="true"
+      equip_action_left_stance="act_equip_shield_left_stance"
       unequip_action="act_unequip_shield"
       unequip_action_left_stance="act_unequip_shield_left_stance"
       show_holster_when_drawn="false"
@@ -76,7 +76,7 @@
     <item_holster
       id="pavise"
       equip_action="act_equip_shield"
-      equip_action_left_stance="true"
+      equip_action_left_stance="act_equip_shield_left_stance"
       unequip_action="act_unequip_shield"
       unequip_action_left_stance="act_unequip_shield_left_stance"
       show_holster_when_drawn="false"

@@ -312,7 +312,7 @@
     <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBM_native_parameters_tweaks.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\RBM_spear_managed_core_parameters.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\RBM_spear_combat_parameters.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBM_bow_shields.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_item_holsters.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\project.mbproj" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\" "$(SolutionDir)..\RBM\GUI\Prefabs\"
 xcopy /d /y "$(SolutionDir)RBMXML\GUI\Brushes\" "$(SolutionDir)..\RBM\GUI\Brushes\"
