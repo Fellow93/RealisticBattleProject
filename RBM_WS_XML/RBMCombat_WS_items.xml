@@ -596,6 +596,7 @@
 			UseTeamColor="false" 
 			Stealth="true"/>
 	</Item>
+	
 	<Item
 		id="celtic_helmet"
 		name="{=VPICWkKq}Old Guard Helmet"
@@ -616,6 +617,213 @@
 		</ItemComponent>
 		<Flags
 			UseTeamColor="true" />
+	</Item>
+	
+	<Item
+		id="nord_helmet_a"
+		name="{=*}Ornate Vendel Helmet"
+		subtype="head_armor"
+		mesh="nord_helmet_a"
+		culture="Culture.nord"
+		weight="3.3"
+		appearance="3"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="105"
+				body_armor="32"
+				arm_armor="20"
+				has_gender_variations="false"
+				hair_cover_type="all"
+				beard_cover_type="type2"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags />
+	</Item>
+	
+	<Item
+		id="nord_helmet_b"
+		name="{=*}Vendel Noble Helmet"
+		subtype="head_armor"
+		mesh="nord_helmet_b"
+		culture="Culture.nord"
+		weight="3.2"
+		appearance="3"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="105"
+				body_armor="28"
+				arm_armor="20"
+				has_gender_variations="false"
+				hair_cover_type="all"
+				beard_cover_type="type2"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags />
+	</Item>
+	
+	<Item
+		id="nord_helmet_c"
+		name="{=*}Brass Vendel Helmet"
+		subtype="head_armor"
+		mesh="nord_helmet_c"
+		culture="Culture.nord"
+		weight="3.2"
+		appearance="3"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="90"
+				body_armor="30"
+				arm_armor="20"
+				has_gender_variations="false"
+				hair_cover_type="all"
+				beard_cover_type="type2"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags />
+	</Item>
+	
+	<Item
+		id="nord_helmet_d"
+		name="{=*}Nordic Spectacle Helmet"
+		subtype="head_armor"
+		mesh="nord_helmet_d"
+		culture="Culture.nord"
+		weight="2.8"
+		appearance="2"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="85"
+				body_armor="26"
+				arm_armor="20"
+				has_gender_variations="false"
+				hair_cover_type="all"
+				beard_cover_type="type2"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags />
+	</Item>
+	
+	<Item
+		id="nord_helmet_da"
+		name="{=*}Nordic Spectacle Helm over Padded"
+		subtype="head_armor"
+		mesh="nord_helmet_da"
+		culture="Culture.nord"
+		weight="2.5"
+		appearance="2"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="73"
+				body_armor="26"
+				arm_armor="8"
+				has_gender_variations="false"
+				hair_cover_type="all"
+				beard_cover_type="type2"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags />
+	</Item>
+	
+	<Item
+		id="nord_helmet_e"
+		name="{=*}Nordic Nasal Helm over Mail"
+		subtype="head_armor"
+		mesh="nord_helmet_e"
+		culture="Culture.nord"
+		weight="2.3"
+		appearance="2"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="87"
+				body_armor="12"
+				arm_armor="20"
+				has_gender_variations="false"
+				hair_cover_type="all"
+				beard_cover_type="type2"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags />
+	</Item>
+	
+	<Item
+		id="nord_helmet_ea"
+		name="{=*}Nordic Nasal Helmet"
+		subtype="head_armor"
+		mesh="nord_helmet_ea"
+		culture="Culture.nord"
+		weight="2.2"
+		appearance="2"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="75"
+				body_armor="12"
+				arm_armor="7"
+				has_gender_variations="false"
+				hair_cover_type="all"
+				beard_cover_type="type2"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags />
+	</Item>
+	
+	<Item
+		id="nord_helmet_f"
+		name="{=*}Nordic Iron Helm over Mail"
+		subtype="head_armor"
+		mesh="nord_helmet_f"
+		culture="Culture.nord"
+		weight="2.1"
+		appearance="2"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="68"
+				body_armor="12"
+				arm_armor="17"
+				has_gender_variations="false"
+				hair_cover_type="all"
+				beard_cover_type="type2"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags />
+	</Item>
+	
+	<Item
+		id="nord_helmet_fa"
+		name="{=*}Nordic Iron Helmet"
+		subtype="head_armor"
+		mesh="nord_helmet_fa"
+		culture="Culture.nord"
+		weight="2.0"
+		appearance="2"
+		Type="HeadArmor">
+		<ItemComponent>
+			<Armor
+				head_armor="55"
+				body_armor="12"
+				arm_armor="7"
+				has_gender_variations="false"
+				hair_cover_type="all"
+				beard_cover_type="type2"
+				modifier_group="plate"
+				material_type="Plate" />
+		</ItemComponent>
+		<Flags />
 	</Item>
 	<!-- #new nord culture already existing items from vanilla, just culture switch -->
 	<Item id="nasal_helmet" name="{=k4kivaf5}Steel Cap with Nose Guard" mesh="nasal_helmet_a" culture="Culture.nord" weight="1.8" appearance="2" Type="HeadArmor">
