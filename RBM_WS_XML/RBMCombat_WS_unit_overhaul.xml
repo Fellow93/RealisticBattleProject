@@ -228,7 +228,7 @@
 					id="Item.western_javelin_1_t2" />
 				<equipment
 					slot="Head"
-					id="Item.nasal_helmet" />
+					id="Item.nord_helmet_fa" />
 				<equipment
 					slot="Body"
 					id="Item.naval_strappy_tunic" />
@@ -286,7 +286,7 @@
 					id="Item.western_javelin_1_t2" />
 				<equipment
 					slot="Head"
-					id="Item.nasal_helmet" />
+					id="Item.nord_helmet_fa" />
 				<equipment
 					slot="Body"
 					id="Item.naval_strappy_tunic" />
@@ -361,7 +361,7 @@
 					id="Item.nord_throwing_axe_2_t4" />
 				<equipment
 					slot="Head"
-					id="Item.northern_goggled_helmet" />
+					id="Item.nord_helmet_f" />
 				<equipment
 					slot="Body"
 					id="Item.norse_chainmail_pleatedtrousers" />
@@ -390,7 +390,7 @@
 					id="Item.nord_throwing_axe_2_t4" />
 				<equipment
 					slot="Head"
-					id="Item.northern_goggled_helmet" />
+					id="Item.nord_helmet_ea" />
 				<equipment
 					slot="Body"
 					id="Item.nord_chainmail_armor" />
@@ -419,7 +419,7 @@
 					id="Item.nord_throwing_axe_2_t4" />
 				<equipment
 					slot="Head"
-					id="Item.northern_goggled_helmet" />
+					id="Item.nord_helmet_e" />
 				<equipment
 					slot="Body"
 					id="Item.norse_chainmail_pleatedtrousers" />
@@ -448,7 +448,7 @@
 					id="Item.nord_throwing_axe_2_t4" />
 				<equipment
 					slot="Head"
-					id="Item.northern_goggled_helmet" />
+					id="Item.nord_helmet_da" />
 				<equipment
 					slot="Body"
 					id="Item.norse_chainmail_pleatedtrousers" />
@@ -530,7 +530,7 @@
 					id="Item.nord_shoulder_b" />
 				<equipment
 					slot="Head"
-					id="Item.nordic_helmet" />
+					id="Item.nord_helmet_d" />
 				<equipment
 					slot="Gloves"
 					id="Item.northman_wrist_armor" />
@@ -550,7 +550,7 @@
 					id="Item.nord_spear_1_t3" />
 				<equipment
 					slot="Head"
-					id="Item.nordic_helmet" />
+					id="Item.nord_helmet_e" />
 				<equipment
 					slot="Cape"
 					id="Item.nord_shoulder_a" />
@@ -582,7 +582,7 @@
 					id="Item.heavy_gambeson_armor" />
 				<equipment
 					slot="Head"
-					id="Item.nasal_helmet_with_mail" />
+					id="Item.nord_helmet_da" />
 				<equipment
 					slot="Leg"
 					id="Item.northman_raider_boot" />
@@ -658,7 +658,7 @@
 					id="Item.bandit_hybrid_armor_boots_a" />
 				<equipment
 					slot="Head"
-					id="Item.goggled_helmet_over_mail" />
+					id="Item.nord_helmet_c" />
 				<equipment
 					slot="Cape"
 					id="Item.northman_raider_cape" />
@@ -687,7 +687,7 @@
 					id="Item.bandit_hybrid_armor_boots_a" />
 				<equipment
 					slot="Head"
-					id="Item.closed_goggled_helmet" />
+					id="Item.nord_helmet_b" />
 				<equipment
 					slot="Cape"
 					id="Item.northman_raider_cape" />
@@ -716,7 +716,7 @@
 					id="Item.bandit_hybrid_armor_boots_a" />
 				<equipment
 					slot="Head"
-					id="Item.closed_goggled_helmet" />
+					id="Item.nord_helmet_a" />
 				<equipment
 					slot="Cape"
 					id="Item.chainmail_shoulder_armor_b" />
@@ -900,7 +900,7 @@
 					id="Item.leather_boots" />
 				<equipment
 					slot="Head"
-					id="Item.berserker_helmet_reinforced" />
+					id="Item.nord_helmet_f" />
 				<equipment
 					slot="Gloves"
 					id="Item.studded_arm_guards" />
@@ -929,7 +929,7 @@
 					id="Item.leather_boots" />
 				<equipment
 					slot="Head"
-					id="Item.berserker_helmet_reinforced" />
+					id="Item.nord_helmet_f" />
 				<equipment
 					slot="Gloves"
 					id="Item.studded_arm_guards" />
@@ -958,7 +958,7 @@
 					id="Item.leather_boots" />
 				<equipment
 					slot="Head"
-					id="Item.berserker_helmet_reinforced" />
+					id="Item.nord_helmet_f" />
 				<equipment
 					slot="Gloves"
 					id="Item.studded_arm_guards" />
@@ -1039,7 +1039,7 @@
 					id="Item.berserker_cloak" />
 				<equipment
 					slot="Head"
-					id="Item.nordic_helmet" />
+					id="Item.nord_helmet_e" />
 				<equipment
 					slot="Gloves"
 					id="Item.splinted_bracers" />
@@ -1068,7 +1068,7 @@
 					id="Item.berserker_cloak" />
 				<equipment
 					slot="Head"
-					id="Item.nordic_helmet" />
+					id="Item.nord_helmet_e" />
 				<equipment
 					slot="Gloves"
 					id="Item.splinted_bracers" />
@@ -1097,7 +1097,7 @@
 					id="Item.berserker_cloak" />
 				<equipment
 					slot="Head"
-					id="Item.nordic_helmet" />
+					id="Item.nord_helmet_d" />
 				<equipment
 					slot="Gloves"
 					id="Item.splinted_bracers" />
@@ -1126,7 +1126,7 @@
 					id="Item.berserker_cloak" />
 				<equipment
 					slot="Head"
-					id="Item.nordic_helmet" />
+					id="Item.nord_helmet_d" />
 				<equipment
 					slot="Gloves"
 					id="Item.splinted_bracers" />
@@ -1207,7 +1207,7 @@
 					id="Item.northman_raider_cape" />
 				<equipment
 					slot="Head"
-					id="Item.closed_goggled_helmet" />
+					id="Item.nord_helmet_b" />
 				<equipment
 					slot="Gloves"
 					id="Item.tacky_bandit_bracer" />
@@ -1236,7 +1236,7 @@
 					id="Item.northman_raider_cape" />
 				<equipment
 					slot="Head"
-					id="Item.closed_goggled_helmet" />
+					id="Item.nord_helmet_b" />
 				<equipment
 					slot="Gloves"
 					id="Item.tacky_bandit_bracer" />
@@ -1265,7 +1265,7 @@
 					id="Item.northman_raider_cape" />
 				<equipment
 					slot="Head"
-					id="Item.closed_goggled_helmet" />
+					id="Item.nord_helmet_a" />
 				<equipment
 					slot="Gloves"
 					id="Item.bandit_hybrid_armor_gloves_a" />
@@ -1294,7 +1294,7 @@
 					id="Item.northman_raider_cape" />
 				<equipment
 					slot="Head"
-					id="Item.closed_goggled_helmet" />
+					id="Item.nord_helmet_a" />
 				<equipment
 					slot="Gloves"
 					id="Item.bandit_hybrid_armor_gloves_a" />
@@ -2092,7 +2092,7 @@
 					id="Item.eastern_spear_5_t5" />
 				<equipment
 					slot="Head"
-					id="Item.goggled_helmet_over_mail" />
+					id="Item.nord_helmet_a" />
 				<equipment
 					slot="Body"
 					id="Item.nord_king_armor" />
@@ -2116,7 +2116,7 @@
 					id="Item.eastern_spear_5_t5" />
 				<equipment
 					slot="Head"
-					id="Item.goggled_helmet_over_mail" />
+					id="Item.nord_helmet_b" />
 				<equipment
 					slot="Body"
 					id="Item.nord_king_armor" />
