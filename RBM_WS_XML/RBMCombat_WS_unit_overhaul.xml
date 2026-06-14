@@ -633,8 +633,7 @@
              value="90" />
     </skills>
 		<upgrade_targets>
-			<upgrade_target
-				id="NPCCharacter.nord_skjaldbrestir" />
+			<upgrade_target id="NPCCharacter.nord_skjaldbrestir" />
 		</upgrade_targets>
 		<Equipments>
 			<EquipmentRoster>
@@ -1928,8 +1927,7 @@
              value="45" />
     </skills>
 		<upgrade_targets>
-			<upgrade_target
-				id="NPCCharacter.nord_skathi" />
+			<upgrade_target id="NPCCharacter.nord_skathi" />
 		</upgrade_targets>
 		<Equipments>
 			<EquipmentRoster>
@@ -2669,7 +2667,9 @@
       <skill id="Throwing"
              value="45" />
     </skills>
-		<upgrade_targets></upgrade_targets>
+		<upgrade_targets>
+			<upgrade_target id="NPCCharacter.nord_skathi" />
+		</upgrade_targets>
 		<Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -2893,7 +2893,9 @@
       <skill id="Throwing"
              value="100" />
     </skills>
-		<upgrade_targets></upgrade_targets>
+		<upgrade_targets>
+			<upgrade_target id="NPCCharacter.nord_skjaldbrestir" />
+		</upgrade_targets>
 		<Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
@@ -4980,10 +4982,9 @@
              value="20" />
     </skills>
     <upgrade_targets>
-
-      <upgrade_target id="NPCCharacter.imperial_trained_infantryman" />
-<upgrade_target
-				id="NPCCharacter.empire_marine_t3" />
+<upgrade_target id="NPCCharacter.guardians_tier_1" />
+<upgrade_target id="NPCCharacter.imperial_trained_infantryman" />
+<upgrade_target id="NPCCharacter.empire_marine_t3" />
     </upgrade_targets>
     <Equipments>
       <EquipmentRoster>
