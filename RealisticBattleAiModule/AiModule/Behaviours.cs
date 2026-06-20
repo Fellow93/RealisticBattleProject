@@ -1154,18 +1154,28 @@ namespace RBMAI
                 {
                     if (___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
                     {
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 15f, 5f, 20f, 5f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 50f, 4f, 20f, 6f, 0.55f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 40f, 5f, 20f, 30f, 0.55f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 1f, 10f, 30f, 120f, 0.5f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0.5f, 10f, 1f, 30f, 30f);
-
-                        if (___Agent.HasMount)
+                        if (___Agent.Formation.IsAIControlled)
                         {
-                            if (RBMAI.Utilities.GetHarnessTier(___Agent) > 3)
+                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 15f, 5f, 20f, 5f);
+                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 50f, 4f, 20f, 6f, 0.55f);
+                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 40f, 5f, 20f, 30f, 0.55f);
+                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 1f, 10f, 30f, 120f, 0.5f);
+                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0.5f, 10f, 1f, 30f, 30f);
+
+                            if (___Agent.HasMount)
                             {
-                                __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 5f, 20f, 30f, 20f, 0.5f);
+                                if (RBMAI.Utilities.GetHarnessTier(___Agent) > 3)
+                                {
+                                    __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 5f, 20f, 30f, 20f, 0.5f);
+                                }
                             }
+                        }
+                        else
+                        {
+                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 15f, 5f, 20f, 5f);
+                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 0f, 2f, 0f, 20f, 0f);
+                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 0.01f, 2f, 0.01f, 30f, 0.01f);
+                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 1f, 15f, 0.065f, 30f, 0.065f);
                         }
                         return;
                     }
