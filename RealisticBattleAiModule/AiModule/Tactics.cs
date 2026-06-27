@@ -521,10 +521,10 @@ namespace RBMAI
                         if (agent != null && agent.IsHuman && !agent.IsRunningAway)
                         {
                             //banner bearers should stay in their current formation type
-                            if (!agent.WieldedOffhandWeapon.IsEmpty && agent.WieldedOffhandWeapon.CurrentUsageItem != null && agent.WieldedOffhandWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Banner)
+                            if (RBMAI.Utilities.IsBannerBearer(agent))
                             {
                                 agent.FormationPositionPreference = FormationPositionPreference.Back;
-                                return true;
+                                continue;
                             }
                             EquipmentIndex wieldedItemIndex = agent.GetPrimaryWieldedItemIndex();
                             bool isRanged = (wieldedItemIndex != EquipmentIndex.None && agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) && agent.Equipment.GetAmmoAmount(wieldedItemIndex) > 5) ||

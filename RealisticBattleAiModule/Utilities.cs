@@ -21,6 +21,39 @@ namespace RBMAI
         public static float swingSpeedTransfer = 4.5454545f;
         public static float thrustSpeedTransfer = 11.7647057f;
 
+        // A "banner" can reach the game as either WeaponClass.Banner (vanilla / decorative banners) or as a regular
+        // melee weapon class such as TwoHandedPolearm (Raise Your Banner's "spear banner" variants). Checking
+        // WeaponClass alone misses the polearm variants, so every banner item is also matched by item_usage="banner".
+        public static bool IsBannerWeapon(MissionWeapon weapon)
+        {
+            if (weapon.IsEmpty || weapon.CurrentUsageItem == null)
+            {
+                return false;
+            }
+            if (weapon.CurrentUsageItem.WeaponClass == WeaponClass.Banner)
+            {
+                return true;
+            }
+            string itemUsage = weapon.CurrentUsageItem.ItemUsage;
+            if (itemUsage != null && itemUsage.Contains("banner"))
+            {
+                return true;
+            }
+            // Bulletproof fallback: every Raise Your Banner item id begins with "RYB_" (StringId == the XML item id),
+            // including the TwoHandedPolearm "spear banner" variants that share no banner WeaponClass.
+            ItemObject item = weapon.Item;
+            return item != null && item.StringId != null && item.StringId.StartsWith("RYB_");
+        }
+
+        public static bool IsBannerBearer(Agent agent)
+        {
+            if (agent == null)
+            {
+                return false;
+            }
+            return IsBannerWeapon(agent.WieldedOffhandWeapon) || IsBannerWeapon(agent.WieldedWeapon);
+        }
+
         public static float FormationRatioWieldingShockWeapons(Formation formation)
         {
             float result = 0f;

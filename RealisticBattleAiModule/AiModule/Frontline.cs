@@ -395,6 +395,7 @@ namespace RBMAI
 
                         Vec2 unitPosition = unit.Position.AsVec2;
                         Vec2 direction = (targetAgent.Position.AsVec2 - unitPosition).Normalized();
+                        unit.InvalidateTargetAgent();
                         Vec2 leftVec = direction.LeftVec();
                         Vec2 rightVec = direction.RightVec();
 
@@ -452,11 +453,7 @@ namespace RBMAI
                             hasTwoHandedEquippedAddtive += 1;
                         }
 
-                        bool isBannerBearer = false;
-                        if (!unit.WieldedOffhandWeapon.IsEmpty && unit.WieldedOffhandWeapon.CurrentUsageItem != null && unit.WieldedOffhandWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Banner)
-                        {
-                            isBannerBearer = true;
-                        }
+                        bool isBannerBearer = RBMAI.Utilities.IsBannerBearer(unit);
                         bool isHero = unit.Character.IsHero;
 
                         bool shouldAttackMore = alliesFrontCount <= 1 && enemiesFrontCount <= 1;

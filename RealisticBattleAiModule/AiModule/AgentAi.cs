@@ -561,6 +561,20 @@ namespace RBMAI
 
             private static void Postfix(ref SpawnedItemEntity ____itemToPickUp, ref Agent ___Agent)
             {
+                // Banner bearers (Raise Your Banner) lock onto a distant enemy as their melee target and the native
+                // combat AI swings at it regardless of range - "attacking air". It is not gated by AIAttackOnDecideChance
+                // nor by the wielded weapon (an empty-handed bearer just punches). While no enemy is in melee range we
+                // clear the locked target so there is nothing to swing at, and sheath any drawn weapon so the banner
+                // stays raised. Once an enemy closes within melee range we leave the agent alone so it can still fight.
+                if (___Agent.IsActive() && Mission.Current != null && RBMAI.Utilities.IsBannerBearer(___Agent))
+                {
+                    MBList<Agent> bannerNearbyEnemies = new MBList<Agent>();
+                    bannerNearbyEnemies = Mission.Current.GetNearbyEnemyAgents(___Agent.GetWorldPosition().AsVec2, 5f, ___Agent.Team, bannerNearbyEnemies);
+                    if (bannerNearbyEnemies.Count == 0)
+                    {
+                        ___Agent.InvalidateTargetAgent();
+                    }
+                }
                 //___Agent.MovementInputVector = new Vec2(30f, 30f);
                 float currentTime = MBCommon.GetTotalMissionTime();
                 if (___Agent.IsActive() && ___Agent.HasMount)
