@@ -168,15 +168,21 @@ namespace RBM
         {
             private static void Postfix(MapSelectionGroupVM __instance)
             {
-                int jabalAshabIndex = __instance.MapSelection.ItemList.FindIndex((MapItemVM x) => x.MapName.Contains("Jabal Ashab"));
-                MapItemVM jabalAshabMap = __instance.MapSelection.ItemList[jabalAshabIndex];
-                __instance.MapSelection.ItemList[jabalAshabIndex] = __instance.MapSelection.ItemList[0];
-                __instance.MapSelection.ItemList[0] = jabalAshabMap;
+                int jabalAshabIndex = __instance.MapSelection.ItemList.FindIndex((MapItemVM x) => x.MapId == "battle_terrain_010");
+                if (jabalAshabIndex > -1)
+                {
+                    MapItemVM jabalAshabMap = __instance.MapSelection.ItemList[jabalAshabIndex];
+                    __instance.MapSelection.ItemList[jabalAshabIndex] = __instance.MapSelection.ItemList[0];
+                    __instance.MapSelection.ItemList[0] = jabalAshabMap;
+                }
 
-                int pendraicPrairieIndex = __instance.MapSelection.ItemList.FindIndex((MapItemVM x) => x.MapName.Contains("Pendraic Prairie"));
-                MapItemVM pendraicPrairieMap = __instance.MapSelection.ItemList[pendraicPrairieIndex];
-                __instance.MapSelection.ItemList[pendraicPrairieIndex] = __instance.MapSelection.ItemList[1];
-                __instance.MapSelection.ItemList[1] = pendraicPrairieMap;
+                int pendraicPrairieIndex = __instance.MapSelection.ItemList.FindIndex((MapItemVM x) => x.MapId == "battle_terrain_032");
+                if (pendraicPrairieIndex > -1)
+                {
+                    MapItemVM pendraicPrairieMap = __instance.MapSelection.ItemList[pendraicPrairieIndex];
+                    __instance.MapSelection.ItemList[pendraicPrairieIndex] = __instance.MapSelection.ItemList[1];
+                    __instance.MapSelection.ItemList[1] = pendraicPrairieMap;
+                }
 
                 __instance.MapSelection.SelectedIndex = 0;
                 SelectedMap.SetValue(__instance, __instance.MapSelection.ItemList[0], BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
