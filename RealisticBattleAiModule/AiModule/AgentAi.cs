@@ -570,6 +570,9 @@ namespace RBMAI
                 {
                     MBList<Agent> bannerNearbyEnemies = new MBList<Agent>();
                     bannerNearbyEnemies = Mission.Current.GetNearbyEnemyAgents(___Agent.GetWorldPosition().AsVec2, 5f, ___Agent.Team, bannerNearbyEnemies);
+                    // Fleeing routers run through our lines and end up within 5m; a banner bearer shouldn't chase-swing
+                    // at them (it can't catch them = "attacking air"), so treat only non-routing enemies as a reason to fight.
+                    bannerNearbyEnemies.RemoveAll((Agent a) => a.IsRunningAway);
                     if (bannerNearbyEnemies.Count == 0)
                     {
                         ___Agent.InvalidateTargetAgent();
