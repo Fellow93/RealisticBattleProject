@@ -395,7 +395,6 @@ namespace RBMAI
 
                         Vec2 unitPosition = unit.Position.AsVec2;
                         Vec2 direction = (targetAgent.Position.AsVec2 - unitPosition).Normalized();
-                        unit.InvalidateTargetAgent();
                         Vec2 leftVec = direction.LeftVec();
                         Vec2 rightVec = direction.RightVec();
 
