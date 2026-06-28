@@ -83,6 +83,7 @@
 	<string id="RBM_CON_013" text="Player Posture Multiplier" />
 	<string id="RBM_CON_014" text="Posture GUI" />
 	<string id="RBM_CON_015" text="Vanilla AI Block/Parry/Attack" />
+	<string id="RBM_CON_031" text="Keep Battle (Last Stand)" />
 	<string id="RBM_CON_016" text="RBM Combat" />
 	<string id="RBM_CON_017" text="Module Status" />
 	<string id="RBM_CON_018" text="RBM AI" />

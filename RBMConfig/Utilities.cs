@@ -235,6 +235,8 @@ namespace RBMConfig
             PostureGUIEnabled.InnerText = RBMConfig.postureGUIEnabled ? "1" : "0";
             XmlElement VanillaCombatAi = xmlconfig.CreateElement("VanillaCombatAi");
             VanillaCombatAi.InnerText = RBMConfig.vanillaCombatAi ? "1" : "0";
+            XmlElement KeepBattleEnabled = xmlconfig.CreateElement("KeepBattleEnabled");
+            KeepBattleEnabled.InnerText = RBMConfig.keepBattleEnabled ? "1" : "0";
             XmlElement PlayerPostureMultiplier = xmlconfig.CreateElement("PlayerPostureMultiplier");
             PlayerPostureMultiplier.InnerText = getPostureMultiplier(RBMConfig.playerPostureMultiplier);
 
@@ -244,6 +246,7 @@ namespace RBMConfig
             RBMAI.AppendChild(PlayerPostureMultiplier);
             RBMAI.AppendChild(PostureGUIEnabled);
             RBMAI.AppendChild(VanillaCombatAi);
+            RBMAI.AppendChild(KeepBattleEnabled);
             Config.AppendChild(RBMAI);
 
             //RBM combat

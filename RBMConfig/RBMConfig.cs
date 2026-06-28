@@ -7,7 +7,7 @@ namespace RBMConfig
     public static class RBMConfig
     {
         // Bump this to force all users to reset to defaults on next launch.
-        public const int CONFIG_VERSION = 1;
+        public const int CONFIG_VERSION = 2;
 
         public static XmlDocument xmlConfig = new XmlDocument();
         public static float ThrustMagnitudeModifier = 0.05f;
@@ -30,6 +30,7 @@ namespace RBMConfig
         public static float playerPostureMultiplier = 1f;
         public static bool postureGUIEnabled = true;
         public static bool vanillaCombatAi = false;
+        public static bool keepBattleEnabled = false;
 
         //RBMCombat
         public static bool realisticArrowArc = false;
@@ -144,6 +145,7 @@ namespace RBMConfig
             staminaEnabled = ReadOrCreate("/Config/RBMAI", "StaminaEnabled", "1").Equals("1");
             postureGUIEnabled = ReadOrCreate("/Config/RBMAI", "PostureGUIEnabled", "1").Equals("1");
             vanillaCombatAi = ReadOrCreate("/Config/RBMAI", "VanillaCombatAi", "0").Equals("1");
+            keepBattleEnabled = ReadOrCreate("/Config/RBMAI", "KeepBattleEnabled", "0").Equals("1");
             switch (ReadOrCreate("/Config/RBMAI", "PlayerPostureMultiplier", "0"))
             {
                 case "1": playerPostureMultiplier = 1.5f; break;
@@ -229,6 +231,7 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/StaminaEnabled"), staminaEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureGUIEnabled"), postureGUIEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/VanillaCombatAi"), vanillaCombatAi);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/KeepBattleEnabled"), keepBattleEnabled);
             switch (playerPostureMultiplier)
             {
                 case 1f:

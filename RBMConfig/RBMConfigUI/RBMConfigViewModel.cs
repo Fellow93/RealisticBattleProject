@@ -38,6 +38,9 @@ namespace RBMConfig
         public TextViewModel VanillaCombatAiText { get; }
         public SelectorVM<SelectorItemVM> VanillaCombatAi { get; }
 
+        public TextViewModel KeepBattleEnabledText { get; }
+        public SelectorVM<SelectorItemVM> KeepBattleEnabled { get; }
+
         public TextViewModel ActiveTroopOverhaulText { get; }
         public SelectorVM<SelectorItemVM> ActiveTroopOverhaul { get; }
 
@@ -253,6 +256,15 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
+        public string KeepBattlet
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_031}Keep Battle (Last Stand)").ToString();
+            }
+        }
+
+        [DataSourceProperty]
         public string RBMTournament
         {
             get
@@ -398,6 +410,10 @@ namespace RBMConfig
             VanillaCombatAiText = new TextViewModel(new TextObject("Vanilla AI Block/Parry/Attack"));
             VanillaCombatAi = new SelectorVM<SelectorItemVM>(vanillaCombatAiOptions, 0, null);
 
+            List<string> keepBattleOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
+            KeepBattleEnabledText = new TextViewModel(new TextObject("Keep Battle (Last Stand)"));
+            KeepBattleEnabled = new SelectorVM<SelectorItemVM>(keepBattleOptions, 0, null);
+
             if (RBMConfig.playerPostureMultiplier == 1f)
             {
                 PlayerPostureMultiplier.SelectedIndex = 0;
@@ -440,6 +456,15 @@ namespace RBMConfig
             else
             {
                 VanillaCombatAi.SelectedIndex = 0;
+            }
+
+            if (RBMConfig.keepBattleEnabled)
+            {
+                KeepBattleEnabled.SelectedIndex = 1;
+            }
+            else
+            {
+                KeepBattleEnabled.SelectedIndex = 0;
             }
 
             List<string> rbmCombatEnabledOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
@@ -594,6 +619,15 @@ namespace RBMConfig
             if (VanillaCombatAi.SelectedIndex == 1)
             {
                 RBMConfig.vanillaCombatAi = true;
+            }
+
+            if (KeepBattleEnabled.SelectedIndex == 0)
+            {
+                RBMConfig.keepBattleEnabled = false;
+            }
+            if (KeepBattleEnabled.SelectedIndex == 1)
+            {
+                RBMConfig.keepBattleEnabled = true;
             }
 
             if (RBMCombatEnabled.SelectedIndex == 0)

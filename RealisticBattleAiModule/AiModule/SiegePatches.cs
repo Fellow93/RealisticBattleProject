@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
@@ -9,7 +10,6 @@ namespace RBMAI
 {
     public static class SiegePatches
     {
-
         [HarmonyPatch(typeof(BehaviorAssaultWalls))]
         private class OverrideBehaviorAssaultWalls
         {
@@ -21,7 +21,6 @@ namespace RBMAI
                 __instance.Formation.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
             }
 
-
             [HarmonyPostfix]
             [HarmonyPatch("CalculateCurrentOrder")]
             private static void PostfixCalculateCurrentOrder(ref BehaviorAssaultWalls __instance, ref MovementOrder ____wallSegmentMoveOrder, ref MovementOrder ____attackEntityOrderOuterGate, ref ArrangementOrder ___CurrentArrangementOrder, ref MovementOrder ____chargeOrder, ref TeamAISiegeComponent ____teamAISiegeComponent, ref MovementOrder ____currentOrder, ref MovementOrder ____attackEntityOrderInnerGate)
@@ -29,7 +28,6 @@ namespace RBMAI
                 ___CurrentArrangementOrder = ArrangementOrder.ArrangementOrderScatter;
             }
         }
-
 
         [HarmonyPatch(typeof(BehaviorShootFromCastleWalls))]
         private class OverrideBehaviorShootFromCastleWalls
@@ -339,7 +337,6 @@ namespace RBMAI
         //    }
         //}
 
-
         [HarmonyPatch(typeof(SiegeTower))]
         private class OverrideSiegeTower
         {
@@ -363,7 +360,6 @@ namespace RBMAI
                         _queueRowSize.DeclaringType.GetField("_queueRowSize");
                         _queueRowSize.SetValue(queue, 1.5f);
                     }
-
                 }
             }
         }
@@ -377,7 +373,6 @@ namespace RBMAI
             {
                 if (____queueManagerForAttackers != null)
                 {
-
                     FieldInfo _agentSpacing = typeof(LadderQueueManager).GetField("_agentSpacing", BindingFlags.NonPublic | BindingFlags.Instance);
                     _agentSpacing.DeclaringType.GetField("_agentSpacing");
                     _agentSpacing.SetValue(____queueManagerForAttackers, 1.5f);
@@ -411,33 +406,35 @@ namespace RBMAI
                 {
                     if (Mission.Current.IsSiegeBattle && affectedAgent.Team.IsDefender)
                     {
-                        //if (affectedAgent.Team.ActiveAgents.Count < 50)
-                        //{
-                        //    float defenderPower = Mission.Current.Teams.Where(team => team.IsDefender).Sum(team =>
-                        //    {
-                        //        float power = 0f;
-                        //        foreach (Agent agent in team.ActiveAgents)
-                        //        {
-                        //            power += agent.CharacterPowerCached;
-                        //        }
-                        //        return power;
-                        //    });
-                        //    float attackerPower = Mission.Current.Teams.Where(team => team.IsAttacker).Sum(team =>
-                        //    {
-                        //        float power = 0f;
-                        //        foreach (Agent agent in team.ActiveAgents)
-                        //        {
-                        //            power += agent.CharacterPowerCached;
-                        //        }
-                        //        return power;
-                        //    });
-                        //    if (defenderPower / attackerPower < 0.2f)
-                        //    {
-                        //        affectedSideMaxMoraleLoss *= 2f;
-                        //        effectRadius = 500f;
-                        //        return true;
-                        //    }
-                        //}
+                        // Keep battle: when the defending garrison is small and badly outpowered,
+                        // allow morale to break so survivors can rout and make a last stand in the keep.
+                        if (RBMConfig.RBMConfig.keepBattleEnabled && affectedAgent.Team.ActiveAgents.Count < 50)
+                        {
+                            float defenderPower = Mission.Current.Teams.Where(team => team.IsDefender).Sum(team =>
+                            {
+                                float power = 0f;
+                                foreach (Agent agent in team.ActiveAgents)
+                                {
+                                    power += agent.CharacterPowerCached;
+                                }
+                                return power;
+                            });
+                            float attackerPower = Mission.Current.Teams.Where(team => team.IsAttacker).Sum(team =>
+                            {
+                                float power = 0f;
+                                foreach (Agent agent in team.ActiveAgents)
+                                {
+                                    power += agent.CharacterPowerCached;
+                                }
+                                return power;
+                            });
+                            if (defenderPower / attackerPower < 0.5f)
+                            {
+                                affectedSideMaxMoraleLoss *= 2f;
+                                effectRadius = 500f;
+                                return true;
+                            }
+                        }
                         return false;
                     }
                 }
