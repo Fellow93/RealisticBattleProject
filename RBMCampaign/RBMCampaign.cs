@@ -1,13 +1,11 @@
 using HarmonyLib;
 using Helpers;
-using psai.Editor;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
-using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Party;
-using TaleWorlds.CampaignSystem.ViewModelCollection.Party;
 using TaleWorlds.Core;
+using TaleWorlds.Localization;
 
 namespace RBMCampaign
 {
@@ -19,10 +17,6 @@ namespace RBMCampaign
         {
             private static bool Prefix(PartyBase party, CharacterObject characterObject, CharacterObject upgradeTarget, ref ExplainedNumber __result)
             {
-                PartyWageModel partyWageModel = Campaign.Current.Models.PartyWageModel;
-                //int roundedResultNumber = partyWageModel.GetTroopRecruitmentCost(upgradeTarget, null, withoutItemCost: true).RoundedResultNumber;
-                //int roundedResultNumber2 = partyWageModel.GetTroopRecruitmentCost(characterObject, null, withoutItemCost: true).RoundedResultNumber;
-
                 int characterEquipmentCost = 0;
                 for (EquipmentIndex i = EquipmentIndex.ArmorItemBeginSlot; i < EquipmentIndex.ArmorItemEndSlot; i++)
                 {
@@ -75,7 +69,9 @@ namespace RBMCampaign
                     PerkHelper.AddPerkBonusForParty(DefaultPerks.Steward.Contractors, party.MobileParty, isPrimaryBonus: true, ref stat);
                 }
 
-                stat.AddFactor(RBMConfig.RBMConfig.troopUpgradeCostMultiplier, GameTexts.FindText("str_rbm_troop_upgrade_cost_multiplier"));
+                // ExplainedNumber resolves to base * (1 + sum of factors), so a 0.1x
+                // multiplier has to be expressed as a -0.9 factor.
+                stat.AddFactor(RBMConfig.RBMConfig.troopUpgradeCostMultiplier - 1f, new TextObject("{=RBM_CON_033}Realistic Battle Mod"));
 
                 __result = stat;
                 return false;
