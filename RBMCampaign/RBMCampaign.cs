@@ -75,7 +75,7 @@ namespace RBMCampaign
                     PerkHelper.AddPerkBonusForParty(DefaultPerks.Steward.Contractors, party.MobileParty, isPrimaryBonus: true, ref stat);
                 }
 
-                stat = new ExplainedNumber((float)((upgradeTargetEquipmentCost - characterEquipmentCost) * RBMConfig.RBMConfig.troopUpgradeCostMultiplier));
+                stat.AddFactor(RBMConfig.RBMConfig.troopUpgradeCostMultiplier, GameTexts.FindText("str_rbm_troop_upgrade_cost_multiplier"));
 
                 __result = stat;
                 return false;
