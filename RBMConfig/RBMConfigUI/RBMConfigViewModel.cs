@@ -59,6 +59,49 @@ namespace RBMConfig
 
         public SelectorVM<SelectorItemVM> RBMTournamentEnabled { get; }
 
+        public SelectorVM<SelectorItemVM> RBMCampaignEnabled { get; }
+
+        private float _troopUpgradeCostMultiplier;
+
+        [DataSourceProperty]
+        public float TroopUpgradeCostMultiplier
+        {
+            get
+            {
+                return _troopUpgradeCostMultiplier;
+            }
+            set
+            {
+                // Slider reports continuous values; snap to 0.01 steps and hold within [0.01, 1].
+                float snapped = (float)System.Math.Round(value, 2);
+                snapped = MathF.Clamp(snapped, 0.01f, 1f);
+                if (snapped != _troopUpgradeCostMultiplier)
+                {
+                    _troopUpgradeCostMultiplier = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopUpgradeCostMultiplier");
+                    OnPropertyChanged("TroopUpgradeCostMultiplierValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopUpgradeCostMultiplierValue
+        {
+            get
+            {
+                return _troopUpgradeCostMultiplier.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopUpgradeCostt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_032}Troop Upgrade Cost Multiplier (default at 0.10)").ToString();
+            }
+        }
+
         [DataSourceProperty]
         public string ThrustModifiert
         {
@@ -273,6 +316,15 @@ namespace RBMConfig
             }
         }
 
+        [DataSourceProperty]
+        public string RBMCampaignt
+        {
+            get
+            {
+                return new TextObject("RBM Campaign").ToString();
+            }
+        }
+
         public List<string> thrustModifierList = new List<string> { new TextObject("0.01").ToString(), new TextObject("0.05").ToString(), new TextObject("0.10").ToString(), new TextObject("0.15").ToString(),
                                                                 new TextObject("0.20").ToString(), new TextObject("0.25").ToString(), new TextObject("0.30").ToString(), new TextObject("0.35").ToString(),
                                                                 new TextObject("0.40").ToString(), new TextObject("0.45").ToString(), new TextObject("0.50").ToString(), new TextObject("0.55").ToString(),
@@ -476,6 +528,9 @@ namespace RBMConfig
             List<string> rbmTournamentEnabledOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             RBMTournamentEnabled = new SelectorVM<SelectorItemVM>(rbmTournamentEnabledOptions, 0, null);
 
+            List<string> rbmCampaignEnabledOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            RBMCampaignEnabled = new SelectorVM<SelectorItemVM>(rbmCampaignEnabledOptions, 0, null);
+
             if (RBMConfig.rbmCombatEnabled)
             {
                 RBMCombatEnabled.SelectedIndex = 1;
@@ -503,6 +558,16 @@ namespace RBMConfig
                 RBMTournamentEnabled.SelectedIndex = 0;
             }
 
+            if (RBMConfig.rbmCampaignEnabled)
+            {
+                RBMCampaignEnabled.SelectedIndex = 1;
+            }
+            else
+            {
+                RBMCampaignEnabled.SelectedIndex = 0;
+            }
+
+            _troopUpgradeCostMultiplier = MathF.Clamp(RBMConfig.troopUpgradeCostMultiplier, 0.01f, 1f);
         }
 
         public override void RefreshValues()
@@ -656,6 +721,17 @@ namespace RBMConfig
             {
                 RBMConfig.rbmTournamentEnabled = true;
             }
+
+            if (RBMCampaignEnabled.SelectedIndex == 0)
+            {
+                RBMConfig.rbmCampaignEnabled = false;
+            }
+            if (RBMCampaignEnabled.SelectedIndex == 1)
+            {
+                RBMConfig.rbmCampaignEnabled = true;
+            }
+
+            RBMConfig.troopUpgradeCostMultiplier = _troopUpgradeCostMultiplier;
 
             RBMConfig.saveXmlConfig();
             //RBMConfig.parseXmlConfig();

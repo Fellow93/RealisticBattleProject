@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Xml;
 
@@ -19,7 +20,11 @@ namespace RBMConfig
 
         public static bool rbmAiEnabled = true;
         public static bool rbmCombatEnabled = true;
+        public static bool rbmCampaignEnabled = true;
         public static bool developerMode = false;
+
+        //RBMCampaign
+        public static float troopUpgradeCostMultiplier = 0.1f;
 
         //RBMAI
         public static bool hitStopEnabled = true;
@@ -128,6 +133,7 @@ namespace RBMConfig
             EnsureNode("/Config", "RBMTournament");
             EnsureNode("/Config", "RBMAI");
             EnsureNode("/Config", "RBMCombat");
+            EnsureNode("/Config", "RBMCampaign");
             EnsureNode("/Config/RBMCombat", "PriceModifiers");
             EnsureNode("/Config/RBMCombat", "Global");
             EnsureNode("/Config/RBMCombat", "WeaponTypes");
@@ -138,6 +144,11 @@ namespace RBMConfig
             rbmTournamentEnabled = ReadOrCreate("/Config/RBMTournament", "Enabled", "1").Equals("1");
             rbmAiEnabled = ReadOrCreate("/Config/RBMAI", "Enabled", "1").Equals("1");
             rbmCombatEnabled = ReadOrCreate("/Config/RBMCombat", "Enabled", "1").Equals("1");
+            rbmCampaignEnabled = ReadOrCreate("/Config/RBMCampaign", "Enabled", "1").Equals("1");
+
+            // RBMCampaign
+            // Invariant culture: on comma-decimal locales "0.1" would otherwise parse as 1.
+            troopUpgradeCostMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeCostMultiplier", "0.1"), CultureInfo.InvariantCulture);
 
             // RBMAI
             hitStopEnabled = ReadOrCreate("/Config/RBMAI", "HitStopEnabled", "1").Equals("1");
@@ -225,6 +236,9 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMTournament/Enabled"), rbmTournamentEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/Enabled"), rbmAiEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Enabled"), rbmCombatEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/Enabled"), rbmCampaignEnabled);
+            //RBMCampaign
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeCostMultiplier"), troopUpgradeCostMultiplier.ToString(CultureInfo.InvariantCulture));
             //RBMAI
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/HitStopEnabled"), hitStopEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureEnabled"), postureEnabled);

@@ -2,6 +2,7 @@
 using RBM.AgentStatusBar;
 using RBMAI;
 using RBMCombat;
+using RBMCampaign;
 using RBMTournament;
 using System;
 using TaleWorlds.CampaignSystem;
@@ -24,6 +25,7 @@ namespace RBM
         public static Harmony rbmaiHarmony = new Harmony("com.rbmai");
         public static Harmony rbmtHarmony = new Harmony("com.rbmt");
         public static Harmony rbmcombatHarmony = new Harmony("com.rbmcombat");
+        public static Harmony rbmcampaignHarmony = new Harmony("com.rbmcampaign");
         public static Harmony rbmHarmony = new Harmony("com.rbmmain");
     }
 
@@ -60,6 +62,14 @@ namespace RBM
             {
                 HarmonyModules.rbmcombatHarmony.UnpatchAll(HarmonyModules.rbmcombatHarmony.Id);
             }
+            if (RBMConfig.RBMConfig.rbmCampaignEnabled)
+            {
+                RBMCampaignPatcher.DoPatching(ref HarmonyModules.rbmcampaignHarmony);
+            }
+            else
+            {
+                HarmonyModules.rbmcampaignHarmony.UnpatchAll(HarmonyModules.rbmcampaignHarmony.Id);
+            }
         }
 
         public static void UnpatchAllRBM()
@@ -69,6 +79,7 @@ namespace RBM
             HarmonyModules.rbmtHarmony.UnpatchAll(HarmonyModules.rbmtHarmony.Id);
             HarmonyModules.rbmaiHarmony.UnpatchAll(HarmonyModules.rbmaiHarmony.Id);
             HarmonyModules.rbmcombatHarmony.UnpatchAll(HarmonyModules.rbmcombatHarmony.Id);
+            HarmonyModules.rbmcampaignHarmony.UnpatchAll(HarmonyModules.rbmcampaignHarmony.Id);
         }
 
         protected override void OnSubModuleLoad()

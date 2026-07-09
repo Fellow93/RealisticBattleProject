@@ -347,6 +347,18 @@ namespace RBMConfig
             RBMCombat.AppendChild(WeaponTypes);
             Config.AppendChild(RBMCombat);
 
+            //RBM campaign
+            XmlElement RBMCampaign = xmlconfig.CreateElement("RBMCampaign");
+
+            XmlElement RBMCampaignEnabled = xmlconfig.CreateElement("Enabled");
+            RBMCampaignEnabled.InnerText = RBMConfig.rbmCampaignEnabled ? "1" : "0";
+            XmlElement TroopUpgradeCostMultiplier = xmlconfig.CreateElement("TroopUpgradeCostMultiplier");
+            TroopUpgradeCostMultiplier.InnerText = RBMConfig.troopUpgradeCostMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+            RBMCampaign.AppendChild(RBMCampaignEnabled);
+            RBMCampaign.AppendChild(TroopUpgradeCostMultiplier);
+            Config.AppendChild(RBMCampaign);
+
             xmlconfig.AppendChild(Config);
             xmlconfig.Save(GetConfigFilePath());
         }
