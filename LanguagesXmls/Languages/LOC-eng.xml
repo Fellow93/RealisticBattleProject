@@ -85,6 +85,7 @@
 	<string id="RBM_CON_015" text="Vanilla AI Block/Parry/Attack" />
 	<string id="RBM_CON_031" text="Keep Battle (Last Stand)" />
 	<string id="RBM_CON_032" text="Troop Upgrade Cost Multiplier (default at 0.10)" />
+	<string id="RBM_CON_033" text="Realistic Battle Mod" />
 	<string id="RBM_CON_016" text="RBM Combat" />
 	<string id="RBM_CON_017" text="Module Status" />
 	<string id="RBM_CON_018" text="RBM AI" />
