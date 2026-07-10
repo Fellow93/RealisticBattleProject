@@ -1,0 +1,52 @@
+# RBM Campaign Module
+
+It gives every stack of troops in your party its own purse, fills it with the gear they strip off the battlefield and a share of their wages, and makes them spend it on their own upgrades, their own food, and their own drink.
+
+## Upgrades are priced by the kit
+
+Vanilla charges a flat, hand-authored gold number to upgrade a troop. RBM replaces that with the actual value of the equipment the man gains — his new armor, weapons, shield and horse, minus what he already carried, averaged over all the loadouts that troop type can spawn with. A recruit becoming a footman is cheap. A veteran stepping into heavy mail and a warhorse is not. (All the vanilla perks that discount upgrades — Sound Reserves, Renowned Archer, Contractors, the Khuzait cavalry feat — still apply on top.)
+
+## Spoils: where the money comes from
+
+Each troop stack (say, your 40 Imperial Recruits) holds a stockpile of **spoils**, measured in gold. One point of spoils is one gold piece — it just lives in the soldiers' pockets rather than yours.
+
+Two things fill it:
+
+**Winning battles.** Hold the field and your men strip the dead — the enemy's dead *and* your own fallen. The wounded keep their kit (they're carried off wearing it) and routers fled with theirs. Nothing comes off a field intact: every piece salvages a random quarter to three-quarters of its worth, because armor is battered, blades are chipped, and a quiver is only worth the arrows still in it. Your share of the field scales with how much your party actually contributed to the battle.
+
+How that loot gets divided is the interesting part. **Veterans pick first**, but each man can only carry so much (three pieces by default), and the further beneath a soldier a piece of gear lies, the likelier he is to walk straight past it — roughly a coin-flip per tier of difference. So the good kit goes to the elite stacks, and the recruits' spears and rags get left lying for the greener troops who'd actually consider them an upgrade. A veteran alone on a field will eventually stoop for a peasant's club, but he won't fill his arms with them while there's mail about.
+
+**Wages.** Half of what you pay a stack each day (by default) goes straight back into its own purse. This doesn't cost you extra gold — it's a statement about where their pay was already going: mending what the march wore through, replacing what couldn't be mended.
+
+## Where the money goes
+
+**Upgrades.** When you upgrade a stack, its spoils are spent one man at a time. If the stockpile covers three men, those three upgrade free and the fourth pays full price out of your treasury. The party screen tooltip spells this out — a **Spoils cover: X** line and a **You pay: Y** line — and there's a spoils bar on each troop card showing how full the stockpile is.
+
+**Food.** When your party stops in a town or village, soldiers buy their own rations off the local market — real items, taken from that settlement's actual stock, at that settlement's actual prices. While a stack is carrying its own food, it doesn't eat out of your party's food stores at all. Better-paid troops buy better food: a man will spend up to half a day's wage on a day's rations, so a recruit buys grain and a veteran buys meat and cheese. If a starving village has nothing on the stalls, your men leave hungry.
+
+**Drink.** Every hour your party idles in a settlement, the men spend on taverns, dice and worse — at the default, more than they earn in a day. **A garrison parked in a town will drink its way out of ever affording better armor.** They never go into debt; an empty purse spends nothing.
+
+And whatever they spend in a settlement stays there: food and drink money raises the town's Prosperity or the village's Hearth.
+
+## What this changes about how you play
+
+Battles now pay for your army's growth directly. A hard-won victory over well-equipped enemies funds a wave of upgrades that would otherwise have drained your treasury. Grinding looters funds nothing, because looters wear nothing worth taking. Sitting still costs you — an idle army eats and drinks its savings. Losing a stack loses its purse with it.
+
+The AI plays by the same rules. Lords' parties accumulate spoils, get discounted upgrades from them, and their troop quality now tracks how well their wars have been going.
+
+## Tuning it
+
+Everything sits in the in-game RBM config under the campaign section, or in the config XML under `/Config/RBMCampaign`:
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| `TroopUpgradeCostMultiplier` | 1 | Scales the gold and spoils price of every upgrade. **0 turns the whole system off.** |
+| `TroopUpgradeSpoilsLootMultiplier` | 1 | How much of a battlefield's salvage your men actually carry off. |
+| `TroopLootPiecesPerMan` | 3 | Pieces of kit one soldier can carry away from a field. |
+| `TroopLootOverlookChancePerTier` | 0.5 | Chance a soldier walks past a piece of gear, per tier it lies beneath him. |
+| `TroopWageSpoilsFraction` | 0.5 | Share of a stack's daily wage that returns to its own purse. |
+| `TroopSettlementFoodDays` | 20 | Days of rations a stack buys for itself when it reaches a market. |
+| `TroopFoodWageFraction` | 0.5 | Share of a day's wage a man will spend on a day's food before calling it extravagant. |
+| `TroopSettlementFunWageFraction` | 1.5 | Drink and dice, as a multiple of the daily wage, per day idled in a settlement. |
+| `SettlementProsperityPerGoldSpent` | 0.02 | Prosperity (or Hearth) a settlement gains per gold your men spend there. |
+| `SpoilsLoggingEnabled` | 1 | Writes what the system is doing to the log, for debugging. |

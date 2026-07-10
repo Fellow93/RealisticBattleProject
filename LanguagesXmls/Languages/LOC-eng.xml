@@ -88,6 +88,9 @@
 	<string id="RBM_CON_033" text="Realistic Battle Mod" />
 	<string id="RBM_CON_035" text="Battle Spoils Loot Multiplier (default at 1.00)" />
 	<string id="RBM_CON_036" text="Share of Daily Wage Returned as Spoils (default at 0.50)" />
+	<string id="RBM_CON_037" text="Pieces of Kit One Man Carries off a Field (default at 3)" />
+	<string id="RBM_CON_038" text="Prosperity a Settlement Gains per Gold Spent in It (default at 0.02)" />
+	<string id="RBM_CON_039" text="Spoils Logging" />
 	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
 	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />
 	<string id="RBM_SPOILS_006" text="Spoils cover: {AMOUNT}" />

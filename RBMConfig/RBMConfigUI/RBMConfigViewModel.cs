@@ -61,6 +61,9 @@ namespace RBMConfig
 
         public SelectorVM<SelectorItemVM> RBMCampaignEnabled { get; }
 
+        public TextViewModel SpoilsLoggingEnabledText { get; }
+        public SelectorVM<SelectorItemVM> SpoilsLoggingEnabled { get; }
+
         private float _troopUpgradeCostMultiplier;
 
         [DataSourceProperty]
@@ -142,6 +145,49 @@ namespace RBMConfig
             }
         }
 
+        private float _troopLootPiecesPerMan;
+
+        /// <summary>
+        /// Whole pieces of kit, so the slider is discrete. Float because that is what SliderWidget
+        /// binds; the value is rounded on the way in and cast back to an int on the way out.
+        /// </summary>
+        [DataSourceProperty]
+        public float TroopLootPiecesPerMan
+        {
+            get
+            {
+                return _troopLootPiecesPerMan;
+            }
+            set
+            {
+                float snapped = MathF.Clamp(MathF.Round(value), 1f, 10f);
+                if (snapped != _troopLootPiecesPerMan)
+                {
+                    _troopLootPiecesPerMan = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopLootPiecesPerMan");
+                    OnPropertyChanged("TroopLootPiecesPerManValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopLootPiecesPerManValue
+        {
+            get
+            {
+                return _troopLootPiecesPerMan.ToString("0");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopLootPiecesPerMant
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_037}Pieces of Kit One Man Carries off a Field (default at 3)").ToString();
+            }
+        }
+
         private float _troopWageSpoilsFraction;
 
         [DataSourceProperty]
@@ -178,6 +224,54 @@ namespace RBMConfig
             get
             {
                 return new TextObject("{=RBM_CON_036}Share of Daily Wage Returned as Spoils (default at 0.50)").ToString();
+            }
+        }
+
+        private float _settlementProsperityPerGoldSpent;
+
+        [DataSourceProperty]
+        public float SettlementProsperityPerGoldSpent
+        {
+            get
+            {
+                return _settlementProsperityPerGoldSpent;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0.01f, 1f);
+                if (snapped != _settlementProsperityPerGoldSpent)
+                {
+                    _settlementProsperityPerGoldSpent = snapped;
+                    OnPropertyChangedWithValue(snapped, "SettlementProsperityPerGoldSpent");
+                    OnPropertyChanged("SettlementProsperityPerGoldSpentValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string SettlementProsperityPerGoldSpentValue
+        {
+            get
+            {
+                return _settlementProsperityPerGoldSpent.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string SettlementProsperityPerGoldSpentt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_038}Prosperity a Settlement Gains per Gold Spent in It (default at 0.02)").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string SpoilsLoggingt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_039}Spoils Logging").ToString();
             }
         }
 
@@ -610,6 +704,10 @@ namespace RBMConfig
             List<string> rbmCampaignEnabledOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             RBMCampaignEnabled = new SelectorVM<SelectorItemVM>(rbmCampaignEnabledOptions, 0, null);
 
+            List<string> spoilsLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            SpoilsLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_039}Spoils Logging"));
+            SpoilsLoggingEnabled = new SelectorVM<SelectorItemVM>(spoilsLoggingOptions, 0, null);
+
             if (RBMConfig.rbmCombatEnabled)
             {
                 RBMCombatEnabled.SelectedIndex = 1;
@@ -648,7 +746,10 @@ namespace RBMConfig
 
             _troopUpgradeCostMultiplier = MathF.Clamp(RBMConfig.troopUpgradeCostMultiplier, 0f, 2f);
             _troopUpgradeSpoilsLootMultiplier = MathF.Clamp(RBMConfig.troopUpgradeSpoilsLootMultiplier, 0f, 5f);
+            _troopLootPiecesPerMan = MathF.Clamp(RBMConfig.troopLootPiecesPerMan, 1f, 10f);
             _troopWageSpoilsFraction = MathF.Clamp(RBMConfig.troopWageSpoilsFraction, 0f, 1f);
+            _settlementProsperityPerGoldSpent = MathF.Clamp(RBMConfig.settlementProsperityPerGoldSpent, 0.01f, 1f);
+            SpoilsLoggingEnabled.SelectedIndex = RBMConfig.spoilsLoggingEnabled ? 1 : 0;
         }
 
         public override void RefreshValues()
@@ -814,7 +915,10 @@ namespace RBMConfig
 
             RBMConfig.troopUpgradeCostMultiplier = _troopUpgradeCostMultiplier;
             RBMConfig.troopUpgradeSpoilsLootMultiplier = _troopUpgradeSpoilsLootMultiplier;
+            RBMConfig.troopLootPiecesPerMan = MathF.Round(_troopLootPiecesPerMan);
             RBMConfig.troopWageSpoilsFraction = _troopWageSpoilsFraction;
+            RBMConfig.settlementProsperityPerGoldSpent = _settlementProsperityPerGoldSpent;
+            RBMConfig.spoilsLoggingEnabled = SpoilsLoggingEnabled.SelectedIndex == 1;
 
             RBMConfig.saveXmlConfig();
             //RBMConfig.parseXmlConfig();
