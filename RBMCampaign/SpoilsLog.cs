@@ -9,14 +9,14 @@ using TaleWorlds.Library;
 namespace RBMCampaign
 {
     /// <summary>
-    /// Everything the gear system does is invisible from inside the game: pools live in a side
+    /// Everything the spoils system does is invisible from inside the game: pools live in a side
     /// dictionary, loot is awarded during a map event that has already closed, and the party screen
-    /// only ever shows a bar. This writes it all to rbm_gear.log next to the RBM config so the
+    /// only ever shows a bar. This writes it all to rbm_spoils.log next to the RBM config so the
     /// numbers can be checked after the fact.
     ///
-    /// Enabled by the GearLogging config flag. Truncated once per launch.
+    /// Enabled by the SpoilsLogging config flag. Truncated once per launch.
     /// </summary>
-    internal static class GearLog
+    internal static class SpoilsLog
     {
         private static readonly HashSet<string> _oncePerKey = new HashSet<string>();
         private static readonly object _fileLock = new object();
@@ -24,12 +24,12 @@ namespace RBMCampaign
 
         public static bool IsEnabled
         {
-            get { return RBMConfig.RBMConfig.gearLoggingEnabled; }
+            get { return RBMConfig.RBMConfig.spoilsLoggingEnabled; }
         }
 
         private static string LogFilePath
         {
-            get { return Path.Combine(RBMConfig.Utilities.GetConfigFolderPath(), "rbm_gear.log"); }
+            get { return Path.Combine(RBMConfig.Utilities.GetConfigFolderPath(), "rbm_spoils.log"); }
         }
 
         public static void Reset()
@@ -44,7 +44,7 @@ namespace RBMCampaign
                 }
                 try
                 {
-                    File.WriteAllText(LogFilePath, "RBM gear log, " + DateTime.Now + Environment.NewLine);
+                    File.WriteAllText(LogFilePath, "RBM spoils log, " + DateTime.Now + Environment.NewLine);
                 }
                 catch
                 {
@@ -60,7 +60,7 @@ namespace RBMCampaign
                 return;
             }
             string line = "[" + category + "] " + message;
-            Debug.Print("[RBM][Gear] " + line);
+            Debug.Print("[RBM][Spoils] " + line);
             WriteToFile(line);
             if (!RBMConfig.RBMConfig.developerMode)
             {

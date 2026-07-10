@@ -13,14 +13,14 @@ using TaleWorlds.Library;
 
 namespace RBMCampaign
 {
-    public static class GearUpgradePatches
+    public static class SpoilsUpgradePatches
     {
         private struct UpgradeOption
         {
             public CharacterObject Target;
             public CharacterObject UpgradeTarget;
             public int Count;
-            /// <summary>The whole batch, not one man: gear makes the leading men free.</summary>
+            /// <summary>The whole batch, not one man: spoils make the leading men free.</summary>
             public int TotalGoldCost;
             public int XpCost;
             public int StackSize;
@@ -29,8 +29,8 @@ namespace RBMCampaign
 
         /// <summary>
         /// Reimplements PartyUpgraderCampaignBehavior.UpgradeReadyTroops so AI upgrades draw down
-        /// the gear they were discounted for. Gold affordability, already checked here against the
-        /// gear-discounted price, is what actually limits the AI. The vanilla helpers cannot be
+        /// the spoils they were discounted for. Gold affordability, already checked here against the
+        /// spoils-discounted price, is what actually limits the AI. The vanilla helpers cannot be
         /// patched directly: they are private and pass a private nested struct, which no patch
         /// signature can name.
         /// </summary>
@@ -42,7 +42,7 @@ namespace RBMCampaign
             {
                 // Vanilla dereferences party.MobileParty unguarded further down, so anything that
                 // survives it today must be a mobile party. Leave the rest to vanilla.
-                if (!GearPool.IsEnabled || party.MobileParty == null)
+                if (!SpoilsPool.IsEnabled || party.MobileParty == null)
                 {
                     return true;
                 }
@@ -104,13 +104,13 @@ namespace RBMCampaign
                         }
                     }
 
-                    // Vanilla clamps by perManPrice * count. Gear makes the first men free, so the
+                    // Vanilla clamps by perManPrice * count. Spoils make the first men free, so the
                     // batch price is fullPrice * (count - coveredMen) and the party can afford
                     // coveredMen + gold/fullPrice of them.
                     int fullGold = RBMCampaignPatches.GetFullUpgradeGoldCost(party, character, upgradeTarget);
                     if (party.LeaderHero != null && fullGold > 0)
                     {
-                        float coveredMen = GearPool.GetCoveredMen(party, character, upgradeTarget);
+                        float coveredMen = SpoilsPool.GetCoveredMen(party, character, upgradeTarget);
                         int affordable = (int)(coveredMen + party.MobileParty.PartyTradeGold / (float)fullGold);
                         count = MathF.Min(count, affordable);
                         if (count <= 0)
@@ -165,21 +165,21 @@ namespace RBMCampaign
                 TroopRoster memberRoster = party.MemberRoster;
                 memberRoster.SetElementXp(rosterIndex, memberRoster.GetElementXp(rosterIndex) - option.XpCost * option.Count);
                 // Drawn down before the roster shrinks, against the same stockpile the price used.
-                int gearSpend = GearPool.GetBatchGearSpend(party, option.Target, option.UpgradeTarget, option.Count);
-                if (GearLog.IsEnabled)
+                int spoilsSpend = SpoilsPool.GetBatchSpoilsSpend(party, option.Target, option.UpgradeTarget, option.Count);
+                if (SpoilsLog.IsEnabled)
                 {
-                    GearLog.Log("UPGRADE", "AI " + GearLog.Describe(party) + " upgraded " + option.Count + "x "
-                        + GearLog.Describe(option.Target) + " -> " + GearLog.Describe(option.UpgradeTarget)
+                    SpoilsLog.Log("UPGRADE", "AI " + SpoilsLog.Describe(party) + " upgraded " + option.Count + "x "
+                        + SpoilsLog.Describe(option.Target) + " -> " + SpoilsLog.Describe(option.UpgradeTarget)
                         + " | stack was " + option.StackSize
-                        + ", free " + GearPool.GetFreeUpgradeCount(party, option.Target, option.UpgradeTarget)
-                        + ", gear spent " + gearSpend + ", pool " + GearPool.GetGear(party, option.Target)
-                        + " -> " + (GearPool.GetGear(party, option.Target) - gearSpend)
+                        + ", free " + SpoilsPool.GetFreeUpgradeCount(party, option.Target, option.UpgradeTarget)
+                        + ", spoils spent " + spoilsSpend + ", pool " + SpoilsPool.GetSpoils(party, option.Target)
+                        + " -> " + (SpoilsPool.GetSpoils(party, option.Target) - spoilsSpend)
                         + ", gold " + option.TotalGoldCost + ", xp " + (option.XpCost * option.Count));
                 }
-                GearPool.AddGear(party, option.Target, -gearSpend);
+                SpoilsPool.AddSpoils(party, option.Target, -spoilsSpend);
                 memberRoster.AddToCounts(option.Target, -option.Count);
                 memberRoster.AddToCounts(option.UpgradeTarget, option.Count);
-                GearPool.ClearGearIfStackGone(party, option.Target);
+                SpoilsPool.ClearSpoilsIfStackGone(party, option.Target);
                 if (option.Count > 0)
                 {
                     ApplyEffects(party, option);
@@ -199,43 +199,43 @@ namespace RBMCampaign
     }
 
     /// <summary>
-    /// Reserves the gear an open party screen has promised but not yet charged, and corrects the gold
+    /// Reserves the spoils an open party screen has promised but not yet charged, and corrects the gold
     /// it staged. Vanilla asks the model for one per-man price and multiplies it by the batch size,
-    /// which overcharges: gear is consumed a man at a time, so the men the stockpile reaches go free
+    /// which overcharges: spoils are consumed a man at a time, so the men the stockpile reaches go free
     /// and only the rest pay.
     /// </summary>
     public static class PartyScreenStagedUpgrades
     {
-        private static readonly Dictionary<CharacterObject, int> _stagedGear = new Dictionary<CharacterObject, int>();
+        private static readonly Dictionary<CharacterObject, int> _stagedSpoils = new Dictionary<CharacterObject, int>();
 
-        /// <summary>Gear promised to upgrades the player has queued but not yet confirmed.</summary>
-        public static int GetStagedGear(PartyBase party, CharacterObject character)
+        /// <summary>Spoils promised to upgrades the player has queued but not yet confirmed.</summary>
+        public static int GetStagedSpoils(PartyBase party, CharacterObject character)
         {
             int staged;
-            return (party == PartyBase.MainParty && _stagedGear.TryGetValue(character, out staged)) ? staged : 0;
+            return (party == PartyBase.MainParty && _stagedSpoils.TryGetValue(character, out staged)) ? staged : 0;
         }
 
         /// <summary>Hands the reservation over on commit, so it is spent exactly once.</summary>
-        public static int ConsumeStagedGear(PartyBase party, CharacterObject character)
+        public static int ConsumeStagedSpoils(PartyBase party, CharacterObject character)
         {
             if (party != PartyBase.MainParty)
             {
                 return 0;
             }
             int staged;
-            if (!_stagedGear.TryGetValue(character, out staged))
+            if (!_stagedSpoils.TryGetValue(character, out staged))
             {
                 return 0;
             }
-            _stagedGear.Remove(character);
+            _stagedSpoils.Remove(character);
             return staged;
         }
 
         // If a clear is ever missed the next screen open resets it, and until then upgrades are
-        // quoted slightly high rather than the gear pool being corrupted.
+        // quoted slightly high rather than the spoils pool being corrupted.
         private static void Clear()
         {
-            _stagedGear.Clear();
+            _stagedSpoils.Clear();
         }
 
         /// <summary>
@@ -256,7 +256,7 @@ namespace RBMCampaign
             {
                 // Vanilla bails on an invalid command without touching gold or roster, so the
                 // reservation must not happen either. ValidateCommand is pure, so asking twice is free.
-                if (!GearPool.IsEnabled || !__instance.ValidateCommand(command))
+                if (!SpoilsPool.IsEnabled || !__instance.ValidateCommand(command))
                 {
                     return;
                 }
@@ -266,12 +266,12 @@ namespace RBMCampaign
                 int count = command.TotalNumber;
 
                 // Priced against the stockpile as it stands, before this batch draws on it.
-                int spend = GearPool.GetBatchGearSpend(party, character, upgradeTarget, count);
+                int spend = SpoilsPool.GetBatchSpoilsSpend(party, character, upgradeTarget, count);
                 int actualGold = RBMCampaignPatches.GetBatchUpgradeGoldCost(party, character, upgradeTarget, count);
 
                 int staged;
-                _stagedGear.TryGetValue(character, out staged);
-                _stagedGear[character] = staged + spend;
+                _stagedSpoils.TryGetValue(character, out staged);
+                _stagedSpoils[character] = staged + spend;
 
                 // Vanilla is about to subtract perManPrice * count, and it will quote that per-man
                 // price against the stockpile the reservation above just depleted. Mirror the read it
@@ -284,9 +284,9 @@ namespace RBMCampaign
                     SetPartyGoldChangeAmount.Invoke(__instance, new object[] { __instance.CurrentData.PartyGoldChangeAmount + correction });
                 }
 
-                GearLog.Log("UPGRADE", "party screen staged " + count + "x " + GearLog.Describe(character)
-                    + " -> " + GearLog.Describe(upgradeTarget)
-                    + " | gear reserved " + spend + " (total " + _stagedGear[character] + ")"
+                SpoilsLog.Log("UPGRADE", "party screen staged " + count + "x " + SpoilsLog.Describe(character)
+                    + " -> " + SpoilsLog.Describe(upgradeTarget)
+                    + "| spoils reserved " + spend + " (total " + _stagedSpoils[character] + ")"
                     + ", gold " + actualGold + " (vanilla will charge " + chargedByVanilla + ")");
             }
         }
@@ -311,7 +311,7 @@ namespace RBMCampaign
             }
         }
 
-        // Runs after DoneLogic has fired PlayerUpgradedTroopsEvent, so the gear is already charged.
+        // Runs after DoneLogic has fired PlayerUpgradedTroopsEvent, so the spoils are already charged.
         [HarmonyPatch(typeof(PartyScreenLogic))]
         [HarmonyPatch("OnPartyScreenClosed")]
         private class ClearOnClose

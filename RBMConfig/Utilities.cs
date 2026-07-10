@@ -354,19 +354,19 @@ namespace RBMConfig
             RBMCampaignEnabled.InnerText = RBMConfig.rbmCampaignEnabled ? "1" : "0";
             XmlElement TroopUpgradeCostMultiplier = xmlconfig.CreateElement("TroopUpgradeCostMultiplier");
             TroopUpgradeCostMultiplier.InnerText = RBMConfig.troopUpgradeCostMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            XmlElement TroopUpgradeGearCostMultiplier = xmlconfig.CreateElement("TroopUpgradeGearCostMultiplier");
-            TroopUpgradeGearCostMultiplier.InnerText = RBMConfig.troopUpgradeGearCostMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            XmlElement TroopUpgradeGearLootMultiplier = xmlconfig.CreateElement("TroopUpgradeGearLootMultiplier");
-            TroopUpgradeGearLootMultiplier.InnerText = RBMConfig.troopUpgradeGearLootMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopUpgradeSpoilsCostMultiplier = xmlconfig.CreateElement("TroopUpgradeSpoilsCostMultiplier");
+            TroopUpgradeSpoilsCostMultiplier.InnerText = RBMConfig.troopUpgradeSpoilsCostMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopUpgradeSpoilsLootMultiplier = xmlconfig.CreateElement("TroopUpgradeSpoilsLootMultiplier");
+            TroopUpgradeSpoilsLootMultiplier.InnerText = RBMConfig.troopUpgradeSpoilsLootMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
             RBMCampaign.AppendChild(RBMCampaignEnabled);
             RBMCampaign.AppendChild(TroopUpgradeCostMultiplier);
-            RBMCampaign.AppendChild(TroopUpgradeGearCostMultiplier);
-            XmlElement GearLoggingEnabled = xmlconfig.CreateElement("GearLoggingEnabled");
-            GearLoggingEnabled.InnerText = RBMConfig.gearLoggingEnabled ? "1" : "0";
+            RBMCampaign.AppendChild(TroopUpgradeSpoilsCostMultiplier);
+            XmlElement SpoilsLoggingEnabled = xmlconfig.CreateElement("SpoilsLoggingEnabled");
+            SpoilsLoggingEnabled.InnerText = RBMConfig.spoilsLoggingEnabled ? "1" : "0";
 
-            RBMCampaign.AppendChild(TroopUpgradeGearLootMultiplier);
-            RBMCampaign.AppendChild(GearLoggingEnabled);
+            RBMCampaign.AppendChild(TroopUpgradeSpoilsLootMultiplier);
+            RBMCampaign.AppendChild(SpoilsLoggingEnabled);
             Config.AppendChild(RBMCampaign);
 
             xmlconfig.AppendChild(Config);

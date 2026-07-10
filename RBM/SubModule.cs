@@ -91,7 +91,7 @@ namespace RBM
             // one hook cannot wait for ApplyHarmonyPatches like the rest of RBMCampaign does.
             if (RBMConfig.RBMConfig.rbmCampaignEnabled)
             {
-                GearBarPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
+                SpoilsBarPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
             }
 
             Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("{=RBM_CON_020}RBM Configuration"), 9999, delegate
@@ -162,7 +162,7 @@ namespace RBM
             ApplyHarmonyPatches();
             if (RBMConfig.RBMConfig.rbmCampaignEnabled && game.GameType is Campaign)
             {
-                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMGearCampaignBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSpoilsCampaignBehavior());
             }
             base.OnGameStart(game, gameStarterObject);
         }

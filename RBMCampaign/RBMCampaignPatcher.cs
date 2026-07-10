@@ -7,7 +7,7 @@ namespace RBMCampaign
         public static void DoPatching(ref Harmony rbmcampaignHarmony)
         {
             rbmcampaignHarmony.PatchAll();
-            RBMTroopGearBarWidget.RegisterWidgetType();
+            RBMTroopSpoilsBarWidget.RegisterWidgetType();
         }
     }
 }

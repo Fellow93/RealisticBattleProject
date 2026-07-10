@@ -86,14 +86,14 @@
 	<string id="RBM_CON_031" text="Keep Battle (Last Stand)" />
 	<string id="RBM_CON_032" text="Troop Upgrade Cost Multiplier (default at 0.10)" />
 	<string id="RBM_CON_033" text="Realistic Battle Mod" />
-	<string id="RBM_CON_034" text="Troop Upgrade Gear Cost Multiplier (0 disables gear, default at 1.00)" />
-	<string id="RBM_CON_035" text="Battle Gear Loot Multiplier (default at 1.00)" />
-	<string id="RBM_GEAR_001" text="Gear Stockpile" />
-	<string id="RBM_GEAR_002" text="Gear per Upgrade" />
-	<string id="RBM_GEAR_006" text="Salvaged gear covers: {AMOUNT}" />
-	<string id="RBM_GEAR_007" text="You pay: {AMOUNT}" />
-	<string id="RBM_GEAR_008" text="{COST}  ({FREE} free)" />
-	<string id="RBM_GEAR_004" text="Holding the field earns gear salvaged from the kit left on it, by the enemies you killed and by your own fallen. Nothing is recovered whole: armour is battered, blades are chipped, and a quiver is worth only the arrows still in it. A soldier takes only kit of his own tier or better, and the veterans pick first, so what they pass over falls to greener troops. The stockpile outfits men one at a time: those it covers upgrade for free, and the rest pay gold for what it cannot reach." />
+	<string id="RBM_CON_034" text="Troop Upgrade Spoils Cost Multiplier (0 disables spoils, default at 1.00)" />
+	<string id="RBM_CON_035" text="Battle Spoils Loot Multiplier (default at 1.00)" />
+	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
+	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />
+	<string id="RBM_SPOILS_006" text="Spoils cover: {AMOUNT}" />
+	<string id="RBM_SPOILS_007" text="You pay: {AMOUNT}" />
+	<string id="RBM_SPOILS_008" text="{COST}  ({FREE} free)" />
+	<string id="RBM_SPOILS_004" text="Holding the field earns spoils salvaged from the kit left on it, by the enemies you killed and by your own fallen. Nothing is recovered whole: armour is battered, blades are chipped, and a quiver is worth only the arrows still in it. A soldier takes only kit of his own tier or better, and the veterans pick first, so what they pass over falls to greener troops. The stockpile outfits men one at a time: those it covers upgrade for free, and the rest pay gold for what it cannot reach." />
 	<string id="RBM_CON_016" text="RBM Combat" />
 	<string id="RBM_CON_017" text="Module Status" />
 	<string id="RBM_CON_018" text="RBM AI" />

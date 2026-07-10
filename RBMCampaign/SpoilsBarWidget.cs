@@ -15,11 +15,11 @@ using TaleWorlds.ObjectSystem;
 namespace RBMCampaign
 {
     /// <summary>
-    /// The gear counterpart of the party screen's troop xp bar. It fills as the men of a stack
+    /// The spoils counterpart of the party screen's troop xp bar. It fills as the men of a stack
     /// accumulate enough looted kit to cover their next upgrade; a full bar means that upgrade
     /// costs no gold at all.
     /// </summary>
-    public class RBMTroopGearBarWidget : FillBarVerticalWidget
+    public class RBMTroopSpoilsBarWidget : FillBarVerticalWidget
     {
         // Coverage is a fraction, and FillBarVerticalWidget counts in whole numbers.
         private const int FillResolution = 1000;
@@ -28,14 +28,14 @@ namespace RBMCampaign
 
         private readonly BasicTooltipViewModel _tooltip;
 
-        public RBMTroopGearBarWidget(UIContext context) : base(context)
+        public RBMTroopSpoilsBarWidget(UIContext context) : base(context)
         {
             MaxAmount = FillResolution;
             IsDirectionUpward = true;
             // The xp bar reaches its tooltip through a HintWidget bound to a view model property.
             // This widget has no view model of its own, so it drives the same tooltip type directly.
             _tooltip = new BasicTooltipViewModel(BuildTooltip);
-            GearLog.TraceOnce("widget-ctor", "gear bar widget constructed");
+            SpoilsLog.TraceOnce("widget-ctor", "spoils bar widget constructed");
         }
 
         protected override void OnHoverBegin()
@@ -64,27 +64,27 @@ namespace RBMCampaign
             }
 
             PartyBase party = PartyBase.MainParty;
-            properties.Add(new TooltipProperty(new TextObject("{=RBM_GEAR_001}Gear Stockpile").ToString(),
-                GearPool.GetAvailableGear(party, character).ToString(), 0));
+            properties.Add(new TooltipProperty(new TextObject("{=RBM_SPOILS_001}Spoils Stockpile").ToString(),
+                SpoilsPool.GetAvailableSpoils(party, character).ToString(), 0));
 
             // A branching troop has an upgrade cost per branch, so one number could only ever describe
             // the branch the template happens to list first. Name them all and let the stockpile speak
             // for itself against each.
-            properties.Add(new TooltipProperty(new TextObject("{=RBM_GEAR_002}Gear per Upgrade").ToString(), "", 0,
+            properties.Add(new TooltipProperty(new TextObject("{=RBM_SPOILS_002}Spoils per Upgrade").ToString(), "", 0,
                 false, TooltipProperty.TooltipPropertyFlags.Title));
             foreach (CharacterObject upgradeTarget in character.UpgradeTargets)
             {
-                int gearCost = GearPool.GetGearCostForUpgrade(character, upgradeTarget);
-                int freeUpgrades = GearPool.GetFreeUpgradeCount(party, character, upgradeTarget);
+                int spoilsCost = SpoilsPool.GetSpoilsCostForUpgrade(character, upgradeTarget);
+                int freeUpgrades = SpoilsPool.GetFreeUpgradeCount(party, character, upgradeTarget);
                 TextObject value = new TextObject((freeUpgrades > 0)
-                    ? "{=RBM_GEAR_008}{COST}  ({FREE} free)"
+                    ? "{=RBM_SPOILS_008}{COST}  ({FREE} free)"
                     : "{=!}{COST}");
-                value.SetTextVariable("COST", gearCost);
+                value.SetTextVariable("COST", spoilsCost);
                 value.SetTextVariable("FREE", freeUpgrades);
                 properties.Add(new TooltipProperty(upgradeTarget.Name.ToString(), value.ToString(), 0));
             }
 
-            properties.Add(new TooltipProperty("", new TextObject("{=RBM_GEAR_004}Holding the field earns gear salvaged from the kit left on it, by the enemies you killed and by your own fallen. Nothing is recovered whole: armour is battered, blades are chipped, and a quiver is worth only the arrows still in it. A soldier takes only kit of his own tier or better, and the veterans pick first, so what they pass over falls to greener troops. The stockpile outfits men one at a time: those it covers upgrade for free, and the rest pay gold for what it cannot reach.").ToString(), 0, false, TooltipProperty.TooltipPropertyFlags.MultiLine));
+            properties.Add(new TooltipProperty("", new TextObject("{=RBM_SPOILS_004}Holding the field earns spoils salvaged from the kit left on it, by the enemies you killed and by your own fallen. Nothing is recovered whole: armour is battered, blades are chipped, and a quiver is worth only the arrows still in it. A soldier takes only kit of his own tier or better, and the veterans pick first, so what they pass over falls to greener troops. The stockpile outfits men one at a time: those it covers upgrade for free, and the rest pay gold for what it cannot reach.").ToString(), 0, false, TooltipProperty.TooltipPropertyFlags.MultiLine));
             return properties;
         }
 
@@ -108,7 +108,7 @@ namespace RBMCampaign
         {
             CharacterObject character = ResolveTroop(TroopId);
             bool hasUpgrade = character != null && character.UpgradeTargets.Length > 0;
-            IsVisible = IsTroopUpgradable && hasUpgrade && GearPool.IsEnabled && Campaign.Current != null;
+            IsVisible = IsTroopUpgradable && hasUpgrade && SpoilsPool.IsEnabled && Campaign.Current != null;
             if (!IsVisible)
             {
                 return;
@@ -116,16 +116,16 @@ namespace RBMCampaign
 
             PartyBase party = PartyBase.MainParty;
             CharacterObject upgradeTarget = character.UpgradeTargets[0];
-            int gearCost = GearPool.GetGearCostForUpgrade(character, upgradeTarget);
-            int stockpile = GearPool.GetAvailableGear(party, character);
-            int stackSize = GearPool.GetStackSize(party, character);
+            int spoilsCost = SpoilsPool.GetSpoilsCostForUpgrade(character, upgradeTarget);
+            int stockpile = SpoilsPool.GetAvailableSpoils(party, character);
+            int stackSize = SpoilsPool.GetStackSize(party, character);
 
             // Mirrors the xp bar: it fills toward the next man's upgrade and saturates once the whole
             // stack is covered, rather than showing the stockpile against some arbitrary ceiling.
-            if (gearCost > 0)
+            if (spoilsCost > 0)
             {
-                MaxAmount = gearCost;
-                InitialAmount = (stockpile >= gearCost * stackSize) ? gearCost : (stockpile % gearCost);
+                MaxAmount = spoilsCost;
+                InitialAmount = (stockpile >= spoilsCost * stackSize) ? spoilsCost : (stockpile % spoilsCost);
             }
             else
             {
@@ -133,13 +133,13 @@ namespace RBMCampaign
                 InitialAmount = 0;
             }
 
-            GearLog.TraceOnce("troop-" + character.StringId, string.Concat(
+            SpoilsLog.TraceOnce("troop-" + character.StringId, string.Concat(
                 character.StringId, " (tier ", character.Tier.ToString(), ") -> ", upgradeTarget.StringId,
-                " | equip ", GearPool.GetEquipmentValue(character).ToString(),
-                " -> ", GearPool.GetEquipmentValue(upgradeTarget).ToString(),
-                " | stockpile ", stockpile.ToString(), "/", gearCost.ToString(), " per man",
+                " | equip ", SpoilsPool.GetEquipmentValue(character).ToString(),
+                " -> ", SpoilsPool.GetEquipmentValue(upgradeTarget).ToString(),
+                " | stockpile ", stockpile.ToString(), "/", spoilsCost.ToString(), " per man",
                 " | stack ", stackSize.ToString(),
-                " | free ", GearPool.GetFreeUpgradeCount(party, character, upgradeTarget).ToString(),
+                " | free ", SpoilsPool.GetFreeUpgradeCount(party, character, upgradeTarget).ToString(),
                 " | nextManGold ", character.GetUpgradeGoldCost(party, 0).ToString()));
         }
 
@@ -175,12 +175,12 @@ namespace RBMCampaign
             WidgetFactory factory = UIResourceManager.WidgetFactory;
             if (factory == null)
             {
-                GearLog.Trace("UIResourceManager.WidgetFactory was null; the gear bar widget type is not registered.");
+                SpoilsLog.Trace("UIResourceManager.WidgetFactory was null; the spoils bar widget type is not registered.");
                 return;
             }
             Dictionary<string, Type> builtinTypes = AccessTools.FieldRefAccess<WidgetFactory, Dictionary<string, Type>>("_builtinTypes")(factory);
-            builtinTypes[nameof(RBMTroopGearBarWidget)] = typeof(RBMTroopGearBarWidget);
-            GearLog.Trace("registered widget type " + nameof(RBMTroopGearBarWidget));
+            builtinTypes[nameof(RBMTroopSpoilsBarWidget)] = typeof(RBMTroopSpoilsBarWidget);
+            SpoilsLog.Trace("registered widget type " + nameof(RBMTroopSpoilsBarWidget));
         }
 
         /// <summary>
@@ -204,13 +204,13 @@ namespace RBMCampaign
             if (widgetInfos == null)
             {
                 // CollectWidgetTypes has not run yet; it will pick the type up on its own.
-                GearLog.Trace("WidgetInfo registry not built yet; skipping widget info registration.");
+                SpoilsLog.Trace("WidgetInfo registry not built yet; skipping widget info registration.");
                 return;
             }
-            if (!widgetInfos.ContainsKey(typeof(RBMTroopGearBarWidget)))
+            if (!widgetInfos.ContainsKey(typeof(RBMTroopSpoilsBarWidget)))
             {
-                widgetInfos.Add(typeof(RBMTroopGearBarWidget), new WidgetInfo(typeof(RBMTroopGearBarWidget)));
-                GearLog.Trace("registered widget info for " + nameof(RBMTroopGearBarWidget));
+                widgetInfos.Add(typeof(RBMTroopSpoilsBarWidget), new WidgetInfo(typeof(RBMTroopSpoilsBarWidget)));
+                SpoilsLog.Trace("registered widget info for " + nameof(RBMTroopSpoilsBarWidget));
             }
         }
     }

@@ -7,13 +7,13 @@ using TaleWorlds.GauntletUI.PrefabSystem;
 namespace RBMCampaign
 {
     /// <summary>
-    /// Inserts the gear bar into SandBox's PartyTroopTuple prefab as it loads, without shipping a
+    /// Inserts the spoils bar into SandBox's PartyTroopTuple prefab as it loads, without shipping a
     /// copy of that file or overriding it by load order. WidgetPrefab.LoadFrom reads the prefab off
     /// disk by path, so patching the xml and redirecting the path leaves the engine's own loader
     /// untouched. If TaleWorlds ever renames the xp bar, the anchor is not found and the bar is
     /// simply skipped rather than the party screen breaking.
     /// </summary>
-    public static class GearBarPrefabPatch
+    public static class SpoilsBarPrefabPatch
     {
         private const string TargetPrefabFileName = "PartyTroopTuple.xml";
         private const string XpBarId = "TroopXPBarWidget";
@@ -29,16 +29,16 @@ namespace RBMCampaign
         /// </summary>
         public static void ApplyEarly(Harmony harmony)
         {
-            GearLog.Reset();
+            SpoilsLog.Reset();
             try
             {
                 harmony.CreateClassProcessor(typeof(SkipGeneratedPartyScreenPrefab)).Patch();
                 harmony.CreateClassProcessor(typeof(RedirectPartyTroopTuple)).Patch();
-                GearLog.Trace("installed the " + TargetPrefabFileName + " load hook");
+                SpoilsLog.Trace("installed the " + TargetPrefabFileName + " load hook");
             }
             catch (Exception exception)
             {
-                GearLog.Trace("FAILED to install the load hook: " + exception);
+                SpoilsLog.Trace("FAILED to install the load hook: " + exception);
             }
         }
 
@@ -55,11 +55,11 @@ namespace RBMCampaign
         {
             private static bool Prefix(string prefabName, ref GeneratedPrefabInstantiationResult __result)
             {
-                if (!GearPool.IsEnabled || prefabName != PartyScreenMovieName)
+                if (!SpoilsPool.IsEnabled || prefabName != PartyScreenMovieName)
                 {
                     return true;
                 }
-                GearLog.TraceOnce("skip-generated", "bypassed the generated " + PartyScreenMovieName + " prefab so the xml loads");
+                SpoilsLog.TraceOnce("skip-generated", "bypassed the generated " + PartyScreenMovieName + " prefab so the xml loads");
                 __result = null;
                 return false;
             }
@@ -79,15 +79,15 @@ namespace RBMCampaign
                 {
                     return;
                 }
-                if (!GearPool.IsEnabled)
+                if (!SpoilsPool.IsEnabled)
                 {
-                    GearLog.Trace("gear is disabled in config; not injecting the bar into " + TargetPrefabFileName);
+                    SpoilsLog.Trace("spoils are disabled in config; not injecting the bar into " + TargetPrefabFileName);
                     return;
                 }
-                GearLog.Trace("intercepted load of " + path);
+                SpoilsLog.Trace("intercepted load of " + path);
                 // Idempotent, and the factory is certainly alive here even if it was not when the
                 // module's patches were applied.
-                RBMTroopGearBarWidget.RegisterWidgetType();
+                RBMTroopSpoilsBarWidget.RegisterWidgetType();
                 string patched = GetPatchedPrefabPath(path);
                 if (patched != null)
                 {
@@ -111,31 +111,31 @@ namespace RBMCampaign
                 XmlElement xpBar = document.SelectSingleNode("//*[@Id='" + XpBarId + "']") as XmlElement;
                 if (xpBar == null || xpBar.ParentNode == null)
                 {
-                    GearLog.Trace(XpBarId + " not found in " + TargetPrefabFileName + "; skipping the gear bar.");
+                    SpoilsLog.Trace(XpBarId + " not found in " + TargetPrefabFileName + "; skipping the spoils bar.");
                     return null;
                 }
-                xpBar.ParentNode.InsertAfter(CreateGearBar(document), xpBar);
+                xpBar.ParentNode.InsertAfter(CreateSpoilsBar(document), xpBar);
 
                 string directory = Path.Combine(Path.GetTempPath(), "RBM", "Prefabs");
                 Directory.CreateDirectory(directory);
                 string patchedPath = Path.Combine(directory, TargetPrefabFileName);
                 document.Save(patchedPath);
                 _patchedPrefabPath = patchedPath;
-                GearLog.Trace("injected gear bar, redirected prefab to " + patchedPath);
+                SpoilsLog.Trace("injected spoils bar, redirected prefab to " + patchedPath);
             }
             catch (Exception exception)
             {
-                GearLog.Trace("failed to inject the gear bar: " + exception);
+                SpoilsLog.Trace("failed to inject the spoils bar: " + exception);
                 _patchedPrefabPath = null;
             }
             return _patchedPrefabPath;
         }
 
         /// <summary>Mirrors the xp bar's geometry, offset left of it by its own width plus a gap.</summary>
-        private static XmlElement CreateGearBar(XmlDocument document)
+        private static XmlElement CreateSpoilsBar(XmlDocument document)
         {
-            XmlElement bar = document.CreateElement(nameof(RBMTroopGearBarWidget));
-            bar.SetAttribute("Id", "TroopGearBarWidget");
+            XmlElement bar = document.CreateElement(nameof(RBMTroopSpoilsBarWidget));
+            bar.SetAttribute("Id", "TroopSpoilsBarWidget");
             bar.SetAttribute("DoNotPassEventsToChildren", "true");
             bar.SetAttribute("WidthSizePolicy", "Fixed");
             bar.SetAttribute("HeightSizePolicy", "Fixed");

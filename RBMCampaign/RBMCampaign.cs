@@ -13,14 +13,14 @@ namespace RBMCampaign
     public static class RBMCampaignPatches
     {
         /// <summary>
-        /// The upgrade price before any gear discount: the equipment value the troop gains, run
+        /// The upgrade price before any spoils discount: the equipment value the troop gains, run
         /// through the same perks and multiplier vanilla would apply. Everything that has to price a
         /// batch of upgrades rather than a single man starts here.
         /// </summary>
         public static ExplainedNumber BuildUpgradeGoldCost(PartyBase party, CharacterObject characterObject, CharacterObject upgradeTarget, float goldFactor)
         {
-            int characterEquipmentCost = GearPool.GetEquipmentValue(characterObject);
-            int upgradeTargetEquipmentCost = GearPool.GetEquipmentValue(upgradeTarget);
+            int characterEquipmentCost = SpoilsPool.GetEquipmentValue(characterObject);
+            int upgradeTargetEquipmentCost = SpoilsPool.GetEquipmentValue(upgradeTarget);
 
             bool isForHire = characterObject.Occupation == Occupation.Mercenary || characterObject.Occupation == Occupation.Gangster || characterObject.Occupation == Occupation.CaravanGuard;
 
@@ -48,21 +48,21 @@ namespace RBMCampaign
             return stat;
         }
 
-        /// <summary>What one man's upgrade costs when the stack holds no usable gear at all.</summary>
+        /// <summary>What one man's upgrade costs when the stack holds no usable spoils at all.</summary>
         public static int GetFullUpgradeGoldCost(PartyBase party, CharacterObject characterObject, CharacterObject upgradeTarget)
         {
             return BuildUpgradeGoldCost(party, characterObject, upgradeTarget, 1f).RoundedResultNumber;
         }
 
         /// <summary>
-        /// The gold a batch of <paramref name="count"/> upgrades actually costs. Gear is consumed one
+        /// The gold a batch of <paramref name="count"/> upgrades actually costs. Spoils are consumed one
         /// man at a time, so the men the stockpile covers go free and the rest pay full price. Vanilla
         /// only ever asks the model for a single per-man number and multiplies it, which is why the
         /// party screen and the AI both have to correct the total themselves.
         /// </summary>
         public static int GetBatchUpgradeGoldCost(PartyBase party, CharacterObject characterObject, CharacterObject upgradeTarget, int count)
         {
-            float unpaidMen = GearPool.GetUnpaidMen(party, characterObject, upgradeTarget, count);
+            float unpaidMen = SpoilsPool.GetUnpaidMen(party, characterObject, upgradeTarget, count);
             return BuildUpgradeGoldCost(party, characterObject, upgradeTarget, unpaidMen).RoundedResultNumber;
         }
 
@@ -74,17 +74,17 @@ namespace RBMCampaign
             {
                 // The price of the next man to be upgraded, not the stack's average: if the stockpile
                 // covers him he is free, and the man after him may not be.
-                float goldFactor = GearPool.GetUnpaidMen(party, characterObject, upgradeTarget, 1);
+                float goldFactor = SpoilsPool.GetUnpaidMen(party, characterObject, upgradeTarget, 1);
                 ExplainedNumber stat = BuildUpgradeGoldCost(party, characterObject, upgradeTarget, goldFactor);
 
                 // The party screen recomputes this on every refresh, so once per troop pair is plenty.
-                GearLog.LogOnce("goldcost-" + characterObject.StringId + "-" + upgradeTarget.StringId, "GOLD",
-                    GearLog.Describe(characterObject) + " -> " + GearLog.Describe(upgradeTarget)
-                    + " | equip " + GearPool.GetEquipmentValue(characterObject) + " -> " + GearPool.GetEquipmentValue(upgradeTarget)
-                    + ", gear cost " + GearPool.GetGearCostForUpgrade(characterObject, upgradeTarget)
-                    + ", stockpile " + GearPool.GetAvailableGear(party, characterObject)
+                SpoilsLog.LogOnce("goldcost-" + characterObject.StringId + "-" + upgradeTarget.StringId, "GOLD",
+                    SpoilsLog.Describe(characterObject) + " -> " + SpoilsLog.Describe(upgradeTarget)
+                    + " | equip " + SpoilsPool.GetEquipmentValue(characterObject) + " -> " + SpoilsPool.GetEquipmentValue(upgradeTarget)
+                    + ", spoils cost " + SpoilsPool.GetSpoilsCostForUpgrade(characterObject, upgradeTarget)
+                    + ", stockpile " + SpoilsPool.GetAvailableSpoils(party, characterObject)
                     + ", next man pays " + goldFactor.ToString("0.00") + " of full"
-                    + ", gold " + stat.RoundedResultNumber + " in " + GearLog.Describe(party));
+                    + ", gold " + stat.RoundedResultNumber + " in " + SpoilsLog.Describe(party));
 
                 __result = stat;
                 return false;
@@ -92,14 +92,14 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// The party screen's upgrade tooltip quotes a single "Cost" line, which under gear is the
+        /// The party screen's upgrade tooltip quotes a single "Cost" line, which under spoils is a
         /// discounted price with no sign of where the discount came from. Break it into the three
-        /// numbers the player actually wants: what the upgrade is worth, what the salvaged gear
-        /// pays for, and what is left for his purse.
+        /// numbers the player actually wants: what the upgrade is worth, what the salvaged spoils
+        /// pay for, and what is left for his purse.
         /// </summary>
         [HarmonyPatch(typeof(CampaignUIHelper))]
         [HarmonyPatch("GetUpgradeHint")]
-        private class ExplainGearDiscountInUpgradeHint
+        private class ExplainSpoilsDiscountInUpgradeHint
         {
             private const string CoinIcon = "<img src=\"General\\Icons\\Coin@2x\" extend=\"6\">";
 
@@ -113,22 +113,22 @@ namespace RBMCampaign
             private static void Prefix(int index, ref int upgradeCoinCost, CharacterObject character, ref int partyGoldChangeAmount, bool areUpgradesDisabled, out int __state)
             {
                 __state = 0;
-                if (areUpgradesDisabled || !GearPool.IsEnabled || character == null
+                if (areUpgradesDisabled || !SpoilsPool.IsEnabled || character == null
                     || index < 0 || index >= character.UpgradeTargets.Length)
                 {
                     return;
                 }
 
                 int fullCost = GetFullUpgradeGoldCost(PartyBase.MainParty, character, character.UpgradeTargets[index]);
-                int coveredByGear = fullCost - upgradeCoinCost;
-                if (coveredByGear <= 0)
+                int coveredBySpoils = fullCost - upgradeCoinCost;
+                if (coveredBySpoils <= 0)
                 {
                     return;
                 }
 
-                __state = coveredByGear;
+                __state = coveredBySpoils;
                 upgradeCoinCost = fullCost;
-                partyGoldChangeAmount += coveredByGear;
+                partyGoldChangeAmount += coveredBySpoils;
             }
 
             /// <summary>upgradeCoinCost arrives as the Prefix left it: the full price.</summary>
@@ -138,9 +138,9 @@ namespace RBMCampaign
                 {
                     return;
                 }
-                __result += "\n" + new TextObject("{=RBM_GEAR_006}Salvaged gear covers: {AMOUNT}")
+                __result += "\n" + new TextObject("{=RBM_SPOILS_006}Spoils cover: {AMOUNT}")
                     .SetTextVariable("AMOUNT", __state).ToString() + CoinIcon;
-                __result += "\n" + new TextObject("{=RBM_GEAR_007}You pay: {AMOUNT}")
+                __result += "\n" + new TextObject("{=RBM_SPOILS_007}You pay: {AMOUNT}")
                     .SetTextVariable("AMOUNT", upgradeCoinCost - __state).ToString() + CoinIcon;
             }
         }

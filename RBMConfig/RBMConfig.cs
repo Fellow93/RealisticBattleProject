@@ -26,13 +26,13 @@ namespace RBMConfig
         //RBMCampaign
         public static float troopUpgradeCostMultiplier = 0.1f;
 
-        // A gear point is a unit of equipment value. An upgrade costs what the better kit is worth
-        // over the old, scaled by this. A cost multiplier of 0 disables the gear system entirely.
-        public static float troopUpgradeGearCostMultiplier = 1f;
-        public static float troopUpgradeGearLootMultiplier = 1f;
+        // A point of spoils is a unit of equipment value. An upgrade costs what the better kit is worth
+        // over the old, scaled by this. A cost multiplier of 0 disables the spoils system entirely.
+        public static float troopUpgradeSpoilsCostMultiplier = 1f;
+        public static float troopUpgradeSpoilsLootMultiplier = 1f;
 
-        // Writes every gear pool change, loot award and upgrade to rbm_gear.log next to this config.
-        public static bool gearLoggingEnabled = true;
+        // Writes every spoils pool change, loot award and upgrade to rbm_spoils.log next to this config.
+        public static bool spoilsLoggingEnabled = true;
 
         //RBMAI
         public static bool hitStopEnabled = true;
@@ -157,9 +157,9 @@ namespace RBMConfig
             // RBMCampaign
             // Invariant culture: on comma-decimal locales "0.1" would otherwise parse as 1.
             troopUpgradeCostMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeCostMultiplier", "0.1"), CultureInfo.InvariantCulture);
-            troopUpgradeGearCostMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeGearCostMultiplier", "1"), CultureInfo.InvariantCulture);
-            troopUpgradeGearLootMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeGearLootMultiplier", "1"), CultureInfo.InvariantCulture);
-            gearLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "GearLoggingEnabled", "1").Equals("1");
+            troopUpgradeSpoilsCostMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeSpoilsCostMultiplier", "1"), CultureInfo.InvariantCulture);
+            troopUpgradeSpoilsLootMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeSpoilsLootMultiplier", "1"), CultureInfo.InvariantCulture);
+            spoilsLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsLoggingEnabled", "1").Equals("1");
 
             // RBMAI
             hitStopEnabled = ReadOrCreate("/Config/RBMAI", "HitStopEnabled", "1").Equals("1");
@@ -250,9 +250,9 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/Enabled"), rbmCampaignEnabled);
             //RBMCampaign
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeCostMultiplier"), troopUpgradeCostMultiplier.ToString(CultureInfo.InvariantCulture));
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeGearCostMultiplier"), troopUpgradeGearCostMultiplier.ToString(CultureInfo.InvariantCulture));
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeGearLootMultiplier"), troopUpgradeGearLootMultiplier.ToString(CultureInfo.InvariantCulture));
-            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/GearLoggingEnabled"), gearLoggingEnabled);
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeSpoilsCostMultiplier"), troopUpgradeSpoilsCostMultiplier.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeSpoilsLootMultiplier"), troopUpgradeSpoilsLootMultiplier.ToString(CultureInfo.InvariantCulture));
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SpoilsLoggingEnabled"), spoilsLoggingEnabled);
             //RBMAI
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/HitStopEnabled"), hitStopEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureEnabled"), postureEnabled);
