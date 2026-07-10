@@ -77,8 +77,17 @@ namespace RBMCampaign
             {
                 return "[" + wallClock + "][no campaign]";
             }
-            CampaignTime now = CampaignTime.Now;
-            return string.Format("[{0}][{1}-{2:000} {3:00}h]", wallClock, now.GetYear, now.GetDayOfYear, now.GetHourOfDay);
+            try
+            {
+                // Campaign.Current can exist while the time system is still mid-init (e.g. during
+                // OnGameStart / Harmony patching), where GetYear divides by an uninitialised constant.
+                CampaignTime now = CampaignTime.Now;
+                return string.Format("[{0}][{1}-{2:000} {3:00}h]", wallClock, now.GetYear, now.GetDayOfYear, now.GetHourOfDay);
+            }
+            catch
+            {
+                return "[" + wallClock + "][time n/a]";
+            }
         }
 
         /// <summary>
