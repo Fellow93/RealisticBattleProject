@@ -148,6 +148,29 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@TroopLootOverlookChancePerTiert"/>
+
+											<ListPanel LayoutImp.LayoutMethod="HorizontalLeftToRight" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="!AT.Slider.Slider.MarginLeft" VerticalAlignment="Center">
+											  <Children>
+												<SliderWidget Id="TroopLootOverlookChancePerTierSlider" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Slider.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center" DoNotUpdateHandleSize="true" Filler="Filler" Handle="SliderHandle" IsDiscrete="false" MinValueFloat="0" MaxValueFloat="1" ValueFloat="@TroopLootOverlookChancePerTier">
+												  <Children>
+													<Widget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="38" HorizontalAlignment="Center" VerticalAlignment="Center" Sprite="SPGeneral\SPOptions\standart_slider_canvas" />
+													<Widget Id="Filler" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="35" VerticalAlignment="Center" Sprite="SPGeneral\SPOptions\standart_slider_fill" ClipContents="true" />
+													<Widget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="65" HorizontalAlignment="Center" VerticalAlignment="Center" Sprite="SPGeneral\SPOptions\standart_slider_frame" />
+													<ImageWidget Id="SliderHandle" DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="14" SuggestedHeight="38" HorizontalAlignment="Left" VerticalAlignment="Center" Brush="SPOptions.Slider.Handle" />
+												  </Children>
+												</SliderWidget>
+
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="!AT.Slider.DefaultValue.MarginLeft" VerticalAlignment="Center" Brush="SPOptions.Slider.Value.Text" Text="@TroopLootOverlookChancePerTierValue"/>
+											  </Children>
+											</ListPanel>
+
+										  </Children>
+										</ListPanel>
+
+										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+										  <Children>
+
 											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@TroopWageSpoilsFractiont"/>
 
 											<ListPanel LayoutImp.LayoutMethod="HorizontalLeftToRight" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="!AT.Slider.Slider.MarginLeft" VerticalAlignment="Center">
@@ -162,6 +185,75 @@
 												</SliderWidget>
 
 												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="!AT.Slider.DefaultValue.MarginLeft" VerticalAlignment="Center" Brush="SPOptions.Slider.Value.Text" Text="@TroopWageSpoilsFractionValue"/>
+											  </Children>
+											</ListPanel>
+
+										  </Children>
+										</ListPanel>
+
+										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+										  <Children>
+
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@TroopSettlementFoodDayst"/>
+
+											<ListPanel LayoutImp.LayoutMethod="HorizontalLeftToRight" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="!AT.Slider.Slider.MarginLeft" VerticalAlignment="Center">
+											  <Children>
+												<SliderWidget Id="TroopSettlementFoodDaysSlider" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Slider.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center" DoNotUpdateHandleSize="true" Filler="Filler" Handle="SliderHandle" IsDiscrete="true" DiscreteIncrementInterval="1" MinValueFloat="0" MaxValueFloat="60" ValueFloat="@TroopSettlementFoodDays">
+												  <Children>
+													<Widget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="38" HorizontalAlignment="Center" VerticalAlignment="Center" Sprite="SPGeneral\SPOptions\standart_slider_canvas" />
+													<Widget Id="Filler" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="35" VerticalAlignment="Center" Sprite="SPGeneral\SPOptions\standart_slider_fill" ClipContents="true" />
+													<Widget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="65" HorizontalAlignment="Center" VerticalAlignment="Center" Sprite="SPGeneral\SPOptions\standart_slider_frame" />
+													<ImageWidget Id="SliderHandle" DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="14" SuggestedHeight="38" HorizontalAlignment="Left" VerticalAlignment="Center" Brush="SPOptions.Slider.Handle" />
+												  </Children>
+												</SliderWidget>
+
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="!AT.Slider.DefaultValue.MarginLeft" VerticalAlignment="Center" Brush="SPOptions.Slider.Value.Text" Text="@TroopSettlementFoodDaysValue"/>
+											  </Children>
+											</ListPanel>
+
+										  </Children>
+										</ListPanel>
+
+										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+										  <Children>
+
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@TroopFoodWageFractiont"/>
+
+											<ListPanel LayoutImp.LayoutMethod="HorizontalLeftToRight" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="!AT.Slider.Slider.MarginLeft" VerticalAlignment="Center">
+											  <Children>
+												<SliderWidget Id="TroopFoodWageFractionSlider" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Slider.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center" DoNotUpdateHandleSize="true" Filler="Filler" Handle="SliderHandle" IsDiscrete="false" MinValueFloat="0" MaxValueFloat="1" ValueFloat="@TroopFoodWageFraction">
+												  <Children>
+													<Widget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="38" HorizontalAlignment="Center" VerticalAlignment="Center" Sprite="SPGeneral\SPOptions\standart_slider_canvas" />
+													<Widget Id="Filler" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="35" VerticalAlignment="Center" Sprite="SPGeneral\SPOptions\standart_slider_fill" ClipContents="true" />
+													<Widget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="65" HorizontalAlignment="Center" VerticalAlignment="Center" Sprite="SPGeneral\SPOptions\standart_slider_frame" />
+													<ImageWidget Id="SliderHandle" DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="14" SuggestedHeight="38" HorizontalAlignment="Left" VerticalAlignment="Center" Brush="SPOptions.Slider.Handle" />
+												  </Children>
+												</SliderWidget>
+
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="!AT.Slider.DefaultValue.MarginLeft" VerticalAlignment="Center" Brush="SPOptions.Slider.Value.Text" Text="@TroopFoodWageFractionValue"/>
+											  </Children>
+											</ListPanel>
+
+										  </Children>
+										</ListPanel>
+
+										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+										  <Children>
+
+											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@TroopSettlementFunWageFractiont"/>
+
+											<ListPanel LayoutImp.LayoutMethod="HorizontalLeftToRight" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="!AT.Slider.Slider.MarginLeft" VerticalAlignment="Center">
+											  <Children>
+												<SliderWidget Id="TroopSettlementFunWageFractionSlider" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Slider.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center" DoNotUpdateHandleSize="true" Filler="Filler" Handle="SliderHandle" IsDiscrete="false" MinValueFloat="0" MaxValueFloat="3" ValueFloat="@TroopSettlementFunWageFraction">
+												  <Children>
+													<Widget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="38" HorizontalAlignment="Center" VerticalAlignment="Center" Sprite="SPGeneral\SPOptions\standart_slider_canvas" />
+													<Widget Id="Filler" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="35" VerticalAlignment="Center" Sprite="SPGeneral\SPOptions\standart_slider_fill" ClipContents="true" />
+													<Widget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="65" HorizontalAlignment="Center" VerticalAlignment="Center" Sprite="SPGeneral\SPOptions\standart_slider_frame" />
+													<ImageWidget Id="SliderHandle" DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="14" SuggestedHeight="38" HorizontalAlignment="Left" VerticalAlignment="Center" Brush="SPOptions.Slider.Handle" />
+												  </Children>
+												</SliderWidget>
+
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="!AT.Slider.DefaultValue.MarginLeft" VerticalAlignment="Center" Brush="SPOptions.Slider.Value.Text" Text="@TroopSettlementFunWageFractionValue"/>
 											  </Children>
 											</ListPanel>
 

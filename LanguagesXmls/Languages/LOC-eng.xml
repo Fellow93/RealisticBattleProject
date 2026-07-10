@@ -91,6 +91,10 @@
 	<string id="RBM_CON_037" text="Pieces of Kit One Man Carries off a Field (default at 3)" />
 	<string id="RBM_CON_038" text="Prosperity a Settlement Gains per Gold Spent in It (default at 0.02)" />
 	<string id="RBM_CON_039" text="Spoils Logging" />
+	<string id="RBM_CON_040" text="Chance a Man Overlooks Kit a Tier Beneath Him (default at 0.50)" />
+	<string id="RBM_CON_041" text="Days of Food a Man Buys in a Settlement (0 stops it, default at 20)" />
+	<string id="RBM_CON_042" text="Share of a Day's Wage a Man Spends on a Day's Food (default at 0.50)" />
+	<string id="RBM_CON_043" text="A Day's Wage a Man Drinks Away per Day Idle in a Settlement (default at 1.50)" />
 	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
 	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />
 	<string id="RBM_SPOILS_006" text="Spoils cover: {AMOUNT}" />

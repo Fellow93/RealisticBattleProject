@@ -188,6 +188,45 @@ namespace RBMConfig
             }
         }
 
+        private float _troopLootOverlookChancePerTier;
+
+        [DataSourceProperty]
+        public float TroopLootOverlookChancePerTier
+        {
+            get
+            {
+                return _troopLootOverlookChancePerTier;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 1f);
+                if (snapped != _troopLootOverlookChancePerTier)
+                {
+                    _troopLootOverlookChancePerTier = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopLootOverlookChancePerTier");
+                    OnPropertyChanged("TroopLootOverlookChancePerTierValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopLootOverlookChancePerTierValue
+        {
+            get
+            {
+                return _troopLootOverlookChancePerTier.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopLootOverlookChancePerTiert
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_040}Chance a Man Overlooks Kit a Tier Beneath Him (default at 0.50)").ToString();
+            }
+        }
+
         private float _troopWageSpoilsFraction;
 
         [DataSourceProperty]
@@ -224,6 +263,127 @@ namespace RBMConfig
             get
             {
                 return new TextObject("{=RBM_CON_036}Share of Daily Wage Returned as Spoils (default at 0.50)").ToString();
+            }
+        }
+
+        private float _troopSettlementFoodDays;
+
+        /// <summary>
+        /// Whole days, so the slider is discrete. Zero is meaningful -- it stops troops buying food --
+        /// so the floor is 0. Float because that is what SliderWidget binds; rounded to an int on save.
+        /// </summary>
+        [DataSourceProperty]
+        public float TroopSettlementFoodDays
+        {
+            get
+            {
+                return _troopSettlementFoodDays;
+            }
+            set
+            {
+                float snapped = MathF.Clamp(MathF.Round(value), 0f, 60f);
+                if (snapped != _troopSettlementFoodDays)
+                {
+                    _troopSettlementFoodDays = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopSettlementFoodDays");
+                    OnPropertyChanged("TroopSettlementFoodDaysValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopSettlementFoodDaysValue
+        {
+            get
+            {
+                return _troopSettlementFoodDays.ToString("0");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopSettlementFoodDayst
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_041}Days of Food a Man Buys in a Settlement (0 stops it, default at 20)").ToString();
+            }
+        }
+
+        private float _troopFoodWageFraction;
+
+        [DataSourceProperty]
+        public float TroopFoodWageFraction
+        {
+            get
+            {
+                return _troopFoodWageFraction;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 1f);
+                if (snapped != _troopFoodWageFraction)
+                {
+                    _troopFoodWageFraction = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopFoodWageFraction");
+                    OnPropertyChanged("TroopFoodWageFractionValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopFoodWageFractionValue
+        {
+            get
+            {
+                return _troopFoodWageFraction.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopFoodWageFractiont
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_042}Share of a Day's Wage a Man Spends on a Day's Food (default at 0.50)").ToString();
+            }
+        }
+
+        private float _troopSettlementFunWageFraction;
+
+        [DataSourceProperty]
+        public float TroopSettlementFunWageFraction
+        {
+            get
+            {
+                return _troopSettlementFunWageFraction;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 3f);
+                if (snapped != _troopSettlementFunWageFraction)
+                {
+                    _troopSettlementFunWageFraction = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopSettlementFunWageFraction");
+                    OnPropertyChanged("TroopSettlementFunWageFractionValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopSettlementFunWageFractionValue
+        {
+            get
+            {
+                return _troopSettlementFunWageFraction.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopSettlementFunWageFractiont
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_043}A Day's Wage a Man Drinks Away per Day Idle in a Settlement (default at 1.50)").ToString();
             }
         }
 
@@ -747,7 +907,11 @@ namespace RBMConfig
             _troopUpgradeCostMultiplier = MathF.Clamp(RBMConfig.troopUpgradeCostMultiplier, 0f, 2f);
             _troopUpgradeSpoilsLootMultiplier = MathF.Clamp(RBMConfig.troopUpgradeSpoilsLootMultiplier, 0f, 5f);
             _troopLootPiecesPerMan = MathF.Clamp(RBMConfig.troopLootPiecesPerMan, 1f, 10f);
+            _troopLootOverlookChancePerTier = MathF.Clamp(RBMConfig.troopLootOverlookChancePerTier, 0f, 1f);
             _troopWageSpoilsFraction = MathF.Clamp(RBMConfig.troopWageSpoilsFraction, 0f, 1f);
+            _troopSettlementFoodDays = MathF.Clamp(RBMConfig.troopSettlementFoodDays, 0f, 60f);
+            _troopFoodWageFraction = MathF.Clamp(RBMConfig.troopFoodWageFraction, 0f, 1f);
+            _troopSettlementFunWageFraction = MathF.Clamp(RBMConfig.troopSettlementFunWageFraction, 0f, 3f);
             _settlementProsperityPerGoldSpent = MathF.Clamp(RBMConfig.settlementProsperityPerGoldSpent, 0.01f, 1f);
             SpoilsLoggingEnabled.SelectedIndex = RBMConfig.spoilsLoggingEnabled ? 1 : 0;
         }
@@ -916,7 +1080,11 @@ namespace RBMConfig
             RBMConfig.troopUpgradeCostMultiplier = _troopUpgradeCostMultiplier;
             RBMConfig.troopUpgradeSpoilsLootMultiplier = _troopUpgradeSpoilsLootMultiplier;
             RBMConfig.troopLootPiecesPerMan = MathF.Round(_troopLootPiecesPerMan);
+            RBMConfig.troopLootOverlookChancePerTier = _troopLootOverlookChancePerTier;
             RBMConfig.troopWageSpoilsFraction = _troopWageSpoilsFraction;
+            RBMConfig.troopSettlementFoodDays = (int)MathF.Round(_troopSettlementFoodDays);
+            RBMConfig.troopFoodWageFraction = _troopFoodWageFraction;
+            RBMConfig.troopSettlementFunWageFraction = _troopSettlementFunWageFraction;
             RBMConfig.settlementProsperityPerGoldSpent = _settlementProsperityPerGoldSpent;
             RBMConfig.spoilsLoggingEnabled = SpoilsLoggingEnabled.SelectedIndex == 1;
 
