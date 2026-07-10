@@ -5,6 +5,7 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace RBMCampaign
 {
@@ -342,8 +343,30 @@ namespace RBMCampaign
                 float share = (float)weight / divisor * RBMConfig.RBMConfig.troopUpgradeSpoilsLootMultiplier;
                 SpoilsLog.Log("LOOT", "  " + SpoilsLog.Describe(victor.Party) + ": contribution " + victor.ContributionToBattle
                     + "/" + totalContribution + ", share " + share.ToString("0.000"));
-                GrantToParty(victor.Party, spoilsByTier, share);
+                int granted = GrantToParty(victor.Party, spoilsByTier, share);
+                if (victor.Party == PartyBase.MainParty)
+                {
+                    AnnounceSpoilsToPlayer(granted);
+                }
             }
+        }
+
+        /// <summary>
+        /// The stockpiles fill silently otherwise: the party screen shows a bar the player has to go
+        /// looking for, and nothing on the map says a battle paid for anything.
+        /// </summary>
+        /// <remarks>
+        /// A stack that is already fully outfitted takes nothing, so a victory can leave the field
+        /// covered in kit and grant zero. Saying so is more use than saying nothing, since it tells
+        /// the player his army has no more room for what it just won.
+        /// </remarks>
+        private static void AnnounceSpoilsToPlayer(int granted)
+        {
+            TextObject message = new TextObject((granted > 0)
+                ? "{=RBM_SPOILS_009}Your men strip the fallen and recover {AMOUNT} in spoils."
+                : "{=RBM_SPOILS_010}Your men find nothing on the fallen they can use.");
+            message.SetTextVariable("AMOUNT", granted);
+            InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
         }
 
         /// <summary>
@@ -483,23 +506,27 @@ namespace RBMCampaign
         /// troop tier, each taking at most what it still needs, and whatever they leave cascades
         /// down to the greener troops behind them.
         /// </summary>
-        private static void GrantToParty(PartyBase party, long[] spoilsByTier, float share)
+        /// <returns>The points the party's stacks actually took, which is less than its share
+        /// whenever a tier finds no troop it would upgrade.</returns>
+        private static int GrantToParty(PartyBase party, long[] spoilsByTier, float share)
         {
             if (party == null || share <= 0f)
             {
-                return;
+                return 0;
             }
+            int granted = 0;
             for (int tier = 0; tier < spoilsByTier.Length; tier++)
             {
                 int points = (int)MathF.Min(spoilsByTier[tier] * share, (float)int.MaxValue);
                 if (points > 0)
                 {
-                    GrantTierToParty(party, tier, points);
+                    granted += GrantTierToParty(party, tier, points);
                 }
             }
+            return granted;
         }
 
-        private static void GrantTierToParty(PartyBase party, int itemTier, int points)
+        private static int GrantTierToParty(PartyBase party, int itemTier, int points)
         {
             List<TroopRosterElement> claimants = new List<TroopRosterElement>();
             TroopRoster roster = party.MemberRoster;
@@ -520,7 +547,7 @@ namespace RBMCampaign
             {
                 SpoilsLog.Log("LOOT", "    tier " + (itemTier + 1) + " (" + points + " pts): no claimant in "
                     + SpoilsLog.Describe(party) + ", discarded");
-                return;
+                return 0;
             }
 
             int remaining = points;
@@ -542,6 +569,7 @@ namespace RBMCampaign
                 SpoilsLog.Log("LOOT", "    tier " + (itemTier + 1) + ": " + remaining
                     + " of " + points + " pts unclaimed in " + SpoilsLog.Describe(party) + " (everyone full)");
             }
+            return points - remaining;
         }
 
         /// <summary>

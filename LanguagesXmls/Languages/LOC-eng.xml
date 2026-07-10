@@ -93,6 +93,8 @@
 	<string id="RBM_SPOILS_006" text="Spoils cover: {AMOUNT}" />
 	<string id="RBM_SPOILS_007" text="You pay: {AMOUNT}" />
 	<string id="RBM_SPOILS_008" text="{COST}  ({FREE} free)" />
+	<string id="RBM_SPOILS_009" text="Your men strip the fallen and recover {AMOUNT} in spoils." />
+	<string id="RBM_SPOILS_010" text="Your men find nothing on the fallen they can use." />
 	<string id="RBM_SPOILS_004" text="Holding the field earns spoils salvaged from the kit left on it, by the enemies you killed and by your own fallen. Nothing is recovered whole: armour is battered, blades are chipped, and a quiver is worth only the arrows still in it. A soldier takes only kit of his own tier or better, and the veterans pick first, so what they pass over falls to greener troops. The stockpile outfits men one at a time: those it covers upgrade for free, and the rest pay gold for what it cannot reach." />
 	<string id="RBM_CON_016" text="RBM Combat" />
 	<string id="RBM_CON_017" text="Module Status" />
