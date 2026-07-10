@@ -86,6 +86,12 @@
 	<string id="RBM_CON_031" text="Keep Battle (Last Stand)" />
 	<string id="RBM_CON_032" text="Troop Upgrade Cost Multiplier (default at 0.10)" />
 	<string id="RBM_CON_033" text="Realistic Battle Mod" />
+	<string id="RBM_CON_034" text="Troop Upgrade Gear Cost Multiplier (0 disables gear, default at 1.00)" />
+	<string id="RBM_CON_035" text="Battle Gear Loot Multiplier (default at 1.00)" />
+	<string id="RBM_GEAR_001" text="Gear per Man" />
+	<string id="RBM_GEAR_002" text="Upgrade Gear Cost" />
+	<string id="RBM_GEAR_003" text="Upgrade Gold Saved" />
+	<string id="RBM_GEAR_004" text="Gear is stripped from the enemies you defeat. Gold buys whatever gear your men still lack, so a full bar means the upgrade is free." />
 	<string id="RBM_CON_016" text="RBM Combat" />
 	<string id="RBM_CON_017" text="Module Status" />
 	<string id="RBM_CON_018" text="RBM AI" />

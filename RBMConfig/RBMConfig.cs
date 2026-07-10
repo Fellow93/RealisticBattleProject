@@ -26,6 +26,11 @@ namespace RBMConfig
         //RBMCampaign
         public static float troopUpgradeCostMultiplier = 0.1f;
 
+        // Gear is a per-troop-stack resource spent alongside xp on upgrades.
+        // A cost multiplier of 0 disables the gear requirement entirely.
+        public static float troopUpgradeGearCostMultiplier = 1f;
+        public static float troopUpgradeGearLootMultiplier = 1f;
+
         //RBMAI
         public static bool hitStopEnabled = true;
 
@@ -149,6 +154,8 @@ namespace RBMConfig
             // RBMCampaign
             // Invariant culture: on comma-decimal locales "0.1" would otherwise parse as 1.
             troopUpgradeCostMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeCostMultiplier", "0.1"), CultureInfo.InvariantCulture);
+            troopUpgradeGearCostMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeGearCostMultiplier", "1"), CultureInfo.InvariantCulture);
+            troopUpgradeGearLootMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeGearLootMultiplier", "1"), CultureInfo.InvariantCulture);
 
             // RBMAI
             hitStopEnabled = ReadOrCreate("/Config/RBMAI", "HitStopEnabled", "1").Equals("1");
@@ -239,6 +246,8 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/Enabled"), rbmCampaignEnabled);
             //RBMCampaign
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeCostMultiplier"), troopUpgradeCostMultiplier.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeGearCostMultiplier"), troopUpgradeGearCostMultiplier.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeGearLootMultiplier"), troopUpgradeGearLootMultiplier.ToString(CultureInfo.InvariantCulture));
             //RBMAI
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/HitStopEnabled"), hitStopEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureEnabled"), postureEnabled);

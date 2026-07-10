@@ -42,6 +42,7 @@
   </PropertyGroup>
   <!-- Bannerlord Native Assemblies -->
   <ItemGroup>
+    <Reference Include="System.Xml" />
     <Reference Include="0Harmony, Version=2.4.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lib.Harmony.2.4.2\lib\net472\0Harmony.dll</HintPath>
     </Reference>
@@ -269,6 +270,11 @@
   </ItemGroup>
   <!-- Files & Classes -->
   <ItemGroup>
+    <Compile Include="GearBarLog.cs" />
+    <Compile Include="GearBarPrefabPatch.cs" />
+    <Compile Include="GearBarWidget.cs" />
+    <Compile Include="GearPool.cs" />
+    <Compile Include="GearUpgradePatches.cs" />
     <Compile Include="RBMCampaignPatcher.cs" />
     <Compile Include="RBMCampaign.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

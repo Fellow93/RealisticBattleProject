@@ -354,9 +354,15 @@ namespace RBMConfig
             RBMCampaignEnabled.InnerText = RBMConfig.rbmCampaignEnabled ? "1" : "0";
             XmlElement TroopUpgradeCostMultiplier = xmlconfig.CreateElement("TroopUpgradeCostMultiplier");
             TroopUpgradeCostMultiplier.InnerText = RBMConfig.troopUpgradeCostMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopUpgradeGearCostMultiplier = xmlconfig.CreateElement("TroopUpgradeGearCostMultiplier");
+            TroopUpgradeGearCostMultiplier.InnerText = RBMConfig.troopUpgradeGearCostMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopUpgradeGearLootMultiplier = xmlconfig.CreateElement("TroopUpgradeGearLootMultiplier");
+            TroopUpgradeGearLootMultiplier.InnerText = RBMConfig.troopUpgradeGearLootMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
             RBMCampaign.AppendChild(RBMCampaignEnabled);
             RBMCampaign.AppendChild(TroopUpgradeCostMultiplier);
+            RBMCampaign.AppendChild(TroopUpgradeGearCostMultiplier);
+            RBMCampaign.AppendChild(TroopUpgradeGearLootMultiplier);
             Config.AppendChild(RBMCampaign);
 
             xmlconfig.AppendChild(Config);

@@ -17,41 +17,17 @@ namespace RBMCampaign
         {
             private static bool Prefix(PartyBase party, CharacterObject characterObject, CharacterObject upgradeTarget, ref ExplainedNumber __result)
             {
-                int characterEquipmentCost = 0;
-                for (EquipmentIndex i = EquipmentIndex.ArmorItemBeginSlot; i < EquipmentIndex.ArmorItemEndSlot; i++)
-                {
-                    if (!characterObject.Equipment[i].IsEmpty)
-                    {
-                        characterEquipmentCost += characterObject.Equipment[i].ItemValue;
-                    }
-                }
-                for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.NumAllWeaponSlots; i++)
-                {
-                    if (!characterObject.Equipment[i].IsEmpty)
-                    {
-                        characterEquipmentCost += characterObject.Equipment[i].ItemValue;
-                    }
-                }
-
-                int upgradeTargetEquipmentCost = 0;
-                for (EquipmentIndex j = EquipmentIndex.ArmorItemBeginSlot; j < EquipmentIndex.ArmorItemEndSlot; j++)
-                {
-                    if (!upgradeTarget.Equipment[j].IsEmpty)
-                    {
-                        upgradeTargetEquipmentCost += upgradeTarget.Equipment[j].ItemValue;
-                    }
-                }
-                for (EquipmentIndex j = EquipmentIndex.WeaponItemBeginSlot; j < EquipmentIndex.NumAllWeaponSlots; j++)
-                {
-                    if (!upgradeTarget.Equipment[j].IsEmpty)
-                    {
-                        upgradeTargetEquipmentCost += upgradeTarget.Equipment[j].ItemValue;
-                    }
-                }
+                int characterEquipmentCost = GearPool.GetEquipmentValue(characterObject);
+                int upgradeTargetEquipmentCost = GearPool.GetEquipmentValue(upgradeTarget);
 
                 bool isForHire = characterObject.Occupation == Occupation.Mercenary || characterObject.Occupation == Occupation.Gangster || characterObject.Occupation == Occupation.CaravanGuard;
 
-                ExplainedNumber stat = new ExplainedNumber((float)(upgradeTargetEquipmentCost - characterEquipmentCost));
+                // Gold buys the gear the soldier is missing. Whatever share of the upgrade's gear
+                // requirement he already carries, he does not have to pay for.
+                float goldCoverage = GearPool.GetGoldCoverage(party, characterObject, upgradeTarget);
+                float equipmentCostDelta = (upgradeTargetEquipmentCost - characterEquipmentCost) * (1f - goldCoverage);
+
+                ExplainedNumber stat = new ExplainedNumber(equipmentCostDelta);
                 if (party.MobileParty.HasPerk(DefaultPerks.Steward.SoundReserves))
                 {
                     PerkHelper.AddPerkBonusForParty(DefaultPerks.Steward.SoundReserves, party.MobileParty, isPrimaryBonus: true, ref stat);

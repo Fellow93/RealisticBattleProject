@@ -87,6 +87,13 @@ namespace RBM
             RBMConfig.RBMConfig.LoadConfig();
             CustomBattlePreset.LoadPreset();
 
+            // Gauntlet parses and caches the party screen prefab before OnGameStart runs, so this
+            // one hook cannot wait for ApplyHarmonyPatches like the rest of RBMCampaign does.
+            if (RBMConfig.RBMConfig.rbmCampaignEnabled)
+            {
+                GearBarPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
+            }
+
             Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("{=RBM_CON_020}RBM Configuration"), 9999, delegate
             {
                 ScreenManager.PushScreen(new RBMConfig.RBMConfigScreen());
@@ -153,6 +160,10 @@ namespace RBM
         {
             RBMConfig.RBMConfig.LoadConfig();
             ApplyHarmonyPatches();
+            if (RBMConfig.RBMConfig.rbmCampaignEnabled && game.GameType is Campaign)
+            {
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMGearCampaignBehavior());
+            }
             base.OnGameStart(game, gameStarterObject);
         }
 

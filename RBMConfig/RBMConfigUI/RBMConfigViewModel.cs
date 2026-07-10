@@ -102,6 +102,84 @@ namespace RBMConfig
             }
         }
 
+        private float _troopUpgradeGearCostMultiplier;
+
+        [DataSourceProperty]
+        public float TroopUpgradeGearCostMultiplier
+        {
+            get
+            {
+                return _troopUpgradeGearCostMultiplier;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 5f);
+                if (snapped != _troopUpgradeGearCostMultiplier)
+                {
+                    _troopUpgradeGearCostMultiplier = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopUpgradeGearCostMultiplier");
+                    OnPropertyChanged("TroopUpgradeGearCostMultiplierValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopUpgradeGearCostMultiplierValue
+        {
+            get
+            {
+                return _troopUpgradeGearCostMultiplier.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopUpgradeGearCostt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_034}Troop Upgrade Gear Cost Multiplier (0 disables gear, default at 1.00)").ToString();
+            }
+        }
+
+        private float _troopUpgradeGearLootMultiplier;
+
+        [DataSourceProperty]
+        public float TroopUpgradeGearLootMultiplier
+        {
+            get
+            {
+                return _troopUpgradeGearLootMultiplier;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 5f);
+                if (snapped != _troopUpgradeGearLootMultiplier)
+                {
+                    _troopUpgradeGearLootMultiplier = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopUpgradeGearLootMultiplier");
+                    OnPropertyChanged("TroopUpgradeGearLootMultiplierValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopUpgradeGearLootMultiplierValue
+        {
+            get
+            {
+                return _troopUpgradeGearLootMultiplier.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopUpgradeGearLoott
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_035}Battle Gear Loot Multiplier (default at 1.00)").ToString();
+            }
+        }
+
         [DataSourceProperty]
         public string ThrustModifiert
         {
@@ -568,6 +646,8 @@ namespace RBMConfig
             }
 
             _troopUpgradeCostMultiplier = MathF.Clamp(RBMConfig.troopUpgradeCostMultiplier, 0.01f, 1f);
+            _troopUpgradeGearCostMultiplier = MathF.Clamp(RBMConfig.troopUpgradeGearCostMultiplier, 0f, 5f);
+            _troopUpgradeGearLootMultiplier = MathF.Clamp(RBMConfig.troopUpgradeGearLootMultiplier, 0f, 5f);
         }
 
         public override void RefreshValues()
@@ -732,6 +812,8 @@ namespace RBMConfig
             }
 
             RBMConfig.troopUpgradeCostMultiplier = _troopUpgradeCostMultiplier;
+            RBMConfig.troopUpgradeGearCostMultiplier = _troopUpgradeGearCostMultiplier;
+            RBMConfig.troopUpgradeGearLootMultiplier = _troopUpgradeGearLootMultiplier;
 
             RBMConfig.saveXmlConfig();
             //RBMConfig.parseXmlConfig();
