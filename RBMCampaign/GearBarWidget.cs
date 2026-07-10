@@ -35,7 +35,7 @@ namespace RBMCampaign
             // The xp bar reaches its tooltip through a HintWidget bound to a view model property.
             // This widget has no view model of its own, so it drives the same tooltip type directly.
             _tooltip = new BasicTooltipViewModel(BuildTooltip);
-            GearBarLog.TraceOnce("widget-ctor", "gear bar widget constructed");
+            GearLog.TraceOnce("widget-ctor", "gear bar widget constructed");
         }
 
         protected override void OnHoverBegin()
@@ -66,13 +66,15 @@ namespace RBMCampaign
             PartyBase party = PartyBase.MainParty;
             CharacterObject upgradeTarget = character.UpgradeTargets[0];
             int gearCost = GearPool.GetGearCostForUpgrade(character, upgradeTarget);
-            int perMan = MathF.Min(GearPool.GetGearPerMan(party, character), gearCost);
-            int goldSaved = (int)(GearPool.GetGoldCoverage(party, character, upgradeTarget) * 100f);
+            int stockpile = GearPool.GetAvailableGear(party, character);
+            int freeUpgrades = GearPool.GetFreeUpgradeCount(party, character, upgradeTarget);
+            int nextManSaved = (int)((1f - GearPool.GetUnpaidMen(party, character, upgradeTarget, 1)) * 100f);
 
-            properties.Add(new TooltipProperty(new TextObject("{=RBM_GEAR_001}Gear per Man").ToString(), perMan.ToString(), 0));
-            properties.Add(new TooltipProperty(new TextObject("{=RBM_GEAR_002}Upgrade Gear Cost").ToString(), gearCost.ToString(), 0));
-            properties.Add(new TooltipProperty(new TextObject("{=RBM_GEAR_003}Upgrade Gold Saved").ToString(), goldSaved + "%", 0));
-            properties.Add(new TooltipProperty("", new TextObject("{=RBM_GEAR_004}Gear is stripped from the enemies you defeat. Gold buys whatever gear your men still lack, so a full bar means the upgrade is free.").ToString(), 0, false, TooltipProperty.TooltipPropertyFlags.MultiLine));
+            properties.Add(new TooltipProperty(new TextObject("{=RBM_GEAR_001}Gear Stockpile").ToString(), stockpile.ToString(), 0));
+            properties.Add(new TooltipProperty(new TextObject("{=RBM_GEAR_002}Gear per Upgrade").ToString(), gearCost.ToString(), 0));
+            properties.Add(new TooltipProperty(new TextObject("{=RBM_GEAR_005}Free Upgrades").ToString(), freeUpgrades.ToString(), 0));
+            properties.Add(new TooltipProperty(new TextObject("{=RBM_GEAR_003}Next Upgrade Gold Saved").ToString(), nextManSaved + "%", 0));
+            properties.Add(new TooltipProperty("", new TextObject("{=RBM_GEAR_004}Holding the field earns gear salvaged from the kit left on it, by the enemies you killed and by your own fallen. Nothing is recovered whole: armour is battered, blades are chipped, and a quiver is worth only the arrows still in it. A soldier takes only kit of his own tier or better, and the veterans pick first, so what they pass over falls to greener troops. The stockpile outfits men one at a time: those it covers upgrade for free, and the rest pay gold for what it cannot reach.").ToString(), 0, false, TooltipProperty.TooltipPropertyFlags.MultiLine));
             return properties;
         }
 
@@ -102,12 +104,33 @@ namespace RBMCampaign
                 return;
             }
 
-            // Index 0 matches the upgrade target the xp bar measures itself against.
-            float coverage = GearPool.GetGoldCoverage(PartyBase.MainParty, character, character.UpgradeTargets[0]);
-            // FillBarVerticalWidget fills to InitialAmount/MaxAmount. CurrentAmount only drives the
-            // change-preview overlay, which this bar does not have.
-            InitialAmount = (int)(coverage * FillResolution);
-            GearBarLog.TraceOnce("widget-refresh", "gear bar visible for " + character.StringId + ", coverage " + coverage.ToString("0.00"));
+            PartyBase party = PartyBase.MainParty;
+            CharacterObject upgradeTarget = character.UpgradeTargets[0];
+            int gearCost = GearPool.GetGearCostForUpgrade(character, upgradeTarget);
+            int stockpile = GearPool.GetAvailableGear(party, character);
+            int stackSize = GearPool.GetStackSize(party, character);
+
+            // Mirrors the xp bar: it fills toward the next man's upgrade and saturates once the whole
+            // stack is covered, rather than showing the stockpile against some arbitrary ceiling.
+            if (gearCost > 0)
+            {
+                MaxAmount = gearCost;
+                InitialAmount = (stockpile >= gearCost * stackSize) ? gearCost : (stockpile % gearCost);
+            }
+            else
+            {
+                MaxAmount = FillResolution;
+                InitialAmount = 0;
+            }
+
+            GearLog.TraceOnce("troop-" + character.StringId, string.Concat(
+                character.StringId, " (tier ", character.Tier.ToString(), ") -> ", upgradeTarget.StringId,
+                " | equip ", GearPool.GetEquipmentValue(character).ToString(),
+                " -> ", GearPool.GetEquipmentValue(upgradeTarget).ToString(),
+                " | stockpile ", stockpile.ToString(), "/", gearCost.ToString(), " per man",
+                " | stack ", stackSize.ToString(),
+                " | free ", GearPool.GetFreeUpgradeCount(party, character, upgradeTarget).ToString(),
+                " | nextManGold ", character.GetUpgradeGoldCost(party, 0).ToString()));
         }
 
         private static CharacterObject ResolveTroop(string troopId)
@@ -142,12 +165,12 @@ namespace RBMCampaign
             WidgetFactory factory = UIResourceManager.WidgetFactory;
             if (factory == null)
             {
-                GearBarLog.Trace("UIResourceManager.WidgetFactory was null; the gear bar widget type is not registered.");
+                GearLog.Trace("UIResourceManager.WidgetFactory was null; the gear bar widget type is not registered.");
                 return;
             }
             Dictionary<string, Type> builtinTypes = AccessTools.FieldRefAccess<WidgetFactory, Dictionary<string, Type>>("_builtinTypes")(factory);
             builtinTypes[nameof(RBMTroopGearBarWidget)] = typeof(RBMTroopGearBarWidget);
-            GearBarLog.Trace("registered widget type " + nameof(RBMTroopGearBarWidget));
+            GearLog.Trace("registered widget type " + nameof(RBMTroopGearBarWidget));
         }
 
         /// <summary>
@@ -171,13 +194,13 @@ namespace RBMCampaign
             if (widgetInfos == null)
             {
                 // CollectWidgetTypes has not run yet; it will pick the type up on its own.
-                GearBarLog.Trace("WidgetInfo registry not built yet; skipping widget info registration.");
+                GearLog.Trace("WidgetInfo registry not built yet; skipping widget info registration.");
                 return;
             }
             if (!widgetInfos.ContainsKey(typeof(RBMTroopGearBarWidget)))
             {
                 widgetInfos.Add(typeof(RBMTroopGearBarWidget), new WidgetInfo(typeof(RBMTroopGearBarWidget)));
-                GearBarLog.Trace("registered widget info for " + nameof(RBMTroopGearBarWidget));
+                GearLog.Trace("registered widget info for " + nameof(RBMTroopGearBarWidget));
             }
         }
     }

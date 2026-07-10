@@ -88,10 +88,11 @@
 	<string id="RBM_CON_033" text="Realistic Battle Mod" />
 	<string id="RBM_CON_034" text="Troop Upgrade Gear Cost Multiplier (0 disables gear, default at 1.00)" />
 	<string id="RBM_CON_035" text="Battle Gear Loot Multiplier (default at 1.00)" />
-	<string id="RBM_GEAR_001" text="Gear per Man" />
-	<string id="RBM_GEAR_002" text="Upgrade Gear Cost" />
-	<string id="RBM_GEAR_003" text="Upgrade Gold Saved" />
-	<string id="RBM_GEAR_004" text="Gear is stripped from the enemies you defeat. Gold buys whatever gear your men still lack, so a full bar means the upgrade is free." />
+	<string id="RBM_GEAR_001" text="Gear Stockpile" />
+	<string id="RBM_GEAR_002" text="Gear per Upgrade" />
+	<string id="RBM_GEAR_003" text="Next Upgrade Gold Saved" />
+	<string id="RBM_GEAR_005" text="Free Upgrades" />
+	<string id="RBM_GEAR_004" text="Holding the field earns gear salvaged from the kit left on it, by the enemies you killed and by your own fallen. Nothing is recovered whole: armour is battered, blades are chipped, and a quiver is worth only the arrows still in it. A soldier takes only kit of his own tier or better, and the veterans pick first, so what they pass over falls to greener troops. The stockpile outfits men one at a time: those it covers upgrade for free, and the rest pay gold for what it cannot reach." />
 	<string id="RBM_CON_016" text="RBM Combat" />
 	<string id="RBM_CON_017" text="Module Status" />
 	<string id="RBM_CON_018" text="RBM AI" />

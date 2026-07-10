@@ -29,17 +29,16 @@ namespace RBMCampaign
         /// </summary>
         public static void ApplyEarly(Harmony harmony)
         {
-            GearBarLog.Reset();
+            GearLog.Reset();
             try
             {
                 harmony.CreateClassProcessor(typeof(SkipGeneratedPartyScreenPrefab)).Patch();
                 harmony.CreateClassProcessor(typeof(RedirectPartyTroopTuple)).Patch();
-                harmony.CreateClassProcessor(typeof(TraceCustomTypeResolution)).Patch();
-                GearBarLog.Trace("installed the " + TargetPrefabFileName + " load hook");
+                GearLog.Trace("installed the " + TargetPrefabFileName + " load hook");
             }
             catch (Exception exception)
             {
-                GearBarLog.Trace("FAILED to install the load hook: " + exception);
+                GearLog.Trace("FAILED to install the load hook: " + exception);
             }
         }
 
@@ -60,24 +59,9 @@ namespace RBMCampaign
                 {
                     return true;
                 }
-                GearBarLog.TraceOnce("skip-generated", "bypassed the generated " + PartyScreenMovieName + " prefab so the xml loads");
+                GearLog.TraceOnce("skip-generated", "bypassed the generated " + PartyScreenMovieName + " prefab so the xml loads");
                 __result = null;
                 return false;
-            }
-        }
-
-        /// <summary>
-        /// Diagnostic only. GetCustomType runs for every prefab that is instantiated, whether or not
-        /// it had to be read off disk, so it separates "the screen was never opened" from "the
-        /// prefab reached the factory without passing through WidgetPrefab.LoadFrom".
-        /// </summary>
-        [HarmonyPatch(typeof(WidgetFactory))]
-        [HarmonyPatch("GetCustomType")]
-        private class TraceCustomTypeResolution
-        {
-            private static void Prefix(string typeName)
-            {
-                GearBarLog.TraceOnce("customtype-" + typeName, "GetCustomType: " + typeName);
             }
         }
 
@@ -87,9 +71,6 @@ namespace RBMCampaign
         {
             private static void Prefix(ref string path)
             {
-                // Every prefab the game loads is recorded, so a missing PartyTroopTuple line proves
-                // the hook is live but never sees that prefab, rather than being dead altogether.
-                GearBarLog.Trace("LoadFrom: " + path);
                 // The resource depot hands out forward slashes; match the trailing file name
                 // directly so PartyTroopTupleLeft.xml, which has no xp bar, cannot be mistaken for
                 // the target and burn the one-shot patch.
@@ -100,10 +81,10 @@ namespace RBMCampaign
                 }
                 if (!GearPool.IsEnabled)
                 {
-                    GearBarLog.Trace("gear is disabled in config; not injecting the bar into " + TargetPrefabFileName);
+                    GearLog.Trace("gear is disabled in config; not injecting the bar into " + TargetPrefabFileName);
                     return;
                 }
-                GearBarLog.Trace("intercepted load of " + path);
+                GearLog.Trace("intercepted load of " + path);
                 // Idempotent, and the factory is certainly alive here even if it was not when the
                 // module's patches were applied.
                 RBMTroopGearBarWidget.RegisterWidgetType();
@@ -130,7 +111,7 @@ namespace RBMCampaign
                 XmlElement xpBar = document.SelectSingleNode("//*[@Id='" + XpBarId + "']") as XmlElement;
                 if (xpBar == null || xpBar.ParentNode == null)
                 {
-                    GearBarLog.Trace(XpBarId + " not found in " + TargetPrefabFileName + "; skipping the gear bar.");
+                    GearLog.Trace(XpBarId + " not found in " + TargetPrefabFileName + "; skipping the gear bar.");
                     return null;
                 }
                 xpBar.ParentNode.InsertAfter(CreateGearBar(document), xpBar);
@@ -140,11 +121,11 @@ namespace RBMCampaign
                 string patchedPath = Path.Combine(directory, TargetPrefabFileName);
                 document.Save(patchedPath);
                 _patchedPrefabPath = patchedPath;
-                GearBarLog.Trace("injected gear bar, redirected prefab to " + patchedPath);
+                GearLog.Trace("injected gear bar, redirected prefab to " + patchedPath);
             }
             catch (Exception exception)
             {
-                GearBarLog.Trace("failed to inject the gear bar: " + exception);
+                GearLog.Trace("failed to inject the gear bar: " + exception);
                 _patchedPrefabPath = null;
             }
             return _patchedPrefabPath;

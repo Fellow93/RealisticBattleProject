@@ -362,7 +362,11 @@ namespace RBMConfig
             RBMCampaign.AppendChild(RBMCampaignEnabled);
             RBMCampaign.AppendChild(TroopUpgradeCostMultiplier);
             RBMCampaign.AppendChild(TroopUpgradeGearCostMultiplier);
+            XmlElement GearLoggingEnabled = xmlconfig.CreateElement("GearLoggingEnabled");
+            GearLoggingEnabled.InnerText = RBMConfig.gearLoggingEnabled ? "1" : "0";
+
             RBMCampaign.AppendChild(TroopUpgradeGearLootMultiplier);
+            RBMCampaign.AppendChild(GearLoggingEnabled);
             Config.AppendChild(RBMCampaign);
 
             xmlconfig.AppendChild(Config);

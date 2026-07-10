@@ -270,8 +270,8 @@
   </ItemGroup>
   <!-- Files & Classes -->
   <ItemGroup>
-    <Compile Include="GearBarLog.cs" />
     <Compile Include="GearBarPrefabPatch.cs" />
+    <Compile Include="GearLog.cs" />
     <Compile Include="GearBarWidget.cs" />
     <Compile Include="GearPool.cs" />
     <Compile Include="GearUpgradePatches.cs" />
