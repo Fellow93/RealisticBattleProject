@@ -238,6 +238,13 @@ namespace RBMCampaign
             _stagedGear.Clear();
         }
 
+        /// <summary>
+        /// Runs before vanilla rather than after it. UpgradeTroop ends by invoking UpdateDelegate,
+        /// which is what drives PartyCharacterVM.InitializeUpgrades and so recomputes the quoted
+        /// price and its tooltip. Reserving from a Postfix would leave that recomputation reading a
+        /// stockpile the upgrade had already claimed, and the screen would quote the man who just
+        /// left the roster.
+        /// </summary>
         [HarmonyPatch(typeof(PartyScreenLogic))]
         [HarmonyPatch("UpgradeTroop")]
         private class TrackStagedUpgrade
@@ -245,9 +252,11 @@ namespace RBMCampaign
             private static readonly MethodInfo SetPartyGoldChangeAmount =
                 AccessTools.Method(typeof(PartyScreenLogic), "SetPartyGoldChangeAmount");
 
-            private static void Postfix(PartyScreenLogic __instance, PartyScreenLogic.PartyCommand command)
+            private static void Prefix(PartyScreenLogic __instance, PartyScreenLogic.PartyCommand command)
             {
-                if (!GearPool.IsEnabled)
+                // Vanilla bails on an invalid command without touching gold or roster, so the
+                // reservation must not happen either. ValidateCommand is pure, so asking twice is free.
+                if (!GearPool.IsEnabled || !__instance.ValidateCommand(command))
                 {
                     return;
                 }
@@ -256,7 +265,7 @@ namespace RBMCampaign
                 CharacterObject upgradeTarget = character.UpgradeTargets[command.UpgradeTarget];
                 int count = command.TotalNumber;
 
-                // Read before reserving, so this batch sees the stockpile the price was quoted against.
+                // Priced against the stockpile as it stands, before this batch draws on it.
                 int spend = GearPool.GetBatchGearSpend(party, character, upgradeTarget, count);
                 int actualGold = RBMCampaignPatches.GetBatchUpgradeGoldCost(party, character, upgradeTarget, count);
 
@@ -264,7 +273,10 @@ namespace RBMCampaign
                 _stagedGear.TryGetValue(character, out staged);
                 _stagedGear[character] = staged + spend;
 
-                // Vanilla already staged perManPrice * count. Refund the difference.
+                // Vanilla is about to subtract perManPrice * count, and it will quote that per-man
+                // price against the stockpile the reservation above just depleted. Mirror the read it
+                // is going to make, then pre-credit the difference so its subtraction lands on
+                // actualGold. Reading before the reservation would mirror a price vanilla never uses.
                 int chargedByVanilla = character.GetUpgradeGoldCost(party, command.UpgradeTarget) * count;
                 int correction = chargedByVanilla - actualGold;
                 if (correction != 0 && SetPartyGoldChangeAmount != null)
@@ -275,7 +287,7 @@ namespace RBMCampaign
                 GearLog.Log("UPGRADE", "party screen staged " + count + "x " + GearLog.Describe(character)
                     + " -> " + GearLog.Describe(upgradeTarget)
                     + " | gear reserved " + spend + " (total " + _stagedGear[character] + ")"
-                    + ", gold " + actualGold + " (vanilla would charge " + chargedByVanilla + ")");
+                    + ", gold " + actualGold + " (vanilla will charge " + chargedByVanilla + ")");
             }
         }
 

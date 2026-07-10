@@ -46,15 +46,63 @@ namespace RBMCampaign
         // A troop template's equipment does not change at runtime, so this never goes stale.
         private static readonly Dictionary<CharacterObject, int> _equipmentValueCache = new Dictionary<CharacterObject, int>();
 
+        private static readonly Dictionary<CharacterObject, List<Equipment>> _battleEquipmentCache = new Dictionary<CharacterObject, List<Equipment>>();
+
         /// <summary>
-        /// CharacterObject.Equipment is the roster's DefaultEquipment, which is not necessarily a
-        /// battle set, so it can price a soldier by his civilian clothes. Value his war gear.
+        /// A troop template usually carries several battle sets and the game picks one at random per
+        /// man, so no single set speaks for the stack.
         /// </summary>
-        private static Equipment GetBattleEquipment(CharacterObject character)
+        /// <remarks>
+        /// CharacterObject.Equipment is the roster's DefaultEquipment, which is not necessarily a
+        /// battle set at all -- it can be civilian clothes -- so it is only the last resort for a
+        /// troop that somehow declares no battle equipment.
+        /// </remarks>
+        private static List<Equipment> GetBattleEquipments(CharacterObject character)
         {
-            return character.FirstBattleEquipment ?? character.Equipment;
+            List<Equipment> cached;
+            if (_battleEquipmentCache.TryGetValue(character, out cached))
+            {
+                return cached;
+            }
+            cached = new List<Equipment>();
+            if (character.BattleEquipments != null)
+            {
+                foreach (Equipment equipment in character.BattleEquipments)
+                {
+                    if (equipment != null)
+                    {
+                        cached.Add(equipment);
+                    }
+                }
+            }
+            if (cached.Count == 0)
+            {
+                Equipment fallback = character.FirstBattleEquipment ?? character.Equipment;
+                if (fallback != null)
+                {
+                    cached.Add(fallback);
+                }
+            }
+            _battleEquipmentCache[character] = cached;
+            return cached;
         }
 
+        private static int GetSetValue(Equipment equipment)
+        {
+            int value = 0;
+            foreach (EquipmentElement item in EnumerateGearSlots(equipment))
+            {
+                value += item.ItemValue;
+            }
+            return value;
+        }
+
+        /// <summary>
+        /// What a man of this troop is worth in kit, averaged over the battle sets he might be
+        /// wearing. Pricing an upgrade off one set would quote every man the cost of the set the
+        /// template happens to list first, which for a troop whose sets differ in worth is a price
+        /// most of the stack never pays.
+        /// </summary>
         public static int GetEquipmentValue(CharacterObject character)
         {
             int cached;
@@ -62,12 +110,13 @@ namespace RBMCampaign
             {
                 return cached;
             }
-            Equipment equipment = GetBattleEquipment(character);
-            int value = 0;
-            foreach (EquipmentElement item in EnumerateGearSlots(equipment))
+            List<Equipment> sets = GetBattleEquipments(character);
+            int total = 0;
+            foreach (Equipment equipment in sets)
             {
-                value += item.ItemValue;
+                total += GetSetValue(equipment);
             }
+            int value = (sets.Count == 0) ? 0 : total / sets.Count;
             _equipmentValueCache[character] = value;
             return value;
         }
@@ -353,21 +402,28 @@ namespace RBMCampaign
             }
         }
 
+        /// <summary>Narrowest and widest share of its worth a piece of kit can survive a battle with.</summary>
+        private const float MinSalvageFraction = 0.25f;
+        private const float MaxSalvageFraction = 0.75f;
+
         /// <summary>
-        /// Nothing comes off a battlefield intact. Armour is battered, weapons are chipped, and a
-        /// quiver is only worth the arrows still in it. The exact condition of a dead man's kit is
-        /// not knowable after the fact -- RBM's armour degradation lives on the mission's agents and
-        /// dies with them, and simulated battles never spawn agents at all -- so each piece salvages
-        /// a random fraction of its worth.
+        /// Nothing comes off a battlefield intact, and nothing is destroyed outright either. Armour
+        /// is battered, weapons are chipped, and a quiver is only worth the arrows still in it. The
+        /// exact condition of a dead man's kit is not knowable after the fact -- RBM's armour
+        /// degradation lives on the mission's agents and dies with them, and simulated battles never
+        /// spawn agents at all -- so each piece salvages a random fraction of its worth, between a
+        /// quarter and three quarters.
         /// </summary>
         /// <remarks>
         /// For a quiver of arrows or a bundle of javelins -- anything whose PrimaryWeapon is
         /// IsConsumable -- the roll is the share still unspent when its owner fell. For armour and
         /// weapons it is the share that survived the fighting. Same distribution, different reason.
+        /// The mean is still a half, so the loot a stack yields averages to half what replacing it
+        /// costs, exactly as it did when the roll spanned the whole range.
         /// </remarks>
         private static float RollSalvageFraction(ItemObject item)
         {
-            return MBRandom.RandomFloat;
+            return MBRandom.RandomFloatRanged(MinSalvageFraction, MaxSalvageFraction);
         }
 
         /// <summary>
@@ -375,6 +431,11 @@ namespace RBMCampaign
         /// item's tier so each piece can only be claimed by troops it would actually be an upgrade
         /// for. Rolled per man rather than per troop type, so a hundred casualties average out.
         /// </summary>
+        /// <remarks>
+        /// Each man is stripped of one battle set drawn at random, the way the game dressed him when
+        /// it spawned him. Over a stack this averages to the same value GetEquipmentValue prices an
+        /// upgrade against, so a troop cannot yield kit worth more than it costs to replace.
+        /// </remarks>
         private static void CountStrippedGear(long[] spoilsByTier, TroopRoster roster, ref long intactValue)
         {
             if (roster == null)
@@ -388,16 +449,18 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                foreach (EquipmentElement item in EnumerateGearSlots(GetBattleEquipment(element.Character)))
+                List<Equipment> sets = GetBattleEquipments(element.Character);
+                if (sets.Count == 0)
                 {
-                    int tier = GetItemTier(item.Item);
-                    intactValue += (long)item.ItemValue * element.Number;
-                    long salvaged = 0L;
-                    for (int man = 0; man < element.Number; man++)
+                    continue;
+                }
+                for (int man = 0; man < element.Number; man++)
+                {
+                    foreach (EquipmentElement item in EnumerateGearSlots(sets[MBRandom.RandomInt(sets.Count)]))
                     {
-                        salvaged += (long)(item.ItemValue * RollSalvageFraction(item.Item));
+                        intactValue += item.ItemValue;
+                        spoilsByTier[GetItemTier(item.Item)] += (long)(item.ItemValue * RollSalvageFraction(item.Item));
                     }
-                    spoilsByTier[tier] += salvaged;
                 }
             }
         }

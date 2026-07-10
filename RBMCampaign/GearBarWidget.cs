@@ -64,16 +64,26 @@ namespace RBMCampaign
             }
 
             PartyBase party = PartyBase.MainParty;
-            CharacterObject upgradeTarget = character.UpgradeTargets[0];
-            int gearCost = GearPool.GetGearCostForUpgrade(character, upgradeTarget);
-            int stockpile = GearPool.GetAvailableGear(party, character);
-            int freeUpgrades = GearPool.GetFreeUpgradeCount(party, character, upgradeTarget);
-            int nextManSaved = (int)((1f - GearPool.GetUnpaidMen(party, character, upgradeTarget, 1)) * 100f);
+            properties.Add(new TooltipProperty(new TextObject("{=RBM_GEAR_001}Gear Stockpile").ToString(),
+                GearPool.GetAvailableGear(party, character).ToString(), 0));
 
-            properties.Add(new TooltipProperty(new TextObject("{=RBM_GEAR_001}Gear Stockpile").ToString(), stockpile.ToString(), 0));
-            properties.Add(new TooltipProperty(new TextObject("{=RBM_GEAR_002}Gear per Upgrade").ToString(), gearCost.ToString(), 0));
-            properties.Add(new TooltipProperty(new TextObject("{=RBM_GEAR_005}Free Upgrades").ToString(), freeUpgrades.ToString(), 0));
-            properties.Add(new TooltipProperty(new TextObject("{=RBM_GEAR_003}Next Upgrade Gold Saved").ToString(), nextManSaved + "%", 0));
+            // A branching troop has an upgrade cost per branch, so one number could only ever describe
+            // the branch the template happens to list first. Name them all and let the stockpile speak
+            // for itself against each.
+            properties.Add(new TooltipProperty(new TextObject("{=RBM_GEAR_002}Gear per Upgrade").ToString(), "", 0,
+                false, TooltipProperty.TooltipPropertyFlags.Title));
+            foreach (CharacterObject upgradeTarget in character.UpgradeTargets)
+            {
+                int gearCost = GearPool.GetGearCostForUpgrade(character, upgradeTarget);
+                int freeUpgrades = GearPool.GetFreeUpgradeCount(party, character, upgradeTarget);
+                TextObject value = new TextObject((freeUpgrades > 0)
+                    ? "{=RBM_GEAR_008}{COST}  ({FREE} free)"
+                    : "{=!}{COST}");
+                value.SetTextVariable("COST", gearCost);
+                value.SetTextVariable("FREE", freeUpgrades);
+                properties.Add(new TooltipProperty(upgradeTarget.Name.ToString(), value.ToString(), 0));
+            }
+
             properties.Add(new TooltipProperty("", new TextObject("{=RBM_GEAR_004}Holding the field earns gear salvaged from the kit left on it, by the enemies you killed and by your own fallen. Nothing is recovered whole: armour is battered, blades are chipped, and a quiver is worth only the arrows still in it. A soldier takes only kit of his own tier or better, and the veterans pick first, so what they pass over falls to greener troops. The stockpile outfits men one at a time: those it covers upgrade for free, and the rest pay gold for what it cannot reach.").ToString(), 0, false, TooltipProperty.TooltipPropertyFlags.MultiLine));
             return properties;
         }

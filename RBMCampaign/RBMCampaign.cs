@@ -4,6 +4,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.ViewModelCollection;
 using TaleWorlds.Core;
 using TaleWorlds.Localization;
 
@@ -87,6 +88,60 @@ namespace RBMCampaign
 
                 __result = stat;
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// The party screen's upgrade tooltip quotes a single "Cost" line, which under gear is the
+        /// discounted price with no sign of where the discount came from. Break it into the three
+        /// numbers the player actually wants: what the upgrade is worth, what the salvaged gear
+        /// pays for, and what is left for his purse.
+        /// </summary>
+        [HarmonyPatch(typeof(CampaignUIHelper))]
+        [HarmonyPatch("GetUpgradeHint")]
+        private class ExplainGearDiscountInUpgradeHint
+        {
+            private const string CoinIcon = "<img src=\"General\\Icons\\Coin@2x\" extend=\"6\">";
+
+            /// <summary>
+            /// Vanilla prints upgradeCoinCost as its "Cost" line, so handing it the undiscounted price
+            /// puts the full worth of the upgrade at the top where it belongs. The only other thing it
+            /// does with either argument is test gold + partyGoldChangeAmount against the cost, so
+            /// crediting the change amount with the covered gold leaves that verdict untouched.
+            /// </summary>
+            /// <param name="__state">The gold the stockpile covers, handed to the Postfix.</param>
+            private static void Prefix(int index, ref int upgradeCoinCost, CharacterObject character, ref int partyGoldChangeAmount, bool areUpgradesDisabled, out int __state)
+            {
+                __state = 0;
+                if (areUpgradesDisabled || !GearPool.IsEnabled || character == null
+                    || index < 0 || index >= character.UpgradeTargets.Length)
+                {
+                    return;
+                }
+
+                int fullCost = GetFullUpgradeGoldCost(PartyBase.MainParty, character, character.UpgradeTargets[index]);
+                int coveredByGear = fullCost - upgradeCoinCost;
+                if (coveredByGear <= 0)
+                {
+                    return;
+                }
+
+                __state = coveredByGear;
+                upgradeCoinCost = fullCost;
+                partyGoldChangeAmount += coveredByGear;
+            }
+
+            /// <summary>upgradeCoinCost arrives as the Prefix left it: the full price.</summary>
+            private static void Postfix(ref string __result, int upgradeCoinCost, int __state)
+            {
+                if (__state <= 0 || __result == null)
+                {
+                    return;
+                }
+                __result += "\n" + new TextObject("{=RBM_GEAR_006}Salvaged gear covers: {AMOUNT}")
+                    .SetTextVariable("AMOUNT", __state).ToString() + CoinIcon;
+                __result += "\n" + new TextObject("{=RBM_GEAR_007}You pay: {AMOUNT}")
+                    .SetTextVariable("AMOUNT", upgradeCoinCost - __state).ToString() + CoinIcon;
             }
         }
     }
