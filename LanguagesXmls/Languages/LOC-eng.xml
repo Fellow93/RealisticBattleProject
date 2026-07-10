@@ -96,6 +96,8 @@
 	<string id="RBM_CON_042" text="Share of a Day's Wage a Man Spends on a Day's Food (default at 0.50)" />
 	<string id="RBM_CON_043" text="A Day's Wage a Man Drinks Away per Day Idle in a Settlement (default at 1.50)" />
 	<string id="RBM_CON_044" text="Share of a Raid's Plunder Its Soldiers Pocket as Spoils (default at 0.25)" />
+	<string id="RBM_CON_045" text="Share of a Stack's Surplus Spoils Handed Up as Gold (default at 1.00)" />
+	<string id="RBM_CON_046" text="War Chest a Man Keeps from the Spill, per Tier (default at 25)" />
 	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
 	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />
 	<string id="RBM_SPOILS_006" text="Spoils cover: {AMOUNT}" />

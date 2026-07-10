@@ -474,6 +474,84 @@ namespace RBMConfig
             }
         }
 
+        private float _troopSpoilsGoldSpillMultiplier;
+
+        [DataSourceProperty]
+        public float TroopSpoilsGoldSpillMultiplier
+        {
+            get
+            {
+                return _troopSpoilsGoldSpillMultiplier;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 1f);
+                if (snapped != _troopSpoilsGoldSpillMultiplier)
+                {
+                    _troopSpoilsGoldSpillMultiplier = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopSpoilsGoldSpillMultiplier");
+                    OnPropertyChanged("TroopSpoilsGoldSpillMultiplierValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopSpoilsGoldSpillMultiplierValue
+        {
+            get
+            {
+                return _troopSpoilsGoldSpillMultiplier.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopSpoilsGoldSpillMultipliert
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_045}Share of a Stack's Surplus Spoils Handed Up as Gold (default at 1.00)").ToString();
+            }
+        }
+
+        private float _troopSpoilsWarChestGoldPerTier;
+
+        [DataSourceProperty]
+        public float TroopSpoilsWarChestGoldPerTier
+        {
+            get
+            {
+                return _troopSpoilsWarChestGoldPerTier;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value), 0f, 1000f);
+                if (snapped != _troopSpoilsWarChestGoldPerTier)
+                {
+                    _troopSpoilsWarChestGoldPerTier = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopSpoilsWarChestGoldPerTier");
+                    OnPropertyChanged("TroopSpoilsWarChestGoldPerTierValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopSpoilsWarChestGoldPerTierValue
+        {
+            get
+            {
+                return ((int)_troopSpoilsWarChestGoldPerTier).ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopSpoilsWarChestGoldPerTiert
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_046}War Chest a Man Keeps from the Spill, per Tier (default at 25)").ToString();
+            }
+        }
+
         [DataSourceProperty]
         public string ThrustModifiert
         {
@@ -954,6 +1032,8 @@ namespace RBMConfig
             _settlementProsperityPerGoldSpent = MathF.Clamp(RBMConfig.settlementProsperityPerGoldSpent, 0.01f, 1f);
             _troopRaidSpoilsMultiplier = MathF.Clamp(RBMConfig.troopRaidSpoilsMultiplier, 0f, 10f);
             SpoilsLoggingEnabled.SelectedIndex = RBMConfig.spoilsLoggingEnabled ? 1 : 0;
+            _troopSpoilsGoldSpillMultiplier = MathF.Clamp(RBMConfig.troopSpoilsGoldSpillMultiplier, 0f, 1f);
+            _troopSpoilsWarChestGoldPerTier = MathF.Clamp(RBMConfig.troopSpoilsWarChestGoldPerTier, 0f, 1000f);
         }
 
         public override void RefreshValues()
@@ -1128,6 +1208,8 @@ namespace RBMConfig
             RBMConfig.settlementProsperityPerGoldSpent = _settlementProsperityPerGoldSpent;
             RBMConfig.troopRaidSpoilsMultiplier = _troopRaidSpoilsMultiplier;
             RBMConfig.spoilsLoggingEnabled = SpoilsLoggingEnabled.SelectedIndex == 1;
+            RBMConfig.troopSpoilsGoldSpillMultiplier = _troopSpoilsGoldSpillMultiplier;
+            RBMConfig.troopSpoilsWarChestGoldPerTier = (int)MathF.Round(_troopSpoilsWarChestGoldPerTier);
 
             RBMConfig.saveXmlConfig();
             //RBMConfig.parseXmlConfig();

@@ -372,6 +372,10 @@ namespace RBMConfig
             SettlementProsperityPerGoldSpent.InnerText = RBMConfig.settlementProsperityPerGoldSpent.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopRaidSpoilsMultiplier = xmlconfig.CreateElement("TroopRaidSpoilsMultiplier");
             TroopRaidSpoilsMultiplier.InnerText = RBMConfig.troopRaidSpoilsMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopSpoilsGoldSpillMultiplier = xmlconfig.CreateElement("TroopSpoilsGoldSpillMultiplier");
+            TroopSpoilsGoldSpillMultiplier.InnerText = RBMConfig.troopSpoilsGoldSpillMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopSpoilsWarChestGoldPerTier = xmlconfig.CreateElement("TroopSpoilsWarChestGoldPerTier");
+            TroopSpoilsWarChestGoldPerTier.InnerText = RBMConfig.troopSpoilsWarChestGoldPerTier.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
             RBMCampaign.AppendChild(RBMCampaignEnabled);
             RBMCampaign.AppendChild(TroopUpgradeCostMultiplier);
@@ -387,6 +391,8 @@ namespace RBMConfig
             RBMCampaign.AppendChild(TroopSettlementFunWageFraction);
             RBMCampaign.AppendChild(SettlementProsperityPerGoldSpent);
             RBMCampaign.AppendChild(TroopRaidSpoilsMultiplier);
+            RBMCampaign.AppendChild(TroopSpoilsGoldSpillMultiplier);
+            RBMCampaign.AppendChild(TroopSpoilsWarChestGoldPerTier);
             RBMCampaign.AppendChild(SpoilsLoggingEnabled);
             Config.AppendChild(RBMCampaign);
 

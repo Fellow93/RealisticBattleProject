@@ -25,7 +25,7 @@ namespace RBMCampaign
         /// </remarks>
         public static void OnDailyTickParty(MobileParty mobileParty)
         {
-            if (!IsEnabled || RBMConfig.RBMConfig.troopWageSpoilsFraction <= 0f || mobileParty == null)
+            if (!IsEnabled || mobileParty == null)
             {
                 return;
             }
@@ -36,6 +36,17 @@ namespace RBMCampaign
                 return;
             }
 
+            DepositWageSpoils(party, roster);
+            // After the day's wage has landed, so a stack cannot spill coin it is about to be handed.
+            SpillSurplusToGold(party);
+        }
+
+        private static void DepositWageSpoils(PartyBase party, TroopRoster roster)
+        {
+            if (RBMConfig.RBMConfig.troopWageSpoilsFraction <= 0f)
+            {
+                return;
+            }
             PartyWageModel wageModel = Campaign.Current.Models.PartyWageModel;
             for (int i = 0; i < roster.Count; i++)
             {

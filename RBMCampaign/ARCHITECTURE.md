@@ -101,6 +101,20 @@ never goes negative.
 **Garrisons and militia are excluded** from food/carousing (they never leave; would be an
 infinite prosperity faucet). Only visiting field parties spend in settlements.
 
+### 4. Surplus spilled to party gold (`SpoilsPool.SpillSurplusToGold`)
+
+Runs on the daily tick (`OnDailyTickParty`, after the wage deposit). Each stack's ceiling
+`GetSpoilsCap` = `(dearest upgrade cost + war chest) × stackSize`, where the per-man war chest is
+`troopSpoilsWarChestGoldPerTier × character.Tier` (a veteran keeps a deeper purse than a recruit);
+`troopSpoilsGoldSpillMultiplier`
+(0–1) of anything over it is drawn out of the purse and minted into the party owner's/leader's gold
+via `GiveGoldAction.ApplyBetweenCharacters(null, payee, …)` (1:1, a point of spoils = a gold piece).
+At 1 the whole surplus sweeps up in a day; below 1 it drains toward the cap over several days; 0
+disables it (closed loop). A top-tier troop has no upgrade target, so its cap is just the war chest
+and nearly all its loot/wage becomes gold — a fully-upgraded army pays a dividend instead of hoarding
+dead loot. Silent like the wage deposit (logged under `SPILL`, no player message); applies to AI too
+(funds their own upgrade treasury).
+
 ## Who it applies to
 
 - **Player** — party screen (upgrades) and settlement visits.
@@ -145,6 +159,8 @@ All under `/Config/RBMCampaign` in the config XML, wired into the in-game settin
 | `TroopLootOverlookChancePerTier` | 0.5 | Chance a troop overlooks kit one tier below him (compounds per tier). |
 | `TroopWageSpoilsFraction` | 0.5 | Share of daily wage deposited into spoils. |
 | `TroopRaidSpoilsMultiplier` | 0.25 | Plunder soldiers pocket sacking a settlement — of a village's `Hearth × RaidDamage`, or a stormed town's `Prosperity`. 0 disables plunder spoils. |
+| `TroopSpoilsGoldSpillMultiplier` | 1 | Share (0–1) of a stack's surplus over its `GetSpoilsCap` minted into party gold on the daily tick. 0 keeps spoils a closed loop. |
+| `TroopSpoilsWarChestGoldPerTier` | 25 | Per-man war chest in `GetSpoilsCap`, multiplied by `character.Tier`. Slider 0–1000. |
 | `TroopSettlementFoodDays` | 20 | Days of food a stack buys per trip. |
 | `TroopFoodWageFraction` | 0.5 | Food price ceiling a man will pay, relative to his wage. |
 | `TroopSettlementFunWageFraction` | 1.5 | Carousing spend per day idled, as a multiple of daily wage. |

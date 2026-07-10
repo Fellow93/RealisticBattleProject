@@ -32,6 +32,8 @@ How that loot gets divided is the interesting part. **Veterans pick first**, but
 
 And whatever they spend in a settlement stays there: food and drink money raises the town's Prosperity or the village's Hearth.
 
+**Surplus handed up as gold.** A stack keeps only what it can still put to use — enough to finish its own upgrades, plus a war chest that grows with the men's tier (a veteran keeps a deeper purse than a recruit) — and hands a share of the rest up to you as gold each day. A top-tier stack has nothing left to buy, so nearly everything it loots and earns comes straight back to your treasury: an elite army you've stopped upgrading becomes a passive income instead of a pile of stranded loot. How much of the surplus is swept up is a dial — at the default it all comes up at once, lower and it drains down to the cap over several days, at zero spoils stay a closed loop spent only on troops, food and drink.
+
 ## What this changes about how you play
 
 Battles now pay for your army's growth directly. A hard-won victory over well-equipped enemies funds a wave of upgrades that would otherwise have drained your treasury. Grinding looters funds nothing, because looters wear nothing worth taking. Sitting still costs you — an idle army eats and drinks its savings. Losing a stack loses its purse with it.
@@ -54,4 +56,6 @@ Everything sits in the in-game RBM config under the campaign section, or in the 
 | `TroopFoodWageFraction` | 0.5 | Share of a day's wage a man will spend on a day's food before calling it extravagant. |
 | `TroopSettlementFunWageFraction` | 1.5 | Drink and dice, as a multiple of the daily wage, per day idled in a settlement. |
 | `SettlementProsperityPerGoldSpent` | 0.02 | Prosperity (or Hearth) a settlement gains per gold your men spend there. |
+| `TroopSpoilsGoldSpillMultiplier` | 1 | Share of a stack's surplus spoils — what it holds over what its upgrades could use — handed up to you as gold each day. 1 sweeps it all, 0 keeps spoils a closed loop. |
+| `TroopSpoilsWarChestGoldPerTier` | 25 | Gold a man keeps back from the spill, per tier he holds (a tier 6 keeps 6× this). On top of what his stack needs for its own upgrades. |
 | `SpoilsLoggingEnabled` | 1 | Writes what the system is doing to the log, for debugging. |
