@@ -21,9 +21,16 @@ namespace RBMCampaign
         // granularity: a TroopRoster holds at most one element per CharacterObject.
         private static Dictionary<string, int> _spoils = new Dictionary<string, int>();
 
-        private static string Key(PartyBase party, CharacterObject character)
+        /// <summary>Identifies one stack. Shared with the stores that key state the same way.</summary>
+        public static string Key(PartyBase party, CharacterObject character)
         {
             return party.Id + "#" + character.StringId;
+        }
+
+        /// <summary>Whether <paramref name="key"/> belongs to <paramref name="party"/>, for pruning.</summary>
+        public static bool KeyBelongsToParty(string key, PartyBase party)
+        {
+            return key.StartsWith(party.Id + "#");
         }
 
         public static void SyncData(IDataStore dataStore)
@@ -176,7 +183,7 @@ namespace RBMCampaign
         /// equipment values it was never measured on, and a soldier could not clothe himself in a
         /// lifetime of pay.
         /// </summary>
-        private static float SpoilsPerGold
+        public static float SpoilsPerGold
         {
             get
             {
@@ -394,7 +401,10 @@ namespace RBMCampaign
         /// as spoils. The gold the party pays is untouched -- this only says where some of it went.
         /// </summary>
         /// <remarks>
-        /// Applied to every party, since every party pays wages.
+        /// Applied to every party, since every party pays wages. Unlike battlefield loot this is not
+        /// capped at what the stack's next upgrade costs: loot is kit, and a man already wearing the
+        /// best of it has no use for more, but wage is coin, and a man with no kit left to buy still
+        /// has bread and beer to buy. What the stack does not spend on its own upgrade it carries.
         /// </remarks>
         public static void OnDailyTickParty(MobileParty mobileParty)
         {
@@ -417,15 +427,9 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                // A stack already outfitted to the man has nothing left to spend its wage on.
-                int need = GetRemainingNeed(party, element.Character, element.Number);
-                if (need <= 0)
-                {
-                    continue;
-                }
                 // The stack's wage, not one man's, so a small troop's half-point is not rounded away.
                 int wage = wageModel.GetCharacterWage(element.Character) * element.Number;
-                int granted = MathF.Min(need, MathF.Round(wage * RBMConfig.RBMConfig.troopWageSpoilsFraction * SpoilsPerGold));
+                int granted = MathF.Round(wage * RBMConfig.RBMConfig.troopWageSpoilsFraction * SpoilsPerGold);
                 if (granted <= 0)
                 {
                     continue;
@@ -435,7 +439,7 @@ namespace RBMCampaign
                     SpoilsLog.Log("WAGE", SpoilsLog.Describe(element.Character) + " x" + element.Number
                         + ": wage " + wage + " at " + SpoilsPerGold.ToString("0.0") + " spoils/gold"
                         + " -> +" + granted + " spoils (pool " + GetSpoils(party, element.Character)
-                        + " -> " + (GetSpoils(party, element.Character) + granted) + ", need was " + need + ")");
+                        + " -> " + (GetSpoils(party, element.Character) + granted) + ")");
                 }
                 AddSpoils(party, element.Character, granted);
             }
@@ -468,6 +472,7 @@ namespace RBMCampaign
         /// <summary>Spoils left on a stack die with the stack, the way its xp does.</summary>
         public static void ClearSpoilsIfStackGone(PartyBase party, CharacterObject character)
         {
+            TroopUpkeep.ClearIfStackGone(party, character);
             if (party.MemberRoster.FindIndexOfTroop(character) < 0 && _spoils.Remove(Key(party, character)))
             {
                 SpoilsLog.Log("POOL", "stack of " + SpoilsLog.Describe(character) + " gone from "

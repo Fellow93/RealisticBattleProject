@@ -163,6 +163,7 @@ namespace RBM
             if (RBMConfig.RBMConfig.rbmCampaignEnabled && game.GameType is Campaign)
             {
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSpoilsCampaignBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMTroopUpkeepCampaignBehavior());
             }
             base.OnGameStart(game, gameStarterObject);
         }

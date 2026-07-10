@@ -37,6 +37,22 @@ namespace RBMConfig
         // upgrade multipliers above set the exchange rate.
         public static float troopWageSpoilsFraction = 0.5f;
 
+        // How long a stack's men stay fed on one visit to a settlement. They buy exactly the food they
+        // will eat over that span at the game's own rate of one item per twenty men per day, so at 20
+        // days each man carries off one item. Zero stops troops buying food.
+        public static int troopSettlementFoodDays = 20;
+
+        // Share of a day's wage a man will lay out on a day's rations before he calls it extravagant.
+        // Nothing else sets a soldier's taste, so raising this feeds veterans on meat and cheese while
+        // recruits still buy grain. Zero leaves everyone eating whatever is cheapest.
+        public static float troopFoodWageFraction = 0.5f;
+
+        // Share of a day's wage a stack drinks and gambles away for each day it sits in a settlement.
+        public static float troopSettlementFunWageFraction = 0.25f;
+
+        // Prosperity, or hearth in a village, a settlement gains per gold its visitors spend there.
+        public static float settlementProsperityPerGoldSpent = 0.02f;
+
         // Writes every spoils pool change, loot award and upgrade to rbm_spoils.log next to this config.
         public static bool spoilsLoggingEnabled = true;
 
@@ -166,6 +182,10 @@ namespace RBMConfig
             troopUpgradeSpoilsCostMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeSpoilsCostMultiplier", "1"), CultureInfo.InvariantCulture);
             troopUpgradeSpoilsLootMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeSpoilsLootMultiplier", "1"), CultureInfo.InvariantCulture);
             troopWageSpoilsFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopWageSpoilsFraction", "0.5"), CultureInfo.InvariantCulture);
+            troopSettlementFoodDays = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSettlementFoodDays", "20"), CultureInfo.InvariantCulture);
+            troopFoodWageFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopFoodWageFraction", "0.5"), CultureInfo.InvariantCulture);
+            troopSettlementFunWageFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSettlementFunWageFraction", "0.25"), CultureInfo.InvariantCulture);
+            settlementProsperityPerGoldSpent = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SettlementProsperityPerGoldSpent", "0.02"), CultureInfo.InvariantCulture);
             spoilsLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsLoggingEnabled", "1").Equals("1");
 
             // RBMAI
@@ -260,6 +280,10 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeSpoilsCostMultiplier"), troopUpgradeSpoilsCostMultiplier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeSpoilsLootMultiplier"), troopUpgradeSpoilsLootMultiplier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopWageSpoilsFraction"), troopWageSpoilsFraction.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSettlementFoodDays"), troopSettlementFoodDays.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopFoodWageFraction"), troopFoodWageFraction.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSettlementFunWageFraction"), troopSettlementFunWageFraction.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SettlementProsperityPerGoldSpent"), settlementProsperityPerGoldSpent.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SpoilsLoggingEnabled"), spoilsLoggingEnabled);
             //RBMAI
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/HitStopEnabled"), hitStopEnabled);

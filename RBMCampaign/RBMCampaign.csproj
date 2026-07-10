@@ -275,6 +275,7 @@
     <Compile Include="SpoilsBarWidget.cs" />
     <Compile Include="SpoilsPool.cs" />
     <Compile Include="SpoilsUpgradePatches.cs" />
+    <Compile Include="TroopUpkeep.cs" />
     <Compile Include="RBMCampaignPatcher.cs" />
     <Compile Include="RBMCampaign.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -360,6 +360,14 @@ namespace RBMConfig
             TroopUpgradeSpoilsLootMultiplier.InnerText = RBMConfig.troopUpgradeSpoilsLootMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopWageSpoilsFraction = xmlconfig.CreateElement("TroopWageSpoilsFraction");
             TroopWageSpoilsFraction.InnerText = RBMConfig.troopWageSpoilsFraction.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopSettlementFoodDays = xmlconfig.CreateElement("TroopSettlementFoodDays");
+            TroopSettlementFoodDays.InnerText = RBMConfig.troopSettlementFoodDays.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopFoodWageFraction = xmlconfig.CreateElement("TroopFoodWageFraction");
+            TroopFoodWageFraction.InnerText = RBMConfig.troopFoodWageFraction.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopSettlementFunWageFraction = xmlconfig.CreateElement("TroopSettlementFunWageFraction");
+            TroopSettlementFunWageFraction.InnerText = RBMConfig.troopSettlementFunWageFraction.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement SettlementProsperityPerGoldSpent = xmlconfig.CreateElement("SettlementProsperityPerGoldSpent");
+            SettlementProsperityPerGoldSpent.InnerText = RBMConfig.settlementProsperityPerGoldSpent.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
             RBMCampaign.AppendChild(RBMCampaignEnabled);
             RBMCampaign.AppendChild(TroopUpgradeCostMultiplier);
@@ -369,6 +377,10 @@ namespace RBMConfig
 
             RBMCampaign.AppendChild(TroopUpgradeSpoilsLootMultiplier);
             RBMCampaign.AppendChild(TroopWageSpoilsFraction);
+            RBMCampaign.AppendChild(TroopSettlementFoodDays);
+            RBMCampaign.AppendChild(TroopFoodWageFraction);
+            RBMCampaign.AppendChild(TroopSettlementFunWageFraction);
+            RBMCampaign.AppendChild(SettlementProsperityPerGoldSpent);
             RBMCampaign.AppendChild(SpoilsLoggingEnabled);
             Config.AppendChild(RBMCampaign);
 
