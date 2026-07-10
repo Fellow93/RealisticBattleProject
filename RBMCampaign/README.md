@@ -16,6 +16,10 @@ Two things fill it:
 
 How that loot gets divided is the interesting part. **Veterans pick first**, but each man can only carry so much (three pieces by default), and the further beneath a soldier a piece of gear lies, the likelier he is to walk straight past it — roughly a coin-flip per tier of difference. So the good kit goes to the elite stacks, and the recruits' spears and rags get left lying for the greener troops who'd actually consider them an upgrade. A veteran alone on a field will eventually stoop for a peasant's club, but he won't fill his arms with them while there's mail about.
 
+**Raiding villages.** When your party sacks a village, its soldiers pocket coin and plate as they go, on top of the goods you cart off. What they take scales with how thoroughly the village was stripped — a raid you saw through to the end pays more than one you broke off — and with the village's wealth. A raid the militia or a relief force turned back pays nothing. The plunder is shared evenly among the men who did the raiding.
+
+**Storming towns.** Take a town or castle by siege and the men who stormed it sack it, pocketing plunder scaled to the settlement's prosperity — a rich town is a far bigger prize than a village, enough to fund a whole wave of upgrades. Only a capture by storm sacks the place: a fief handed to you by barter, gift or a council vote leaves its wealth alone. The plunder goes to the party credited with the capture.
+
 **Wages.** Half of what you pay a stack each day (by default) goes straight back into its own purse. This doesn't cost you extra gold — it's a statement about where their pay was already going: mending what the march wore through, replacing what couldn't be mended.
 
 ## Where the money goes
@@ -45,6 +49,7 @@ Everything sits in the in-game RBM config under the campaign section, or in the 
 | `TroopLootPiecesPerMan` | 3 | Pieces of kit one soldier can carry away from a field. |
 | `TroopLootOverlookChancePerTier` | 0.5 | Chance a soldier walks past a piece of gear, per tier it lies beneath him. |
 | `TroopWageSpoilsFraction` | 0.5 | Share of a stack's daily wage that returns to its own purse. |
+| `TroopRaidSpoilsMultiplier` | 0.25 | Plunder its soldiers pocket as spoils when they sack a settlement — a share of a raided village's wealth, or of a stormed town's prosperity. 0 turns plunder spoils off. |
 | `TroopSettlementFoodDays` | 20 | Days of rations a stack buys for itself when it reaches a market. |
 | `TroopFoodWageFraction` | 0.5 | Share of a day's wage a man will spend on a day's food before calling it extravagant. |
 | `TroopSettlementFunWageFraction` | 1.5 | Drink and dice, as a multiple of the daily wage, per day idled in a settlement. |

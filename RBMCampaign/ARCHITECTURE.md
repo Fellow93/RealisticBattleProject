@@ -43,7 +43,27 @@ carousing.
 - **Player feedback**: post-battle message ("Your men strip the fallen and recover N in
   spoils" / "…find nothing they can use").
 
-### 2. Wages (`SpoilsPool.OnDailyTickParty`)
+### 2. Village raids (`SpoilsPool.OnRaidCompleted`)
+
+Hooks `CampaignEvents.RaidCompletedEvent(BattleSideEnum winnerSide, RaidEventComponent raidEvent)`,
+which fires once when a raid concludes. Only on `winnerSide == Attacker`. The pot is
+`village.Hearth × RaidDamage × troopRaidSpoilsMultiplier` (`RaidEventComponent.RaidDamage` is the
+0–1 share of the village actually stripped). It's split among `raidEvent.AttackerSide.Parties` by
+`ContributionToBattle` (even split if all zero — mirrors `OnMapEventEnded`), then spread evenly by
+head count within each party via `GrantFlatSpoilsToParty` (plunder is shared, not fought over piece
+by piece like battlefield kit). The player gets a "Your men plunder {SETTLEMENT}…" message.
+
+### 3. Town/castle sacking (`SpoilsPool.OnSettlementCaptured`)
+
+Hooks `CampaignEvents.OnSettlementOwnerChangedEvent`, gated on
+`detail == ChangeOwnerOfSettlementDetail.BySiege` (so barter/gift/vote transfers grant nothing).
+Pot = `town.Prosperity × troopRaidSpoilsMultiplier` (prosperity, not hearth — towns are measured in
+it; the same knob tunes both). Granted to the **single capturing party** — `capturerHero` (fallback
+`newOwner`) → `PartyBelongedTo.Party` — via `GrantFlatSpoilsToParty`, mirroring how the game credits
+a capture to one hero rather than splitting across a besieging army. Player gets a "Your men sack
+{SETTLEMENT}…" message. (Army-wide splitting is a possible future refinement.)
+
+### 4. Wages (`SpoilsPool.OnDailyTickParty`)
 
 Each day, `troopWageSpoilsFraction` of every non-hero stack's wage is deposited into its purse.
 **The party's actual gold is untouched** — this only reinterprets where some of the wage
@@ -124,6 +144,7 @@ All under `/Config/RBMCampaign` in the config XML, wired into the in-game settin
 | `TroopLootPiecesPerMan` | 3 | Pieces of kit one man can carry off a field. |
 | `TroopLootOverlookChancePerTier` | 0.5 | Chance a troop overlooks kit one tier below him (compounds per tier). |
 | `TroopWageSpoilsFraction` | 0.5 | Share of daily wage deposited into spoils. |
+| `TroopRaidSpoilsMultiplier` | 0.25 | Plunder soldiers pocket sacking a settlement — of a village's `Hearth × RaidDamage`, or a stormed town's `Prosperity`. 0 disables plunder spoils. |
 | `TroopSettlementFoodDays` | 20 | Days of food a stack buys per trip. |
 | `TroopFoodWageFraction` | 0.5 | Food price ceiling a man will pay, relative to his wage. |
 | `TroopSettlementFunWageFraction` | 1.5 | Carousing spend per day idled, as a multiple of daily wage. |
@@ -164,6 +185,8 @@ folder — one timestamped file per launch so runs don't overwrite each other. W
 
 `RBMSpoilsCampaignBehavior` (`SpoilsPool`):
 - `MapEventEnded` → loot distribution
+- `RaidCompletedEvent` → village-raid plunder
+- `OnSettlementOwnerChangedEvent` → town/castle sack plunder (siege captures only)
 - `DailyTickPartyEvent` → wage deposits
 - `MobilePartyDestroyed` → prune purses
 - `PlayerUpgradedTroopsEvent` → charge staged spoils

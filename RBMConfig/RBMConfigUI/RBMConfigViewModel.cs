@@ -426,6 +426,45 @@ namespace RBMConfig
             }
         }
 
+        private float _troopRaidSpoilsMultiplier;
+
+        [DataSourceProperty]
+        public float TroopRaidSpoilsMultiplier
+        {
+            get
+            {
+                return _troopRaidSpoilsMultiplier;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 10f);
+                if (snapped != _troopRaidSpoilsMultiplier)
+                {
+                    _troopRaidSpoilsMultiplier = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopRaidSpoilsMultiplier");
+                    OnPropertyChanged("TroopRaidSpoilsMultiplierValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopRaidSpoilsMultiplierValue
+        {
+            get
+            {
+                return _troopRaidSpoilsMultiplier.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopRaidSpoilsMultipliert
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_044}Share of a Raid's Plunder Its Soldiers Pocket as Spoils (default at 0.25)").ToString();
+            }
+        }
+
         [DataSourceProperty]
         public string SpoilsLoggingt
         {
@@ -913,6 +952,7 @@ namespace RBMConfig
             _troopFoodWageFraction = MathF.Clamp(RBMConfig.troopFoodWageFraction, 0f, 1f);
             _troopSettlementFunWageFraction = MathF.Clamp(RBMConfig.troopSettlementFunWageFraction, 0f, 3f);
             _settlementProsperityPerGoldSpent = MathF.Clamp(RBMConfig.settlementProsperityPerGoldSpent, 0.01f, 1f);
+            _troopRaidSpoilsMultiplier = MathF.Clamp(RBMConfig.troopRaidSpoilsMultiplier, 0f, 10f);
             SpoilsLoggingEnabled.SelectedIndex = RBMConfig.spoilsLoggingEnabled ? 1 : 0;
         }
 
@@ -1086,6 +1126,7 @@ namespace RBMConfig
             RBMConfig.troopFoodWageFraction = _troopFoodWageFraction;
             RBMConfig.troopSettlementFunWageFraction = _troopSettlementFunWageFraction;
             RBMConfig.settlementProsperityPerGoldSpent = _settlementProsperityPerGoldSpent;
+            RBMConfig.troopRaidSpoilsMultiplier = _troopRaidSpoilsMultiplier;
             RBMConfig.spoilsLoggingEnabled = SpoilsLoggingEnabled.SelectedIndex == 1;
 
             RBMConfig.saveXmlConfig();
