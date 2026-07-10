@@ -168,7 +168,7 @@ namespace RBMCampaign
                 int spoilsSpend = SpoilsPool.GetBatchSpoilsSpend(party, option.Target, option.UpgradeTarget, option.Count);
                 if (SpoilsLog.IsEnabled)
                 {
-                    SpoilsLog.Log("UPGRADE", "AI " + SpoilsLog.Describe(party) + " upgraded " + option.Count + "x "
+                    SpoilsLog.Log("UPGRADE", party, SpoilsLog.Describe(party) + " upgraded " + option.Count + "x "
                         + SpoilsLog.Describe(option.Target) + " -> " + SpoilsLog.Describe(option.UpgradeTarget)
                         + " | stack was " + option.StackSize
                         + ", free " + SpoilsPool.GetFreeUpgradeCount(party, option.Target, option.UpgradeTarget)
@@ -284,7 +284,7 @@ namespace RBMCampaign
                     SetPartyGoldChangeAmount.Invoke(__instance, new object[] { __instance.CurrentData.PartyGoldChangeAmount + correction });
                 }
 
-                SpoilsLog.Log("UPGRADE", "party screen staged " + count + "x " + SpoilsLog.Describe(character)
+                SpoilsLog.Log("UPGRADE", PartyBase.MainParty, "party screen staged " + count + "x " + SpoilsLog.Describe(character)
                     + " -> " + SpoilsLog.Describe(upgradeTarget)
                     + "| spoils reserved " + spend + " (total " + _stagedSpoils[character] + ")"
                     + ", gold " + actualGold + " (vanilla will charge " + chargedByVanilla + ")");

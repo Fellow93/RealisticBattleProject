@@ -354,10 +354,12 @@ namespace RBMConfig
             RBMCampaignEnabled.InnerText = RBMConfig.rbmCampaignEnabled ? "1" : "0";
             XmlElement TroopUpgradeCostMultiplier = xmlconfig.CreateElement("TroopUpgradeCostMultiplier");
             TroopUpgradeCostMultiplier.InnerText = RBMConfig.troopUpgradeCostMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            XmlElement TroopUpgradeSpoilsCostMultiplier = xmlconfig.CreateElement("TroopUpgradeSpoilsCostMultiplier");
-            TroopUpgradeSpoilsCostMultiplier.InnerText = RBMConfig.troopUpgradeSpoilsCostMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopUpgradeSpoilsLootMultiplier = xmlconfig.CreateElement("TroopUpgradeSpoilsLootMultiplier");
             TroopUpgradeSpoilsLootMultiplier.InnerText = RBMConfig.troopUpgradeSpoilsLootMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopLootPiecesPerMan = xmlconfig.CreateElement("TroopLootPiecesPerMan");
+            TroopLootPiecesPerMan.InnerText = RBMConfig.troopLootPiecesPerMan.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopLootOverlookChancePerTier = xmlconfig.CreateElement("TroopLootOverlookChancePerTier");
+            TroopLootOverlookChancePerTier.InnerText = RBMConfig.troopLootOverlookChancePerTier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopWageSpoilsFraction = xmlconfig.CreateElement("TroopWageSpoilsFraction");
             TroopWageSpoilsFraction.InnerText = RBMConfig.troopWageSpoilsFraction.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopSettlementFoodDays = xmlconfig.CreateElement("TroopSettlementFoodDays");
@@ -371,11 +373,12 @@ namespace RBMConfig
 
             RBMCampaign.AppendChild(RBMCampaignEnabled);
             RBMCampaign.AppendChild(TroopUpgradeCostMultiplier);
-            RBMCampaign.AppendChild(TroopUpgradeSpoilsCostMultiplier);
             XmlElement SpoilsLoggingEnabled = xmlconfig.CreateElement("SpoilsLoggingEnabled");
             SpoilsLoggingEnabled.InnerText = RBMConfig.spoilsLoggingEnabled ? "1" : "0";
 
             RBMCampaign.AppendChild(TroopUpgradeSpoilsLootMultiplier);
+            RBMCampaign.AppendChild(TroopLootPiecesPerMan);
+            RBMCampaign.AppendChild(TroopLootOverlookChancePerTier);
             RBMCampaign.AppendChild(TroopWageSpoilsFraction);
             RBMCampaign.AppendChild(TroopSettlementFoodDays);
             RBMCampaign.AppendChild(TroopFoodWageFraction);

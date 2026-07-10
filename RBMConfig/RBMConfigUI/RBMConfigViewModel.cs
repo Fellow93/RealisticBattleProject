@@ -72,9 +72,10 @@ namespace RBMConfig
             }
             set
             {
-                // Slider reports continuous values; snap to 0.01 steps and hold within [0.01, 1].
+                // Slider reports continuous values; snap to 0.01 steps. Zero is meaningful -- it makes
+                // upgrades free and turns the spoils system off with them -- so the floor is 0, not 0.01.
                 float snapped = (float)System.Math.Round(value, 2);
-                snapped = MathF.Clamp(snapped, 0.01f, 1f);
+                snapped = MathF.Clamp(snapped, 0f, 2f);
                 if (snapped != _troopUpgradeCostMultiplier)
                 {
                     _troopUpgradeCostMultiplier = snapped;
@@ -98,46 +99,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_032}Troop Upgrade Cost Multiplier (default at 0.10)").ToString();
-            }
-        }
-
-        private float _troopUpgradeSpoilsCostMultiplier;
-
-        [DataSourceProperty]
-        public float TroopUpgradeSpoilsCostMultiplier
-        {
-            get
-            {
-                return _troopUpgradeSpoilsCostMultiplier;
-            }
-            set
-            {
-                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 5f);
-                if (snapped != _troopUpgradeSpoilsCostMultiplier)
-                {
-                    _troopUpgradeSpoilsCostMultiplier = snapped;
-                    OnPropertyChangedWithValue(snapped, "TroopUpgradeSpoilsCostMultiplier");
-                    OnPropertyChanged("TroopUpgradeSpoilsCostMultiplierValue");
-                }
-            }
-        }
-
-        [DataSourceProperty]
-        public string TroopUpgradeSpoilsCostMultiplierValue
-        {
-            get
-            {
-                return _troopUpgradeSpoilsCostMultiplier.ToString("0.00");
-            }
-        }
-
-        [DataSourceProperty]
-        public string TroopUpgradeSpoilsCostt
-        {
-            get
-            {
-                return new TextObject("{=RBM_CON_034}Troop Upgrade Spoils Cost Multiplier (0 disables spoils, default at 1.00)").ToString();
+                return new TextObject("{=RBM_CON_032}Troop Upgrade Cost Multiplier, gold and spoils alike (0 disables spoils, default at 1.00)").ToString();
             }
         }
 
@@ -684,8 +646,7 @@ namespace RBMConfig
                 RBMCampaignEnabled.SelectedIndex = 0;
             }
 
-            _troopUpgradeCostMultiplier = MathF.Clamp(RBMConfig.troopUpgradeCostMultiplier, 0.01f, 1f);
-            _troopUpgradeSpoilsCostMultiplier = MathF.Clamp(RBMConfig.troopUpgradeSpoilsCostMultiplier, 0f, 5f);
+            _troopUpgradeCostMultiplier = MathF.Clamp(RBMConfig.troopUpgradeCostMultiplier, 0f, 2f);
             _troopUpgradeSpoilsLootMultiplier = MathF.Clamp(RBMConfig.troopUpgradeSpoilsLootMultiplier, 0f, 5f);
             _troopWageSpoilsFraction = MathF.Clamp(RBMConfig.troopWageSpoilsFraction, 0f, 1f);
         }
@@ -852,7 +813,6 @@ namespace RBMConfig
             }
 
             RBMConfig.troopUpgradeCostMultiplier = _troopUpgradeCostMultiplier;
-            RBMConfig.troopUpgradeSpoilsCostMultiplier = _troopUpgradeSpoilsCostMultiplier;
             RBMConfig.troopUpgradeSpoilsLootMultiplier = _troopUpgradeSpoilsLootMultiplier;
             RBMConfig.troopWageSpoilsFraction = _troopWageSpoilsFraction;
 

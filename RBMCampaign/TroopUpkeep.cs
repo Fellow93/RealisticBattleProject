@@ -180,7 +180,7 @@ namespace RBMCampaign
                 stalls.Add(new FoodStall
                 {
                     Item = item,
-                    UnitSpoils = MathF.Max(1, MathF.Round(market.GetElementUnitCost(i) * SpoilsPool.SpoilsPerGold)),
+                    UnitSpoils = MathF.Max(1, market.GetElementUnitCost(i)),
                     Available = market.GetElementNumber(i)
                 });
             }
@@ -201,8 +201,7 @@ namespace RBMCampaign
         private static int GetFoodPriceCeiling(CharacterObject character)
         {
             float dailyWage = Campaign.Current.Models.PartyWageModel.GetCharacterWage(character);
-            return MathF.Round(dailyWage * RBMConfig.RBMConfig.troopFoodWageFraction
-                * SpoilsPool.SpoilsPerGold * MenPerFoodPerDay);
+            return MathF.Round(dailyWage * RBMConfig.RBMConfig.troopFoodWageFraction * MenPerFoodPerDay);
         }
 
         private static void FeedStack(PartyBase party, Settlement settlement, ItemRoster market, List<FoodStall> stalls, TroopRosterElement element, int wanted, int foodDays)
@@ -231,7 +230,7 @@ namespace RBMCampaign
 
             if (SpoilsLog.IsEnabled && party == PartyBase.MainParty)
             {
-                SpoilsLog.Log("FOOD", SpoilsLog.Describe(element.Character) + " x" + element.Number
+                SpoilsLog.Log("FOOD", party, SpoilsLog.Describe(element.Character) + " x" + element.Number
                     + " in " + settlement.Name + ": bought " + bought + " of " + wanted + " food for "
                     + spent + " spoils (would pay up to " + ceiling + " an item)"
                     + ", fed " + (fedHours / 24f).ToString("0.0") + " days"
@@ -268,9 +267,10 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Taverns, dice and worse. A stack spends a share of what it earns in a day for every day it
-        /// idles in a settlement, and a stack with an empty purse spends nothing -- the pool is never
-        /// driven negative, so carousing cannot put a soldier in debt.
+        /// Taverns, dice and worse. A stack spends against what it earns in a day for every day it
+        /// idles in a settlement -- more than it earns, at the default, so an idle garrison town eats
+        /// the savings its men marched in with. A stack with an empty purse spends nothing: the pool
+        /// is never driven negative, so carousing cannot put a soldier in debt.
         /// </summary>
         private static void SpendOnFun(MobileParty mobileParty, Settlement settlement)
         {
@@ -298,7 +298,7 @@ namespace RBMCampaign
                 // An hour's worth of the day's wage. Veterans earn more and so drink better.
                 float dailyWage = wageModel.GetCharacterWage(element.Character) * element.Number;
                 int spend = MathF.Min(purse, MathF.Round(dailyWage / 24f
-                    * RBMConfig.RBMConfig.troopSettlementFunWageFraction * SpoilsPool.SpoilsPerGold));
+                    * RBMConfig.RBMConfig.troopSettlementFunWageFraction));
                 if (spend <= 0)
                 {
                     continue;
@@ -314,21 +314,16 @@ namespace RBMCampaign
             if (spentTotal > 0 && SpoilsLog.IsEnabled && party == PartyBase.MainParty)
             {
                 // Hourly, so once a day per settlement is enough to see the rate without flooding.
-                SpoilsLog.LogOnce("fun-" + settlement.StringId + "-" + (NowHours / 24), "FUN",
+                SpoilsLog.LogOnce("fun-" + settlement.StringId + "-" + (NowHours / 24), "FUN", party,
                     SpoilsLog.Describe(party) + " carousing in " + settlement.Name
                     + ": " + spentTotal + " spoils this hour");
             }
         }
 
-        /// <summary>
-        /// Coin spent in a settlement stays there. Spoils are worth more than the gold they stand for,
-        /// so the spend is converted back before the town is credited, or a place would grow rich in
-        /// proportion to how steeply this mod discounts upgrades.
-        /// </summary>
+        /// <summary>Coin spent in a settlement stays there. A point of spoils is a gold piece.</summary>
         private static void CreditSettlement(Settlement settlement, int spoilsSpent)
         {
-            float gold = spoilsSpent / SpoilsPool.SpoilsPerGold;
-            float gain = gold * RBMConfig.RBMConfig.settlementProsperityPerGoldSpent;
+            float gain = spoilsSpent * RBMConfig.RBMConfig.settlementProsperityPerGoldSpent;
             if (gain <= 0f)
             {
                 return;

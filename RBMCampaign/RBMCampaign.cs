@@ -78,7 +78,7 @@ namespace RBMCampaign
                 ExplainedNumber stat = BuildUpgradeGoldCost(party, characterObject, upgradeTarget, goldFactor);
 
                 // The party screen recomputes this on every refresh, so once per troop pair is plenty.
-                SpoilsLog.LogOnce("goldcost-" + characterObject.StringId + "-" + upgradeTarget.StringId, "GOLD",
+                SpoilsLog.LogOnce("goldcost-" + characterObject.StringId + "-" + upgradeTarget.StringId, "GOLD", party,
                     SpoilsLog.Describe(characterObject) + " -> " + SpoilsLog.Describe(upgradeTarget)
                     + " | equip " + SpoilsPool.GetEquipmentValue(characterObject) + " -> " + SpoilsPool.GetEquipmentValue(upgradeTarget)
                     + ", spoils cost " + SpoilsPool.GetSpoilsCostForUpgrade(characterObject, upgradeTarget)

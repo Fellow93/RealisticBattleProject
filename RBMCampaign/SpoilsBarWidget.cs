@@ -16,8 +16,9 @@ namespace RBMCampaign
 {
     /// <summary>
     /// The spoils counterpart of the party screen's troop xp bar. It fills as the men of a stack
-    /// accumulate enough looted kit to cover their next upgrade; a full bar means that upgrade
-    /// costs no gold at all.
+    /// accumulate enough looted kit to cover their next upgrade; a full bar means that upgrade costs
+    /// no gold at all. A stack with no upgrade left to buy still has a purse and still fills a bar,
+    /// measured against the worth of the kit one of its men is already wearing.
     /// </summary>
     public class RBMTroopSpoilsBarWidget : FillBarVerticalWidget
     {
@@ -58,7 +59,7 @@ namespace RBMCampaign
         {
             List<TooltipProperty> properties = new List<TooltipProperty>();
             CharacterObject character = ResolveTroop(TroopId);
-            if (character == null || character.UpgradeTargets.Length == 0 || Campaign.Current == null)
+            if (character == null || Campaign.Current == null)
             {
                 return properties;
             }
@@ -70,21 +71,30 @@ namespace RBMCampaign
             // A branching troop has an upgrade cost per branch, so one number could only ever describe
             // the branch the template happens to list first. Name them all and let the stockpile speak
             // for itself against each.
-            properties.Add(new TooltipProperty(new TextObject("{=RBM_SPOILS_002}Spoils per Upgrade").ToString(), "", 0,
-                false, TooltipProperty.TooltipPropertyFlags.Title));
-            foreach (CharacterObject upgradeTarget in character.UpgradeTargets)
+            if (character.UpgradeTargets.Length > 0)
             {
-                int spoilsCost = SpoilsPool.GetSpoilsCostForUpgrade(character, upgradeTarget);
-                int freeUpgrades = SpoilsPool.GetFreeUpgradeCount(party, character, upgradeTarget);
-                TextObject value = new TextObject((freeUpgrades > 0)
-                    ? "{=RBM_SPOILS_008}{COST}  ({FREE} free)"
-                    : "{=!}{COST}");
-                value.SetTextVariable("COST", spoilsCost);
-                value.SetTextVariable("FREE", freeUpgrades);
-                properties.Add(new TooltipProperty(upgradeTarget.Name.ToString(), value.ToString(), 0));
+                properties.Add(new TooltipProperty(new TextObject("{=RBM_SPOILS_002}Spoils per Upgrade").ToString(), "", 0,
+                    false, TooltipProperty.TooltipPropertyFlags.Title));
+                foreach (CharacterObject upgradeTarget in character.UpgradeTargets)
+                {
+                    int spoilsCost = SpoilsPool.GetSpoilsCostForUpgrade(character, upgradeTarget);
+                    int freeUpgrades = SpoilsPool.GetFreeUpgradeCount(party, character, upgradeTarget);
+                    TextObject value = new TextObject((freeUpgrades > 0)
+                        ? "{=RBM_SPOILS_008}{COST}  ({FREE} free)"
+                        : "{=!}{COST}");
+                    value.SetTextVariable("COST", spoilsCost);
+                    value.SetTextVariable("FREE", freeUpgrades);
+                    properties.Add(new TooltipProperty(upgradeTarget.Name.ToString(), value.ToString(), 0));
+                }
+            }
+            else
+            {
+                // The bar has no upgrade to fill toward, so it says what it is filling toward instead.
+                properties.Add(new TooltipProperty(new TextObject("{=RBM_SPOILS_012}A Man's Kit Is Worth").ToString(),
+                    SpoilsPool.GetEquipmentValue(character).ToString(), 0));
             }
 
-            properties.Add(new TooltipProperty("", new TextObject("{=RBM_SPOILS_004}Holding the field earns spoils salvaged from the kit left on it, by the enemies you killed and by your own fallen. Nothing is recovered whole: armour is battered, blades are chipped, and a quiver is worth only the arrows still in it. A soldier takes only kit of his own tier or better, and the veterans pick first, so what they pass over falls to greener troops. The stockpile outfits men one at a time: those it covers upgrade for free, and the rest pay gold for what it cannot reach.").ToString(), 0, false, TooltipProperty.TooltipPropertyFlags.MultiLine));
+            properties.Add(new TooltipProperty("", new TextObject("{=RBM_SPOILS_004}Holding the field earns spoils salvaged from the kit left on it, by the enemies you killed and by your own fallen. Nothing is recovered whole: armour is battered, blades are chipped, and a quiver is worth only the arrows still in it. The veterans pick first, and the further beneath a man a piece lies the likelier he is to step over it, so what they overlook falls to greener troops. What his men do not spend on their own upgrades they spend on food and drink in the settlements you stop in.").ToString(), 0, false, TooltipProperty.TooltipPropertyFlags.MultiLine));
             return properties;
         }
 
@@ -92,10 +102,15 @@ namespace RBMCampaign
         public string TroopId { get; set; }
 
         /// <summary>
-        /// Bound to the view model's IsUpgradableTroop. The widget owns its own IsVisible rather
-        /// than binding it, because a one-way binding only pushes when the source property changes:
-        /// once this widget cleared IsVisible for its own reasons, nothing would ever set it back.
+        /// Bound to the view model's IsUpgradableTroop, and no longer read: the bar belongs to every
+        /// stack, upgradable or not. Kept because the prefab patch sets the attribute, and Gauntlet
+        /// throws on a binding whose target property does not exist.
         /// </summary>
+        /// <remarks>
+        /// The widget owns its own IsVisible rather than binding it, because a one-way binding only
+        /// pushes when the source property changes: once this widget cleared IsVisible for its own
+        /// reasons, nothing would ever set it back.
+        /// </remarks>
         public bool IsTroopUpgradable { get; set; }
 
         protected override void OnUpdate(float dt)
@@ -107,40 +122,53 @@ namespace RBMCampaign
         private void Refresh()
         {
             CharacterObject character = ResolveTroop(TroopId);
-            bool hasUpgrade = character != null && character.UpgradeTargets.Length > 0;
-            IsVisible = IsTroopUpgradable && hasUpgrade && SpoilsPool.IsEnabled && Campaign.Current != null;
+            // A troop with nowhere left to upgrade still carries a purse, and still spends it on his
+            // bread and his beer, so the bar is his too. Neither IsTroopUpgradable nor an upgrade
+            // target gates it: only whether there is a troop, and a spoils system to speak for.
+            IsVisible = character != null && SpoilsPool.IsEnabled && Campaign.Current != null;
             if (!IsVisible)
             {
                 return;
             }
 
             PartyBase party = PartyBase.MainParty;
-            CharacterObject upgradeTarget = character.UpgradeTargets[0];
-            int spoilsCost = SpoilsPool.GetSpoilsCostForUpgrade(character, upgradeTarget);
             int stockpile = SpoilsPool.GetAvailableSpoils(party, character);
-            int stackSize = SpoilsPool.GetStackSize(party, character);
+            int spoilsCost = GetPrimarySpoilsCost(character);
 
-            // Mirrors the xp bar: it fills toward the next man's upgrade and saturates once the whole
-            // stack is covered, rather than showing the stockpile against some arbitrary ceiling.
             if (spoilsCost > 0)
             {
+                // Mirrors the xp bar: it fills toward the next man's upgrade and saturates once the
+                // whole stack is covered, rather than showing the stockpile against some arbitrary
+                // ceiling.
+                int stackSize = SpoilsPool.GetStackSize(party, character);
                 MaxAmount = spoilsCost;
                 InitialAmount = (stockpile >= spoilsCost * stackSize) ? spoilsCost : (stockpile % spoilsCost);
             }
             else
             {
-                MaxAmount = FillResolution;
-                InitialAmount = 0;
+                // Nothing to upgrade to, so the bar is measured against what one of his own men is
+                // wearing: a full bar means the stack carries the price of a man's kit in coin.
+                MaxAmount = MathF.Max(1, SpoilsPool.GetEquipmentValue(character));
+                InitialAmount = MathF.Min(stockpile, MaxAmount);
             }
 
             SpoilsLog.TraceOnce("troop-" + character.StringId, string.Concat(
-                character.StringId, " (tier ", character.Tier.ToString(), ") -> ", upgradeTarget.StringId,
+                character.StringId, " (tier ", character.Tier.ToString(), ")",
                 " | equip ", SpoilsPool.GetEquipmentValue(character).ToString(),
-                " -> ", SpoilsPool.GetEquipmentValue(upgradeTarget).ToString(),
-                " | stockpile ", stockpile.ToString(), "/", spoilsCost.ToString(), " per man",
-                " | stack ", stackSize.ToString(),
-                " | free ", SpoilsPool.GetFreeUpgradeCount(party, character, upgradeTarget).ToString(),
-                " | nextManGold ", character.GetUpgradeGoldCost(party, 0).ToString()));
+                " | stockpile ", stockpile.ToString(), " against ", MaxAmount.ToString(),
+                " | stack ", SpoilsPool.GetStackSize(party, character).ToString()));
+        }
+
+        /// <summary>
+        /// The upgrade the bar measures itself against: the first branch, the same one the xp bar
+        /// takes. Zero when the troop has nowhere to go, or when the branch is worth no more in kit
+        /// than what he already wears.
+        /// </summary>
+        private static int GetPrimarySpoilsCost(CharacterObject character)
+        {
+            return character.UpgradeTargets.Length == 0
+                ? 0
+                : SpoilsPool.GetSpoilsCostForUpgrade(character, character.UpgradeTargets[0]);
         }
 
         private static CharacterObject ResolveTroop(string troopId)

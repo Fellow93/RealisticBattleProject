@@ -11,8 +11,9 @@ using TaleWorlds.Localization;
 namespace RBMCampaign
 {
     /// <summary>
-    /// Spoils are a second xp-like resource: it accumulates on a troop stack and is spent when that
-    /// stack upgrades. It is earned by winning battles, scaled by the equipment the losers lost.
+    /// Spoils are a troop stack's purse. It fills from the kit its men strip off a field they hold
+    /// and from the share of their wage they do not pocket, and it empties on their upgrades, their
+    /// food, and their drink. Every stack loots, including the ones with no upgrade left to buy.
     /// </summary>
     public static class SpoilsPool
     {
@@ -36,8 +37,10 @@ namespace RBMCampaign
         public static void SyncData(IDataStore dataStore)
         {
             // The key is bumped whenever the meaning of a point of spoils changes, so stale pools are
-            // dropped rather than reinterpreted on a scale they were never measured against.
-            dataStore.SyncData("RBM_troopSpoilsValue", ref _spoils);
+            // dropped rather than reinterpreted on a scale they were never measured against. A point
+            // used to be a unit of equipment value, worth ten of the gold an upgrade was priced in.
+            // It is now a gold piece.
+            dataStore.SyncData("RBM_troopSpoilsGold", ref _spoils);
             if (_spoils == null)
             {
                 _spoils = new Dictionary<string, int>();
@@ -45,9 +48,8 @@ namespace RBMCampaign
             SpoilsLog.Log("SAVE", (dataStore.IsSaving ? "saved " : "loaded ") + _spoils.Count + " spoils pool entries");
             if (!dataStore.IsSaving)
             {
-                SpoilsLog.Log("CONFIG", "spoils cost x" + RBMConfig.RBMConfig.troopUpgradeSpoilsCostMultiplier
-                    + ", loot x" + RBMConfig.RBMConfig.troopUpgradeSpoilsLootMultiplier
-                    + ", gold cost x" + RBMConfig.RBMConfig.troopUpgradeCostMultiplier);
+                SpoilsLog.Log("CONFIG", "upgrade cost x" + RBMConfig.RBMConfig.troopUpgradeCostMultiplier
+                    + " (gold and spoils alike), loot x" + RBMConfig.RBMConfig.troopUpgradeSpoilsLootMultiplier);
             }
         }
 
@@ -152,14 +154,17 @@ namespace RBMCampaign
             }
         }
 
+        /// <summary>Zero makes an upgrade free, and a free upgrade has nothing for spoils to buy.</summary>
         public static bool IsEnabled
         {
-            get { return RBMConfig.RBMConfig.troopUpgradeSpoilsCostMultiplier > 0f; }
+            get { return RBMConfig.RBMConfig.troopUpgradeCostMultiplier > 0f; }
         }
 
         /// <summary>
-        /// A point of spoils is a unit of equipment value, so an upgrade costs what the better kit is
-        /// worth over the old. Zero means the upgrade needs no spoils, so callers must not divide by it.
+        /// What the better kit is worth over the old, which is exactly what the upgrade costs in gold.
+        /// A point of spoils is a gold piece: the two prices are the same number because they are the
+        /// same price, paid out of different pockets. Zero means the upgrade needs no spoils, so
+        /// callers must not divide by it.
         /// </summary>
         public static int GetSpoilsCostForUpgrade(CharacterObject character, CharacterObject upgradeTarget)
         {
@@ -172,34 +177,7 @@ namespace RBMCampaign
             {
                 return 0;
             }
-            return MathF.Max(1, MathF.Round(delta * RBMConfig.RBMConfig.troopUpgradeSpoilsCostMultiplier));
-        }
-
-        /// <summary>
-        /// What a gold piece buys when it is spent as spoils rather than as gold. Both prices are the
-        /// same equipment value seen through a different multiplier, so their ratio is the exchange
-        /// rate: at the defaults an upgrade costs a tenth of its worth in gold but the whole of it in
-        /// spoils, making a gold piece worth ten points. Without this a wage would be quoted against
-        /// equipment values it was never measured on, and a soldier could not clothe himself in a
-        /// lifetime of pay.
-        /// </summary>
-        public static float SpoilsPerGold
-        {
-            get
-            {
-                float goldMultiplier = RBMConfig.RBMConfig.troopUpgradeCostMultiplier;
-                // A free upgrade is worth unbounded spoils per gold; hand back the raw rate instead.
-                return goldMultiplier <= 0f ? 1f : RBMConfig.RBMConfig.troopUpgradeSpoilsCostMultiplier / goldMultiplier;
-            }
-        }
-
-        /// <summary>
-        /// The cost of the upgrade a stack is measured against everywhere a single number is needed:
-        /// the bar, the loot cap. Index 0 matches the target the xp bar measures itself against.
-        /// </summary>
-        public static int GetPrimarySpoilsCost(CharacterObject character)
-        {
-            return character.UpgradeTargets.Length == 0 ? 0 : GetSpoilsCostForUpgrade(character, character.UpgradeTargets[0]);
+            return MathF.Max(1, MathF.Round(delta * RBMConfig.RBMConfig.troopUpgradeCostMultiplier));
         }
 
         /// <summary>
@@ -212,14 +190,54 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// A soldier only bothers with kit of his own tier or better. Item tiers are zero based
-        /// (Tier1 == 0) and troop tiers are one based, so an item matches a troop's tier when its
-        /// index is one lower. Veterans therefore ignore the cheap kit, leaving it to float down
-        /// to the greener troops behind them.
+        /// How far beneath a troop a piece of kit is. Item tiers are zero based (Tier1 == 0) and troop
+        /// tiers are one based, so an item matches a troop's tier when its index is one lower. Zero or
+        /// less means the kit is as good as his own or better.
         /// </summary>
-        private static bool IsUpgradeFor(int itemTier, CharacterObject character)
+        private static int GetTierGap(int itemTier, CharacterObject character)
         {
-            return itemTier >= character.Tier - 1;
+            return (character.Tier - 1) - itemTier;
+        }
+
+        /// <summary>
+        /// The share of a heap of kit a troop stoops to pick up. He never walks past his own tier or
+        /// better, but the further beneath him a piece is the likelier he is to leave it lying: a
+        /// veteran picking over a field steps over the recruits' spears without quite seeing them.
+        /// What he passes over stays on the field for the greener troops behind him, which is how the
+        /// cheap kit reaches the men it would actually be an upgrade for.
+        /// </summary>
+        /// <remarks>
+        /// Compounded per tier of gap rather than subtracted, so nothing is ever certain to be
+        /// overlooked and a rag of tier 1 is still worth something to the tier 6 man who finds
+        /// himself alone on the field. An overlook chance of 1 is the exception: then a troop sees
+        /// nothing at all beneath his own tier, which is how this worked before.
+        /// </remarks>
+        private static float GetNoticeFraction(int tierGap)
+        {
+            if (tierGap <= 0)
+            {
+                return 1f;
+            }
+            float overlook = MathF.Clamp(RBMConfig.RBMConfig.troopLootOverlookChancePerTier, 0f, 1f);
+            return MathF.Pow(1f - overlook, tierGap);
+        }
+
+        /// <summary>
+        /// Of <paramref name="available"/> pieces lying at a troop's feet, how many he sees. The
+        /// fractional piece is rolled for rather than dropped, so a lone piece a veteran would notice
+        /// a quarter of the time is not silently unlootable.
+        /// </summary>
+        private static long GetNoticedPieces(long available, int tierGap)
+        {
+            float exact = available * GetNoticeFraction(tierGap);
+            long whole = (long)exact;
+            return whole + ((MBRandom.RandomFloat < exact - whole) ? 1L : 0L);
+        }
+
+        /// <summary>Pieces of kit one man will carry off a field, however much of it he sees.</summary>
+        private static int GetCarryCapacity(int menInStack)
+        {
+            return MathF.Max(0, RBMConfig.RBMConfig.troopLootPiecesPerMan) * menInStack;
         }
 
         public static int GetStackSize(PartyBase party, CharacterObject character)
@@ -318,21 +336,24 @@ namespace RBMCampaign
                 return;
             }
 
-            // One point per piece of kit left on the field, bucketed by its tier so each piece can
-            // only be handed to troops it would actually be an upgrade for. Only the dead are
-            // stripped: the wounded are carried off still wearing their kit, and the routed fled
-            // with theirs. The victors hold the field, so they recover their own fallen as well as
-            // the enemy's.
-            // Value, not piece count, so a big battle can sum well past what an int would hold.
+            // What the field yields, bucketed by the tier of the kit so a man's own tier can decide
+            // how likely he is to stoop for it. Only the dead are stripped: the wounded are carried
+            // off still wearing their kit, and the routed fled with theirs. The victors hold the
+            // field, so they recover their own fallen as well as the enemy's.
+            //
+            // Counted twice over: pieces, because a man can only carry so many, and value, because
+            // that is what a piece is worth once it is his. Both are long, since a big battle sums
+            // well past what an int would hold.
             long[] spoilsByTier = new long[(int)ItemObject.ItemTiers.NumTiers];
+            long[] piecesByTier = new long[(int)ItemObject.ItemTiers.NumTiers];
             long intactValue = 0L;
             foreach (MapEventParty loser in winner.OtherSide.Parties)
             {
-                CountStrippedEquipment(spoilsByTier, loser.DiedInBattle, ref intactValue);
+                CountStrippedEquipment(spoilsByTier, piecesByTier, loser.DiedInBattle, ref intactValue);
             }
             foreach (MapEventParty victor in winner.Parties)
             {
-                CountStrippedEquipment(spoilsByTier, victor.DiedInBattle, ref intactValue);
+                CountStrippedEquipment(spoilsByTier, piecesByTier, victor.DiedInBattle, ref intactValue);
             }
 
             long totalContribution = 0L;
@@ -355,7 +376,8 @@ namespace RBMCampaign
                 {
                     if (spoilsByTier[tier] > 0L)
                     {
-                        SpoilsLog.Log("LOOT", "  field yields tier " + (tier + 1) + ": " + spoilsByTier[tier] + " value");
+                        SpoilsLog.Log("LOOT", "  field yields tier " + (tier + 1) + ": " + piecesByTier[tier]
+                            + " pieces worth " + spoilsByTier[tier]);
                     }
                 }
             }
@@ -367,9 +389,9 @@ namespace RBMCampaign
                 long weight = (totalContribution > 0L) ? MathF.Max(0, victor.ContributionToBattle) : 1L;
                 long divisor = (totalContribution > 0L) ? totalContribution : winner.Parties.Count;
                 float share = (float)weight / divisor * RBMConfig.RBMConfig.troopUpgradeSpoilsLootMultiplier;
-                SpoilsLog.Log("LOOT", "  " + SpoilsLog.Describe(victor.Party) + ": contribution " + victor.ContributionToBattle
+                SpoilsLog.Log("LOOT", victor.Party, SpoilsLog.Describe(victor.Party) + ": contribution " + victor.ContributionToBattle
                     + "/" + totalContribution + ", share " + share.ToString("0.000"));
-                int granted = GrantToParty(victor.Party, spoilsByTier, share);
+                int granted = GrantToParty(victor.Party, spoilsByTier, piecesByTier, share);
                 if (victor.Party == PartyBase.MainParty)
                 {
                     AnnounceSpoilsToPlayer(granted);
@@ -382,9 +404,8 @@ namespace RBMCampaign
         /// looking for, and nothing on the map says a battle paid for anything.
         /// </summary>
         /// <remarks>
-        /// A stack that is already fully outfitted takes nothing, so a victory can leave the field
-        /// covered in kit and grant zero. Saying so is more use than saying nothing, since it tells
-        /// the player his army has no more room for what it just won.
+        /// A victory can still grant nothing: a small party with its arms already full, or one whose
+        /// men walked past everything the field had left. Saying so is more use than saying nothing.
         /// </remarks>
         private static void AnnounceSpoilsToPlayer(int granted)
         {
@@ -401,10 +422,9 @@ namespace RBMCampaign
         /// as spoils. The gold the party pays is untouched -- this only says where some of it went.
         /// </summary>
         /// <remarks>
-        /// Applied to every party, since every party pays wages. Unlike battlefield loot this is not
-        /// capped at what the stack's next upgrade costs: loot is kit, and a man already wearing the
-        /// best of it has no use for more, but wage is coin, and a man with no kit left to buy still
-        /// has bread and beer to buy. What the stack does not spend on its own upgrade it carries.
+        /// Applied to every party, since every party pays wages. A point of spoils is a gold piece, so
+        /// half a wage deposits half its gold and no conversion is needed. What the stack does not
+        /// spend on its own upgrade it carries, to spend on bread and beer instead.
         /// </remarks>
         public static void OnDailyTickParty(MobileParty mobileParty)
         {
@@ -429,15 +449,15 @@ namespace RBMCampaign
                 }
                 // The stack's wage, not one man's, so a small troop's half-point is not rounded away.
                 int wage = wageModel.GetCharacterWage(element.Character) * element.Number;
-                int granted = MathF.Round(wage * RBMConfig.RBMConfig.troopWageSpoilsFraction * SpoilsPerGold);
+                int granted = MathF.Round(wage * RBMConfig.RBMConfig.troopWageSpoilsFraction);
                 if (granted <= 0)
                 {
                     continue;
                 }
                 if (SpoilsLog.IsEnabled && party == PartyBase.MainParty)
                 {
-                    SpoilsLog.Log("WAGE", SpoilsLog.Describe(element.Character) + " x" + element.Number
-                        + ": wage " + wage + " at " + SpoilsPerGold.ToString("0.0") + " spoils/gold"
+                    SpoilsLog.Log("WAGE", party, SpoilsLog.Describe(element.Character) + " x" + element.Number
+                        + ": wage " + wage
                         + " -> +" + granted + " spoils (pool " + GetSpoils(party, element.Character)
                         + " -> " + (GetSpoils(party, element.Character) + granted) + ")");
                 }
@@ -460,7 +480,7 @@ namespace RBMCampaign
             int spend = PartyScreenStagedUpgrades.ConsumeStagedSpoils(party, character);
             if (SpoilsLog.IsEnabled && spend > 0)
             {
-                SpoilsLog.Log("UPGRADE", "player upgraded " + count + "x " + SpoilsLog.Describe(character)
+                SpoilsLog.Log("UPGRADE", party, "player upgraded " + count + "x " + SpoilsLog.Describe(character)
                     + " -> " + SpoilsLog.Describe(upgradeTarget)
                     + "| spoils spent " + spend + " of " + (GetSpoilsCostForUpgrade(character, upgradeTarget) * count) + " needed"
                     + ", pool " + GetSpoils(party, character) + " -> " + (GetSpoils(party, character) - spend));
@@ -475,7 +495,7 @@ namespace RBMCampaign
             TroopUpkeep.ClearIfStackGone(party, character);
             if (party.MemberRoster.FindIndexOfTroop(character) < 0 && _spoils.Remove(Key(party, character)))
             {
-                SpoilsLog.Log("POOL", "stack of " + SpoilsLog.Describe(character) + " gone from "
+                SpoilsLog.Log("POOL", party, "stack of " + SpoilsLog.Describe(character) + " gone from "
                     + SpoilsLog.Describe(party) + "; its remaining spoils are lost");
             }
         }
@@ -497,7 +517,7 @@ namespace RBMCampaign
             }
             if (stale.Count > 0)
             {
-                SpoilsLog.Log("POOL", "party " + SpoilsLog.Describe(party.Party) + " destroyed; pruned "
+                SpoilsLog.Log("POOL", party.Party, "party " + SpoilsLog.Describe(party.Party) + " destroyed; pruned "
                     + stale.Count + " spoils pool entries");
             }
         }
@@ -528,15 +548,15 @@ namespace RBMCampaign
 
         /// <summary>
         /// Every equipment slot of every fallen man yields part of its item's value, bucketed by the
-        /// item's tier so each piece can only be claimed by troops it would actually be an upgrade
-        /// for. Rolled per man rather than per troop type, so a hundred casualties average out.
+        /// item's tier so a looter's own tier can decide how likely he is to notice it. Rolled per man
+        /// rather than per troop type, so a hundred casualties average out.
         /// </summary>
         /// <remarks>
         /// Each man is stripped of one battle set drawn at random, the way the game dressed him when
         /// it spawned him. Over a stack this averages to the same value GetEquipmentValue prices an
         /// upgrade against, so a troop cannot yield kit worth more than it costs to replace.
         /// </remarks>
-        private static void CountStrippedEquipment(long[] spoilsByTier, TroopRoster roster, ref long intactValue)
+        private static void CountStrippedEquipment(long[] spoilsByTier, long[] piecesByTier, TroopRoster roster, ref long intactValue)
         {
             if (roster == null)
             {
@@ -558,61 +578,61 @@ namespace RBMCampaign
                 {
                     foreach (EquipmentElement item in EnumerateEquipmentSlots(sets[MBRandom.RandomInt(sets.Count)]))
                     {
+                        int tier = GetItemTier(item.Item);
                         intactValue += item.ItemValue;
-                        spoilsByTier[GetItemTier(item.Item)] += (long)(item.ItemValue * RollSalvageFraction(item.Item));
+                        spoilsByTier[tier] += (long)(item.ItemValue * RollSalvageFraction(item.Item));
+                        piecesByTier[tier]++;
                     }
                 }
             }
         }
 
         /// <summary>
-        /// A stack stops taking loot once every man in it is fully covered, leaving the rest for
-        /// others. Spoils beyond this point could never be spent anyway.
+        /// The party's share of the field, tier by tier. Every stack has a claim on every tier now --
+        /// a veteran will take a recruit's spear if nothing better is lying near him -- but the
+        /// veterans walk the field first, and the further beneath them a piece is the likelier they
+        /// are to step over it. What they overlook or cannot carry is left for the greener troops.
         /// </summary>
-        private static int GetRemainingNeed(PartyBase party, CharacterObject character, int stackSize)
-        {
-            return MathF.Max(0, GetPrimarySpoilsCost(character) * stackSize - GetSpoils(party, character));
-        }
-
-        /// <summary>
-        /// Each tier of loot is shared only among the stacks it would actually upgrade. A tier 1
-        /// pitchfork is worth nothing to anyone; a tier 5 hauberk is worth a point to recruits and
-        /// veterans alike, but not to the tier 5 troops already wearing one.
-        ///
-        /// Within a tier the veterans pick over the field first: stacks are served in descending
-        /// troop tier, each taking at most what it still needs, and whatever they leave cascades
-        /// down to the greener troops behind them.
-        /// </summary>
+        /// <remarks>
+        /// The pieces a stack has already carried off are tracked across the whole field, not per
+        /// tier, so a man who filled his arms with mail cannot also stoop for six spears.
+        /// </remarks>
         /// <returns>The points the party's stacks actually took, which is less than its share
-        /// whenever a tier finds no troop it would upgrade.</returns>
-        private static int GrantToParty(PartyBase party, long[] spoilsByTier, float share)
+        /// whenever a tier is overlooked or is more than the men have arms to carry.</returns>
+        private static int GrantToParty(PartyBase party, long[] spoilsByTier, long[] piecesByTier, float share)
         {
             if (party == null || share <= 0f)
             {
                 return 0;
             }
+            Dictionary<CharacterObject, int> carried = new Dictionary<CharacterObject, int>();
             int granted = 0;
             for (int tier = 0; tier < spoilsByTier.Length; tier++)
             {
-                int points = (int)MathF.Min(spoilsByTier[tier] * share, (float)int.MaxValue);
-                if (points > 0)
+                if (piecesByTier[tier] <= 0L)
                 {
-                    granted += GrantTierToParty(party, tier, points);
+                    continue;
+                }
+                // A piece is worth the tier's average. Scaling the count by the share rather than the
+                // worth keeps a party's total at exactly the fraction of the field it earned.
+                float valuePerPiece = (float)spoilsByTier[tier] / piecesByTier[tier];
+                int pieces = (int)MathF.Min(piecesByTier[tier] * share, (float)int.MaxValue);
+                if (pieces > 0 && valuePerPiece > 0f)
+                {
+                    granted += GrantTierToParty(party, carried, tier, pieces, valuePerPiece);
                 }
             }
             return granted;
         }
 
-        private static int GrantTierToParty(PartyBase party, int itemTier, int points)
+        private static int GrantTierToParty(PartyBase party, Dictionary<CharacterObject, int> carried, int itemTier, int pieces, float valuePerPiece)
         {
             List<TroopRosterElement> claimants = new List<TroopRosterElement>();
             TroopRoster roster = party.MemberRoster;
             for (int i = 0; i < roster.Count; i++)
             {
                 TroopRosterElement element = roster.GetElementCopyAtIndex(i);
-                if (!element.Character.IsHero
-                    && IsUpgradeFor(itemTier, element.Character)
-                    && GetRemainingNeed(party, element.Character, element.Number) > 0)
+                if (!element.Character.IsHero && GetCarryRoom(carried, element) > 0)
                 {
                     claimants.Add(element);
                 }
@@ -622,12 +642,13 @@ namespace RBMCampaign
 
             if (claimants.Count == 0)
             {
-                SpoilsLog.Log("LOOT", "    tier " + (itemTier + 1) + " (" + points + " pts): no claimant in "
+                SpoilsLog.Log("LOOT", party, "  tier " + (itemTier + 1) + " (" + pieces + " pieces): no claimant in "
                     + SpoilsLog.Describe(party) + ", discarded");
                 return 0;
             }
 
-            int remaining = points;
+            int granted = 0;
+            int remaining = pieces;
             int groupStart = 0;
             while (groupStart < claimants.Count && remaining > 0)
             {
@@ -637,31 +658,43 @@ namespace RBMCampaign
                 {
                     groupEnd++;
                 }
-                remaining -= GrantToTierGroup(party, claimants, groupStart, groupEnd, remaining, itemTier);
+                // What this rank of troops sees of what is still lying there. The rest they walk past.
+                int gap = GetTierGap(itemTier, claimants[groupStart].Character);
+                int noticed = (int)MathF.Min(GetNoticedPieces(remaining, gap), (long)remaining);
+                remaining -= GrantToTierGroup(party, carried, claimants, groupStart, groupEnd, noticed, itemTier, valuePerPiece, ref granted);
                 groupStart = groupEnd;
             }
 
             if (remaining > 0)
             {
-                SpoilsLog.Log("LOOT", "    tier " + (itemTier + 1) + ": " + remaining
-                    + " of " + points + " pts unclaimed in " + SpoilsLog.Describe(party) + " (everyone full)");
+                SpoilsLog.Log("LOOT", party, "  tier " + (itemTier + 1) + ": " + remaining
+                    + " of " + pieces + " pieces left lying in " + SpoilsLog.Describe(party)
+                    + " (overlooked, full, or no arms to carry them)");
             }
-            return points - remaining;
+            return granted;
+        }
+
+        /// <summary>Pieces this stack has arms left to carry.</summary>
+        private static int GetCarryRoom(Dictionary<CharacterObject, int> carried, TroopRosterElement element)
+        {
+            int taken;
+            carried.TryGetValue(element.Character, out taken);
+            return MathF.Max(0, GetCarryCapacity(element.Number) - taken);
         }
 
         /// <summary>
         /// Stacks of equal troop tier have equal claim, so they split by head count, and anything a
-        /// stack cannot take because it is nearly full is passed around the group before cascading.
-        /// Returns how many points the group actually consumed.
+        /// stack cannot take, because its arms are already full, is passed around the group before
+        /// cascading. Returns how many pieces the group actually carried off.
         /// </summary>
-        private static int GrantToTierGroup(PartyBase party, List<TroopRosterElement> claimants, int start, int end, int available, int itemTier)
+        private static int GrantToTierGroup(PartyBase party, Dictionary<CharacterObject, int> carried, List<TroopRosterElement> claimants, int start, int end, int available, int itemTier, float valuePerPiece, ref int granted)
         {
             int groupMen = 0;
             for (int i = start; i < end; i++)
             {
                 groupMen += claimants[i].Number;
             }
-            if (groupMen <= 0)
+            if (groupMen <= 0 || available <= 0)
             {
                 return 0;
             }
@@ -670,19 +703,16 @@ namespace RBMCampaign
             int allocated = 0;
             for (int i = start; i < end; i++)
             {
-                TroopRosterElement element = claimants[i];
-                int need = GetRemainingNeed(party, element.Character, element.Number);
-                int proportional = (int)((long)available * element.Number / groupMen);
-                shares[i - start] = MathF.Min(need, proportional);
+                int proportional = (int)((long)available * claimants[i].Number / groupMen);
+                shares[i - start] = MathF.Min(GetCarryRoom(carried, claimants[i]), proportional);
                 allocated += shares[i - start];
             }
 
-            // Hand what the near-full stacks left behind to their peers before it cascades down.
+            // Hand what the full-handed stacks left behind to their peers before it cascades down.
             int leftover = available - allocated;
             for (int i = start; i < end && leftover > 0; i++)
             {
-                TroopRosterElement element = claimants[i];
-                int room = GetRemainingNeed(party, element.Character, element.Number) - shares[i - start];
+                int room = GetCarryRoom(carried, claimants[i]) - shares[i - start];
                 int extra = MathF.Min(leftover, room);
                 shares[i - start] += extra;
                 leftover -= extra;
@@ -692,20 +722,31 @@ namespace RBMCampaign
             for (int i = start; i < end; i++)
             {
                 TroopRosterElement element = claimants[i];
-                int granted = shares[i - start];
-                if (SpoilsLog.IsEnabled && granted > 0)
+                int taken = shares[i - start];
+                if (taken <= 0)
+                {
+                    continue;
+                }
+                int points = MathF.Round(taken * valuePerPiece);
+                if (SpoilsLog.IsEnabled)
                 {
                     int before = GetSpoils(party, element.Character);
-                    SpoilsLog.Log("LOOT", "    tier " + (itemTier + 1) + " -> " + SpoilsLog.Describe(element.Character)
+                    SpoilsLog.Log("LOOT", party, "  tier " + (itemTier + 1) + " -> " + SpoilsLog.Describe(element.Character)
                         + " x" + element.Number + " in " + SpoilsLog.Describe(party)
-                        + ": +" + granted + " (pool " + before + " -> " + (before + granted)
-                        + ", need was " + GetRemainingNeed(party, element.Character, element.Number) + ")");
+                        + ": " + taken + " pieces, +" + points + " (pool " + before + " -> " + (before + points)
+                        + ", arms left " + (GetCarryRoom(carried, element) - taken)
+                        + ", gap " + GetTierGap(itemTier, element.Character) + ")");
                 }
-                AddSpoils(party, element.Character, granted);
-                consumed += granted;
+                AddSpoils(party, element.Character, points);
+                int alreadyCarried;
+                carried.TryGetValue(element.Character, out alreadyCarried);
+                carried[element.Character] = alreadyCarried + taken;
+                granted += points;
+                consumed += taken;
             }
             return consumed;
         }
+
     }
 
     public class RBMSpoilsCampaignBehavior : CampaignBehaviorBase

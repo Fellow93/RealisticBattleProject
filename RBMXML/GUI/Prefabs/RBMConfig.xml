@@ -83,7 +83,7 @@
 
 											<ListPanel LayoutImp.LayoutMethod="HorizontalLeftToRight" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="!AT.Slider.Slider.MarginLeft" VerticalAlignment="Center">
 											  <Children>
-												<SliderWidget Id="TroopUpgradeCostSlider" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Slider.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center" DoNotUpdateHandleSize="true" Filler="Filler" Handle="SliderHandle" IsDiscrete="false" MinValueFloat="0.01" MaxValueFloat="1" ValueFloat="@TroopUpgradeCostMultiplier">
+												<SliderWidget Id="TroopUpgradeCostSlider" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Slider.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center" DoNotUpdateHandleSize="true" Filler="Filler" Handle="SliderHandle" IsDiscrete="false" MinValueFloat="0" MaxValueFloat="2" ValueFloat="@TroopUpgradeCostMultiplier">
 												  <Children>
 													<Widget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="38" HorizontalAlignment="Center" VerticalAlignment="Center" Sprite="SPGeneral\SPOptions\standart_slider_canvas" />
 													<Widget Id="Filler" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="35" VerticalAlignment="Center" Sprite="SPGeneral\SPOptions\standart_slider_fill" ClipContents="true" />
@@ -93,29 +93,6 @@
 												</SliderWidget>
 
 												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="!AT.Slider.DefaultValue.MarginLeft" VerticalAlignment="Center" Brush="SPOptions.Slider.Value.Text" Text="@TroopUpgradeCostMultiplierValue"/>
-											  </Children>
-											</ListPanel>
-
-										  </Children>
-										</ListPanel>
-
-										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
-										  <Children>
-
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@TroopUpgradeSpoilsCostt"/>
-
-											<ListPanel LayoutImp.LayoutMethod="HorizontalLeftToRight" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="!AT.Slider.Slider.MarginLeft" VerticalAlignment="Center">
-											  <Children>
-												<SliderWidget Id="TroopUpgradeSpoilsCostSlider" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Slider.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center" DoNotUpdateHandleSize="true" Filler="Filler" Handle="SliderHandle" IsDiscrete="false" MinValueFloat="0" MaxValueFloat="5" ValueFloat="@TroopUpgradeSpoilsCostMultiplier">
-												  <Children>
-													<Widget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="38" HorizontalAlignment="Center" VerticalAlignment="Center" Sprite="SPGeneral\SPOptions\standart_slider_canvas" />
-													<Widget Id="Filler" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="35" VerticalAlignment="Center" Sprite="SPGeneral\SPOptions\standart_slider_fill" ClipContents="true" />
-													<Widget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="65" HorizontalAlignment="Center" VerticalAlignment="Center" Sprite="SPGeneral\SPOptions\standart_slider_frame" />
-													<ImageWidget Id="SliderHandle" DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="14" SuggestedHeight="38" HorizontalAlignment="Left" VerticalAlignment="Center" Brush="SPOptions.Slider.Handle" />
-												  </Children>
-												</SliderWidget>
-
-												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="!AT.Slider.DefaultValue.MarginLeft" VerticalAlignment="Center" Brush="SPOptions.Slider.Value.Text" Text="@TroopUpgradeSpoilsCostMultiplierValue"/>
 											  </Children>
 											</ListPanel>
 

@@ -44,12 +44,56 @@ namespace RBMCampaign
                 }
                 try
                 {
-                    File.WriteAllText(LogFilePath, "RBM spoils log, " + DateTime.Now + Environment.NewLine);
+                    File.WriteAllText(LogFilePath,
+                        "RBM spoils log, " + DateTime.Now + Environment.NewLine
+                        + "[wall clock][campaign year-day hour][category][MAIN or AI party] message" + Environment.NewLine);
                 }
                 catch
                 {
                     _fileLogFailed = true;
                 }
+            }
+        }
+
+        /// <summary>
+        /// The wall clock, to line a log up against a crash or a screenshot, and the campaign date,
+        /// to line it up against the battle that caused it. Neither alone is enough: a day of
+        /// campaign time can pass in a second, and a second of real time can span a battle.
+        /// </summary>
+        /// <remarks>
+        /// CampaignTime.Now reads Campaign.Current, which is null for the lines written from
+        /// OnSubModuleLoad and from the prefab loading thread before a campaign exists.
+        /// </remarks>
+        private static string Timestamp()
+        {
+            string wallClock = DateTime.Now.ToString("HH:mm:ss");
+            if (Campaign.Current == null)
+            {
+                return "[" + wallClock + "][no campaign]";
+            }
+            CampaignTime now = CampaignTime.Now;
+            return string.Format("[{0}][{1}-{2:000} {3:00}h]", wallClock, now.GetYear, now.GetDayOfYear, now.GetHourOfDay);
+        }
+
+        /// <summary>
+        /// Which party a line is about, since the log carries every party in the world and the player
+        /// only ever wants to read his own. Tagged rather than filtered so an AI lord's spoils can
+        /// still be checked against his battles.
+        /// </summary>
+        private static string PartyTag(PartyBase party)
+        {
+            if (Campaign.Current == null || party == null)
+            {
+                return "[----] ";
+            }
+            return (party == PartyBase.MainParty) ? "[MAIN] " : "[ AI ] ";
+        }
+
+        public static void Log(string category, PartyBase party, string message)
+        {
+            if (IsEnabled)
+            {
+                Log(category, PartyTag(party) + message);
             }
         }
 
@@ -59,7 +103,7 @@ namespace RBMCampaign
             {
                 return;
             }
-            string line = "[" + category + "] " + message;
+            string line = Timestamp() + "[" + category + "] " + message;
             Debug.Print("[RBM][Spoils] " + line);
             WriteToFile(line);
             if (!RBMConfig.RBMConfig.developerMode)
@@ -74,6 +118,11 @@ namespace RBMCampaign
             catch
             {
             }
+        }
+
+        public static void LogOnce(string key, string category, PartyBase party, string message)
+        {
+            LogOnce(key, category, PartyTag(party) + message);
         }
 
         /// <summary>For lines that would otherwise repeat every frame or every troop refresh.</summary>
