@@ -270,14 +270,23 @@
   </ItemGroup>
   <!-- Files & Classes -->
   <ItemGroup>
-    <Compile Include="SpoilsBarPrefabPatch.cs" />
-    <Compile Include="SpoilsLog.cs" />
-    <Compile Include="SpoilsBarWidget.cs" />
-    <Compile Include="SpoilsPool.cs" />
-    <Compile Include="SpoilsUpgradePatches.cs" />
-    <Compile Include="TroopUpkeep.cs" />
     <Compile Include="RBMCampaignPatcher.cs" />
-    <Compile Include="RBMCampaign.cs" />
+    <Compile Include="Diagnostics\SpoilsLog.cs" />
+    <Compile Include="Spoils\SpoilsPool.cs" />
+    <Compile Include="Spoils\SpoilsPool.Equipment.cs" />
+    <Compile Include="Spoils\SpoilsPool.UpgradeMath.cs" />
+    <Compile Include="Spoils\SpoilsPool.BattleLoot.cs" />
+    <Compile Include="Spoils\SpoilsPool.Plunder.cs" />
+    <Compile Include="Spoils\SpoilsPool.Wages.cs" />
+    <Compile Include="Spoils\RBMSpoilsCampaignBehavior.cs" />
+    <Compile Include="Upkeep\TroopUpkeep.cs" />
+    <Compile Include="Upkeep\TroopUpkeep.Food.cs" />
+    <Compile Include="Upkeep\RBMTroopUpkeepCampaignBehavior.cs" />
+    <Compile Include="Upgrades\RBMCampaignPatches.cs" />
+    <Compile Include="Upgrades\SpoilsUpgradePatches.cs" />
+    <Compile Include="Upgrades\PartyScreenStagedUpgrades.cs" />
+    <Compile Include="UI\SpoilsBarWidget.cs" />
+    <Compile Include="UI\SpoilsBarPrefabPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
