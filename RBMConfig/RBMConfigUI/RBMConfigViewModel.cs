@@ -180,6 +180,45 @@ namespace RBMConfig
             }
         }
 
+        private float _troopWageSpoilsFraction;
+
+        [DataSourceProperty]
+        public float TroopWageSpoilsFraction
+        {
+            get
+            {
+                return _troopWageSpoilsFraction;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 1f);
+                if (snapped != _troopWageSpoilsFraction)
+                {
+                    _troopWageSpoilsFraction = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopWageSpoilsFraction");
+                    OnPropertyChanged("TroopWageSpoilsFractionValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopWageSpoilsFractionValue
+        {
+            get
+            {
+                return _troopWageSpoilsFraction.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopWageSpoilsFractiont
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_036}Share of Daily Wage Returned as Spoils (default at 0.50)").ToString();
+            }
+        }
+
         [DataSourceProperty]
         public string ThrustModifiert
         {
@@ -648,6 +687,7 @@ namespace RBMConfig
             _troopUpgradeCostMultiplier = MathF.Clamp(RBMConfig.troopUpgradeCostMultiplier, 0.01f, 1f);
             _troopUpgradeSpoilsCostMultiplier = MathF.Clamp(RBMConfig.troopUpgradeSpoilsCostMultiplier, 0f, 5f);
             _troopUpgradeSpoilsLootMultiplier = MathF.Clamp(RBMConfig.troopUpgradeSpoilsLootMultiplier, 0f, 5f);
+            _troopWageSpoilsFraction = MathF.Clamp(RBMConfig.troopWageSpoilsFraction, 0f, 1f);
         }
 
         public override void RefreshValues()
@@ -814,6 +854,7 @@ namespace RBMConfig
             RBMConfig.troopUpgradeCostMultiplier = _troopUpgradeCostMultiplier;
             RBMConfig.troopUpgradeSpoilsCostMultiplier = _troopUpgradeSpoilsCostMultiplier;
             RBMConfig.troopUpgradeSpoilsLootMultiplier = _troopUpgradeSpoilsLootMultiplier;
+            RBMConfig.troopWageSpoilsFraction = _troopWageSpoilsFraction;
 
             RBMConfig.saveXmlConfig();
             //RBMConfig.parseXmlConfig();

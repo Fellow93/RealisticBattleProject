@@ -88,6 +88,7 @@
 	<string id="RBM_CON_033" text="Realistic Battle Mod" />
 	<string id="RBM_CON_034" text="Troop Upgrade Spoils Cost Multiplier (0 disables spoils, default at 1.00)" />
 	<string id="RBM_CON_035" text="Battle Spoils Loot Multiplier (default at 1.00)" />
+	<string id="RBM_CON_036" text="Share of Daily Wage Returned as Spoils (default at 0.50)" />
 	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
 	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />
 	<string id="RBM_SPOILS_006" text="Spoils cover: {AMOUNT}" />

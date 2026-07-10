@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
@@ -165,6 +166,24 @@ namespace RBMCampaign
                 return 0;
             }
             return MathF.Max(1, MathF.Round(delta * RBMConfig.RBMConfig.troopUpgradeSpoilsCostMultiplier));
+        }
+
+        /// <summary>
+        /// What a gold piece buys when it is spent as spoils rather than as gold. Both prices are the
+        /// same equipment value seen through a different multiplier, so their ratio is the exchange
+        /// rate: at the defaults an upgrade costs a tenth of its worth in gold but the whole of it in
+        /// spoils, making a gold piece worth ten points. Without this a wage would be quoted against
+        /// equipment values it was never measured on, and a soldier could not clothe himself in a
+        /// lifetime of pay.
+        /// </summary>
+        private static float SpoilsPerGold
+        {
+            get
+            {
+                float goldMultiplier = RBMConfig.RBMConfig.troopUpgradeCostMultiplier;
+                // A free upgrade is worth unbounded spoils per gold; hand back the raw rate instead.
+                return goldMultiplier <= 0f ? 1f : RBMConfig.RBMConfig.troopUpgradeSpoilsCostMultiplier / goldMultiplier;
+            }
         }
 
         /// <summary>
@@ -367,6 +386,59 @@ namespace RBMCampaign
                 : "{=RBM_SPOILS_010}Your men find nothing on the fallen they can use.");
             message.SetTextVariable("AMOUNT", granted);
             InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
+        }
+
+        /// <summary>
+        /// A stack's wage is not all pay: part of it is what the men lay out on their own kit, mending
+        /// what the last march wore through and replacing what they cannot mend. That part comes back
+        /// as spoils. The gold the party pays is untouched -- this only says where some of it went.
+        /// </summary>
+        /// <remarks>
+        /// Applied to every party, since every party pays wages.
+        /// </remarks>
+        public static void OnDailyTickParty(MobileParty mobileParty)
+        {
+            if (!IsEnabled || RBMConfig.RBMConfig.troopWageSpoilsFraction <= 0f || mobileParty == null)
+            {
+                return;
+            }
+            PartyBase party = mobileParty.Party;
+            TroopRoster roster = party?.MemberRoster;
+            if (roster == null)
+            {
+                return;
+            }
+
+            PartyWageModel wageModel = Campaign.Current.Models.PartyWageModel;
+            for (int i = 0; i < roster.Count; i++)
+            {
+                TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+                if (element.Character.IsHero)
+                {
+                    continue;
+                }
+                // A stack already outfitted to the man has nothing left to spend its wage on.
+                int need = GetRemainingNeed(party, element.Character, element.Number);
+                if (need <= 0)
+                {
+                    continue;
+                }
+                // The stack's wage, not one man's, so a small troop's half-point is not rounded away.
+                int wage = wageModel.GetCharacterWage(element.Character) * element.Number;
+                int granted = MathF.Min(need, MathF.Round(wage * RBMConfig.RBMConfig.troopWageSpoilsFraction * SpoilsPerGold));
+                if (granted <= 0)
+                {
+                    continue;
+                }
+                if (SpoilsLog.IsEnabled && party == PartyBase.MainParty)
+                {
+                    SpoilsLog.Log("WAGE", SpoilsLog.Describe(element.Character) + " x" + element.Number
+                        + ": wage " + wage + " at " + SpoilsPerGold.ToString("0.0") + " spoils/gold"
+                        + " -> +" + granted + " spoils (pool " + GetSpoils(party, element.Character)
+                        + " -> " + (GetSpoils(party, element.Character) + granted) + ", need was " + need + ")");
+                }
+                AddSpoils(party, element.Character, granted);
+            }
         }
 
         /// <summary>
@@ -636,6 +708,7 @@ namespace RBMCampaign
         public override void RegisterEvents()
         {
             CampaignEvents.MapEventEnded.AddNonSerializedListener(this, SpoilsPool.OnMapEventEnded);
+            CampaignEvents.DailyTickPartyEvent.AddNonSerializedListener(this, SpoilsPool.OnDailyTickParty);
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, SpoilsPool.OnMobilePartyDestroyed);
             CampaignEvents.PlayerUpgradedTroopsEvent.AddNonSerializedListener(this, SpoilsPool.OnPlayerUpgradedTroops);
         }

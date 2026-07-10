@@ -358,6 +358,8 @@ namespace RBMConfig
             TroopUpgradeSpoilsCostMultiplier.InnerText = RBMConfig.troopUpgradeSpoilsCostMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopUpgradeSpoilsLootMultiplier = xmlconfig.CreateElement("TroopUpgradeSpoilsLootMultiplier");
             TroopUpgradeSpoilsLootMultiplier.InnerText = RBMConfig.troopUpgradeSpoilsLootMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopWageSpoilsFraction = xmlconfig.CreateElement("TroopWageSpoilsFraction");
+            TroopWageSpoilsFraction.InnerText = RBMConfig.troopWageSpoilsFraction.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
             RBMCampaign.AppendChild(RBMCampaignEnabled);
             RBMCampaign.AppendChild(TroopUpgradeCostMultiplier);
@@ -366,6 +368,7 @@ namespace RBMConfig
             SpoilsLoggingEnabled.InnerText = RBMConfig.spoilsLoggingEnabled ? "1" : "0";
 
             RBMCampaign.AppendChild(TroopUpgradeSpoilsLootMultiplier);
+            RBMCampaign.AppendChild(TroopWageSpoilsFraction);
             RBMCampaign.AppendChild(SpoilsLoggingEnabled);
             Config.AppendChild(RBMCampaign);
 

@@ -31,6 +31,12 @@ namespace RBMConfig
         public static float troopUpgradeSpoilsCostMultiplier = 1f;
         public static float troopUpgradeSpoilsLootMultiplier = 1f;
 
+        // The share of a stack's daily wage that returns to it as spoils. The gold paid out is
+        // unchanged; this is the part of it the men are taken to spend on their own kit. Converted at
+        // what the gold would have bought had it been spent on the upgrade directly, so the two
+        // upgrade multipliers above set the exchange rate.
+        public static float troopWageSpoilsFraction = 0.5f;
+
         // Writes every spoils pool change, loot award and upgrade to rbm_spoils.log next to this config.
         public static bool spoilsLoggingEnabled = true;
 
@@ -159,6 +165,7 @@ namespace RBMConfig
             troopUpgradeCostMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeCostMultiplier", "0.1"), CultureInfo.InvariantCulture);
             troopUpgradeSpoilsCostMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeSpoilsCostMultiplier", "1"), CultureInfo.InvariantCulture);
             troopUpgradeSpoilsLootMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeSpoilsLootMultiplier", "1"), CultureInfo.InvariantCulture);
+            troopWageSpoilsFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopWageSpoilsFraction", "0.5"), CultureInfo.InvariantCulture);
             spoilsLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsLoggingEnabled", "1").Equals("1");
 
             // RBMAI
@@ -252,6 +259,7 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeCostMultiplier"), troopUpgradeCostMultiplier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeSpoilsCostMultiplier"), troopUpgradeSpoilsCostMultiplier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeSpoilsLootMultiplier"), troopUpgradeSpoilsLootMultiplier.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopWageSpoilsFraction"), troopWageSpoilsFraction.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SpoilsLoggingEnabled"), spoilsLoggingEnabled);
             //RBMAI
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/HitStopEnabled"), hitStopEnabled);
