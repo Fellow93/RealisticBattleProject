@@ -22,6 +22,12 @@ namespace RBMCampaign
         private static readonly object _fileLock = new object();
         private static bool _fileLogFailed;
 
+        /// <summary>
+        /// The timestamp is fixed once per launch so every line of a single run lands in the same
+        /// file, and a fresh run gets a new name rather than overwriting the last one.
+        /// </summary>
+        private static readonly string _launchStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+
         public static bool IsEnabled
         {
             get { return RBMConfig.RBMConfig.spoilsLoggingEnabled; }
@@ -29,7 +35,7 @@ namespace RBMCampaign
 
         private static string LogFilePath
         {
-            get { return Path.Combine(RBMConfig.Utilities.GetConfigFolderPath(), "rbm_spoils.log"); }
+            get { return Path.Combine(RBMConfig.Utilities.GetConfigFolderPath(), "rbm_spoils_" + _launchStamp + ".log"); }
         }
 
         public static void Reset()
