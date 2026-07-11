@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 
@@ -99,6 +100,22 @@ namespace RBMCampaign
         {
             int spoils;
             return _spoils.TryGetValue(Key(party, character), out spoils) ? spoils : 0;
+        }
+
+        /// <summary>The whole party's purse: the spoils of every stack on its member roster, summed.</summary>
+        public static int GetPartyTotalSpoils(PartyBase party)
+        {
+            if (party == null)
+            {
+                return 0;
+            }
+            int total = 0;
+            TroopRoster roster = party.MemberRoster;
+            for (int i = 0; i < roster.Count; i++)
+            {
+                total += GetSpoils(party, roster.GetCharacterAtIndex(i));
+            }
+            return total;
         }
 
         public static void AddSpoils(PartyBase party, CharacterObject character, int amount)

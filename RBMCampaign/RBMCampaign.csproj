@@ -292,6 +292,7 @@
     <Compile Include="Upgrades\PartyScreenStagedUpgrades.cs" />
     <Compile Include="UI\SpoilsBarWidget.cs" />
     <Compile Include="UI\SpoilsBarPrefabPatch.cs" />
+    <Compile Include="UI\SpoilsPartyTooltip.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
