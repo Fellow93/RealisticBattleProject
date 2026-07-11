@@ -66,8 +66,9 @@ namespace RBMCampaign
         /// </summary>
         /// <remarks>
         /// Silent, the way the wage deposit is: a daily trickle of background economy, not a windfall
-        /// worth a message. It is logged under SPILL for the player's own party. Applies to every
-        /// party -- an AI lord's surplus funds his own upgrades from the same treasury they draw on.
+        /// worth a message. The summary is logged under SPILL for every party -- the party column tells
+        /// the player's from an AI lord's -- while the per-stack detail is the player's own. Applies to
+        /// every party -- an AI lord's surplus funds his own upgrades from the same treasury they draw on.
         /// <para>
         /// troopSpoilsGoldSpillPerManPerDay is a flat ceiling on how much each man's share can hand up
         /// in a day, so the spill is always a slow trickle rather than a lump: however deep a stack's
@@ -129,7 +130,10 @@ namespace RBMCampaign
             // Null giver mints the coin into the payee's purse, the mirror of how an upgrade pays gold
             // out to a null receiver.
             GiveGoldAction.ApplyBetweenCharacters(null, payee, spilledTotal, true);
-            if (SpoilsLog.IsEnabled && party == PartyBase.MainParty)
+            // Logged for every party -- an AI lord's surplus is real gold moving into his purse the same
+            // as the player's -- with the party column (MAIN/AI) telling them apart. The per-stack detail
+            // above stays main-only so the daily tick does not write a line per soldier across the world.
+            if (SpoilsLog.IsEnabled)
             {
                 SpoilsLog.Log("SPILL", party, SpoilsLog.Describe(party) + " handed up " + spilledTotal
                     + " gold in surplus spoils to " + payee.Name);
