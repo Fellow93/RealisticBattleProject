@@ -248,7 +248,12 @@ namespace RBMCampaign
         /// </summary>
         /// <remarks>
         /// The pieces a stack has already carried off are tracked across the whole field, not per
-        /// tier, so a man who filled his arms with mail cannot also stoop for six spears.
+        /// tier, so a man who filled his arms with mail cannot also stoop for six spears. And the
+        /// field is worked dearest kit first, from the top tier down, so a man's arms fill with the
+        /// best he can reach before he ever stoops for the cheap stuff. Were it the other way, the
+        /// recruits' spears would soak up every arm and the fine mail lie discarded for want of a
+        /// hand to carry it -- the higher a piece is above the men picking it, the more it is worth
+        /// grabbing, so it is offered while there are still empty arms to take it.
         /// </remarks>
         /// <returns>The points the party's stacks actually took, which is less than its share
         /// whenever a tier is overlooked or is more than the men have arms to carry.</returns>
@@ -260,7 +265,7 @@ namespace RBMCampaign
             }
             Dictionary<CharacterObject, int> carried = new Dictionary<CharacterObject, int>();
             int granted = 0;
-            for (int tier = 0; tier < spoilsByTier.Length; tier++)
+            for (int tier = spoilsByTier.Length - 1; tier >= 0; tier--)
             {
                 if (piecesByTier[tier] <= 0L)
                 {

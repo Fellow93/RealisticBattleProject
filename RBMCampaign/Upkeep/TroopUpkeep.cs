@@ -9,6 +9,7 @@ using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
+using TaleWorlds.ObjectSystem;
 
 namespace RBMCampaign
 {
@@ -198,6 +199,64 @@ namespace RBMCampaign
             if (party.MemberRoster.FindIndexOfTroop(character) < 0)
             {
                 _fedUntilHours.Remove(SpoilsPool.Key(party, character));
+            }
+        }
+
+        /// <summary>
+        /// Rations move with the men when they transfer to another party, the way their purse does. The
+        /// receiving stack keeps the later of the two provisionings, and the source's entry is dropped if
+        /// its men all marched off. Paired with <see cref="SpoilsPool.TransferSpoils"/>.
+        /// </summary>
+        public static void TransferFedState(PartyBase from, PartyBase to, CharacterObject character)
+        {
+            int fedUntil;
+            if (_fedUntilHours.TryGetValue(SpoilsPool.Key(from, character), out fedUntil))
+            {
+                int existing;
+                _fedUntilHours.TryGetValue(SpoilsPool.Key(to, character), out existing);
+                if (fedUntil > existing)
+                {
+                    _fedUntilHours[SpoilsPool.Key(to, character)] = fedUntil;
+                }
+            }
+            ClearIfStackGone(from, character);
+        }
+
+        /// <summary>
+        /// Drops ration entries for stacks that have left <paramref name="party"/> by a path that never
+        /// cleared them, the food-side twin of <see cref="SpoilsPool.PruneOrphans"/>.
+        /// </summary>
+        public static void PruneOrphans(PartyBase party)
+        {
+            if (party == null || party.MemberRoster == null)
+            {
+                return;
+            }
+            string prefix = party.Id + "#";
+            List<string> orphans = null;
+            foreach (string key in _fedUntilHours.Keys)
+            {
+                if (!key.StartsWith(prefix))
+                {
+                    continue;
+                }
+                string charId = key.Substring(prefix.Length);
+                CharacterObject character = MBObjectManager.Instance.GetObject<CharacterObject>(charId);
+                if (character == null || party.MemberRoster.FindIndexOfTroop(character) < 0)
+                {
+                    if (orphans == null)
+                    {
+                        orphans = new List<string>();
+                    }
+                    orphans.Add(key);
+                }
+            }
+            if (orphans != null)
+            {
+                foreach (string key in orphans)
+                {
+                    _fedUntilHours.Remove(key);
+                }
             }
         }
 
