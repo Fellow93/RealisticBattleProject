@@ -1,5 +1,7 @@
 ﻿// CunningLords.Interaction.CunningLordsMenuViewModel
+using System;
 using System.Collections.Generic;
+using TaleWorlds.Core.ViewModelCollection.Information;
 using TaleWorlds.Core.ViewModelCollection.Selector;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
@@ -102,9 +104,12 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_032}Troop Upgrade Cost Multiplier, gold and spoils alike (0 disables spoils, default at 1.00)").ToString();
+                return new TextObject("{=RBM_CON_032}Troop Upgrade Cost").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopUpgradeCostHint { get; } = Hint("{=RBM_CON_050}Multiplier on the gold-and-spoils cost to upgrade a troop. 0 turns the spoils system off and makes upgrades free. Default 1.00.");
 
         private float _troopUpgradeSpoilsLootMultiplier;
 
@@ -141,9 +146,12 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_035}Battle Spoils Loot Multiplier (default at 1.00)").ToString();
+                return new TextObject("{=RBM_CON_035}Battle Spoils Loot").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopUpgradeSpoilsLootHint { get; } = Hint("{=RBM_CON_051}Multiplier on the worth of the kit your men salvage from a battlefield. Default 1.00.");
 
         private float _troopLootPiecesPerMan;
 
@@ -184,9 +192,12 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_037}Pieces of Kit One Man Carries off a Field (default at 3)").ToString();
+                return new TextObject("{=RBM_CON_037}Kit Pieces per Man").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopLootPiecesPerManHint { get; } = Hint("{=RBM_CON_052}How many pieces of kit a single soldier can carry off a field. Default 3.");
 
         private float _troopLootOverlookChancePerTier;
 
@@ -223,9 +234,12 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_040}Chance a Man Overlooks Kit a Tier Beneath Him (default at 0.50)").ToString();
+                return new TextObject("{=RBM_CON_040}Overlook Chance / Tier").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopLootOverlookChancePerTierHint { get; } = Hint("{=RBM_CON_053}Chance a man steps over a piece of kit one tier beneath him, leaving it for greener troops. Default 0.50.");
 
         private float _troopWageSpoilsFraction;
 
@@ -262,9 +276,12 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_036}Share of Daily Wage Returned as Spoils (default at 0.50)").ToString();
+                return new TextObject("{=RBM_CON_036}Wage Kept as Spoils").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopWageSpoilsFractionHint { get; } = Hint("{=RBM_CON_054}Share of a man's daily wage that returns to you as spoils. Default 0.50.");
 
         private float _troopSettlementFoodDays;
 
@@ -305,9 +322,12 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_041}Days of Food a Man Buys in a Settlement (0 stops it, default at 20)").ToString();
+                return new TextObject("{=RBM_CON_041}Food Days Bought").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopSettlementFoodDaysHint { get; } = Hint("{=RBM_CON_055}Days of food a man buys when he passes through a settlement. 0 stops him buying any. Default 20.");
 
         private float _troopFoodWageFraction;
 
@@ -344,9 +364,12 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_042}Share of a Day's Wage a Man Spends on a Day's Food (default at 0.50)").ToString();
+                return new TextObject("{=RBM_CON_042}Wage Spent on Food").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopFoodWageFractionHint { get; } = Hint("{=RBM_CON_056}Share of a day's wage a man spends to feed himself for a day. Default 0.50.");
 
         private float _troopSettlementFunWageFraction;
 
@@ -383,9 +406,12 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_043}A Day's Wage a Man Drinks Away per Day Idle in a Settlement (default at 1.50)").ToString();
+                return new TextObject("{=RBM_CON_043}Wage Drunk Away").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopSettlementFunWageFractionHint { get; } = Hint("{=RBM_CON_057}A day's wage a man drinks away for each day he sits idle in a settlement. Default 1.50.");
 
         private float _settlementProsperityPerGoldSpent;
 
@@ -422,9 +448,12 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_038}Prosperity a Settlement Gains per Gold Spent in It (default at 0.02)").ToString();
+                return new TextObject("{=RBM_CON_038}Prosperity per Gold").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel SettlementProsperityPerGoldSpentHint { get; } = Hint("{=RBM_CON_058}Prosperity a settlement gains for every gold your men spend in it. Default 0.02.");
 
         private float _troopRaidSpoilsMultiplier;
 
@@ -461,9 +490,12 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_044}Share of a Raid's Plunder Its Soldiers Pocket as Spoils (default at 0.25)").ToString();
+                return new TextObject("{=RBM_CON_044}Raid Plunder Pocketed").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopRaidSpoilsMultiplierHint { get; } = Hint("{=RBM_CON_059}Share of a raid's plunder its soldiers keep for themselves as spoils. Default 0.25.");
 
         [DataSourceProperty]
         public string SpoilsLoggingt
@@ -509,9 +541,12 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_045}Share of a Stack's Surplus Spoils Handed Up as Gold (default at 1.00)").ToString();
+                return new TextObject("{=RBM_CON_045}Surplus Handed Up").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopSpoilsGoldSpillMultiplierHint { get; } = Hint("{=RBM_CON_060}Share of a stack's surplus spoils handed up to you as gold once its own men are provisioned. Default 1.00.");
 
         private float _troopSpoilsWarChestGoldPerTier;
 
@@ -548,9 +583,12 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_046}War Chest a Man Keeps from the Spill, per Tier (default at 25)").ToString();
+                return new TextObject("{=RBM_CON_046}War Chest per Tier").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopSpoilsWarChestGoldPerTierHint { get; } = Hint("{=RBM_CON_061}Gold a man holds back from the surplus he hands up, scaled by his tier. Default 25.");
 
         [DataSourceProperty]
         public string ThrustModifiert
@@ -1034,6 +1072,17 @@ namespace RBMConfig
             SpoilsLoggingEnabled.SelectedIndex = RBMConfig.spoilsLoggingEnabled ? 1 : 0;
             _troopSpoilsGoldSpillMultiplier = MathF.Clamp(RBMConfig.troopSpoilsGoldSpillMultiplier, 0f, 1f);
             _troopSpoilsWarChestGoldPerTier = MathF.Clamp(RBMConfig.troopSpoilsWarChestGoldPerTier, 0f, 1000f);
+        }
+
+        /// <summary>
+        /// A hover tooltip carrying the full explanation a shortened option label leaves out. The
+        /// localized string is resolved lazily, each time the tooltip is shown, so a language switch
+        /// while the screen is open is honoured. Paired in the prefab with a HintWidget overlaying the
+        /// label, which relays its parent's hover to this view model.
+        /// </summary>
+        private static BasicTooltipViewModel Hint(string localizedText)
+        {
+            return new BasicTooltipViewModel((Func<string>)(() => new TextObject(localizedText).ToString()));
         }
 
         public override void RefreshValues()

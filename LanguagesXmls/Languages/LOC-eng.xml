@@ -84,20 +84,33 @@
 	<string id="RBM_CON_014" text="Posture GUI" />
 	<string id="RBM_CON_015" text="Vanilla AI Block/Parry/Attack" />
 	<string id="RBM_CON_031" text="Keep Battle (Last Stand)" />
-	<string id="RBM_CON_032" text="Troop Upgrade Cost Multiplier, gold and spoils alike (0 disables spoils, default at 1.00)" />
+	<string id="RBM_CON_032" text="Troop Upgrade Cost" />
 	<string id="RBM_CON_033" text="Realistic Battle Mod" />
-	<string id="RBM_CON_035" text="Battle Spoils Loot Multiplier (default at 1.00)" />
-	<string id="RBM_CON_036" text="Share of Daily Wage Returned as Spoils (default at 0.50)" />
-	<string id="RBM_CON_037" text="Pieces of Kit One Man Carries off a Field (default at 3)" />
-	<string id="RBM_CON_038" text="Prosperity a Settlement Gains per Gold Spent in It (default at 0.02)" />
+	<string id="RBM_CON_035" text="Battle Spoils Loot" />
+	<string id="RBM_CON_036" text="Wage Kept as Spoils" />
+	<string id="RBM_CON_037" text="Kit Pieces per Man" />
+	<string id="RBM_CON_038" text="Prosperity per Gold" />
 	<string id="RBM_CON_039" text="Spoils Logging" />
-	<string id="RBM_CON_040" text="Chance a Man Overlooks Kit a Tier Beneath Him (default at 0.50)" />
-	<string id="RBM_CON_041" text="Days of Food a Man Buys in a Settlement (0 stops it, default at 20)" />
-	<string id="RBM_CON_042" text="Share of a Day's Wage a Man Spends on a Day's Food (default at 0.50)" />
-	<string id="RBM_CON_043" text="A Day's Wage a Man Drinks Away per Day Idle in a Settlement (default at 1.50)" />
-	<string id="RBM_CON_044" text="Share of a Raid's Plunder Its Soldiers Pocket as Spoils (default at 0.25)" />
-	<string id="RBM_CON_045" text="Share of a Stack's Surplus Spoils Handed Up as Gold (default at 1.00)" />
-	<string id="RBM_CON_046" text="War Chest a Man Keeps from the Spill, per Tier (default at 25)" />
+	<string id="RBM_CON_040" text="Overlook Chance / Tier" />
+	<string id="RBM_CON_041" text="Food Days Bought" />
+	<string id="RBM_CON_042" text="Wage Spent on Food" />
+	<string id="RBM_CON_043" text="Wage Drunk Away" />
+	<string id="RBM_CON_044" text="Raid Plunder Pocketed" />
+	<string id="RBM_CON_045" text="Surplus Handed Up" />
+	<string id="RBM_CON_046" text="War Chest per Tier" />
+	<!-- Campaign option hover tooltips (full descriptions the shortened labels drop) -->
+	<string id="RBM_CON_050" text="Multiplier on the gold-and-spoils cost to upgrade a troop. 0 turns the spoils system off and makes upgrades free. Default 1.00." />
+	<string id="RBM_CON_051" text="Multiplier on the worth of the kit your men salvage from a battlefield. Default 1.00." />
+	<string id="RBM_CON_052" text="How many pieces of kit a single soldier can carry off a field. Default 3." />
+	<string id="RBM_CON_053" text="Chance a man steps over a piece of kit one tier beneath him, leaving it for greener troops. Default 0.50." />
+	<string id="RBM_CON_054" text="Share of a man's daily wage that returns to you as spoils. Default 0.50." />
+	<string id="RBM_CON_055" text="Days of food a man buys when he passes through a settlement. 0 stops him buying any. Default 20." />
+	<string id="RBM_CON_056" text="Share of a day's wage a man spends to feed himself for a day. Default 0.50." />
+	<string id="RBM_CON_057" text="A day's wage a man drinks away for each day he sits idle in a settlement. Default 1.50." />
+	<string id="RBM_CON_058" text="Prosperity a settlement gains for every gold your men spend in it. Default 0.02." />
+	<string id="RBM_CON_059" text="Share of a raid's plunder its soldiers keep for themselves as spoils. Default 0.25." />
+	<string id="RBM_CON_060" text="Share of a stack's surplus spoils handed up to you as gold once its own men are provisioned. Default 1.00." />
+	<string id="RBM_CON_061" text="Gold a man holds back from the surplus he hands up, scaled by his tier. Default 25." />
 	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
 	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />
 	<string id="RBM_SPOILS_006" text="Spoils cover: {AMOUNT}" />

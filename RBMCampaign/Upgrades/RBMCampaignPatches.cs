@@ -5,7 +5,9 @@ using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.ViewModelCollection;
+using TaleWorlds.CampaignSystem.ViewModelCollection.Party;
 using TaleWorlds.Core;
+using TaleWorlds.Core.ViewModelCollection.Information;
 using TaleWorlds.Localization;
 
 namespace RBMCampaign
@@ -142,6 +144,71 @@ namespace RBMCampaign
                     .SetTextVariable("AMOUNT", __state).ToString() + CoinIcon;
                 __result += "\n" + new TextObject("{=RBM_SPOILS_007}You pay: {AMOUNT}")
                     .SetTextVariable("AMOUNT", upgradeCoinCost - __state).ToString() + CoinIcon;
+            }
+        }
+
+        /// <summary>
+        /// A shown hint is a snapshot: BasicTooltipViewModel.ExecuteBeginHint reads the text once on
+        /// hover-begin and hands it to the tooltip layer, and nothing polls it after that. Under spoils
+        /// every upgrade shifts the "Spoils cover / You pay" split, so a tooltip the player is still
+        /// hovering keeps stale numbers until the cursor leaves the arrow and returns.
+        ///
+        /// The party screen's upgrade arrows never raise a focus event on mouse hover (only gamepad
+        /// navigation sets PartyVM.CurrentFocusedUpgrade), so the only reliable way to know which arrow
+        /// the cursor is over is to watch which tooltip the game last showed. These two patches record
+        /// the tooltip that is currently on screen and forget it when it closes.
+        /// </summary>
+        private static BasicTooltipViewModel _shownHint;
+
+        [HarmonyPatch(typeof(BasicTooltipViewModel))]
+        [HarmonyPatch("ExecuteBeginHint")]
+        private class TrackShownHintBegin
+        {
+            private static void Postfix(BasicTooltipViewModel __instance)
+            {
+                _shownHint = __instance;
+            }
+        }
+
+        [HarmonyPatch(typeof(BasicTooltipViewModel))]
+        [HarmonyPatch("ExecuteEndHint")]
+        private class TrackShownHintEnd
+        {
+            private static void Postfix(BasicTooltipViewModel __instance)
+            {
+                if (_shownHint == __instance)
+                {
+                    _shownHint = null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// An upgrade re-runs InitializeUpgrades, which calls Refresh on every arrow of the stack and
+        /// rebuilds each one's hint with the post-upgrade numbers. If the arrow being refreshed is the
+        /// one whose tooltip is currently on screen, replay the player's own workaround — hide the stale
+        /// tooltip and show it again — so the live numbers update without moving the cursor. Matching on
+        /// the pre-refresh Hint (captured before Refresh swaps in the new one) is what identifies the
+        /// hovered arrow; the last-man-upgraded path never refreshes that arrow (its VM is dropped) and
+        /// the game hides its tooltip itself, so it is left alone.
+        /// </summary>
+        [HarmonyPatch(typeof(UpgradeTargetVM))]
+        [HarmonyPatch("Refresh")]
+        private class RefreshShownUpgradeHint
+        {
+            private static void Prefix(UpgradeTargetVM __instance, out bool __state)
+            {
+                __state = SpoilsPool.IsEnabled && _shownHint != null && __instance.Hint == _shownHint;
+            }
+
+            private static void Postfix(UpgradeTargetVM __instance, bool __state)
+            {
+                if (!__state)
+                {
+                    return;
+                }
+                MBInformationManager.HideInformations();
+                __instance.Hint?.ExecuteBeginHint();
             }
         }
     }
