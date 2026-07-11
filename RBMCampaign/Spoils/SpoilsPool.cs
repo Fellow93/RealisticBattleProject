@@ -41,6 +41,19 @@ namespace RBMCampaign
             return key.StartsWith(party.Id + "#");
         }
 
+        /// <summary>
+        /// Villager parties carry goods to market, not war-kit: they take no field loot, sack no
+        /// settlement, mend no armour off their wage, and drink in no tavern. The whole spoils system is
+        /// about troops keeping their arms, which villagers have none of, so they are exempt from all of
+        /// it. Gated at <see cref="AddSpoils"/>, the one funnel every purse fills or drains through, so an
+        /// exempt party never holds a purse and everything downstream -- food, carousing, prosperity --
+        /// finds nothing to spend and does nothing.
+        /// </summary>
+        public static bool IsExemptParty(PartyBase party)
+        {
+            return party == null || (party.MobileParty != null && party.MobileParty.IsVillager);
+        }
+
         public static void SyncData(IDataStore dataStore)
         {
             // The key is bumped whenever the meaning of a point of spoils changes, so stale pools are
@@ -90,7 +103,7 @@ namespace RBMCampaign
 
         public static void AddSpoils(PartyBase party, CharacterObject character, int amount)
         {
-            if (amount == 0)
+            if (amount == 0 || IsExemptParty(party))
             {
                 return;
             }
@@ -117,6 +130,62 @@ namespace RBMCampaign
                 SpoilsLog.Log("POOL", party, "stack of " + SpoilsLog.Describe(character) + " gone from "
                     + SpoilsLog.Describe(party) + "; its remaining spoils are lost");
             }
+        }
+
+        /// <summary>
+        /// Clears every purse and ration held by a party now exempt from the system. A save made before
+        /// villagers were exempted carries pools their owners can no longer spend or prune, so they are
+        /// swept once when a session launches. Nothing is spilled back to gold: an exempt party was never
+        /// meant to hold spoils, so its stranded pool is dropped rather than paid out.
+        /// </summary>
+        public static void PruneExemptParties()
+        {
+            HashSet<string> exempt = new HashSet<string>();
+            foreach (MobileParty mobileParty in MobileParty.All)
+            {
+                PartyBase party = mobileParty?.Party;
+                if (party != null && IsExemptParty(party))
+                {
+                    exempt.Add(party.Id);
+                }
+            }
+            if (exempt.Count == 0)
+            {
+                return;
+            }
+            int removed = RemoveEntriesForParties(_spoils, exempt);
+            if (removed > 0)
+            {
+                SpoilsLog.Log("POOL", "pruned " + removed + " spoils pool entries from exempt (villager) parties");
+            }
+            TroopUpkeep.PruneExemptParties(exempt);
+        }
+
+        /// <summary>
+        /// Removes every entry a stack-keyed store holds for one of <paramref name="partyIds"/>. Keys are
+        /// <c>partyId#charId</c>, so the party is read off the key rather than matched prefix by prefix.
+        /// Shared by the spoils pool and the ration stores, which key state the same way.
+        /// </summary>
+        public static int RemoveEntriesForParties(Dictionary<string, int> store, HashSet<string> partyIds)
+        {
+            List<string> stale = null;
+            foreach (string key in store.Keys)
+            {
+                int hash = key.IndexOf('#');
+                if (hash > 0 && partyIds.Contains(key.Substring(0, hash)))
+                {
+                    (stale ?? (stale = new List<string>())).Add(key);
+                }
+            }
+            if (stale == null)
+            {
+                return 0;
+            }
+            foreach (string key in stale)
+            {
+                store.Remove(key);
+            }
+            return stale.Count;
         }
 
         public static void OnMobilePartyDestroyed(MobileParty party, PartyBase destroyer)

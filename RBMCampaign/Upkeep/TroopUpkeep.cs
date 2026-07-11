@@ -296,6 +296,22 @@ namespace RBMCampaign
             }
         }
 
+        /// <summary>
+        /// Drops the ration and luxury-cooldown entries of parties now exempt from the system, the
+        /// food-side twin of <see cref="SpoilsPool.PruneExemptParties"/>. Called with the exempt party
+        /// ids the spoils sweep already gathered, so the party list is walked once for both stores.
+        /// </summary>
+        public static void PruneExemptParties(HashSet<string> partyIds)
+        {
+            int fed = SpoilsPool.RemoveEntriesForParties(_fedUntilHours, partyIds);
+            int luxury = SpoilsPool.RemoveEntriesForParties(_luxuryCooldownUntilHours, partyIds);
+            if (fed > 0 || luxury > 0)
+            {
+                SpoilsLog.Log("POOL", "pruned " + fed + " ration and " + luxury
+                    + " luxury entries from exempt (villager) parties");
+            }
+        }
+
         public static void OnMobilePartyDestroyed(MobileParty party, PartyBase destroyer)
         {
             List<string> stale = new List<string>();

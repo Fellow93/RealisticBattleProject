@@ -380,6 +380,8 @@ namespace RBMConfig
             TroopLuxuryCooldownDays.InnerText = RBMConfig.troopLuxuryCooldownDays.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopLuxurySpendChance = xmlconfig.CreateElement("TroopLuxurySpendChance");
             TroopLuxurySpendChance.InnerText = RBMConfig.troopLuxurySpendChance.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopFallenSpoilsCaptureFraction = xmlconfig.CreateElement("TroopFallenSpoilsCaptureFraction");
+            TroopFallenSpoilsCaptureFraction.InnerText = RBMConfig.troopFallenSpoilsCaptureFraction.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
             RBMCampaign.AppendChild(RBMCampaignEnabled);
             RBMCampaign.AppendChild(TroopUpgradeCostMultiplier);
@@ -401,6 +403,7 @@ namespace RBMConfig
             RBMCampaign.AppendChild(TroopSpoilsWarChestGoldPerTier);
             RBMCampaign.AppendChild(TroopLuxuryCooldownDays);
             RBMCampaign.AppendChild(TroopLuxurySpendChance);
+            RBMCampaign.AppendChild(TroopFallenSpoilsCaptureFraction);
             RBMCampaign.AppendChild(SpoilsLoggingEnabled);
             RBMCampaign.AppendChild(SpoilsVerboseLoggingEnabled);
             Config.AppendChild(RBMCampaign);

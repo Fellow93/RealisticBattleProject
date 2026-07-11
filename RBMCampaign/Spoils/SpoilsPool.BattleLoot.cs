@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
@@ -76,6 +77,25 @@ namespace RBMCampaign
             return MathF.Max(0, RBMConfig.RBMConfig.troopLootPiecesPerMan) * menInStack;
         }
 
+        /// <summary>Every party on a battle side, names comma-joined, for the loot header line.</summary>
+        private static string SidePartyNames(MapEventSide side)
+        {
+            if (side == null || side.Parties == null || side.Parties.Count == 0)
+            {
+                return "none";
+            }
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < side.Parties.Count; i++)
+            {
+                if (i > 0)
+                {
+                    sb.Append(", ");
+                }
+                sb.Append(SpoilsLog.Describe(side.Parties[i].Party));
+            }
+            return sb.ToString();
+        }
+
         public static void OnMapEventEnded(MapEvent mapEvent)
         {
             if (!IsEnabled)
@@ -128,7 +148,9 @@ namespace RBMCampaign
                     salvagedValue += spoilsByTier[tier];
                 }
                 SpoilsLog.Log("LOOT", "battle ended: " + mapEvent.EventType + ", winner side " + mapEvent.WinningSide
-                    + ", " + winner.Parties.Count + " victor party(s), " + winner.OtherSide.Parties.Count + " loser party(s)");
+                    + ", " + winner.Parties.Count + " victor party(s), " + winner.OtherSide.Parties.Count + " loser party(s)"
+                    + "; attackers: " + SidePartyNames(mapEvent.AttackerSide)
+                    + "; defenders: " + SidePartyNames(mapEvent.DefenderSide));
                 SpoilsLog.Log("LOOT", "  the dead wore " + intactValue + " value; " + salvagedValue + " salvaged ("
                     + (intactValue > 0L ? (100L * salvagedValue / intactValue) : 0L) + "%)");
                 for (int tier = 0; tier < spoilsByTier.Length; tier++)

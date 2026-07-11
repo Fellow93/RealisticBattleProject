@@ -101,6 +101,7 @@
 	<string id="RBM_CON_047" text="Luxury Cooldown (Days)" />
 	<string id="RBM_CON_048" text="Luxury Buy Chance" />
 	<string id="RBM_CON_049" text="Verbose Logging" />
+	<string id="RBM_CON_065" text="Fallen Spoils Captured" />
 	<!-- Campaign option hover tooltips (full descriptions the shortened labels drop) -->
 	<string id="RBM_CON_050" text="Multiplier on the gold-and-spoils cost to upgrade a troop. 0 turns the spoils system off and makes upgrades free. Default 1.00." />
 	<string id="RBM_CON_051" text="Multiplier on the worth of the kit your men salvage from a battlefield. Default 1.00." />
@@ -116,6 +117,7 @@
 	<string id="RBM_CON_061" text="Gold a man holds back from the surplus he hands up, scaled by his tier. Default 25." />
 	<string id="RBM_CON_063" text="Days a stack waits after buying a luxury before it splurges again. Default 20." />
 	<string id="RBM_CON_064" text="Chance each idle hour that an over-cap stack buys a luxury from the settlement. Default 0.02." />
+	<string id="RBM_CON_066" text="Share of a beaten enemy's killed and wounded spoils the victors carry off; the rest is lost. Default 0.75." />
 	<string id="RBM_CON_062" text="Reset to Default" />
 	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
 	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />

@@ -687,6 +687,48 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel TroopLuxurySpendChanceHint { get; } = Hint("{=RBM_CON_064}Chance each idle hour that an over-cap stack buys a luxury from the settlement. Default 0.02.");
 
+        private float _troopFallenSpoilsCaptureFraction;
+
+        [DataSourceProperty]
+        public float TroopFallenSpoilsCaptureFraction
+        {
+            get
+            {
+                return _troopFallenSpoilsCaptureFraction;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 1f);
+                if (snapped != _troopFallenSpoilsCaptureFraction)
+                {
+                    _troopFallenSpoilsCaptureFraction = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopFallenSpoilsCaptureFraction");
+                    OnPropertyChanged("TroopFallenSpoilsCaptureFractionValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopFallenSpoilsCaptureFractionValue
+        {
+            get
+            {
+                return _troopFallenSpoilsCaptureFraction.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopFallenSpoilsCaptureFractiont
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_065}Fallen Spoils Captured").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopFallenSpoilsCaptureFractionHint { get; } = Hint("{=RBM_CON_066}Share of a beaten enemy's killed and wounded spoils the victors carry off; the rest is lost. Default 0.75.");
+
         [DataSourceProperty]
         public string ThrustModifiert
         {
@@ -1185,6 +1227,7 @@ namespace RBMConfig
             _troopSpoilsWarChestGoldPerTier = MathF.Clamp(RBMConfig.troopSpoilsWarChestGoldPerTier, 0f, 1000f);
             _troopLuxuryCooldownDays = MathF.Clamp(RBMConfig.troopLuxuryCooldownDays, 0f, 120f);
             _troopLuxurySpendChance = MathF.Clamp(RBMConfig.troopLuxurySpendChance, 0f, 1f);
+            _troopFallenSpoilsCaptureFraction = MathF.Clamp(RBMConfig.troopFallenSpoilsCaptureFraction, 0f, 1f);
         }
 
         /// <summary>
@@ -1375,6 +1418,7 @@ namespace RBMConfig
             RBMConfig.troopSpoilsWarChestGoldPerTier = (int)MathF.Round(_troopSpoilsWarChestGoldPerTier);
             RBMConfig.troopLuxuryCooldownDays = (int)MathF.Round(_troopLuxuryCooldownDays);
             RBMConfig.troopLuxurySpendChance = _troopLuxurySpendChance;
+            RBMConfig.troopFallenSpoilsCaptureFraction = _troopFallenSpoilsCaptureFraction;
 
             RBMConfig.saveXmlConfig();
             //RBMConfig.parseXmlConfig();
@@ -1428,6 +1472,7 @@ namespace RBMConfig
             TroopSpoilsWarChestGoldPerTier = 25f;
             TroopLuxuryCooldownDays = 20f;
             TroopLuxurySpendChance = 0.02f;
+            TroopFallenSpoilsCaptureFraction = 0.75f;
             SpoilsLoggingEnabled.SelectedIndex = 1;
             SpoilsVerboseLoggingEnabled.SelectedIndex = 1;
         }

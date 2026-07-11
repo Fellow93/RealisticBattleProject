@@ -23,6 +23,9 @@ namespace RBMCampaign
         private void OnSessionLaunched(CampaignGameStarter starter)
         {
             SpoilsLog.StartCampaignLog();
+            // Sweep out any purse a save made before villagers were exempted left on a villager party;
+            // its owner can no longer spend or prune it, so it would otherwise linger for the save's life.
+            SpoilsPool.PruneExemptParties();
         }
 
         // A daily sweep of every party's purses. The party-screen transfer hook moves a purse when the

@@ -88,6 +88,12 @@ namespace RBMConfig
         // buys a luxury off the market. Small: over a full day's stay the odds add up. Zero stops it.
         public static float troopLuxurySpendChance = 0.02f;
 
+        // Share of a beaten enemy's fallen-and-wounded spoils the victors strip off the field; the rest
+        // is trampled and lost. Split across the winning parties by their part in the battle, and within
+        // a party across its stacks by weight -- men times tier -- so veterans take the larger cut. Zero
+        // leaves the dead's purse on the field.
+        public static float troopFallenSpoilsCaptureFraction = 0.75f;
+
         // Writes every spoils pool change, loot award and upgrade to rbm_spoils.log next to this config.
         public static bool spoilsLoggingEnabled = true;
 
@@ -232,6 +238,7 @@ namespace RBMConfig
             troopSpoilsWarChestGoldPerTier = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSpoilsWarChestGoldPerTier", "25"), CultureInfo.InvariantCulture);
             troopLuxuryCooldownDays = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLuxuryCooldownDays", "20"), CultureInfo.InvariantCulture);
             troopLuxurySpendChance = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLuxurySpendChance", "0.02"), CultureInfo.InvariantCulture);
+            troopFallenSpoilsCaptureFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopFallenSpoilsCaptureFraction", "0.75"), CultureInfo.InvariantCulture);
             spoilsLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsLoggingEnabled", "1").Equals("1");
             spoilsVerboseLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsVerboseLoggingEnabled", "1").Equals("1");
 
@@ -337,6 +344,7 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSpoilsWarChestGoldPerTier"), troopSpoilsWarChestGoldPerTier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLuxuryCooldownDays"), troopLuxuryCooldownDays.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLuxurySpendChance"), troopLuxurySpendChance.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopFallenSpoilsCaptureFraction"), troopFallenSpoilsCaptureFraction.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SpoilsLoggingEnabled"), spoilsLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SpoilsVerboseLoggingEnabled"), spoilsVerboseLoggingEnabled);
             //RBMAI

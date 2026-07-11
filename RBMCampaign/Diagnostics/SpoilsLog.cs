@@ -153,6 +153,7 @@ namespace RBMCampaign
                     Field("troopSpoilsWarChestGoldPerTier", RC.troopSpoilsWarChestGoldPerTier),
                     Field("troopLuxuryCooldownDays", RC.troopLuxuryCooldownDays),
                     Field("troopLuxurySpendChance", RC.troopLuxurySpendChance),
+                    Field("troopFallenSpoilsCaptureFraction", RC.troopFallenSpoilsCaptureFraction),
                     Field("spoilsLoggingEnabled", RC.spoilsLoggingEnabled),
                     Field("spoilsVerboseLoggingEnabled", RC.spoilsVerboseLoggingEnabled))),
                 Member("ai", Obj(2,

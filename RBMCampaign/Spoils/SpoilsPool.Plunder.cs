@@ -65,7 +65,8 @@ namespace RBMCampaign
             {
                 SpoilsLog.Log("RAID", "raid on " + (settlement.Name != null ? settlement.Name.ToString() : settlement.StringId)
                     + " done: hearth " + (int)village.Hearth + " x damage " + raidEvent.RaidDamage.ToString("0.00")
-                    + " -> pot " + (int)pot + " across " + attackers.Parties.Count + " raider party(s)");
+                    + " -> pot " + (int)pot + " across " + attackers.Parties.Count + " raider party(s)"
+                    + "; raiders: " + SidePartyNames(attackers));
             }
 
             foreach (MapEventParty raider in attackers.Parties)
@@ -180,7 +181,8 @@ namespace RBMCampaign
             {
                 SpoilsLog.Log("RAID", captor, "town " + (settlement.Name != null ? settlement.Name.ToString() : settlement.StringId)
                     + " sacked: prosperity " + (int)town.Prosperity + " -> pot " + (int)pot
-                    + " to " + SpoilsLog.Describe(captor));
+                    + " to " + SpoilsLog.Describe(captor)
+                    + (oldOwner != null ? " from " + (oldOwner.Name != null ? oldOwner.Name.ToString() : oldOwner.StringId) : ""));
             }
 
             int granted = GrantFlatSpoilsToParty(captor, MathF.Round(pot));
