@@ -69,15 +69,16 @@ namespace RBMCampaign
         /// worth a message. It is logged under SPILL for the player's own party. Applies to every
         /// party -- an AI lord's surplus funds his own upgrades from the same treasury they draw on.
         /// <para>
-        /// troopSpoilsGoldSpillMultiplier scales how much of the surplus is handed up each day: 1 sweeps
-        /// it all, 0 keeps spoils a closed loop, and a value between drains the overflow down to the cap
-        /// over several days rather than in one.
+        /// troopSpoilsGoldSpillPerManPerDay is a flat ceiling on how much each man's share can hand up
+        /// in a day, so the spill is always a slow trickle rather than a lump: however deep a stack's
+        /// surplus, only this much per man drains up daily, and a large overflow empties over many days.
+        /// 0 keeps spoils a closed loop, spent only on troops, food and drink.
         /// </para>
         /// </remarks>
         public static void SpillSurplusToGold(PartyBase party)
         {
-            float spillFraction = MathF.Clamp(RBMConfig.RBMConfig.troopSpoilsGoldSpillMultiplier, 0f, 1f);
-            if (spillFraction <= 0f)
+            int perManPerDay = RBMConfig.RBMConfig.troopSpoilsGoldSpillPerManPerDay;
+            if (perManPerDay <= 0)
             {
                 return;
             }
@@ -103,7 +104,10 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                int spill = MathF.Round(surplus * spillFraction);
+                // A flat daily ceiling, scaled by the number of men in the stack: the surplus drains up
+                // no faster than this, so a deep purse trickles out over many days instead of in one lump.
+                int dailyCap = perManPerDay * MathF.Max(1, element.Number);
+                int spill = MathF.Min(surplus, dailyCap);
                 if (spill <= 0)
                 {
                     continue;
@@ -111,7 +115,7 @@ namespace RBMCampaign
                 if (SpoilsLog.Verbose && party == PartyBase.MainParty)
                 {
                     SpoilsLog.LogVerbose("SPILL", party, SpoilsLog.Describe(element.Character) + " x" + element.Number
-                        + ": over cap by " + surplus + ", handed up " + spill + " as gold (pool " + purse
+                        + ": over cap by " + surplus + ", trickled up " + spill + " as gold (pool " + purse
                         + " -> " + (purse - spill) + ", cap " + cap + ")");
                 }
                 AddSpoils(party, element.Character, -spill);

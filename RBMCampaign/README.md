@@ -56,6 +56,6 @@ Everything sits in the in-game RBM config under the campaign section, or in the 
 | `TroopFoodWageFraction` | 0.5 | Share of a day's wage a man will spend on a day's food before calling it extravagant. |
 | `TroopSettlementFunWageFraction` | 1.5 | Drink and dice, as a multiple of the daily wage, per day idled in a settlement. |
 | `SettlementProsperityPerGoldSpent` | 0.02 | Prosperity (or Hearth) a settlement gains per gold your men spend there. |
-| `TroopSpoilsGoldSpillMultiplier` | 0.25 | Share of a stack's surplus spoils — what it holds over what its upgrades could use — handed up to you as gold each day. 1 sweeps it all, 0 keeps spoils a closed loop. |
+| `TroopSpoilsGoldSpillPerManPerDay` | 10 | Most gold one man's share of a stack's surplus spoils — what it holds over what its upgrades could use — can trickle up to you in a day. A flat daily cap, so a deep surplus drains slowly; 0 keeps spoils a closed loop. |
 | `TroopSpoilsWarChestGoldPerTier` | 25 | Gold a man keeps back from the spill, per tier he holds (a tier 6 keeps 6× this). On top of what his stack needs for its own upgrades. |
 | `SpoilsLoggingEnabled` | 1 | Writes what the system is doing to the log, for debugging. |
