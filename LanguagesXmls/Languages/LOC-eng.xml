@@ -111,6 +111,7 @@
 	<string id="RBM_CON_059" text="Share of a raid's plunder its soldiers keep for themselves as spoils. Default 0.25." />
 	<string id="RBM_CON_060" text="Share of a stack's surplus spoils handed up to you as gold once its own men are provisioned. Default 1.00." />
 	<string id="RBM_CON_061" text="Gold a man holds back from the surplus he hands up, scaled by his tier. Default 25." />
+	<string id="RBM_CON_062" text="Reset to Default" />
 	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
 	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />
 	<string id="RBM_SPOILS_006" text="Spoils cover: {AMOUNT}" />

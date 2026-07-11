@@ -57,7 +57,11 @@
 								<ListPanel Id="OuterList" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Top" LayoutImp.LayoutMethod="VerticalBottomToTop" MarginBottom="20">
 									<Children>
 
-										<!-- Tournament section (listed first = displayed at bottom) -->
+										<!-- Tournament section (collapsible; listed first = displayed at bottom) -->
+										<ListPanel Id="TournamentSection" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalBottomToTop">
+										  <Children>
+										    <ListPanel Id="TournamentOptions" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalBottomToTop">
+										      <Children>
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
@@ -73,9 +77,25 @@
 										  </Children>
 										</ListPanel>
 
-										<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Left" VerticalAlignment="Center" Brush="SPOptions.GameKeysGroup.Title.Text" Text="@RBMTournament"/>
+										</Children>
+										    </ListPanel>
+										    <PartyHeaderToggleWidget DoNotPassEventsToChildren="true" UpdateChildrenStates="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Center" MarginTop="!AT.Heading.MarginTop" MarginBottom="!AT.Heading.MarginBottom" WidgetToClose="..\TournamentOptions" ListPanel="..\TournamentOptions" CollapseIndicator="TournamentTitle\CollapseIndicator">
+										      <Children>
+										        <TextWidget Id="TournamentTitle" DoNotAcceptEvents="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Center" MarginLeft="30" Brush="SPOptions.GameKeysGroup.Title.Text" Text="@RBMTournament" ClipContents="false">
+										          <Children>
+										            <BrushWidget Id="CollapseIndicator" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedHeight="19" SuggestedWidth="19" VerticalAlignment="Center" PositionXOffset="-26" PositionYOffset="-3" Brush="SPOptions.GameKeysgroup.ExpandIndicator" OverrideDefaultStateSwitchingEnabled="true" />
+										          </Children>
+										        </TextWidget>
+										      </Children>
+										    </PartyHeaderToggleWidget>
+										  </Children>
+										</ListPanel>
 
-										<!-- Campaign section -->
+										<!-- Campaign section (collapsible) -->
+										<ListPanel Id="CampaignSection" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalBottomToTop">
+										  <Children>
+										    <ListPanel Id="CampaignOptions" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalBottomToTop">
+										      <Children>
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
@@ -442,9 +462,25 @@
 										  </Children>
 										</ListPanel>
 
-										<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Left" VerticalAlignment="Center" Brush="SPOptions.GameKeysGroup.Title.Text" Text="@RBMCampaignt"/>
+										</Children>
+										    </ListPanel>
+										    <PartyHeaderToggleWidget DoNotPassEventsToChildren="true" UpdateChildrenStates="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Center" MarginTop="!AT.Heading.MarginTop" MarginBottom="!AT.Heading.MarginBottom" WidgetToClose="..\CampaignOptions" ListPanel="..\CampaignOptions" CollapseIndicator="CampaignTitle\CollapseIndicator">
+										      <Children>
+										        <TextWidget Id="CampaignTitle" DoNotAcceptEvents="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Center" MarginLeft="30" Brush="SPOptions.GameKeysGroup.Title.Text" Text="@RBMCampaignt" ClipContents="false">
+										          <Children>
+										            <BrushWidget Id="CollapseIndicator" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedHeight="19" SuggestedWidth="19" VerticalAlignment="Center" PositionXOffset="-26" PositionYOffset="-3" Brush="SPOptions.GameKeysgroup.ExpandIndicator" OverrideDefaultStateSwitchingEnabled="true" />
+										          </Children>
+										        </TextWidget>
+										      </Children>
+										    </PartyHeaderToggleWidget>
+										  </Children>
+										</ListPanel>
 
-										<!-- RBMAI section -->
+										<!-- RBMAI section (collapsible) -->
+										<ListPanel Id="AISection" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalBottomToTop">
+										  <Children>
+										    <ListPanel Id="AIOptions" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalBottomToTop">
+										      <Children>
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
@@ -564,9 +600,25 @@
 										  </Children>
 										</ListPanel>
 
-										<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Left" VerticalAlignment="Center" Brush="SPOptions.GameKeysGroup.Title.Text" Text="@RBMAIt"/>
+										</Children>
+										    </ListPanel>
+										    <PartyHeaderToggleWidget DoNotPassEventsToChildren="true" UpdateChildrenStates="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Center" MarginTop="!AT.Heading.MarginTop" MarginBottom="!AT.Heading.MarginBottom" WidgetToClose="..\AIOptions" ListPanel="..\AIOptions" CollapseIndicator="AITitle\CollapseIndicator">
+										      <Children>
+										        <TextWidget Id="AITitle" DoNotAcceptEvents="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Center" MarginLeft="30" Brush="SPOptions.GameKeysGroup.Title.Text" Text="@RBMAIt" ClipContents="false">
+										          <Children>
+										            <BrushWidget Id="CollapseIndicator" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedHeight="19" SuggestedWidth="19" VerticalAlignment="Center" PositionXOffset="-26" PositionYOffset="-3" Brush="SPOptions.GameKeysgroup.ExpandIndicator" OverrideDefaultStateSwitchingEnabled="true" />
+										          </Children>
+										        </TextWidget>
+										      </Children>
+										    </PartyHeaderToggleWidget>
+										  </Children>
+										</ListPanel>
 
-										<!-- RBMCombat section (listed last = displayed at top) -->
+										<!-- RBMCombat section (collapsible; listed last = displayed at top) -->
+										<ListPanel Id="CombatSection" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalBottomToTop">
+										  <Children>
+										    <ListPanel Id="CombatOptions" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalBottomToTop">
+										      <Children>
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
@@ -700,7 +752,19 @@
 										  </Children>
 										</ListPanel>
 
-										<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Left" VerticalAlignment="Center" Brush="SPOptions.GameKeysGroup.Title.Text" Text="@RBMCombatt"/>
+										</Children>
+										    </ListPanel>
+										    <PartyHeaderToggleWidget DoNotPassEventsToChildren="true" UpdateChildrenStates="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Center" MarginTop="!AT.Heading.MarginTop" MarginBottom="!AT.Heading.MarginBottom" WidgetToClose="..\CombatOptions" ListPanel="..\CombatOptions" CollapseIndicator="CombatTitle\CollapseIndicator">
+										      <Children>
+										        <TextWidget Id="CombatTitle" DoNotAcceptEvents="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Center" MarginLeft="30" Brush="SPOptions.GameKeysGroup.Title.Text" Text="@RBMCombatt" ClipContents="false">
+										          <Children>
+										            <BrushWidget Id="CollapseIndicator" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedHeight="19" SuggestedWidth="19" VerticalAlignment="Center" PositionXOffset="-26" PositionYOffset="-3" Brush="SPOptions.GameKeysgroup.ExpandIndicator" OverrideDefaultStateSwitchingEnabled="true" />
+										          </Children>
+										        </TextWidget>
+										      </Children>
+										    </PartyHeaderToggleWidget>
+										  </Children>
+										</ListPanel>
 
 									</Children>
 								</ListPanel>
@@ -738,6 +802,13 @@
 						</ListPanel>
 					</Children>
 				</Standard.TopPanel>
+
+				<!-- Reset to Default button, pinned to the top band above the scrollable content -->
+				<ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="251" SuggestedHeight="64" Brush="Popup.Cancel.Button" HorizontalAlignment="Left" VerticalAlignment="Top" MarginTop="120" MarginLeft="50" Command.Click="ExecuteResetToDefault" DoNotPassEventsToChildren="true">
+					<Children>
+						<TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="Popup.Button.Text" Text="@ResetToDefaultText" MarginLeft="25" MarginRight="25" MarginTop="10" MarginBottom="10" />
+					</Children>
+				</ButtonWidget>
 
 				<!-- Done/ Close Buttons -->
 				<Standard.DialogCloseButtons Parameter.CancelButtonAction="ExecuteCancel" Parameter.CancelButtonText="@CancelText" Parameter.DoneButtonAction="ExecuteDone" Parameter.DoneButtonText="@DoneText" />

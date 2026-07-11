@@ -618,6 +618,15 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
+        public string ResetToDefaultText
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_062}Reset to Default").ToString();
+            }
+        }
+
+        [DataSourceProperty]
         public string RBMCombatt
         {
             get
@@ -1263,6 +1272,54 @@ namespace RBMConfig
             RBMConfig.saveXmlConfig();
             //RBMConfig.parseXmlConfig();
             TaleWorlds.ScreenSystem.ScreenManager.PopScreen();
+        }
+
+        /// <summary>
+        /// Restores every control to the mod's shipped default, matching the field defaults in
+        /// <see cref="RBMConfig"/>. Only the on-screen controls are touched; nothing is persisted until
+        /// the player presses Done, so a reset can still be abandoned with Cancel.
+        /// </summary>
+        private void ExecuteResetToDefault()
+        {
+            // Combat
+            ThrustModifier.SelectedIndex = thrustModifierList.IndexOf(new TextObject("0.05").ToString());
+            RealisticArrowArc.SelectedIndex = 0;
+            ArmorStatusUIEnabled.SelectedIndex = 1;
+            SneakAttackInstaKill.SelectedIndex = 0;
+            BetterArrowVisuals.SelectedIndex = 1;
+            PassiveShoulderShields.SelectedIndex = 0;
+            RangedReloadSpeed.SelectedIndex = 2;
+            ActiveTroopOverhaul.SelectedIndex = 1;
+            RBMCombatEnabled.SelectedIndex = 1;
+
+            // AI
+            VanillaCombatAi.SelectedIndex = 0;
+            KeepBattleEnabled.SelectedIndex = 0;
+            PostureGUIEnabled.SelectedIndex = 1;
+            PlayerPostureMultiplier.SelectedIndex = 0;
+            PostureSystemEnabled.SelectedIndex = 1;
+            StaminaSystemEnabled.SelectedIndex = 1;
+            HitStopEnabled.SelectedIndex = 1;
+            RBMAIEnabled.SelectedIndex = 1;
+
+            // Modules
+            RBMTournamentEnabled.SelectedIndex = 1;
+            RBMCampaignEnabled.SelectedIndex = 1;
+
+            // Campaign / spoils
+            TroopUpgradeCostMultiplier = 1f;
+            TroopUpgradeSpoilsLootMultiplier = 1f;
+            TroopLootPiecesPerMan = 3f;
+            TroopLootOverlookChancePerTier = 0.5f;
+            TroopWageSpoilsFraction = 0.5f;
+            TroopSettlementFoodDays = 20f;
+            TroopFoodWageFraction = 0.5f;
+            TroopSettlementFunWageFraction = 1.5f;
+            SettlementProsperityPerGoldSpent = 0.02f;
+            TroopRaidSpoilsMultiplier = 0.25f;
+            TroopSpoilsGoldSpillMultiplier = 1f;
+            TroopSpoilsWarChestGoldPerTier = 25f;
+            SpoilsLoggingEnabled.SelectedIndex = 1;
         }
 
         private void ExecuteCancel()
