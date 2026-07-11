@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection.Information;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.GauntletUI;
@@ -29,6 +30,14 @@ namespace RBMCampaign
 
         private readonly BasicTooltipViewModel _tooltip;
 
+        // A shown hint is a one-shot snapshot: BuildTooltip runs once on hover-begin and nothing polls
+        // it after. Staging an upgrade from the party screen changes the stockpile (staged spoils are
+        // subtracted live), so a tooltip the player is still hovering keeps stale numbers. These track
+        // whether this bar's tooltip is currently on screen and the figures it was last built with, so
+        // OnUpdate can replay the player's own off-and-back workaround the moment they change.
+        private bool _tooltipShown;
+        private long _tooltipSignature;
+
         public RBMTroopSpoilsBarWidget(UIContext context) : base(context)
         {
             MaxAmount = FillResolution;
@@ -45,6 +54,8 @@ namespace RBMCampaign
             if (IsVisible)
             {
                 _tooltip.ExecuteBeginHint();
+                _tooltipShown = true;
+                _tooltipSignature = ComputeTooltipSignature();
             }
         }
 
@@ -53,6 +64,24 @@ namespace RBMCampaign
             base.OnHoverEnd();
             // Unconditional: a tooltip shown before the bar hid itself must still be dismissed.
             _tooltip.ExecuteEndHint();
+            _tooltipShown = false;
+        }
+
+        /// <summary>
+        /// Everything the tooltip prints that can change while it is on screen: the stockpile and the
+        /// stack size (which the "free" upgrade counts are drawn from). Equipment values and costs are
+        /// static, so this pair is enough to tell a stale tooltip from a current one.
+        /// </summary>
+        private long ComputeTooltipSignature()
+        {
+            CharacterObject character = ResolveTroop(TroopId);
+            if (character == null || Campaign.Current == null)
+            {
+                return 0;
+            }
+            PartyBase party = PartyBase.MainParty;
+            return ((long)SpoilsPool.GetAvailableSpoils(party, character) << 20)
+                ^ (uint)SpoilsPool.GetStackSize(party, character);
         }
 
         private List<TooltipProperty> BuildTooltip()
@@ -129,6 +158,21 @@ namespace RBMCampaign
             if (!IsVisible)
             {
                 return;
+            }
+
+            // If the player is hovering this bar when its numbers move — an upgrade staged from the
+            // party screen draws the stockpile down at once — the tooltip on screen is now stale.
+            // Replay their own off-and-back workaround so it shows the live figures without the cursor
+            // having to leave and return, mirroring the party-screen upgrade arrows.
+            if (_tooltipShown)
+            {
+                long signature = ComputeTooltipSignature();
+                if (signature != _tooltipSignature)
+                {
+                    _tooltipSignature = signature;
+                    MBInformationManager.HideInformations();
+                    _tooltip.ExecuteBeginHint();
+                }
             }
 
             PartyBase party = PartyBase.MainParty;

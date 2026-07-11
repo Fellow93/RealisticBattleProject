@@ -165,19 +165,26 @@ namespace RBMCampaign
                 memberRoster.SetElementXp(rosterIndex, memberRoster.GetElementXp(rosterIndex) - option.XpCost * option.Count);
                 // Drawn down before the roster shrinks, against the same stockpile the price used.
                 int spoilsSpend = SpoilsPool.GetBatchSpoilsSpend(party, option.Target, option.UpgradeTarget, option.Count);
+                // A cheaper-kitted upgrade salvages its surplus into the upgradeTarget stack's purse.
+                int spoilsCredit = SpoilsPool.GetSpoilsCreditForUpgrade(option.Target, option.UpgradeTarget) * option.Count;
+                SpoilsPool.AddSpoils(party, option.Target, -spoilsSpend);
+                memberRoster.AddToCounts(option.Target, -option.Count);
+                memberRoster.AddToCounts(option.UpgradeTarget, option.Count);
+                SpoilsPool.AddSpoils(party, option.UpgradeTarget, spoilsCredit);
+                // The leaving men take their share of the purse left after their upgrade is paid for.
+                int carried = SpoilsPool.CarrySpoilsOnUpgrade(party, option.Target, option.UpgradeTarget, option.Count, option.StackSize);
                 if (SpoilsLog.IsEnabled)
                 {
                     SpoilsLog.Log("UPGRADE", party, SpoilsLog.Describe(party) + " upgraded " + option.Count + "x "
                         + SpoilsLog.Describe(option.Target) + " -> " + SpoilsLog.Describe(option.UpgradeTarget)
                         + " | stack was " + option.StackSize
                         + ", free " + SpoilsPool.GetFreeUpgradeCount(party, option.Target, option.UpgradeTarget)
-                        + ", spoils spent " + spoilsSpend + ", pool " + SpoilsPool.GetSpoils(party, option.Target)
-                        + " -> " + (SpoilsPool.GetSpoils(party, option.Target) - spoilsSpend)
+                        + ", spoils spent " + spoilsSpend
+                        + (spoilsCredit > 0 ? ", salvaged " + spoilsCredit + " into " + SpoilsLog.Describe(option.UpgradeTarget) + "'s purse" : "")
+                        + (carried > 0 ? ", carried " + carried + " of the purse along" : "")
+                        + ", pool " + SpoilsPool.GetSpoils(party, option.Target)
                         + ", gold " + option.TotalGoldCost + ", xp " + (option.XpCost * option.Count));
                 }
-                SpoilsPool.AddSpoils(party, option.Target, -spoilsSpend);
-                memberRoster.AddToCounts(option.Target, -option.Count);
-                memberRoster.AddToCounts(option.UpgradeTarget, option.Count);
                 SpoilsPool.ClearSpoilsIfStackGone(party, option.Target);
                 if (option.Count > 0)
                 {

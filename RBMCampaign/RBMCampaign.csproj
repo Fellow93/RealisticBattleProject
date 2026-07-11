@@ -276,6 +276,7 @@
     <Compile Include="Spoils\SpoilsPool.Equipment.cs" />
     <Compile Include="Spoils\SpoilsPool.UpgradeMath.cs" />
     <Compile Include="Spoils\SpoilsPool.BattleLoot.cs" />
+    <Compile Include="Spoils\SpoilsPool.Casualties.cs" />
     <Compile Include="Spoils\SpoilsPool.Plunder.cs" />
     <Compile Include="Spoils\SpoilsPool.Wages.cs" />
     <Compile Include="Spoils\SpoilsPool.Spill.cs" />

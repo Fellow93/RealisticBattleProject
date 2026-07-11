@@ -78,12 +78,19 @@ namespace RBMCampaign
 
         public static void OnMapEventEnded(MapEvent mapEvent)
         {
-            if (!IsEnabled || RBMConfig.RBMConfig.troopUpgradeSpoilsLootMultiplier <= 0f)
+            if (!IsEnabled)
             {
                 return;
             }
             MapEventSide winner = mapEvent.Winner;
-            if (winner == null || winner.OtherSide == null)
+            if (winner == null)
+            {
+                return;
+            }
+            // The fallen take their share of the purse to the grave, and a wiped stack's is split among
+            // the men left standing, before the field they hold is stripped for what fills the purse.
+            ApplyBattleCasualties(winner);
+            if (RBMConfig.RBMConfig.troopUpgradeSpoilsLootMultiplier <= 0f || winner.OtherSide == null)
             {
                 return;
             }

@@ -8,6 +8,7 @@ using TaleWorlds.CampaignSystem.ViewModelCollection;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Party;
 using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection.Information;
+using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
 namespace RBMCampaign
@@ -50,10 +51,14 @@ namespace RBMCampaign
             return stat;
         }
 
-        /// <summary>What one man's upgrade costs when the stack holds no usable spoils at all.</summary>
+        /// <summary>
+        /// What one man's upgrade costs when the stack holds no usable spoils at all. Floored at zero:
+        /// a troop that upgrades into cheaper kit costs nothing in gold, and the surplus it strips off
+        /// the retired gear is paid into its spoils purse instead (see GetSpoilsCreditForUpgrade).
+        /// </summary>
         public static int GetFullUpgradeGoldCost(PartyBase party, CharacterObject characterObject, CharacterObject upgradeTarget)
         {
-            return BuildUpgradeGoldCost(party, characterObject, upgradeTarget, 1f).RoundedResultNumber;
+            return MathF.Max(0, BuildUpgradeGoldCost(party, characterObject, upgradeTarget, 1f).RoundedResultNumber);
         }
 
         /// <summary>
@@ -65,7 +70,7 @@ namespace RBMCampaign
         public static int GetBatchUpgradeGoldCost(PartyBase party, CharacterObject characterObject, CharacterObject upgradeTarget, int count)
         {
             float unpaidMen = SpoilsPool.GetUnpaidMen(party, characterObject, upgradeTarget, count);
-            return BuildUpgradeGoldCost(party, characterObject, upgradeTarget, unpaidMen).RoundedResultNumber;
+            return MathF.Max(0, BuildUpgradeGoldCost(party, characterObject, upgradeTarget, unpaidMen).RoundedResultNumber);
         }
 
         [HarmonyPatch(typeof(DefaultPartyTroopUpgradeModel))]
@@ -78,6 +83,12 @@ namespace RBMCampaign
                 // covers him he is free, and the man after him may not be.
                 float goldFactor = SpoilsPool.GetUnpaidMen(party, characterObject, upgradeTarget, 1);
                 ExplainedNumber stat = BuildUpgradeGoldCost(party, characterObject, upgradeTarget, goldFactor);
+                // A cheaper-kit upgrade prices out negative; the surplus is salvaged into the stack's
+                // spoils on commit instead of handing the player gold, so the quoted cost floors at zero.
+                if (stat.RoundedResultNumber < 0)
+                {
+                    stat = new ExplainedNumber(0f);
+                }
 
                 // The party screen recomputes this on every refresh, so once per troop pair is plenty.
                 SpoilsLog.LogOnce("goldcost-" + characterObject.StringId + "-" + upgradeTarget.StringId, "GOLD", party,
@@ -133,17 +144,36 @@ namespace RBMCampaign
                 partyGoldChangeAmount += coveredBySpoils;
             }
 
-            /// <summary>upgradeCoinCost arrives as the Prefix left it: the full price.</summary>
-            private static void Postfix(ref string __result, int upgradeCoinCost, int __state)
+            /// <summary>
+            /// upgradeCoinCost arrives as the Prefix left it: the full price. When the upgrade instead
+            /// wears cheaper kit, there is no discount to break out — the price is already zero — so the
+            /// salvaged surplus is named on its own line, read straight from the original arguments.
+            /// </summary>
+            private static void Postfix(ref string __result, int index, CharacterObject character, bool areUpgradesDisabled, int upgradeCoinCost, int __state)
             {
-                if (__state <= 0 || __result == null)
+                if (__result == null)
                 {
                     return;
                 }
-                __result += "\n" + new TextObject("{=RBM_SPOILS_006}Spoils cover: {AMOUNT}")
-                    .SetTextVariable("AMOUNT", __state).ToString() + CoinIcon;
-                __result += "\n" + new TextObject("{=RBM_SPOILS_007}You pay: {AMOUNT}")
-                    .SetTextVariable("AMOUNT", upgradeCoinCost - __state).ToString() + CoinIcon;
+                if (__state > 0)
+                {
+                    __result += "\n" + new TextObject("{=RBM_SPOILS_006}Spoils cover: {AMOUNT}")
+                        .SetTextVariable("AMOUNT", __state).ToString() + CoinIcon;
+                    __result += "\n" + new TextObject("{=RBM_SPOILS_007}You pay: {AMOUNT}")
+                        .SetTextVariable("AMOUNT", upgradeCoinCost - __state).ToString() + CoinIcon;
+                    return;
+                }
+                if (areUpgradesDisabled || !SpoilsPool.IsEnabled || character == null
+                    || index < 0 || index >= character.UpgradeTargets.Length)
+                {
+                    return;
+                }
+                int salvaged = SpoilsPool.GetSpoilsCreditForUpgrade(character, character.UpgradeTargets[index]);
+                if (salvaged > 0)
+                {
+                    __result += "\n" + new TextObject("{=RBM_SPOILS_005}Salvaged into spoils: {AMOUNT}")
+                        .SetTextVariable("AMOUNT", salvaged).ToString() + CoinIcon;
+                }
             }
         }
 

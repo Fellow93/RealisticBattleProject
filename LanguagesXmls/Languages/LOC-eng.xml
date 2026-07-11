@@ -114,6 +114,7 @@
 	<string id="RBM_CON_062" text="Reset to Default" />
 	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
 	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />
+	<string id="RBM_SPOILS_005" text="Salvaged into spoils: {AMOUNT}" />
 	<string id="RBM_SPOILS_006" text="Spoils cover: {AMOUNT}" />
 	<string id="RBM_SPOILS_007" text="You pay: {AMOUNT}" />
 	<string id="RBM_SPOILS_008" text="{COST}  ({FREE} free)" />
