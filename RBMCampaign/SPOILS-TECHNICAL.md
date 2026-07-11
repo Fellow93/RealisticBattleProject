@@ -286,7 +286,7 @@ Only stacks already over their spoils cap indulge. Per check:
 
 ```
 if MBRandom.RandomFloat >= troopLuxurySpendChance: skip     // default 0.02
-buy one random affordable luxury (ItemCategory.LuxuryDemand > BaseDemand, IsTradeGood, not food)
+buy one random affordable luxury (ItemCategory.LuxuryDemand > BaseDemand, trade good or equipment, not food)
 cost = Max(1, GetElementUnitCost); drawn from purse, credits the settlement
 cooldown until NowHours + troopLuxuryCooldownDays * 24       // default 20 days
 ```

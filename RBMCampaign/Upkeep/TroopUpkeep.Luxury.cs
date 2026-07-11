@@ -10,7 +10,8 @@ namespace RBMCampaign
 {
     /// <summary>
     /// A stack sitting on more spoils than it will ever need for its kit sometimes indulges: it buys a
-    /// luxury off the settlement's market -- jewellery, velvet, furs, wine -- purely to have it. The
+    /// luxury off the settlement's market -- jewellery, velvet, furs, wine, a fine garment -- purely to
+    /// have it. The
     /// coin leaves the purse for the settlement, the way carousing does, and the good itself is a
     /// personal keepsake rather than party loot, so it cannot be turned back into gold at the next town.
     /// </summary>
@@ -71,7 +72,9 @@ namespace RBMCampaign
             for (int i = 0; i < market.Count; i++)
             {
                 ItemObject item = market.GetItemAtIndex(i);
-                if (item == null || !item.IsTradeGood || item.IsFood || item.ItemCategory == null)
+                // Trade goods and equipment both qualify -- a fine garment is as much an indulgence as
+                // a cask of wine. Food is the one trade good we never treat as a keepsake.
+                if (item == null || item.IsFood || item.ItemCategory == null)
                 {
                     continue;
                 }
